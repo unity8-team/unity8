@@ -20,7 +20,7 @@ LIST(APPEND QT_PKGCONFIG_DEPENDENCIES "Qt5Quick")
 
 set(SYSTEM_COMPONENTS_DIR ${QT_IMPORTS_DIR}/Ubuntu)
 
-# enable QML debugging
+# Enable QML debugging
 if(CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-DQT_QML_DEBUG)
 endif()
@@ -53,10 +53,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
 add_custom_target(uninstall "${CMAKE_COMMAND}"
                   -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-enable_testing()
-
-#add_subdirectory(tests)
-
 # Doc
 OPTION(GENERATE_DOC "Enable qdoc generation" OFF)
 if(GENERATE_DOC)
@@ -69,7 +65,7 @@ if(GENERATE_DOC)
     endif()
 endif()
 
-# install subdirectories
+# Install subdirectories
 set(QML_DIRS
     SystemComponents
     )
@@ -77,3 +73,8 @@ set(QML_DIRS
 install(DIRECTORY ${QML_DIRS}
     DESTINATION ${SYSTEM_COMPONENTS_DIR}
     )
+
+# Tests
+enable_testing()
+
+add_subdirectory(tests)
