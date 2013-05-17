@@ -23,7 +23,6 @@ import "../../SystemComponents"
 import "utils.js" as UtilsJS
 
 Item {
-    id: root
     width: units.gu(42)
     height: units.gu(75)
 

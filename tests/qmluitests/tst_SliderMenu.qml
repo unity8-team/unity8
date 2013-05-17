@@ -22,7 +22,6 @@ import Ubuntu.Components 0.1
 import "../../SystemComponents"
 
 Item {
-    id: root
     width: units.gu(42)
     height: units.gu(75)
 
