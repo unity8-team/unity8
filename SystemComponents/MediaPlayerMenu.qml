@@ -93,6 +93,7 @@ BasicMenu {
             }
 
             Button {
+                objectName: "playButton"
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/RightArrow.png"
                 onClicked: mediaPlayerMenu.play(list.currentIndex)

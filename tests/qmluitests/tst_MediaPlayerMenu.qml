@@ -20,11 +20,19 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import "../../SystemComponents"
+import "utils.js" as UtilsJS
 
 Item {
     id: root
     width: units.gu(42)
     height: units.gu(75)
+
+    ListModel {
+        id: mediaPlayerModel
+        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "MediaPlayer/speak-now.jpg"}
+        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "MediaPlayer/electric.jpg"}
+        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "MediaPlayer/the-man-machine.jpg"}
+    }
 
     Flickable {
         id: flickable
@@ -39,30 +47,29 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            ButtonMenu {
-                id: buttonMenu
-                text: i18n.tr("Button")
-                controlText: i18n.tr("Hello world!")
+            MediaPlayerMenu {
+                id: mediaPlayerMenu
+                model: mediaPlayerModel
             }
         }
     }
 
     SignalSpy {
         id: signalSpy
-        signalName: "clicked"
-        target: buttonMenu.control
+        signalName: "play"
+        target: mediaPlayerMenu
     }
 
     TestCase {
-        name: "ButtonMenu"
+        name: "MediaPlayerMenu"
         when: windowShown
 
         function test_click() {
             signalSpy.clear()
 
-            var button = buttonMenu.control
-            mouseClick(buttonMenu, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
-            compare(signalSpy.count > 0, true, "signal clicked not triggered")
+            var playButton = UtilsJS.findChild(mediaPlayerMenu, "playButton")
+            mouseClick(playButton, playButton.width / 2, playButton.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
+            compare(signalSpy.count > 0, true, "signal play not triggered")
         }
     }
 }
