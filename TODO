@@ -13,10 +13,10 @@ Date of the Event should be formatted
 Right signals for skipping songs, maybe extra properties exposed
 
 [ProgressBarMenu]
-The ProgressBar does nothing, needs API
+DONE - The ProgressBar does nothing, needs API
 
 [SliderMenu]
-The Slider does nothing, needs API
+DONE - The Slider does nothing, needs API
 
 [TimeZoneMenu]
 Needs to format and support real timezones
