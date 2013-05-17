@@ -27,6 +27,6 @@ BasicMenu {
             rightMargin: units.gu(2)
             verticalCenter: parent.verticalCenter
         }
-        indeterminate: true
+        indeterminate: true // FIXME
     }
 }

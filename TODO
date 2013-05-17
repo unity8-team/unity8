@@ -1,0 +1,25 @@
+[BasicMenu]
+
+[ButtonMenu]
+Emit the button click signal to the parent?
+
+[CalendarMenu]
+The Calendar components needs to support multiple models, and expose some properties
+
+[EventMenu]
+Date of the Event should be formatted
+
+[MediaPlayerMenu]
+Right signals for skipping songs, maybe extra properties exposed
+
+[ProgressBarMenu]
+The ProgressBar does nothing, needs API
+
+[SliderMenu]
+The Slider does nothing, needs API
+
+[TimeZoneMenu]
+Needs to format and support real timezones
+
+[UserSessionMenu]
+Needs multiple users, a model
