@@ -70,6 +70,7 @@ MainView {
 
                 ProgressBarMenu {
                     text: i18n.tr("ProgressBar")
+                    indeterminate: true
                 }
 
                 ButtonMenu {

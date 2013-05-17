@@ -20,13 +20,18 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
+    property alias indeterminate: progressBar.indeterminate
+    property alias minimumValue: progressBar.minimumValue
+    property alias maximumValue: progressBar.maximumValue
+    property alias value: progressBar.value
+
     ProgressBar {
+        id: progressBar
         width: __controlWidth
         anchors {
             right: parent.right
             rightMargin: units.gu(2)
             verticalCenter: parent.verticalCenter
         }
-        indeterminate: true // FIXME
     }
 }
