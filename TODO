@@ -1,7 +1,7 @@
 [BasicMenu]
 
 [ButtonMenu]
-Emit the button click signal to the parent?
+DONE - Emit the button click signal to the parent?
 
 [CalendarMenu]
 The Calendar components needs to support multiple models, and expose some properties

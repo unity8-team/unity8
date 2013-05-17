@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "Components"
+import "SystemComponents"
 
 MainView {
     // Note! applicationName needs to match the .desktop filename

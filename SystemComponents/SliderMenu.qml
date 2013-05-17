@@ -20,7 +20,12 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
+    property alias minimumValue: slider.minimumValue
+    property alias maximumValue: slider.maximumValue
+    property alias value: slider.value
+
     control: Slider {
+        id: slider
         width: __controlWidth
         anchors.verticalCenter: parent.verticalCenter
         live: false

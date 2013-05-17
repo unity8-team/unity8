@@ -22,6 +22,8 @@ import Ubuntu.Components 0.1
 BasicMenu {
     property alias controlText: control.text
 
+    Component.onCompleted: control.clicked.connect(clicked)
+
     control: Button {
         id: control
         width: __controlWidth
