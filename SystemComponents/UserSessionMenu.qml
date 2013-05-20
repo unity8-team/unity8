@@ -20,7 +20,10 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
+    property alias active: activeIcon.visible
+
     Rectangle {
+        id: activeIcon
         anchors {
             right: parent.right
             rightMargin: units.gu(2)
@@ -31,6 +34,7 @@ BasicMenu {
         radius: width / 2
         antialiasing: true
         color: "#d0d0d0"
+        visible: false
 
         Image {
             id: image

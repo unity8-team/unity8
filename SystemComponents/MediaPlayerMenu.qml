@@ -22,9 +22,14 @@ import Ubuntu.Components 0.1
 BasicMenu {
     id: mediaPlayerMenu
 
-    property alias model: list.model
+    property alias albumArt: albumArtImage.source
+    property alias song: songLabel.text
+    property alias artist: artistLabel.text
+    property alias album: albumLabel.text
 
-    signal play(int index)
+    signal next()
+    signal play()
+    signal previous()
 
     implicitHeight: column.height + units.gu(4)
 
@@ -38,42 +43,33 @@ BasicMenu {
         }
         spacing: units.gu(2)
 
-        ListView {
-            id: list
+        Row {
+            width: mediaPlayerMenu.width
+            spacing: units.gu(2)
 
-            width: currentItem.width
-            height: currentItem.height
-            orientation: ListView.Horizontal
-            highlightMoveDuration: 500
+            UbuntuShape {
+                width: units.gu(14)
+                height: width
 
-            delegate: Row {
-                width: mediaPlayerMenu.width
-                spacing: units.gu(2)
+                image: Image {
+                    id: albumArtImage
+                }
+            }
 
-                UbuntuShape {
-                    width: units.gu(14)
-                    height: width
+            Column {
+                spacing: units.gu(1)
 
-                    image: Image {
-                        source: model.albumArt
-                    }
+                Label {
+                    id: songLabel
+                    font.weight: Font.DemiBold
                 }
 
-                Column {
-                    spacing: units.gu(1)
+                Label {
+                    id: artistLabel
+                }
 
-                    Label {
-                        text: model.song
-                        font.weight: Font.DemiBold
-                    }
-
-                    Label {
-                        text: model.artist
-                    }
-
-                    Label {
-                        text: model.album
-                    }
+                Label {
+                    id: albumLabel
                 }
             }
         }
@@ -87,22 +83,24 @@ BasicMenu {
             spacing: units.gu(4)
 
             Button {
+                objectName: "previousButton"
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/DoubleLeftArrow.png"
-                onClicked: list.currentIndex = Math.max(list.currentIndex - 1, 0)
+                onClicked: mediaPlayerMenu.previous()
             }
 
             Button {
                 objectName: "playButton"
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/RightArrow.png"
-                onClicked: mediaPlayerMenu.play(list.currentIndex)
+                onClicked: mediaPlayerMenu.play()
             }
 
             Button {
+                objectName: "nextButton"
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/DoubleRightArrow.png"
-                onClicked: list.currentIndex = Math.min(list.currentIndex + 1, model.count - 1)
+                onClicked: mediaPlayerMenu.next()
             }
         }
     }

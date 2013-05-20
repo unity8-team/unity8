@@ -10,7 +10,7 @@ The Calendar components needs to support multiple models, and expose some proper
 Date of the Event should be formatted
 
 [MediaPlayerMenu]
-Right signals for skipping songs, maybe extra properties exposed
+DONE - Right signals for skipping songs, maybe extra properties exposed
 
 [ProgressBarMenu]
 DONE - The ProgressBar does nothing, needs API

@@ -29,9 +29,9 @@ MainView {
 
     ListModel {
         id: mediaPlayerModel
-        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "MediaPlayer/speak-now.jpg"}
-        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "MediaPlayer/electric.jpg"}
-        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "MediaPlayer/the-man-machine.jpg"}
+        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "SystemComponents/MediaPlayer/speak-now.jpg"}
+        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "SystemComponents/MediaPlayer/electric.jpg"}
+        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "SystemComponents/MediaPlayer/the-man-machine.jpg"}
     }
 
     ListModel {
@@ -84,10 +84,19 @@ MainView {
                 UserSessionMenu {
                     text: i18n.tr("Lola Chang")
                     icon: Qt.resolvedUrl("avatar.png")
+                    active: true
                 }
 
                 MediaPlayerMenu {
-                    model: mediaPlayerModel
+                    property int index: 0
+
+                    onPrevious: index = Math.max(index - 1, 0)
+                    onNext: index = Math.min(index + 1, mediaPlayerModel.count - 1)
+
+                    song: mediaPlayerModel.get(index).song;
+                    artist: mediaPlayerModel.get(index).artist;
+                    album: mediaPlayerModel.get(index).album;
+                    albumArt: mediaPlayerModel.get(index).albumArt;
                 }
 
                 TimeZoneMenu {

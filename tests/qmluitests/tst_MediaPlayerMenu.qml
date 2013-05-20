@@ -26,13 +26,6 @@ Item {
     width: units.gu(42)
     height: units.gu(75)
 
-    ListModel {
-        id: mediaPlayerModel
-        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "MediaPlayer/speak-now.jpg"}
-        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "MediaPlayer/electric.jpg"}
-        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "MediaPlayer/the-man-machine.jpg"}
-    }
-
     Flickable {
         id: flickable
 
@@ -48,14 +41,29 @@ Item {
 
             MediaPlayerMenu {
                 id: mediaPlayerMenu
-                model: mediaPlayerModel
+                song: "Mine";
+                artist: "Taylor Swift";
+                album: "Speak Now";
+                albumArt: "../../SystemComponents/MediaPlayer/speak-now.jpg"
             }
         }
     }
 
     SignalSpy {
-        id: signalSpy
+        id: signalSpyNext
+        signalName: "next"
+        target: mediaPlayerMenu
+    }
+
+    SignalSpy {
+        id: signalSpyPlay
         signalName: "play"
+        target: mediaPlayerMenu
+    }
+
+    SignalSpy {
+        id: signalSpyPrevious
+        signalName: "previous"
         target: mediaPlayerMenu
     }
 
@@ -63,12 +71,20 @@ Item {
         name: "MediaPlayerMenu"
         when: windowShown
 
-        function test_click() {
-            signalSpy.clear()
+        function test_buttons_data() {
+            return [
+                {tag: 'next', signalSpy: signalSpyNext, objectName: "nextButton"},
+                {tag: 'play', signalSpy: signalSpyPlay, objectName: "playButton"},
+                {tag: 'previous', signalSpy: signalSpyPrevious, objectName: "previousButton"},
+            ];
+        }
 
-            var playButton = UtilsJS.findChild(mediaPlayerMenu, "playButton")
-            mouseClick(playButton, playButton.width / 2, playButton.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
-            compare(signalSpy.count > 0, true, "signal play not triggered")
+        function test_buttons(data) {
+            data.signalSpy.clear()
+
+            var button = UtilsJS.findChild(mediaPlayerMenu, data.objectName)
+            mouseClick(button, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
+            compare(data.signalSpy.count > 0, true, "signal not triggered")
         }
     }
 }
