@@ -1,13 +1,16 @@
 [BasicMenu]
+Add tests?
 
 [ButtonMenu]
 DONE - Emit the button click signal to the parent?
 
 [CalendarMenu]
 The Calendar components needs to support multiple models, and expose some properties
+Add tests
 
 [EventMenu]
 Date of the Event should be formatted
+Add tests
 
 [MediaPlayerMenu]
 DONE - Right signals for skipping songs, maybe extra properties exposed
@@ -20,6 +23,7 @@ DONE - The Slider does nothing, needs API
 
 [TimeZoneMenu]
 Needs to format and support real timezones
+Add tests
 
 [UserSessionMenu]
 Needs multiple users, a model
