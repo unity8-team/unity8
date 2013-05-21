@@ -24,6 +24,7 @@ BasicMenu {
 
     Rectangle {
         id: activeIcon
+        objectName: "activeIcon"
         anchors {
             right: parent.right
             rightMargin: units.gu(2)
