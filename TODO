@@ -10,7 +10,7 @@ Add tests
 
 [EventMenu]
 Date of the Event should be formatted
-Add tests
+DONE - Add tests
 
 [MediaPlayerMenu]
 DONE - Right signals for skipping songs, maybe extra properties exposed
@@ -23,7 +23,7 @@ DONE - The Slider does nothing, needs API
 
 [TimeZoneMenu]
 Needs to format and support real timezones
-Add tests
+DONE - Add tests
 
 [UserSessionMenu]
-Needs multiple users, a model
+DONE - Add tests
