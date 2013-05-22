@@ -103,8 +103,23 @@ MainView {
                     model: timeZoneModel
                 }
 
-                EventMenu {
-                    model: eventModel
+                Column {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    Repeater {
+                        id: list
+                        model: eventModel
+
+                        EventMenu {
+                            name: model.name
+                            description: model.description
+                            color: model.color
+                            date: model.date
+                        }
+                    }
                 }
             }
         }

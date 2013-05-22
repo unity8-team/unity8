@@ -21,29 +21,24 @@ import Ubuntu.Components 0.1
 import "Event"
 
 BasicMenu {
-    property alias model: list.model
+    property alias name: event.name
+    property alias description: event.description
+    property alias color: event.color
+    property alias date: event.date
 
-    implicitHeight: column.height + units.gu(4)
+    Event {
+        id: event
 
-    Column {
-        id: column
         anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
-            margins: units.gu(2)
+            fill: parent
+            topMargin: units.gu(1.5)
+            bottomMargin: units.gu(1.5)
+            leftMargin: units.gu(2)
+            rightMargin: units.gu(2)
         }
-        spacing: units.gu(2)
-
-        Repeater {
-            id: list
-            Event {
-                width: parent.width
-                name: model.name
-                description: model.description
-                color: model.color
-                date: model.date
-            }
-        }
+        name: name
+        description: description
+        color: color
+        date: date
     }
 }

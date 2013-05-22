@@ -25,8 +25,6 @@ Item {
     property alias color: icon.color
     property string date
 
-    implicitHeight: units.gu(4)
-
     Row {
         anchors.left: parent.left
         spacing: units.gu(1)

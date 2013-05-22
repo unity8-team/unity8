@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import "../../SystemComponents"
-import "utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -39,25 +38,38 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            UserSessionMenu {
-                id: userSessionMenu
-                text: i18n.tr("Lola Chang")
-                icon: Qt.resolvedUrl("avatar.png")
-                active: true
+            EventMenu {
+                id: eventMenu
+                color: "yellow"
+                name: "Lunch with Lola"
+                description: "Some nice Thai food in the bay area"
+                date: "1:10 PM"
             }
         }
     }
 
     TestCase {
-        name: "UserSessionMenu"
+        name: "EventMenu"
         when: windowShown
 
-        function test_active() {
-            var activeIcon = UtilsJS.findChild(userSessionMenu, "activeIcon")
-            userSessionMenu.active = false
-            compare(activeIcon.visible, false, "Cannot disable the active icon element")
-            userSessionMenu.active = true
-            compare(activeIcon.visible, true, "Cannot enable the active icon element")
+        function test_color() {
+            eventMenu.color = "red"
+            compare(eventMenu.color, "#ff0000", "Cannot set color")
+        }
+
+        function test_name() {
+            eventMenu.name = "Gym"
+            compare(eventMenu.name, "Gym", "Cannot set name")
+        }
+
+        function test_description() {
+            eventMenu.description = "Workout with John"
+            compare(eventMenu.description, "Workout with John", "Cannot set description")
+        }
+
+        function test_date() {
+            eventMenu.date = "6:30 PM"
+            compare(eventMenu.date, "6:30 PM", "Cannot set date")
         }
     }
 }
