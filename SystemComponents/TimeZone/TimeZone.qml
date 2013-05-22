@@ -21,11 +21,10 @@ import Ubuntu.Components 0.1
 import "Time.js" as TimeLocal
 
 Item {
-    property alias city: cityLabel.text
     property int timeZone // FIXME read proper timezone formats
     property var date
 
-    implicitHeight: units.gu(2)
+    onTimeZoneChanged: timer.restart()
 
     Timer {
         id: timer
@@ -34,11 +33,6 @@ Item {
         repeat: true
         triggeredOnStart: true
         onTriggered: date = new Date().addHours(timeZone)
-    }
-
-    Label {
-        id: cityLabel
-        anchors.left: parent.left
     }
 
     Label {

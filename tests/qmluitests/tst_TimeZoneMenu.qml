@@ -20,6 +20,7 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import "../../SystemComponents"
+import "utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -38,31 +39,41 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            UserSessionMenu {
-                id: userSessionMenu
-                name: i18n.tr("Lola Chang")
-                icon: Qt.resolvedUrl("avatar.png")
-                active: true
+            TimeZoneMenu {
+                id: timeZoneMenu
+                city: "San Francisco"
+                timeZone: -8
             }
         }
     }
 
     TestCase {
-        name: "UserSessionMenu"
+        name: "TimeZoneMenu"
         when: windowShown
 
-        function test_name() {
-            userSessionMenu.name = "Test User"
-            compare(userSessionMenu.name, "Test User", "Cannot set name")
-            compare(userSessionMenu.text, "Test User", "Text property of ListItem did not change")
+        function test_city() {
+            timeZoneMenu.city = "London"
+            compare(timeZoneMenu.city, "London", "Cannot set city")
+            compare(timeZoneMenu.text, "London", "Text property of ListItem did not change")
         }
 
-        function test_active() {
-            var activeIcon = UtilsJS.findChild(userSessionMenu, "activeIcon")
-            userSessionMenu.active = false
-            compare(activeIcon.visible, false, "Cannot disable the active icon element")
-            userSessionMenu.active = true
-            compare(activeIcon.visible, true, "Cannot enable the active icon element")
+        function test_timeZone() {
+            var timeZoneComponent = UtilsJS.findChild(timeZoneMenu, "timeZoneComponent")
+            var timeZoneDate = timeZoneComponent.date
+            timeZoneMenu.timeZone = "0"
+            compare(timeZoneMenu.timeZone, 0, "Cannot set timeZone")
+
+            var timeSpent = 0
+            var timeout = 5000
+            var success = false
+            while (timeSpent < timeout && !success) {
+                success = timeZoneComponent.date !== timeZoneDate
+                if (success === false) {
+                    wait(50)
+                    timeSpent += 50
+                }
+            }
+            compare(success, true, "Date didn't change after changing time zone")
         }
     }
 }

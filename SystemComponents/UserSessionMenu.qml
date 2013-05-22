@@ -20,6 +20,9 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
+    id: userSessionMenu
+
+    property alias name: userSessionMenu.text
     property alias active: activeIcon.visible
 
     Rectangle {

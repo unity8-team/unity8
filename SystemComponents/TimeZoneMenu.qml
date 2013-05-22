@@ -21,27 +21,17 @@ import Ubuntu.Components 0.1
 import "TimeZone"
 
 BasicMenu {
-    property alias model: list.model
+    id: timeZoneMenu
 
-    implicitHeight: column.height + units.gu(4)
+    property alias city: timeZoneMenu.text
+    property alias timeZone: timeZoneComponent.timeZone
 
-    Column {
-        id: column
+    TimeZone {
+        id: timeZoneComponent
+        objectName: "timeZoneComponent"
         anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
+            fill: parent
             margins: units.gu(2)
-        }
-        spacing: units.gu(2)
-
-        Repeater {
-            id: list
-            TimeZone {
-                width: parent.width
-                city: model.city
-                timeZone: model.timeZone
-            }
         }
     }
 }

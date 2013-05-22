@@ -36,9 +36,9 @@ MainView {
 
     ListModel {
         id: timeZoneModel
-        ListElement { city: "San Francisco"; timeZone: 0 }
-        ListElement { city: "London"; timeZone: -8 }
-        ListElement { city: "Rome"; timeZone: -9 }
+        ListElement { city: "San Francisco"; timeZone: -8 }
+        ListElement { city: "London"; timeZone: 0 }
+        ListElement { city: "Rome"; timeZone: 1 }
     }
 
     ListModel {
@@ -82,7 +82,7 @@ MainView {
                 }
 
                 UserSessionMenu {
-                    text: i18n.tr("Lola Chang")
+                    name: i18n.tr("Lola Chang")
                     icon: Qt.resolvedUrl("avatar.png")
                     active: true
                 }
@@ -99,8 +99,20 @@ MainView {
                     albumArt: mediaPlayerModel.get(index).albumArt;
                 }
 
-                TimeZoneMenu {
-                    model: timeZoneModel
+                Column {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    Repeater {
+                        model: timeZoneModel
+
+                        TimeZoneMenu {
+                            city: model.city
+                            timeZone: model.timeZone
+                        }
+                    }
                 }
 
                 Column {
@@ -110,7 +122,6 @@ MainView {
                     }
 
                     Repeater {
-                        id: list
                         model: eventModel
 
                         EventMenu {

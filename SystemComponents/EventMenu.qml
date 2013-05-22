@@ -28,7 +28,6 @@ BasicMenu {
 
     Event {
         id: event
-
         anchors {
             fill: parent
             topMargin: units.gu(1.5)
@@ -36,9 +35,5 @@ BasicMenu {
             leftMargin: units.gu(2)
             rightMargin: units.gu(2)
         }
-        name: name
-        description: description
-        color: color
-        date: date
     }
 }
