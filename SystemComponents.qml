@@ -79,6 +79,8 @@ MainView {
                 }
 
                 CalendarMenu {
+                    minimumDate: new Date(2013, 3, 2) // april 2013
+                    maximumDate: new Date(2013, 6, 2) // july 2013
                 }
 
                 UserSessionMenu {

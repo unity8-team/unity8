@@ -1,72 +1,40 @@
+/*
+ * Copyright 2013 Canonical Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import "dateExt.js" as DateExt
 import "colorUtils.js" as Color
 
+// TODO clamp selectedDate and currentDate with maximumDate and minimumDate
+// TODO remove gotoNextMonth
+// TODO rewrite the logic
+
 ListView {
     id: monthView
 
-    readonly property var monthStart: currentItem != null ? currentItem.monthStart : (new Date()).monthStart()
     readonly property var monthEnd: currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
-    readonly property var currentDayStart: intern.currentDayStart
+    readonly property var monthStart: currentItem != null ? currentItem.monthStart : (new Date()).monthStart()
 
-    property bool compressed: false
-    readonly property real compressedHeight: {
-        var height =  intern.squareUnit + intern.verticalMargin * 2 ;
-//        if( pageStack.header ) {
-//            height += pageStack.header.height;
-//        }
-        return height;
-    }
-
-    readonly property real expandedHeight: {
-        var height = intern.squareUnit * 6 + intern.verticalMargin * 2;
-//        if( pageStack.header ) {
-//            height += pageStack.header.height;
-//        }
-        return height;
-    }
-
-    signal incrementCurrentDay
-    signal decrementCurrentDay
+    property var minimumDate: (new Date()).monthStart().addMonths(-2)
+    property var maximumDate: (new Date()).monthStart().addMonths(2)
+    property var currentDate: intern.today.monthStart()
+    property alias selectedDate: intern.currentDayStart
 
     signal gotoNextMonth(int month)
-    signal focusOnDay(var dayStart)
-
-    onCurrentItemChanged: {
-        if (currentItem == null) {
-            intern.currentDayStart = intern.currentDayStart
-            return
-        }
-        if (currentItem.monthStart <= intern.currentDayStart && intern.currentDayStart < currentItem.monthEnd)
-            return
-        if (currentItem.monthStart <= intern.today && intern.today < currentItem.monthEnd)
-            intern.currentDayStart = intern.today
-        else
-            intern.currentDayStart = currentItem.monthStart
-    }
-
-    onIncrementCurrentDay: {
-        var t = intern.currentDayStart.addDays(1)
-        if (t < monthEnd) {
-            intern.currentDayStart = t
-        }
-        else if (currentIndex < count - 1) {
-            intern.currentDayStart = t
-            currentIndex = currentIndex + 1
-        }
-    }
-
-    onDecrementCurrentDay: {
-        var t = intern.currentDayStart.addDays(-1)
-        if (t >= monthStart) {
-            intern.currentDayStart = t
-        }
-        else if (currentIndex > 0) {
-            intern.currentDayStart = t
-            currentIndex = currentIndex - 1
-        }
-    }
 
     onGotoNextMonth: {
         if (monthStart.getMonth() != month) {
@@ -79,63 +47,71 @@ ListView {
         }
     }
 
-    onFocusOnDay: {
-        if (dayStart < monthStart) {
+    onCurrentItemChanged: {
+        currentDate = currentItem.monthStart
+    }
+
+    onSelectedDateChanged: {
+        if (selectedDate < monthStart) {
             if (currentIndex > 0) {
-                intern.currentDayStart = dayStart
                 currentIndex = currentIndex - 1
             }
         }
-        else if (dayStart >= monthEnd) {
+        else if (selectedDate >= monthEnd) {
             if (currentIndex < count - 1) {
-                intern.currentDayStart = dayStart
                 currentIndex = currentIndex + 1
             }
         }
-        else intern.currentDayStart = dayStart
     }
 
-    focus: true
-    Keys.onLeftPressed: decrementCurrentDay()
-    Keys.onRightPressed: incrementCurrentDay()
+    function __diffMonths(dateA, dateB) {
+        var months;
+        months = (dateB.getFullYear() - dateA.getFullYear()) * 12;
+        months -= dateA.getMonth();
+        months += dateB.getMonth();
+        return Math.max(months, 0);
+    }
 
     QtObject {
         id: intern
 
+        // number of months in the calendar, represents the number of pages/items of the listview
+        property int monthCount: __diffMonths(minimumDate, maximumDate) + 1
+
         property int squareUnit: monthView.width / 8
         property int verticalMargin: units.gu(1)
-        property int weekstartDay: Qt.locale(i18n.language).firstDayOfWeek
-        property int monthCount: 49 // months for +-2 years
 
-        property var today: (new Date()).midnight() // TODO: update at midnight
+        // first day of the week // TODO export property
+        property int weekstartDay: Qt.locale(i18n.language).firstDayOfWeek
         property var currentDayStart: today
-        property int monthIndex0: Math.floor(monthCount / 2)
-        property var monthStart0: today.monthStart()
+        property var today: (new Date()).midnight() // TODO: update at midnight
     }
 
     width: parent.width
-    height: compressed ? compressedHeight : expandedHeight
-
-    interactive: !compressed
+    height: intern.squareUnit * 6 + intern.verticalMargin * 2;
+    interactive: true
     clip: true
     orientation: ListView.Horizontal
     snapMode: ListView.SnapOneItem
     cacheBuffer: width + 1
-
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
-
     model: intern.monthCount
-    currentIndex: intern.monthIndex0
+    focus: true
+
+    Keys.onLeftPressed: selectedDate.addDays(-1)
+    Keys.onRightPressed: selectedDate.addDays(1)
+
+    Component.onCompleted: currentIndex = __diffMonths(minimumDate, selectedDate)
 
     delegate: Item {
         id: monthItem
 
-        property var monthStart: intern.monthStart0.addMonths(index - intern.monthIndex0)
-        property var monthEnd: monthStart.addMonths(1)
+        property int currentWeekRow: Math.floor((selectedDate.getTime() - gridStart.getTime()) / Date.msPerWeek)
         property var gridStart: monthStart.weekStart(intern.weekstartDay)
-        property int currentWeekRow: Math.floor((currentDayStart.getTime() - gridStart.getTime()) / Date.msPerWeek)
+        property var monthEnd: monthStart.addMonths(1)
+        property var monthStart: minimumDate.addMonths(index)
 
         width: monthView.width
         height: monthView.height
@@ -145,7 +121,6 @@ ListView {
 
             rows: 6
             columns: 7
-
             x: intern.squareUnit / 2
             y: intern.verticalMargin
             width: intern.squareUnit * columns
@@ -155,27 +130,33 @@ ListView {
                 model: monthGrid.rows * monthGrid.columns
                 delegate: Item {
                     id: dayItem
-                    property var dayStart: gridStart.addDays(index)
-                    property bool isCurrentMonth: monthStart <= dayStart && dayStart < monthEnd
-                    property bool isToday: dayStart.getTime() == intern.today.getTime()
+
                     property bool isCurrent: dayStart.getTime() == intern.currentDayStart.getTime()
-                    property int weekday: (index % 7 + intern.weekstartDay) % 7
-                    property bool isSunday: weekday == 0
-                    property int row: Math.floor(index / 7)
+                    property bool isCurrentMonth: monthStart <= dayStart && dayStart < monthEnd
                     property bool isCurrentWeek: row == currentWeekRow
-                    property real topMargin: (row == 0 || (monthView.compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
-                    property real bottomMargin: (row == 5 || (monthView.compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
-                    visible: monthView.compressed ? isCurrentWeek : true
+                    property bool isSunday: weekday == 0
+                    property bool isToday: dayStart.getTime() == intern.today.getTime()
+                    property int row: Math.floor(index / 7)
+                    property int weekday: (index % 7 + intern.weekstartDay) % 7
+                    property real bottomMargin: row == 5 ? -intern.verticalMargin : 0
+                    property real topMargin: row == 0 ? -intern.verticalMargin : 0
+                    property var dayStart: gridStart.addDays(index)
+
+                    visible: true
                     width: intern.squareUnit
                     height: intern.squareUnit
+
                     Rectangle {
+                        anchors {
+                            fill: parent
+                            topMargin: dayItem.topMargin
+                            bottomMargin: dayItem.bottomMargin
+                        }
                         visible: isSunday
-                        anchors.fill: parent
-                        anchors.topMargin: dayItem.topMargin
-                        anchors.bottomMargin: dayItem.bottomMargin
                         color: Color.warmGrey
                         opacity: 0.1
                     }
+
                     Text {
                         anchors.centerIn: parent
                         text: dayStart.getDate()
@@ -183,28 +164,28 @@ ListView {
                         color: isToday ? Color.ubuntuOrange : themeDummy.color
                         scale: isCurrent ? 1.8 : 1.
                         opacity: isCurrentMonth ? 1. : 0.3
+
                         Behavior on scale {
                             NumberAnimation { duration: 50 }
                         }
                     }
+
                     MouseArea {
-                        anchors.fill: parent
-                        anchors.topMargin: dayItem.topMargin
-                        anchors.bottomMargin: dayItem.bottomMargin
-                        onReleased: monthView.focusOnDay(dayStart)
+                        anchors {
+                            fill: parent
+                            topMargin: dayItem.topMargin
+                            bottomMargin: dayItem.bottomMargin
+                        }
+                        onReleased: monthView.selectedDate = dayStart
                     }
-                    // Component.onCompleted: console.log(dayStart, intern.currentDayStart)
                 }
             }
         }
-
-        // Component.onCompleted: console.log("Created delegate for month", index, monthStart, gridStart, currentWeekRow, currentWeekRowReal)
     }
 
     Label {
         visible: false
         id: themeDummy
         fontSize: "large"
-        // Component.onCompleted: console.log(color, Qt.lighter(color, 1.74))
     }
 }

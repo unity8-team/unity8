@@ -21,12 +21,31 @@ import Ubuntu.Components 0.1
 import "Calendar"
 
 BasicMenu {
-    height: units.gu(33)
+    property alias maximumDate: calendar.maximumDate
+    property alias minimumDate: calendar.minimumDate
+    property alias currentDate: calendar.currentDate
+
     text: ""
+    implicitHeight: label.height + calendar.height + units.gu(4)
+
+    Label {
+        id: label
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            margins: units.gu(2)
+        }
+        text: (calendar.currentDate.getMonth() + 1) + " " + calendar.currentDate.getFullYear()
+        font.weight: Font.DemiBold
+    }
 
     Calendar {
+        id: calendar
         anchors {
-            fill: parent
+            left: parent.left
+            right: parent.right
+            top: label.bottom
         }
     }
 }
