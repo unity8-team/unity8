@@ -20,38 +20,24 @@ import "dateExt.js" as DateExt
 import "colorUtils.js" as Color
 
 // TODO clamp selectedDate and currentDate with maximumDate and minimumDate
-// TODO remove gotoNextMonth
 // TODO rewrite the logic
 
 ListView {
     id: monthView
 
-    readonly property var monthEnd: currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
-    readonly property var monthStart: currentItem != null ? currentItem.monthStart : (new Date()).monthStart()
-
     property var minimumDate: (new Date()).monthStart().addMonths(-2)
     property var maximumDate: (new Date()).monthStart().addMonths(2)
     property var currentDate: intern.today.monthStart()
-    property alias selectedDate: intern.currentDayStart
-
-    signal gotoNextMonth(int month)
-
-    onGotoNextMonth: {
-        if (monthStart.getMonth() != month) {
-            var i = intern.monthIndex0, m = intern.today.getMonth()
-            while (m != month) {
-                m = (m + 1) % 12
-                i = i + 1
-            }
-            currentIndex = i
-        }
-    }
+    property var selectedDate: intern.today
 
     onCurrentItemChanged: {
         currentDate = currentItem.monthStart
     }
 
     onSelectedDateChanged: {
+        var monthEnd = currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
+        var monthStart = currentItem != null ? currentItem.monthStart : (new Date()).monthStart()
+
         if (selectedDate < monthStart) {
             if (currentIndex > 0) {
                 currentIndex = currentIndex - 1
@@ -83,8 +69,14 @@ ListView {
 
         // first day of the week // TODO export property
         property int weekstartDay: Qt.locale(i18n.language).firstDayOfWeek
-        property var currentDayStart: today
-        property var today: (new Date()).midnight() // TODO: update at midnight
+        property var today: (new Date()).midnight()
+    }
+
+    Timer {
+        interval: 60000
+        running: true
+        repeate: true
+        onTriggered: intern.today = (new Date()).midnight()
     }
 
     width: parent.width
@@ -131,7 +123,7 @@ ListView {
                 delegate: Item {
                     id: dayItem
 
-                    property bool isCurrent: dayStart.getTime() == intern.currentDayStart.getTime()
+                    property bool isCurrent: dayStart.getTime() == selectedDate.getTime()
                     property bool isCurrentMonth: monthStart <= dayStart && dayStart < monthEnd
                     property bool isCurrentWeek: row == currentWeekRow
                     property bool isSunday: weekday == 0
