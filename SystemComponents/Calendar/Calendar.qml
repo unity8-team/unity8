@@ -19,7 +19,6 @@ import Ubuntu.Components 0.1
 import "dateExt.js" as DateExt
 import "colorUtils.js" as Color
 
-// TODO clamp selectedDate and currentDate with maximumDate and minimumDate
 // TODO rewrite the logic
 
 ListView {
@@ -31,9 +30,7 @@ ListView {
     property var maximumDate: (new Date()).monthStart().addMonths(2)
     property var selectedDate: intern.today
 
-    onCurrentItemChanged: {
-        currentDate = currentItem.monthStart
-    }
+    onCurrentItemChanged: currentDate = currentItem.monthStart
 
     onSelectedDateChanged: {
         var monthEnd = currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
@@ -70,6 +67,7 @@ ListView {
     }
 
     Timer {
+        id: timer
         interval: 60000
         repeat: true
         running: true
@@ -94,7 +92,10 @@ ListView {
     Keys.onLeftPressed: selectedDate.addDays(-1)
     Keys.onRightPressed: selectedDate.addDays(1)
 
-    Component.onCompleted: currentIndex = __diffMonths(minimumDate, selectedDate)
+    Component.onCompleted: {
+        timer.start()
+        currentIndex = __diffMonths(minimumDate, selectedDate)
+    }
 
     delegate: Item {
         id: monthItem
@@ -127,6 +128,7 @@ ListView {
                     property bool isCurrentWeek: row == currentWeekRow
                     property bool isSunday: weekday == 0
                     property bool isToday: dayStart.getTime() == intern.today.getTime()
+                    property bool isWithinBounds: dayStart >= minimumDate && dayStart <= maximumDate
                     property int row: Math.floor(index / 7)
                     property int weekday: (index % 7 + firstDayOfWeek) % 7
                     property real bottomMargin: row == 5 ? -intern.verticalMargin : 0
@@ -154,7 +156,7 @@ ListView {
                         font: themeDummy.font
                         color: isToday ? Color.ubuntuOrange : themeDummy.color
                         scale: isCurrent ? 1.8 : 1.
-                        opacity: isCurrentMonth ? 1. : 0.3
+                        opacity: isWithinBounds ? isCurrentMonth ? 1. : 0.3 : 0.1
 
                         Behavior on scale {
                             NumberAnimation { duration: 50 }
@@ -167,7 +169,8 @@ ListView {
                             topMargin: dayItem.topMargin
                             bottomMargin: dayItem.bottomMargin
                         }
-                        onReleased: monthView.selectedDate = dayStart
+
+                        onReleased: if (isWithinBounds) monthView.selectedDate = dayStart
                     }
                 }
             }
