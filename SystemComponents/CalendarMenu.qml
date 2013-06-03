@@ -26,18 +26,19 @@ BasicMenu {
     property alias currentDate: calendar.currentDate
 
     text: ""
-    implicitHeight: label.height + calendar.height + units.gu(4)
+    implicitHeight: label.height + calendar.height + units.gu(2)
 
     Label {
         id: label
+
         anchors {
             left: parent.left
             right: parent.right
             top: parent.top
             margins: units.gu(2)
         }
-        text: (calendar.currentDate.getMonth() + 1) + " " + calendar.currentDate.getFullYear()
-        font.weight: Font.DemiBold
+        height: units.gu(5)
+        fontSize: "large"
     }
 
     Calendar {
@@ -46,6 +47,12 @@ BasicMenu {
             left: parent.left
             right: parent.right
             top: label.bottom
+        }
+
+        onCurrentDateChanged: {
+            var monthNames = [ "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December" ];
+            label.text = monthNames[calendar.currentDate.getMonth()] + " " + calendar.currentDate.getFullYear()
         }
     }
 }
