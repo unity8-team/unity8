@@ -19,8 +19,6 @@ import Ubuntu.Components 0.1
 import "dateExt.js" as DateExt
 import "colorUtils.js" as Color
 
-// TODO rewrite the logic
-
 ListView {
     id: monthView
 
