@@ -25,9 +25,10 @@ import "colorUtils.js" as Color
 ListView {
     id: monthView
 
+    property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
+    property var currentDate: intern.today.monthStart()
     property var minimumDate: (new Date()).monthStart().addMonths(-2)
     property var maximumDate: (new Date()).monthStart().addMonths(2)
-    property var currentDate: intern.today.monthStart()
     property var selectedDate: intern.today
 
     onCurrentItemChanged: {
@@ -63,19 +64,17 @@ ListView {
 
         // number of months in the calendar, represents the number of pages/items of the listview
         property int monthCount: __diffMonths(minimumDate, maximumDate) + 1
-
         property int squareUnit: monthView.width / 8
-        property int verticalMargin: units.gu(1)
-
-        // first day of the week // TODO export property
-        property int weekstartDay: Qt.locale(i18n.language).firstDayOfWeek
         property var today: (new Date()).midnight()
+        property int verticalMargin: units.gu(1)
     }
 
     Timer {
         interval: 60000
+        repeat: true
         running: true
-        repeate: true
+        triggeredOnStart: true
+
         onTriggered: intern.today = (new Date()).midnight()
     }
 
@@ -83,13 +82,13 @@ ListView {
     height: intern.squareUnit * 6 + intern.verticalMargin * 2;
     interactive: true
     clip: true
-    orientation: ListView.Horizontal
-    snapMode: ListView.SnapOneItem
     cacheBuffer: width + 1
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
     model: intern.monthCount
+    orientation: ListView.Horizontal
+    snapMode: ListView.SnapOneItem
     focus: true
 
     Keys.onLeftPressed: selectedDate.addDays(-1)
@@ -101,7 +100,7 @@ ListView {
         id: monthItem
 
         property int currentWeekRow: Math.floor((selectedDate.getTime() - gridStart.getTime()) / Date.msPerWeek)
-        property var gridStart: monthStart.weekStart(intern.weekstartDay)
+        property var gridStart: monthStart.weekStart(firstDayOfWeek)
         property var monthEnd: monthStart.addMonths(1)
         property var monthStart: minimumDate.addMonths(index)
 
@@ -129,7 +128,7 @@ ListView {
                     property bool isSunday: weekday == 0
                     property bool isToday: dayStart.getTime() == intern.today.getTime()
                     property int row: Math.floor(index / 7)
-                    property int weekday: (index % 7 + intern.weekstartDay) % 7
+                    property int weekday: (index % 7 + firstDayOfWeek) % 7
                     property real bottomMargin: row == 5 ? -intern.verticalMargin : 0
                     property real topMargin: row == 0 ? -intern.verticalMargin : 0
                     property var dayStart: gridStart.addDays(index)
