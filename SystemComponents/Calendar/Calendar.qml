@@ -28,7 +28,8 @@ ListView {
     property var maximumDate: (new Date()).monthStart().addMonths(2)
     property var selectedDate: intern.today
 
-    onCurrentItemChanged: currentDate = currentItem.monthStart
+    onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart
+    onCurrentDateChanged: if (currentIndex != __diffMonths(minimumDate, currentDate)) currentIndex = __diffMonths(minimumDate, currentDate)
 
     onSelectedDateChanged: {
         var monthEnd = currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
