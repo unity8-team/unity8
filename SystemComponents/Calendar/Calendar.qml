@@ -57,11 +57,9 @@ ListView {
     QtObject {
         id: intern
 
-        // number of months in the calendar, represents the number of pages/items of the listview
-        property int monthCount: __diffMonths(minimumDate, maximumDate) + 1
         property int squareUnit: monthView.width / 8
-        property var today: (new Date()).midnight()
         property int verticalMargin: units.gu(1)
+        property var today: (new Date()).midnight()
     }
 
     Timer {
@@ -82,7 +80,7 @@ ListView {
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
-    model: intern.monthCount
+    model: __diffMonths(minimumDate, maximumDate) + 1
     orientation: ListView.Horizontal
     snapMode: ListView.SnapOneItem
     focus: true
