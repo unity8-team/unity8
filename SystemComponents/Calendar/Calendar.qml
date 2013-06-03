@@ -22,10 +22,10 @@ import "colorUtils.js" as Color
 ListView {
     id: monthView
 
-    property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var currentDate: intern.today.monthStart()
-    property var minimumDate: (new Date()).monthStart().addMonths(-2)
+    property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var maximumDate: (new Date()).monthStart().addMonths(2)
+    property var minimumDate: (new Date()).monthStart().addMonths(-2)
     property var selectedDate: intern.today
 
     onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart

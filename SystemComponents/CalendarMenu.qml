@@ -21,11 +21,13 @@ import Ubuntu.Components 0.1
 import "Calendar"
 
 BasicMenu {
+    property alias currentDate: calendar.currentDate
+    property alias firstDayOfWeek: calendar.firstDayOfWeek
     property alias maximumDate: calendar.maximumDate
     property alias minimumDate: calendar.minimumDate
-    property alias currentDate: calendar.currentDate
+    property alias selectedDate: calendar.selectedDate
+    property alias text: label.text
 
-    text: ""
     implicitHeight: label.height + calendar.height + units.gu(2)
 
     Label {
@@ -43,6 +45,7 @@ BasicMenu {
 
     Calendar {
         id: calendar
+        objectName: "Calendar"
         anchors {
             left: parent.left
             right: parent.right
