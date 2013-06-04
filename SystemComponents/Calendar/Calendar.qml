@@ -22,6 +22,7 @@ import "colorUtils.js" as Color
 ListView {
     id: monthView
 
+    property bool compressed: false
     property var currentDate: intern.today.monthStart()
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var maximumDate: (new Date()).monthStart().addMonths(2)
@@ -74,8 +75,8 @@ ListView {
     }
 
     width: parent.width
-    height: intern.squareUnit * 6 + intern.verticalMargin * 2;
-    interactive: true
+    height: intern.squareUnit * (compressed ? 1 : 6) + intern.verticalMargin * 2;
+    interactive: !compressed
     clip: true
     cacheBuffer: width + 1
     highlightRangeMode: ListView.StrictlyEnforceRange
@@ -128,11 +129,11 @@ ListView {
                     property bool isWithinBounds: dayStart >= minimumDate && dayStart <= maximumDate
                     property int row: Math.floor(index / 7)
                     property int weekday: (index % 7 + firstDayOfWeek) % 7
-                    property real bottomMargin: row == 5 ? -intern.verticalMargin : 0
-                    property real topMargin: row == 0 ? -intern.verticalMargin : 0
+                    property real bottomMargin: (row == 5 || (compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
+                    property real topMargin: (row == 0 || (compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
                     property var dayStart: gridStart.addDays(index)
 
-                    visible: true
+                    visible: compressed ? isCurrentWeek : true
                     width: intern.squareUnit
                     height: intern.squareUnit
 
