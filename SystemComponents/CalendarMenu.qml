@@ -46,7 +46,7 @@ BasicMenu {
 
     Calendar {
         id: calendar
-        objectName: "Calendar"
+        objectName: "calendar"
         anchors {
             left: parent.left
             right: parent.right
