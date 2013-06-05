@@ -5,8 +5,9 @@ Add tests?
 DONE - Emit the button click signal to the parent?
 
 [CalendarMenu]
-The Calendar components needs to support multiple models, and expose some properties
-Add tests
+The Calendar components needs to support multiple models
+DONE - expose some properties
+DONE - Add tests
 
 [EventMenu]
 Date of the Event should be formatted
