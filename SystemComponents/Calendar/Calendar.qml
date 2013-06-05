@@ -22,30 +22,28 @@ import "colorUtils.js" as Color
 ListView {
     id: monthView
 
+    // Used for tests
+    readonly property real __compressedHeight: intern.squareUnit + intern.verticalMargin * 2
+    readonly property real __expandedHeight: intern.squareUnit * 6 + intern.verticalMargin * 2
+
     property bool compressed: false
-    property var currentDate: intern.today.monthStart()
+    property var currentDate: selectedDate.monthStart().addDays(15)
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var maximumDate: (new Date()).monthStart().addMonths(2)
     property var minimumDate: (new Date()).monthStart().addMonths(-2)
     property var selectedDate: intern.today
 
-    onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart
+    onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart.addDays(15)
     onCurrentDateChanged: if (currentIndex != __diffMonths(minimumDate, currentDate)) currentIndex = __diffMonths(minimumDate, currentDate)
 
     onSelectedDateChanged: {
+        if (selectedDate < minimumDate || selectedDate > maximumDate)
+            return
+
         var monthEnd = currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
         var monthStart = currentItem != null ? currentItem.monthStart : (new Date()).monthStart()
 
-        if (selectedDate < monthStart) {
-            if (currentIndex > 0) {
-                currentIndex = currentIndex - 1
-            }
-        }
-        else if (selectedDate >= monthEnd) {
-            if (currentIndex < count - 1) {
-                currentIndex = currentIndex + 1
-            }
-        }
+        currentIndex = __diffMonths(minimumDate, selectedDate)
     }
 
     function __diffMonths(dateA, dateB) {
@@ -58,8 +56,9 @@ ListView {
 
     QtObject {
         id: intern
+        objectName: "intern"
 
-        property int squareUnit: monthView.width / 8
+        property int squareUnit: monthView.width / 7
         property int verticalMargin: units.gu(1)
         property var today: (new Date()).midnight()
     }
@@ -75,7 +74,7 @@ ListView {
     }
 
     width: parent.width
-    height: intern.squareUnit * (compressed ? 1 : 6) + intern.verticalMargin * 2;
+    height: compressed ? __compressedHeight : __expandedHeight
     interactive: !compressed
     clip: true
     cacheBuffer: width + 1
@@ -101,7 +100,7 @@ ListView {
         property int currentWeekRow: Math.floor((selectedDate.getTime() - gridStart.getTime()) / Date.msPerWeek)
         property var gridStart: monthStart.weekStart(firstDayOfWeek)
         property var monthEnd: monthStart.addMonths(1)
-        property var monthStart: minimumDate.addMonths(index)
+        property var monthStart: minimumDate.monthStart().addMonths(index)
 
         width: monthView.width
         height: monthView.height
@@ -111,7 +110,6 @@ ListView {
 
             rows: 6
             columns: 7
-            x: intern.squareUnit / 2
             y: intern.verticalMargin
             width: intern.squareUnit * columns
             height: intern.squareUnit * rows
@@ -121,7 +119,9 @@ ListView {
                 delegate: Item {
                     id: dayItem
 
-                    property bool isCurrent: dayStart.getTime() == selectedDate.getTime()
+                    property bool isCurrent: (dayStart.getFullYear() == selectedDate.getFullYear() &&
+                                              dayStart.getMonth() == selectedDate.getMonth() &&
+                                              dayStart.getDate() == selectedDate.getDate())
                     property bool isCurrentMonth: monthStart <= dayStart && dayStart < monthEnd
                     property bool isCurrentWeek: row == currentWeekRow
                     property bool isSunday: weekday == 0

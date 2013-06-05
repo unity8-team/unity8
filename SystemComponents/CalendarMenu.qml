@@ -21,6 +21,7 @@ import Ubuntu.Components 0.1
 import "Calendar"
 
 BasicMenu {
+    property alias compressed: calendar.compressed
     property alias currentDate: calendar.currentDate
     property alias firstDayOfWeek: calendar.firstDayOfWeek
     property alias maximumDate: calendar.maximumDate
@@ -50,6 +51,8 @@ BasicMenu {
             left: parent.left
             right: parent.right
             top: label.bottom
+            leftMargin: units.gu(2)
+            rightMargin: units.gu(2)
         }
 
         onCurrentDateChanged: {
