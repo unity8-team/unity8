@@ -118,6 +118,7 @@ ListView {
                 model: monthGrid.rows * monthGrid.columns
                 delegate: Item {
                     id: dayItem
+                    objectName: "dayItem" + index
 
                     property bool isCurrent: (dayStart.getFullYear() == selectedDate.getFullYear() &&
                                               dayStart.getMonth() == selectedDate.getMonth() &&

@@ -51,39 +51,66 @@ Item {
             compare(calendar.interactive, true, "Calendar should be interactive")
         }
 
-        function test_currentDate() {
-            calendar.currentDate = new Date(2013, 5, 10)
-            compare(calendar.currentIndex, 3, "currentIndex did not change")
-            calendar.currentDate = new Date(2013, 4, 10)
-            compare(calendar.currentIndex, 2, "currentIndex did not change")
+        function test_currentDate_data() {
+            return [
+                {date: new Date(2013, 5, 10), currentIndex: 3},
+                {date: new Date(2013, 4, 10), currentIndex: 2},
+            ];
         }
 
-        function test_firstDayOfWeek() {
-            calendar.firstDayOfWeek = 5
-            compare(calendar.firstDayOfWeek, 5, "Cannot set firstDayOfWeek")
-            calendar.firstDayOfWeek = 0
-            compare(calendar.firstDayOfWeek, 0, "Cannot set firstDayOfWeek")
+        function test_currentDate(data) {
+            calendar.currentDate = data.date
+            compare(calendar.currentIndex, data.currentIndex, "currentIndex did not change")
         }
 
-        function test_maximumDate() {
-            calendar.maximumDate = new Date(2014, 6, 10)
-            compare(calendar.count, 17, "The number of months should have increased")
-            calendar.maximumDate = new Date(2013, 6, 10)
-            compare(calendar.count, 5, "The number of months should have increased")
+        function test_firstDayOfWeek_data() {
+            return [
+                {tag: 'Thursday', firstDayOfWeek: 5, item1: 6},
+                {tag: 'Sunday', firstDayOfWeek: 0, item1: 1},
+            ];
         }
 
-        function test_minimumDate() {
-            calendar.minimumDate = new Date(2012, 2, 10)
-            compare(calendar.count, 17, "The number of months should have increased")
-            calendar.minimumDate = new Date(2013, 2, 10)
-            compare(calendar.count, 5, "The number of months should have increased")
+        function test_firstDayOfWeek(data) {
+            var dayItem1 = UtilsJS.findChild(calendar, "dayItem1")
+
+            calendar.firstDayOfWeek = data.firstDayOfWeek
+            compare(dayItem1.dayStart.getDay(), data.item1, "Cannot set firstDayOfWeek")
         }
 
-        function test_selectedDate() {
-            calendar.selectedDate = new Date(2013, 5, 10)
-            compare(calendar.currentIndex, 3, "currentIndex did not change")
-            calendar.selectedDate = new Date(2013, 4, 10)
-            compare(calendar.currentIndex, 2, "currentIndex did not change")
+        function test_maximumDate_data() {
+            return [
+                {date: new Date(2014, 6, 10), count: 17},
+                {date: new Date(2013, 6, 10), count: 5},
+            ];
+        }
+
+        function test_maximumDate(data) {
+            calendar.maximumDate = data.date
+            compare(calendar.count, data.count, "The number of months should have changed")
+        }
+
+        function test_minimumDate_data() {
+            return [
+                {date: new Date(2012, 2, 10), count: 17},
+                {date: new Date(2013, 2, 10), count: 5},
+            ];
+        }
+
+        function test_minimumDate(data) {
+            calendar.minimumDate = data.date
+            compare(calendar.count, data.count, "The number of months should have changed")
+        }
+
+        function test_selectedDate_data() {
+            return [
+                {date: new Date(2013, 5, 10), currentIndex: 3},
+                {date: new Date(2013, 4, 10), currentIndex: 2},
+            ];
+        }
+
+        function test_selectedDate(data) {
+            calendar.selectedDate = data.date
+            compare(calendar.currentIndex, data.currentIndex, "currentIndex did not change")
         }
     }
 }
