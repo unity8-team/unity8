@@ -158,7 +158,7 @@ Item {
                         if (dashContentList.currentIndex == index) {
                             gracePeriodRunning = true;
                         } else if (gracePeriodRunning) {
-                            unloadTimer.start();
+                            unloadTimer.restart();
                         }
                     }
                 }
