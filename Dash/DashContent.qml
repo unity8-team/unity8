@@ -118,7 +118,8 @@ Item {
 
         delegate:
             Loader {
-                visible: index >= ListView.view.currentIndex - 1 && index <= ListView.view.currentIndex + 1
+                visible: (index >= ListView.view.currentIndex - 1 && index <= ListView.view.currentIndex + 1) || gracePeriodRunning
+                property bool gracePeriodRunning: false
                 width: ListView.view.width
                 height: ListView.view.height
                 asynchronous: true
@@ -149,6 +150,24 @@ Item {
                         } else {
                             dashContentList.interactive = true
                         }
+                    }
+                }
+                Connections {
+                    target: dashContentList
+                    onCurrentIndexChanged: {
+                        if (dashContentList.currentIndex == index) {
+                            gracePeriodRunning = true;
+                        } else if (gracePeriodRunning) {
+                            unloadTimer.start();
+                        }
+                    }
+                }
+                Timer {
+                    id: unloadTimer
+                    interval: 1000
+                    repeat: false
+                    onTriggered: {
+                        gracePeriodRunning = false;
                     }
                 }
             }
