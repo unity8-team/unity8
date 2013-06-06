@@ -118,6 +118,7 @@ Item {
 
         delegate:
             Loader {
+                visible: index >= ListView.view.currentIndex - 1 && index <= ListView.view.currentIndex + 1
                 width: ListView.view.width
                 height: ListView.view.height
                 asynchronous: true

@@ -40,7 +40,7 @@ FilterGrid {
         text: model.column_4
         imageWidth: filtergrid.iconWidth
         imageHeight: filtergrid.iconHeight
-        source: model.column_1
+        source: visible ? model.column_1 : ""
         fillMode: Image.PreserveAspectCrop
         onClicked: {
             var fileUri = model.column_0.replace(/^[^:]+:/, "")

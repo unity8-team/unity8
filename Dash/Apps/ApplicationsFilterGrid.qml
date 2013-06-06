@@ -50,7 +50,7 @@ FilterGrid {
         text: model.column_4 ? model.column_4 : application.name // FIXME: this is temporary
         imageWidth: units.gu(8)
         imageHeight: units.gu(7.5)
-        source: icon.indexOf("/") == -1 ? "image://gicon/" + icon : icon
+        source: visible ? (icon.indexOf("/") == -1 ? "image://gicon/" + icon : icon) : ""
         onClicked: filterGrid.clicked(index, application.desktopFile);
     }
 }

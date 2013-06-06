@@ -76,7 +76,7 @@ AbstractButton {
 
     ApplicationImage {
         id: applicationImage
-        source: application
+        source: visible ? application : ""
         width: shapedApplicationImage.width
         height: shapedApplicationImage.height
         fillMode: ApplicationImage.PreserveAspectCrop

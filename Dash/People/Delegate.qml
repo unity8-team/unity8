@@ -52,7 +52,7 @@ Item {
             height: units.gu(6)
             image: Image {
                 width: units.gu(6)
-                source: peopleView.dataModel.avatar
+                source: avatar.visible ? peopleView.dataModel.avatar : ""
                 sourceSize { width: avatar.width; height: avatar.height }
                 fillMode: Image.PreserveAspectCrop
                 smooth: true

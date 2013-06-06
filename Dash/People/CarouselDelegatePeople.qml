@@ -31,7 +31,7 @@ BaseCarouselDelegate {
         image: Image {
             asynchronous: true
             sourceSize { width: item.width; height: item.height }
-            source: dataModel.avatar ? dataModel.avatar : ""
+            source: dataModel.avatar && item.visible ? dataModel.avatar : ""
             fillMode: Image.PreserveAspectCrop
         }
     }

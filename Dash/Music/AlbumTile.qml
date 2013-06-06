@@ -33,7 +33,7 @@ AbstractButton {
         }
         radius: "medium"
         image: Image {
-            source: root.source
+            source: icon.visible ? root.source : ""
             sourceSize { width: icon.width; height: icon.height }
             asynchronous: true
             cache: false
