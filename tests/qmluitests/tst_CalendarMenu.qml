@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SystemComponents"
+import "../../SettingsComponents"
 import "utils.js" as UtilsJS
 
 Item {
@@ -50,6 +50,9 @@ Item {
         when: windowShown
 
         property var calendar: UtilsJS.findChild(calendarMenu, "calendar")
+        property var date1: new Date(2012, 2, 10)
+        property var date2: new Date(2013, 5, 10)
+        property var date3: new Date(2014, 6, 10)
 
         function test_compressed() {
             calendarMenu.compressed = true
@@ -57,8 +60,8 @@ Item {
         }
 
         function test_currentDate() {
-            calendarMenu.currentDate = new Date(2013, 5, 10)
-            compare(calendar.currentDate, new Date(2013, 5, 10), "Cannot set currendDate")
+            calendarMenu.currentDate = date2
+            compare(calendar.currentDate, date2, "Cannot set currendDate")
         }
 
         function test_firstDayOfWeek() {
@@ -67,18 +70,18 @@ Item {
         }
 
         function test_maximumDate() {
-            calendarMenu.maximumDate = new Date(2014, 6, 10)
-            compare(calendar.maximumDate, new Date(2014, 6, 10), "Cannot set maximumDate")
+            calendarMenu.maximumDate = date3
+            compare(calendar.maximumDate, date3, "Cannot set maximumDate")
         }
 
         function test_minimumDate() {
-            calendar.minimumDate = new Date(2012, 2, 10)
-            compare(calendar.minimumDate, new Date(2012, 2, 10), "Cannot set minimumDate")
+            calendar.minimumDate = date1
+            compare(calendar.minimumDate, date1, "Cannot set minimumDate")
         }
 
         function test_selectedDate() {
-            calendar.selectedDate = new Date(2013, 5, 10)
-            compare(calendar.selectedDate, new Date(2013, 5, 10), "Cannot set selectedDate")
+            calendar.selectedDate = date2
+            compare(calendar.selectedDate, date2, "Cannot set selectedDate")
         }
     }
 }

@@ -18,27 +18,27 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "SystemComponents"
+import "SettingsComponents"
 
 MainView {
     // Note! applicationName needs to match the .desktop filename
-    applicationName: "SystemComponents"
+    applicationName: "SettingsComponents"
 
     width: units.gu(42)
     height: units.gu(75)
 
     ListModel {
         id: mediaPlayerModel
-        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "SystemComponents/MediaPlayer/speak-now.jpg"}
-        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "SystemComponents/MediaPlayer/electric.jpg"}
-        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "SystemComponents/MediaPlayer/the-man-machine.jpg"}
+        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "SettingsComponents/MediaPlayer/speak-now.jpg"}
+        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "SettingsComponents/MediaPlayer/electric.jpg"}
+        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "SettingsComponents/MediaPlayer/the-man-machine.jpg"}
     }
 
     ListModel {
         id: timeZoneModel
-        ListElement { city: "San Francisco"; timeZone: -8 }
-        ListElement { city: "London"; timeZone: 0 }
-        ListElement { city: "Rome"; timeZone: 1 }
+        ListElement { city: "San Francisco"; time: "3:00am" }
+        ListElement { city: "London"; time: "11:00am" }
+        ListElement { city: "Rome"; time: "12:00am" }
     }
 
     ListModel {
@@ -49,7 +49,7 @@ MainView {
     }
 
     Page {
-        title: "SystemComponents"
+        title: "SettingsComponents"
 
         Flickable {
             id: flickable
@@ -113,7 +113,7 @@ MainView {
 
                         TimeZoneMenu {
                             city: model.city
-                            timeZone: model.timeZone
+                            time: model.time
                         }
                     }
                 }

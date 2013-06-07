@@ -1,5 +1,5 @@
 
-project(system-components)
+project(settings-components)
 
 cmake_minimum_required(VERSION 2.8.9)
 
@@ -18,7 +18,7 @@ file(TO_CMAKE_PATH "${QT_IMPORTS_DIR}" QT_IMPORTS_DIR)
 set(OUR_QT_QUICK_INCLUDE ${Qt5Quick_INCLUDE_DIRS})
 LIST(APPEND QT_PKGCONFIG_DEPENDENCIES "Qt5Quick")
 
-set(SYSTEM_COMPONENTS_DIR ${QT_IMPORTS_DIR}/Ubuntu)
+set(SETTINGS_COMPONENTS_DIR ${QT_IMPORTS_DIR}/Ubuntu)
 
 # Enable QML debugging
 if(CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -67,11 +67,11 @@ endif()
 
 # Install subdirectories
 set(QML_DIRS
-    SystemComponents
+    SettingsComponents
     )
 
 install(DIRECTORY ${QML_DIRS}
-    DESTINATION ${SYSTEM_COMPONENTS_DIR}
+    DESTINATION ${SETTINGS_COMPONENTS_DIR}
     )
 
 # Tests

@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SystemComponents/Calendar"
+import "../../SettingsComponents/Calendar"
 import "utils.js" as UtilsJS
 
 Item {
@@ -42,6 +42,13 @@ Item {
         name: "Calendar"
         when: windowShown
 
+        property var date1: new Date(2012, 2, 10)
+        property var date2: new Date(2013, 2, 10)
+        property var date3: new Date(2013, 4, 10)
+        property var date4: new Date(2013, 5, 10)
+        property var date5: new Date(2013, 6, 10)
+        property var date6: new Date(2014, 6, 10)
+
         function test_compressed() {
             calendar.compressed = true
             compare(calendar.height, calendar.__compressedHeight, "Unexpected height")
@@ -53,8 +60,8 @@ Item {
 
         function test_currentDate_data() {
             return [
-                {date: new Date(2013, 5, 10), currentIndex: 3},
-                {date: new Date(2013, 4, 10), currentIndex: 2},
+                {date: date4, currentIndex: 3},
+                {date: date3, currentIndex: 2},
             ];
         }
 
@@ -79,8 +86,8 @@ Item {
 
         function test_maximumDate_data() {
             return [
-                {date: new Date(2014, 6, 10), count: 17},
-                {date: new Date(2013, 6, 10), count: 5},
+                {date: date6, count: 17},
+                {date: date5, count: 5},
             ];
         }
 
@@ -91,8 +98,8 @@ Item {
 
         function test_minimumDate_data() {
             return [
-                {date: new Date(2012, 2, 10), count: 17},
-                {date: new Date(2013, 2, 10), count: 5},
+                {date: date1, count: 17},
+                {date: date2, count: 5},
             ];
         }
 
@@ -103,8 +110,8 @@ Item {
 
         function test_selectedDate_data() {
             return [
-                {date: new Date(2013, 5, 10), currentIndex: 3},
-                {date: new Date(2013, 4, 10), currentIndex: 2},
+                {date: date4, currentIndex: 3},
+                {date: date3, currentIndex: 2},
             ];
         }
 

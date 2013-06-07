@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SystemComponents"
+import "../../SettingsComponents"
 import "utils.js" as UtilsJS
 
 Item {
@@ -42,7 +42,7 @@ Item {
             TimeZoneMenu {
                 id: timeZoneMenu
                 city: "San Francisco"
-                timeZone: -8
+                time: "10:00am"
             }
         }
     }
@@ -57,23 +57,10 @@ Item {
             compare(timeZoneMenu.text, "London", "Text property of ListItem did not change")
         }
 
-        function test_timeZone() {
-            var timeZoneComponent = UtilsJS.findChild(timeZoneMenu, "timeZoneComponent")
-            var timeZoneDate = timeZoneComponent.date
-            timeZoneMenu.timeZone = "0"
-            compare(timeZoneMenu.timeZone, 0, "Cannot set timeZone")
-
-            var timeSpent = 0
-            var timeout = 5000
-            var success = false
-            while (timeSpent < timeout && !success) {
-                success = timeZoneComponent.date !== timeZoneDate
-                if (success === false) {
-                    wait(50)
-                    timeSpent += 50
-                }
-            }
-            compare(success, true, "Date didn't change after changing time zone")
+        function test_time() {
+            timeZoneMenu.time = "12:00am"
+            var timeLabel = UtilsJS.findChild(timeZoneMenu, "timeLabel")
+            compare(timeLabel.text, "12:00am", "Cannot set time")
         }
     }
 }

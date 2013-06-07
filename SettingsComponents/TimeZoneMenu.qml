@@ -18,20 +18,20 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "TimeZone"
 
 BasicMenu {
     id: timeZoneMenu
 
     property alias city: timeZoneMenu.text
-    property alias timeZone: timeZoneComponent.timeZone
+    property alias time: timeLabel.text
 
-    TimeZone {
-        id: timeZoneComponent
-        objectName: "timeZoneComponent"
+    Label {
+        id: timeLabel
+        objectName: "timeLabel"
         anchors {
-            fill: parent
-            margins: units.gu(2)
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+            rightMargin: units.gu(2)
         }
     }
 }

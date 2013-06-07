@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=SystemComponents
+Name=SettingsComponents
 Comment=Showcase of Indicators Components
-Exec=/usr/bin/qmlscene $@ /usr/share/SystemComponents/SystemComponents.qml
+Exec=/usr/bin/qmlscene $@ /usr/share/SettingsComponents/SettingsComponents.qml
 Icon=qmlscene
 Terminal=false
 Type=Application
