@@ -35,16 +35,30 @@ ApplicationManager::ApplicationManager(QObject *parent)
     , m_mainStage(0)
     , m_sideStageComponent(0)
     , m_sideStage(0)
+    , m_quickView(0)
 {
     buildListOfAvailableApplications();
-    createMainStageComponent();
-    createSideStageComponent();
+
+    QGuiApplication::instance()->installEventFilter(this);
 }
 
 ApplicationManager::~ApplicationManager()
 {
     delete m_mainStageApplications;
     delete m_sideStageApplications;
+}
+
+bool ApplicationManager::eventFilter(QObject *object, QEvent *event)
+{
+    // best to wait for this event before locating the view
+    if (!m_quickView && (event->type() == QEvent::ApplicationActivate)) {
+        m_quickView = qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
+
+        createMainStageComponent();
+        createSideStageComponent();
+    }
+
+    return QObject::eventFilter(object, event);
 }
 
 int ApplicationManager::keyboardHeight() const
@@ -92,6 +106,22 @@ ApplicationInfo* ApplicationManager::sideStageFocusedApplication() const
     return m_sideStageFocusedApplication;
 }
 
+void ApplicationManager::setMainStageFocusedApplication(ApplicationInfo *app)
+{
+    if (app != m_mainStageFocusedApplication) {
+        m_mainStageFocusedApplication = app;
+        Q_EMIT mainStageFocusedApplicationChanged();
+    }
+}
+
+void ApplicationManager::setSideStageFocusedApplication(ApplicationInfo *app)
+{
+    if (app != m_sideStageFocusedApplication) {
+        m_sideStageFocusedApplication = app;
+        Q_EMIT sideStageFocusedApplicationChanged();
+    }
+}
+
 ApplicationInfo* ApplicationManager::startProcess(QString desktopFile,
                                               ExecFlags flags,
                                               QStringList arguments)
@@ -112,9 +142,13 @@ ApplicationInfo* ApplicationManager::startProcess(QString desktopFile,
 
     if (flags.testFlag(ApplicationManager::ForceMainStage)
             || application->stage() == ApplicationInfo::MainStage) {
-        m_mainStageApplications->add(application);
+        if (!m_mainStageApplications->contains(application)) {
+            m_mainStageApplications->add(application);
+        }
     } else {
-        m_sideStageApplications->add(application);
+        if (!m_sideStageApplications->contains(application)) {
+            m_sideStageApplications->add(application);
+        }
     }
 
     return application;
@@ -123,18 +157,18 @@ ApplicationInfo* ApplicationManager::startProcess(QString desktopFile,
 void ApplicationManager::stopProcess(ApplicationInfo* application)
 {
     if (m_mainStageApplications->contains(application)) {
+        application->hideWindow();
         m_mainStageApplications->remove(application);
 
         if (m_mainStageFocusedApplication == application) {
-            m_mainStageFocusedApplication = 0;
-            Q_EMIT mainStageFocusedApplicationChanged();
+            setMainStageFocusedApplication(0);
         }
     } else if (m_sideStageApplications->contains(application)){
+        application->hideWindow();
         m_sideStageApplications->remove(application);
 
         if (m_sideStageFocusedApplication == application) {
-            m_sideStageFocusedApplication = 0;
-            Q_EMIT sideStageFocusedApplicationChanged();
+            setSideStageFocusedApplication(0);
         }
     }
 }
@@ -146,14 +180,13 @@ void ApplicationManager::focusApplication(int handle)
         if (application->handle() == handle) {
             if (m_mainStageFocusedApplication)
                 m_mainStageFocusedApplication->hideWindow();
-            m_mainStageFocusedApplication = application;
             if (!m_mainStage)
                 createMainStage();
             application->showWindow(m_mainStage);
             m_mainStage->setZ(-1000);
             if (m_sideStage)
                 m_sideStage->setZ(-2000);
-            Q_EMIT mainStageFocusedApplicationChanged();
+            setMainStageFocusedApplication(application);
             return;
         }
     }
@@ -163,14 +196,13 @@ void ApplicationManager::focusApplication(int handle)
         if (application->handle() == handle) {
             if (m_sideStageFocusedApplication)
                 m_sideStageFocusedApplication->hideWindow();
-            m_sideStageFocusedApplication = application;
             if (!m_sideStage)
                 createSideStage();
             application->showWindow(m_sideStage);
             m_sideStage->setZ(-1000);
             if (m_mainStage)
                 m_mainStage->setZ(-2000);
-            Q_EMIT sideStageFocusedApplicationChanged();
+            setSideStageFocusedApplication(application);
             return;
         }
     }
@@ -181,14 +213,12 @@ void ApplicationManager::unfocusCurrentApplication(StageHint stageHint)
     if (stageHint == SideStage) {
         if (m_sideStageFocusedApplication) {
             m_sideStageFocusedApplication->hideWindow();
-            m_sideStageFocusedApplication = 0;
-            Q_EMIT sideStageFocusedApplicationChanged();
+            setSideStageFocusedApplication(0);
         }
     } else {
         if (m_mainStageFocusedApplication) {
             m_mainStageFocusedApplication->hideWindow();
-            m_mainStageFocusedApplication = 0;
-            Q_EMIT mainStageFocusedApplicationChanged();
+            setMainStageFocusedApplication(0);
         }
     }
 }
@@ -384,11 +414,7 @@ void ApplicationManager::buildListOfAvailableApplications()
 
 void ApplicationManager::createMainStageComponent()
 {
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQmlEngine *engine = quickView->engine();
+    QQmlEngine *engine = m_quickView->engine();
 
     m_mainStageComponent = new QQmlComponent(engine, this);
     QString mainStageQml =
@@ -403,11 +429,7 @@ void ApplicationManager::createMainStageComponent()
 
 void ApplicationManager::createMainStage()
 {
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQuickItem *shell = quickView->rootObject();
+    QQuickItem *shell = m_quickView->rootObject();
 
     m_mainStage = qobject_cast<QQuickItem *>(m_mainStageComponent->create());
     m_mainStage->setParentItem(shell);
@@ -415,11 +437,7 @@ void ApplicationManager::createMainStage()
 
 void ApplicationManager::createSideStageComponent()
 {
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQmlEngine *engine = quickView->engine();
+    QQmlEngine *engine = m_quickView->engine();
 
     m_sideStageComponent = new QQmlComponent(engine, this);
     QString sideStageQml =
@@ -437,11 +455,7 @@ void ApplicationManager::createSideStageComponent()
 
 void ApplicationManager::createSideStage()
 {
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQuickItem *shell = quickView->rootObject();
+    QQuickItem *shell = m_quickView->rootObject();
 
     m_sideStage = qobject_cast<QQuickItem *>(m_sideStageComponent->create());
     m_sideStage->setParentItem(shell);

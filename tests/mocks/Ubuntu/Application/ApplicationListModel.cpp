@@ -64,8 +64,8 @@ void ApplicationListModel::move(int from, int to)
 
 void ApplicationListModel::add(ApplicationInfo* application)
 {
-    beginInsertRows(QModelIndex(), m_applications.size(), m_applications.size());
-    m_applications.append(application);
+    beginInsertRows(QModelIndex(), 0, 0);
+    m_applications.prepend(application);
     endInsertRows();
     Q_EMIT countChanged();
 }

@@ -32,9 +32,6 @@ add_qml_test(Components ResponsiveFlowView)
 add_qml_test(Components ResponsiveGridView)
 add_qml_test(Components Revealer)
 add_qml_test(Components Showable)
-add_qml_test(Components Stage IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS}
-                                           ${CMAKE_BINARY_DIR}/tests/mocks
-                                           ${CMAKE_BINARY_DIR}/plugins)
 add_qml_test(Components Tile)
 add_qml_test(Components PageHeader)
 add_qml_test(Dash DashBar IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${CMAKE_CURRENT_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS})
@@ -64,6 +61,7 @@ add_qml_test(Panel Overview)
 add_qml_test(Panel Panel)
 add_qml_test(Panel SearchIndicator)
 add_qml_test(Panel/Menus IndicatorMenuWindow IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS})
-add_qml_test(SideStage SideStage IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS}
-                                              ${CMAKE_BINARY_DIR}/tests/mocks
-                                              ${CMAKE_BINARY_DIR}/plugins)
+add_qml_test(Stages Stage IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS} ${CMAKE_BINARY_DIR}/tests/mocks ${CMAKE_BINARY_DIR}/plugins)
+add_qml_test(Stages StageManager-phone IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS} ${CMAKE_BINARY_DIR}/tests/mocks ${CMAKE_BINARY_DIR}/plugins)
+add_qml_test(Stages StageManager-tablet IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS} ${CMAKE_BINARY_DIR}/tests/mocks ${CMAKE_BINARY_DIR}/plugins)
+add_qml_test(Stages SideStage IMPORT_PATHS ${qmltest_DEFAULT_IMPORT_PATHS} ${CMAKE_BINARY_DIR}/tests/mocks ${CMAKE_BINARY_DIR}/plugins)

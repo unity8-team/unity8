@@ -24,6 +24,8 @@
 #include "ApplicationInfo.h"
 
 class QQuickItem;
+class QQuickView;
+class QEvent;
 
 class ApplicationManager : public QObject {
     Q_OBJECT
@@ -95,6 +97,12 @@ class ApplicationManager : public QObject {
     void sideStageFocusedApplicationChanged();
     void focusRequested(FavoriteApplication favoriteApplication);
 
+protected:
+    bool eventFilter(QObject *, QEvent *);
+
+    void setMainStageFocusedApplication(ApplicationInfo *);
+    void setSideStageFocusedApplication(ApplicationInfo *);
+
  private:
     void showApplicationWindow(ApplicationInfo *application);
     void buildListOfAvailableApplications();
@@ -114,6 +122,7 @@ class ApplicationManager : public QObject {
     QQuickItem *m_mainStage;
     QQmlComponent *m_sideStageComponent;
     QQuickItem *m_sideStage;
+    QQuickView *m_quickView;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ApplicationManager::ExecFlags)

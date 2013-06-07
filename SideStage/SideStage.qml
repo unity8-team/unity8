@@ -38,7 +38,7 @@ Stage {
             left: parent.left
             right: parent.right
         }
-        height: shell.panelHeight
+        height: normalApplicationY
         color: background.color
         z: -1
     }

@@ -18,6 +18,7 @@ import QtQuick 2.0
 import Ubuntu.Application 0.1
 import Ubuntu.Components 0.1
 import Ubuntu.Gestures 0.1
+import "../Components"
 
 /*
   Responsible for application switching.
@@ -179,7 +180,11 @@ Showable {
             delayedHideScreenshots.stop();
             applicationManager.focusApplication(application);
         }
-        stage.focusedApplicationWhenUsingScreenshots = null;
+
+        // Don't over-write this if another animation has begun, as another app will get focus then
+        if (!showStartingApplicationAnimation.running && !switchToApplicationAnimation.running) {
+            stage.focusedApplicationWhenUsingScreenshots = null;
+        }
     }
 
     function __focusApplicationUsingScreenshots(application) {
