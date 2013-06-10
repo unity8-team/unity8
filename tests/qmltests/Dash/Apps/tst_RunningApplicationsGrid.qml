@@ -128,6 +128,7 @@ Item {
             compare(runningApplicationsGrid.terminationModeEnabled, false)
 
             isCalendarLongPressed = false
+            waitForRendering(runningApplicationsGrid)
             mousePress(calendarTile, calendarTile.width/2, calendarTile.height/2)
             tryCompareFunction(checkSwitchToTerminationModeAfterLongPress, true)
 
@@ -186,6 +187,7 @@ Item {
             verify(calendarTile != undefined)
 
             verify(fakeRunningAppsModel.contains(calendarApp))
+            waitForRendering(runningApplicationsGrid) //ensure populating animation has stopped
 
             mouseClick(calendarTile, calendarTile.width/2, calendarTile.height/2)
 
