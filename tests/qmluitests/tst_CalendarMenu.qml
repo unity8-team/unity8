@@ -26,6 +26,10 @@ Item {
     width: units.gu(42)
     height: units.gu(75)
 
+    property var date1: new Date(2012, 2, 10)
+    property var date2: new Date(2013, 5, 10)
+    property var date3: new Date(2014, 6, 10)
+
     Flickable {
         id: flickable
 
@@ -50,9 +54,6 @@ Item {
         when: windowShown
 
         property var calendar: UtilsJS.findChild(calendarMenu, "calendar")
-        property var date1: new Date(2012, 2, 10)
-        property var date2: new Date(2013, 5, 10)
-        property var date3: new Date(2014, 6, 10)
 
         function test_compressed() {
             calendarMenu.compressed = true

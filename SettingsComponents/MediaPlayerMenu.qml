@@ -87,6 +87,7 @@ BasicMenu {
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/DoubleLeftArrow.png"
                 onClicked: mediaPlayerMenu.previous()
+                text: ""
             }
 
             Button {
@@ -94,6 +95,7 @@ BasicMenu {
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/RightArrow.png"
                 onClicked: mediaPlayerMenu.play()
+                text: ""
             }
 
             Button {
@@ -101,6 +103,7 @@ BasicMenu {
                 width: controlsRow.buttonsWidth
                 iconSource: "MediaPlayer/DoubleRightArrow.png"
                 onClicked: mediaPlayerMenu.next()
+                text: ""
             }
         }
     }

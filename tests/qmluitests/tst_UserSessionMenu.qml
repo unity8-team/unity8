@@ -42,7 +42,7 @@ Item {
             UserSessionMenu {
                 id: userSessionMenu
                 name: i18n.tr("Lola Chang")
-                icon: Qt.resolvedUrl("avatar.png")
+                icon: Qt.resolvedUrl("../../avatar.png")
                 active: true
             }
         }
