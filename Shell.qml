@@ -148,8 +148,8 @@ FocusScope {
                 greeter.forceActiveFocus();
                 // FIXME: *FocusedApplication are not updated when unfocused, hence the need to check whether
                 // the stage was actually shown
-                if (mainStage.fullyShown) greeter.previousMainApp = applicationManager.mainStageFocusedApplication;
-                if (sideStage.fullyShown) greeter.previousSideApp = applicationManager.sideStageFocusedApplication;
+                if (stageManager.mainStageFullyShown) greeter.previousMainApp = applicationManager.mainStageFocusedApplication;
+                if (stageManager.sideStageFullyShown) greeter.previousSideApp = applicationManager.sideStageFocusedApplication;
                 applicationManager.unfocusCurrentApplication();
             } else {
                 if (greeter.previousMainApp) {

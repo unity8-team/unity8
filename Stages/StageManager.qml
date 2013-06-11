@@ -60,6 +60,9 @@ Item {
         }
     }
 
+    readonly property alias mainStageFullyShown: mainStage.fullyShown
+    readonly property alias sideStageFullyShown: sideStage.fullyShown
+
     function hide() {
         stages.hide()
     }
