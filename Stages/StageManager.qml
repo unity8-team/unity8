@@ -162,13 +162,13 @@ Item {
             Connections {
                 target: applicationManager
                 onMainStageFocusedApplicationChanged: {
-                    if (shell.applicationManager.mainStageFocusedApplication) {
+                    if (applicationManager.mainStageFocusedApplication) {
                         mainStage.show();
                         stages.show();
                     }
                 }
                 onSideStageFocusedApplicationChanged: {
-                    if (shell.applicationManager.sideStageFocusedApplication) {
+                    if (applicationManager.sideStageFocusedApplication) {
                         sideStage.show();
                         stages.show();
                     }                }
