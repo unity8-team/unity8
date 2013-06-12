@@ -162,26 +162,17 @@ Item {
             Connections {
                 target: applicationManager
                 onMainStageFocusedApplicationChanged: {
-                    handleFocusedApplicationChange(mainStage, applicationManager.mainStageFocusedApplication);
-                }
-                onSideStageFocusedApplicationChanged: {
-                    handleFocusedApplicationChange(sideStage, applicationManager.sideStageFocusedApplication);
-                }
-                ignoreUnknownSignals: true
-
-                function handleFocusedApplicationChange(stage, application) {
-                    if (stages.shown) {
-                        if (application) {
-                            stage.show();
-                            stages.show();
-                        }
-                    } else {
-                        // focus changed while shell in foreground, ensure app remains unfocused
-                        if (application) {
-                            applicationManager.unfocusCurrentApplication();
-                        }
+                    if (shell.applicationManager.mainStageFocusedApplication) {
+                        mainStage.show();
+                        stages.show();
                     }
                 }
+                onSideStageFocusedApplicationChanged: {
+                    if (shell.applicationManager.sideStageFocusedApplication) {
+                        sideStage.show();
+                        stages.show();
+                    }                }
+                ignoreUnknownSignals: true
             }
 
             Stage {
