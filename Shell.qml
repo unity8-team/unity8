@@ -244,13 +244,8 @@ FocusScope {
             indicators {
                 hides: [launcher]
             }
-<<<<<<< TREE
             fullscreenMode: stageManager.fullscreenMode
-            searchVisible: !greeter.shown
-=======
-            fullscreenMode: shell.fullscreenMode
             searchVisible: !greeter.shown && !lockscreen.shown
->>>>>>> MERGE-SOURCE
 
             InputFilterArea {
                 anchors.fill: parent
