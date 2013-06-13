@@ -20,11 +20,11 @@
 #include <QObject>
 #include <QList>
 #include <QStringList>
+#include <QQuickView>
 #include "ApplicationListModel.h"
 #include "ApplicationInfo.h"
 
 class QQuickItem;
-class QQuickView;
 class QEvent;
 
 class ApplicationManager : public QObject {
@@ -90,6 +90,8 @@ class ApplicationManager : public QObject {
     Q_INVOKABLE void stopProcess(ApplicationInfo* application);
     Q_INVOKABLE void startWatcher() {}
 
+    Q_SLOT void quickViewStatusChanged(QQuickView::Status);
+
  Q_SIGNALS:
     void keyboardHeightChanged();
     void keyboardVisibleChanged();
@@ -111,6 +113,7 @@ protected:
     void createMainStage();
     void createSideStageComponent();
     void createSideStage();
+    void lookupQuickView();
     int m_keyboardHeight;
     bool m_keyboardVisible;
     ApplicationListModel* m_mainStageApplications;
