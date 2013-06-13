@@ -52,7 +52,7 @@ bool ApplicationManager::eventFilter(QObject *object, QEvent *event)
 {
     // best to wait for this event before locating the view
     if (!m_quickView && (event->type() == QEvent::ApplicationActivate)) {
-        lookupQuickView();
+        m_quickView = qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
 
         createMainStageComponent();
         createSideStageComponent();
@@ -60,28 +60,6 @@ bool ApplicationManager::eventFilter(QObject *object, QEvent *event)
 
     return QObject::eventFilter(object, event);
 }
-
-void ApplicationManager::lookupQuickView()
-{
-    if (m_quickView)
-        return;
-    Q_FOREACH (QWindow *w, QGuiApplication::topLevelWindows()) {
-        m_quickView = qobject_cast<QQuickView*>(w);
-        if (m_quickView) {
-            // connect in case we get the root object changed
-            QObject::connect(m_quickView, &QQuickView::statusChanged,
-                             this, &ApplicationManager::quickViewStatusChanged);
-            break;
-        }
-    }
-}
-
-void ApplicationManager::quickViewStatusChanged(QQuickView::Status status) {
-    if (status == QQuickView::Ready) {
-        lookupQuickView();
-    }
-}
-
 
 int ApplicationManager::keyboardHeight() const
 {
