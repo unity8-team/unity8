@@ -24,6 +24,21 @@
 #include <QQuickItem>
 #include <QQuickView>
 #include <QQmlComponent>
+#include <QWaitCondition>
+#include <QMutex>
+
+struct Sleeper {
+    QMutex mutex;
+    QWaitCondition sleeper;
+ 
+    Sleeper() { mutex.lock(); }
+    ~Sleeper() { mutex.unlock(); }
+    
+    void sleep(unsigned long duration)
+    {
+        sleeper.wait(&mutex, duration);
+    }
+};
 
 ApplicationManager::ApplicationManager(QObject *parent)
     : QObject(parent)
@@ -429,6 +444,11 @@ void ApplicationManager::createMainStageComponent()
 
 void ApplicationManager::createMainStage()
 {
+    Sleeper sleeper;
+    while (m_quickView->status() != QQuickView::Ready) {
+        sleeper.sleep(500);
+    }
+
     QQuickItem *shell = m_quickView->rootObject();
 
     m_mainStage = qobject_cast<QQuickItem *>(m_mainStageComponent->create());
@@ -455,6 +475,11 @@ void ApplicationManager::createSideStageComponent()
 
 void ApplicationManager::createSideStage()
 {
+    Sleeper sleeper;
+    while (m_quickView->status() != QQuickView::Ready) {
+        sleeper.sleep(500);
+    }
+    
     QQuickItem *shell = m_quickView->rootObject();
 
     m_sideStage = qobject_cast<QQuickItem *>(m_sideStageComponent->create());
