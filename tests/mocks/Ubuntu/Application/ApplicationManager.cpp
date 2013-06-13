@@ -30,10 +30,10 @@
 struct Sleeper {
     QMutex mutex;
     QWaitCondition sleeper;
- 
+
     Sleeper() { mutex.lock(); }
     ~Sleeper() { mutex.unlock(); }
-    
+
     void sleep(unsigned long duration)
     {
         sleeper.wait(&mutex, duration);
@@ -479,7 +479,7 @@ void ApplicationManager::createSideStage()
     while (m_quickView->status() != QQuickView::Ready) {
         sleeper.sleep(500);
     }
-    
+
     QQuickItem *shell = m_quickView->rootObject();
 
     m_sideStage = qobject_cast<QQuickItem *>(m_sideStageComponent->create());
