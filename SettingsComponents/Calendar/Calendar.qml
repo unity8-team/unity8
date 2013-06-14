@@ -33,6 +33,8 @@ ListView {
     property var minimumDate: (new Date()).monthStart().addMonths(-2)
     property var selectedDate: intern.today
 
+    ItemStyle.class: "calendar"
+
     onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart.addDays(15)
     onCurrentDateChanged: if (currentIndex != __diffMonths(minimumDate, currentDate)) currentIndex = __diffMonths(minimumDate, currentDate)
 
@@ -134,31 +136,42 @@ ListView {
                     property real topMargin: (row == 0 || (compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
                     property var dayStart: gridStart.addDays(index)
 
+                    // Styling properties
+                    property color color: "#757373"
+                    property color todayColor: "#DD4814"
+                    property string fontSize: "large"
+                    property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
+                    property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
+
                     visible: compressed ? isCurrentWeek : true
                     width: intern.squareUnit
                     height: intern.squareUnit
 
-                    Rectangle {
+                    ItemStyle.class: "day"
+                    ItemStyle.delegate: Item {
                         anchors {
                             fill: parent
                             topMargin: dayItem.topMargin
                             bottomMargin: dayItem.bottomMargin
                         }
-                        visible: isSunday
-                        color: Color.warmGrey
-                        opacity: 0.1
-                    }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: dayStart.getDate()
-                        font: themeDummy.font
-                        color: isToday ? Color.ubuntuOrange : themeDummy.color
-                        scale: isCurrent ? 1.8 : 1.
-                        opacity: isWithinBounds ? isCurrentMonth ? 1. : 0.3 : 0.1
+                        Rectangle {
+                            anchors.fill: parent
+                            visible: color.a > 0
+                            color: isSunday ? dayItem.sundayBackgroundColor : dayItem.backgroundColor
+                        }
 
-                        Behavior on scale {
-                            NumberAnimation { duration: 50 }
+                        Label {
+                            anchors.centerIn: parent
+                            text: dayStart.getDate()
+                            fontSize: dayItem.fontSize
+                            color: isToday ? dayItem.todayColor : dayItem.color
+                            scale: isCurrent ? 1.8 : 1.
+                            opacity: isWithinBounds ? isCurrentMonth ? 1. : 0.3 : 0.1
+
+                            Behavior on scale {
+                                NumberAnimation { duration: 50 }
+                            }
                         }
                     }
 
@@ -174,11 +187,5 @@ ListView {
                 }
             }
         }
-    }
-
-    Label {
-        visible: false
-        id: themeDummy
-        fontSize: "large"
     }
 }

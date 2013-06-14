@@ -43,9 +43,9 @@ MainView {
 
     ListModel {
         id: eventModel
-        ListElement { color: "yellow"; name: "Lunch with Lola"; description: "Some nice Thai food in the bay area"; date: "1:10 PM" }
-        ListElement { color: "green"; name: "Gym"; description: "Workout with John"; date: "6:30 PM" }
-        ListElement { color: "red"; name: "Birthday Party"; description: "Don't forget your present!"; date: "9:00 PM" }
+        ListElement { eventColor: "yellow"; name: "Lunch with Lola"; description: "Some nice Thai food in the bay area"; date: "1:10 PM" }
+        ListElement { eventColor: "green"; name: "Gym"; description: "Workout with John"; date: "6:30 PM" }
+        ListElement { eventColor: "red"; name: "Birthday Party"; description: "Don't forget your present!"; date: "9:00 PM" }
     }
 
     Page {
@@ -130,7 +130,7 @@ MainView {
                         EventMenu {
                             name: model.name
                             description: model.description
-                            color: model.color
+                            eventColor: model.eventColor
                             date: model.date
                         }
                     }

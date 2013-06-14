@@ -21,6 +21,8 @@ import Ubuntu.Components 0.1
 import "Calendar"
 
 BasicMenu {
+    id: calendarMenu
+
     property alias compressed: calendar.compressed
     property alias currentDate: calendar.currentDate
     property alias firstDayOfWeek: calendar.firstDayOfWeek
@@ -29,7 +31,9 @@ BasicMenu {
     property alias selectedDate: calendar.selectedDate
     property alias text: label.text
 
-    implicitHeight: label.height + calendar.height + units.gu(2)
+//    ItemStyle.class: "settings-menu calendar-menu"
+
+    implicitHeight: label.height + calendar.height + units.gu(2) + units.dp(2)
 
     Label {
         id: label
@@ -41,7 +45,7 @@ BasicMenu {
             margins: units.gu(2)
         }
         height: units.gu(5)
-        fontSize: "large"
+        ItemStyle.class: "label label-date"
     }
 
     Calendar {

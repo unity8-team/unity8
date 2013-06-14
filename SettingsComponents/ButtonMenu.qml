@@ -22,6 +22,8 @@ import Ubuntu.Components 0.1
 BasicMenu {
     property alias controlText: control.text
 
+//    ItemStyle.class: "settings-menu button-menu"
+
     Component.onCompleted: control.clicked.connect(clicked)
 
     control: Button {

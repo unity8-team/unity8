@@ -25,6 +25,8 @@ BasicMenu {
     property alias maximumValue: progressBar.maximumValue
     property alias value: progressBar.value
 
+//    ItemStyle.class: "settings-menu progressbar-menu"
+
     ProgressBar {
         id: progressBar
         width: __controlWidth

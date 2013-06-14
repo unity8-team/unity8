@@ -24,6 +24,8 @@ BasicMenu {
     property alias maximumValue: slider.maximumValue
     property alias value: slider.value
 
+//    ItemStyle.class: "settings-menu slider-menu"
+
     control: Slider {
         id: slider
         width: __controlWidth

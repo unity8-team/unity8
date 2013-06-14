@@ -18,22 +18,54 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "Event"
 
 BasicMenu {
-    property alias name: event.name
-    property alias description: event.description
-    property alias color: event.color
-    property alias date: event.date
+    property alias name: nameLabel.text
+    property alias description: descriptionLabel.text
+    property alias eventColor: icon.color
+    property alias date: dateLabel.text
 
-    Event {
-        id: event
+//    ItemStyle.class: "settings-menu event-menu"
+
+    Row {
+        id: row
+
         anchors {
             fill: parent
             topMargin: units.gu(1.5)
             bottomMargin: units.gu(1.5)
             leftMargin: units.gu(2)
+        }
+        spacing: units.gu(1)
+
+        Rectangle {
+            id: icon
+            width: units.gu(2)
+            height: units.gu(2)
+            opacity: 0.5
+        }
+
+        Column {
+            Label {
+                id: nameLabel
+                font.weight: Font.DemiBold
+            }
+
+            Label {
+                id: descriptionLabel
+                fontSize: "small"
+                ItemStyle.class: "label label-description"
+            }
+        }
+    }
+
+    Label {
+        id: dateLabel
+        anchors {
+            right: parent.right
+            top: row.top
             rightMargin: units.gu(2)
         }
+        ItemStyle.class: "label label-time"
     }
 }

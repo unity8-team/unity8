@@ -31,6 +31,8 @@ BasicMenu {
     signal play()
     signal previous()
 
+//    ItemStyle.class: "settings-menu mediaplayer-menu"
+
     implicitHeight: column.height + units.gu(4)
 
     Column {
@@ -61,15 +63,17 @@ BasicMenu {
 
                 Label {
                     id: songLabel
-                    font.weight: Font.DemiBold
+                    ItemStyle.class: "label label-song"
                 }
 
                 Label {
                     id: artistLabel
+                    ItemStyle.class: "label label-artist"
                 }
 
                 Label {
                     id: albumLabel
+                    ItemStyle.class: "label label-album"
                 }
             }
         }

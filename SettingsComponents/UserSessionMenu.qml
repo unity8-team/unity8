@@ -25,6 +25,8 @@ BasicMenu {
     property alias name: userSessionMenu.text
     property alias active: activeIcon.visible
 
+//    ItemStyle.class: "settings-menu usersession-menu"
+
     Rectangle {
         id: activeIcon
         objectName: "activeIcon"

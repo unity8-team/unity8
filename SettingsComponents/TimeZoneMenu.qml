@@ -25,6 +25,8 @@ BasicMenu {
     property alias city: timeZoneMenu.text
     property alias time: timeLabel.text
 
+//    ItemStyle.class: "settings-menu slider-menu"
+
     Label {
         id: timeLabel
         objectName: "timeLabel"
@@ -33,5 +35,6 @@ BasicMenu {
             verticalCenter: parent.verticalCenter
             rightMargin: units.gu(2)
         }
+        ItemStyle.class: "label label-time"
     }
 }

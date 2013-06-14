@@ -21,7 +21,27 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
 ListItem.Standard {
+    id: basicMenu
+
     property real __controlWidth: text ? units.gu(20) : width - units.gu(4)
 
+    // Styling properties
+    __foregroundColor: themeDummy.color
+    property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
+
+    ItemStyle.class: "settings-menu"
+
     implicitHeight: units.gu(7)
+
+    Rectangle {
+        visible: color.a > 0
+        color: basicMenu.backgroundColor
+        anchors.fill: parent
+        z: -1
+    }
+
+    Label {
+        id: themeDummy
+        visible: false
+    }
 }

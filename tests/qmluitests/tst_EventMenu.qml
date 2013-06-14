@@ -40,7 +40,7 @@ Item {
 
             EventMenu {
                 id: eventMenu
-                color: "yellow"
+                eventColor: "yellow"
                 name: "Lunch with Lola"
                 description: "Some nice Thai food in the bay area"
                 date: "1:10 PM"
@@ -52,9 +52,9 @@ Item {
         name: "EventMenu"
         when: windowShown
 
-        function test_color() {
-            eventMenu.color = "red"
-            compare(eventMenu.color, "#ff0000", "Cannot set color")
+        function test_eventColor() {
+            eventMenu.eventColor = "red"
+            compare(eventMenu.eventColor, "#ff0000", "Cannot set color")
         }
 
         function test_name() {
