@@ -35,6 +35,7 @@ ListItem.Standard {
     showDivider: false
 
     Rectangle {
+        id: background
         visible: color.a > 0
         color: basicMenu.backgroundColor
         anchors.fill: parent
@@ -43,8 +44,7 @@ ListItem.Standard {
 
     Column {
         id: thinDivider
-        visible: !basicMenu.showDivider
-
+        visible: !basicMenu.showDivider && background.visible
         anchors {
             left: parent.left
             right: parent.right
@@ -56,6 +56,7 @@ ListItem.Standard {
             height: units.dp(1)
             color: Qt.rgba(0, 0, 0, 0.12)
         }
+
         Rectangle {
             width: parent.width
             height: units.dp(1)
