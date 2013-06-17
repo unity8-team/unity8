@@ -21,10 +21,6 @@ import "dateExt.js" as DateExt
 ListView {
     id: monthView
 
-    // Used for tests
-    readonly property real __compressedHeight: intern.squareUnit + intern.verticalMargin * 2
-    readonly property real __expandedHeight: intern.squareUnit * 6 + intern.verticalMargin * 2
-
     property bool compressed: false
     property var currentDate: selectedDate.monthStart().addDays(15)
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
@@ -75,7 +71,7 @@ ListView {
     }
 
     width: parent.width
-    height: compressed ? __compressedHeight : __expandedHeight
+    height: intern.squareUnit * (compressed ? 1 : 6) + intern.verticalMargin * 2
     interactive: !compressed
     clip: true
     cacheBuffer: width + 1

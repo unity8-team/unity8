@@ -51,10 +51,10 @@ Item {
 
         function test_compressed() {
             calendar.compressed = true
-            compare(calendar.height, calendar.__compressedHeight, "Unexpected height")
             compare(calendar.interactive, false, "Calendar should not be interactive")
+            var compressedHeight = calendar.height
             calendar.compressed = false
-            compare(calendar.height, calendar.__expandedHeight, "Unexpected height")
+            verify(calendar.height > compressedHeight * 4 && calendar.height < compressedHeight * 6, "Height did not expand properly")
             compare(calendar.interactive, true, "Calendar should be interactive")
         }
 
