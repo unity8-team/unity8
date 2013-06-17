@@ -32,7 +32,7 @@ ListItem.Standard {
     ItemStyle.class: "settings-menu"
 
     implicitHeight: units.gu(7)
-    showDivider: false
+    showDivider: !background.visible
 
     Rectangle {
         id: background
@@ -44,7 +44,7 @@ ListItem.Standard {
 
     Column {
         id: thinDivider
-        visible: !basicMenu.showDivider && background.visible
+        visible: !basicMenu.showDivider
         anchors {
             left: parent.left
             right: parent.right
