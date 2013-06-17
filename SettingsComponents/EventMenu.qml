@@ -20,6 +20,8 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
+    id: eventMenu
+
     property alias name: nameLabel.text
     property alias description: descriptionLabel.text
     property alias eventColor: icon.color
@@ -54,6 +56,7 @@ BasicMenu {
             Label {
                 id: descriptionLabel
                 fontSize: "small"
+                color: "#757373"
                 ItemStyle.class: "label label-description"
             }
         }
@@ -66,6 +69,7 @@ BasicMenu {
             top: row.top
             rightMargin: units.gu(2)
         }
+        color: "#757373"
         ItemStyle.class: "label label-time"
     }
 }

@@ -32,12 +32,35 @@ ListItem.Standard {
     ItemStyle.class: "settings-menu"
 
     implicitHeight: units.gu(7)
+    showDivider: false
 
     Rectangle {
         visible: color.a > 0
         color: basicMenu.backgroundColor
         anchors.fill: parent
         z: -1
+    }
+
+    Column {
+        id: thinDivider
+        visible: !basicMenu.showDivider
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        Rectangle {
+            width: parent.width
+            height: units.dp(1)
+            color: Qt.rgba(0, 0, 0, 0.12)
+        }
+        Rectangle {
+            width: parent.width
+            height: units.dp(1)
+            color: Qt.rgba(1, 1, 1, 0.1)
+        }
     }
 
     Label {

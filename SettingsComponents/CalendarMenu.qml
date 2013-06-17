@@ -37,7 +37,6 @@ BasicMenu {
 
     Label {
         id: label
-
         anchors {
             left: parent.left
             right: parent.right
@@ -45,6 +44,8 @@ BasicMenu {
             margins: units.gu(2)
         }
         height: units.gu(5)
+        color: "#757373"
+        fontSize: "large"
         ItemStyle.class: "label label-date"
     }
 
