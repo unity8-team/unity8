@@ -55,9 +55,9 @@ Item {
 
         property var calendar: UtilsJS.findChild(calendarMenu, "calendar")
 
-        function test_compressed() {
-            calendarMenu.compressed = true
-            compare(calendar.compressed, true, "Cannot set compressed")
+        function test_collapsed() {
+            calendarMenu.collapsed = true
+            compare(calendar.collapsed, true, "Cannot set collapsed")
         }
 
         function test_currentDate() {

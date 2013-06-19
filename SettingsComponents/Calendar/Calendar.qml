@@ -21,7 +21,7 @@ import "dateExt.js" as DateExt
 ListView {
     id: monthView
 
-    property bool compressed: false
+    property bool collapsed: false
     property var currentDate: selectedDate.monthStart().addDays(15)
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var maximumDate: (new Date()).monthStart().addMonths(2)
@@ -71,8 +71,8 @@ ListView {
     }
 
     width: parent.width
-    height: intern.squareUnit * (compressed ? 1 : 6) + intern.verticalMargin * 2
-    interactive: !compressed
+    height: intern.squareUnit * (collapsed ? 1 : 6) + intern.verticalMargin * 2
+    interactive: !collapsed
     clip: true
     cacheBuffer: width + 1
     highlightRangeMode: ListView.StrictlyEnforceRange
@@ -127,8 +127,8 @@ ListView {
                     property bool isWithinBounds: dayStart >= minimumDate && dayStart <= maximumDate
                     property int row: Math.floor(index / 7)
                     property int weekday: (index % 7 + firstDayOfWeek) % 7
-                    property real bottomMargin: (row == 5 || (compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
-                    property real topMargin: (row == 0 || (compressed && isCurrentWeek)) ? -intern.verticalMargin : 0
+                    property real bottomMargin: (row == 5 || (collapsed && isCurrentWeek)) ? -intern.verticalMargin : 0
+                    property real topMargin: (row == 0 || (collapsed && isCurrentWeek)) ? -intern.verticalMargin : 0
                     property var dayStart: gridStart.addDays(index)
 
                     // Styling properties
@@ -138,7 +138,7 @@ ListView {
                     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
                     property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
 
-                    visible: compressed ? isCurrentWeek : true
+                    visible: collapsed ? isCurrentWeek : true
                     width: intern.squareUnit
                     height: intern.squareUnit
 

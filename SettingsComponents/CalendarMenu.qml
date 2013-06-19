@@ -23,7 +23,7 @@ import "Calendar"
 BasicMenu {
     id: calendarMenu
 
-    property alias compressed: calendar.compressed
+    property alias collapsed: calendar.collapsed
     property alias currentDate: calendar.currentDate
     property alias firstDayOfWeek: calendar.firstDayOfWeek
     property alias maximumDate: calendar.maximumDate

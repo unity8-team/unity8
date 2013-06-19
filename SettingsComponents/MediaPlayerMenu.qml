@@ -26,6 +26,7 @@ BasicMenu {
     property alias song: songLabel.text
     property alias artist: artistLabel.text
     property alias album: albumLabel.text
+    property bool playing: false
 
     signal next()
     signal play()
@@ -34,6 +35,8 @@ BasicMenu {
 //    ItemStyle.class: "settings-menu mediaplayer-menu"
 
     implicitHeight: column.height + units.gu(4)
+
+    onPlay: playing = !playing
 
     Column {
         id: column
@@ -100,7 +103,7 @@ BasicMenu {
             Button {
                 objectName: "playButton"
                 width: controlsRow.buttonsWidth
-                iconSource: "MediaPlayer/RightArrow.png"
+                iconSource: playing ? "MediaPlayer/RightArrow.png" : "MediaPlayer/RightArrow.png"
                 onClicked: mediaPlayerMenu.play()
                 text: ""
             }

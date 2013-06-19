@@ -49,12 +49,12 @@ Item {
         name: "Calendar"
         when: windowShown
 
-        function test_compressed() {
-            calendar.compressed = true
+        function test_collapsed() {
+            calendar.collapsed = true
             compare(calendar.interactive, false, "Calendar should not be interactive")
-            var compressedHeight = calendar.height
-            calendar.compressed = false
-            verify(calendar.height > compressedHeight * 4 && calendar.height < compressedHeight * 6, "Height did not expand properly")
+            var collapsedHeight = calendar.height
+            calendar.collapsed = false
+            verify(calendar.height > collapsedHeight * 4 && calendar.height < collapsedHeight * 6, "Height did not expand properly")
             compare(calendar.interactive, true, "Calendar should be interactive")
         }
 
