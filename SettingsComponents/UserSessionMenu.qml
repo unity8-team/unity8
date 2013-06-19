@@ -22,10 +22,34 @@ import Ubuntu.Components 0.1
 BasicMenu {
     id: userSessionMenu
 
-    property alias name: userSessionMenu.text
+    property alias name: label.text
     property alias active: activeIcon.visible
+    property alias icon: iconImage.source
 
 //    ItemStyle.class: "settings-menu usersession-menu"
+
+    Row {
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+            leftMargin: units.gu(2)
+        }
+        spacing: units.gu(1)
+
+        UbuntuShape {
+            width: units.gu(5)
+            height: width
+
+            image: Image {
+                id: iconImage
+            }
+        }
+
+        Label {
+            id: label
+            anchors.verticalCenter: parent.verticalCenter
+        }
+    }
 
     Rectangle {
         id: activeIcon
@@ -35,15 +59,15 @@ BasicMenu {
             rightMargin: units.gu(2)
             verticalCenter: parent.verticalCenter
         }
-        width: image.width + units.gu(1.5)
-        height: image.height + units.gu(1.5)
+        width: checkMark.width + units.gu(1.5)
+        height: checkMark.height + units.gu(1.5)
         radius: width / 2
         antialiasing: true
         color: "#d0d0d0"
         visible: false
 
         Image {
-            id: image
+            id: checkMark
             source: "UserSession/CheckMark.png"
             anchors.centerIn: parent
         }

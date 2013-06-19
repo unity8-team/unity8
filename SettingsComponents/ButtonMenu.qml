@@ -20,15 +20,29 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
-    property alias controlText: control.text
+    property alias text: label.text
+    property alias buttonText: button.text
 
 //    ItemStyle.class: "settings-menu button-menu"
 
-    Component.onCompleted: control.clicked.connect(clicked)
+    Component.onCompleted: button.clicked.connect(clicked)
 
-    control: Button {
-        id: control
-        width: __controlWidth
-        anchors.verticalCenter: parent.verticalCenter
+    Label {
+        id: label
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+            leftMargin: units.gu(2)
+        }
+    }
+
+    Button {
+        id: button
+        width: units.gu(20)
+        anchors {
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+            rightMargin: units.gu(2)
+        }
     }
 }

@@ -75,7 +75,7 @@ MainView {
 
                 ButtonMenu {
                     text: i18n.tr("Button")
-                    controlText: i18n.tr("Hello world!")
+                    buttonText: i18n.tr("Hello world!")
                 }
 
                 CalendarMenu {

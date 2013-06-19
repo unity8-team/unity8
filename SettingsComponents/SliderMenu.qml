@@ -20,16 +20,30 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 BasicMenu {
+    property alias text: label.text
     property alias minimumValue: slider.minimumValue
     property alias maximumValue: slider.maximumValue
     property alias value: slider.value
 
 //    ItemStyle.class: "settings-menu slider-menu"
 
-    control: Slider {
+    Label {
+        id: label
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+            leftMargin: units.gu(2)
+        }
+    }
+
+    Slider {
         id: slider
-        width: __controlWidth
-        anchors.verticalCenter: parent.verticalCenter
+        width: units.gu(20)
+        anchors {
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+            rightMargin: units.gu(2)
+        }
         live: false
     }
 }

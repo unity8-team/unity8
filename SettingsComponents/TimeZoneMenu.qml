@@ -22,10 +22,19 @@ import Ubuntu.Components 0.1
 BasicMenu {
     id: timeZoneMenu
 
-    property alias city: timeZoneMenu.text
+    property alias city: label.text
     property alias time: timeLabel.text
 
 //    ItemStyle.class: "settings-menu slider-menu"
+
+    Label {
+        id: label
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+            leftMargin: units.gu(2)
+        }
+    }
 
     Label {
         id: timeLabel

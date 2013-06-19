@@ -29,7 +29,6 @@ BasicMenu {
     property alias maximumDate: calendar.maximumDate
     property alias minimumDate: calendar.minimumDate
     property alias selectedDate: calendar.selectedDate
-    property alias text: label.text
 
 //    ItemStyle.class: "settings-menu calendar-menu"
 
