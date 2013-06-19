@@ -38,6 +38,7 @@ BasicMenu {
 
     Button {
         id: button
+        objectName: "button"
         width: units.gu(20)
         anchors {
             right: parent.right

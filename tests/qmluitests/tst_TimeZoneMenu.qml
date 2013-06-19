@@ -54,7 +54,6 @@ Item {
         function test_city() {
             timeZoneMenu.city = "London"
             compare(timeZoneMenu.city, "London", "Cannot set city")
-            compare(timeZoneMenu.text, "London", "Text property of ListItem did not change")
         }
 
         function test_time() {

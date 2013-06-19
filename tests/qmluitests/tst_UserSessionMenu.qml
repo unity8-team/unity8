@@ -55,7 +55,6 @@ Item {
         function test_name() {
             userSessionMenu.name = "Test User"
             compare(userSessionMenu.name, "Test User", "Cannot set name")
-            compare(userSessionMenu.text, "Test User", "Text property of ListItem did not change")
         }
 
         function test_active() {

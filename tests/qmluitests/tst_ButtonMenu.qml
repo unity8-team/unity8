@@ -20,6 +20,7 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import "../../SettingsComponents"
+import "utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -41,7 +42,7 @@ Item {
             ButtonMenu {
                 id: buttonMenu
                 text: i18n.tr("Button")
-                controlText: i18n.tr("Hello world!")
+                buttonText: i18n.tr("Hello world!")
             }
         }
     }
@@ -59,7 +60,7 @@ Item {
         function test_click() {
             signalSpy.clear()
 
-            var button = buttonMenu.control
+            var button = UtilsJS.findChild(buttonMenu, "button")
             mouseClick(buttonMenu, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
             compare(signalSpy.count > 0, true, "signal clicked not triggered")
         }
