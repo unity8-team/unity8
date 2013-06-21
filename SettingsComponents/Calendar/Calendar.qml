@@ -33,11 +33,49 @@ ListView {
     onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart.addDays(15)
     onCurrentDateChanged: if (currentIndex != DateExt.diffMonths(minimumDate, currentDate)) currentIndex = DateExt.diffMonths(minimumDate, currentDate)
 
+    onMaximumDateChanged: {
+        if (intern.oldMaximumDate != undefined) {
+            if (maximumDate > intern.oldMaximumDate) {
+                var count = __diffMonths(intern.oldMaximumDate, maximumDate)
+                for (var i = 0; i < count; i++) {
+                    calendarModel.append({"monthStart": intern.oldMaximumDate.monthStart().addMonths(i)})
+                }
+            } else {
+                var count = __diffMonths(maximumDate, intern.oldMaximumDate)
+                for (var i = 0; i < count; i++) {
+                    calendarModel.remove(calendarModel.count - 1)
+                }
+            }
+        }
+        intern.oldMaximumDate = maximumDate
+    }
+
+    onMinimumDateChanged: {
+        if (intern.oldMinimumDate != undefined) {
+            if (minimumDate < intern.oldMinimumDate) {
+                var count = __diffMonths(minimumDate, intern.oldMinimumDate)
+                for (var i = 0; i < count; i++) {
+                    calendarModel.insert(0, {"monthStart": intern.oldMinimumDate.monthStart().addMonths(-i)})
+                }
+            } else {
+                var count = __diffMonths(intern.oldMinimumDate, minimumDate)
+                for (var i = 0; i < count; i++) {
+                    calendarModel.remove(0)
+                }
+            }
+        }
+        intern.oldMinimumDate = minimumDate
+    }
+
     onSelectedDateChanged: {
         if (selectedDate < minimumDate || selectedDate > maximumDate)
             returns
 
         currentIndex = DateExt.diffMonths(minimumDate, selectedDate)
+    }
+
+    ListModel {
+        id: calendarModel
     }
 
     QtObject {
@@ -47,6 +85,8 @@ ListView {
         property int squareUnit: monthView.width / 7
         property int verticalMargin: units.gu(1)
         property var today: (new Date()).midnight()
+        property var oldMaximumDate
+        property var oldMinimumDate
     }
 
     Timer {
@@ -67,7 +107,7 @@ ListView {
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
-    model: DateExt.diffMonths(minimumDate, maximumDate) + 1
+    model: calendarModel
     orientation: ListView.Horizontal
     snapMode: ListView.SnapOneItem
     focus: true
@@ -77,6 +117,16 @@ ListView {
 
     Component.onCompleted: {
         timer.start()
+
+        // Populate the model
+        var count = DateExt.diffMonths(minimumDate, maximumDate) + 1
+
+        for (var i = 0; i < count; i++) {
+            calendarModel.append({"monthStart": minimumDate.monthStart().addMonths(i)})
+        }
+        intern.oldMaximumDate = maximumDate
+        intern.oldMinimumDate = minimumDate
+
         currentIndex = DateExt.diffMonths(minimumDate, selectedDate)
     }
 
@@ -86,7 +136,7 @@ ListView {
         property int currentWeekRow: Math.floor((selectedDate.getTime() - gridStart.getTime()) / Date.msPerWeek)
         property var gridStart: monthStart.weekStart(firstDayOfWeek)
         property var monthEnd: monthStart.addMonths(1)
-        property var monthStart: minimumDate.monthStart().addMonths(index)
+        property var monthStart: model.monthStart
 
         width: monthView.width
         height: monthView.height
