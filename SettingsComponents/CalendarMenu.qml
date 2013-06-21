@@ -46,6 +46,7 @@ BasicMenu {
         color: "#757373"
         fontSize: "large"
         ItemStyle.class: "label label-date"
+        text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
     }
 
     Calendar {
@@ -57,12 +58,6 @@ BasicMenu {
             top: label.bottom
             leftMargin: units.gu(2)
             rightMargin: units.gu(2)
-        }
-
-        onCurrentDateChanged: {
-            var monthNames = [ "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December" ];
-            label.text = monthNames[calendar.currentDate.getMonth()] + " " + calendar.currentDate.getFullYear()
         }
     }
 }

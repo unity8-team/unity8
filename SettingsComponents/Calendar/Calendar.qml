@@ -31,24 +31,13 @@ ListView {
     ItemStyle.class: "calendar"
 
     onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart.addDays(15)
-    onCurrentDateChanged: if (currentIndex != __diffMonths(minimumDate, currentDate)) currentIndex = __diffMonths(minimumDate, currentDate)
+    onCurrentDateChanged: if (currentIndex != DateExt.diffMonths(minimumDate, currentDate)) currentIndex = DateExt.diffMonths(minimumDate, currentDate)
 
     onSelectedDateChanged: {
         if (selectedDate < minimumDate || selectedDate > maximumDate)
-            return
+            returns
 
-        var monthEnd = currentItem != null ? currentItem.monthEnd : (new Date()).monthStart().addMonths(1)
-        var monthStart = currentItem != null ? currentItem.monthStart : (new Date()).monthStart()
-
-        currentIndex = __diffMonths(minimumDate, selectedDate)
-    }
-
-    function __diffMonths(dateA, dateB) {
-        var months;
-        months = (dateB.getFullYear() - dateA.getFullYear()) * 12;
-        months -= dateA.getMonth();
-        months += dateB.getMonth();
-        return Math.max(months, 0);
+        currentIndex = DateExt.diffMonths(minimumDate, selectedDate)
     }
 
     QtObject {
@@ -78,7 +67,7 @@ ListView {
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
-    model: __diffMonths(minimumDate, maximumDate) + 1
+    model: DateExt.diffMonths(minimumDate, maximumDate) + 1
     orientation: ListView.Horizontal
     snapMode: ListView.SnapOneItem
     focus: true
@@ -88,7 +77,7 @@ ListView {
 
     Component.onCompleted: {
         timer.start()
-        currentIndex = __diffMonths(minimumDate, selectedDate)
+        currentIndex = DateExt.diffMonths(minimumDate, selectedDate)
     }
 
     delegate: Item {

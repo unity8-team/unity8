@@ -1,5 +1,13 @@
 .pragma library
 
+function diffMonths(dateA, dateB) {
+    var months;
+    months = (dateB.getFullYear() - dateA.getFullYear()) * 12;
+    months -= dateA.getMonth();
+    months += dateB.getMonth();
+    return Math.max(months, 0);
+}
+
 Date.msPerDay = 86400e3
 Date.msPerWeek = Date.msPerDay * 7
 
