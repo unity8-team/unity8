@@ -25,7 +25,7 @@ ListItem.Empty {
 
     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
 
-    ItemStyle.class: "settings-menu"
+//    ItemStyle.class: "settings-menu"
 
     implicitHeight: units.gu(7)
     showDivider: !background.visible

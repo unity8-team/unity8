@@ -45,6 +45,6 @@ BasicMenu {
             rightMargin: units.gu(2)
         }
         color: "#757373"
-        ItemStyle.class: "label label-time"
+//        ItemStyle.class: "label label-time"
     }
 }

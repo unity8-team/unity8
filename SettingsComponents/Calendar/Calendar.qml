@@ -28,7 +28,7 @@ ListView {
     property var minimumDate: (new Date()).monthStart().addMonths(-2)
     property var selectedDate: intern.today
 
-    ItemStyle.class: "calendar"
+//    ItemStyle.class: "calendar"
 
     onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart.addDays(15)
     onCurrentDateChanged: if (currentIndex != DateExt.diffMonths(minimumDate, currentDate)) currentIndex = DateExt.diffMonths(minimumDate, currentDate)
@@ -181,8 +181,8 @@ ListView {
                     width: intern.squareUnit
                     height: intern.squareUnit
 
-                    ItemStyle.class: "day"
-                    ItemStyle.delegate: Item {
+//                    ItemStyle.class: "day"
+                    Item {
                         anchors {
                             fill: parent
                             topMargin: dayItem.topMargin
