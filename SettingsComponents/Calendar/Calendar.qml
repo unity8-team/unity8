@@ -41,17 +41,17 @@ ListView {
     onCurrentIndexChanged: {
         if (!priv.ready) return
 
-        var currentValue = currentItem.monthStart
-        var minValue = calendarModel.get(0).monthStart
-        var maxValue = calendarModel.get(calendarModel.count - 1).monthStart
-        if (DateExt.diffMonths(minValue, currentValue) <= 1) {
-            var newDate = minValue.addMonths(-1)
+        var currentMonth = currentItem.monthStart
+        var minimumMonth = calendarModel.get(0).monthStart
+        var maximumMonth = calendarModel.get(calendarModel.count - 1).monthStart
+        if (DateExt.diffMonths(minimumMonth, currentMonth) <= 1) {
+            var newDate = minimumMonth.addMonths(-1)
             if (__withinLowerMonthBound(newDate)) {
                 calendarModel.insert(0, {"monthStart": newDate})
                 if (calendarModel.count > 5) calendarModel.remove(calendarModel.count - 1)
             }
-        } else if (DateExt.diffMonths(currentValue, maxValue) <= 1) {
-            var newDate = maxValue.addMonths(1)
+        } else if (DateExt.diffMonths(currentMonth, maximumMonth) <= 1) {
+            var newDate = maximumMonth.addMonths(1)
             if (__withinUpperMonthBound(newDate)) {
                 calendarModel.append({"monthStart": newDate})
                 if (calendarModel.count > 5) calendarModel.remove(0)
@@ -109,9 +109,9 @@ ListView {
     onMaximumDateChanged: {
         if (!priv.ready) return
 
-        var maxValue = calendarModel.get(calendarModel.count - 1).monthStart;
+        var maximumMonth = calendarModel.get(calendarModel.count - 1).monthStart;
 
-        if (maxValue > maximumDate) {
+        if (maximumMonth > maximumDate) {
             calendarModel.clear()
             __populateModel()
         }
@@ -120,9 +120,9 @@ ListView {
     onMinimumDateChanged: {
         if (!priv.ready) return
 
-        var minValue = calendarModel.get(0).monthStart;
+        var minimumMonth = calendarModel.get(0).monthStart;
 
-        if (minValue < minimumDate) {
+        if (minimumMonth < minimumDate) {
             calendarModel.clear()
             __populateModel()
         }
