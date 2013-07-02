@@ -24,54 +24,117 @@ ListView {
     property bool collapsed: false
     property var currentDate: selectedDate.monthStart().addDays(15)
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
-    property var maximumDate: (new Date()).monthStart().addMonths(2)
-    property var minimumDate: (new Date()).monthStart().addMonths(-2)
-    property var selectedDate: intern.today
+    property var maximumDate
+    property var minimumDate
+    property var selectedDate: priv.today
 
     ItemStyle.class: "calendar"
 
-    onCurrentItemChanged: if (currentDate != currentItem.monthStart) currentDate = currentItem.monthStart.addDays(15)
-    onCurrentDateChanged: if (currentIndex != DateExt.diffMonths(minimumDate, currentDate)) currentIndex = DateExt.diffMonths(minimumDate, currentDate)
+    function __withinLowerMonthBound(date) {
+        return minimumDate == undefined || date.monthStart() >= minimumDate.monthStart()
+    }
 
-    onMaximumDateChanged: {
-        if (intern.oldMaximumDate != undefined) {
-            if (maximumDate > intern.oldMaximumDate) {
-                var count = __diffMonths(intern.oldMaximumDate, maximumDate)
-                for (var i = 0; i < count; i++) {
-                    calendarModel.append({"monthStart": intern.oldMaximumDate.monthStart().addMonths(i)})
-                }
-            } else {
-                var count = __diffMonths(maximumDate, intern.oldMaximumDate)
-                for (var i = 0; i < count; i++) {
-                    calendarModel.remove(calendarModel.count - 1)
-                }
+    function __withinUpperMonthBound(date) {
+        return maximumDate == undefined || date.monthStart() <= maximumDate.monthStart()
+    }
+
+    onCurrentIndexChanged: {
+        if (!priv.ready) return
+
+        var currentValue = currentItem.monthStart
+        var minValue = calendarModel.get(0).monthStart
+        var maxValue = calendarModel.get(calendarModel.count - 1).monthStart
+        if (DateExt.diffMonths(minValue, currentValue) <= 1) {
+            var newDate = minValue.addMonths(-1)
+            if (__withinLowerMonthBound(newDate)) {
+                calendarModel.insert(0, {"monthStart": newDate})
+                if (calendarModel.count > 5) calendarModel.remove(calendarModel.count - 1)
+            }
+        } else if (DateExt.diffMonths(currentValue, maxValue) <= 1) {
+            var newDate = maxValue.addMonths(1)
+            if (__withinUpperMonthBound(newDate)) {
+                calendarModel.append({"monthStart": newDate})
+                if (calendarModel.count > 5) calendarModel.remove(0)
             }
         }
-        intern.oldMaximumDate = maximumDate
+        currentDate = currentItem.monthStart.addDays(15)
+    }
+
+    function __getRealMinimumDate(date) {
+        if (minimumDate != undefined && minimumDate > date) {
+            return minimumDate;
+        }
+        return date;
+    }
+
+    function __getRealMaximumDate(date) {
+        if (maximumDate != undefined && maximumDate < date) {
+            return maximumDate;
+        }
+        return date;
+    }
+
+    function __populateModel() {
+        //  disable the onCurrentIndexChanged logic
+        priv.ready = false
+
+        var minimumAddedDate = __getRealMinimumDate(currentDate.addMonths(-2));
+        var maximumAddedDate = __getRealMaximumDate(currentDate.addMonths(2));
+
+        var count = Math.min(DateExt.diffMonths(minimumAddedDate, maximumAddedDate) + 1, 5)
+        for (var i = 0; i < count; ++i) {
+            calendarModel.append({"monthStart": minimumAddedDate.monthStart().addMonths(i)});
+        }
+
+        currentIndex = DateExt.diffMonths(minimumAddedDate, currentDate);
+
+        // Ok, we're all set up. enable the onCurrentIndexChanged logic
+        priv.ready = true
+    }
+
+    Component.onCompleted: {
+        __populateModel()
+        timer.start()
+    }
+
+    onCurrentDateChanged: {
+        if (!priv.ready) return
+
+        if (currentDate.monthStart() != currentItem.monthStart) {
+            calendarModel.clear()
+            __populateModel()
+        }
+    }
+
+    onMaximumDateChanged: {
+        if (!priv.ready) return
+
+        var maxValue = calendarModel.get(calendarModel.count - 1).monthStart;
+
+        if (maxValue > maximumDate) {
+            calendarModel.clear()
+            __populateModel()
+        }
     }
 
     onMinimumDateChanged: {
-        if (intern.oldMinimumDate != undefined) {
-            if (minimumDate < intern.oldMinimumDate) {
-                var count = __diffMonths(minimumDate, intern.oldMinimumDate)
-                for (var i = 0; i < count; i++) {
-                    calendarModel.insert(0, {"monthStart": intern.oldMinimumDate.monthStart().addMonths(-i)})
-                }
-            } else {
-                var count = __diffMonths(intern.oldMinimumDate, minimumDate)
-                for (var i = 0; i < count; i++) {
-                    calendarModel.remove(0)
-                }
-            }
+        if (!priv.ready) return
+
+        var minValue = calendarModel.get(0).monthStart;
+
+        if (minValue < minimumDate) {
+            calendarModel.clear()
+            __populateModel()
         }
-        intern.oldMinimumDate = minimumDate
     }
 
     onSelectedDateChanged: {
         if (selectedDate < minimumDate || selectedDate > maximumDate)
-            returns
+            return
 
-        currentIndex = DateExt.diffMonths(minimumDate, selectedDate)
+        calendarModel.clear()
+        currentDate = selectedDate
+        __populateModel()
     }
 
     ListModel {
@@ -79,14 +142,14 @@ ListView {
     }
 
     QtObject {
-        id: intern
-        objectName: "intern"
+        id: priv
 
         property int squareUnit: monthView.width / 7
         property int verticalMargin: units.gu(1)
         property var today: (new Date()).midnight()
         property var oldMaximumDate
         property var oldMinimumDate
+        property bool ready: false
     }
 
     Timer {
@@ -96,11 +159,11 @@ ListView {
         running: true
         triggeredOnStart: true
 
-        onTriggered: intern.today = (new Date()).midnight()
+        onTriggered: priv.today = (new Date()).midnight()
     }
 
     width: parent.width
-    height: intern.squareUnit * (collapsed ? 1 : 6) + intern.verticalMargin * 2
+    height: priv.squareUnit * (collapsed ? 1 : 6) + priv.verticalMargin * 2
     interactive: !collapsed
     clip: true
     cacheBuffer: width + 1
@@ -114,21 +177,6 @@ ListView {
 
     Keys.onLeftPressed: selectedDate.addDays(-1)
     Keys.onRightPressed: selectedDate.addDays(1)
-
-    Component.onCompleted: {
-        timer.start()
-
-        // Populate the model
-        var count = DateExt.diffMonths(minimumDate, maximumDate) + 1
-
-        for (var i = 0; i < count; i++) {
-            calendarModel.append({"monthStart": minimumDate.monthStart().addMonths(i)})
-        }
-        intern.oldMaximumDate = maximumDate
-        intern.oldMinimumDate = minimumDate
-
-        currentIndex = DateExt.diffMonths(minimumDate, selectedDate)
-    }
 
     delegate: Item {
         id: monthItem
@@ -146,9 +194,9 @@ ListView {
 
             rows: 6
             columns: 7
-            y: intern.verticalMargin
-            width: intern.squareUnit * columns
-            height: intern.squareUnit * rows
+            y: priv.verticalMargin
+            width: priv.squareUnit * columns
+            height: priv.squareUnit * rows
 
             Repeater {
                 model: monthGrid.rows * monthGrid.columns
@@ -162,12 +210,13 @@ ListView {
                     property bool isCurrentMonth: monthStart <= dayStart && dayStart < monthEnd
                     property bool isCurrentWeek: row == currentWeekRow
                     property bool isSunday: weekday == 0
-                    property bool isToday: dayStart.getTime() == intern.today.getTime()
-                    property bool isWithinBounds: dayStart >= minimumDate && dayStart <= maximumDate
+                    property bool isToday: dayStart.getTime() == priv.today.getTime()
+                    property bool isWithinBounds: (minimumDate == undefined || dayStart >= minimumDate) &&
+                                                  (maximumDate == undefined || dayStart <= maximumDate)
                     property int row: Math.floor(index / 7)
                     property int weekday: (index % 7 + firstDayOfWeek) % 7
-                    property real bottomMargin: (row == 5 || (collapsed && isCurrentWeek)) ? -intern.verticalMargin : 0
-                    property real topMargin: (row == 0 || (collapsed && isCurrentWeek)) ? -intern.verticalMargin : 0
+                    property real bottomMargin: (row == 5 || (collapsed && isCurrentWeek)) ? -priv.verticalMargin : 0
+                    property real topMargin: (row == 0 || (collapsed && isCurrentWeek)) ? -priv.verticalMargin : 0
                     property var dayStart: gridStart.addDays(index)
 
                     // Styling properties
@@ -178,8 +227,8 @@ ListView {
                     property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
 
                     visible: collapsed ? isCurrentWeek : true
-                    width: intern.squareUnit
-                    height: intern.squareUnit
+                    width: priv.squareUnit
+                    height: priv.squareUnit
 
                     ItemStyle.class: "day"
                     ItemStyle.delegate: Item {

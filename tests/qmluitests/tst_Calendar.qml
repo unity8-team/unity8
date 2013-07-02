@@ -26,19 +26,33 @@ Item {
     width: units.gu(42)
     height: units.gu(75)
 
-    property var date1: new Date(2012, 2, 10)
-    property var date2: new Date(2013, 2, 10)
+    property var date1: new Date(2012, 3, 10)
+    property var date2: new Date(2013, 3, 10)
     property var date3: new Date(2013, 4, 10)
-    property var date4: new Date(2013, 5, 10)
-    property var date5: new Date(2013, 6, 10)
-    property var date6: new Date(2014, 6, 10)
+    property var date4: new Date(2013, 4, 10)
+    property var date5: new Date(2013, 5, 10)
+    property var date6: new Date(2014, 5, 10)
+
+    Label {
+        id: label
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            margins: units.gu(2)
+        }
+        height: units.gu(5)
+        color: "#757373"
+        fontSize: "large"
+        text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
+    }
 
     Calendar {
         id: calendar
         anchors {
             left: parent.left
             right: parent.right
-            top: parent.top
+            top: label.bottom
         }
         maximumDate: new Date(2013, 6, 10)
         minimumDate: new Date(2013, 2, 10)
@@ -60,14 +74,14 @@ Item {
 
         function test_currentDate_data() {
             return [
-                {date: date4, currentIndex: 3},
-                {date: date3, currentIndex: 2},
+                {date: date4},
+                {date: date3},
             ];
         }
 
         function test_currentDate(data) {
             calendar.currentDate = data.date
-            compare(calendar.currentIndex, data.currentIndex, "currentIndex did not change")
+            compare(calendar.currentItem.monthStart.getMonth(), data.date.getMonth(), "currentItem did not change")
         }
 
         function test_firstDayOfWeek_data() {
@@ -86,8 +100,8 @@ Item {
 
         function test_maximumDate_data() {
             return [
-                {date: date6, count: 17},
-                {date: date5, count: 5},
+                {date: date6, count: 5},
+                {date: date5, count: 4},
             ];
         }
 
@@ -98,8 +112,8 @@ Item {
 
         function test_minimumDate_data() {
             return [
-                {date: date1, count: 17},
-                {date: date2, count: 5},
+                {date: date1, count: 4},
+                {date: date2, count: 3},
             ];
         }
 
@@ -110,14 +124,14 @@ Item {
 
         function test_selectedDate_data() {
             return [
-                {date: date4, currentIndex: 3},
-                {date: date3, currentIndex: 2},
+                {date: date4},
+                {date: date3},
             ];
         }
 
         function test_selectedDate(data) {
             calendar.selectedDate = data.date
-            compare(calendar.currentIndex, data.currentIndex, "currentIndex did not change")
+            compare(calendar.currentItem.monthStart.getMonth(), data.date.getMonth(), "currentItem did not change")
         }
     }
 }
