@@ -136,12 +136,10 @@ ListView {
     QtObject {
         id: priv
 
+        property bool ready: false
         property int squareUnit: monthView.width / 7
         property int verticalMargin: units.gu(1)
         property var today: (new Date()).midnight()
-        property var oldMaximumDate
-        property var oldMinimumDate
-        property bool ready: false
     }
 
     Timer {
