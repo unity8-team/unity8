@@ -57,7 +57,8 @@ ListView {
                 if (calendarModel.count > 5) calendarModel.remove(0)
             }
         }
-        currentDate = currentItem.monthStart.addDays(15)
+
+        currentDate = currentItem.monthStart
     }
 
     function __getRealMinimumDate(date) {
@@ -126,15 +127,6 @@ ListView {
             calendarModel.clear()
             __populateModel()
         }
-    }
-
-    onSelectedDateChanged: {
-        if (selectedDate < minimumDate || selectedDate > maximumDate)
-            return
-
-        calendarModel.clear()
-        currentDate = selectedDate
-        __populateModel()
     }
 
     ListModel {
