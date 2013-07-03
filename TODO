@@ -8,6 +8,7 @@ DONE - Emit the button click signal to the parent?
 The Calendar components needs to support multiple models
 DONE - expose some properties
 DONE - Add tests
+- Do not repopulate the whole model on property changes, be smarter
 
 [EventMenu]
 Date of the Event should be formatted
