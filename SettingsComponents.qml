@@ -80,9 +80,9 @@ MainView {
 
                 CalendarMenu {
                     id: calendar
-                    currentDate: new Date(2013, 6, 2) // june 2013
-                    minimumDate: new Date(2013, 4, 2) // april 2013
-                    maximumDate: new Date(2013, 7, 2) // july 2013
+//                    currentDate: new Date(2013, 6, 2) // june 2013
+//                    minimumDate: new Date(2013, 4, 2) // april 2013
+//                    maximumDate: new Date(2013, 7, 2) // july 2013
                 }
 
                 UserSessionMenu {

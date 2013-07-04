@@ -28,14 +28,9 @@ ListView {
     property var minimumDate
     property var selectedDate: priv.today
 
-    ItemStyle.class: "calendar"
-
-    function __withinLowerMonthBound(date) {
-        return minimumDate == undefined || date.monthStart() >= minimumDate.monthStart()
-    }
-
-    function __withinUpperMonthBound(date) {
-        return maximumDate == undefined || date.monthStart() <= maximumDate.monthStart()
+    Component.onCompleted: {
+        priv.__populateModel()
+        timer.start()
     }
 
     onCurrentIndexChanged: {
@@ -46,13 +41,13 @@ ListView {
         var maximumMonth = calendarModel.get(calendarModel.count - 1).monthStart
         if (DateExt.diffMonths(minimumMonth, currentMonth) <= 1) {
             var newDate = minimumMonth.addMonths(-1)
-            if (__withinLowerMonthBound(newDate)) {
+            if (priv.__withinLowerMonthBound(newDate)) {
                 calendarModel.insert(0, {"monthStart": newDate})
                 if (calendarModel.count > 5) calendarModel.remove(calendarModel.count - 1)
             }
         } else if (DateExt.diffMonths(currentMonth, maximumMonth) <= 1) {
             var newDate = maximumMonth.addMonths(1)
-            if (__withinUpperMonthBound(newDate)) {
+            if (priv.__withinUpperMonthBound(newDate)) {
                 calendarModel.append({"monthStart": newDate})
                 if (calendarModel.count > 5) calendarModel.remove(0)
             }
@@ -61,49 +56,19 @@ ListView {
         currentDate = currentItem.monthStart
     }
 
-    function __getRealMinimumDate(date) {
-        if (minimumDate != undefined && minimumDate > date) {
-            return minimumDate;
-        }
-        return date;
-    }
-
-    function __getRealMaximumDate(date) {
-        if (maximumDate != undefined && maximumDate < date) {
-            return maximumDate;
-        }
-        return date;
-    }
-
-    function __populateModel() {
-        //  disable the onCurrentIndexChanged logic
-        priv.ready = false
-
-        var minimumAddedDate = __getRealMinimumDate(currentDate.addMonths(-2));
-        var maximumAddedDate = __getRealMaximumDate(currentDate.addMonths(2));
-
-        var count = Math.min(DateExt.diffMonths(minimumAddedDate, maximumAddedDate) + 1, 5)
-        for (var i = 0; i < count; ++i) {
-            calendarModel.append({"monthStart": minimumAddedDate.monthStart().addMonths(i)});
-        }
-
-        currentIndex = DateExt.diffMonths(minimumAddedDate, currentDate);
-
-        // Ok, we're all set up. enable the onCurrentIndexChanged logic
-        priv.ready = true
-    }
-
-    Component.onCompleted: {
-        __populateModel()
-        timer.start()
-    }
-
     onCurrentDateChanged: {
         if (!priv.ready) return
 
-        if (currentDate.monthStart() != currentItem.monthStart) {
+        if (currentDate.monthStart().getTime() != currentItem.monthStart.getTime()) {
+            for (var i = 0; i < calendarModel.count; i++) {
+                if (calendarModel.get(i).monthStart == currentDate.monthStart()) {
+                    currentIndex = i
+                    return
+                }
+            }
+
             calendarModel.clear()
-            __populateModel()
+            priv.__populateModel()
         }
     }
 
@@ -114,7 +79,7 @@ ListView {
 
         if (maximumMonth > maximumDate) {
             calendarModel.clear()
-            __populateModel()
+            priv.__populateModel()
         }
     }
 
@@ -125,7 +90,7 @@ ListView {
 
         if (minimumMonth < minimumDate) {
             calendarModel.clear()
-            __populateModel()
+            priv.__populateModel()
         }
     }
 
@@ -140,6 +105,46 @@ ListView {
         property int squareUnit: monthView.width / 7
         property int verticalMargin: units.gu(1)
         property var today: (new Date()).midnight()
+
+        function __withinLowerMonthBound(date) {
+            return minimumDate == undefined || date.monthStart() >= minimumDate.monthStart()
+        }
+
+        function __withinUpperMonthBound(date) {
+            return maximumDate == undefined || date.monthStart() <= maximumDate.monthStart()
+        }
+
+        function __getRealMinimumDate(date) {
+            if (minimumDate != undefined && minimumDate > date) {
+                return minimumDate;
+            }
+            return date;
+        }
+
+        function __getRealMaximumDate(date) {
+            if (maximumDate != undefined && maximumDate < date) {
+                return maximumDate;
+            }
+            return date;
+        }
+
+        function __populateModel() {
+            //  disable the onCurrentIndexChanged logic
+            priv.ready = false
+
+            var minimumAddedDate = priv.__getRealMinimumDate(currentDate.addMonths(-2));
+            var maximumAddedDate = priv.__getRealMaximumDate(currentDate.addMonths(2));
+
+            var count = Math.min(DateExt.diffMonths(minimumAddedDate, maximumAddedDate) + 1, 5)
+            for (var i = 0; i < count; ++i) {
+                calendarModel.append({"monthStart": minimumAddedDate.monthStart().addMonths(i)});
+            }
+
+            currentIndex = DateExt.diffMonths(minimumAddedDate, currentDate);
+
+            // Ok, we're all set up. enable the onCurrentIndexChanged logic
+            priv.ready = true
+        }
     }
 
     Timer {
@@ -220,8 +225,8 @@ ListView {
                     width: priv.squareUnit
                     height: priv.squareUnit
 
-                    ItemStyle.class: "day"
-                    ItemStyle.delegate: Item {
+//                    ItemStyle.class: "day"
+                    Item {
                         anchors {
                             fill: parent
                             topMargin: dayItem.topMargin

@@ -67,19 +67,19 @@ BasicMenu {
                 Label {
                     id: songLabel
                     color: "#757373"
-                    ItemStyle.class: "label label-song"
+//                    ItemStyle.class: "label label-song"
                 }
 
                 Label {
                     id: artistLabel
                     color: "#757373"
-                    ItemStyle.class: "label label-artist"
+//                    ItemStyle.class: "label label-artist"
                 }
 
                 Label {
                     id: albumLabel
                     color: "#757373"
-                    ItemStyle.class: "label label-album"
+//                    ItemStyle.class: "label label-album"
                 }
             }
         }

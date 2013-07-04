@@ -45,7 +45,7 @@ BasicMenu {
         height: units.gu(5)
         color: "#757373"
         fontSize: "large"
-        ItemStyle.class: "label label-date"
+        //ItemStyle.class: "label label-date"
         text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
     }
 
