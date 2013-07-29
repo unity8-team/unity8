@@ -61,7 +61,7 @@ ListView {
 
         if (currentDate.monthStart().getTime() != currentItem.monthStart.getTime()) {
             for (var i = 0; i < calendarModel.count; i++) {
-                if (calendarModel.get(i).monthStart == currentDate.monthStart()) {
+                if (calendarModel.get(i).monthStart.getTime() == currentDate.monthStart().getTime()) {
                     currentIndex = i
                     return
                 }
@@ -75,10 +75,13 @@ ListView {
     onMaximumDateChanged: {
         if (!priv.ready) return
 
-        var maximumMonth = calendarModel.get(calendarModel.count - 1).monthStart;
+        var i = calendarModel.count - 1
+        while (i >= 0 && calendarModel.get(i).monthStart > maximumDate) {
+            calendarModel.remove(i)
+            i--
+        }
 
-        if (maximumMonth > maximumDate) {
-            calendarModel.clear()
+        if (calendarModel.count == 0) {
             priv.__populateModel()
         }
     }
@@ -86,10 +89,13 @@ ListView {
     onMinimumDateChanged: {
         if (!priv.ready) return
 
-        var minimumMonth = calendarModel.get(0).monthStart;
+        var i = 0
+        while (i < calendarModel.count && calendarModel.get(0).monthStart < minimumDate) {
+            calendarModel.remove(0)
+            i++
+        }
 
-        if (minimumMonth < minimumDate) {
-            calendarModel.clear()
+        if (calendarModel.count == 0) {
             priv.__populateModel()
         }
     }
