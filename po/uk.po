@@ -1,0 +1,220 @@
+# Ukrainian translation for unity
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
+# This file is distributed under the same license as the unity package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: unity\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2013-06-26 22:58+0200\n"
+"PO-Revision-Date: 2013-07-21 05:47+0000\n"
+"Last-Translator: Ярослав Смук <Smuk.Slavko@yandex.ua>\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2013-07-31 06:28+0000\n"
+"X-Generator: Launchpad (build 16718)\n"
+
+#: Applications/applications.js:23
+msgid "Phone"
+msgstr "Телефон"
+
+#: Applications/applications.js:29
+msgid "Camera"
+msgstr "Фотоапарат"
+
+#: Applications/applications.js:35
+msgid "Gallery"
+msgstr "Галерея"
+
+#: Applications/applications.js:40
+msgid "Facebook"
+msgstr "Facebook"
+
+#: Applications/applications.js:46
+msgid "Browser"
+msgstr "Навігатор"
+
+#: Applications/applications.js:51
+msgid "Twitter"
+msgstr "Twitter"
+
+#: Applications/applications.js:57
+msgid "GMail"
+msgstr "GMail"
+
+#: Applications/applications.js:62
+msgid "Weather"
+msgstr "Погода"
+
+#: Applications/applications.js:68
+msgid "Notepad"
+msgstr "Блокнот"
+
+#: Applications/applications.js:74
+msgid "Calendar"
+msgstr "Календар"
+
+#: Applications/applications.js:80
+msgid "Media Player"
+msgstr "Програвач"
+
+#: Applications/applications.js:86
+msgid "Evernote"
+msgstr "Evernote"
+
+#: Applications/applications.js:91
+msgid "Map"
+msgstr "Карта"
+
+#: Applications/applications.js:96
+msgid "Pinterest"
+msgstr "Pinterest"
+
+#: Applications/applications.js:101
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+#: Applications/applications.js:106
+msgid "Wikipedia"
+msgstr "Вікіпедія"
+
+#: Applications/applications.js:111
+msgid "YouTube"
+msgstr "YouTube"
+
+#: Components/PageHeader.qml:300
+msgid "Recent searches"
+msgstr "Нещодавні пошуки"
+
+#: Dash/DashApps.qml:65
+msgid "Running apps"
+msgstr "Запущені програми"
+
+#: Dash/DashApps.qml:68
+msgid "Frequently used"
+msgstr "Найчастіше використовувані"
+
+#: Dash/DashApps.qml:71
+msgid "Installed"
+msgstr "Встановлені"
+
+#: Dash/DashApps.qml:74
+msgid "Available for download"
+msgstr "Доступно до завантаження"
+
+#: Dash/DashApps.qml:178
+msgid "Apps"
+msgstr "Програми"
+
+#: Dash/DashHome.qml:40
+msgid "Frequent Apps"
+msgstr "Часто використовувані програми"
+
+#: Dash/DashHome.qml:43
+msgid "Recent Music"
+msgstr "Нещодавно прослухана музика"
+
+#: Dash/DashHome.qml:46
+msgid "Videos Popular Online"
+msgstr "Популярні в мережі відео"
+
+#: Dash/DashHome.qml:175
+msgid "Home"
+msgstr "Домівка"
+
+#: Dash/DashMusic.qml:27 Dash/DashVideos.qml:28
+msgid "Featured"
+msgstr "Рекомендовані"
+
+#: Dash/DashMusic.qml:28 Dash/DashVideos.qml:29
+msgid "Recent"
+msgstr "Нещодавні"
+
+#: Dash/DashMusic.qml:29 Dash/DashVideos.qml:30
+msgid "New Releases"
+msgstr "Нові випуски"
+
+#: Dash/DashMusic.qml:30
+msgid "Top Charting"
+msgstr "З високими оцінками"
+
+#: Dash/DashMusic.qml:99
+msgid "Music"
+msgstr "Музика"
+
+#: Dash/DashVideos.qml:31
+msgid "Popular Online"
+msgstr "Популярне у мережі"
+
+#: Dash/DashVideos.qml:155
+msgid "Videos"
+msgstr "Відео"
+
+#: Dash/Video/VideoPreview.qml:98
+msgid "Directed by:"
+msgstr "Режисер:"
+
+#: Dash/Video/VideoPreview.qml:121
+msgid "Starring:"
+msgstr "Актори:"
+
+#: Dash/Video/VideoPreview.qml:144
+msgid "Author:"
+msgstr "Автор:"
+
+#: Greeter/Lockscreen.qml:133
+msgid "Emergency call"
+msgstr "Екстрений виклик"
+
+#: Greeter/PassphraseLockscreen.qml:59
+#, qt-format
+msgid "Hello %1"
+msgstr "Привіт, %1"
+
+#: Greeter/PassphraseLockscreen.qml:59
+msgid "Hello"
+msgstr "Привіт!"
+
+#: Hud/HudParametrizedActionsPage.qml:132
+msgid "Confirm"
+msgstr "Підтвердити"
+
+#: Hud/Hud.qml:61 Hud/Hud.qml:99 Hud/Hud.qml:372
+msgid "Type or say a command"
+msgstr "Введіть або озвучте команду"
+
+#: Hud/Hud.qml:84
+msgid "Loading. Please Wait..."
+msgstr "Завантаження. Будь ласка, зачекайте…"
+
+#: Hud/Hud.qml:89
+msgid "Speak Now..."
+msgstr "Можна говорити…"
+
+#: Hud/Hud.qml:94
+msgid "Speaking..."
+msgstr "Мовлення…"
+
+#: Panel/MenuContent.qml:192
+msgid "Device"
+msgstr "Пристрій"
+
+#: Panel/Menus/Overview/FlightModeWidget.qml:42
+msgid "Flight mode"
+msgstr "Автономний режим"
+
+#: Panel/SearchIndicator.qml:26
+msgid "Search"
+msgstr "Пошук"
+
+#: plugins/Unity/scope.cpp:268
+msgid "Sorry, there is nothing that matches your search."
+msgstr "Вибачте, для вказаних вами ключових слів нічого не знайдено."
+
+#: Shell.qml:383
+#, qt-format
+msgid "Please enter %1"
+msgstr "Будь ласка, введіть %1"
