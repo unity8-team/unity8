@@ -1,0 +1,18 @@
+Source: ubuntu-settings-components
+Section: unity
+Priority: optional
+Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
+Build-Depends: cmake,
+               debhelper (>= 9),
+Standards-Version: 3.9.4
+Homepage: https://launchpad.net/ubuntu-settings-components
+# If you aren't a member of ~ubuntu-settings-components-team but need to upload packaging changes,
+# just go ahead. ~ubuntu-settings-components-team will notice and sync up the code again.
+Vcs-Bzr: https://code.launchpad.net/~ubuntu-settings-components-team/ubuntu-settings-components/trunk
+
+Package: ubuntu-settings-components
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Ubuntu Settings Components
+ This package contains the settings components for Ubuntu.
