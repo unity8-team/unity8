@@ -4,6 +4,8 @@ Priority: optional
 Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
+               pkg-config,
+               qtdeclarative5-dev,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
 # If you aren't a member of ~ubuntu-settings-components-team but need to upload packaging changes,
