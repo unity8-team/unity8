@@ -12,7 +12,7 @@ Vcs-Bzr: https://code.launchpad.net/~ubuntu-settings-components-team/ubuntu-sett
 
 Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
-Depends: qtdeclarative5-ubuntu-settings-components-assets (= ${binary:Version}),
+Depends: qtdeclarative5-ubuntu-settings-components-assets (= ${source:Version}),
          qtdeclarative5-ubuntu-ui-toolkit-plugin,
          ${misc:Depends},
          ${shlibs:Depends},
