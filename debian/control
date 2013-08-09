@@ -10,16 +10,17 @@ Homepage: https://launchpad.net/ubuntu-settings-components
 # just go ahead. ~ubuntu-settings-components-team will notice and sync up the code again.
 Vcs-Bzr: https://code.launchpad.net/~ubuntu-settings-components-team/ubuntu-settings-components/trunk
 
-Package: ubuntu-settings-components
+Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
-Depends: ubuntu-settings-components-assets,
+Depends: qtdeclarative5-ubuntu-settings-components-assets (= ${binary:Version}),
+         qtdeclarative5-ubuntu-ui-toolkit-plugin,
          ${misc:Depends},
          ${shlibs:Depends},
 Description: Ubuntu Settings Components
  This package provides a link from /usr/lib to /usr/share, so QML can
  find its assets.
 
-Package: ubuntu-settings-components-assets
+Package: qtdeclarative5-ubuntu-settings-components-assets
 Architecture: all
 Depends: ${misc:Depends},
          ${shlibs:Depends},
