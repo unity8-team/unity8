@@ -1,5 +1,5 @@
 Source: ubuntu-settings-components
-Section: unity
+Section: misc
 Priority: optional
 Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
@@ -12,7 +12,16 @@ Vcs-Bzr: https://code.launchpad.net/~ubuntu-settings-components-team/ubuntu-sett
 
 Package: ubuntu-settings-components
 Architecture: any
+Depends: ubuntu-settings-components-assets,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: Ubuntu Settings Components
+ This package provides a link from /usr/lib to /usr/share, so QML can
+ find its assets.
+
+Package: ubuntu-settings-components-assets
+Architecture: all
 Depends: ${misc:Depends},
          ${shlibs:Depends},
 Description: Ubuntu Settings Components
- This package contains the settings components for Ubuntu.
+ Architecture-independent QML and images files for Ubuntu Settings.

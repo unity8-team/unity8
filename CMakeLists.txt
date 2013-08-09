@@ -70,8 +70,15 @@ set(QML_DIRS
     SettingsComponents
     )
 
+INSTALL(CODE "EXECUTE_PROCESS(COMMAND
+             mkdir -p \$ENV{DESTDIR}${SETTINGS_COMPONENTS_DIR})")
+INSTALL(CODE "EXECUTE_PROCESS(COMMAND
+             ln -sf /usr/share/SettingsComponents
+                    \$ENV{DESTDIR}${SETTINGS_COMPONENTS_DIR})")
+
+# Install arch-independent assets under /usr/share
 install(DIRECTORY ${QML_DIRS}
-    DESTINATION ${SETTINGS_COMPONENTS_DIR}
+    DESTINATION ${CMAKE_INSTALL_DATADIR}
     )
 
 # Tests
