@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 class NotificationsBase(UnityTestCase):
     """Base class for all notification tests that provides helper methods."""
 
-    scenarios = _get_device_emulation_scenarios()
+    scenarios = _get_device_emulation_scenarios('Nexus4')
 
     def _get_icon_path(self, icon_name):
         """Given an icons file name returns the full path (either system or
@@ -47,11 +47,11 @@ class NotificationsBase(UnityTestCase):
 
         Consider the graphics directory as root so for example (runnign tests
         from installed unity8-autopilot package):
-        >>> self.get_icon_path('clock@18.png')
-        /usr/share/unity8/graphics/clock@18.png
+        >>> self.get_icon_path('clock.png')
+        /usr/share/unity8/graphics/clock.png
 
-        >>> self.get_icon_path('applicationIcons/facebook@18.png')
-        /usr/share/unity8/graphics/applicationIcons/facebook@18.png
+        >>> self.get_icon_path('applicationIcons/facebook.png')
+        /usr/share/unity8/graphics/applicationIcons/facebook.png
 
         """
         if os.path.abspath(__file__).startswith('/usr/'):
@@ -120,19 +120,19 @@ class InteractiveNotificationBase(NotificationsBase):
         """Interactive notification must react upon click on itself."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary = "Interactive notification"
         body = "This notification can be clicked on to trigger an action."
-        icon_path = self._get_icon_path('avatars/anna_olsson@12.png')
+        icon_path = self._get_icon_path('avatars/anna_olsson.png')
         actions = [("action_id", "dummy")]
         hints = [
             ("x-canonical-switch-to-application", "true"),
             (
                 "x-canonical-secondary-icon",
-                self._get_icon_path('applicationIcons/phone-app@18.png')
+                self._get_icon_path('applicationIcons/phone-app.png')
             )
         ]
 
@@ -156,20 +156,20 @@ class InteractiveNotificationBase(NotificationsBase):
         self.assert_notification_action_id_was_called('action_id')
 
     def test_sd_incoming_call(self):
-        """Snap-decision simulating incoming call."""
+        """Rejecting a call should make notification expand and offer more options."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary = "Incoming call"
         body = "Frank Zappa\n+44 (0)7736 027340"
-        icon_path = self._get_icon_path('avatars/anna_olsson@12.png')
+        icon_path = self._get_icon_path('avatars/anna_olsson.png')
         hints = [
             (
                 "x-canonical-secondary-icon",
-                self._get_icon_path('applicationIcons/phone-app@18.png')
+                self._get_icon_path('applicationIcons/phone-app.png')
             ),
             ("x-canonical-snap-decisions", "true"),
         ]
@@ -194,14 +194,14 @@ class InteractiveNotificationBase(NotificationsBase):
         get_notification = lambda: notify_list.select_single('Notification')
         self.assertThat(get_notification, Eventually(NotEquals(None)))
         notification = get_notification()
-        #self._assert_notification(notification, None, None, True, True, 1.0)
+        self._assert_notification(notification, None, None, True, True, 1.0)
+        initial_height = notification.height
         self.touch.tap_object(notification.select_single(objectName="button1"))
-        # Veebers: this needs a better check as it's happening to quick.
         self.assertThat(
-            notification.select_single(objectName="buttonRow").expanded,
-            Eventually(Equals(True))
-        )
-        time.sleep(2)
+            notification.height,
+            Eventually(Equals(initial_height +
+                              3 * notification.select_single(objectName="buttonColumn").spacing +
+                              3 * notification.select_single(objectName="button4").height)))
         self.touch.tap_object(notification.select_single(objectName="button4"))
         self.assert_notification_action_id_was_called("action_decline_4")
 
@@ -335,18 +335,18 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification must display the expected summary and body text."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary = "Icon-Summary-Body"
         body = "Hey pal, what's up with the party next weekend? Will you " \
                "join me and Anna?"
-        icon_path = self._get_icon_path('avatars/anna_olsson@12.png')
+        icon_path = self._get_icon_path('avatars/anna_olsson.png')
         hints = [
             (
                 "x-canonical-secondary-icon",
-                self._get_icon_path('applicationIcons/phone-app@18.png')
+                self._get_icon_path('applicationIcons/phone-app.png')
             )
         ]
 
@@ -369,7 +369,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification must display the expected summary and secondary icon."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
@@ -377,7 +377,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         hints = [
             (
                 "x-canonical-secondary-icon",
-                self._get_icon_path('applicationIcons/facebook@18.png')
+                self._get_icon_path('applicationIcons/facebook.png')
             )
         ]
 
@@ -407,22 +407,22 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notifications must be displayed in order according to their urgency."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary_low = 'Low Urgency'
         body_low = "No, I'd rather see paint dry, pal *yawn*"
-        icon_path_low = self._get_icon_path('avatars/amanda@12.png')
+        icon_path_low = self._get_icon_path('avatars/amanda.png')
 
         summary_normal = 'Normal Urgency'
         body_normal = "Hey pal, what's up with the party next weekend? Will " \
             "you join me and Anna?"
-        icon_path_normal = self._get_icon_path('avatars/funky@12.png')
+        icon_path_normal = self._get_icon_path('avatars/funky.png')
 
         summary_critical = 'Critical Urgency'
         body_critical = 'Dude, this is so urgent you have no idea :)'
-        icon_path_critical = self._get_icon_path('avatars/anna_olsson@12.png')
+        icon_path_critical = self._get_icon_path('avatars/anna_olsson.png')
 
         notification_normal = self._create_ephemeral_notification(
             summary_normal,
@@ -498,7 +498,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification must display the expected summary- and body-text."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
@@ -524,7 +524,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification must display only the expected summary-text."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
@@ -543,13 +543,13 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification must allow updating its contents while being displayed."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary = 'Initial notification'
         body = 'This is the original content of this notification-bubble.'
-        icon_path = self._get_icon_path('avatars/funky@12.png')
+        icon_path = self._get_icon_path('avatars/funky.png')
 
         notification = self._create_ephemeral_notification(
             summary,
@@ -572,7 +572,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         summary = 'Updated notification'
         body = 'Here the same bubble with new title- and body-text, even ' \
             'the icon can be changed on the update.'
-        icon_path = self._get_icon_path('avatars/amanda@12.png')
+        icon_path = self._get_icon_path('avatars/amanda.png')
         notification.update(summary, body, icon_path)
         notification.show()
         self.assertThat(get_notification, Eventually(NotEquals(None)))
@@ -582,15 +582,15 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification must allow updating its contents and layout while being displayed."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary = 'Initial layout'
         body = 'This bubble uses the icon-title-body layout with a ' \
             'secondary icon.'
-        icon_path = self._get_icon_path('avatars/anna_olsson@12.png')
-        hint_icon = self._get_icon_path('applicationIcons/phone-app@18.png')
+        icon_path = self._get_icon_path('avatars/anna_olsson.png')
+        hint_icon = self._get_icon_path('applicationIcons/phone-app.png')
 
         notification = self._create_ephemeral_notification(
             summary,
@@ -614,7 +614,6 @@ class EphemeralNotificationsTests(NotificationsBase):
             1.0
         )
 
-        time.sleep(3)
         notification.clear_hints()
         summary = 'Updated layout'
         body = 'After the update we now have a bubble using the title-body ' \
@@ -629,13 +628,13 @@ class EphemeralNotificationsTests(NotificationsBase):
         """Notification has to accumulate body-text using append-hint."""
         self.launch_unity()
         greeter = self.main_window.get_greeter()
-        greeter.unlock()
+        greeter.swipe()
 
         notify_list = self._get_notifications_list()
 
         summary = 'Cole Raby'
         body = 'Hey Bro Coly!'
-        icon_path = self._get_icon_path('avatars/amanda@12.png')
+        icon_path = self._get_icon_path('avatars/amanda.png')
         body_sum = body
         notification = self._create_ephemeral_notification(
             summary,
@@ -669,7 +668,6 @@ class EphemeralNotificationsTests(NotificationsBase):
         ]
 
         for new_body in bodies:
-            time.sleep(1)
             body = new_body
             body_sum += '\n' + body
             notification = self._create_ephemeral_notification(
