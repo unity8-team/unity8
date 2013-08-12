@@ -430,7 +430,6 @@ class EphemeralNotificationsTests(NotificationsBase):
             icon_path_normal,
             urgency="NORMAL"
         )
-        notification_normal.show()
 
         notification_low = self._create_ephemeral_notification(
             summary_low,
@@ -438,7 +437,6 @@ class EphemeralNotificationsTests(NotificationsBase):
             icon_path_low,
             urgency="LOW"
         )
-        notification_low.show()
 
         notification_critical = self._create_ephemeral_notification(
             summary_critical,
@@ -446,53 +444,28 @@ class EphemeralNotificationsTests(NotificationsBase):
             icon_path_critical,
             urgency="CRITICAL"
         )
+
+        notification_normal.show()
+        notification_low.show()
         notification_critical.show()
 
-        get_notification = lambda: notify_list.select_single(
+        get_critical_notification = lambda: notify_list.select_single(
             'Notification',
             summary=summary_critical
         )
-        self.assertThat(get_notification, Eventually(NotEquals(None)))
-
-        notification = get_notification()
-        self._assert_notification(
-            notification,
-            summary_critical,
-            body_critical,
-            True,
-            False,
-            1.0
-        )
+        self.assertThat(get_critical_notification, Eventually(NotEquals(None)))
 
         get_normal_notification = lambda: notify_list.select_single(
             'Notification',
             summary=summary_normal
         )
         self.assertThat(get_normal_notification, Eventually(NotEquals(None)))
-        notification = get_normal_notification()
-        self._assert_notification(
-            notification,
-            summary_normal,
-            body_normal,
-            True,
-            False,
-            1.0
-        )
 
         get_low_notification = lambda: notify_list.select_single(
             'Notification',
             summary=summary_low
         )
         self.assertThat(get_low_notification, Eventually(NotEquals(None)))
-        notification = get_low_notification()
-        self._assert_notification(
-            notification,
-            summary_low,
-            body_low,
-            True,
-            False,
-            1.0
-        )
 
     def test_summary_and_body(self):
         """Notification must display the expected summary- and body-text."""
