@@ -156,6 +156,12 @@ install(DIRECTORY ${QML_DIRS}
     DESTINATION ${SHELL_APP_DIR}
     )
 
+set(QML_TESTS_DIRS
+    tests/qmltests
+    tests/utils
+    )
+install(DIRECTORY ${QML_TESTS_DIRS} DESTINATION ${SHELL_APP_DIR}/tests)
+
 # generate desktop file
 configure_file(${SHELL_APP}.desktop.in ${CMAKE_CURRENT_BINARY_DIR}/${SHELL_APP}.desktop @ONLY)
 

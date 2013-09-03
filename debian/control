@@ -125,3 +125,10 @@ Description: Unity 8 private libs
  .
  This package contains the private libraries for QML and other components
  only used by the shell.
+
+Package: unity8-qmltests
+Architecture: all
+Depends: unity8,
+         unity8-fake-env,
+Description: Unity 8 qml tests
+ QML unit tests for the unity8 package

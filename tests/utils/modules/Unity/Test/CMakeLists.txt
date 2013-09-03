@@ -1,3 +1,5 @@
+include(Plugins)
+
 add_definitions(-DQT_NO_KEYWORDS)
 
 set(UnityTestQML_SOURCES
@@ -17,3 +19,8 @@ add_custom_target(UnityTestQmlJsFiles ALL
     COMMAND cp ${QML_JS_FILES} ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${QML_JS_FILES}
 )
+
+# export the qmldir and qmltypes files
+export_qmlfiles(Unity.Test Unity/Test)
+export_qmlplugin(Unity.Test 0.1 Unity/Test TARGETS UnityTestQml)
+

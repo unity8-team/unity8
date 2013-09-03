@@ -22,7 +22,7 @@ macro(export_qmlfiles PLUGIN PLUGIN_SUBPATH)
 
     # copy the qmldir file
     add_custom_target(${PLUGIN}-qmlfiles ALL
-                        COMMAND cp ${QMLFILES} ${CMAKE_BINARY_DIR}/plugins/${PLUGIN_SUBPATH}
+                        COMMAND cp ${QMLFILES} ${CMAKE_CURRENT_BINARY_DIR}}
                         DEPENDS ${QMLFILES}
     )
 
@@ -31,6 +31,26 @@ macro(export_qmlfiles PLUGIN PLUGIN_SUBPATH)
         DESTINATION ${SHELL_PRIVATE_LIBDIR}/qml/${PLUGIN_SUBPATH}
     )
 endmacro(export_qmlfiles)
+
+macro(export_custom_qmlfiles PLUGIN PLUGIN_SUBPATH)
+
+    file(GLOB QMLFILES
+        *.qml
+        *.js
+        qmldir
+    )
+
+    # copy the qmldir file
+    add_custom_target(${PLUGIN}-qmlfiles ALL
+                        COMMAND cp ${QMLFILES} ${CMAKE_BINARY_DIR}/plugins/${PLUGIN_SUBPATH}
+                        DEPENDS ${QMLFILES}
+    )
+
+    # install the qmlfiles file.
+    install(FILES ${QMLFILES}
+        DESTINATION ${SHELL_PRIVATE_LIBDIR}/qml/${PLUGIN_SUBPATH}
+    )
+endmacro(export_custom_qmlfiles)
 
 
 # Creates target for generating the qmltypes file for a plugin and installs plugin files
