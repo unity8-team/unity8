@@ -22,3 +22,8 @@ Powerd::Powerd(QObject* parent)
   : QObject(parent)
 {
 }
+
+bool Powerd::getNearProximity()
+{
+    return false;
+}

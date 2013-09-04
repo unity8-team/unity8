@@ -17,20 +17,44 @@
  */
 
 #include "Powerd.h"
+#include <ubuntu/application/sensors/proximity.h>
 
 Powerd::Powerd(QObject* parent)
   : QObject(parent),
-    powerd(NULL)
+    m_powerd(NULL),
+    m_proximitySensor(ua_sensors_proximity_new()) // Note: seems no way to free...
 {
-    powerd = new QDBusInterface("com.canonical.powerd",
-                                "/com/canonical/powerd",
-                                "com.canonical.powerd",
-                                QDBusConnection::SM_BUSNAME(), this);
+    m_powerd = new QDBusInterface("com.canonical.powerd",
+                                  "/com/canonical/powerd",
+                                  "com.canonical.powerd",
+                                  QDBusConnection::SM_BUSNAME(), this);
 
-    powerd->connection().connect("com.canonical.powerd",
-                                 "/com/canonical/powerd",
-                                 "com.canonical.powerd",
-                                 "DisplayPowerStateChange",
-                                 this,
-                                 SIGNAL(displayPowerStateChange(int, unsigned int)));
+    m_powerd->connection().connect("com.canonical.powerd",
+                                   "/com/canonical/powerd",
+                                   "com.canonical.powerd",
+                                   "DisplayPowerStateChange",
+                                   this,
+                                   SIGNAL(displayPowerStateChange(int, unsigned int)));
+
+    if (m_proximitySensor) {
+        ua_sensors_proximity_set_reading_cb(m_proximitySensor,
+                                            onProximityEvent,
+                                            this);
+    }
+}
+
+bool Powerd::getNearProximity()
+{
+    return m_nearProximity;
+}
+
+void Powerd::onProximityEvent(UASProximityEvent *event, void *context)
+{
+    auto powerd = (Powerd*)context;
+
+    bool isNear = uas_proximity_event_get_distance(event) == U_PROXIMITY_NEAR;
+    if (isNear != powerd->m_nearProximity) {
+        powerd->m_nearProximity = isNear;
+        Q_EMIT powerd->nearProximityChanged();
+    }
 }

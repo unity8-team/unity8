@@ -27,6 +27,10 @@ class Powerd: public QObject
     Q_ENUMS(Status)
     Q_FLAGS(DisplayFlag DisplayFlags)
 
+    Q_PROPERTY(bool nearProximity
+               READ getNearProximity
+               NOTIFY nearProximityChanged)
+
 public:
     enum DisplayFlag {
         UseProximity          = 1, // Use proximity sensor to override screen state
@@ -42,8 +46,11 @@ public:
 
     explicit Powerd(QObject *parent = 0);
 
+    bool getNearProximity();
+
 Q_SIGNALS:
     void displayPowerStateChange(int status, unsigned int flags);
+    void nearProximityChanged();
 };
 
 #endif

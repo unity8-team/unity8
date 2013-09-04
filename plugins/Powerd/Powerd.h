@@ -23,11 +23,18 @@
 #include <QtCore/QObject>
 #include <QtDBus/QDBusInterface>
 
+typedef void UASProximityEvent;
+typedef void UASensorsProximity;
+
 class Powerd: public QObject
 {
     Q_OBJECT
     Q_ENUMS(Status)
     Q_FLAGS(DisplayFlag DisplayFlags)
+
+    Q_PROPERTY(bool nearProximity
+               READ getNearProximity
+               NOTIFY nearProximityChanged)
 
 public:
     enum DisplayFlag {
@@ -44,11 +51,18 @@ public:
 
     explicit Powerd(QObject *parent = 0);
 
+    bool getNearProximity();
+
 Q_SIGNALS:
     void displayPowerStateChange(int status, unsigned int flags);
+    void nearProximityChanged();
 
 private:
-    QDBusInterface *powerd;
+    static void onProximityEvent(UASProximityEvent *event, void *context);
+
+    QDBusInterface *m_powerd;
+    bool m_nearProximity;
+    UASensorsProximity *m_proximitySensor;
 };
 
 #endif
