@@ -76,7 +76,7 @@ FocusScope {
     }
 
     readonly property bool applicationFocused: !!applicationManager.mainStageFocusedApplication
-                                               || !!applicationManager.shellStageFocusedApplication
+                                               || !!applicationManager.sideStageFocusedApplication
 
     readonly property bool fullscreenMode: {
         if (greeter.shown || lockscreen.shown) {
@@ -158,6 +158,10 @@ FocusScope {
                 shell.background = defaultBackground
             }
         }
+    }
+
+    OSKController {
+        anchors.fill: parent // as needs to know the geometry of the shell
     }
 
     VolumeControl {
@@ -496,7 +500,7 @@ FocusScope {
     InputFilterArea {
         anchors.fill: parent
         blockInput: !applicationFocused || greeter.shown || lockscreen.shown || launcher.shown
-                    || panel.indicators.shown
+                    || panel.indicators.shown || hud.shown
     }
 
     Connections {
@@ -585,16 +589,6 @@ FocusScope {
                 target: shell.applicationManager
                 onMainStageFocusedApplicationChanged: hud.hide()
                 onSideStageFocusedApplicationChanged: hud.hide()
-            }
-
-            InputFilterArea {
-                anchors {
-                    bottom: parent.bottom
-                    left: parent.left
-                }
-                width: parent.width
-                height: (!hud.shown) ? shell.edgeSize : parent.height
-                blockInput: true
             }
         }
 
