@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AccountsService.h"
+#include "AccountsServiceDBusAdaptor.h"
 #include "launcherbackend.h"
 
 #include <QDir>
@@ -43,7 +43,7 @@ LauncherBackend::LauncherBackend(bool useStorage, QObject *parent):
     m_accounts(nullptr)
 {
     if (useStorage) {
-        m_accounts = new AccountsService(this);
+        m_accounts = new AccountsServiceDBusAdaptor(this);
     }
     m_user = qgetenv("USER");
     syncFromAccounts();
@@ -214,7 +214,7 @@ void LauncherBackend::syncFromAccounts()
     m_storedApps.clear();
 
     if (m_accounts && !m_user.isEmpty()) {
-        QVariant variant = m_accounts->getUserProperty(m_user, "launcher-items");
+        QVariant variant = m_accounts->getUserProperty(m_user, "com.canonical.unity.AccountsService", "launcher-items");
         apps = qdbus_cast<QList<QVariantMap>>(variant.value<QDBusArgument>());
         defaults = isDefaultsItem(apps);
     }
@@ -224,7 +224,11 @@ void LauncherBackend::syncFromAccounts()
         Q_FOREACH(const QString &entry, gSettings.get("favorites").toStringList()) {
             if (entry.startsWith("application://")) {
                 QString appId = entry;
+                // Transform "application://foobar.desktop" to "foobar"
                 appId.remove("application://");
+                if (appId.endsWith(".desktop")) {
+                    appId.chop(8);
+                }
                 QString df = findDesktopFile(appId);
 
                 if (!df.isEmpty()) {
@@ -253,7 +257,7 @@ void LauncherBackend::syncToAccounts()
             items << itemToVariant(appId);
         }
 
-        m_accounts->setUserProperty(m_user, "launcher-items", QVariant::fromValue(items));
+        m_accounts->setUserProperty(m_user, "com.canonical.unity.AccountsService", "launcher-items", QVariant::fromValue(items));
     }
 }
 
@@ -263,20 +267,12 @@ QString LauncherBackend::findDesktopFile(const QString &appId) const
     QString helper = appId;
 
     QStringList searchDirs;
+    searchDirs << QDir::homePath() + "/.local/share/applications";
     searchDirs << "/usr/share/applications";
 
-// FIXME: Right now the appId can be (or rather is) a full path
-// to a .desktop file. This will change in the future.
-// Once the ApplicationManager has been switched over to use appIds,
-// remove this chop() and enable the ifdef to only search the current
-// working dir for testing. Also, this is the place to add the search
-// paths for click apps in the next step.
-    if (helper.endsWith(".desktop")) {
-        helper.chop(8);
-    }
-//#ifdef LAUNCHER_TESTING
+#ifdef LAUNCHER_TESTING
     searchDirs << "";
-//#endif
+#endif
 
     do {
         if (dashPos != -1) {
