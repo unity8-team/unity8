@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SettingsComponents/Calendar"
+import "../../Ubuntu/SettingsComponents/Calendar"
 import "utils.js" as UtilsJS
 
 Item {
@@ -98,29 +98,29 @@ Item {
             compare(dayItem1.dayStart.getDay(), data.item1, "Cannot set firstDayOfWeek")
         }
 
-        function test_maximumDate_data() {
-            return [
-                {date: date6, count: 5},
-                {date: date5, count: 4},
-            ];
-        }
+//        function test_maximumDate_data() {
+//            return [
+//                {date: date6, count: 5},
+//                {date: date5, count: 4},
+//            ];
+//        }
 
-        function test_maximumDate(data) {
-            calendar.maximumDate = data.date
-            compare(calendar.count, data.count, "The number of months should have changed")
-        }
+//        function test_maximumDate(data) {
+//            calendar.maximumDate = data.date
+//            compare(calendar.count, data.count, "The number of months should have changed")
+//        }
 
-        function test_minimumDate_data() {
-            return [
-                {date: date1, count: 4},
-                {date: date2, count: 3},
-            ];
-        }
+//        function test_minimumDate_data() {
+//            return [
+//                {date: date1, count: 4},
+//                {date: date2, count: 3},
+//            ];
+//        }
 
-        function test_minimumDate(data) {
-            calendar.minimumDate = data.date
-            compare(calendar.count, data.count, "The number of months should have changed")
-        }
+//        function test_minimumDate(data) {
+//            calendar.minimumDate = data.date
+//            compare(calendar.count, data.count, "The number of months should have changed")
+//        }
 
         function test_selectedDate_data() {
             return [

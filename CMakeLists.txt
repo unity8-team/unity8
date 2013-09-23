@@ -3,6 +3,8 @@ project(settings-components)
 
 cmake_minimum_required(VERSION 2.8.9)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+
 # Install paths
 include(GNUInstallDirs)
 
@@ -18,7 +20,7 @@ file(TO_CMAKE_PATH "${QT_IMPORTS_DIR}" QT_IMPORTS_DIR)
 set(OUR_QT_QUICK_INCLUDE ${Qt5Quick_INCLUDE_DIRS})
 LIST(APPEND QT_PKGCONFIG_DEPENDENCIES "Qt5Quick")
 
-set(SETTINGS_COMPONENTS_DIR ${QT_IMPORTS_DIR}/Ubuntu)
+set(UBUNTU_QML_DIR ${QT_IMPORTS_DIR}/Ubuntu)
 
 # Enable QML debugging
 if(CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -33,6 +35,10 @@ add_definitions(-DQT_NO_KEYWORDS)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+include_directories(
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+    )
+
 # Coverage tools
 OPTION(ENABLE_COVERAGE "Build with coverage analysis support" OFF)
 if(ENABLE_COVERAGE)
@@ -41,11 +47,14 @@ if(ENABLE_COVERAGE)
     if(NOT COVERAGE_COMMAND)
         message(FATAL_ERROR "gcov command not found")
     endif()
-    SET(CMAKE_C_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
+    SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+    SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
     include(${CMAKE_SOURCE_DIR}/cmake/lcov.cmake)
 endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wall -Wextra")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -67,19 +76,19 @@ endif()
 
 # Install subdirectories
 set(QML_DIRS
-    SettingsComponents
+    Ubuntu/SettingsComponents
     )
-
-INSTALL(CODE "EXECUTE_PROCESS(COMMAND
-             mkdir -p \$ENV{DESTDIR}${SETTINGS_COMPONENTS_DIR})")
-INSTALL(CODE "EXECUTE_PROCESS(COMMAND
-             ln -sf /usr/share/SettingsComponents
-                    \$ENV{DESTDIR}${SETTINGS_COMPONENTS_DIR})")
 
 # Install arch-independent assets under /usr/share
 install(DIRECTORY ${QML_DIRS}
     DESTINATION ${CMAKE_INSTALL_DATADIR}
     )
+
+INSTALL(CODE "EXECUTE_PROCESS(COMMAND
+             mkdir -p \$ENV{DESTDIR}${UBUNTU_QML_DIR})")
+install(CODE "EXECUTE_PROCESS(COMMAND
+             ln -sf /usr/share/SettingsComponents
+                    \$ENV{DESTDIR}${UBUNTU_QML_DIR}/SettingsComponents)")
 
 # Tests
 enable_testing()

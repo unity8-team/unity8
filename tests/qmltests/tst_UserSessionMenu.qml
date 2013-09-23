@@ -19,7 +19,8 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SettingsComponents"
+import Ubuntu.SettingsComponents 0.1
+import "utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -38,30 +39,30 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            SliderMenu {
-                id: sliderMenu
-                text: i18n.tr("Slider")
+            UserSessionMenu {
+                id: userSessionMenu
+                name: i18n.tr("Lola Chang")
+                icon: Qt.resolvedUrl("../../avatar.png")
+                active: true
             }
         }
     }
 
     TestCase {
-        name: "SliderMenu"
+        name: "UserSessionMenu"
         when: windowShown
 
-        function test_minimumValue() {
-            sliderMenu.minimumValue = 11
-            compare(sliderMenu.minimumValue, 11, "Cannot set minimumValue")
+        function test_name() {
+            userSessionMenu.name = "Test User"
+            compare(userSessionMenu.name, "Test User", "Cannot set name")
         }
 
-        function test_maximumValue() {
-            sliderMenu.minimumValue = 98
-            compare(sliderMenu.minimumValue, 98, "Cannot set maximumValue")
-        }
-
-        function test_value() {
-            sliderMenu.value = 36
-            compare(sliderMenu.value, 36, "Cannot set value")
+        function test_active() {
+            var activeIcon = UtilsJS.findChild(userSessionMenu, "activeIcon")
+            userSessionMenu.active = false
+            compare(activeIcon.visible, false, "Cannot disable the active icon element")
+            userSessionMenu.active = true
+            compare(activeIcon.visible, true, "Cannot enable the active icon element")
         }
     }
 }

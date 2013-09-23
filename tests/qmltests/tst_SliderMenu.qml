@@ -19,8 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SettingsComponents"
-import "utils.js" as UtilsJS
+import Ubuntu.SettingsComponents 0.1
 
 Item {
     width: units.gu(42)
@@ -39,30 +38,30 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            ButtonMenu {
-                id: buttonMenu
-                text: i18n.tr("Button")
-                buttonText: i18n.tr("Hello world!")
+            SliderMenu {
+                id: sliderMenu
+                text: i18n.tr("Slider")
             }
         }
     }
 
-    SignalSpy {
-        id: signalSpy
-        signalName: "clicked"
-        target: buttonMenu
-    }
-
     TestCase {
-        name: "ButtonMenu"
+        name: "SliderMenu"
         when: windowShown
 
-        function test_click() {
-            signalSpy.clear()
+        function test_minimumValue() {
+            sliderMenu.minimumValue = 11
+            compare(sliderMenu.minimumValue, 11, "Cannot set minimumValue")
+        }
 
-            var button = UtilsJS.findChild(buttonMenu, "button")
-            mouseClick(buttonMenu, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
-            compare(signalSpy.count > 0, true, "signal clicked not triggered")
+        function test_maximumValue() {
+            sliderMenu.minimumValue = 98
+            compare(sliderMenu.minimumValue, 98, "Cannot set maximumValue")
+        }
+
+        function test_value() {
+            sliderMenu.value = 36
+            compare(sliderMenu.value, 36, "Cannot set value")
         }
     }
 }
