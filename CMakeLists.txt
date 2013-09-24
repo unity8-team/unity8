@@ -84,10 +84,10 @@ install(DIRECTORY ${QML_DIRS}
     DESTINATION ${CMAKE_INSTALL_DATADIR}
     )
 
-INSTALL(CODE "EXECUTE_PROCESS(COMMAND
+install(CODE "EXECUTE_PROCESS(COMMAND
              mkdir -p \$ENV{DESTDIR}${UBUNTU_QML_DIR})")
 install(CODE "EXECUTE_PROCESS(COMMAND
-             ln -sf /usr/share/SettingsComponents
+             ln -sf ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/SettingsComponents
                     \$ENV{DESTDIR}${UBUNTU_QML_DIR}/SettingsComponents)")
 
 # Tests
