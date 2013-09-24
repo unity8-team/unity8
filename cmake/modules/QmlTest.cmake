@@ -20,12 +20,11 @@
 # qmltest_DEFAULT_PROPERTIES
 
 find_program(qmltestrunner_exe qmltestrunner)
+find_program(qmlscene_exe qmlscene)
 
 if(NOT qmltestrunner_exe)
   msg(FATAL_ERROR "Could not locate qmltestrunner.")
 endif()
-
-set(qmlscene_exe ${CMAKE_BINARY_DIR}/tests/uqmlscene/uqmlscene)
 
 macro(add_manual_qml_test SUBPATH COMPONENT_NAME)
     set(options NO_ADD_TEST NO_TARGETS)
