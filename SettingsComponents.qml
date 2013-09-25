@@ -87,7 +87,7 @@ MainView {
 
                 UserSessionMenu {
                     name: i18n.tr("Lola Chang")
-                    icon: Qt.resolvedUrl("avatar.png")
+                    icon: Qt.resolvedUrl("tests/artwork/avatar.png")
                     active: true
                 }
 

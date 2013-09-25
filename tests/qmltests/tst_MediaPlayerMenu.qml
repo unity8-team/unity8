@@ -44,7 +44,7 @@ Item {
                 song: "Mine";
                 artist: "Taylor Swift";
                 album: "Speak Now";
-                albumArt: "../tests/artwork/speak-now.jpg"
+                albumArt: "../artwork/speak-now.jpg"
             }
         }
     }
