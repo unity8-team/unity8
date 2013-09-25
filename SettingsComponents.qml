@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "SettingsComponents"
+import Ubuntu.Settings.Menus 0.1
 
 MainView {
     // Note! applicationName needs to match the .desktop filename
