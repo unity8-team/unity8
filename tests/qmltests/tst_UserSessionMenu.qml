@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import Ubuntu.SettingsComponents 0.1
+import Ubuntu.Settings.Menus 0.1
 import "utils.js" as UtilsJS
 
 Item {
@@ -42,7 +42,7 @@ Item {
             UserSessionMenu {
                 id: userSessionMenu
                 name: i18n.tr("Lola Chang")
-                icon: Qt.resolvedUrl("../../avatar.png")
+                icon: Qt.resolvedUrl("../artwork/avatar.png")
                 active: true
             }
         }

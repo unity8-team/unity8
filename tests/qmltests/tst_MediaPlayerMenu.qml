@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import Ubuntu.SettingsComponents 0.1
+import Ubuntu.Settings.Menus 0.1
 import "utils.js" as UtilsJS
 
 Item {
@@ -44,7 +44,7 @@ Item {
                 song: "Mine";
                 artist: "Taylor Swift";
                 album: "Speak Now";
-                albumArt: "../../Ubuntu/SettingsComponents/MediaPlayer/speak-now.jpg"
+                albumArt: "../tests/artwork/speak-now.jpg"
             }
         }
     }

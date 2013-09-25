@@ -29,9 +29,9 @@ MainView {
 
     ListModel {
         id: mediaPlayerModel
-        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "SettingsComponents/MediaPlayer/speak-now.jpg"}
-        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "SettingsComponents/MediaPlayer/electric.jpg"}
-        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "SettingsComponents/MediaPlayer/the-man-machine.jpg"}
+        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "tests/artwork/speak-now.jpg"}
+        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "tests/artwork/electric.jpg"}
+        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "tests/artwork/the-man-machine.jpg"}
     }
 
     ListModel {

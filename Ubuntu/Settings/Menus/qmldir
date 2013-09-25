@@ -1,4 +1,4 @@
-module Ubuntu.SettingsComponents
+module Ubuntu.Settings.Menus
 
 BasicMenu 0.1 BasicMenu.qml
 ButtonMenu 0.1 ButtonMenu.qml

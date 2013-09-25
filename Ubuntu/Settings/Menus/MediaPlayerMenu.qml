@@ -95,7 +95,7 @@ BasicMenu {
             Button {
                 objectName: "previousButton"
                 width: controlsRow.buttonsWidth
-                iconSource: "MediaPlayer/DoubleLeftArrow.png"
+                iconSource: "artwork/DoubleLeftArrow.png"
                 onClicked: mediaPlayerMenu.previous()
                 text: ""
             }
@@ -103,7 +103,7 @@ BasicMenu {
             Button {
                 objectName: "playButton"
                 width: controlsRow.buttonsWidth
-                iconSource: playing ? "MediaPlayer/RightArrow.png" : "MediaPlayer/RightArrow.png"
+                iconSource: playing ? "artwork/RightArrow.png" : "artwork/RightArrow.png"
                 onClicked: mediaPlayerMenu.play()
                 text: ""
             }
@@ -111,7 +111,7 @@ BasicMenu {
             Button {
                 objectName: "nextButton"
                 width: controlsRow.buttonsWidth
-                iconSource: "MediaPlayer/DoubleRightArrow.png"
+                iconSource: "artwork/DoubleRightArrow.png"
                 onClicked: mediaPlayerMenu.next()
                 text: ""
             }

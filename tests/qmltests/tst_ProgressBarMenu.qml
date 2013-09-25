@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import Ubuntu.SettingsComponents 0.1
+import Ubuntu.Settings.Menus 0.1
 
 Item {
     width: units.gu(42)
