@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=SettingsComponents
-Comment=Showcase of Indicators Components
-Exec=/usr/bin/qmlscene $@ /usr/share/SettingsComponents/SettingsComponents.qml
-Icon=qmlscene
-Terminal=false
-Type=Application
-X-Ubuntu-Touch=true
