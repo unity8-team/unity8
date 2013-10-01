@@ -26,13 +26,6 @@ Item {
     width: units.gu(42)
     height: units.gu(75)
 
-    property var date1: new Date(2012, 3, 10)
-    property var date2: new Date(2013, 3, 10)
-    property var date3: new Date(2013, 4, 10)
-    property var date4: new Date(2013, 6, 10)
-    property var date5: new Date(2013, 6, 10)
-    property var date6: new Date(2014, 6, 10)
-
     Label {
         id: label
         anchors {
@@ -54,73 +47,84 @@ Item {
             right: parent.right
             top: label.bottom
         }
-        currentDate: new Date(2013, 3, 2)
-        maximumDate: new Date(2013, 9, 10)
-        minimumDate: new Date(2013, 1, 10)
-        selectedDate: new Date(2013, 4, 10)
+
+        selectedDate: new Date()
     }
 
     TestCase {
         name: "Calendar"
         when: windowShown
 
-        function test_collapsed() {
-            calendar.collapsed = true
-            compare(calendar.interactive, false, "Calendar should not be interactive")
-            var collapsedHeight = calendar.height
-            calendar.collapsed = false
-            verify(calendar.height > collapsedHeight * 4 && calendar.height < collapsedHeight * 6, "Height did not expand properly")
-            compare(calendar.interactive, true, "Calendar should be interactive")
+        function init() {
+            calendar.selectedDate = new Date(2013, 4, 10);
+            calendar.maximumDate = undefined;
+            calendar.minimumDate = undefined;
         }
 
-        function test_currentDate_data() {
+        function test_collapsed() {
+            calendar.collapsed = true;
+            compare(calendar.interactive, false, "Calendar should not be interactive");
+            var collapsedHeight = calendar.height;
+            calendar.collapsed = false;
+            verify(calendar.height > collapsedHeight * 4 && calendar.height < collapsedHeight * 6, "Height did not expand properly");
+            compare(calendar.interactive, true, "Calendar should be interactive");
+        }
+
+        function test_selectedDate_data() {
             return [
-                {date: date4},
-                {date: date3},
+                { date: new Date(2010, 4, 10) },
+                { date: new Date() },
+                { date: new Date(2020, 10, 31)},
             ];
         }
 
-        function test_currentDate(data) {
-            calendar.currentDate = data.date
-            compare(calendar.currentItem.monthStart.getMonth(), data.date.getMonth(), "currentItem did not change")
+        function test_selectedDate(data) {
+            calendar.selectedDate = data.date;
+            compare(calendar.currentItem.monthStart.getYear(), data.date.getYear(), "Current year does no correspond to set date");
+            compare(calendar.currentItem.monthStart.getMonth(), data.date.getMonth(), "Current month does no correspond to set date");
         }
 
         function test_firstDayOfWeek_data() {
             return [
-                {tag: 'Thursday', firstDayOfWeek: 5, item1: 6},
-                {tag: 'Sunday', firstDayOfWeek: 0, item1: 1},
+                {tag: 'Thursday', firstDayOfWeek: 5},
+                {tag: 'Sunday', firstDayOfWeek: 0},
             ];
         }
 
         function test_firstDayOfWeek(data) {
-            var dayItem1 = UtilsJS.findChild(calendar, "dayItem1")
+            calendar.firstDayOfWeek = data.firstDayOfWeek;
 
-            calendar.firstDayOfWeek = data.firstDayOfWeek
-            compare(dayItem1.dayStart.getDay(), data.item1, "Cannot set firstDayOfWeek")
+            for (var i = 0; i < (6*7); i++) {
+                var dayColumn = UtilsJS.findChild(calendar, "dayItem" + i);
+                verify(dayColumn);
+
+                compare(dayColumn.dayStart.getDay(), (data.firstDayOfWeek + i)%7, "Day column does not match expected for firstDayOfWeek");
+            }
         }
 
-        function test_maximumDate_data() {
+        function test_minMaxDate_data() {
             return [
-                {date: date6, count: 5},
-                {date: date5, count: 4},
+                {tag: "Min=-0", date: new Date(), minDate: new Date(), maxDate: undefined, count: 3},
+                {tag: "Min=-1", date: new Date(), minDate: new Date().addMonths(-1), maxDate: undefined, count: 4},
+                {tag: "Min=-22", date: new Date(), minDate: new Date().addMonths(-22), maxDate: undefined, count: 5}, // max out at +-2
+
+                {tag: "Max=+0", date: new Date(), minDate: undefined, maxDate: new Date(), count: 3},
+                {tag: "Max=+1", date: new Date(), minDate: undefined, maxDate: new Date().addMonths(1), count: 4},
+                {tag: "Max=+22", date: new Date(), minDate: undefined, maxDate: new Date().addMonths(22), count: 5}, // max out at +-2
+
+                {tag: "Min=-0,Max=+0", date: new Date(), minDate: new Date(), maxDate: new Date(), count: 1},
+                {tag: "Min=-1,Max=+1", date: new Date(), minDate: new Date().addMonths(-1), maxDate: new Date().addMonths(1), count: 3},
+                {tag: "Min=-22,Max=+1", date: new Date(), minDate: new Date().addMonths(-22), maxDate: new Date().addMonths(1), count: 4}, // max out at +-2
+                {tag: "Min=-1,Max=+22", date: new Date(), minDate: new Date().addMonths(-1), maxDate: new Date().addMonths(22), count: 4}, // max out at +-2
+                {tag: "Min=-22,Max=+22", date: new Date(), minDate: new Date().addMonths(-22), maxDate: new Date().addMonths(22), count: 5}, // max out at +-2
             ];
         }
 
-        function test_maximumDate(data) {
-            calendar.maximumDate = data.date
-            compare(calendar.count, data.count, "The number of months should have changed")
-        }
-
-        function test_minimumDate_data() {
-            return [
-                {date: date1, count: 4},
-                {date: date2, count: 3},
-            ];
-        }
-
-        function test_minimumDate(data) {
-            calendar.minimumDate = data.date
-            compare(calendar.count, data.count, "The number of months should have changed")
+        function test_minMaxDate(data) {
+            calendar.selectedDate = data.date;
+            calendar.minimumDate = data.minDate;
+            calendar.maximumDate = data.maxDate;
+            compare(calendar.count, data.count, "The number of months should have changed");
         }
     }
 }
