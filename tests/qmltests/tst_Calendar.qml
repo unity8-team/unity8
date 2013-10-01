@@ -104,6 +104,7 @@ Item {
 
         function test_minMaxDate_data() {
             return [
+                {tag: "undefined", date: new Date(), minDate: undefined, maxDate: undefined, count: 5}, // max out at +-2
                 {tag: "Min=-0", date: new Date(), minDate: new Date(), maxDate: undefined, count: 3},
                 {tag: "Min=-1", date: new Date(), minDate: new Date().addMonths(-1), maxDate: undefined, count: 4},
                 {tag: "Min=-22", date: new Date(), minDate: new Date().addMonths(-22), maxDate: undefined, count: 5}, // max out at +-2
