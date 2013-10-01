@@ -29,9 +29,9 @@ Item {
     property var date1: new Date(2012, 3, 10)
     property var date2: new Date(2013, 3, 10)
     property var date3: new Date(2013, 4, 10)
-    property var date4: new Date(2013, 4, 10)
-    property var date5: new Date(2013, 5, 10)
-    property var date6: new Date(2014, 5, 10)
+    property var date4: new Date(2013, 6, 10)
+    property var date5: new Date(2013, 6, 10)
+    property var date6: new Date(2014, 6, 10)
 
     Label {
         id: label
@@ -54,8 +54,9 @@ Item {
             right: parent.right
             top: label.bottom
         }
-        maximumDate: new Date(2013, 6, 10)
-        minimumDate: new Date(2013, 2, 10)
+        currentDate: new Date(2013, 3, 2)
+        maximumDate: new Date(2013, 9, 10)
+        minimumDate: new Date(2013, 1, 10)
         selectedDate: new Date(2013, 4, 10)
     }
 
@@ -98,40 +99,28 @@ Item {
             compare(dayItem1.dayStart.getDay(), data.item1, "Cannot set firstDayOfWeek")
         }
 
-//        function test_maximumDate_data() {
-//            return [
-//                {date: date6, count: 5},
-//                {date: date5, count: 4},
-//            ];
-//        }
-
-//        function test_maximumDate(data) {
-//            calendar.maximumDate = data.date
-//            compare(calendar.count, data.count, "The number of months should have changed")
-//        }
-
-//        function test_minimumDate_data() {
-//            return [
-//                {date: date1, count: 4},
-//                {date: date2, count: 3},
-//            ];
-//        }
-
-//        function test_minimumDate(data) {
-//            calendar.minimumDate = data.date
-//            compare(calendar.count, data.count, "The number of months should have changed")
-//        }
-
-        function test_selectedDate_data() {
+        function test_maximumDate_data() {
             return [
-                {date: date4},
-                {date: date3},
+                {date: date6, count: 5},
+                {date: date5, count: 4},
             ];
         }
 
-        function test_selectedDate(data) {
-            calendar.selectedDate = data.date
-            compare(calendar.currentItem.monthStart.getMonth(), data.date.getMonth(), "currentItem did not change")
+        function test_maximumDate(data) {
+            calendar.maximumDate = data.date
+            compare(calendar.count, data.count, "The number of months should have changed")
+        }
+
+        function test_minimumDate_data() {
+            return [
+                {date: date1, count: 4},
+                {date: date2, count: 3},
+            ];
+        }
+
+        function test_minimumDate(data) {
+            calendar.minimumDate = data.date
+            compare(calendar.count, data.count, "The number of months should have changed")
         }
     }
 }

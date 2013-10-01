@@ -39,9 +39,7 @@ Date.weeksInMonth = function(year, month, weekday) {
 
 Date.prototype.midnight = function() {
     var date = new Date(this)
-    var t = date.getTime()
-    if (t % Date.msPerDay != 0)
-        date.setTime(t - t % Date.msPerDay)
+    date.setHours(0,0,0,0);
     return date
 }
 
@@ -53,7 +51,7 @@ Date.prototype.addDays = function(days) {
 
 Date.prototype.addMonths = function(months) {
     var date = new Date(this)
-    date.setUTCMonth(date.getUTCMonth() + months)
+    date.setMonth(date.getMonth() + months)
     return date
 }
 
