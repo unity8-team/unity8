@@ -75,29 +75,13 @@ ListView {
     onMaximumDateChanged: {
         if (!priv.ready) return
 
-        var i = calendarModel.count - 1
-        while (i >= 0 && calendarModel.get(i).monthStart > maximumDate) {
-            calendarModel.remove(i)
-            i--
-        }
-
-        if (calendarModel.count == 0) {
-            priv.__populateModel()
-        }
+        priv.__populateModel()
     }
 
     onMinimumDateChanged: {
         if (!priv.ready) return
 
-        var i = 0
-        while (i < calendarModel.count && calendarModel.get(0).monthStart < minimumDate) {
-            calendarModel.remove(0)
-            i++
-        }
-
-        if (calendarModel.count == 0) {
-            priv.__populateModel()
-        }
+        priv.__populateModel()
     }
 
     ListModel {
@@ -138,12 +122,37 @@ ListView {
             //  disable the onCurrentIndexChanged logic
             priv.ready = false
 
-            var minimumAddedDate = priv.__getRealMinimumDate(currentDate.addMonths(-2));
-            var maximumAddedDate = priv.__getRealMaximumDate(currentDate.addMonths(2));
+            var minimumAddedDate = priv.__getRealMinimumDate(currentDate.addMonths(-2)).monthStart();
+            var maximumAddedDate = priv.__getRealMaximumDate(currentDate.addMonths(2)).monthStart();
 
-            var count = Math.min(DateExt.diffMonths(minimumAddedDate, maximumAddedDate) + 1, 5)
-            for (var i = 0; i < count; ++i) {
-                calendarModel.append({"monthStart": minimumAddedDate.monthStart().addMonths(i)});
+            // Remove old minimum months
+            while (calendarModel.count > 0 && calendarModel.get(0).monthStart < minimumAddedDate) {
+                calendarModel.remove(0);
+            }
+            // Remove old maximum months
+            while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).monthStart > maximumAddedDate) {
+                calendarModel.remove(calendarModel.count - 1);
+            }
+
+            // Add new months
+            i = 0;
+            while (calendarModel.count > 0 && calendarModel.get(0).monthStart > minimumAddedDate) {
+                calendarModel.insert(0, {"monthStart": calendarModel.get(0).monthStart.addMonths(-1)});
+                ++i;
+            }
+
+            if (calendarModel.count > 0) {
+                var i = 0;
+                while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).monthStart < maximumAddedDate) {
+                    calendarModel.append({"monthStart": calendarModel.get(calendarModel.count - 1).monthStart.addMonths(1)});
+                    ++i;
+                }
+            } else {
+                var i = 0;
+                do {
+                    calendarModel.append({"monthStart": minimumAddedDate.addMonths(i)});
+                    ++i;
+                } while (calendarModel.get(i-1).monthStart < maximumAddedDate)
             }
 
             currentIndex = DateExt.diffMonths(minimumAddedDate, currentDate);
