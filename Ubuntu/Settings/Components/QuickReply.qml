@@ -29,7 +29,7 @@ Item {
     property alias messages : messagelistRepeater.model
     property alias replyEnabled: actionTextField.activateEnabled
 
-    signal reply(var value)
+    signal replied(var value)
 
     Item {
         id: header
@@ -147,8 +147,8 @@ Item {
             anchors.margins: units.gu(1)
             activateEnabled: replyEnabled
 
-            onActivate: {
-                quickReply.reply(value)
+            onActivated: {
+                quickReply.replied(value)
             }
         }
 

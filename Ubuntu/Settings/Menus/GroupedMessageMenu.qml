@@ -29,8 +29,8 @@ ListItem.Empty {
     property alias count: label.text
     property url appIcon
 
-    signal activateApp()
-    signal dismiss()
+    signal appActivated()
+    signal dismissed()
 
     implicitHeight: units.gu(10)
 
@@ -82,7 +82,14 @@ ListItem.Empty {
         anchors.bottom: parent.bottom
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            menu.appActivated();
+        }
+    }
+
     onItemRemoved: {
-        menu.dismiss();
+        menu.dismissed();
     }
 }

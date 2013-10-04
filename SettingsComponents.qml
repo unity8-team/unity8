@@ -162,7 +162,7 @@ MainView {
 
                     replyMessages: ["Yeah right", "Sure she did"]
 
-                    onClicked: {
+                    onTriggered: {
                         selected = !selected;
                     }
                 }
@@ -172,7 +172,7 @@ MainView {
                     time: "11am"
                     message: "I am a little teacup"
 
-                    onClicked: {
+                    onTriggered: {
                         selected = !selected;
                     }
                 }
@@ -182,7 +182,7 @@ MainView {
                     time: "11am"
                     message: "I happen to be tall and thin!"
 
-                    onClicked: {
+                    onTriggered: {
                         selected = !selected;
                     }
                 }

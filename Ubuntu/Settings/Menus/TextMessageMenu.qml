@@ -28,7 +28,7 @@ SimpleTextMessageMenu {
     property bool replyEnabled: true
     property string replyButtonText: "Send"
 
-    signal reply(string value)
+    signal replied(string value)
 
     footer: USC.ActionTextField {
         anchors.fill:  parent
@@ -36,8 +36,8 @@ SimpleTextMessageMenu {
         activateEnabled: menu.replyEnabled
         buttonText: menu.replyButtonText
 
-        onActivate: {
-            menu.reply(value);
+        onActivated: {
+            menu.replied(value);
         }
     }
 }

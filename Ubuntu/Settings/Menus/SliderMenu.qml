@@ -31,7 +31,7 @@ ListItem.Empty {
     property alias minIcon: leftImage.source
     property alias maxIcon: rightImage.source
 
-    signal changeValue(real value)
+    signal updated(real value)
 
     property QtObject d: QtObject {
         property bool enableValueConnection: true
@@ -130,7 +130,7 @@ ListItem.Empty {
                         d.enableValueConnection = false;
 
                         menu.value = slider.value;
-                        menu.changeValue(slider.value);
+                        menu.updated(slider.value);
 
                         d.enableValueConnection = oldEnable;
                     }

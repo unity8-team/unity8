@@ -22,29 +22,49 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
 ListItem.Standard {
-    id: menuItem
+    id: menu
 
     property bool checked: false
-
-    signal check(bool checked)
-
-    onCheckedChanged: {
-        // Can't rely on binding. Checked is assigned on click.
-        switcher.checked = checked;
-    }
 
     control: Switch {
         id: switcher
         objectName: "switcher"
+        property bool enableCheckConnection: true
+
+        onEnabledChanged: console.log("enabled" + enabled);
 
         Component.onCompleted: {
-            checked = menuItem.checked;
+            checked = menu.checked;
         }
 
         // FIXME : should use Checkbox.toggled signal
         // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
-        onClicked: {
-            menuItem.check(switcher.checked);
+        onCheckedChanged: {
+            if (!enableCheckConnection) {
+                return;
+            }
+            var oldEnable = enableCheckConnection;
+            enableCheckConnection = false;
+
+            menu.checked = checked;
+            menu.triggered(menu.checked);
+
+            enableCheckConnection = oldEnable;
+        }
+
+        Connections {
+            target: menu
+            onCheckedChanged: {
+                if (!switcher.enableCheckConnection) {
+                    return;
+                }
+                var oldEnable = switcher.enableCheckConnection;
+                switcher.enableCheckConnection = false;
+
+                switcher.checked = menu.checked;
+
+                switcher.enableCheckConnection = oldEnable;
+            }
         }
     }
 }

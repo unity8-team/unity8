@@ -31,20 +31,12 @@ ListItem.Empty {
     property int signalStrength: 0
     property alias text: label.text
 
-    signal activate()
-
-    onCheckedChanged: {
-        // Can't rely on binding. Checked is assigned on click.
-        checkBoxActive.checked = checked;
-    }
-
-    onClicked: {
-        checkBoxActive.clicked();
-    }
+    __acceptEvents: false
 
     CheckBox {
-        id: checkBoxActive
+        id: checkbox
         objectName: "checkBox"
+        property bool enableCheckConnection: true
 
         height: units.gu(3)
         width: units.gu(3)
@@ -55,8 +47,41 @@ ListItem.Empty {
             verticalCenter: parent.verticalCenter
         }
 
-        onClicked: {
-            menu.activate();
+        // FIXME : should use Checkbox.toggled signal
+        // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
+        onCheckedChanged: {
+            if (!enableCheckConnection) {
+                return;
+            }
+            var oldEnable = enableCheckConnection;
+            enableCheckConnection = false;
+
+            menu.checked = checked;
+            menu.triggered(menu.checked);
+
+            enableCheckConnection = oldEnable;
+        }
+
+        Connections {
+            target: menu
+            onCheckedChanged: {
+                if (!checkbox.enableCheckConnection) {
+                    return;
+                }
+                var oldEnable = checkbox.enableCheckConnection;
+                checkbox.enableCheckConnection = false;
+
+                checkbox.checked = menu.checked;
+
+                checkbox.enableCheckConnection = oldEnable;
+            }
+        }
+
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                checkbox.clicked();
+            }
         }
     }
 
@@ -67,7 +92,7 @@ ListItem.Empty {
         width: height
         height: Math.min(units.gu(5), parent.height - units.gu(1))
         anchors {
-            left: checkBoxActive.right
+            left: checkbox.right
             leftMargin: units.gu(1)
             verticalCenter: parent.verticalCenter
         }
