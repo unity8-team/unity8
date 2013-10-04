@@ -43,13 +43,23 @@ ListItem.Empty {
             height: units.gu(6)
             width: units.gu(6)
             image: Image {
+                objectName: "appIcon"
                 source: appIcon != "" ? appIcon : "artwork/default_app.svg"
                 fillMode: Image.PreserveAspectFit
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    console.log("click");
+                    menu.activateApp();
+                }
             }
         }
 
         Label {
             id: __title
+            objectName: "title"
             anchors.verticalCenter: parent.verticalCenter
             font.weight: Font.DemiBold
             fontSize: "medium"
@@ -57,6 +67,8 @@ ListItem.Empty {
 
         Label {
             id: label
+            objectName: "messageCount"
+
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - x
             horizontalAlignment: Text.AlignRight
@@ -68,13 +80,6 @@ ListItem.Empty {
 
     ListItem.ThinDivider {
         anchors.bottom: parent.bottom
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            menu.activateApp();
-        }
     }
 
     onItemRemoved: {

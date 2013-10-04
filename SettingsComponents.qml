@@ -162,8 +162,9 @@ MainView {
 
                     replyMessages: ["Yeah right", "Sure she did"]
 
-                    onSelectMenu: selected = true
-                    onDeselectMenu: selected = false
+                    onClicked: {
+                        selected = !selected;
+                    }
                 }
 
                 SimpleTextMessageMenu {
@@ -171,8 +172,9 @@ MainView {
                     time: "11am"
                     message: "I am a little teacup"
 
-                    onSelectMenu: selected = true
-                    onDeselectMenu: selected = false
+                    onClicked: {
+                        selected = !selected;
+                    }
                 }
 
                 TextMessageMenu {
@@ -180,8 +182,9 @@ MainView {
                     time: "11am"
                     message: "I happen to be tall and thin!"
 
-                    onSelectMenu: selected = true
-                    onDeselectMenu: selected = false
+                    onClicked: {
+                        selected = !selected;
+                    }
                 }
 
                 Column {

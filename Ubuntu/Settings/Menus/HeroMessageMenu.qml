@@ -36,9 +36,6 @@ ListItem.Empty {
     signal activateApp
     signal dismiss
 
-    signal selectMenu
-    signal deselectMenu
-
     removable: state !== "expanded"
     implicitHeight: collapsedHeight
 
@@ -65,16 +62,7 @@ ListItem.Empty {
         state: menu.state
 
         onAppIconClicked:  {
-            deselectMenu();
             menu.activateApp();
-        }
-    }
-
-    onClicked: {
-        if (selected) {
-            deselectMenu();
-        } else {
-            selectMenu();
         }
     }
 

@@ -44,6 +44,8 @@ ListItem.Empty {
 
     CheckBox {
         id: checkBoxActive
+        objectName: "checkBox"
+
         height: units.gu(3)
         width: units.gu(3)
 
@@ -58,8 +60,9 @@ ListItem.Empty {
         }
     }
 
-    Image {
+    Icon {
         id: iconSignal
+        objectName: "iconSignal"
 
         width: height
         height: Math.min(units.gu(5), parent.height - units.gu(1))
@@ -69,12 +72,12 @@ ListItem.Empty {
             verticalCenter: parent.verticalCenter
         }
 
-        source: {
+        name: {
             var imageName = "nm-signal-100"
 
             if (adHoc) {
                 imageName = "nm-adhoc";
-            } else if (signalStrength == 0) {
+            } else if (signalStrength <= 0) {
                 imageName = "nm-signal-00";
             } else if (signalStrength <= 25) {
                 imageName = "nm-signal-25";
@@ -83,7 +86,7 @@ ListItem.Empty {
             } else if (signalStrength <= 75) {
                 imageName = "nm-signal-75";
             }
-            return "image://theme/" + imageName;
+            return imageName;
         }
     }
 
@@ -100,10 +103,11 @@ ListItem.Empty {
         opacity: label.enabled ? 1.0 : 0.5
     }
 
-    Image {
+    Icon {
         id: iconSecure
+        objectName: "iconSecure"
         visible: secure
-        source: "artwork/secure.svg"
+        name: "network-secure"
 
         width: height
         height: Math.min(units.gu(4), parent.height - units.gu(1))

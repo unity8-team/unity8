@@ -1,0 +1,3 @@
+module Ubuntu.Test
+plugin UbuntuTestQml
+UbuntuTestCase 0.1 UbuntuTestCase.qml

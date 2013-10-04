@@ -31,6 +31,7 @@ Item {
 
     TextField {
         id: replyField
+        objectName: "replyText"
 
         anchors {
             top: parent.top
@@ -53,6 +54,7 @@ Item {
 
     Button {
         id: sendButton
+        objectName: "sendButton"
         anchors {
             top: parent.top
             bottom: parent.bottom

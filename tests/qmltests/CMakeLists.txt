@@ -7,16 +7,26 @@ set(qmltest_DEFAULT_PROPERTIES "")
 
 set(qmltest_DEFAULT_IMPORT_PATHS
   ${CMAKE_SOURCE_DIR}
+  ${CMAKE_BINARY_DIR}/tests/utils/modules
 )
 
 add_qml_test(Components Calendar)
 
+add_qml_test(Menus AccessPointMenu)
 add_qml_test(Menus ButtonMenu)
 add_qml_test(Menus CalendarMenu)
+add_qml_test(Menus CheckableMenu)
 add_qml_test(Menus EventMenu)
+add_qml_test(Menus GroupedMessageMenu)
 add_qml_test(Menus MediaPlayerMenu)
 add_qml_test(Menus PlaybackItemMenu)
 add_qml_test(Menus ProgressBarMenu)
+add_qml_test(Menus ProgressValueMenu)
+add_qml_test(Menus SectionMenu)
+add_qml_test(Menus SimpleTextMessageMenu)
 add_qml_test(Menus SliderMenu)
+add_qml_test(Menus SnapDecisionMenu)
+add_qml_test(Menus SwitchMenu)
 add_qml_test(Menus UserSessionMenu)
+add_qml_test(Menus TextMessageMenu)
 add_qml_test(Menus TimeZoneMenu)
