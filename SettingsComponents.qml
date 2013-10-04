@@ -65,18 +65,46 @@ MainView {
                 height: childrenRect.height
 
                 SliderMenu {
+                    id: slider
                     text: i18n.tr("Slider")
+                    minimumValue: 0
+                    maximumValue: 100
+                    value: 20
                 }
 
                 ProgressBarMenu {
                     text: i18n.tr("ProgressBar")
-                    indeterminate: true
+                    value: slider.value
+                    minimumValue: 0
+                    maximumValue: 100
+                }
+
+                ProgressValueMenu {
+                    text: i18n.tr("ProgressValue")
+                    value: slider.value
                 }
 
                 ButtonMenu {
                     text: i18n.tr("Button")
                     buttonText: i18n.tr("Hello world!")
                 }
+
+                CheckableMenu {
+                    text: i18n.tr("Checkable")
+                    checked: true
+                }
+
+                SwitchMenu {
+                    text: i18n.tr("Switch")
+                    checked: true
+                }
+
+                SectionMenu {
+                    text: i18n.tr("Section Starts Here")
+                    busy: true
+                }
+
+                SeparatorMenu {}
 
                 CalendarMenu {
                     id: calendar
@@ -92,15 +120,68 @@ MainView {
                 }
 
                 MediaPlayerMenu {
+                    id: mediaPlayer
                     property int index: 0
 
-                    onPrevious: index = Math.max(index - 1, 0)
-                    onNext: index = Math.min(index + 1, mediaPlayerModel.count - 1)
-
+                    playerName: "Rhythmbox"
+                    playerIcon: Qt.resolvedUrl("tests/artwork/rhythmbox.png")
                     song: mediaPlayerModel.get(index).song;
                     artist: mediaPlayerModel.get(index).artist;
                     album: mediaPlayerModel.get(index).album;
                     albumArt: mediaPlayerModel.get(index).albumArt;
+                }
+
+                PlaybackItemMenu {
+                    canPlay: true
+                    canGoNext: true
+                    canGoPrevious: true
+                    playing: mediaPlayer.running
+
+                    onPrevious: mediaPlayer.index = Math.max(mediaPlayer.index - 1, 0)
+                    onNext: mediaPlayer.index = Math.min(mediaPlayer.index + 1, mediaPlayerModel.count - 1)
+                    onPlay: { mediaPlayer.running = !mediaPlayer.running; }
+                }
+
+                AccessPointMenu {
+                    checked: true
+                    secure: true
+                    adHoc: false
+                    signalStrength: 50
+                    text: "Access Point"
+                }
+
+                GroupedMessageMenu {
+                    title: "Group Message"
+                    count: "4"
+                }
+
+                SnapDecisionMenu {
+                    title: "Snap Decision"
+                    time: "10:30am"
+                    message: "My mother says I'm handsome!"
+
+                    replyMessages: ["Yeah right", "Sure she did"]
+
+                    onSelectMenu: selected = true
+                    onDeselectMenu: selected = false
+                }
+
+                SimpleTextMessageMenu {
+                    title: "Simple Text Message"
+                    time: "11am"
+                    message: "I am a little teacup"
+
+                    onSelectMenu: selected = true
+                    onDeselectMenu: selected = false
+                }
+
+                TextMessageMenu {
+                    title: "Text Message"
+                    time: "11am"
+                    message: "I happen to be tall and thin!"
+
+                    onSelectMenu: selected = true
+                    onDeselectMenu: selected = false
                 }
 
                 Column {

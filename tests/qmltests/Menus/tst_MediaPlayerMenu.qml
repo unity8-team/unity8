@@ -20,6 +20,7 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Settings.Menus 0.1
+import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -32,43 +33,36 @@ Item {
         contentWidth: column.width
         contentHeight: column.height
 
-        Column {
+        Item {
             id: column
 
             width: flickable.width
             height: childrenRect.height
 
-            ProgressBarMenu {
-                id: progressBarMenu
-                text: i18n.tr("ProgressBar")
+            MediaPlayerMenu {
+                id: mediaPlayerMenu
             }
         }
     }
 
     TestCase {
-        name: "ProgressBarMenu"
+        name: "MediaPlayerMenu"
         when: windowShown
 
-        function test_indeterminate() {
-            var indeterminate = progressBarMenu.indeterminate
-            progressBarMenu.indeterminate = !indeterminate
-            compare(progressBarMenu.indeterminate, !indeterminate, "Cannot set indeterminate")
-            progressBarMenu.indeterminate = indeterminate
-        }
+        function test_running() {
+            var player = UtilsJS.findChild(mediaPlayerMenu, "player");
+            var albumArt = UtilsJS.findChild(mediaPlayerMenu, "albumArt");
 
-        function test_minimumValue() {
-            progressBarMenu.minimumValue = 11
-            compare(progressBarMenu.minimumValue, 11, "Cannot set minimumValue")
-        }
+            var running = mediaPlayerMenu.running
 
-        function test_maximumValue() {
-            progressBarMenu.minimumValue = 98
-            compare(progressBarMenu.minimumValue, 98, "Cannot set maximumValue")
-        }
+            compare(player.visible, !running, "player should be not visible when running");
+            compare(albumArt.visible, running, "albumn art should be visible when running");
 
-        function test_value() {
-            progressBarMenu.value = 36
-            compare(progressBarMenu.value, 36, "Cannot set value")
+            running = !running;
+            mediaPlayerMenu.running = running;
+
+            compare(player.visible, !running, "player should be not visible when running");
+            compare(albumArt.visible, running, "albumn art should be visible when running");
         }
     }
 }

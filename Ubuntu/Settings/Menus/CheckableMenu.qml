@@ -18,11 +18,11 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 0.1 as Components
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
-    id: menuItem
+ListItem.Empty {
+    id: menu
 
     property bool checked: false
 
@@ -30,21 +30,40 @@ ListItem.Standard {
 
     onCheckedChanged: {
         // Can't rely on binding. Checked is assigned on click.
-        switcher.checked = checked;
+        checkbox.checked = checked;
     }
 
-    control: Switch {
-        id: switcher
-        objectName: "switcher"
+    onClicked: {
+        checkbox.clicked()
+    }
+
+    Components.CheckBox {
+        id: checkbox
+        objectName: "checkbox"
+        anchors {
+            left: parent.left
+            leftMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
+        }
 
         Component.onCompleted: {
-            checked = menuItem.checked;
+            checked = menu.checked;
         }
 
         // FIXME : should use Checkbox.toggled signal
         // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
         onClicked: {
-            menuItem.check(switcher.checked);
+            menu.check(checkbox.checked);
+        }
+    }
+
+    Components.Label {
+        text: menu.text
+        anchors {
+            left: checkbox.right
+            leftMargin: menu.__contentsMargins
+            rightMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
     }
 }

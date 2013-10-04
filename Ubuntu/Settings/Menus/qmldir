@@ -1,12 +1,13 @@
 module Ubuntu.Settings.Menus
 
 AccessPointMenu 0.1 AccessPointMenu.qml
-BasicMenu 0.1 BasicMenu.qml
 ButtonMenu 0.1 ButtonMenu.qml
 CalendarMenu 0.1 CalendarMenu.qml
+CheckableMenu 0.1 CheckableMenu.qml
 EventMenu 0.1 EventMenu.qml
 GroupedMessageMenu 0.1 GroupedMessageMenu.qml
 MediaPlayerMenu 0.1 MediaPlayerMenu.qml
+PlaybackItemMenu 0.1 PlaybackItemMenu.qml
 ProgressBarMenu 0.1 ProgressBarMenu.qml
 ProgressValueMenu 0.1 ProgressValueMenu.qml
 SectionMenu 0.1 SectionMenu.qml
@@ -14,7 +15,6 @@ SeparatorMenu 0.1 SeparatorMenu.qml
 SimpleTextMessageMenu 0.1 SimpleTextMessageMenu.qml
 SliderMenu 0.1 SliderMenu.qml
 SnapDecisionMenu 0.1 SnapDecisionMenu.qml
-StandardMenuItem 0.1 StandardMenuItem.qml
 SwitchMenu 0.1 SwitchMenu.qml
 TextMessageMenu 0.1 TextMessageMenu.qml
 TimeZoneMenu 0.1 TimeZoneMenu.qml

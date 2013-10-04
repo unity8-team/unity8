@@ -20,10 +20,9 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
-import Unity.Indicators 0.1 as Indicators
 
-Indicators.BaseMenuItem {
-    id: menuItem
+ListItem.Empty {
+    id: menu
     implicitHeight: units.gu(5.5)
 
     property bool checked: false
@@ -50,12 +49,12 @@ Indicators.BaseMenuItem {
 
         anchors {
             left: parent.left
-            leftMargin: menuItem.__contentsMargins
+            leftMargin: menu.__contentsMargins
             verticalCenter: parent.verticalCenter
         }
 
         onClicked: {
-            menuItem.activate();
+            menu.activate();
         }
     }
 
@@ -95,7 +94,7 @@ Indicators.BaseMenuItem {
             leftMargin: units.gu(1)
             verticalCenter: parent.verticalCenter
             right: iconSecure.visible ? iconSecure.left : parent.right
-            rightMargin: menuItem.__contentsMargins
+            rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
         opacity: label.enabled ? 1.0 : 0.5
@@ -104,7 +103,7 @@ Indicators.BaseMenuItem {
     Image {
         id: iconSecure
         visible: secure
-        source: "qrc:/indicators/artwork/network/secure.svg"
+        source: "artwork/secure.svg"
 
         width: height
         height: Math.min(units.gu(4), parent.height - units.gu(1))

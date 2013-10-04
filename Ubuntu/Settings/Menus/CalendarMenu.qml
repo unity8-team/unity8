@@ -18,10 +18,11 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 import Ubuntu.Settings.Components 0.1
 
-BasicMenu {
-    id: calendarMenu
+ListItem.Empty {
+    id: menu
 
     property alias collapsed: calendar.collapsed
     property alias currentDate: calendar.currentDate
@@ -30,34 +31,40 @@ BasicMenu {
     property alias minimumDate: calendar.minimumDate
     property alias selectedDate: calendar.selectedDate
 
-//    ItemStyle.class: "settings-menu calendar-menu"
+    implicitHeight: column.height
 
-    implicitHeight: label.height + calendar.height + units.gu(2) + units.dp(2)
+    Column {
+        id: column
 
-    Label {
-        id: label
+        height: childrenRect.height + units.gu(1.5)
         anchors {
-            left: parent.left
-            right: parent.right
             top: parent.top
-            margins: units.gu(2)
-        }
-        height: units.gu(5)
-        color: "#757373"
-        fontSize: "large"
-        //ItemStyle.class: "label label-date"
-        text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
-    }
-
-    Calendar {
-        id: calendar
-        objectName: "calendar"
-        anchors {
             left: parent.left
             right: parent.right
-            top: label.bottom
-            leftMargin: units.gu(2)
-            rightMargin: units.gu(2)
+            topMargin: units.gu(1)
+            leftMargin: menu.__contentsMargins
+            rightMargin: menu.__contentsMargins
+        }
+        spacing: units.gu(1)
+
+        Label {
+            id: label
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+            fontSize: "large"
+            //ItemStyle.class: "label label-date"
+            text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
+        }
+
+        Calendar {
+            id: calendar
+            objectName: "calendar"
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
         }
     }
 }

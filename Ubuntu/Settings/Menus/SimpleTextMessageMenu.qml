@@ -21,8 +21,8 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 
-HeroMessage {
-    id: __heroMessage
+HeroMessageMenu {
+    id: menu
 
     property string title: ""
     property string time: ""
@@ -58,7 +58,6 @@ HeroMessage {
             }
             wrapMode: Text.WordWrap
             elide: Text.ElideRight
-            color: "#e8e1d0"
             fontSize: "medium"
             text: heroMessageHeader.bodyText.text
         }
@@ -77,7 +76,7 @@ HeroMessage {
 
         states: State {
             name: "expanded"
-            when: __heroMessage.state === "expanded"
+            when: menu.state === "expanded"
 
             PropertyChanges {
                 target: heroMessageHeader.bodyText

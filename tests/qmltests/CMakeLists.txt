@@ -9,12 +9,14 @@ set(qmltest_DEFAULT_IMPORT_PATHS
   ${CMAKE_SOURCE_DIR}
 )
 
-add_qml_test(. ButtonMenu)
-add_qml_test(. Calendar)
-add_qml_test(. CalendarMenu)
-add_qml_test(. EventMenu)
-add_qml_test(. MediaPlayerMenu)
-add_qml_test(. ProgressBarMenu)
-add_qml_test(. SliderMenu)
-add_qml_test(. UserSessionMenu)
-add_qml_test(. TimeZoneMenu)
+add_qml_test(Components Calendar)
+
+add_qml_test(Menus ButtonMenu)
+add_qml_test(Menus CalendarMenu)
+add_qml_test(Menus EventMenu)
+add_qml_test(Menus MediaPlayerMenu)
+add_qml_test(Menus PlaybackItemMenu)
+add_qml_test(Menus ProgressBarMenu)
+add_qml_test(Menus SliderMenu)
+add_qml_test(Menus UserSessionMenu)
+add_qml_test(Menus TimeZoneMenu)

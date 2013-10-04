@@ -18,32 +18,16 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-BasicMenu {
-    property alias text: label.text
+ListItem.Standard {
     property alias indeterminate: progressBar.indeterminate
     property alias minimumValue: progressBar.minimumValue
     property alias maximumValue: progressBar.maximumValue
     property alias value: progressBar.value
 
-//    ItemStyle.class: "settings-menu progressbar-menu"
-
-    Label {
-        id: label
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-            leftMargin: units.gu(2)
-        }
-    }
-
-    ProgressBar {
+    control: ProgressBar {
         id: progressBar
         width: units.gu(20)
-        anchors {
-            right: parent.right
-            rightMargin: units.gu(2)
-            verticalCenter: parent.verticalCenter
-        }
     }
 }

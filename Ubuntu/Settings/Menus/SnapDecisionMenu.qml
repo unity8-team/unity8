@@ -20,11 +20,10 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
-import "utils.js" as Utils
+import Ubuntu.Settings.Components 0.1 as USC
 
-HeroMessage {
-    id: snapDecision
+HeroMessageMenu {
+    id: menu
 
     property string title: ""
     property string time: ""
@@ -40,9 +39,7 @@ HeroMessage {
     expandedHeight: buttons.y + buttons.height + quickreply.height + units.gu(2)
     heroMessageHeader.titleText.text:  title
     heroMessageHeader.subtitleText.text: message
-    heroMessageHeader.subtitleText.color: "#e8e1d0"
     heroMessageHeader.bodyText.text: time
-    heroMessageHeader.bodyText.color: "#8f8f88"
 
     signal activate
     signal reply(string value)
@@ -61,11 +58,11 @@ HeroMessage {
 
         Button {
             text: "Message"
-            color: "#bababa"
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: (parent.width - units.gu(1)) / 2
+            gradient: UbuntuColors.greyGradient
 
             onClicked: {
                 if (quickreply.state === "") {
@@ -79,21 +76,20 @@ HeroMessage {
         Button {
             id: actionButton
             text: "Call back"
-            color: enabled ? "#c94212" : "#bababa"
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: (parent.width - units.gu(1)) / 2
-            enabled: snapDecision.activateEnabled
+            enabled: menu.activateEnabled
 
             onClicked: {
-                snapDecision.activate();
+                menu.activate();
             }
         }
 
         states: State {
             name: "expanded"
-            when: snapDecision.state === "expanded"
+            when: menu.state === "expanded"
 
             PropertyChanges {
                 target: buttons
@@ -109,11 +105,11 @@ HeroMessage {
         }
     }
 
-    QuickReply {
+    USC.QuickReply {
         id: quickreply
 
         onReply: {
-            snapDecision.reply(value);
+            menu.reply(value);
         }
 
         messages: ""
@@ -127,7 +123,7 @@ HeroMessage {
         height: 0
         opacity: 0.0
         enabled: false
-        replyEnabled: snapDecision.replyEnabled
+        replyEnabled: menu.replyEnabled
 
         states: State {
             name: "expanded"

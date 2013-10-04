@@ -18,32 +18,17 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-BasicMenu {
-    property alias text: label.text
+ListItem.Standard {
     property alias buttonText: button.text
 
-//    ItemStyle.class: "settings-menu button-menu"
-
+    iconFrame: false
     Component.onCompleted: button.clicked.connect(clicked)
 
-    Label {
-        id: label
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-            leftMargin: units.gu(2)
-        }
-    }
-
-    Button {
+    control: Button {
         id: button
         objectName: "button"
         width: units.gu(20)
-        anchors {
-            right: parent.right
-            verticalCenter: parent.verticalCenter
-            rightMargin: units.gu(2)
-        }
     }
 }

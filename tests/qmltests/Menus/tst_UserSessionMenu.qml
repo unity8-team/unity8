@@ -20,6 +20,7 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Settings.Menus 0.1
+import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -32,44 +33,45 @@ Item {
         contentWidth: column.width
         contentHeight: column.height
 
-        Column {
+        Item {
             id: column
 
             width: flickable.width
             height: childrenRect.height
 
-            EventMenu {
-                id: eventMenu
-                eventColor: "yellow"
-                name: "Lunch with Lola"
-                description: "Some nice Thai food in the bay area"
-                date: "1:10 PM"
+            UserSessionMenu {
+                id: userSessionMenu
+                name: i18n.tr("Lola Chang")
+                icon: Qt.resolvedUrl("../../artwork/avatar.png")
+                active: true
+            }
+            UserSessionMenu {
+                id: userSessionMenu2
+                name: i18n.tr("Sponge Bob")
+                icon: Qt.resolvedUrl("../../artwork/avatar.png")
+                active: false
+                anchors.top: userSessionMenu.bottom
             }
         }
     }
 
     TestCase {
-        name: "EventMenu"
+        name: "UserSessionMenu"
         when: windowShown
 
-        function test_eventColor() {
-            eventMenu.eventColor = "red"
-            compare(eventMenu.eventColor, "#ff0000", "Cannot set color")
-        }
-
         function test_name() {
-            eventMenu.name = "Gym"
-            compare(eventMenu.name, "Gym", "Cannot set name")
+            userSessionMenu.name = "Test User"
+            compare(userSessionMenu.name, "Test User", "Cannot set name")
         }
 
-        function test_description() {
-            eventMenu.description = "Workout with John"
-            compare(eventMenu.description, "Workout with John", "Cannot set description")
+        function test_active() {
+            var activeIcon = UtilsJS.findChild(userSessionMenu, "activeIcon")
+            compare(activeIcon.visible, true, "Active icon should be visible when active")
         }
 
-        function test_date() {
-            eventMenu.date = "6:30 PM"
-            compare(eventMenu.date, "6:30 PM", "Cannot set date")
+        function test_inactive() {
+            var activeIcon = UtilsJS.findChild(userSessionMenu2, "activeIcon")
+            compare(activeIcon.visible, false, "Active icon should not be visible when inactive")
         }
     }
 }

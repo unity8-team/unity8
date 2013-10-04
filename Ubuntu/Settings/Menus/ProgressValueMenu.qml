@@ -14,25 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
+ *      Nick Dedekind <nick.dedekind@canonical.com>
  */
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-FramedMenuItem {
+ListItem.Standard {
     id: menuItem
 
     property int value : 0.0
 
     control: Label {
         id: progress
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        objectName: "progress"
 
         text: menuItem.value + " %"
         fontSize: "medium"
-        color: "#e8e1d0"
     }
 }
