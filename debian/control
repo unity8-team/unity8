@@ -8,12 +8,15 @@ Build-Depends: cmake,
                qtdeclarative5-dev,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
-# If you aren't a member of ~ubuntu-settings-components-team but need to upload packaging changes,
-# just go ahead. ~ubuntu-settings-components-team will notice and sync up the code again.
-Vcs-Bzr: https://code.launchpad.net/~ubuntu-settings-components-team/ubuntu-settings-components/trunk
+# If you don't have have commit access to this branch but would like to upload
+# directly to Ubuntu, don't worry: your changes will be merged back into the
+# upstream branch
+Vcs-Bzr: lp:ubuntu-settings-components
 
 Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~)
 Depends: qtdeclarative5-ubuntu-settings-components-assets (= ${source:Version}),
          qtdeclarative5-ubuntu-ui-toolkit-plugin,
          ${misc:Depends},
