@@ -68,7 +68,7 @@ BasicMenu {
 
         Image {
             id: checkMark
-            source: "UserSession/CheckMark.png"
+            source: "artwork/CheckMark.png"
             anchors.centerIn: parent
         }
     }

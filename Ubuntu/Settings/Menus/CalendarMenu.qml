@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "Calendar"
+import Ubuntu.Settings.Components 0.1
 
 BasicMenu {
     id: calendarMenu

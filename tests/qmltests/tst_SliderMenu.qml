@@ -19,8 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SettingsComponents"
-import "utils.js" as UtilsJS
+import Ubuntu.Settings.Menus 0.1
 
 Item {
     width: units.gu(42)
@@ -39,27 +38,30 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            TimeZoneMenu {
-                id: timeZoneMenu
-                city: "San Francisco"
-                time: "10:00am"
+            SliderMenu {
+                id: sliderMenu
+                text: i18n.tr("Slider")
             }
         }
     }
 
     TestCase {
-        name: "TimeZoneMenu"
+        name: "SliderMenu"
         when: windowShown
 
-        function test_city() {
-            timeZoneMenu.city = "London"
-            compare(timeZoneMenu.city, "London", "Cannot set city")
+        function test_minimumValue() {
+            sliderMenu.minimumValue = 11
+            compare(sliderMenu.minimumValue, 11, "Cannot set minimumValue")
         }
 
-        function test_time() {
-            timeZoneMenu.time = "12:00am"
-            var timeLabel = UtilsJS.findChild(timeZoneMenu, "timeLabel")
-            compare(timeLabel.text, "12:00am", "Cannot set time")
+        function test_maximumValue() {
+            sliderMenu.minimumValue = 98
+            compare(sliderMenu.minimumValue, 98, "Cannot set maximumValue")
+        }
+
+        function test_value() {
+            sliderMenu.value = 36
+            compare(sliderMenu.value, 36, "Cannot set value")
         }
     }
 }

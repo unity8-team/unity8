@@ -3,6 +3,8 @@ project(settings-components)
 
 cmake_minimum_required(VERSION 2.8.9)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+
 # Install paths
 include(GNUInstallDirs)
 
@@ -18,7 +20,8 @@ file(TO_CMAKE_PATH "${QT_IMPORTS_DIR}" QT_IMPORTS_DIR)
 set(OUR_QT_QUICK_INCLUDE ${Qt5Quick_INCLUDE_DIRS})
 LIST(APPEND QT_PKGCONFIG_DEPENDENCIES "Qt5Quick")
 
-set(SETTINGS_COMPONENTS_DIR ${QT_IMPORTS_DIR}/Ubuntu)
+set(UBUNTU_QML_DIR ${QT_IMPORTS_DIR}/Ubuntu)
+set(SETTINGS_COMPONENTS_DIR ${CMAKE_INSTALL_DATADIR}/ubuntu-settings-components)
 
 # Enable QML debugging
 if(CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -67,19 +70,19 @@ endif()
 
 # Install subdirectories
 set(QML_DIRS
-    SettingsComponents
+    Ubuntu/Settings
     )
-
-INSTALL(CODE "EXECUTE_PROCESS(COMMAND
-             mkdir -p \$ENV{DESTDIR}${SETTINGS_COMPONENTS_DIR})")
-INSTALL(CODE "EXECUTE_PROCESS(COMMAND
-             ln -sf /usr/share/SettingsComponents
-                    \$ENV{DESTDIR}${SETTINGS_COMPONENTS_DIR})")
 
 # Install arch-independent assets under /usr/share
 install(DIRECTORY ${QML_DIRS}
-    DESTINATION ${CMAKE_INSTALL_DATADIR}
+    DESTINATION ${SETTINGS_COMPONENTS_DIR}
     )
+
+install(CODE "EXECUTE_PROCESS(COMMAND
+             mkdir -p \$ENV{DESTDIR}${UBUNTU_QML_DIR})")
+install(CODE "EXECUTE_PROCESS(COMMAND
+             ln -sf ${CMAKE_INSTALL_PREFIX}/${SETTINGS_COMPONENTS_DIR}/Settings
+                    \$ENV{DESTDIR}${UBUNTU_QML_DIR}/Settings)")
 
 # Tests
 enable_testing()

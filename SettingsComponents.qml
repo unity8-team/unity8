@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "SettingsComponents"
+import Ubuntu.Settings.Menus 0.1
 
 MainView {
     // Note! applicationName needs to match the .desktop filename
@@ -29,9 +29,9 @@ MainView {
 
     ListModel {
         id: mediaPlayerModel
-        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "SettingsComponents/MediaPlayer/speak-now.jpg"}
-        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "SettingsComponents/MediaPlayer/electric.jpg"}
-        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "SettingsComponents/MediaPlayer/the-man-machine.jpg"}
+        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "tests/artwork/speak-now.jpg"}
+        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "tests/artwork/electric.jpg"}
+        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "tests/artwork/the-man-machine.jpg"}
     }
 
     ListModel {
@@ -87,7 +87,7 @@ MainView {
 
                 UserSessionMenu {
                     name: i18n.tr("Lola Chang")
-                    icon: Qt.resolvedUrl("avatar.png")
+                    icon: Qt.resolvedUrl("tests/artwork/avatar.png")
                     active: true
                 }
 

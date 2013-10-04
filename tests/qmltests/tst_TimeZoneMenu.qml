@@ -19,7 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
-import "../../SettingsComponents"
+import Ubuntu.Settings.Menus 0.1
 import "utils.js" as UtilsJS
 
 Item {
@@ -39,30 +39,27 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            ButtonMenu {
-                id: buttonMenu
-                text: i18n.tr("Button")
-                buttonText: i18n.tr("Hello world!")
+            TimeZoneMenu {
+                id: timeZoneMenu
+                city: "San Francisco"
+                time: "10:00am"
             }
         }
     }
 
-    SignalSpy {
-        id: signalSpy
-        signalName: "clicked"
-        target: buttonMenu
-    }
-
     TestCase {
-        name: "ButtonMenu"
+        name: "TimeZoneMenu"
         when: windowShown
 
-        function test_click() {
-            signalSpy.clear()
+        function test_city() {
+            timeZoneMenu.city = "London"
+            compare(timeZoneMenu.city, "London", "Cannot set city")
+        }
 
-            var button = UtilsJS.findChild(buttonMenu, "button")
-            mouseClick(buttonMenu, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0)
-            compare(signalSpy.count > 0, true, "signal clicked not triggered")
+        function test_time() {
+            timeZoneMenu.time = "12:00am"
+            var timeLabel = UtilsJS.findChild(timeZoneMenu, "timeLabel")
+            compare(timeLabel.text, "12:00am", "Cannot set time")
         }
     }
 }
