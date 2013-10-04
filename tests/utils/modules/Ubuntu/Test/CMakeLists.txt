@@ -22,3 +22,6 @@ add_custom_target(UbuntuTestQmlJsFiles ALL
     COMMAND cp ${QML_JS_FILES} ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${QML_JS_FILES}
 )
+
+add_custom_target(UbuntuTest)
+add_dependencies(UbuntuTest UbuntuTestQml UbuntuTestQmlJsFiles)

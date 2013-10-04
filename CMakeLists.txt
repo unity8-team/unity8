@@ -23,11 +23,6 @@ LIST(APPEND QT_PKGCONFIG_DEPENDENCIES "Qt5Quick")
 set(UBUNTU_QML_DIR ${QT_IMPORTS_DIR}/Ubuntu)
 set(SETTINGS_COMPONENTS_DIR ${CMAKE_INSTALL_DATADIR}/ubuntu-settings-components)
 
-# Enable QML debugging
-if(CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_definitions(-DQT_QML_DEBUG)
-endif()
-
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -36,18 +31,27 @@ add_definitions(-DQT_NO_KEYWORDS)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-# Coverage tools
-OPTION(ENABLE_COVERAGE "Build with coverage analysis support" OFF)
-if(ENABLE_COVERAGE)
-    message(STATUS "Using coverage flags")
-    find_program(COVERAGE_COMMAND gcov)
-    if(NOT COVERAGE_COMMAND)
-        message(FATAL_ERROR "gcov command not found")
-    endif()
-    SET(CMAKE_C_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
-    include(${CMAKE_SOURCE_DIR}/cmake/lcov.cmake)
+# enable QML debugging
+string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower) # Build types should always be lowercase but sometimes they are not.
+if(cmake_build_type_lower MATCHES "debug")
+    add_definitions(-DQT_QML_DEBUG)
+endif()
+
+include(EnableCoverageReport)
+#####################################################################
+# Enable code coverage calculation with gcov/gcovr/lcov
+# Usage:
+#  * Switch build type to coverage (use ccmake or cmake-gui)
+#  * Invoke make, make test, make coverage (or ninja if you use that backend)
+#  * Find html report in subdir coveragereport
+#  * Find xml report feasible for jenkins in coverage.xml
+#####################################################################
+if(cmake_build_type_lower MATCHES coverage)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage" )
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage" )
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage" )
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage" )
+  ENABLE_COVERAGE_REPORT(TARGETS ${SHELL_APP} FILTER /usr/include ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)
 endif()
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
