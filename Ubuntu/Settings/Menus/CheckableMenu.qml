@@ -25,21 +25,13 @@ ListItem.Empty {
     id: menu
 
     property bool checked: false
-
-    signal check(bool checked)
-
-    onCheckedChanged: {
-        // Can't rely on binding. Checked is assigned on click.
-        checkbox.checked = checked;
-    }
-
-    onClicked: {
-        checkbox.clicked()
-    }
+    __acceptEvents: false
 
     Components.CheckBox {
         id: checkbox
         objectName: "checkbox"
+        property bool enableCheckConnection: true
+
         anchors {
             left: parent.left
             leftMargin: menu.__contentsMargins
@@ -52,8 +44,39 @@ ListItem.Empty {
 
         // FIXME : should use Checkbox.toggled signal
         // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
-        onClicked: {
-            menu.check(checkbox.checked);
+        onCheckedChanged: {
+            if (!enableCheckConnection) {
+                return;
+            }
+            var oldEnable = enableCheckConnection;
+            enableCheckConnection = false;
+
+            menu.checked = checked;
+            menu.triggered(menu.checked);
+
+            enableCheckConnection = oldEnable;
+        }
+
+        Connections {
+            target: menu
+            onCheckedChanged: {
+                if (!checkbox.enableCheckConnection) {
+                    return;
+                }
+                var oldEnable = checkbox.enableCheckConnection;
+                checkbox.enableCheckConnection = false;
+
+                checkBoxActive.checked = menu.checked;
+
+                checkbox.enableCheckConnection = oldEnable;
+            }
+        }
+
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                checkbox.clicked();
+            }
         }
     }
 

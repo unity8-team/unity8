@@ -41,8 +41,8 @@ HeroMessageMenu {
     heroMessageHeader.subtitleText.text: message
     heroMessageHeader.bodyText.text: time
 
-    signal activate
-    signal reply(string value)
+    signal activated
+    signal replied(string value)
 
     Item {
         id: buttons
@@ -83,7 +83,7 @@ HeroMessageMenu {
             enabled: menu.activateEnabled
 
             onClicked: {
-                menu.activate();
+                menu.activated();
             }
         }
 
@@ -108,8 +108,8 @@ HeroMessageMenu {
     USC.QuickReply {
         id: quickreply
 
-        onReply: {
-            menu.reply(value);
+        onReplied: {
+            menu.replied(value);
         }
 
         messages: ""

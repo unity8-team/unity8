@@ -33,11 +33,11 @@ ListItem.Empty {
     property url avatar
     property url appIcon
 
-    signal activateApp
-    signal dismiss
+    signal appActivated
+    signal dismissed
 
-    signal selectMenu
-    signal deselectMenu
+    signal selected
+    signal deselected
 
     removable: state !== "expanded"
     implicitHeight: collapsedHeight
@@ -66,15 +66,15 @@ ListItem.Empty {
 
         onAppIconClicked:  {
             deselectMenu();
-            menu.activateApp();
+            menu.appActivated();
         }
     }
 
     onClicked: {
         if (selected) {
-            deselectMenu();
+            deselected();
         } else {
-            selectMenu();
+            selected();
         }
     }
 
@@ -104,6 +104,6 @@ ListItem.Empty {
     }
 
     onItemRemoved: {
-        menu.dismiss();
+        menu.dismissed();
     }
 }
