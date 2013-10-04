@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+export DPKG_GENSYMBOLS_CHECK_LEVEL=4
+
 %:
 	dh $@ --parallel --fail-missing
