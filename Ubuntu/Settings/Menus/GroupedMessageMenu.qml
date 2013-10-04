@@ -47,14 +47,6 @@ ListItem.Empty {
                 source: appIcon != "" ? appIcon : "artwork/default_app.svg"
                 fillMode: Image.PreserveAspectFit
             }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.log("click");
-                    menu.activateApp();
-                }
-            }
         }
 
         Label {

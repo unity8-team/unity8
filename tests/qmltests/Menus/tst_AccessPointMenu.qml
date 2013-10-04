@@ -57,8 +57,8 @@ Item {
     }
 
     SignalSpy {
-        id: signalSpyActivate
-        signalName: "activate"
+        id: signalSpyTriggered
+        signalName: "triggered"
         target: accessPoint
     }
 
@@ -71,11 +71,12 @@ Item {
             accessPoint.secure = false;
             accessPoint.adHoc = false;
             accessPoint.signalStrength = 0;
+            signalSpyTriggered.clear();
         }
 
         function test_activate() {
             mouseClick(accessPoint, accessPoint.width / 2, accessPoint.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivate.count > 0, true, "activate signal should have been triggered");
+            compare(signalSpyTriggered.count > 0, true, "activate signal should have been triggered");
         }
 
         function test_signalIcon_data() {

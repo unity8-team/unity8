@@ -52,13 +52,13 @@ Item {
 
     SignalSpy {
         id: signalSpyActivateApp
-        signalName: "activateApp"
+        signalName: "appActivated"
         target: messageMenu
     }
 
     SignalSpy {
         id: signalSpyDismiss
-        signalName: "dismiss"
+        signalName: "dismissed"
         target: messageMenu
     }
 
@@ -116,12 +116,7 @@ Item {
         }
 
         function test_activate() {
-            var appIcon = UtilsJS.findChild(messageMenu, "appIcon");
-
-            mouseClick(appIcon, appIcon.width * 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count, 0, "activate app should not have been triggered");
-
-            mouseClick(appIcon, appIcon.width / 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(messageMenu, messageMenu.width / 2, messageMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyActivateApp.count > 0, true, "activate app should have been triggered");
         }
 

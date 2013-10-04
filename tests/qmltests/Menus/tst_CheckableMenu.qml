@@ -47,8 +47,8 @@ Item {
     }
 
     SignalSpy {
-        id: signalSpy
-        signalName: "check"
+        id: signalSpyTriggered
+        signalName: "triggered"
         target: checkMenu
     }
 
@@ -58,6 +58,7 @@ Item {
 
         function init() {
             checkMenu.checked = false;
+            signalSpyTriggered.clear();
         }
 
         function test_checkChanged() {
@@ -70,18 +71,14 @@ Item {
         }
 
         function test_clickCheckBox() {
-            signalSpy.clear();
-
             var checkbox = UtilsJS.findChild(checkMenu, "checkbox");
             mouseClick(checkMenu, checkbox.width / 2, checkbox.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpy.count > 0, true, "signal checked not triggered on checkbox click");
+            compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on checkbox click");
         }
 
         function test_clickCheckMenu() {
-            signalSpy.clear()
-
             mouseClick(checkMenu, checkMenu.width / 2, checkMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpy.count > 0, true, "signal checked not triggered on checkMenu click");
+            compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on checkMenu click");
         }
     }
 }

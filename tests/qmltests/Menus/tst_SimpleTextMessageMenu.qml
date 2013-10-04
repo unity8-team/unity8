@@ -65,7 +65,7 @@ Item {
 
     SignalSpy {
         id: signalSpyActivateApp
-        signalName: "activateApp"
+        signalName: "appActivated"
         target: messageMenuSelected
     }
 

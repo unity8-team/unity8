@@ -53,8 +53,8 @@ Item {
     }
 
     SignalSpy {
-        id: signalSpy
-        signalName: "check"
+        id: signalSpyTriggered
+        signalName: "triggered"
         target: switchMenu
     }
 
@@ -64,6 +64,7 @@ Item {
 
         function init() {
             switchMenu.checked = false;
+            signalSpyTriggered.clear();
         }
 
         function test_checkChanged() {
@@ -76,18 +77,14 @@ Item {
         }
 
         function test_clickSwitchBox() {
-            signalSpy.clear();
-
             var switcher = UtilsJS.findChild(switchMenu, "switcher");
             mouseClick(switchMenu, switcher.width / 2, switcher.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpy.count > 0, true, "signal checked not triggered on switcher click");
+            compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on switcher click");
         }
 
         function test_clickSwitchMenu() {
-            signalSpy.clear();
-
             mouseClick(switchMenu, switchMenu.width / 2, switchMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpy.count > 0, true, "signal checked not triggered on switchMenu click");
+            compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on switchMenu click");
         }
     }
 }

@@ -60,7 +60,7 @@ Item {
                 removable: true
                 anchors.top: messageMenuRemovable.bottom
 
-                onReply: {
+                onReplied: {
                     textMessageReply = value;
                 }
             }
@@ -71,19 +71,19 @@ Item {
 
     SignalSpy {
         id: signalSpyActivateApp
-        signalName: "activateApp"
+        signalName: "appActivated"
         target: messageMenuSelected
     }
 
     SignalSpy {
         id: signalSpyDismiss
-        signalName: "dismiss"
+        signalName: "dismissed"
         target: messageMenuRemovable
     }
 
     SignalSpy {
         id: signalSpyReply
-        signalName: "reply"
+        signalName: "replied"
         target: messageMenuSelected
     }
 
