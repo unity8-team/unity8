@@ -31,8 +31,6 @@ ListItem.Standard {
         objectName: "switcher"
         property bool enableCheckConnection: true
 
-        onEnabledChanged: console.log("enabled" + enabled);
-
         Component.onCompleted: {
             checked = menu.checked;
         }
