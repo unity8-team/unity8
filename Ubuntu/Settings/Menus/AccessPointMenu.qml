@@ -70,7 +70,7 @@ ListItem.Empty {
                 var oldEnable = checkbox.enableCheckConnection;
                 checkbox.enableCheckConnection = false;
 
-                checkBoxActive.checked = menu.checked;
+                checkbox.checked = menu.checked;
 
                 checkbox.enableCheckConnection = oldEnable;
             }
