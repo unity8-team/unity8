@@ -74,6 +74,8 @@ public:
     enum Roles {
         Identifier = 0,
         Position,
+        Title,
+        Description,
         WidgetSource,
         PageSource,
         IndicatorProperties,

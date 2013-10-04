@@ -100,17 +100,16 @@ MainView {
             Tab {
                 id: tab
                 objectName: model.identifier
+                title: model.title
 
                 page: Page {
                     Loader {
-                        id: loader
                         clip: true
                         anchors.fill: parent
                         source: pageSource
                         asynchronous: true
 
-                        readonly property bool indexActive: index >= 0 && index < menuActivator.count && menuActivator.content[index].active
-                        readonly property bool contentActive: content.__contentActive && indexActive
+                        property bool contentActive: content.__contentActive && menuActivator.content[index].active
 
                         onContentActiveChanged: {
                             if (contentActive && item) {
@@ -136,12 +135,6 @@ MainView {
                             if (contentActive && tabs.visible) {
                                 item.start()
                             }
-                        }
-
-                        Binding {
-                            target: tab
-                            property: "title"
-                            value: loader.item && loader.item.hasOwnProperty("title") && loader.item.title !== "" ? loader.item.title : model.identifier
                         }
                     }
                 }

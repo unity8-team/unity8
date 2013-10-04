@@ -19,16 +19,16 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
+import Unity.IndicatorsLegacy 0.1 as Indicators
 
 Indicators.IndicatorWidget {
     id: indicatorWidget
 
+    enabled:true
     width: itemRow.width + units.gu(0.5)
 
-    property alias leftLabel: itemLeftLabel.text
-    property alias rightLabel: itemRightLabel.text
-    property var icons: undefined
+    property alias label: itemLabel.text
+    property alias iconSource: itemImage.source
 
     Row {
         id: itemRow
@@ -40,43 +40,19 @@ Indicators.IndicatorWidget {
         }
         spacing: units.gu(0.5)
 
-        Label {
-            id: itemLeftLabel
-            objectName: "leftLabel"
-            color: Theme.palette.selected.backgroundText
-            opacity: 0.8
-            font.family: "Ubuntu"
-            fontSize: "medium"
+        // FIXME : Should us Ubuntu.Icon . results in low res images
+        Image {
+            id: itemImage
+            objectName: "itemImage"
+            visible: source != ""
+            height: indicatorWidget.iconSize
+            width: indicatorWidget.iconSize
             anchors.verticalCenter: parent.verticalCenter
-            visible: text != ""
-        }
-
-        Row {
-            width: childrenRect.width
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
-            spacing: units.gu(0.5)
-
-            Repeater {
-                model: indicatorWidget.icons
-
-                Image {
-                    id: itemImage
-                    objectName: "itemImage"
-                    visible: source != ""
-                    source: modelData
-                    height: indicatorWidget.iconSize
-                    width: indicatorWidget.iconSize
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
         }
 
         Label {
-            id: itemRightLabel
-            objectName: "rightLabel"
+            id: itemLabel
+            objectName: "itemLabel"
             color: Theme.palette.selected.backgroundText
             opacity: 0.8
             font.family: "Ubuntu"
@@ -86,18 +62,16 @@ Indicators.IndicatorWidget {
         }
     }
 
-    onRootActionStateChanged: {
-        if (rootActionState == undefined) {
-            leftLabel = "";
-            rightLabel = "";
-            icons = undefined;
-            enabled = false;
+    onActionStateChanged: {
+        if (action == undefined || !action.valid) {
             return;
         }
 
-        leftLabel = rootActionState.leftLabel ? rootActionState.leftLabel : "";
-        rightLabel = rootActionState.rightLabel ? rootActionState.rightLabel : "";
-        icons = rootActionState.icons;
-        enabled = rootActionState.visible;
+        if (action.state == undefined) {
+            return;
+        }
+
+        label = action.state[Indicators.ActionState.Label];
+        iconSource = "image://theme/" + action.state[Indicators.ActionState.IconSource];
     }
 }

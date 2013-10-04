@@ -623,7 +623,6 @@ FocusScope {
         }
 
         Bottombar {
-            id: bottombar
             theHud: hud
             anchors.fill: parent
             enabled: hud.available
@@ -651,7 +650,7 @@ FocusScope {
             onDashItemSelected: showHome()
             onDash: {
                 if (stages.shown) {
-                    dash.setCurrentScope("applications.scope", true /* animate */, true /* reset */)
+                    dash.setCurrentScope("applications.scope", true, false)
                     stages.hide();
                     launcher.hide();
                 }
@@ -664,7 +663,6 @@ FocusScope {
                 if (shown) {
                     panel.indicators.hide()
                     hud.hide()
-                    bottombar.hide()
                 }
             }
         }

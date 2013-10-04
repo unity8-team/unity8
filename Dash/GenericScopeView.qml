@@ -22,7 +22,6 @@ import "../Components/ListItems" as ListItems
 ScopeView {
     id: scopeView
     readonly property alias previewShown: previewLoader.onScreen
-    property bool enableHeightBehaviorOnNextCreation: false
 
     onIsCurrentChanged: {
         pageHeader.resetSearch();
@@ -30,8 +29,6 @@ ScopeView {
     }
 
     onMovementStarted: categoryView.showHeader()
-
-    onPositionedAtBeginning: categoryView.positionAtBeginning()
 
     Binding {
         target: scopeView.scope
@@ -61,7 +58,6 @@ ScopeView {
 
     ScopeListView {
         id: categoryView
-        objectName: "categoryListView"
         anchors.fill: parent
         model: scopeView.categories
         forceNoClip: previewLoader.onScreen
@@ -86,13 +82,9 @@ ScopeView {
                     right: parent.right
                 }
 
-                source: getRenderer(model.renderer, model.contentType, model.rendererHint)
+                source: getRenderer(model.renderer, model.contentType)
 
                 onLoaded: {
-                    if (item.enableHeightBehavior !== undefined && item.enableHeightBehaviorOnNextCreation !== undefined) {
-                        item.enableHeightBehavior = scopeView.enableHeightBehaviorOnNextCreation;
-                        scopeView.enableHeightBehaviorOnNextCreation = false;
-                    }
                     if (source.toString().indexOf("Apps/RunningApplicationsGrid.qml") != -1) {
                         // TODO: the running apps grid doesn't support standard scope results model yet
                         item.firstModel = Qt.binding(function() { return results.firstModel })
@@ -106,12 +98,6 @@ ScopeView {
                         if (shouldFilter != item.filter) {
                             item.filter = shouldFilter;
                         }
-                    }
-                }
-
-                Component.onDestruction: {
-                    if (item.enableHeightBehavior !== undefined && item.enableHeightBehaviorOnNextCreation !== undefined) {
-                        scopeView.enableHeightBehaviorOnNextCreation = item.enableHeightBehaviorOnNextCreation;
                     }
                 }
 
@@ -190,7 +176,6 @@ ScopeView {
             width: categoryView.width
             text: scopeView.scope.name
             searchEntryEnabled: true
-            scope: scopeView.scope
         }
     }
 
@@ -200,7 +185,7 @@ ScopeView {
         }
     }
 
-    function getRenderer(rendererId, contentType, rendererHint) {
+    function getRenderer(rendererId, contentType) {
         if (rendererId == "default") {
             rendererId = getDefaultRendererId(contentType);
         }
@@ -209,22 +194,10 @@ ScopeView {
                 switch (contentType) {
                     case "video": return "Generic/GenericFilterGridPotrait.qml";
                     case "music": return "Music/MusicFilterGrid.qml";
-                    case "apps": {
-                        if (rendererHint == "toggled")
-                            return "Apps/DashPluginFilterGrid.qml";
-                        else
-                            return "Generic/GenericFilterGrid.qml";
-                    }
-                    case "weather": return "Generic/WeatherFilterGrid.qml";
                     default: return "Generic/GenericFilterGrid.qml";
                 }
             }
-            case "carousel": {
-                switch (contentType) {
-                    case "music": return "Music/MusicCarousel.qml";
-                    default: return "Generic/GenericCarousel.qml";
-                }
-            }
+            case "carousel": return "Generic/GenericCarousel.qml";
             case "special": {
                 switch (contentType) {
                     case "apps": return "Apps/RunningApplicationsGrid.qml";

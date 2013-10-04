@@ -97,9 +97,7 @@ Showable {
         if (shouldUseScreenshots) {
             stage.__focusApplicationUsingScreenshots(stage.focusedApplication);
         } else {
-            if (stage.focusedApplicationWhenUsingScreenshots) {
-                stage.__focusActualApplication(stage.focusedApplicationWhenUsingScreenshots);
-            }
+            stage.__focusActualApplication(stage.focusedApplicationWhenUsingScreenshots);
         }
     }
 
@@ -246,7 +244,6 @@ Showable {
                     */
                     delayedHideScreenshots.start();
                 } else {
-                    stage.focusedApplicationWhenUsingScreenshots = null;
                     stage.__hideScreenshots();
                 }
             }

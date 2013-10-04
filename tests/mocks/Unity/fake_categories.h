@@ -39,7 +39,6 @@ public:
         RoleIcon,
         RoleRenderer,
         RoleContentType,
-        RoleRendererHint,
         RoleHints,
         RoleResults,
         RoleCount

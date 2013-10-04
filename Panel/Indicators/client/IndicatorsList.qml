@@ -20,7 +20,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
-import Unity.Indicators 0.1 as Indicators
+import Unity.IndicatorsLegacy 0.1 as Indicators
 import "../.."
 
 Page {
@@ -28,10 +28,8 @@ Page {
     anchors.fill: parent
     title: "Plugin list"
 
-    Indicators.IndicatorsModel {
+    IndicatorsDataModel {
         id: indicatorsModel
-
-        Component.onCompleted: load()
     }
 
     ListView {
@@ -40,24 +38,24 @@ Page {
         anchors.fill: parent
         model: indicatorsModel
 
-        delegate: Indicators.FramedMenuItem {
+        delegate: Indicators.MenuItem {
             anchors.left: parent.left
             anchors.right: parent.right
+            progression: isValid
             objectName: identifier
 
-            text: title
-
-            onClicked: {
-                var new_page = Qt.createComponent("IndicatorsPage.qml");
-                page.pageStack.push(new_page.createObject(pages), {"indicatorProperties" : model.indicatorProperties, "pageSource" : model.pageSource});
+            Label {
+                anchors.left: parent.left
+                anchors.leftMargin: units.gu(0.5)
+                anchors.verticalCenter: parent.verticalCenter
+                text: title
             }
 
-            Rectangle {
-                id: background
-
-                anchors.fill: parent
-                color: "#221e1c"
-                z: -1
+            onClicked: {
+                if (progression) {
+                    var new_page = Qt.createComponent("IndicatorsPage.qml");
+                    page.pageStack.push(new_page.createObject(pages), {"indicatorProperties" : model.indicatorProperties, "pageSource" : model.pageSource});
+                }
             }
         }
     }

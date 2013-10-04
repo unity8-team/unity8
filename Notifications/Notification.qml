@@ -17,8 +17,6 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Unity.Notifications 1.0
-import QMenuModel 0.1
-import Utils 0.1
 
 UbuntuShape {
     id: notification
@@ -39,24 +37,6 @@ UbuntuShape {
     opacity: 0
 
     clip: true
-
-    UnityMenuModelPaths {
-        id: paths
-
-        source: hints["x-canonical-private-menu-model"]
-
-        busNameHint: "busName"
-        actionsHint: "actions"
-        menuObjectPathHint: "menuPath"
-    }
-
-    UnityMenuModel {
-        id: unityMenuModel
-
-        busName: paths.busName
-        actions: paths.actions
-        menuObjectPath: paths.menuObjectPath
-    }
 
     Behavior on implicitHeight {
         id: heightBehavior
@@ -161,27 +141,6 @@ UbuntuShape {
             }
         }
 
-        Column {
-            objectName: "dialogListView"
-            spacing: units.gu(2)
-
-            visible: count > 0
-
-            anchors.left: parent.left; anchors.right: parent.right
-
-            Repeater {
-                model: unityMenuModel
-
-                NotificationMenuItemFactory {
-                    anchors.left: parent.left; anchors.right: parent.right
-
-                    menuModel: unityMenuModel
-                    menuData: model
-                    menuIndex: index
-                }
-            }
-        }
-
         Item {
             id: buttonRow
 
@@ -236,7 +195,7 @@ UbuntuShape {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                gradient: notification.hints["x-canonical-private-button-tint"] == "true" ? UbuntuColors.orangeGradient : UbuntuColors.greyGradient
+                gradient: notification.hints == Notification.ButtonTint ? UbuntuColors.orangeGradient : UbuntuColors.greyGradient
                 visible: width > 0
                 onClicked: notification.notification.invokeAction(actionRepeater.itemAt(0).actionId)
             }

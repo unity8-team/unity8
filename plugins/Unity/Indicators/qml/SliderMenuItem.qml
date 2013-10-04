@@ -71,7 +71,7 @@ FramedMenuItem {
                 leftMargin: leftImage.visible ? units.gu(0.5) : 0
                 rightMargin: rightImage.visible ? units.gu(0.5) : 0
             }
-            live: true
+            live: false
 
             Component.onCompleted: {
                 value = menuItem.value

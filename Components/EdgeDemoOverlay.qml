@@ -121,6 +121,7 @@ Showable {
 
         Column {
             id: labelGroup
+            layer.enabled: true // otherwise the underlining on "Skip intro" jumps
             spacing: units.gu(3)
 
             anchors {
@@ -149,15 +150,7 @@ Showable {
                 text: i18n.tr("Skip intro")
                 color: UbuntuColors.orange
                 fontSize: "small"
-
-                Icon {
-                    anchors.left: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: units.dp(12)
-                    width: units.dp(12)
-                    name: "chevron"
-                    color: UbuntuColors.orange
-                }
+                font.underline: true
 
                 MouseArea {
                     // Make clickable area bigger than just the link because

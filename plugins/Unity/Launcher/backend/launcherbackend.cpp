@@ -38,13 +38,13 @@ public:
     bool pinned;
 };
 
-LauncherBackend::LauncherBackend(QObject *parent):
+LauncherBackend::LauncherBackend(bool useStorage, QObject *parent):
     QObject(parent),
     m_accounts(nullptr)
 {
-#ifndef LAUNCHER_TESTING
-    m_accounts = new AccountsServiceDBusAdaptor(this);
-#endif
+    if (useStorage) {
+        m_accounts = new AccountsServiceDBusAdaptor(this);
+    }
     m_user = qgetenv("USER");
     syncFromAccounts();
 }

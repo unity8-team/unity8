@@ -1,8 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
- *
- * Authors:
- *   Mirco Müller <mirco.mueller@canonical.com>
+ * Copyright (C) 2012 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +12,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Author: Nick Dedekind <nick.dedekind@canonical.com>
  */
 
-import QtQuick 2.0
+// Qt
+#include <QtQml/qqml.h>
 
-QtObject {
-    property variant busName
-    property variant actions
-    property variant menuObjectPath
+// self
+#include "plugin.h"
+
+// local
+#include "networkagent.h"
+
+void IndicatorsNetworkPlugin::registerTypes(const char *uri)
+{
+    qmlRegisterType<NetworkAgent>(uri, 0, 1, "NetworkAgent");
 }

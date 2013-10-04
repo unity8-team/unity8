@@ -30,7 +30,6 @@ class BottomBarVisibilityCommunicatorShell : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool forceHidden READ forceHidden WRITE setForceHidden NOTIFY forceHiddenChanged)
-    Q_PROPERTY(double position READ position WRITE setPosition NOTIFY positionChanged)
 
     Q_CLASSINFO("D-Bus Interface", "com.canonical.Shell.BottomBarVisibilityCommunicator")
 public:
@@ -42,18 +41,13 @@ public:
     bool forceHidden() const;
     void setForceHidden(bool forceHidden);
 
-    double position() const;
-    void setPosition(double position);
-
 Q_SIGNALS:
     void forceHiddenChanged(bool forceHidden);
-    void positionChanged(double position);
 
 private:
     BottomBarVisibilityCommunicatorShell();
 
     bool m_forceHidden;
-    double m_position;
 };
 
 #endif

@@ -22,8 +22,6 @@ ResponsiveFlowView {
     clip: true
 
     signal updateScreenshots
-    property alias enableHeightBehavior: heightBehaviour.enabled
-    property bool enableHeightBehaviorOnNextCreation: firstModel.count + secondModel.count == 0
 
     Connections {
         target: shell
@@ -31,24 +29,7 @@ ResponsiveFlowView {
         onStageScreenshotsReadyChanged: if (shell.dashShown && shell.stageScreenshotsReady) updateScreenshots();
     }
 
-    Behavior on height {
-        id: heightBehaviour
-        enabled: false
-        NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
-    }
-
-    Connections {
-        target: root.firstModel
-        onCountChanged: {
-            heightBehaviour.enabled = true;
-        }
-    }
-    Connections {
-        target: root.secondModel
-        onCountChanged: {
-            heightBehaviour.enabled = true;
-        }
-    }
+    Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
 
     property bool canEnableTerminationMode: true
 

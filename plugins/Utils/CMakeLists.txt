@@ -9,7 +9,6 @@ set(QMLPLUGIN_SRC
     qlimitproxymodelqml.cpp
     qsortfilterproxymodelqml.cpp
     ubuntuwindow.cpp
-    unitymenumodelpaths.cpp
     plugin.cpp
     )
 
@@ -22,7 +21,7 @@ add_library(Utils-qml SHARED
 # files directly in targets.
 set_target_properties(Utils-qml PROPERTIES COMPILE_FLAGS -fvisibility=default)
 
-qt5_use_modules(Utils-qml Qml Quick DBus)
+qt5_use_modules(Utils-qml Qml Quick)
 
 # export the qmldir qmltypes and plugin files
 export_qmlfiles(Utils Utils)
