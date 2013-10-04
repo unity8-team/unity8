@@ -70,13 +70,6 @@ ListItem.Empty {
         anchors.bottom: parent.bottom
     }
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            menu.appActivated();
-        }
-    }
-
     onItemRemoved: {
         menu.dismissed();
     }
