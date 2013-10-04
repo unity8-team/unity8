@@ -60,8 +60,8 @@ Item {
             left: avatarImageContainer.right
             leftMargin: units.gu(1)
         }
-        height: units.gu(1.5)
         width: units.gu(2)
+        height: width
         horizontalAlignment: Image.AlignHCenter
         verticalAlignment: Image.AlignBottom
         fillMode: Image.PreserveAspectFit
@@ -77,7 +77,6 @@ Item {
             rightMargin: units.gu(2)
         }
         elide: Text.ElideRight
-        color: "#e8e1d0"
         font.weight: Font.DemiBold
         fontSize: "medium"
     }
@@ -91,7 +90,6 @@ Item {
             right: __titleText.right
         }
         elide: Text.ElideRight
-        color: "#8f8f88"
         fontSize: "small"
     }
 
@@ -107,7 +105,6 @@ Item {
         maximumLineCount: 2
         wrapMode: Text.WordWrap
         elide: Text.ElideRight
-        color: "#e8e1d0"
         fontSize: "small"
     }
 

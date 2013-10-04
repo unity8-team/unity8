@@ -18,25 +18,22 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-BasicMenu {
-    id: mediaPlayerMenu
+ListItem.Empty {
+    id: menu
+
+    property bool running: false
+    property alias playerName: playerNameLabel.text
+    property alias playerIcon: playerIcon.source
 
     property alias albumArt: albumArtImage.source
     property alias song: songLabel.text
     property alias artist: artistLabel.text
     property alias album: albumLabel.text
-    property bool playing: false
 
-    signal next()
-    signal play()
-    signal previous()
-
-//    ItemStyle.class: "settings-menu mediaplayer-menu"
-
-    implicitHeight: column.height + units.gu(4)
-
-    onPlay: playing = !playing
+    implicitHeight: column.height + units.gu(2)
+    Behavior on implicitHeight { UbuntuNumberAnimation {} }
 
     Column {
         id: column
@@ -44,16 +41,46 @@ BasicMenu {
             left: parent.left
             right: parent.right
             top: parent.top
-            margins: units.gu(2)
+            topMargin: units.gu(1)
+            leftMargin: menu.__contentsMargins
+            rightMargin: menu.__contentsMargins
         }
-        spacing: units.gu(2)
+        height: running ? trackRow.height : playerRow.height
 
         Row {
-            width: mediaPlayerMenu.width
-            spacing: units.gu(2)
+            objectName: "player"
+            id: playerRow
+            spacing: menu.__contentsMargins
+            visible: !running
+
+            Behavior on opacity { UbuntuNumberAnimation {} }
 
             UbuntuShape {
-                width: units.gu(14)
+                width: units.gu(5)
+                height: width
+
+                image: Image {
+                    id: playerIcon
+                }
+            }
+
+            Label {
+                id: playerNameLabel
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Row {
+            objectName: "albumArt"
+            id: trackRow
+            width: menu.width
+            spacing: units.gu(2)
+            visible: running
+
+            Behavior on opacity { UbuntuNumberAnimation {} }
+
+            UbuntuShape {
+                width: units.gu(10)
                 height: width
 
                 image: Image {
@@ -63,57 +90,19 @@ BasicMenu {
 
             Column {
                 spacing: units.gu(1)
+                anchors.verticalCenter: parent.verticalCenter
 
                 Label {
                     id: songLabel
-                    color: "#757373"
-//                    ItemStyle.class: "label label-song"
                 }
 
                 Label {
                     id: artistLabel
-                    color: "#757373"
-//                    ItemStyle.class: "label label-artist"
                 }
 
                 Label {
                     id: albumLabel
-                    color: "#757373"
-//                    ItemStyle.class: "label label-album"
                 }
-            }
-        }
-
-        Row {
-            id: controlsRow
-
-            readonly property real buttonsWidth: units.gu(8)
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: units.gu(4)
-
-            Button {
-                objectName: "previousButton"
-                width: controlsRow.buttonsWidth
-                iconSource: "artwork/DoubleLeftArrow.png"
-                onClicked: mediaPlayerMenu.previous()
-                text: ""
-            }
-
-            Button {
-                objectName: "playButton"
-                width: controlsRow.buttonsWidth
-                iconSource: playing ? "artwork/RightArrow.png" : "artwork/RightArrow.png"
-                onClicked: mediaPlayerMenu.play()
-                text: ""
-            }
-
-            Button {
-                objectName: "nextButton"
-                width: controlsRow.buttonsWidth
-                iconSource: "artwork/DoubleRightArrow.png"
-                onClicked: mediaPlayerMenu.next()
-                text: ""
             }
         }
     }

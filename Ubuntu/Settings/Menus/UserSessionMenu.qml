@@ -18,52 +18,22 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-BasicMenu {
+ListItem.Standard {
     id: userSessionMenu
 
-    property alias name: label.text
+    property alias name: userSessionMenu.text
     property alias active: activeIcon.visible
-    property alias icon: iconImage.source
 
-//    ItemStyle.class: "settings-menu usersession-menu"
-
-    Row {
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-            leftMargin: units.gu(2)
-        }
-        spacing: units.gu(1)
-
-        UbuntuShape {
-            width: units.gu(5)
-            height: width
-
-            image: Image {
-                id: iconImage
-            }
-        }
-
-        Label {
-            id: label
-            anchors.verticalCenter: parent.verticalCenter
-        }
-    }
-
-    Rectangle {
+    control: Rectangle {
         id: activeIcon
         objectName: "activeIcon"
-        anchors {
-            right: parent.right
-            rightMargin: units.gu(2)
-            verticalCenter: parent.verticalCenter
-        }
         width: checkMark.width + units.gu(1.5)
         height: checkMark.height + units.gu(1.5)
         radius: width / 2
         antialiasing: true
-        color: "#d0d0d0"
+        color: Theme.palette.normal.backgroundText
         visible: false
 
         Image {

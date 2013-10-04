@@ -18,32 +18,133 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-BasicMenu {
-    property alias text: label.text
+ListItem.Empty {
+    id: menu
+
     property alias minimumValue: slider.minimumValue
     property alias maximumValue: slider.maximumValue
-    property alias value: slider.value
+    property alias live: slider.live
+    property double value: 0.0
 
-//    ItemStyle.class: "settings-menu slider-menu"
+    property alias minIcon: leftImage.source
+    property alias maxIcon: rightImage.source
 
-    Label {
-        id: label
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-            leftMargin: units.gu(2)
+    signal updated(real value)
+
+    property QtObject d: QtObject {
+        property bool enableValueConnection: true
+
+        property Connections connections: Connections {
+            target: d.enableValueConnection ? menu : null
+            onValueChanged: {
+                var oldEnable = d.enableValueConnection
+                d.enableValueConnection = false;
+
+                // Can't rely on binding. Slider value is assigned by user slide.
+                if (menu.value < minimumValue) {
+                    slider.value = minimumValue;
+                    menu.value = minimumValue;
+                } else if (menu.value > maximumValue) {
+                    slider.value = maximumValue;
+                    menu.value = maximumValue;
+                } else {
+                    slider.value = menu.value;
+                }
+
+                d.enableValueConnection = oldEnable;
+            }
         }
     }
 
-    Slider {
-        id: slider
-        width: units.gu(20)
+    implicitHeight: column.height + units.gu(1.5)
+
+    Column {
+        id: column
         anchors {
-            right: parent.right
             verticalCenter: parent.verticalCenter
-            rightMargin: units.gu(2)
+            left: parent.left
+            right: parent.right
+            leftMargin: menu.__contentsMargins
+            rightMargin: menu.__contentsMargins
         }
-        live: false
+        height: childrenRect.height
+        spacing: units.gu(0.5)
+
+        Label {
+            id: label
+            text: menu.text
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+            visible: text != ""
+        }
+
+        Item {
+            id: row
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+            height: slider.height
+
+            Image {
+                id: leftImage
+                visible: source != ""
+                anchors.left: row.left
+                anchors.verticalCenter: row.verticalCenter
+                height: slider.height - units.gu(2)
+                width: height
+            }
+
+            Slider {
+                id: slider
+                objectName: "slider"
+                anchors {
+                    left: leftImage.visible ? leftImage.right : row.left
+                    right: rightImage.visible ? rightImage.left : row.right
+                    leftMargin: leftImage.visible ? units.gu(0.5) : 0
+                    rightMargin: rightImage.visible ? units.gu(0.5) : 0
+                }
+                live: true
+
+                Component.onCompleted: {
+                    value = menu.value
+                }
+
+                minimumValue: 0
+                maximumValue: 100
+
+                // FIXME - to be deprecated in Ubuntu.Components.
+                // Use this to disable the label, since there is not way to do it on the component.
+                function formatValue(v) {
+                    return "";
+                }
+
+                Connections {
+                    target: d.enableValueConnection ? slider : null
+                    onValueChanged: {
+                        var oldEnable = d.enableValueConnection;
+                        d.enableValueConnection = false;
+
+                        menu.value = slider.value;
+                        menu.updated(slider.value);
+
+                        d.enableValueConnection = oldEnable;
+                    }
+                }
+            }
+
+            Image {
+                id: rightImage
+                visible: source != ""
+                anchors.right: row.right
+                anchors.verticalCenter: row.verticalCenter
+                height: slider.height - units.gu(2)
+                width: height
+            }
+        }
     }
 }

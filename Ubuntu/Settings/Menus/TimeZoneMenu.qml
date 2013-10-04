@@ -18,33 +18,16 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-BasicMenu {
+ListItem.Standard {
     id: timeZoneMenu
 
-    property alias city: label.text
+    property alias city: timeZoneMenu.text
     property alias time: timeLabel.text
 
-//    ItemStyle.class: "settings-menu slider-menu"
-
-    Label {
-        id: label
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-            leftMargin: units.gu(2)
-        }
-    }
-
-    Label {
+    control: Label {
         id: timeLabel
         objectName: "timeLabel"
-        anchors {
-            right: parent.right
-            verticalCenter: parent.verticalCenter
-            rightMargin: units.gu(2)
-        }
-        color: "#757373"
-//        ItemStyle.class: "label label-time"
     }
 }

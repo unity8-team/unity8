@@ -20,7 +20,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
 Item {
     id: quickReply
@@ -29,7 +29,7 @@ Item {
     property alias messages : messagelistRepeater.model
     property alias replyEnabled: actionTextField.activateEnabled
 
-    signal reply(var value)
+    signal replied(var value)
 
     Item {
         id: header
@@ -52,21 +52,19 @@ Item {
                 width: units.gu(2)
                 height: width
                 fillMode: Image.PreserveAspectFit
-                source: "qrc:/indicators/artwork/messaging/message_sms01_54px.png"
+                source: "artwork/message_sms01_54px.png"
             }
 
             Label {
                 height: parent.height
                 verticalAlignment: Text.AlignVCenter
                 fontSize: "small"
-                color: "#8f8f88"
                 text: "Quick reply with:"
             }
         }
 
-        Indicators.HLine {
+        ListItem.ThinDivider {
             anchors.bottom: parent.bottom
-            color: "#20201F"
         }
     }
 
@@ -98,18 +96,14 @@ Item {
                     }
                     verticalAlignment: Text.AlignVCenter
                     fontSize: "medium"
-                    color: "#e8e1d0"
                     text: modelData
                 }
 
-                Indicators.HLine {
+                ListItem.ThinDivider {
                     anchors.top: parent.top
-                    color: "#464543"
                 }
-
-                Indicators.HLine {
+                ListItem.ThinDivider {
                     anchors.bottom: parent.bottom
-                    color: "#20201F"
                 }
 
                 MouseArea {
@@ -152,14 +146,13 @@ Item {
             anchors.margins: units.gu(1)
             activateEnabled: replyEnabled
 
-            onActivate: {
-                quickReply.reply(value)
+            onActivated: {
+                quickReply.replied(value)
             }
         }
 
-        Indicators.HLine {
+        ListItem.ThinDivider {
             anchors.top: parent.top
-            color: "#464543"
         }
     }
 }

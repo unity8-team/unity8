@@ -18,20 +18,25 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 0.1 as Components
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
+ListItem.Empty {
     id: menu
 
     property bool checked: false
+    __acceptEvents: false
 
-    control: Switch {
-        id: switcher
-        objectName: "switcher"
+    Components.CheckBox {
+        id: checkbox
+        objectName: "checkbox"
         property bool enableCheckConnection: true
 
-        onEnabledChanged: console.log("enabled" + enabled);
+        anchors {
+            left: parent.left
+            leftMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
+        }
 
         Component.onCompleted: {
             checked = menu.checked;
@@ -55,16 +60,33 @@ ListItem.Standard {
         Connections {
             target: menu
             onCheckedChanged: {
-                if (!switcher.enableCheckConnection) {
+                if (!checkbox.enableCheckConnection) {
                     return;
                 }
-                var oldEnable = switcher.enableCheckConnection;
-                switcher.enableCheckConnection = false;
+                var oldEnable = checkbox.enableCheckConnection;
+                checkbox.enableCheckConnection = false;
 
-                switcher.checked = menu.checked;
+                checkbox.checked = menu.checked;
 
-                switcher.enableCheckConnection = oldEnable;
+                checkbox.enableCheckConnection = oldEnable;
             }
+        }
+
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                checkbox.clicked();
+            }
+        }
+    }
+
+    Components.Label {
+        text: menu.text
+        anchors {
+            left: checkbox.right
+            leftMargin: menu.__contentsMargins
+            rightMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
     }
 }

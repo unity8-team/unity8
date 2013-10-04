@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Settings.Menus 0.1
-import "utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -33,33 +32,47 @@ Item {
         contentWidth: column.width
         contentHeight: column.height
 
-        Column {
+        Item {
             id: column
 
             width: flickable.width
             height: childrenRect.height
 
-            TimeZoneMenu {
-                id: timeZoneMenu
-                city: "San Francisco"
-                time: "10:00am"
+            ProgressBarMenu {
+                id: progressBarMenu
+                text: i18n.tr("ProgressBar")
+            }
+            ProgressBarMenu {
+                id: progressBarMenu2
+                anchors.top: progressBarMenu.bottom
             }
         }
     }
 
     TestCase {
-        name: "TimeZoneMenu"
+        name: "ProgressBarMenu"
         when: windowShown
 
-        function test_city() {
-            timeZoneMenu.city = "London"
-            compare(timeZoneMenu.city, "London", "Cannot set city")
+        function test_indeterminate() {
+            var indeterminate = progressBarMenu.indeterminate
+            progressBarMenu.indeterminate = !indeterminate
+            compare(progressBarMenu.indeterminate, !indeterminate, "Cannot set indeterminate")
+            progressBarMenu.indeterminate = indeterminate
         }
 
-        function test_time() {
-            timeZoneMenu.time = "12:00am"
-            var timeLabel = UtilsJS.findChild(timeZoneMenu, "timeLabel")
-            compare(timeLabel.text, "12:00am", "Cannot set time")
+        function test_minimumValue() {
+            progressBarMenu.minimumValue = 11
+            compare(progressBarMenu.minimumValue, 11, "Cannot set minimumValue")
+        }
+
+        function test_maximumValue() {
+            progressBarMenu.minimumValue = 98
+            compare(progressBarMenu.minimumValue, 98, "Cannot set maximumValue")
+        }
+
+        function test_value() {
+            progressBarMenu.value = 36
+            compare(progressBarMenu.value, 36, "Cannot set value")
         }
     }
 }

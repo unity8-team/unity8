@@ -20,20 +20,21 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
+import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Settings.Components 0.1 as USC
 
-Indicators.BaseMenuItem {
-    id: heroMessage
+ListItem.Empty {
+    id: menu
 
     property alias heroMessageHeader: __heroMessageHeader
     property real collapsedHeight: heroMessageHeader.y + heroMessageHeader.bodyBottom + units.gu(2)
     property real expandedHeight: collapsedHeight
 
-    property alias avatar: __heroMessageHeader.avatar
-    property alias appIcon: __heroMessageHeader.icon
+    property url avatar
+    property url appIcon
 
-    signal activateApp
-    signal dismiss
+    signal appActivated
+    signal dismissed
 
     removable: state !== "expanded"
     implicitHeight: collapsedHeight
@@ -41,68 +42,41 @@ Indicators.BaseMenuItem {
     Rectangle {
         id: background
         property real alpha: 0.0
+
         anchors.fill: parent
         color: Qt.rgba(1.0, 1.0, 1.0, alpha)
         z: -1
     }
 
-    HeroMessageHeader {
+    USC.HeroMessageHeader {
         id: __heroMessageHeader
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
-        avatar: "qrc:/indicators/artwork/messaging/default_contact.png"
-        appIcon: icon
+        avatar: menu.avatar != "" ? menu.avatar : "artwork/default_contact.png"
+        appIcon: menu.appIcon != "" ? menu.appIcon : "artwork/default_app.svg"
+        icon: appIcon
 
-        state: heroMessage.state
+        state: menu.state
 
         onAppIconClicked:  {
-            deselectMenu();
-            heroMessage.activateApp();
+            menu.appActivated();
         }
-    }
-
-    onClicked: {
-        if (menuSelected) {
-            deselectMenu();
-        } else {
-            selectMenu();
-        }
-    }
-
-    Indicators.HLine {
-        id: __topHLine
-        anchors.top: parent.top
-        color: "#403b37"
-    }
-
-    Indicators.HLine {
-        id: __bottomHLine
-        anchors.bottom: parent.bottom
-        color: "#060606"
     }
 
     states: State {
         name: "expanded"
-        when: menuSelected
+        when: selected
 
         PropertyChanges {
-            target: heroMessage
-            implicitHeight: heroMessage.expandedHeight
+            target: menu
+            implicitHeight: menu.expandedHeight
         }
         PropertyChanges {
             target: background
             alpha: 0.05
-        }
-        PropertyChanges {
-            target: __topHLine
-            opacity: 0.0
-        }
-        PropertyChanges {
-            target: __bottomHLine
-            opacity: 0.0
         }
     }
 
@@ -118,6 +92,6 @@ Indicators.BaseMenuItem {
     }
 
     onItemRemoved: {
-        heroMessage.dismiss();
+        menu.dismissed();
     }
 }

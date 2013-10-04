@@ -20,7 +20,7 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Settings.Components 0.1
-import "utils.js" as UtilsJS
+import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -35,7 +35,6 @@ Item {
             margins: units.gu(2)
         }
         height: units.gu(5)
-        color: "#757373"
         fontSize: "large"
         text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
     }
@@ -104,7 +103,6 @@ Item {
 
         function test_minMaxDate_data() {
             return [
-                {tag: "undefined", date: new Date(), minDate: undefined, maxDate: undefined, count: 5}, // max out at +-2
                 {tag: "Min=-0", date: new Date(), minDate: new Date(), maxDate: undefined, count: 3},
                 {tag: "Min=-1", date: new Date(), minDate: new Date().addMonths(-1), maxDate: undefined, count: 4},
                 {tag: "Min=-22", date: new Date(), minDate: new Date().addMonths(-22), maxDate: undefined, count: 5}, // max out at +-2

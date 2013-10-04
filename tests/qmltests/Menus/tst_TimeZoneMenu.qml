@@ -20,7 +20,7 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Settings.Menus 0.1
-import "utils.js" as UtilsJS
+import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -33,36 +33,39 @@ Item {
         contentWidth: column.width
         contentHeight: column.height
 
-        Column {
+        Item {
             id: column
 
             width: flickable.width
             height: childrenRect.height
 
-            UserSessionMenu {
-                id: userSessionMenu
-                name: i18n.tr("Lola Chang")
-                icon: Qt.resolvedUrl("../artwork/avatar.png")
-                active: true
+            TimeZoneMenu {
+                id: timeZoneMenu
+                city: "San Francisco, USA"
+                time: "10:00am"
+            }
+            TimeZoneMenu {
+                id: timeZoneMenu2
+                city: "London, UK"
+                time: "6:00pm"
+                anchors.top: timeZoneMenu.bottom
             }
         }
     }
 
     TestCase {
-        name: "UserSessionMenu"
+        name: "TimeZoneMenu"
         when: windowShown
 
-        function test_name() {
-            userSessionMenu.name = "Test User"
-            compare(userSessionMenu.name, "Test User", "Cannot set name")
+        function test_city() {
+            timeZoneMenu.city = "London, UK"
+            compare(timeZoneMenu.city, "London, UK", "Cannot set city")
         }
 
-        function test_active() {
-            var activeIcon = UtilsJS.findChild(userSessionMenu, "activeIcon")
-            userSessionMenu.active = false
-            compare(activeIcon.visible, false, "Cannot disable the active icon element")
-            userSessionMenu.active = true
-            compare(activeIcon.visible, true, "Cannot enable the active icon element")
+        function test_time() {
+            timeZoneMenu.time = "12:00am"
+            var timeLabel = UtilsJS.findChild(timeZoneMenu, "timeLabel")
+            compare(timeLabel.text, "12:00am", "Cannot set time")
         }
     }
 }

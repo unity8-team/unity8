@@ -20,17 +20,17 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
-Indicators.BaseMenuItem {
-    id: groupedMessage
+ListItem.Empty {
+    id: menu
 
     property alias title: __title.text
     property alias count: label.text
-    property string appIcon: "qrc:/indicators/artwork/messaging/default_app.svg"
+    property url appIcon
 
-    signal activateApp()
-    signal dismiss()
+    signal appActivated()
+    signal dismissed()
 
     implicitHeight: units.gu(10)
 
@@ -43,7 +43,7 @@ Indicators.BaseMenuItem {
             height: units.gu(6)
             width: units.gu(6)
             image: Image {
-                source: groupedMessage.appIcon
+                source: appIcon != "" ? appIcon : "artwork/default_app.svg"
                 fillMode: Image.PreserveAspectFit
             }
         }
@@ -51,7 +51,6 @@ Indicators.BaseMenuItem {
         Label {
             id: __title
             anchors.verticalCenter: parent.verticalCenter
-            color: "#e8e1d0"
             font.weight: Font.DemiBold
             fontSize: "medium"
         }
@@ -61,31 +60,24 @@ Indicators.BaseMenuItem {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - x
             horizontalAlignment: Text.AlignRight
-            color: "#e8e1d0"
             font.weight: Font.DemiBold
             fontSize: "medium"
             text: "0"
         }
     }
 
-    Indicators.HLine {
-        anchors.top: parent.top
-        color: "#403b37"
-    }
-
-    Indicators.HLine {
+    ListItem.ThinDivider {
         anchors.bottom: parent.bottom
-        color: "#060606"
     }
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            groupedMessage.activateApp();
+            menu.appActivated();
         }
     }
 
     onItemRemoved: {
-        groupedMessage.dismiss();
+        menu.dismissed();
     }
 }

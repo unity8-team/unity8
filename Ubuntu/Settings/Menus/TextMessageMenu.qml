@@ -20,24 +20,24 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Indicators 0.1 as Indicators
+import Ubuntu.Settings.Components 0.1 as USC
 
-SimpleTextMessage {
-    id: simpleMessage
+SimpleTextMessageMenu {
+    id: menu
 
-    property bool replyEnabled: false
+    property bool replyEnabled: true
     property string replyButtonText: "Send"
 
-    signal reply(string value)
+    signal replied(string value)
 
-    footer: ActionTextField {
+    footer: USC.ActionTextField {
         anchors.fill:  parent
 
-        activateEnabled: simpleMessage.replyEnabled
-        buttonText: simpleMessage.replyButtonText
+        activateEnabled: menu.replyEnabled
+        buttonText: menu.replyButtonText
 
-        onActivate: {
-            simpleMessage.reply(value);
+        onActivated: {
+            menu.replied(value);
         }
     }
 }

@@ -230,7 +230,7 @@ ListView {
                     property var dayStart: gridStart.addDays(index)
 
                     // Styling properties
-                    property color color: "#757373"
+                    property color color: Theme.palette.selected.backgroundText
                     property color todayColor: "#DD4814"
                     property string fontSize: "large"
                     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)

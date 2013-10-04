@@ -20,10 +20,9 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
-import Unity.Indicators 0.1 as Indicators
 
-Indicators.BaseMenuItem {
-    id: menuItem
+ListItem.Empty {
+    id: menu
     implicitHeight: units.gu(5.5)
 
     property bool checked: false
@@ -32,30 +31,56 @@ Indicators.BaseMenuItem {
     property int signalStrength: 0
     property alias text: label.text
 
-    signal activate()
-
-    onCheckedChanged: {
-        // Can't rely on binding. Checked is assigned on click.
-        checkBoxActive.checked = checked;
-    }
-
-    onClicked: {
-        checkBoxActive.clicked();
-    }
+    __acceptEvents: false
 
     CheckBox {
-        id: checkBoxActive
+        id: checkbox
+        property bool enableCheckConnection: true
+
         height: units.gu(3)
         width: units.gu(3)
 
         anchors {
             left: parent.left
-            leftMargin: menuItem.__contentsMargins
+            leftMargin: menu.__contentsMargins
             verticalCenter: parent.verticalCenter
         }
 
-        onClicked: {
-            menuItem.activate();
+        // FIXME : should use Checkbox.toggled signal
+        // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
+        onCheckedChanged: {
+            if (!enableCheckConnection) {
+                return;
+            }
+            var oldEnable = enableCheckConnection;
+            enableCheckConnection = false;
+
+            menu.checked = checked;
+            menu.triggered(menu.checked);
+
+            enableCheckConnection = oldEnable;
+        }
+
+        Connections {
+            target: menu
+            onCheckedChanged: {
+                if (!checkbox.enableCheckConnection) {
+                    return;
+                }
+                var oldEnable = checkbox.enableCheckConnection;
+                checkbox.enableCheckConnection = false;
+
+                checkbox.checked = menu.checked;
+
+                checkbox.enableCheckConnection = oldEnable;
+            }
+        }
+
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                checkbox.clicked();
+            }
         }
     }
 
@@ -65,7 +90,7 @@ Indicators.BaseMenuItem {
         width: height
         height: Math.min(units.gu(5), parent.height - units.gu(1))
         anchors {
-            left: checkBoxActive.right
+            left: checkbox.right
             leftMargin: units.gu(1)
             verticalCenter: parent.verticalCenter
         }
@@ -95,7 +120,7 @@ Indicators.BaseMenuItem {
             leftMargin: units.gu(1)
             verticalCenter: parent.verticalCenter
             right: iconSecure.visible ? iconSecure.left : parent.right
-            rightMargin: menuItem.__contentsMargins
+            rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
         opacity: label.enabled ? 1.0 : 0.5
@@ -104,7 +129,7 @@ Indicators.BaseMenuItem {
     Image {
         id: iconSecure
         visible: secure
-        source: "qrc:/indicators/artwork/network/secure.svg"
+        source: "artwork/secure.svg"
 
         width: height
         height: Math.min(units.gu(4), parent.height - units.gu(1))
