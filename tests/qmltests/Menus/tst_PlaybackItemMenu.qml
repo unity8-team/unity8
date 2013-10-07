@@ -64,7 +64,7 @@ Item {
     }
 
     TestCase {
-        name: "MediaPlayerMenu"
+        name: "PlaybackItemMenu"
         when: windowShown
 
         function init() {

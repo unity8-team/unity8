@@ -83,6 +83,7 @@ Item {
             height: childrenRect.height
 
             Item {
+                objectName: "replyMessage" + index
                 width: messagelist.width
                 height: units.gu(5)
 

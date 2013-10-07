@@ -57,6 +57,7 @@ HeroMessageMenu {
         opacity: 0.0
 
         Button {
+            objectName: "messageButton"
             text: "Message"
             anchors.left: parent.left
             anchors.top: parent.top
@@ -75,6 +76,7 @@ HeroMessageMenu {
 
         Button {
             id: actionButton
+            objectName: "actionButton"
             text: "Call back"
             anchors.right: parent.right
             anchors.top: parent.top

@@ -48,12 +48,14 @@ Item {
         width: units.gu(6)
         image: Image {
             id: avatarImage
+            objectName: "avatar"
             fillMode: Image.PreserveAspectFit
         }
     }
 
     Image {
         id: iconImage
+        objectName: "icon"
         anchors {
             top: parent.top
             topMargin: units.gu(2)
@@ -69,6 +71,7 @@ Item {
 
     Label {
         id: __titleText
+        objectName: "title"
         anchors {
             baseline: iconImage.bottom
             left: iconImage.right
@@ -83,6 +86,7 @@ Item {
 
     Label {
         id: __subtitleText
+        objectName: "subtitle"
         anchors {
             baseline: __titleText.baseline
             baselineOffset: units.gu(2.5)
@@ -95,6 +99,7 @@ Item {
 
     Label {
         id: __bodyText
+        objectName: "body"
         anchors {
             baseline: __subtitleText.baseline
             baselineOffset: units.gu(2.5)
@@ -121,6 +126,7 @@ Item {
 
         Image {
             id: appIconImage
+            objectName: "appIcon"
             height: width
             anchors {
                 left: parent.left

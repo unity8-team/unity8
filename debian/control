@@ -5,6 +5,7 @@ Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
                pkg-config,
+               qtbase5-private-dev,
                qtdeclarative5-dev,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
