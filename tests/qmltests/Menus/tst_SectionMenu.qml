@@ -61,11 +61,11 @@ Item {
         }
 
         function test_busy() {
-            var inidcator = UtilsJS.findChild(section1, "indicator");
-            verify(inidcator.running === false);
+            var indicator = UtilsJS.findChild(section1, "indicator");
+            verify(indicator.running === false);
 
             section1.busy = true
-            compare(inidcator.running, true, "Activity indicator should be animating when busy");
+            compare(indicator.running, true, "Activity indicator should be animating when busy");
         }
     }
 }
