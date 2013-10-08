@@ -160,10 +160,6 @@ FocusScope {
         }
     }
 
-    OSKController {
-        anchors.fill: parent // as needs to know the geometry of the shell
-    }
-
     VolumeControl {
         id: volumeControl
     }
@@ -704,6 +700,7 @@ FocusScope {
     }
 
     focus: true
+    onFocusChanged: if (!focus) forceActiveFocus();
 
     InputFilterArea {
         anchors {
@@ -729,6 +726,10 @@ FocusScope {
         target: i18n
         property: "domain"
         value: "unity8"
+    }
+
+    OSKController {
+        anchors.fill: parent // as needs to know the geometry of the shell
     }
 
     //FIXME: This should be handled in the input stack, keyboard shouldnt propagate
