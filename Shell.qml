@@ -535,7 +535,7 @@ FocusScope {
             // is active.  This usually indicates something like a phone call.
             if (status == Powerd.Off && (flags & Powerd.UseProximity) == 0) {
                 powerConnection.setFocused(false);
-                greeter.show();
+                greeter.showNow();
             } else if (status == Powerd.On) {
                 powerConnection.setFocused(true);
             }
@@ -694,6 +694,12 @@ FocusScope {
                     PropertyChanges { target: notifications; width: units.gu(38) }
                 }
             ]
+
+            InputFilterArea {
+                anchors { left: parent.left; right: parent.right }
+                height: parent.contentHeight
+                blockInput: height > 0
+            }
         }
     }
 
