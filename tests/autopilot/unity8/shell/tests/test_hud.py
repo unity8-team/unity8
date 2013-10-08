@@ -19,7 +19,7 @@
 
 from __future__ import absolute_import
 
-from unity8.shell import with_lightdm_mock, DragMixin
+from unity8.shell import with_lightdm_mock, DragMixin, finger_down
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
 from testtools.matchers import Equals
@@ -75,9 +75,9 @@ class TestHud(UnityTestCase, DragMixin):
         self.assertThat(hud.shown, Equals(False))
         self.assertThat(hud_show_button.opacity, Eventually(Equals(0.0)))
 
-    def test_show_hud_appears(self):
-        """Releasing the touch on the 'show hud' button must display the hud.
-           Test that the hud button stays on screen and tapping it opens the hud.
+    def test_hud_opens_on_drag_release(self):
+        """Dragging up to display the show hud button and then releasing on the
+        button must bring up the hud.
 
         """
         self.launch_unity()
@@ -93,23 +93,43 @@ class TestHud(UnityTestCase, DragMixin):
             hud_show_button
         )
 
-        self.touch.press(swipe_coords.start_x, swipe_coords.start_y)
-        self.addCleanup(self._maybe_release_finger)
-        self._drag(swipe_coords.start_x, swipe_coords.start_y, swipe_coords.start_x, swipe_coords.end_y)
-        self.assertThat(hud.shown, Eventually(Equals(False)))
-        self.assertThat(hud_show_button.opacity, Eventually(Equals(1.0)))
-        self.touch.release()
+        with finger_down(swipe_coords.start_x, swipe_coords.start_y) as finger:
+            finger.drag(swipe_coords.start_x, swipe_coords.end_y)
+            self.assertThat(hud.shown, Eventually(Equals(False)))
+            self.assertThat(hud_show_button.opacity, Eventually(Equals(1.0)))
+        # Finger is released here
         self.assertThat(hud.shown, Eventually(Equals(True)))
         self.assertThat(hud_show_button.opacity, Eventually(Equals(0.0)))
+
         x, y = hud.get_close_button_coords()
         self.touch.tap(x, y)
         self.assertThat(hud.shown, Eventually(Equals(False)))
 
-        self.touch.press(swipe_coords.start_x, swipe_coords.start_y)
-        self._drag(swipe_coords.start_x, swipe_coords.start_y, swipe_coords.start_x, swipe_coords.end_y - int(hud_show_button.height))
-        self.assertThat(hud.shown, Equals(False))
-        self.assertThat(hud_show_button.opacity, Eventually(Equals(1.0)))
-        self.touch.release()
+    def test_hud_opens_when_visible_and_clicked(self):
+        """Tapping on the show hud button while it is around must open the
+        hud.
+
+        """
+        self.launch_unity()
+        self.main_window.get_greeter().swipe()
+        window = self.main_window.get_qml_view()
+        hud_show_button = self.main_window.get_hud_show_button()
+        hud = self.main_window.get_hud()
+
+        self._launch_test_app_from_app_screen()
+
+        swipe_coords = hud.get_button_swipe_coords(
+            window,
+            hud_show_button
+        )
+
+        with finger_down(swipe_coords.start_x, swipe_coords.start_y) as finger:
+            finger.drag(
+                swipe_coords.start_x,
+                swipe_coords.end_y - int(hud_show_button.height)
+            )
+            self.assertThat(hud.shown, Equals(False))
+            self.assertThat(hud_show_button.opacity, Eventually(Equals(1.0)))
         self.assertThat(hud_show_button.opacity, Eventually(Equals(1.0)))
         self.touch.tap(swipe_coords.end_x, swipe_coords.end_y)
         self.assertThat(hud.shown, Eventually(Equals(True)))
