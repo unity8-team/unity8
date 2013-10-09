@@ -9,6 +9,7 @@ Build-Depends: cmake,
                qtbase5-private-dev,
                qtdeclarative5-dev,
                qtdeclarative5-dev-tools,
+               qtdeclarative5-qtquick2-plugin,
                qtdeclarative5-test-plugin,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
