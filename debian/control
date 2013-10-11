@@ -5,8 +5,13 @@ Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
                pkg-config,
+               qt5-default,
                qtbase5-private-dev,
                qtdeclarative5-dev,
+               qtdeclarative5-dev-tools,
+               qtdeclarative5-qtquick2-plugin,
+               qtdeclarative5-test-plugin,
+               qtdeclarative5-ubuntu-ui-toolkit-plugin,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
 # If you don't have have commit access to this branch but would like to upload
