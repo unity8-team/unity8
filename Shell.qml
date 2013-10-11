@@ -390,7 +390,7 @@ FocusScope {
 
                 width: shell.edgeSize
                 direction: Direction.Leftwards
-                enabled: edgeDemo.dashEnabled
+                enabled: greeter.showProgress == 0 && edgeDemo.dashEnabled
                 property bool haveApps: mainStage.applications.count > 0 || sideStage.applications.count > 0
 
                 maxTotalDragDistance: haveApps ? parent.width : parent.width * 0.7
@@ -558,13 +558,9 @@ FocusScope {
     }
 
     function showHome() {
+        var animate = !greeter.shown && !stages.shown
         greeter.hide()
-        // Animate if moving between application and dash
-        if (!stages.shown) {
-            dash.setCurrentScope("home.scope", true, false)
-        } else {
-            dash.setCurrentScope("home.scope", false, false)
-        }
+        dash.setCurrentScope("home.scope", animate, false)
         stages.hide()
     }
 
