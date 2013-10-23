@@ -1,0 +1,14 @@
+{
+    "description": "description of reminders-app",
+    "framework": "ubuntu-sdk-13.10",
+    "hooks": {
+        "reminders-app": {
+            "apparmor": "reminders-app.json",
+            "desktop": "reminders-app.desktop"
+        }
+    },
+    "maintainer": "David Planella <david.planella@ubuntu.com>",
+    "name": "com.ubuntu.developer.dpm.reminders-app",
+    "title": "reminders-app",
+    "version": "0.1"
+}
