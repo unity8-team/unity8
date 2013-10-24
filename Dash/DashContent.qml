@@ -26,8 +26,6 @@ Item {
     property real contentProgress: Math.max(0, Math.min(dashContentList.contentX / (dashContentList.contentWidth - dashContentList.width), units.dp(1)))
     property alias currentIndex: dashContentList.currentIndex
 
-    property ScopeDelegateMapper scopeMapper : ScopeDelegateMapper {}
-
     signal movementStarted()
     signal movementEnded()
     signal contentFlickStarted()
@@ -113,7 +111,7 @@ Item {
                 width: ListView.view.width
                 height: ListView.view.height
                 asynchronous: true
-                source: scopeMapper.map(scope.id)
+                source: "GenericScopeView.qml"
                 objectName: scope.id + " loader"
 
                 readonly property bool previewShown: item.previewShown

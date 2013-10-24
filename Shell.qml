@@ -20,9 +20,6 @@ import GSettings 1.0
 import Unity.Application 0.1
 import Ubuntu.Components 0.1
 import Ubuntu.Gestures 0.1
-import Unity.Launcher 0.1
-import LightDM 0.1 as LightDM
-import Powerd 0.1
 import SessionBroadcast 0.1
 import "Dash"
 import "Panel"
@@ -43,40 +40,22 @@ FocusScope {
     readonly property real panelHeight: panel.panelHeight
 
     property bool dashShown: dash.shown
-    property bool stageScreenshotsReady: {
-        if (sideStage.shown) {
-            if (mainStage.applications.count > 0) {
-                return mainStage.usingScreenshots && sideStage.usingScreenshots;
-            } else {
-                return sideStage.usingScreenshots;
-            }
-        } else {
-            return mainStage.usingScreenshots;
-        }
-    }
 
     property ListModel searchHistory: SearchHistoryModel {}
 
     property var applicationManager: ApplicationManagerWrapper {}
 
-    Binding {
-        target: LauncherModel
-        property: "applicationManager"
-        value: ApplicationManager
-    }
-
     Component.onCompleted: {
         Theme.name = "Ubuntu.Components.Themes.SuruGradient"
 
-        applicationManager.sideStageEnabled = Qt.binding(function() { return sideStage.enabled })
+        applicationManager.sideStageEnabled = false;
 
         // FIXME: if application focused before shell starts, shell draws on top of it only.
         // We should detect already running applications on shell start and bring them to the front.
         applicationManager.unfocusCurrentApplication();
     }
 
-    readonly property bool applicationFocused: !!applicationManager.mainStageFocusedApplication
-                                               || !!applicationManager.sideStageFocusedApplication
+    readonly property bool applicationFocused: false
     // Used for autopilot testing.
     readonly property string currentFocusedAppId: ApplicationManager.focusedApplicationId
 
@@ -221,171 +200,8 @@ FocusScope {
         }
     }
 
-    Item {
-        id: stagesOuterContainer
-
-        width: parent.width
-        height: parent.height
-        x: launcher.progress
-        Behavior on x {SmoothedAnimation{velocity: 600}}
-
-        property real showProgress:
-            MathLocal.clamp(1 - (x + stages.x) / shell.width, 0, 1)
-
-        Showable {
-            id: stages
-            objectName: "stages"
-
-            x: width
-
-            property bool fullyShown: shown && x == 0 && parent.x == 0
-            property bool fullyHidden: !shown && x == width
-            available: !greeter.shown
-            hides: [panel.indicators]
-            shown: false
-            opacity: 1.0
-            showAnimation: StandardAnimation { property: "x"; duration: 350; to: 0; easing.type: Easing.OutCubic }
-            hideAnimation: StandardAnimation { property: "x"; duration: 350; to: width; easing.type: Easing.OutCubic }
-
-            width: parent.width
-            height: parent.height
-
-            // close the stages when no focused application remains
-            Connections {
-                target: shell.applicationManager
-                onMainStageFocusedApplicationChanged: stages.closeIfNoApplications()
-                onSideStageFocusedApplicationChanged: stages.closeIfNoApplications()
-                ignoreUnknownSignals: true
-            }
-
-            function closeIfNoApplications() {
-                if (!shell.applicationManager.mainStageFocusedApplication
-                 && !shell.applicationManager.sideStageFocusedApplication
-                 && shell.applicationManager.mainStageApplications.count == 0
-                 && shell.applicationManager.sideStageApplications.count == 0) {
-                    stages.hide();
-                }
-            }
-
-            // show the stages when an application gets the focus
-            Connections {
-                target: shell.applicationManager
-                onMainStageFocusedApplicationChanged: {
-                    if (shell.applicationManager.mainStageFocusedApplication) {
-                        mainStage.show();
-                        stages.show();
-                    }
-                }
-                onSideStageFocusedApplicationChanged: {
-                    if (shell.applicationManager.sideStageFocusedApplication) {
-                        sideStage.show();
-                        stages.show();
-                    }
-                }
-                ignoreUnknownSignals: true
-            }
-
-            Stage {
-                id: mainStage
-
-                anchors.fill: parent
-                fullyShown: stages.fullyShown
-                fullyHidden: stages.fullyHidden
-                shouldUseScreenshots: !fullyShown
-                rightEdgeEnabled: !sideStage.enabled
-
-                applicationManager: shell.applicationManager
-                rightEdgeDraggingAreaWidth: shell.edgeSize
-                normalApplicationY: shell.panelHeight
-
-                shown: true
-                function show() {
-                    stages.show();
-                }
-                function hide() {
-                }
-
-                // FIXME: workaround the fact that focusing a main stage application
-                // raises its surface on top of all other surfaces including the ones
-                // that belong to side stage applications.
-                onFocusedApplicationChanged: {
-                    if (focusedApplication && sideStage.focusedApplication && sideStage.fullyShown) {
-                        shell.applicationManager.focusApplication(sideStage.focusedApplication);
-                    }
-                }
-            }
-
-            Revealer {
-                id: sideStageRevealer
-
-                enabled: mainStage.applications.count > 0 && sideStage.applications.count > 0
-                         && sideStage.available
-                direction: Qt.RightToLeft
-                openedValue: parent.width - sideStage.width
-                hintDisplacement: units.gu(3)
-                /* The size of the sidestage handle needs to be bigger than the
-                   typical size used for edge detection otherwise it is really
-                   hard to grab.
-                */
-                handleSize: sideStage.shown ? units.gu(4) : shell.edgeSize
-                closedValue: parent.width + sideStage.handleSizeCollapsed
-                target: sideStage
-                x: parent.width - width
-                width: sideStage.width + handleSize * 0.7
-                height: sideStage.height
-                orientation: Qt.Horizontal
-            }
-
-            DragHandle {
-                id: stagesDragHandle
-
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.right: parent.left
-
-                width: shell.edgeSize
-                direction: Direction.Leftwards
-                enabled: greeter.showProgress == 0 && edgeDemo.dashEnabled
-                property bool haveApps: mainStage.applications.count > 0 || sideStage.applications.count > 0
-
-                maxTotalDragDistance: haveApps ? parent.width : parent.width * 0.7
-                // Make autocompletion impossible when !haveApps
-                edgeDragEvaluator.minDragDistance: haveApps ? maxTotalDragDistance * 0.1 : Number.MAX_VALUE
-            }
-        }
-    }
-
-    InputFilterArea {
-        anchors.fill: parent
-        blockInput: !applicationFocused || greeter.shown || lockscreen.shown || launcher.shown
-                    || panel.indicators.shown || hud.shown
-    }
-
-    Connections {
-        id: powerConnection
-        target: Powerd
-
-        onDisplayPowerStateChange: {
-            // We ignore any display-off signals when the proximity sensor
-            // is active.  This usually indicates something like a phone call.
-            if (status == Powerd.Off && (flags & Powerd.UseProximity) == 0) {
-                greeter.showNow();
-            }
-
-            // No reason to chew demo CPU when user isn't watching
-            if (status == Powerd.Off) {
-                edgeDemo.paused = true;
-            } else if (status == Powerd.On) {
-                edgeDemo.paused = false;
-            }
-        }
-    }
-
     function showHome() {
-        var animate = !greeter.shown && !stages.shown
-        greeter.hide()
-        dash.setCurrentScope("home.scope", animate, false)
-        stages.hide()
+        dash.setCurrentScope("home.scope", false, false)
     }
 
     Item {
@@ -469,29 +285,6 @@ FocusScope {
         height: shell.applicationManager ? shell.applicationManager.keyboardHeight : 0
 
         enabled: shell.applicationManager && shell.applicationManager.keyboardVisible
-    }
-
-    Label {
-        anchors.centerIn: parent
-        visible: applicationManager.fake
-        text: "EARLY ALPHA\nNOT READY FOR USE"
-        color: "lightgrey"
-        opacity: 0.2
-        font.weight: Font.Black
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
-        rotation: -45
-        scale: Math.min(parent.width, parent.height) / width
-    }
-
-    EdgeDemo {
-        id: edgeDemo
-        greeter: greeter
-        launcher: launcher
-        dash: dash
-        indicators: panel.indicators
-        underlay: underlay
     }
 
     Connections {
