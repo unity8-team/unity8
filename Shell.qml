@@ -25,16 +25,9 @@ import LightDM 0.1 as LightDM
 import Powerd 0.1
 import SessionBroadcast 0.1
 import "Dash"
-import "Greeter"
-import "Launcher"
 import "Panel"
-import "Hud"
 import "Components"
 import "Components/Math.js" as MathLocal
-import "Bottombar"
-import "SideStage"
-import "Notifications"
-import Unity.Notifications 1.0 as NotificationBackend
 
 FocusScope {
     id: shell
@@ -322,44 +315,6 @@ FocusScope {
                 }
             }
 
-            SideStage {
-                id: sideStage
-
-                applicationManager: shell.applicationManager
-                rightEdgeDraggingAreaWidth: shell.edgeSize
-                normalApplicationY: shell.panelHeight
-
-                onShownChanged: {
-                    if (!shown && mainStage.applications.count == 0) {
-                        stages.hide();
-                    }
-                }
-                // FIXME: when hiding the side stage, refocus the main stage
-                // application so that it goes in front of the side stage
-                // application and hides it
-                onFullyShownChanged: {
-                    if (!fullyShown && stages.fullyShown && sideStage.focusedApplication != null) {
-                        shell.applicationManager.focusApplication(mainStage.focusedApplication);
-                    }
-                }
-
-                enabled: shell.width >= units.gu(60)
-                visible: enabled
-                fullyShown: stages.fullyShown && shown
-                            && sideStage[sideStageRevealer.boundProperty] == sideStageRevealer.openedValue
-                shouldUseScreenshots: !fullyShown || mainStage.usingScreenshots || sideStageRevealer.pressed
-
-                available: !greeter.shown && !lockscreen.shown && enabled
-                hides: [launcher, panel.indicators]
-                shown: false
-                showAnimation: StandardAnimation { property: "x"; duration: 350; to: sideStageRevealer.openedValue; easing.type: Easing.OutQuint }
-                hideAnimation: StandardAnimation { property: "x"; duration: 350; to: sideStageRevealer.closedValue; easing.type: Easing.OutQuint }
-
-                width: units.gu(40)
-                height: stages.height
-                handleExpanded: sideStageRevealer.pressed
-            }
-
             Revealer {
                 id: sideStageRevealer
 
@@ -396,137 +351,6 @@ FocusScope {
                 maxTotalDragDistance: haveApps ? parent.width : parent.width * 0.7
                 // Make autocompletion impossible when !haveApps
                 edgeDragEvaluator.minDragDistance: haveApps ? maxTotalDragDistance * 0.1 : Number.MAX_VALUE
-            }
-        }
-    }
-
-    Lockscreen {
-        id: lockscreen
-        hides: [launcher, panel.indicators, hud]
-        shown: false
-        enabled: true
-        showAnimation: StandardAnimation { property: "opacity"; to: 1 }
-        hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
-        y: panel.panelHeight
-        x: required ? 0 : - width
-        width: parent.width
-        height: parent.height - panel.panelHeight
-        background: shell.background
-
-        onUnlocked: lockscreen.hide()
-        onCancel: greeter.show()
-
-        Component.onCompleted: {
-            if (LightDM.Users.count == 1) {
-                LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole))
-                greeter.selected(0)
-            }
-        }
-    }
-
-    Connections {
-        target: LightDM.Greeter
-
-        onShowPrompt: {
-            if (LightDM.Users.count == 1) {
-                // TODO: There's no better way for now to determine if its a PIN or a passphrase.
-                if (text == "PIN") {
-                    lockscreen.alphaNumeric = false
-                } else {
-                    lockscreen.alphaNumeric = true
-                }
-                lockscreen.placeholderText = i18n.tr("Please enter %1").arg(text);
-                lockscreen.show();
-            }
-        }
-    }
-
-    Greeter {
-        id: greeter
-        objectName: "greeter"
-
-        available: true
-        hides: [launcher, panel.indicators, hud]
-        shown: true
-
-        defaultBackground: shell.background
-
-        y: panel.panelHeight
-        width: parent.width
-        height: parent.height - panel.panelHeight
-
-        dragHandleWidth: shell.edgeSize
-
-        property var previousMainApp: null
-        property var previousSideApp: null
-
-        function removeApplicationFocus() {
-            greeter.previousMainApp = applicationManager.mainStageFocusedApplication;
-            greeter.previousSideApp = applicationManager.sideStageFocusedApplication;
-            applicationManager.unfocusCurrentApplication();
-        }
-
-        function restoreApplicationFocus() {
-            if (greeter.previousMainApp) {
-                applicationManager.focusApplication(greeter.previousMainApp);
-                greeter.previousMainApp = null;
-            }
-            if (greeter.previousSideApp) {
-                applicationManager.focusApplication(greeter.previousSideApp);
-                greeter.previousSideApp = null;
-            }
-        }
-
-        onShownChanged: {
-            if (shown) {
-                lockscreen.reset();
-                // If there is only one user, we start authenticating with that one here.
-                // If there are more users, the Greeter will handle that
-                if (LightDM.Users.count == 1) {
-                    LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole));
-                    greeter.selected(0);
-                }
-                greeter.forceActiveFocus();
-                removeApplicationFocus();
-            } else {
-                restoreApplicationFocus();
-            }
-        }
-
-        onUnlocked: greeter.hide()
-        onSelected: {
-            // Update launcher items for new user
-            var user = LightDM.Users.data(uid, LightDM.UserRoles.NameRole);
-            AccountsService.user = user;
-            LauncherModel.setUser(user);
-        }
-
-        onLeftTeaserPressedChanged: {
-            if (leftTeaserPressed) {
-                launcher.tease();
-            }
-        }
-
-        Connections {
-            target: applicationManager
-            ignoreUnknownSignals: true
-            // If any app is focused when greeter is open, it's due to a user action
-            // like a snap decision (say, an incoming call).
-            // TODO: these should be protected to only unlock for certain applications / certain usecases
-            // potentially only in connection with a notification.
-            onMainStageFocusedApplicationChanged: {
-                if (greeter.shown && applicationManager.mainStageFocusedApplication) {
-                    greeter.previousMainApp = null // make way for new focused app
-                    greeter.previousSideApp = null
-                    greeter.hide()
-                }
-            }
-            onSideStageFocusedApplicationChanged: {
-                if (greeter.shown && applicationManager.sideStageFocusedApplication) {
-                    greeter.previousMainApp = null // make way for new focused app
-                    greeter.previousSideApp = null
-                    greeter.hide()
-                }
             }
         }
     }
@@ -592,48 +416,6 @@ FocusScope {
             }
         }
 
-        Hud {
-            id: hud
-
-            width: parent.width > units.gu(60) ? units.gu(40) : parent.width
-            height: parent.height
-
-            available: !greeter.shown && !panel.indicators.shown && !lockscreen.shown && edgeDemo.dashEnabled
-            shown: false
-            showAnimation: StandardAnimation { property: "y"; duration: hud.showableAnimationDuration; to: 0; easing.type: Easing.Linear }
-            hideAnimation: StandardAnimation { property: "y"; duration: hud.showableAnimationDuration; to: hudRevealer.closedValue; easing.type: Easing.Linear }
-
-            Connections {
-                target: shell.applicationManager
-                onMainStageFocusedApplicationChanged: hud.hide()
-                onSideStageFocusedApplicationChanged: hud.hide()
-            }
-        }
-
-        Revealer {
-            id: hudRevealer
-
-            enabled: hud.shown
-            width: hud.width
-            anchors.left: hud.left
-            height: parent.height
-            target: hud.revealerTarget
-            closedValue: height
-            openedValue: 0
-            direction: Qt.RightToLeft
-            orientation: Qt.Vertical
-            handleSize: hud.handleHeight
-            onCloseClicked: target.hide()
-        }
-
-        Bottombar {
-            id: bottombar
-            theHud: hud
-            anchors.fill: parent
-            enabled: hud.available
-            applicationIsOnForeground: applicationFocused
-        }
-
         InputFilterArea {
             blockInput: launcher.shown
             anchors {
@@ -642,68 +424,6 @@ FocusScope {
                 left: parent.left
             }
             width: launcher.width
-        }
-
-        Launcher {
-            id: launcher
-
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: parent.width
-            dragAreaWidth: shell.edgeSize
-            available: (!greeter.shown || greeter.narrowMode) && edgeDemo.launcherEnabled
-            onDashItemSelected: showHome()
-            onDash: {
-                if (stages.shown) {
-                    dash.setCurrentScope("applications.scope", true /* animate */, true /* reset */)
-                    stages.hide();
-                    launcher.hide();
-                }
-            }
-            onLauncherApplicationSelected:{
-                greeter.hide()
-                shell.activateApplication(appId)
-            }
-            onShownChanged: {
-                if (shown) {
-                    panel.indicators.hide()
-                    hud.hide()
-                    bottombar.hide()
-                }
-            }
-        }
-
-        Notifications {
-            id: notifications
-
-            model: NotificationBackend.Model
-            anchors {
-                top: parent.top
-                right: parent.right
-                bottom: parent.bottom
-                leftMargin: units.gu(1)
-                rightMargin: units.gu(1)
-                topMargin: panel.panelHeight + units.gu(1)
-            }
-            states: [
-                State {
-                    name: "narrow"
-                    when: overlay.width <= units.gu(60)
-                    AnchorChanges { target: notifications; anchors.left: parent.left }
-                },
-                State {
-                    name: "wide"
-                    when: overlay.width > units.gu(60)
-                    AnchorChanges { target: notifications; anchors.left: undefined }
-                    PropertyChanges { target: notifications; width: units.gu(38) }
-                }
-            ]
-
-            InputFilterArea {
-                anchors { left: parent.left; right: parent.right }
-                height: parent.contentHeight
-                blockInput: height > 0
-            }
         }
     }
 
