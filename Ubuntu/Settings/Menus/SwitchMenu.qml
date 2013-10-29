@@ -25,6 +25,7 @@ ListItem.Standard {
     id: menu
 
     property bool checked: false
+    iconFrame: false
 
     control: Switch {
         id: switcher

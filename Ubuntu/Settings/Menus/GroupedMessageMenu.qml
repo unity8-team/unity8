@@ -22,63 +22,43 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Empty {
+ListItem.Standard {
     id: menu
 
-    property alias title: __title.text
+    property alias title: menu.text
     property alias count: label.text
     property url appIcon
 
     signal appActivated()
     signal dismissed()
 
-    implicitHeight: units.gu(10)
+    icon: appIcon != "" ? appIcon : Qt.resolvedUrl("artwork/default_app.svg")
 
-    Row {
-        anchors.fill: parent
-        anchors.margins: units.gu(2)
-        spacing: units.gu(4)
+    control: UbuntuShape {
 
-        UbuntuShape {
-            height: units.gu(6)
-            width: units.gu(6)
-            image: Image {
-                objectName: "appIcon"
-                source: appIcon != "" ? appIcon : "artwork/default_app.svg"
-                fillMode: Image.PreserveAspectFit
-            }
-        }
-
-        Label {
-            id: __title
-            objectName: "title"
-            anchors.verticalCenter: parent.verticalCenter
-            font.weight: Font.DemiBold
-            fontSize: "medium"
-        }
+        height: label.height + units.gu(2)
+        width: label.width + units.gu(2)
+        color: Theme.palette.normal.backgroundText
+        radius: "medium"
 
         Label {
             id: label
             objectName: "messageCount"
 
+            anchors.horizontalCenter: parent.horizontalCenter
+
             anchors.verticalCenter: parent.verticalCenter
-            width: parent.width - x
             horizontalAlignment: Text.AlignRight
             font.weight: Font.DemiBold
             fontSize: "medium"
             text: "0"
+
+            color: Theme.palette.normal.foregroundText
         }
     }
 
-    ListItem.ThinDivider {
-        anchors.bottom: parent.bottom
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            menu.appActivated();
-        }
+    onClicked: {
+        menu.appActivated();
     }
 
     onItemRemoved: {

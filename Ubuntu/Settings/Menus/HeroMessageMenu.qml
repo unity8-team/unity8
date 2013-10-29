@@ -36,7 +36,6 @@ ListItem.Empty {
     signal appActivated
     signal dismissed
 
-    removable: state !== "expanded"
     implicitHeight: collapsedHeight
 
     Rectangle {

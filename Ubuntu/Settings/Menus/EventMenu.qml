@@ -17,54 +17,33 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 0.1 as Components
+import Ubuntu.Settings.Components 0.1 as USC
+import Ubuntu.Components.ListItems 0.1 as ListItems
 
-ListItem.Empty {
+ListItems.Standard {
     id: eventMenu
 
-    property alias name: nameLabel.text
-    property alias description: descriptionLabel.text
-    property alias eventColor: icon.color
-    property alias date: dateLabel.text
+    property alias iconSource: iconVisual.source
+    property alias time: dateLabel.text
+    property alias eventColor: iconVisual.color
 
-    Row {
-        id: row
+    property var __icon: USC.IconVisual {
+        id: iconVisual
+        source: "image://theme/calendar"
+        visible: source != ""
 
-        anchors {
-            fill: parent
-            topMargin: units.gu(1.5)
-            bottomMargin: units.gu(1.5)
-            leftMargin: units.gu(2)
-        }
-        spacing: units.gu(1)
+        height: Math.min(units.gu(5), parent.height - units.gu(1))
+        width: Math.min(units.gu(5), parent.height - units.gu(1))
 
-        Rectangle {
-            id: icon
-            width: units.gu(2)
-            height: units.gu(2)
-            opacity: 0.5
-        }
-
-        Column {
-            Label {
-                id: nameLabel
-                font.weight: Font.DemiBold
-            }
-
-            Label {
-                id: descriptionLabel
-                fontSize: "small"
-            }
+        Component.onCompleted: {
+            icon = iconVisual;
+            anchors.verticalCenter = parent.verticalCenter
         }
     }
 
-    Label {
+    control: Components.Label {
         id: dateLabel
-        anchors {
-            right: parent.right
-            top: row.top
-            rightMargin: units.gu(2)
-        }
+        color: Theme.palette.normal.backgroundText
     }
 }
