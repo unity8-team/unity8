@@ -92,7 +92,7 @@ ListItem.Empty {
 
             Image {
                 id: leftImage
-                visible: source != ""
+                visible: status === Image.Ready
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
@@ -139,7 +139,7 @@ ListItem.Empty {
 
             Image {
                 id: rightImage
-                visible: source != ""
+                visible: status === Image.Ready
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)

@@ -31,10 +31,10 @@ ListItems.Standard {
     property var __icon: USC.IconVisual {
         id: iconVisual
         source: "image://theme/calendar"
-        visible: source != ""
+        visible: status == Image.Ready
 
         height: Math.min(units.gu(5), parent.height - units.gu(1))
-        width: Math.min(units.gu(5), parent.height - units.gu(1))
+        width: height
 
         Component.onCompleted: {
             icon = iconVisual;
