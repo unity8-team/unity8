@@ -67,7 +67,9 @@ Date.prototype.weekStart = function(weekStartDay) {
 }
 
 Date.prototype.monthStart = function() {
-    return this.midnight().addDays(1 - this.getDate())
+    var date = new Date(this).midnight();
+    date.setDate(1);
+    return date;
 }
 
 Date.prototype.weekNumber = function() {
