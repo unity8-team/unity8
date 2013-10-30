@@ -28,7 +28,7 @@ ListItems.Standard {
     property alias time: dateLabel.text
     property alias eventColor: iconVisual.color
 
-    property var __icon: USC.IconVisual {
+    USC.IconVisual {
         id: iconVisual
         source: "image://theme/calendar"
         visible: status == Image.Ready
