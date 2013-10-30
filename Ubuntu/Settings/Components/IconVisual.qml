@@ -23,6 +23,7 @@ Item {
     property url source
     property alias color: colorizedImage.keyColorOut
     property alias keyColor: colorizedImage.keyColorIn
+    property alias status: image.status
 
     Image {
         id: image
