@@ -27,10 +27,6 @@ MainView {
     width: units.gu(42)
     height: units.gu(75)
 
-    Component.onCompleted: {
-        Theme.name = "Ubuntu.Components.Themes.SuruGradient"
-    }
-
     ListModel {
         id: mediaPlayerModel
         ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "tests/artwork/speak-now.jpg"}
@@ -67,11 +63,6 @@ MainView {
 
                 width: flickable.width
                 height: childrenRect.height
-
-                SectionMenu {
-                    text: i18n.tr("Section Starts Here")
-                    busy: true
-                }
 
                 SliderMenu {
                     id: slider
@@ -111,44 +102,52 @@ MainView {
                     checked: true
                 }
 
+                SectionMenu {
+                    text: i18n.tr("Section Starts Here")
+                    busy: true
+                }
+
+                SeparatorMenu {}
+
+                CalendarMenu {
+                    id: calendar
+                }
+
                 UserSessionMenu {
                     name: i18n.tr("Lola Chang")
                     icon: Qt.resolvedUrl("tests/artwork/avatar.png")
                     active: true
                 }
 
-                Column {
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                    }
+                MediaPlayerMenu {
+                    id: mediaPlayer
+                    property int index: 0
 
-                    Repeater {
-                        model: timeZoneModel
-
-                        TimeZoneMenu {
-                            city: model.city
-                            time: model.time
-                        }
-                    }
+                    playerName: "Rhythmbox"
+                    playerIcon: Qt.resolvedUrl("tests/artwork/rhythmbox.png")
+                    song: mediaPlayerModel.get(index).song;
+                    artist: mediaPlayerModel.get(index).artist;
+                    album: mediaPlayerModel.get(index).album;
+                    albumArt: mediaPlayerModel.get(index).albumArt;
                 }
 
-                Column {
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                    }
+                PlaybackItemMenu {
+                    canPlay: true
+                    canGoNext: true
+                    canGoPrevious: true
+                    playing: mediaPlayer.running
 
-                    Repeater {
-                        model: eventModel
+                    onPrevious: mediaPlayer.index = Math.max(mediaPlayer.index - 1, 0)
+                    onNext: mediaPlayer.index = Math.min(mediaPlayer.index + 1, mediaPlayerModel.count - 1)
+                    onPlay: { mediaPlayer.running = !mediaPlayer.running; }
+                }
 
-                        EventMenu {
-                            iconSource: model.icon
-                            text: model.text
-                            eventColor: model.eventColor
-                            time: model.time
-                        }
-                    }
+                AccessPointMenu {
+                    checked: true
+                    secure: true
+                    adHoc: false
+                    signalStrength: 50
+                    text: "Access Point"
                 }
 
                 GroupedMessageMenu {
@@ -188,44 +187,38 @@ MainView {
                     }
                 }
 
-                SeparatorMenu {}
+                Column {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
 
-                AccessPointMenu {
-                    checked: true
-                    secure: true
-                    adHoc: false
-                    signalStrength: 50
-                    text: "Access Point"
+                    Repeater {
+                        model: timeZoneModel
+
+                        TimeZoneMenu {
+                            city: model.city
+                            time: model.time
+                        }
+                    }
                 }
 
-                MediaPlayerMenu {
-                    id: mediaPlayer
-                    property int index: 0
+                Column {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
 
-                    playerName: "Rhythmbox"
-                    playerIcon: Qt.resolvedUrl("tests/artwork/rhythmbox.png")
-                    song: mediaPlayerModel.get(index).song;
-                    artist: mediaPlayerModel.get(index).artist;
-                    album: mediaPlayerModel.get(index).album;
-                    albumArt: mediaPlayerModel.get(index).albumArt;
-                }
+                    Repeater {
+                        model: eventModel
 
-                PlaybackItemMenu {
-                    canPlay: true
-                    canGoNext: true
-                    canGoPrevious: true
-                    playing: mediaPlayer.running
-
-                    onPrevious: mediaPlayer.index = Math.max(mediaPlayer.index - 1, 0)
-                    onNext: mediaPlayer.index = Math.min(mediaPlayer.index + 1, mediaPlayerModel.count - 1)
-                    onPlay: { mediaPlayer.running = !mediaPlayer.running; }
-                }
-
-                CalendarMenu {
-                    id: calendar
-//                    currentDate: new Date(2013, 6, 2) // june 2013
-//                    minimumDate: new Date(2013, 4, 2) // april 2013
-//                    maximumDate: new Date(2013, 7, 2) // july 2013
+                        EventMenu {
+                            iconSource: model.icon
+                            text: model.text
+                            eventColor: model.eventColor
+                            time: model.time
+                        }
+                    }
                 }
             }
         }
