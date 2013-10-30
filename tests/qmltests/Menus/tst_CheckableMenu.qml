@@ -62,7 +62,7 @@ Item {
         }
 
         function test_checkChanged() {
-            var checkbox = UtilsJS.findChild(checkMenu, "checkbox");
+            var checkbox = checkMenu.icon;
             verify(checkbox !== undefined);
 
             compare(checkbox.checked, false, "Checkbox should initially be unchecked");
@@ -71,7 +71,9 @@ Item {
         }
 
         function test_clickCheckBox() {
-            var checkbox = UtilsJS.findChild(checkMenu, "checkbox");
+            var checkbox = checkMenu.icon;
+            verify(checkbox !== undefined);
+
             mouseClick(checkMenu, checkbox.width / 2, checkbox.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on checkbox click");
         }

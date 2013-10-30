@@ -152,7 +152,7 @@ MainView {
                 }
 
                 GroupedMessageMenu {
-                    title: "Group Message"
+                    text: "Group Message"
                     count: "4"
                 }
 

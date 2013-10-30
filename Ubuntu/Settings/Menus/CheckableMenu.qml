@@ -27,7 +27,7 @@ ListItem.Standard {
     property bool checked: false
     __acceptEvents: false
 
-    property var __icon: Components.CheckBox {
+    Components.CheckBox {
         id: checkbox
         objectName: "checkbox"
         property bool enableCheckConnection: true

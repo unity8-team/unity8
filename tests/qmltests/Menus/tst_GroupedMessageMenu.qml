@@ -44,15 +44,15 @@ Item {
                 id: messageMenu
                 removable: true
 
-                title: "Group Message"
+                text: "Group Message"
                 count: "3"
             }
         }
     }
 
     SignalSpy {
-        id: signalSpyActivateApp
-        signalName: "appActivated"
+        id: signalSpyTriggered
+        signalName: "triggered"
         target: messageMenu
     }
 
@@ -67,57 +67,13 @@ Item {
         when: windowShown
 
         function init() {
-            signalSpyActivateApp.clear();
+            signalSpyTriggered.clear();
             signalSpyDismiss.clear();
         }
 
-        function test_title_data() {
-            return [
-                { title: "title1" },
-                { title: "title2" },
-            ];
-        }
-
-        function test_title(data) {
-            messageMenu.title = data.title;
-
-            var title = UtilsJS.findChild(messageMenu, "title");
-            verify(title !== undefined, "No title");
-            compare(title.text, data.title, "Title does not match set title.");
-        }
-
-        function test_appIcon_data() {
-            return [
-                { appIcon: Qt.resolvedUrl("../../artwork/avatar.png") },
-                { appIcon: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
-            ];
-        }
-
-        function test_appIcon(data) {
-            messageMenu.appIcon = data.appIcon;
-            var appIcon = UtilsJS.findChild(messageMenu, "appIcon");
-            verify(appIcon !== undefined, "No app icon");
-            compare(appIcon.source, data.appIcon, "App Icon does not match set icon.");
-        }
-
-        function test_count_data() {
-            return [
-                { count: "0" },
-                { count: "5" },
-            ];
-        }
-
-        function test_count(data) {
-            messageMenu.count = data.count;
-
-            var count = UtilsJS.findChild(messageMenu, "messageCount");
-            verify(count !== undefined, "No count");
-            compare(count.text, data.count, "Count does not match set count.");
-        }
-
-        function test_activate() {
+        function test_triggered() {
             mouseClick(messageMenu, messageMenu.width / 2, messageMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count > 0, true, "activate app should have been triggered");
+            compare(signalSpyTriggered.count > 0, true, "should have been triggered");
         }
 
         function test_dismiss() {

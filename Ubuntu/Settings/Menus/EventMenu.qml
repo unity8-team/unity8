@@ -22,7 +22,7 @@ import Ubuntu.Settings.Components 0.1 as USC
 import Ubuntu.Components.ListItems 0.1 as ListItems
 
 ListItems.Standard {
-    id: eventMenu
+    id: menu
 
     property alias iconSource: iconVisual.source
     property alias time: dateLabel.text
@@ -45,5 +45,12 @@ ListItems.Standard {
     control: Components.Label {
         id: dateLabel
         color: Theme.palette.normal.backgroundText
+
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                menu.clicked();
+            }
+        }
     }
 }

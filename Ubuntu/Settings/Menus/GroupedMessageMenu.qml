@@ -25,14 +25,11 @@ import Ubuntu.Components.ListItems 0.1 as ListItem
 ListItem.Standard {
     id: menu
 
-    property alias title: menu.text
     property alias count: label.text
-    property url appIcon
 
-    signal appActivated()
     signal dismissed()
 
-    icon: appIcon != "" ? appIcon : Qt.resolvedUrl("artwork/default_app.svg")
+    icon: Qt.resolvedUrl("artwork/default_app.svg")
 
     control: UbuntuShape {
 
@@ -55,10 +52,13 @@ ListItem.Standard {
 
             color: Theme.palette.normal.foregroundText
         }
-    }
 
-    onClicked: {
-        menu.appActivated();
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                menu.clicked();
+            }
+        }
     }
 
     onItemRemoved: {
