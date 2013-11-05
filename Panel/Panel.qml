@@ -22,7 +22,6 @@ Item {
     id: root
     readonly property real panelHeight: units.gu(3) + units.dp(2)
     property real indicatorsMenuWidth: (shell.width > units.gu(60)) ? units.gu(40) : shell.width
-    property alias indicators: indicatorsMenu
     property bool fullscreenMode: false
     property bool searchVisible: true
 
@@ -53,58 +52,13 @@ Item {
         saturation: 1 - indicatorsMenu.unitProgress
     }
 
-    Rectangle {
-        id: darkenedArea
-        property real darkenedOpacity: 0.6
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: panelBackground.bottom
-            bottom: parent.bottom
-        }
-        color: "black"
-        opacity: indicatorsMenu.unitProgress * darkenedOpacity
-        MouseArea {
-            anchors.fill: parent
-            enabled: indicatorsMenu.shown
-            onClicked: if (indicatorsMenu.fullyOpened) indicatorsMenu.hide();
-        }
-    }
-
-    Indicators {
-        id: indicatorsMenu
-        objectName: "indicators"
-
-        anchors.right: parent.right
-        y: panelBackground.y
-        width: root.indicatorsMenuWidth
-        shown: false
-        hintValue: __panelMinusSeparatorLineHeight * 3
-        panelHeight: __panelMinusSeparatorLineHeight
-        openedHeight: parent.height + (pinnedMode ? 0 : root.panelHeight)
-        pinnedMode: !fullscreenMode
-        overFlowWidth: search.state=="hidden" ? parent.width : parent.width - search.width
-
-        property real unitProgress: (height - panelHeight) / (openedHeight - panelHeight)
-    }
-
-    PanelSeparatorLine {
-        id: indicatorsSeparatorLine
-        visible: true
-        anchors {
-            left: indicatorsMenu.left
-            right: indicatorsMenu.right
-        }
-        y: indicatorsMenu.visualBottom
-    }
-
     BorderImage {
         id: dropShadow
         anchors {
-            top: indicators.top
-            bottom: indicatorsSeparatorLine.bottom
-            left: indicators.left
-            right: indicators.right
+            top: panelBackground.top
+            bottom: panelBackground.bottom
+            left: parent.left
+            right: parent.right
             margins: -units.gu(1)
         }
         visible: indicatorsMenu.height > indicatorsMenu.panelHeight

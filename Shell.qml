@@ -134,7 +134,7 @@ FocusScope {
         anchors.fill: parent
 
         // Whether the underlay is fully covered by opaque UI elements.
-        property bool fullyCovered: panel.indicators.fullyOpened && shell.width <= panel.indicatorsMenuWidth
+        property bool fullyCovered: false
 
         readonly property bool applicationRunning: ((mainStage.applications && mainStage.applications.count > 0)
                                            || (sideStage.applications && sideStage.applications.count > 0))
@@ -169,7 +169,6 @@ FocusScope {
             objectName: "dash"
 
             available: !greeter.shown && !lockscreen.shown
-            hides: [stages, launcher, panel.indicators]
             shown: disappearingAnimationProgress !== 1.0
             enabled: disappearingAnimationProgress === 0.0 && edgeDemo.dashEnabled
             // FIXME: unfocus all applications when going back to the dash
@@ -213,11 +212,6 @@ FocusScope {
             id: panel
             anchors.fill: parent //because this draws indicator menus
             indicatorsMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
-            indicators {
-                hides: [launcher]
-                available: edgeDemo.panelEnabled
-                contentEnabled: edgeDemo.panelContentEnabled
-            }
             fullscreenMode: shell.fullscreenMode
             searchVisible: !greeter.shown && !lockscreen.shown && dash.shown
 
