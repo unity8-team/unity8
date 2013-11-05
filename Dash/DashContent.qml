@@ -114,8 +114,8 @@ Item {
                 source: "GenericScopeView.qml"
                 objectName: scope.id + " loader"
 
-                readonly property bool previewShown: item.previewShown
-                readonly property bool moving: item.moving
+                readonly property bool previewShown: item ? item.previewShown : false
+                readonly property bool moving: item ? item.moving : false
 
                 // these are needed for autopilot tests
                 readonly property string scopeId: scope.id
