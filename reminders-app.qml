@@ -11,7 +11,7 @@ MainView {
     objectName: "mainView"
 
     // Note! applicationName needs to match the "name" field of the click manifest
-    applicationName: "com.ubuntu.developer.dpm.reminders-app"
+    applicationName: "com.ubuntu.reminders-app"
 
     /*
      This property enables the application to change orientation
@@ -19,35 +19,29 @@ MainView {
     */
     //automaticOrientation: true
 
-    width: units.gu(100)
+    width: units.gu(50)
     height: units.gu(75)
 
-    Page {
-        title: i18n.tr("Reminders")
+    backgroundColor: UbuntuColors.coolGrey
 
-        Column {
-            spacing: units.gu(1)
-            anchors {
-                margins: units.gu(2)
-                fill: parent
+    PageStack {
+        id: pagestack
+
+        Tabs {
+            id: rootTabs
+
+            anchors.fill: parent
+
+            Tab {
+                title: "Notes"
             }
 
-            HelloComponent {
-                id: label
-                objectName: "label"
-
-                text: i18n.tr("Hello..")
+            Tab {
+                title: "Notebook"
             }
 
-            Button {
-                objectName: "button"
-                width: parent.width
-
-                text: i18n.tr("Tap me!")
-
-                onClicked: {
-                    label.text = i18n.tr("..world!")
-                }
+            Tab {
+                title: "Reminders"
             }
         }
     }
