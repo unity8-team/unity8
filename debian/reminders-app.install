@@ -1,0 +1,6 @@
+reminders-app usr/bin/
+reminders-app.desktop usr/share/applications/
+*.qml usr/share/reminders-app/
+*.png usr/share/reminders-app/
+components usr/share/reminders-app/
+ui usr/share/reminders-app/
