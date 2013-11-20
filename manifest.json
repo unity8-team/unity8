@@ -7,8 +7,8 @@
             "desktop": "reminders-app.desktop"
         }
     },
-    "maintainer": "David Planella <david.planella@ubuntu.com>",
-    "name": "com.ubuntu.developer.dpm.reminders-app",
+    "maintainer": "Ubuntu Reminders app developers <ubuntu-phone@lists.launchpad.net>",
+    "name": "com.ubuntu.reminders-app",
     "title": "reminders-app",
     "version": "0.1"
 }
