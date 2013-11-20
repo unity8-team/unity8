@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@
+
+override_dh_install:
+	tests/autopilot/install_autopilot.sh $(CURDIR)
+	dh_install --fail-missing
+	appname=reminders-app; \
+	for pofile in $(shell find ./po -name "*.po"); do \
+		pofilename="$${pofile##*/}"; \
+		langcode="$${pofilename%.*}"; \
+		localedir="debian/$$appname/usr/share/locale/$$langcode/LC_MESSAGES"; \
+		mkdir -p $$localedir; \
+		mofile="$$localedir/$$appname.mo"; \
+		msgfmt -o $$mofile $$pofile; \
+	done
