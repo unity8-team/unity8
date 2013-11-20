@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import "components"
+import "ui"
 
 /*!
     \brief MainView with a Label and Button elements.
@@ -22,6 +23,7 @@ MainView {
     width: units.gu(50)
     height: units.gu(75)
 
+    // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
 
     PageStack {
@@ -33,15 +35,24 @@ MainView {
             anchors.fill: parent
 
             Tab {
-                title: "Notes"
+                title: i18n.tr("Notes")
+                page: Notes {
+                    id: notesPage
+                }
             }
 
             Tab {
-                title: "Notebook"
+                title: i18n.tr("Notebook")
+                page: Notebooks {
+                    id: notebooksPage
+                }
             }
 
             Tab {
-                title: "Reminders"
+                title: i18n.tr("Reminders")
+                page: Reminders {
+                    id: remindersPage
+                }
             }
         }
     }
