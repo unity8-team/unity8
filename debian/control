@@ -2,6 +2,7 @@ Source: reminders-app
 Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: debhelper (>= 9),
+	       gettext,
                python,
 Standards-Version: 3.9.4
 Section: misc
@@ -21,12 +22,9 @@ Description: Reminders application
 
 Package: reminders-app-autopilot
 Architecture: all
-Depends: ${misc:Depends},
-         python2.7,
-         reminders-app (= ${source:Version}),
+Depends: reminders-app (= ${source:Version}),
          libautopilot-qt,
          libqt5test5,
-         libqt5widgets5,
          ubuntu-ui-toolkit-autopilot,
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package

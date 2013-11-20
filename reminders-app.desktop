@@ -2,7 +2,8 @@
 Name=reminders-app
 Comment=My project description
 Exec=/usr/bin/qmlscene $@ /usr/share/reminders-app/reminders-app.qml
-Icon=qmlscene
+Icon=/usr/share/ubuntu-clock-app/reminders-app.png
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true
+X-Ubuntu-Gettext-Domain=com.ubuntu.reminders-app
