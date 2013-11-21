@@ -7,7 +7,7 @@
             "desktop": "reminders-app.desktop"
         }
     },
-    "maintainer": "Ubuntu Reminders app developers <ubuntu-phone@lists.launchpad.net>",
+    "maintainer": "",
     "name": "com.ubuntu.reminders-app",
     "title": "reminders-app",
     "version": "0.1"
