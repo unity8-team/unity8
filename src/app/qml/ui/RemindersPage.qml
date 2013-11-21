@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
-import "../components"
+//import "../components"
 
 Page {
     id: remindersPage
@@ -21,7 +21,7 @@ Page {
             subText: '<b>Date:</b> ' + model.date
         }
 
-        model: RemindersModel {}
+//        model: RemindersModel {}
 
     }
 

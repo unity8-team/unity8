@@ -1,7 +1,8 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "components"
+//import "components"
 import "ui"
+import Evernote 0.1
 
 /*!
     \brief MainView with a Label and Button elements.
@@ -26,6 +27,13 @@ MainView {
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
 
+    Component.onCompleted: {
+        pagestack.push(rootTabs)
+        if (NotesStore.token.length == 0) {
+            pagestack.push(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
+        }
+    }
+
     PageStack {
         id: pagestack
 
@@ -36,14 +44,14 @@ MainView {
 
             Tab {
                 title: i18n.tr("Notes")
-                page: Notes {
+                page: NotesPage {
                     id: notesPage
                 }
             }
 
             Tab {
                 title: i18n.tr("Notebook")
-                page: Notebooks {
+                page: NotebooksPage {
                     id: notebooksPage
                 }
             }
