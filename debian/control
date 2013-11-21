@@ -22,7 +22,8 @@ Description: Reminders application
 
 Package: reminders-app-autopilot
 Architecture: all
-Depends: reminders-app (= ${source:Version}),
+Depends: ${misc:Depends},
+         reminders-app (= ${source:Version}),
          libautopilot-qt,
          libqt5test5,
          ubuntu-ui-toolkit-autopilot,

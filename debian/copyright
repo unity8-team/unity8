@@ -4,7 +4,6 @@ Source: https://launchpad.net/reminders-app
 
 Files: *
 Copyright: 2013 Canonical Ltd.
-
 License: GPL-3
 
 Files: debian/*
