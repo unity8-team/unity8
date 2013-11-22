@@ -3,7 +3,11 @@ Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: debhelper (>= 9),
 	       gettext,
+               libboost-dev,
+               libssl-dev,
                python,
+               qt5-default,
+               qtdeclarative5-dev,
 Standards-Version: 3.9.4
 Section: misc
 Homepage: https://launchpad.net/reminders-app
@@ -11,7 +15,7 @@ Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 
 Package: reminders-app
 Section: misc
-Architecture: all
+Architecture: any
 Depends: ${misc:Depends},
          qmlscene,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
