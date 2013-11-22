@@ -15,7 +15,7 @@ Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 
 Package: reminders-app
 Section: misc
-Architecture: all
+Architecture: any
 Depends: ${misc:Depends},
          qmlscene,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,

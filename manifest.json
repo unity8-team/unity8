@@ -1,6 +1,7 @@
 {
     "description": "description of reminders-app",
     "framework": "ubuntu-sdk-13.10",
+    "architecture": "armhf",
     "hooks": {
         "reminders-app": {
             "apparmor": "reminders-app.json",
