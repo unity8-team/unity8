@@ -1,2 +1,2 @@
 #!/bin/bash
-qmlscene /usr/share/reminders-app/reminders-app.qml
+qmlscene /usr/share/reminders-app/qml/reminders-app.qml
