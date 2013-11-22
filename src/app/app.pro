@@ -1,4 +1,4 @@
-TARGET = evernote-app
+TARGET = reminders-app
 TEMPLATE = app
 
 QT+= core qml quick
