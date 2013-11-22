@@ -1,6 +1,5 @@
 reminders-app usr/bin/
 reminders-app.desktop usr/share/applications/
-*.qml usr/share/reminders-app/
+src/app/qml/ usr/share/reminders-app/qml
 *.png usr/share/reminders-app/
-components usr/share/reminders-app/
-ui usr/share/reminders-app/
+usr/lib/*/qt5/qml/Evernote/
