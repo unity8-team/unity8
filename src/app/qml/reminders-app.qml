@@ -58,7 +58,7 @@ MainView {
 
             Tab {
                 title: i18n.tr("Reminders")
-                page: Reminders {
+                page: RemindersPage {
                     id: remindersPage
                 }
             }
