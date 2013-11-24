@@ -41,6 +41,7 @@ QHash<int, QByteArray> Notebooks::roleNames() const
 
 void Notebooks::refresh()
 {
+    qDebug() << "refreshing notebooks";
     NotesStore::instance()->refreshNotebooks();
 }
 

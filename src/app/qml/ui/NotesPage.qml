@@ -8,16 +8,8 @@ Page {
 
     property alias filter: notes.filterNotebookGuid
 
-    onActiveChanged: {
-        if (active) {
-            notes.refresh();
-        }
-    }
-
     Notes {
         id: notes
-
-        onFilterNotebookGuidChanged: refresh();
     }
 
     ListView {

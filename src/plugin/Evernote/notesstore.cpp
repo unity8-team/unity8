@@ -1,11 +1,11 @@
 #include "notesstore.h"
 #include "notebooks.h"
 #include "notebook.h"
+#include "note.h"
 
-// Evernote SDK
-#include <NoteStore.h>
-#include <NoteStore_constants.h>
-#include <Errors_types.h>
+#include "fetchnotesjob.h"
+#include "fetchnotebooksjob.h"
+#include "fetchnotejob.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -23,7 +23,8 @@ using namespace apache::thrift::transport;
 NotesStore* NotesStore::s_instance = 0;
 
 NotesStore::NotesStore(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_currentJob(0)
 {
     try {
         // TODO: Move this to a common place instead of keeping a copy here and in UserStore
@@ -88,9 +89,10 @@ QString NotesStore::token() const
 void NotesStore::setToken(const QString &token)
 {
     if (token != m_token) {
-        qDebug() << "NotesStore: setting token:" << token;
         m_token = token;
         emit tokenChanged();
+        refreshNotebooks();
+        refreshNotes();
     }
 }
 
@@ -121,32 +123,20 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
         return;
     }
 
-    // TODO: fix start/end (use smaller chunks and continue fetching if there are more notes available)
-    int32_t start = 0;
-    int32_t end = 10000;
+    evernote::edam::NotesMetadataList *resultList = new evernote::edam::NotesMetadataList;
+    FetchNotesJob *job = new FetchNotesJob(resultList, m_client, m_token, filterNotebookGuid);
+    m_notesResultsMap.insert(job, resultList);
+    connect(job, SIGNAL(resultReady()), SLOT(fetchNotesJobDone()));
+    m_requestQueue.append(job);
+    sendNextRequest();
+}
 
-    // Prepare filter
-    evernote::edam::NoteFilter filter;
-    filter.notebookGuid = filterNotebookGuid.toStdString();
-    filter.__isset.notebookGuid = !filterNotebookGuid.isEmpty();
+void NotesStore::fetchNotesJobDone()
+{
+    evernote::edam::NotesMetadataList *results = m_notesResultsMap.take(sender());
 
-    // Prepare ResultSpec
-    evernote::edam::NotesMetadataResultSpec resultSpec;
-    resultSpec.includeNotebookGuid = true;
-    resultSpec.__isset.includeNotebookGuid = true;
-    resultSpec.includeTitle = true;
-    resultSpec.__isset.includeTitle = true;
-
-    evernote::edam::NotesMetadataList results;
-    try {
-        m_client->findNotesMetadata(results, m_token.toStdString(), filter, start, end, resultSpec);
-    } catch(...) {
-        qDebug() << "error fetching notes";
-        return;
-    }
-
-    for (int i = 0; i < results.notes.size(); ++i) {
-        evernote::edam::NoteMetadata result = results.notes.at(i);
+    for (int i = 0; i < results->notes.size(); ++i) {
+        evernote::edam::NoteMetadata result = results->notes.at(i);
         Note *note = m_notes.value(QString::fromStdString(result.guid));
         if (note) {
             qDebug() << "Received update for existing note";
@@ -155,62 +145,93 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
             note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
             note->setTitle(QString::fromStdString(result.title));
             m_notes.insert(note->guid(), note);
-            qDebug() << "Received new note" << note->title();
             emit noteAdded(note->guid());
         }
     }
+    delete results;
+    delete sender();
+    m_currentJob = 0;
+    sendNextRequest();
 }
 
 void NotesStore::refreshNoteContent(const QString &guid)
 {
     if (m_token.isEmpty()) {
-        qDebug() << "No token set. Cannot fetch note.";
         return;
     }
 
-    evernote::edam::Note result;
-    try {
-        m_client->getNote(result, m_token.toStdString(), guid.toStdString(), true, true, false, false);
-    } catch(...) {
-        qDebug() << "error fetching note";
-        return;
-    }
+    evernote::edam::Note *result = new evernote::edam::Note;
+    FetchNoteJob *job = new FetchNoteJob(result, m_client, m_token, guid, this);
+    m_noteContentResultsMap.insert(job, result);
+    connect(job, SIGNAL(resultReady()), SLOT(fetchNoteJobDone()));
+    m_requestQueue.append(job);
+    sendNextRequest();
+}
 
-    Note *note = m_notes.value(guid);
-    note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
-    note->setTitle(QString::fromStdString(result.title));
-    note->setContent(QString::fromStdString(result.content));
+void NotesStore::fetchNoteJobDone()
+{
+    evernote::edam::Note *result = m_noteContentResultsMap.take(sender());
+    Note *note = m_notes.value(QString::fromStdString(result->guid));
+    note->setNotebookGuid(QString::fromStdString(result->notebookGuid));
+    note->setTitle(QString::fromStdString(result->title));
+    note->setContent(QString::fromStdString(result->content));
     emit noteChanged(note->guid());
+
+    delete result;
+    delete sender();
+    m_currentJob = 0;
+    sendNextRequest();
 }
 
 void NotesStore::refreshNotebooks()
 {
     if (m_token.isEmpty()) {
         qDebug() << "No token set. Cannot refresh notebooks.";
-    }
-    std::vector<evernote::edam::Notebook> results;
-    try {
-        m_client->listNotebooks(results, m_token.toStdString());
-    } catch (...) {
-        qDebug() << "Error fetching notebooks";
         return;
     }
 
-    for (int i = 0; i < results.size(); ++i) {
-        evernote::edam::Notebook result = results.at(i);
+    std::vector<evernote::edam::Notebook> *results = new std::vector<evernote::edam::Notebook>;
+    FetchNotebooksJob *job = new FetchNotebooksJob(results, m_client, m_token);
+    connect(job, SIGNAL(resultReady()), SLOT(fetchNotebooksJobDone()));
+    m_notebooksResultsMap.insert(job, results);
+    m_requestQueue.append(job);
+    sendNextRequest();
+}
+
+void NotesStore::fetchNotebooksJobDone()
+{
+    std::vector<evernote::edam::Notebook> *results = m_notebooksResultsMap.take(sender());
+
+    for (int i = 0; i < results->size(); ++i) {
+        evernote::edam::Notebook result = results->at(i);
         Notebook *notebook = m_notebooks.value(QString::fromStdString(result.guid));
         if (notebook) {
             qDebug() << "got notebook update";
         } else {
             notebook = new Notebook(QString::fromStdString(result.guid), this);
             notebook->setName(QString::fromStdString(result.name));
-            qDebug() << "got new notebook" << notebook->name();
             m_notebooks.insert(notebook->guid(), notebook);
             emit notebookAdded(notebook->guid());
         }
     }
+    delete results;
+    delete sender();
+    m_currentJob = 0;
+    sendNextRequest();
 }
 
+void NotesStore::sendNextRequest()
+{
+    if (m_requestQueue.isEmpty()) {
+        return;
+    }
+
+    if (m_currentJob) {
+        return;
+    }
+    m_currentJob = m_requestQueue.takeFirst();
+    m_currentJob->start();
+}
 
 // TODO: move to a common place instead of copying it through *store.cpps
 void NotesStore::displayException()

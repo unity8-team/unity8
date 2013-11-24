@@ -1,19 +1,16 @@
 #ifndef NOTESSTORE_H
 #define NOTESSTORE_H
 
-#include "note.h"
+// Evernote SDK
+#include <NoteStore.h>
+#include <NoteStore_constants.h>
+#include <Errors_types.h>
 
 #include <QObject>
 #include <QHash>
 
 class Notebook;
 class Note;
-
-namespace evernote {
-namespace edam {
-class NoteStoreClient;
-}
-}
 
 class NotesStore : public QObject
 {
@@ -41,6 +38,13 @@ public:
 private:
     explicit NotesStore(QObject *parent = 0);
 
+private slots:
+    void fetchNotesJobDone();
+    void fetchNotebooksJobDone();
+    void fetchNoteJobDone();
+
+    void sendNextRequest();
+
 signals:
     void tokenChanged();
 
@@ -59,6 +63,12 @@ private:
 
     QHash<QString, Notebook*> m_notebooks;
     QHash<QString, Note*> m_notes;
+
+    QList<QThread*> m_requestQueue;
+    QThread *m_currentJob;
+    QHash<QObject*, evernote::edam::NotesMetadataList*> m_notesResultsMap;
+    QHash<QObject*, std::vector<evernote::edam::Notebook>* > m_notebooksResultsMap;
+    QHash<QObject*, evernote::edam::Note*> m_noteContentResultsMap;
 
 };
 

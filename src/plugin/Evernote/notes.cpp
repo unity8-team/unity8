@@ -1,4 +1,5 @@
 #include "notes.h"
+#include "note.h"
 
 #include <QDebug>
 
