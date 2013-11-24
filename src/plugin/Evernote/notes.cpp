@@ -5,15 +5,17 @@
 Notes::Notes(QObject *parent) :
     QAbstractListModel(parent)
 {
+    connect(NotesStore::instance(), SIGNAL(noteAdded(const QString &)), SLOT(noteAdded(const QString &)));
 }
 
 QVariant Notes::data(const QModelIndex &index, int role) const
 {
+    Note *note = NotesStore::instance()->note(m_list.at(index.row()));
     switch(role) {
     case RoleGuid:
-        return QString::fromStdString(m_list.at(index.row()).guid);
+        return note->guid();
     case RoleTitle:
-        return QString::fromStdString(m_list.at(index.row()).title);
+        return note->title();
     }
 
     return QVariant();
@@ -45,59 +47,40 @@ void Notes::setFilterNotebookGuid(const QString &notebookGuid)
     }
 }
 
-QString Notes::note(const QString &noteGuid)
+Note* Notes::note(const QString &guid)
 {
-    QString token = NotesStore::instance()->token();
-    if (token.isEmpty()) {
-        qDebug() << "No token set. Cannot fetch note.";
-        return QString();
-    }
+    NotesStore::instance()->refreshNoteContent(guid);
+    return NotesStore::instance()->note(guid);
+}
 
-    Note note;
-    try {
-        NotesStore::instance()->evernoteNotesStoreClient()->getNote(note, token.toStdString(), noteGuid.toStdString(), true, true, false, false);
-    } catch(...) {
-        qDebug() << "error fetching note";
-        return QString();
+void Notes::componentComplete()
+{
+    foreach (Note *note, NotesStore::instance()->notes()) {
+        if (m_filterNotebookGuid.isEmpty() || note->notebookGuid() == m_filterNotebookGuid) {
+            m_list.append(note->guid());
+        }
     }
-
-    return QString::fromStdString(note.content);
+    beginInsertRows(QModelIndex(), 0, m_list.count() - 1);
+    endInsertRows();
+    refresh();
 }
 
 void Notes::refresh()
 {
-    QString token = NotesStore::instance()->token();
-    if (token.isEmpty()) {
-        qDebug() << "No token set. Cannot fetch notes.";
-        return;
+    NotesStore::instance()->refreshNotes(m_filterNotebookGuid);
+}
+
+void Notes::noteAdded(const QString &guid)
+{
+    beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
+    m_list.append(guid);
+    endInsertRows();
+}
+
+void Notes::noteChanged(const QString &guid)
+{
+    int row = m_list.indexOf(guid);
+    if (row >= 0) {
+        emit dataChanged(index(row), index(row));
     }
-
-    int32_t start = 0;
-    int32_t end = 10000;
-
-    // Prepare filter
-    NoteFilter filter;
-    filter.notebookGuid = m_filterNotebookGuid.toStdString();
-    filter.__isset.notebookGuid = !m_filterNotebookGuid.isEmpty();
-
-    // Prepare ResultSpec
-    NotesMetadataResultSpec resultSpec;
-    resultSpec.includeTitle = true;
-    resultSpec.__isset.includeTitle = true;
-
-    NotesMetadataList notes;
-    try {
-        NotesStore::instance()->evernoteNotesStoreClient()->findNotesMetadata(notes, token.toStdString(), filter, start, end, resultSpec);
-    } catch(...) {
-        qDebug() << "error fetching notes";
-        return;
-    }
-
-    beginResetModel();
-    m_list.clear();
-    foreach (NoteMetadata note, notes.notes) {
-        m_list.append(note);
-        qDebug() << QString::fromStdString(note.guid) << QString::fromStdString(note.title);
-    }
-    endResetModel();
 }

@@ -22,6 +22,7 @@
 #include "notesstore.h"
 #include "notes.h"
 #include "notebooks.h"
+#include "note.h"
 
 #include <QtQml>
 
@@ -37,4 +38,5 @@ void FitBitPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<NotesStore>("Evernote", 0, 1, "NotesStore", notesStoreProvider);
     qmlRegisterType<Notes>("Evernote", 0, 1, "Notes");
     qmlRegisterType<Notebooks>("Evernote", 0, 1, "Notebooks");
+    qmlRegisterUncreatableType<Note>("Evernote", 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
 }

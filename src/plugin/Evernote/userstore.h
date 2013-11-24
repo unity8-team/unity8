@@ -5,8 +5,6 @@
 
 #include <QObject>
 
-using namespace evernote::edam;
-
 class UserStore : public QObject
 {
     Q_OBJECT

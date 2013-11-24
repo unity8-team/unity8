@@ -5,8 +5,6 @@
 
 #include <QAbstractListModel>
 
-using namespace evernote::edam;
-
 class Notebooks : public QAbstractListModel
 {
     Q_OBJECT
@@ -24,10 +22,11 @@ public:
 public slots:
     void refresh();
 
+private slots:
+    void notebookAdded(const QString &guid);
+
 private:
-    std::vector<Notebook> m_list;
-
-
+    QList<QString> m_list;
 };
 
 #endif // NOTEBOOKS_H

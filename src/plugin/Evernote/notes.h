@@ -4,10 +4,9 @@
 #include "notesstore.h"
 
 #include <QAbstractListModel>
+#include <QQmlParserStatus>
 
-using namespace evernote::edam;
-
-class Notes : public QAbstractListModel
+class Notes : public QAbstractListModel, public QQmlParserStatus
 {
     Q_OBJECT
     Q_PROPERTY(QString filterNotebookGuid READ filterNotebookGuid WRITE setFilterNotebookGuid NOTIFY filterNotebookGuidChanged)
@@ -25,16 +24,23 @@ public:
     QString filterNotebookGuid() const;
     void setFilterNotebookGuid(const QString &notebookGuid);
 
-    Q_INVOKABLE QString note(const QString &noteGuid);
+    Q_INVOKABLE Note* note(const QString &guid);
+
+    void classBegin() {}
+    void componentComplete();
 
 public slots:
     void refresh();
+
+private slots:
+    void noteAdded(const QString &guid);
+    void noteChanged(const QString &guid);
 
 signals:
     void filterNotebookGuidChanged();
 
 private:
-    QList<NoteMetadata> m_list;
+    QList<QString> m_list;
     QString m_filterNotebookGuid;
 
 };

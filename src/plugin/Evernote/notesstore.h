@@ -1,17 +1,19 @@
 #ifndef NOTESSTORE_H
 #define NOTESSTORE_H
 
-// Evernote SDK
-#include <NoteStore.h>
-#include <NoteStore_constants.h>
-#include <Errors_types.h>
+#include "note.h"
 
-// Qt
 #include <QObject>
+#include <QHash>
 
-using namespace evernote::edam;
+class Notebook;
+class Note;
 
-class Notebooks;
+namespace evernote {
+namespace edam {
+class NoteStoreClient;
+}
+}
 
 class NotesStore : public QObject
 {
@@ -26,7 +28,15 @@ public:
     QString token() const;
     void setToken(const QString &token);
 
-    NoteStoreClient *evernoteNotesStoreClient();
+    QList<Note*> notes() const;
+    Note* note(const QString &guid);
+
+    QList<Notebook*> notebooks() const;
+    Notebook* notebook(const QString &guid);
+
+    void refreshNotes(const QString &filterNotebookGuid = QString());
+    void refreshNoteContent(const QString &guid);
+    void refreshNotebooks();
 
 private:
     explicit NotesStore(QObject *parent = 0);
@@ -34,13 +44,21 @@ private:
 signals:
     void tokenChanged();
 
+    void noteAdded(const QString &guid);
+    void noteChanged(const QString &guid);
+
+    void notebookAdded(const QString &guid);
+
 private:
     static NotesStore *s_instance;
 
     void displayException();
 
     QString m_token;
-    NoteStoreClient *m_client;
+    evernote::edam::NoteStoreClient *m_client;
+
+    QHash<QString, Notebook*> m_notebooks;
+    QHash<QString, Note*> m_notes;
 
 };
 

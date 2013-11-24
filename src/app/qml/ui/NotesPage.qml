@@ -28,7 +28,7 @@ Page {
             text: title
 
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {title: title, text: notes.note(guid)})
+                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: notes.note(guid)})
             }
         }
     }
