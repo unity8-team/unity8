@@ -27,8 +27,6 @@ NotesStore::NotesStore(QObject *parent) :
     m_currentJob(0)
 {
     try {
-        // TODO: Move this to a common place instead of keeping a copy here and in UserStore
-
         // FIXME: need to populate this string from the system
         // The structure should be:
         // application/version; platform/version; [ device/version ]
@@ -161,7 +159,7 @@ void NotesStore::startNextJob()
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
 {
     if (m_token.isEmpty()) {
-        qDebug() << "No token set. Cannot fetch notes.";
+        qWarning() << "No token set. Cannot fetch notes.";
         return;
     }
 
@@ -201,6 +199,7 @@ void NotesStore::fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::No
 void NotesStore::refreshNoteContent(const QString &guid)
 {
     if (m_token.isEmpty()) {
+        qWarning() << "No token set. Cannot fetch note.";
         return;
     }
 
@@ -232,7 +231,7 @@ void NotesStore::fetchNoteJobDone(ErrorCode errorCode, const evernote::edam::Not
 void NotesStore::refreshNotebooks()
 {
     if (m_token.isEmpty()) {
-        qDebug() << "No token set. Cannot refresh notebooks.";
+        qWarning() << "No token set. Cannot refresh notebooks.";
         return;
     }
 
