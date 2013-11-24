@@ -18,7 +18,15 @@ class NotesStore : public QObject
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
 
 public:
+    enum ErrorCode {
+        ErrorCodeNoError,
+        ErrorCodeUserException,
+        ErrorCodeSystemException,
+        ErrorCodeNotFoundExcpetion
+    };
+
     static NotesStore *instance();
+    static QString errorCodeToString(ErrorCode errorCode);
 
     ~NotesStore();
 
@@ -35,16 +43,6 @@ public:
     void refreshNoteContent(const QString &guid);
     void refreshNotebooks();
 
-private:
-    explicit NotesStore(QObject *parent = 0);
-
-private slots:
-    void fetchNotesJobDone();
-    void fetchNotebooksJobDone();
-    void fetchNoteJobDone();
-
-    void sendNextRequest();
-
 signals:
     void tokenChanged();
 
@@ -53,10 +51,17 @@ signals:
 
     void notebookAdded(const QString &guid);
 
-private:
-    static NotesStore *s_instance;
+private slots:
+    void fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::NotesMetadataList &results);
+    void fetchNotebooksJobDone(ErrorCode errorCode, const std::vector<evernote::edam::Notebook> &results);
+    void fetchNoteJobDone(ErrorCode errorCode, const evernote::edam::Note &result);
 
-    void displayException();
+    void startJobQueue();
+    void startNextJob();
+
+private:
+    explicit NotesStore(QObject *parent = 0);
+    static NotesStore *s_instance;
 
     QString m_token;
     evernote::edam::NoteStoreClient *m_client;
@@ -66,10 +71,6 @@ private:
 
     QList<QThread*> m_requestQueue;
     QThread *m_currentJob;
-    QHash<QObject*, evernote::edam::NotesMetadataList*> m_notesResultsMap;
-    QHash<QObject*, std::vector<evernote::edam::Notebook>* > m_notebooksResultsMap;
-    QHash<QObject*, evernote::edam::Note*> m_noteContentResultsMap;
-
 };
 
 #endif // NOTESSTORE_H

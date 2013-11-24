@@ -1,8 +1,7 @@
 #include "fetchnotejob.h"
 
-FetchNoteJob::FetchNoteJob(evernote::edam::Note *result, evernote::edam::NoteStoreClient *client, const QString &token, const QString &guid, QObject *parent) :
+FetchNoteJob::FetchNoteJob(evernote::edam::NoteStoreClient *client, const QString &token, const QString &guid, QObject *parent) :
     QThread(parent),
-    m_result(result),
     m_client(client),
     m_token(token),
     m_guid(guid)
@@ -11,9 +10,17 @@ FetchNoteJob::FetchNoteJob(evernote::edam::Note *result, evernote::edam::NoteSto
 
 void FetchNoteJob::run()
 {
+    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
+    evernote::edam::Note result;
     try {
-        m_client->getNote(*m_result, m_token.toStdString(), m_guid.toStdString(), true, true, false, false);
-    } catch(...) {
+        m_client->getNote(result, m_token.toStdString(), m_guid.toStdString(), true, true, false, false);
+    } catch(evernote::edam::EDAMUserException) {
+        errorCode = NotesStore::ErrorCodeUserException;
+    } catch(evernote::edam::EDAMSystemException) {
+        errorCode = NotesStore::ErrorCodeSystemException;
+    } catch(evernote::edam::EDAMNotFoundException) {
+        errorCode = NotesStore::ErrorCodeNotFoundExcpetion;
     }
-    emit resultReady();
+
+    emit resultReady(errorCode, result);
 }

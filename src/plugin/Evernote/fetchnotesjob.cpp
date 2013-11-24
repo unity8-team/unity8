@@ -4,12 +4,10 @@
 
 #include <QDebug>
 
-FetchNotesJob::FetchNotesJob(evernote::edam::NotesMetadataList *results,
-                             evernote::edam::NoteStoreClient *client,
+FetchNotesJob::FetchNotesJob(evernote::edam::NoteStoreClient *client,
                              const QString &token,
                              const QString &filterNotebookGuid, QObject *parent) :
     QThread(parent),
-    m_results(results),
     m_client(client),
     m_token(token),
     m_filterNotebookGuid(filterNotebookGuid)
@@ -34,11 +32,17 @@ void FetchNotesJob::run()
     resultSpec.includeTitle = true;
     resultSpec.__isset.includeTitle = true;
 
+    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
+    evernote::edam::NotesMetadataList results;
+
     try {
-        m_client->findNotesMetadata(*m_results, m_token.toStdString(), filter, start, end, resultSpec);
-    } catch(...) {
-        qDebug() << "error fetching notes";
-        return;
+        m_client->findNotesMetadata(results, m_token.toStdString(), filter, start, end, resultSpec);
+    } catch(evernote::edam::EDAMUserException) {
+        errorCode = NotesStore::ErrorCodeUserException;
+    } catch(evernote::edam::EDAMSystemException) {
+        errorCode = NotesStore::ErrorCodeSystemException;
+    } catch(evernote::edam::EDAMNotFoundException) {
+        errorCode = NotesStore::ErrorCodeNotFoundExcpetion;
     }
-    emit resultReady();
+    emit resultReady(errorCode, results);
 }

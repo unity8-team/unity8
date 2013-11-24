@@ -1,6 +1,8 @@
 #ifndef FETCHNOTEBOOKSJOB_H
 #define FETCHNOTEBOOKSJOB_H
 
+#include "notesstore.h"
+
 // Evernote SDK
 #include <NoteStore.h>
 #include <NoteStore_constants.h>
@@ -12,15 +14,14 @@ class FetchNotebooksJob : public QThread
 {
     Q_OBJECT
 public:
-    explicit FetchNotebooksJob(std::vector<evernote::edam::Notebook> *results, evernote::edam::NoteStoreClient *client, const QString &token, QObject *parent = 0);
+    explicit FetchNotebooksJob(evernote::edam::NoteStoreClient *client, const QString &token, QObject *parent = 0);
 
     void run();
 
 signals:
-    void resultReady();
+    void resultReady(NotesStore::ErrorCode errorCode, const std::vector<evernote::edam::Notebook> &results);
 
 private:
-    std::vector<evernote::edam::Notebook> *m_results;
     evernote::edam::NoteStoreClient *m_client;
     QString m_token;
 };
