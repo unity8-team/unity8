@@ -2,6 +2,7 @@
 #include "notebooks.h"
 #include "notebook.h"
 #include "note.h"
+#include "utils/html2enmlconverter.h"
 
 #include "jobs/fetchnotesjob.h"
 #include "jobs/fetchnotebooksjob.h"
@@ -133,6 +134,10 @@ Note *NotesStore::note(const QString &guid)
 void NotesStore::saveNote(const QString &guid)
 {
     Note *note = m_notes.value(guid);
+
+    QString enml = Html2EnmlConverter::html2enml(note->content());
+    note->setContent(enml);
+
     SaveNoteJob *job = new SaveNoteJob(note, this);
     connect(job, &SaveNoteJob::resultReady, this, &NotesStore::saveNoteJobDone);
     m_jobQueue.append(job);
