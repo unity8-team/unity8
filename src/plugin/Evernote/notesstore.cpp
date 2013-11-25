@@ -3,9 +3,12 @@
 #include "notebook.h"
 #include "note.h"
 
-#include "fetchnotesjob.h"
-#include "fetchnotebooksjob.h"
-#include "fetchnotejob.h"
+#include "jobs/fetchnotesjob.h"
+#include "jobs/fetchnotebooksjob.h"
+#include "jobs/fetchnotejob.h"
+#include "jobs/createnotejob.h"
+#include "jobs/savenotejob.h"
+#include "jobs/deletenotejob.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -127,6 +130,23 @@ Note *NotesStore::note(const QString &guid)
     return m_notes.value(guid);
 }
 
+void NotesStore::saveNote(const QString &guid)
+{
+    Note *note = m_notes.value(guid);
+    SaveNoteJob *job = new SaveNoteJob(note, this);
+    connect(job, &SaveNoteJob::resultReady, this, &NotesStore::saveNoteJobDone);
+    m_jobQueue.append(job);
+    startJobQueue();
+}
+
+void NotesStore::deleteNote(const QString &guid)
+{
+    DeleteNoteJob *job = new DeleteNoteJob(guid, this);
+    connect(job, &DeleteNoteJob::resultReady, this, &NotesStore::deleteNoteJobDone);
+    m_jobQueue.append(job);
+    startJobQueue();
+}
+
 QList<Notebook *> NotesStore::notebooks() const
 {
     return m_notebooks.values();
@@ -139,14 +159,14 @@ Notebook *NotesStore::notebook(const QString &guid)
 
 void NotesStore::startJobQueue()
 {
-    if (m_requestQueue.isEmpty()) {
+    if (m_jobQueue.isEmpty()) {
         return;
     }
 
     if (m_currentJob) {
         return;
     }
-    m_currentJob = m_requestQueue.takeFirst();
+    m_currentJob = m_jobQueue.takeFirst();
     m_currentJob->start();
 }
 
@@ -163,11 +183,10 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
         return;
     }
 
-    FetchNotesJob *job = new FetchNotesJob(m_client, m_token, filterNotebookGuid);
+    FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
     connect(job, &FetchNotesJob::resultReady, this, &NotesStore::fetchNotesJobDone);
-    connect(job, &FetchNoteJob::finished, job, &FetchNotesJob::deleteLater);
 
-    m_requestQueue.append(job);
+    m_jobQueue.append(job);
     startJobQueue();
 }
 
@@ -183,7 +202,9 @@ void NotesStore::fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::No
         evernote::edam::NoteMetadata result = results.notes.at(i);
         Note *note = m_notes.value(QString::fromStdString(result.guid));
         if (note) {
-            qDebug() << "Received update for existing note";
+            note->setTitle(QString::fromStdString(result.title));
+            note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+            emit noteChanged(note->guid());
         } else {
             note = new Note(QString::fromStdString(result.guid), this);
             note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
@@ -203,10 +224,9 @@ void NotesStore::refreshNoteContent(const QString &guid)
         return;
     }
 
-    FetchNoteJob *job = new FetchNoteJob(m_client, m_token, guid, this);
+    FetchNoteJob *job = new FetchNoteJob(guid, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
-    connect(job, &FetchNoteJob::finished, job, &FetchNoteJob::deleteLater);
-    m_requestQueue.append(job);
+    m_jobQueue.append(job);
 
     startJobQueue();
 }
@@ -235,11 +255,10 @@ void NotesStore::refreshNotebooks()
         return;
     }
 
-    FetchNotebooksJob *job = new FetchNotebooksJob(m_client, m_token);
+    FetchNotebooksJob *job = new FetchNotebooksJob();
     connect(job, &FetchNotebooksJob::resultReady, this, &NotesStore::fetchNotebooksJobDone);
-    connect(job, &FetchNotebooksJob::finished, job, &FetchNotebooksJob::deleteLater);
 
-    m_requestQueue.append(job);
+    m_jobQueue.append(job);
     startJobQueue();
 }
 
@@ -256,13 +275,61 @@ void NotesStore::fetchNotebooksJobDone(ErrorCode errorCode, const std::vector<ev
         Notebook *notebook = m_notebooks.value(QString::fromStdString(result.guid));
         if (notebook) {
             qDebug() << "got notebook update";
+            notebook->setName(QString::fromStdString(result.name));
+            emit notebookChanged(notebook->guid());
         } else {
             notebook = new Notebook(QString::fromStdString(result.guid), this);
             notebook->setName(QString::fromStdString(result.name));
             m_notebooks.insert(notebook->guid(), notebook);
             emit notebookAdded(notebook->guid());
+            qDebug() << "got new notebook" << notebook->guid();
         }
     }
 
     startNextJob();
 }
+
+void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &content)
+{
+    Note *note = new Note();
+    note->setTitle(title);
+    note->setNotebookGuid(notebookGuid);
+    note->setContent(content);
+    CreateNoteJob *job = new CreateNoteJob(note);
+    connect(job, &CreateNoteJob::resultReady, this, &NotesStore::createNoteJobDone);
+
+    m_jobQueue.append(job);
+    startJobQueue();
+}
+
+void NotesStore::createNoteJobDone(NotesStore::ErrorCode errorCode, Note *note)
+{
+    if (errorCode != ErrorCodeNoError) {
+        qWarning() << "Error creating note:" << errorCodeToString(errorCode);
+        delete note;
+        startNextJob();
+        return;
+    }
+
+    m_notes.insert(note->guid(), note);
+    noteAdded(note->guid());
+    startNextJob();
+}
+
+void NotesStore::saveNoteJobDone(NotesStore::ErrorCode errorCode, Note *note)
+{
+    startNextJob();
+}
+
+void NotesStore::deleteNoteJobDone(NotesStore::ErrorCode errorCode, const QString &guid)
+{
+    if (errorCode != ErrorCodeNoError) {
+        qWarning() << "Cannot delete note:" << errorCodeToString(errorCode);
+        startNextJob();
+        return;
+    }
+    emit noteRemoved(guid);
+    m_notes.take(guid)->deleteLater();
+    startNextJob();
+}
+

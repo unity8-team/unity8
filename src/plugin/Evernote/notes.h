@@ -35,6 +35,7 @@ public slots:
 private slots:
     void noteAdded(const QString &guid);
     void noteChanged(const QString &guid);
+    void noteRemoved(const QString &guid);
 
 signals:
     void filterNotebookGuidChanged();

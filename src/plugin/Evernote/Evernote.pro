@@ -16,9 +16,13 @@ SOURCES += evernoteplugin.cpp \
     notes.cpp \
     note.cpp \
     notebook.cpp \
-    fetchnotesjob.cpp \
-    fetchnotebooksjob.cpp \
-    fetchnotejob.cpp
+    jobs/fetchnotesjob.cpp \
+    jobs/fetchnotebooksjob.cpp \
+    jobs/fetchnotejob.cpp \
+    jobs/createnotejob.cpp \
+    jobs/evernotejob.cpp \
+    jobs/savenotejob.cpp \
+    jobs/deletenotejob.cpp
 
 HEADERS += evernoteplugin.h \
     notesstore.h \
@@ -27,9 +31,13 @@ HEADERS += evernoteplugin.h \
     notes.h \
     note.h \
     notebook.h \
-    fetchnotesjob.h \
-    fetchnotebooksjob.h \
-    fetchnotejob.h
+    jobs/fetchnotesjob.h \
+    jobs/fetchnotebooksjob.h \
+    jobs/fetchnotejob.h \
+    jobs/createnotejob.h \
+    jobs/evernotejob.h \
+    jobs/savenotejob.h \
+    jobs/deletenotejob.h
 
 message(building in $$OUT_PWD)
 LIBS += -L$$OUT_PWD/../../../3rdParty/evernote-sdk-cpp/ -L$$OUT_PWD/../../../3rdParty/libthrift/ -levernote-sdk-cpp -llibthrift

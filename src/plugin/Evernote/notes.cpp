@@ -6,7 +6,9 @@
 Notes::Notes(QObject *parent) :
     QAbstractListModel(parent)
 {
-    connect(NotesStore::instance(), SIGNAL(noteAdded(const QString &)), SLOT(noteAdded(const QString &)));
+    connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Notes::noteAdded);
+    connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notes::noteRemoved);
+    connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Notes::noteChanged);
 }
 
 QVariant Notes::data(const QModelIndex &index, int role) const
@@ -83,5 +85,15 @@ void Notes::noteChanged(const QString &guid)
     int row = m_list.indexOf(guid);
     if (row >= 0) {
         emit dataChanged(index(row), index(row));
+    }
+}
+
+void Notes::noteRemoved(const QString &guid)
+{
+    int index = m_list.indexOf(guid);
+    if (index >= 0) {
+        beginRemoveRows(QModelIndex(), index, index);
+        m_list.removeAt(index);
+        endRemoveRows();
     }
 }
