@@ -1,7 +1,7 @@
 TARGET=evernoteplugin
 TEMPLATE=lib
 CONFIG = qt plugin
-QT += qml gui
+QT += qml gui xml
 QMAKE_CXXFLAGS += -std=c++0x -fPIC
 
 INCLUDEPATH += ../../../3rdParty/evernote-sdk-cpp/src/ ../../../3rdParty/libthrift
@@ -22,7 +22,8 @@ SOURCES += evernoteplugin.cpp \
     jobs/createnotejob.cpp \
     jobs/evernotejob.cpp \
     jobs/savenotejob.cpp \
-    jobs/deletenotejob.cpp
+    jobs/deletenotejob.cpp \
+    utils/html2enmlconverter.cpp
 
 HEADERS += evernoteplugin.h \
     notesstore.h \
@@ -37,7 +38,8 @@ HEADERS += evernoteplugin.h \
     jobs/createnotejob.h \
     jobs/evernotejob.h \
     jobs/savenotejob.h \
-    jobs/deletenotejob.h
+    jobs/deletenotejob.h \
+    utils/html2enmlconverter.h
 
 message(building in $$OUT_PWD)
 LIBS += -L$$OUT_PWD/../../../3rdParty/evernote-sdk-cpp/ -L$$OUT_PWD/../../../3rdParty/libthrift/ -levernote-sdk-cpp -llibthrift
