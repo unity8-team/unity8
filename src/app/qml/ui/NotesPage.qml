@@ -8,16 +8,8 @@ Page {
 
     property alias filter: notes.filterNotebookGuid
 
-    onActiveChanged: {
-        if (active) {
-            notes.refresh();
-        }
-    }
-
     Notes {
         id: notes
-
-        onFilterNotebookGuidChanged: refresh();
     }
 
     ListView {
@@ -28,7 +20,7 @@ Page {
             text: title
 
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {title: title, text: notes.note(guid)})
+                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: notes.note(guid)})
             }
         }
     }

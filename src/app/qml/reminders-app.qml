@@ -29,7 +29,7 @@ MainView {
 
     Component.onCompleted: {
         pagestack.push(rootTabs)
-        if (NotesStore.token.length == 0) {
+        if (NotesStore.token.length === 0) {
             pagestack.push(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
         }
     }
