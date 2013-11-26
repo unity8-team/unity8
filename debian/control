@@ -20,7 +20,9 @@ Depends: ${misc:Depends},
          qmlscene,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          qtdeclarative5-localstorage-plugin,
-         qtdeclarative5-qtquick2-plugin
+         qtdeclarative5-qtquick2-plugin,
+         account-plugin-evernote,
+         signon-plugin-oauth2 (>= 0.19-0~57~)
 Description: Reminders application
  Note taking application powered by Evernote
 
