@@ -1,5 +1,7 @@
 #include "note.h"
 
+#include "notesstore.h"
+
 Note::Note(const QString &guid, QObject *parent) :
     QObject(parent),
     m_guid(guid)
@@ -9,6 +11,14 @@ Note::Note(const QString &guid, QObject *parent) :
 QString Note::guid() const
 {
     return m_guid;
+}
+
+void Note::setGuid(const QString &guid)
+{
+    if (m_guid == guid) {
+        m_guid = guid;
+        emit guidChanged();
+    }
 }
 
 QString Note::notebookGuid() const
@@ -48,4 +58,14 @@ void Note::setContent(const QString &content)
         m_content = content;
         emit contentChanged();
     }
+}
+
+void Note::save()
+{
+    NotesStore::instance()->saveNote(m_guid);
+}
+
+void Note::remove()
+{
+    NotesStore::instance()->deleteNote(m_guid);
 }

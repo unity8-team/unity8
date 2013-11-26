@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QHash>
 
+class EvernoteJob;
+
 class Notebook;
 class Note;
 
@@ -17,13 +19,18 @@ class NotesStore : public QObject
     Q_OBJECT
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
 
+    friend class EvernoteJob;
+
 public:
     enum ErrorCode {
         ErrorCodeNoError,
         ErrorCodeUserException,
         ErrorCodeSystemException,
-        ErrorCodeNotFoundExcpetion
+        ErrorCodeNotFoundExcpetion,
+        ErrorCodeConnectionLost
     };
+
+    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &content);
 
     static NotesStore *instance();
     static QString errorCodeToString(ErrorCode errorCode);
@@ -35,6 +42,8 @@ public:
 
     QList<Note*> notes() const;
     Note* note(const QString &guid);
+    void saveNote(const QString &guid);
+    void deleteNote(const QString &guid);
 
     QList<Notebook*> notebooks() const;
     Notebook* notebook(const QString &guid);
@@ -48,13 +57,18 @@ signals:
 
     void noteAdded(const QString &guid);
     void noteChanged(const QString &guid);
+    void noteRemoved(const QString &guid);
 
     void notebookAdded(const QString &guid);
+    void notebookChanged(const QString &guid);
 
 private slots:
     void fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::NotesMetadataList &results);
     void fetchNotebooksJobDone(ErrorCode errorCode, const std::vector<evernote::edam::Notebook> &results);
     void fetchNoteJobDone(ErrorCode errorCode, const evernote::edam::Note &result);
+    void createNoteJobDone(ErrorCode errorCode, Note *note);
+    void saveNoteJobDone(ErrorCode errorCode, Note *note);
+    void deleteNoteJobDone(ErrorCode errorCode, const QString &guid);
 
     void startJobQueue();
     void startNextJob();
@@ -69,7 +83,7 @@ private:
     QHash<QString, Notebook*> m_notebooks;
     QHash<QString, Note*> m_notes;
 
-    QList<QThread*> m_requestQueue;
+    QList<EvernoteJob*> m_jobQueue;
     QThread *m_currentJob;
 };
 

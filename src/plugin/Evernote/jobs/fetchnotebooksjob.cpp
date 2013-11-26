@@ -2,10 +2,8 @@
 
 #include <QDebug>
 
-FetchNotebooksJob::FetchNotebooksJob(evernote::edam::NoteStoreClient *client, const QString &token, QObject *parent) :
-    QThread(parent),
-    m_client(client),
-    m_token(token)
+FetchNotebooksJob::FetchNotebooksJob(QObject *parent) :
+    EvernoteJob(parent)
 {
 }
 
@@ -15,7 +13,7 @@ void FetchNotebooksJob::run()
     NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
     std::vector<evernote::edam::Notebook> results;
     try {
-        m_client->listNotebooks(results, m_token.toStdString());
+        client()->listNotebooks(results, token().toStdString());
     } catch(evernote::edam::EDAMUserException) {
         errorCode = NotesStore::ErrorCodeUserException;
     } catch(evernote::edam::EDAMSystemException) {
