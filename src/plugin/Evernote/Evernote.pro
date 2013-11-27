@@ -42,7 +42,7 @@ HEADERS += evernoteplugin.h \
     utils/html2enmlconverter.h
 
 message(building in $$OUT_PWD)
-LIBS += -L$$OUT_PWD/../../../3rdParty/evernote-sdk-cpp/ -L$$OUT_PWD/../../../3rdParty/libthrift/ -levernote-sdk-cpp -llibthrift
+LIBS += -L$$OUT_PWD/../../../3rdParty/evernote-sdk-cpp/ -L$$OUT_PWD/../../../3rdParty/libthrift/ -levernote-sdk-cpp -llibthrift -lssl -lcrypto
 
 installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
 qmldir.files = qmldir

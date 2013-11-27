@@ -59,7 +59,7 @@ NotesStore::NotesStore(QObject *parent) :
         QString EVERNOTE_HOST = QStringLiteral("sandbox.evernote.com");
         QString EDAM_USER_STORE_PATH = QStringLiteral("/edam/note");
         boost::shared_ptr<TSocket> socket;
-        bool use_SSL = false;
+        bool use_SSL = true;
 
         if (use_SSL) {
             // Create an SSL socket
@@ -69,9 +69,11 @@ NotesStore::NotesStore(QObject *parent) :
             // Additionally, the UI blocks and does not load for about 2 minutes
             boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
             socket = sslSocketFactory->createSocket(EVERNOTE_HOST.toStdString(), 443);
+            qDebug() << "created SSL socket";
         } else {
             // Create a non-secure socket
             socket = boost::shared_ptr<TSocket> (new TSocket(EVERNOTE_HOST.toStdString(), 80));
+            qDebug() << "created insecure socket";
         }
 
         boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
