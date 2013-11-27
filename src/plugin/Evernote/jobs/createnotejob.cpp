@@ -22,36 +22,30 @@
 
 #include <QDebug>
 
-CreateNoteJob::CreateNoteJob(Note *note, QObject *parent) :
+CreateNoteJob::CreateNoteJob(const QString &title, const QString &notebookGuid, const QString &content, QObject *parent) :
     EvernoteJob(parent),
-    m_note(note)
+    m_title(title),
+    m_notebookGuid(notebookGuid),
+    m_content(content)
 {
 }
 
-void CreateNoteJob::run()
+void CreateNoteJob::startJob()
 {
-    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
+    evernote::edam::Note input;
+    input.title = m_title.toStdString();
+    input.__isset.title = true;
+    input.notebookGuid = m_notebookGuid.toStdString();
+    input.__isset.notebookGuid = true;
+    input.content = m_content.toStdString();
+    input.__isset.content = true;
+    input.contentLength = m_content.length();
+    input.__isset.contentLength = true;
 
-    try {
-        evernote::edam::Note input;
-        input.title = m_note->title().toStdString();
-        input.__isset.title = true;
-        input.notebookGuid = m_note->notebookGuid().toStdString();
-        input.__isset.notebookGuid = true;
-        input.content = m_note->content().toStdString();
-        input.__isset.content = true;
-        input.contentLength = m_note->content().length();
-        input.__isset.contentLength = true;
+    client()->createNote(m_resultNote, token().toStdString(), input);
+}
 
-        evernote::edam::Note result;
-        client()->createNote(result, token().toStdString(), input);
-
-        m_note->setGuid(QString::fromStdString(result.guid));
-
-    } catch(evernote::edam::EDAMUserException e) {
-        errorCode = NotesStore::ErrorCodeUserException;
-    } catch(evernote::edam::EDAMSystemException) {
-        errorCode = NotesStore::ErrorCodeSystemException;
-    }
-    emit resultReady(errorCode, m_note);
+void CreateNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+{
+    emit jobDone(errorCode, errorMessage, m_resultNote);
 }

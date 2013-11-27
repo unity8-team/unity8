@@ -26,13 +26,12 @@ DeleteNoteJob::DeleteNoteJob(const QString &guid, QObject *parent):
 {
 }
 
-void DeleteNoteJob::run()
+void DeleteNoteJob::startJob()
 {
-    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
-    try {
-        client()->deleteNote(token().toStdString(), m_guid.toStdString());
-    } catch(...) {
-        catchTransportException();
-    }
-    emit resultReady(errorCode, m_guid);
+    client()->deleteNote(token().toStdString(), m_guid.toStdString());
+}
+
+void DeleteNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+{
+    emit jobDone(errorCode, errorMessage, m_guid);
 }

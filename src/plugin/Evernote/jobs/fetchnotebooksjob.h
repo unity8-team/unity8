@@ -9,10 +9,15 @@ class FetchNotebooksJob : public EvernoteJob
 public:
     explicit FetchNotebooksJob(QObject *parent = 0);
 
-    void run();
-
 signals:
-    void resultReady(NotesStore::ErrorCode errorCode, const std::vector<evernote::edam::Notebook> &results);
+    void jobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
+
+protected:
+    void startJob();
+    void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage);
+
+private:
+    std::vector<evernote::edam::Notebook> m_results;
 };
 
 #endif // FETCHNOTEBOOKSJOB_H

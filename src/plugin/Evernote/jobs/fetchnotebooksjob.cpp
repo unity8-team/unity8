@@ -28,16 +28,12 @@ FetchNotebooksJob::FetchNotebooksJob(QObject *parent) :
 }
 
 
-void FetchNotebooksJob::run()
+void FetchNotebooksJob::startJob()
 {
-    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
-    std::vector<evernote::edam::Notebook> results;
-    try {
-        client()->listNotebooks(results, token().toStdString());
-    } catch(evernote::edam::EDAMUserException) {
-        errorCode = NotesStore::ErrorCodeUserException;
-    } catch(evernote::edam::EDAMSystemException) {
-        errorCode = NotesStore::ErrorCodeSystemException;
-    }
-    emit resultReady(errorCode, results);
+    client()->listNotebooks(m_results, token().toStdString());
+}
+
+void FetchNotebooksJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+{
+    emit jobDone(errorCode, errorMessage, m_results);
 }

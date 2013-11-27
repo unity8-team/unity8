@@ -26,22 +26,12 @@ FetchNoteJob::FetchNoteJob(const QString &guid, QObject *parent) :
 {
 }
 
-void FetchNoteJob::run()
+void FetchNoteJob::startJob()
 {
-    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
-    evernote::edam::Note result;
-    try {
-        client()->getNote(result, token().toStdString(), m_guid.toStdString(), true, true, false, false);
-    } catch (evernote::edam::EDAMUserException) {
-        errorCode = NotesStore::ErrorCodeUserException;
-    } catch (evernote::edam::EDAMSystemException) {
-        errorCode = NotesStore::ErrorCodeSystemException;
-    } catch (evernote::edam::EDAMNotFoundException) {
-        errorCode = NotesStore::ErrorCodeNotFoundExcpetion;
-    } catch (...) {
-        catchTransportException();
-        errorCode = NotesStore::ErrorCodeConnectionLost;
-    }
+    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, true, false, false);
+}
 
-    emit resultReady(errorCode, result);
+void FetchNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+{
+    emit resultReady(errorCode, errorMessage, m_result);
 }

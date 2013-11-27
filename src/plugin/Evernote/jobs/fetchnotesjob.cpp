@@ -30,7 +30,7 @@ FetchNotesJob::FetchNotesJob( const QString &filterNotebookGuid, QObject *parent
 {
 }
 
-void FetchNotesJob::run()
+void FetchNotesJob::startJob()
 {
     // TODO: fix start/end (use smaller chunks and continue fetching if there are more notes available)
     int32_t start = 0;
@@ -48,17 +48,10 @@ void FetchNotesJob::run()
     resultSpec.includeTitle = true;
     resultSpec.__isset.includeTitle = true;
 
-    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
-    evernote::edam::NotesMetadataList results;
+    client()->findNotesMetadata(m_results, token().toStdString(), filter, start, end, resultSpec);
+}
 
-    try {
-        client()->findNotesMetadata(results, token().toStdString(), filter, start, end, resultSpec);
-    } catch(evernote::edam::EDAMUserException) {
-        errorCode = NotesStore::ErrorCodeUserException;
-    } catch(evernote::edam::EDAMSystemException) {
-        errorCode = NotesStore::ErrorCodeSystemException;
-    } catch(evernote::edam::EDAMNotFoundException) {
-        errorCode = NotesStore::ErrorCodeNotFoundExcpetion;
-    }
-    emit resultReady(errorCode, results);
+void FetchNotesJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+{
+    emit jobDone(errorCode, errorMessage, m_results);
 }

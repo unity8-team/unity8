@@ -9,12 +9,20 @@ class SaveNoteJob : public EvernoteJob
 public:
     explicit SaveNoteJob(Note *note, QObject *parent = 0);
 
-    void run();
 signals:
-    void resultReady(NotesStore::ErrorCode errorCode, Note *note);
+    void jobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &note);
+
+protected:
+    void startJob();
+    void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage);
 
 private:
-    Note *m_note;
+    QString m_guid;
+    QString m_title;
+    QString m_notebookGuid;
+    QString m_content;
+
+    evernote::edam::Note m_note;
 };
 
 #endif // SAVENOTEJOB_H

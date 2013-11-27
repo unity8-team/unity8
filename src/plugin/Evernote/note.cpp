@@ -35,7 +35,7 @@ QString Note::guid() const
 
 void Note::setGuid(const QString &guid)
 {
-    if (m_guid == guid) {
+    if (m_guid != guid) {
         m_guid = guid;
         emit guidChanged();
     }
