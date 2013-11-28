@@ -24,7 +24,7 @@
 #include <QDebug>
 
 SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
-    EvernoteJob(parent),
+    NotesStoreJob(parent),
     m_guid(note->guid()),
     m_title(note->title()),
     m_notebookGuid(note->notebookGuid()),
@@ -48,7 +48,7 @@ void SaveNoteJob::startJob()
     client()->updateNote(m_note, token().toStdString(), note);
 }
 
-void SaveNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+void SaveNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
     emit jobDone(errorCode, errorMessage, m_note);
 }

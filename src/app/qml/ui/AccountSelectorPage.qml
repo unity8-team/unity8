@@ -51,7 +51,7 @@ Page {
                         // Print the access token on the console
                         onAuthenticated: {
                             console.log("Access token is " + reply.AccessToken)
-                            NotesStore.token = reply.AccessToken;
+                            EvernoteConnection.token = reply.AccessToken;
                             pagestack.pop();
                         }
                         onAuthenticationError: { console.log("Authentication failed, code " + error.code) }

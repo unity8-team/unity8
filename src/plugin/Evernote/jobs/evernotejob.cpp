@@ -19,6 +19,7 @@
  */
 
 #include "evernotejob.h"
+#include "evernoteconnection.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -35,10 +36,9 @@ using namespace apache::thrift::transport;
 
 EvernoteJob::EvernoteJob(QObject *parent) :
     QThread(parent),
-    m_token(NotesStore::instance()->token())
+    m_token(EvernoteConnection::instance()->token())
 {
     connect(this, &EvernoteJob::finished, this, &EvernoteJob::deleteLater);
-    connect(this, &EvernoteJob::finished, NotesStore::instance(), &NotesStore::startNextJob);
 }
 
 EvernoteJob::~EvernoteJob()
@@ -49,7 +49,7 @@ void EvernoteJob::run()
 {
     if (m_token.isEmpty()) {
         qWarning() << "No token set. Cannot execute job.";
-        emitJobDone(NotesStore::ErrorCodeUserException, QStringLiteral("No token set."));
+        emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("No token set."));
         return;
     }
 
@@ -62,36 +62,29 @@ void EvernoteJob::run()
         // so lets try to start the job once more.
         qWarning() << "Got a transport exception:" << e.what() << ". Trying to reestablish connection...";
         try {
-            NotesStore::instance()->m_httpClient->close();
-            NotesStore::instance()->m_httpClient->open();
-
+            resetConnection();
             startJob();
         } catch (const TTransportException &e) {
             // Giving up... the connection seems to be down for real.
             qWarning() << "Cannot reestablish connection:" << e.what();
-            emitJobDone(NotesStore::ErrorCodeConnectionLost, e.what());
+            emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
         } catch (const evernote::edam::EDAMUserException &e) {
-            emitJobDone(NotesStore::ErrorCodeUserException, e.what());
+            emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
         } catch (const evernote::edam::EDAMSystemException &e) {
-            emitJobDone(NotesStore::ErrorCodeSystemException, e.what());
+            emitJobDone(EvernoteConnection::ErrorCodeSystemException, e.what());
         } catch (const evernote::edam::EDAMNotFoundException &e) {
-            emitJobDone(NotesStore::ErrorCodeNotFoundExcpetion, e.what());
+            emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
         }
 
     } catch (const evernote::edam::EDAMUserException &e) {
-        emitJobDone(NotesStore::ErrorCodeUserException, e.what());
+        emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
     } catch (const evernote::edam::EDAMSystemException &e) {
-        emitJobDone(NotesStore::ErrorCodeSystemException, e.what());
+        emitJobDone(EvernoteConnection::ErrorCodeSystemException, e.what());
     } catch (const evernote::edam::EDAMNotFoundException &e) {
-        emitJobDone(NotesStore::ErrorCodeNotFoundExcpetion, e.what());
+        emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
     }
 
-    emitJobDone(NotesStore::ErrorCodeNoError, QString());
-}
-
-evernote::edam::NoteStoreClient *EvernoteJob::client()
-{
-    return NotesStore::instance()->m_client;
+    emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
 }
 
 QString EvernoteJob::token()

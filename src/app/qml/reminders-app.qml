@@ -47,8 +47,15 @@ MainView {
 
     Component.onCompleted: {
         pagestack.push(rootTabs)
-        if (NotesStore.token.length === 0) {
+        if (EvernoteConnection.token.length === 0) {
             pagestack.push(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
+        }
+    }
+
+    Connections {
+        target: UserStore
+        onUsernameChanged: {
+            print("Logged in as user:", UserStore.username)
         }
     }
 

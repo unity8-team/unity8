@@ -23,7 +23,7 @@
 #include <QDebug>
 
 FetchNotebooksJob::FetchNotebooksJob(QObject *parent) :
-    EvernoteJob(parent)
+    NotesStoreJob(parent)
 {
 }
 
@@ -33,7 +33,7 @@ void FetchNotebooksJob::startJob()
     client()->listNotebooks(m_results, token().toStdString());
 }
 
-void FetchNotebooksJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+void FetchNotebooksJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
     emit jobDone(errorCode, errorMessage, m_results);
 }

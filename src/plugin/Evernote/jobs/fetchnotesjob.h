@@ -1,20 +1,20 @@
 #ifndef FETCHNOTESJOB_H
 #define FETCHNOTESJOB_H
 
-#include "evernotejob.h"
+#include "notesstorejob.h"
 
-class FetchNotesJob : public EvernoteJob
+class FetchNotesJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
     explicit FetchNotesJob(const QString &filterNotebookGuid, QObject *parent = 0);
 
 signals:
-    void jobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
 
 protected:
     void startJob();
-    void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage);
+    void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
     QString m_filterNotebookGuid;
