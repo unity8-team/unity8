@@ -43,6 +43,9 @@ class MainWindow(object):
             objectName="greeterContentLoader"
         )
 
+    def get_greeter_background(self):
+        return self.app.select_single("CrossFadeImage", objectName="greeterBackground")
+
     def get_login_loader(self):
         return self.app.select_single("QQuickLoader", objectName="loginLoader")
 
@@ -63,12 +66,6 @@ class MainWindow(object):
 
     def get_dash(self):
         return self.app.select_single(Dash)
-
-    def get_dash_home_applications_grid(self):
-        return self.app.select_single(
-            "ApplicationsFilterGrid",
-            objectName="dashHomeApplicationsGrid"
-        )
 
     def get_bottombar(self):
         return self.app.select_single("Bottombar")
@@ -93,3 +90,6 @@ class MainWindow(object):
 
     def get_pinentryField(self):
         return self.app.select_single(objectName="pinentryField")
+
+    def get_shell_background(self):
+        return self.app.select_single("CrossFadeImage", objectName="backgroundImage")
