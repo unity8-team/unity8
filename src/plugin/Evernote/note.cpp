@@ -148,6 +148,18 @@ void Note::setReminderDoneTime(const QDateTime &reminderDoneTime)
     }
 }
 
+Note *Note::clone()
+{
+    Note *note = new Note(m_guid, m_created);
+    note->setNotebookGuid(m_notebookGuid);
+    note->setTitle(m_title);
+    note->setContent(m_content);
+    note->setReminderOrder(m_reminderOrder);
+    note->setReminderTime(m_reminderTime);
+    note->setReminderDoneTime(m_reminderDoneTime);
+    return note;
+}
+
 void Note::save()
 {
     NotesStore::instance()->saveNote(m_guid);

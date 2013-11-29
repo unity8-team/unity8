@@ -9,6 +9,7 @@ class Note : public QObject
 {
     Q_OBJECT
 
+    // Don't forget to update clone() if you add properties!
     Q_PROPERTY(QString guid READ guid CONSTANT)
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
@@ -18,6 +19,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
+    // Don't forget to update clone() if you add properties!
 
 public:
     explicit Note(const QString &guid, const QDateTime &created, QObject *parent = 0);
@@ -55,6 +57,8 @@ public:
 
     QDateTime reminderDoneTime() const;
     void setReminderDoneTime(const QDateTime &reminderDoneTime);
+
+    Note* clone();
 
 public slots:
     void save();

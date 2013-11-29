@@ -25,34 +25,35 @@
 
 SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
     NotesStoreJob(parent),
-    m_guid(note->guid()),
-    m_title(note->title()),
-    m_notebookGuid(note->notebookGuid()),
-    m_content(note->content()),
-    m_reminderOrder(note->reminderOrder())
+    m_note(note->clone())
 {
 }
 
 void SaveNoteJob::startJob()
 {
     evernote::edam::Note note;
-    note.guid = m_guid.toStdString();
+    note.guid = m_note->guid().toStdString();
     note.__isset.guid = true;
-    note.title = m_title.toStdString();
+    note.title = m_note->title().toStdString();
     note.__isset.title = true;
-    note.notebookGuid = m_notebookGuid.toStdString();
+    note.notebookGuid = m_note->notebookGuid().toStdString();
     note.__isset.notebookGuid = true;
-    note.content = m_content.toStdString();
+    note.content = m_note->content().toStdString();
     note.__isset.content = true;
-    note.contentLength = m_content.length();
-    note.attributes.reminderOrder = m_reminderOrder;
-    note.attributes.__isset.reminderOrder;
-    note.__isset.attributes = true;
+    note.contentLength = m_note->content().length();
 
-    client()->updateNote(m_note, token().toStdString(), note);
+    note.__isset.attributes = true;
+    note.attributes.reminderOrder = m_note->reminderOrder();
+    note.attributes.__isset.reminderOrder;
+    note.attributes.reminderTime = m_note->reminderTime().toMSecsSinceEpoch();
+    note.attributes.__isset.reminderTime = true;
+    note.attributes.reminderDoneTime = m_note->reminderDoneTime().toMSecsSinceEpoch();
+    note.attributes.__isset.reminderDoneTime = true;
+
+    client()->updateNote(m_resultNote, token().toStdString(), note);
 }
 
 void SaveNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage, m_note);
+    emit jobDone(errorCode, errorMessage, m_resultNote);
 }

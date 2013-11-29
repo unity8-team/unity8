@@ -17,13 +17,8 @@ protected:
     void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
-    QString m_guid;
-    QString m_title;
-    QString m_notebookGuid;
-    QString m_content;
-    qint64 m_reminderOrder;
-
-    evernote::edam::Note m_note;
+    Note* m_note;
+    evernote::edam::Note m_resultNote;
 };
 
 #endif // SAVENOTEJOB_H
