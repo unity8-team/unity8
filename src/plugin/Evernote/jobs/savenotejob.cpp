@@ -24,9 +24,13 @@
 #include <QDebug>
 
 SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
-    NotesStoreJob(parent),
-    m_note(note->clone())
+    NotesStoreJob(parent)
 {
+    // Need to clone it. As startJob() will run in another thread we can't access the real note from there.
+    m_note = note->clone();
+
+    // Make sure we delete the clone when done
+    m_note->setParent(this);
 }
 
 void SaveNoteJob::startJob()
