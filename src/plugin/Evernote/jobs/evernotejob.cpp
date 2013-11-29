@@ -48,7 +48,7 @@ EvernoteJob::~EvernoteJob()
 void EvernoteJob::run()
 {
     if (m_token.isEmpty()) {
-        qWarning() << "No token set. Cannot execute job.";
+        qWarning() << "No token set. Cannot execute job. (" << this->metaObject()->className() << ")";
         emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("No token set."));
         return;
     }

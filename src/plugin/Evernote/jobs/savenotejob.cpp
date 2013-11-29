@@ -28,7 +28,8 @@ SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
     m_guid(note->guid()),
     m_title(note->title()),
     m_notebookGuid(note->notebookGuid()),
-    m_content(note->content())
+    m_content(note->content()),
+    m_reminderOrder(note->reminderOrder())
 {
 }
 
@@ -44,6 +45,9 @@ void SaveNoteJob::startJob()
     note.content = m_content.toStdString();
     note.__isset.content = true;
     note.contentLength = m_content.length();
+    note.attributes.reminderOrder = m_reminderOrder;
+    note.attributes.__isset.reminderOrder;
+    note.__isset.attributes = true;
 
     client()->updateNote(m_note, token().toStdString(), note);
 }

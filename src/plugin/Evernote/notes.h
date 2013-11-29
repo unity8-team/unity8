@@ -3,46 +3,33 @@
 
 #include "notesstore.h"
 
-#include <QAbstractListModel>
-#include <QQmlParserStatus>
+#include <QSortFilterProxyModel>
 
-class Notes : public QAbstractListModel, public QQmlParserStatus
+class Notes : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(QString filterNotebookGuid READ filterNotebookGuid WRITE setFilterNotebookGuid NOTIFY filterNotebookGuidChanged)
-public:
-    enum Roles {
-        RoleGuid,
-        RoleTitle
-    };
-    explicit Notes(QObject *parent = 0);
+    Q_PROPERTY(bool onlyReminders READ onlyReminders WRITE setOnlyReminders NOTIFY onlyRemindersChanged)
 
-    QVariant data(const QModelIndex &index, int role) const;
-    int rowCount(const QModelIndex &parent) const;
-    QHash<int, QByteArray> roleNames() const;
+public:
+    explicit Notes(QObject *parent = 0);
 
     QString filterNotebookGuid() const;
     void setFilterNotebookGuid(const QString &notebookGuid);
 
-    Q_INVOKABLE Note* note(const QString &guid);
+    bool onlyReminders() const;
+    void setOnlyReminders(bool onlyReminders);
 
-    void classBegin() {}
-    void componentComplete();
-
-public slots:
-    void refresh();
-
-private slots:
-    void noteAdded(const QString &guid);
-    void noteChanged(const QString &guid);
-    void noteRemoved(const QString &guid);
+protected:
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 
 signals:
     void filterNotebookGuidChanged();
+    void onlyRemindersChanged();
 
 private:
-    QList<QString> m_list;
     QString m_filterNotebookGuid;
+    bool m_onlyReminders;
 
 };
 

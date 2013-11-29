@@ -35,7 +35,6 @@ Notebooks::Notebooks(QObject *parent) :
 
 QVariant Notebooks::data(const QModelIndex &index, int role) const
 {
-
     Notebook *notebook = NotesStore::instance()->notebook(m_list.at(index.row()));
     switch(role) {
     case RoleGuid:

@@ -21,6 +21,7 @@ private:
     QString m_title;
     QString m_notebookGuid;
     QString m_content;
+    qint64 m_reminderOrder;
 
     evernote::edam::Note m_note;
 };

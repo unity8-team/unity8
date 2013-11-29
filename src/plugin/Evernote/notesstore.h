@@ -15,7 +15,7 @@
 #include <NoteStore_constants.h>
 #include <Errors_types.h>
 
-#include <QObject>
+#include <QAbstractListModel>
 #include <QHash>
 
 class Notebook;
@@ -23,21 +23,36 @@ class Note;
 
 using namespace apache::thrift::transport;
 
-class NotesStore : public QObject
+class NotesStore : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &content);
-
-    static NotesStore *instance();
+    enum Roles {
+        RoleGuid,
+        RoleNotebookGuid,
+        RoleCreated,
+        RoleTitle,
+        RoleReminder,
+        RoleReminderTime,
+        RoleReminderDone,
+        RoleReminderDoneTime
+    };
 
     ~NotesStore();
+    static NotesStore *instance();
+
+    // reimplemented from QAbstractListModel
+    int rowCount(const QModelIndex &parent) const;
+    QVariant data(const QModelIndex &index, int role) const;
+    QHash<int, QByteArray> roleNames() const;
 
     QList<Note*> notes() const;
-    Note* note(const QString &guid);
-    void saveNote(const QString &guid);
-    void deleteNote(const QString &guid);
+
+    Q_INVOKABLE Note* note(const QString &guid);
+    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &content);
+    Q_INVOKABLE void saveNote(const QString &guid);
+    Q_INVOKABLE void deleteNote(const QString &guid);
 
     QList<Notebook*> notebooks() const;
     Notebook* notebook(const QString &guid);
@@ -69,9 +84,12 @@ private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;
 
-    QHash<QString, Notebook*> m_notebooks;
-    QHash<QString, Note*> m_notes;
+    QList<Note*> m_notes;
+    QList<Notebook*> m_notebooks;
 
+    // Keep hashes for faster lookups as we always identify notes via guid
+    QHash<QString, Note*> m_notesHash;
+    QHash<QString, Notebook*> m_notebooksHash;
 };
 
 #endif // NOTESSTORE_H
