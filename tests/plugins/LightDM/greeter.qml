@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright 2013 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,8 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import LightDM 0.1 as LightDM
 
-Loader {
-    property var model: null
-    property url carouselUrl: "GenericCarousel.qml"
-    property url filtergridUrl: "GenericFilterGrid.qml"
-
-    source: model.count > 6 ? carouselUrl : filtergridUrl // FIXME do not hardcode 6, but retrieve correct minimum required count
-
-    onLoaded: {
-        item.model = Qt.binding(function() { return model; })
-    }
+Item {
+    property var greeter: LightDM.Greeter
 }
