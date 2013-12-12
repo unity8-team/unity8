@@ -48,7 +48,7 @@ void SaveNoteJob::startJob()
 
     note.__isset.attributes = true;
     note.attributes.reminderOrder = m_note->reminderOrder();
-    note.attributes.__isset.reminderOrder;
+    note.attributes.__isset.reminderOrder = true;
     note.attributes.reminderTime = m_note->reminderTime().toMSecsSinceEpoch();
     note.attributes.__isset.reminderTime = true;
     note.attributes.reminderDoneTime = m_note->reminderDoneTime().toMSecsSinceEpoch();
