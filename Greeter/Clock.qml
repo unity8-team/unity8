@@ -46,9 +46,12 @@ Item {
 
         Indicators.RootActionState {
             menu: timeModel.model
+
+            property string timeLabel
+
             onUpdated: {
-                if (timeLabel.text != rightLabel) {
-                    timeLabel.text = rightLabel;
+                if (timeLabel != rightLabel) {
+                    timeLabel= rightLabel;
                     clock.currentDate = new Date();
                 }
             }
