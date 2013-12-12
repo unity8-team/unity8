@@ -62,7 +62,7 @@ Page {
             }
 
             onPressAndHold: {
-                notes.note(guid).remove();
+                NotesStore.deleteNote(guid);
             }
         }
     }

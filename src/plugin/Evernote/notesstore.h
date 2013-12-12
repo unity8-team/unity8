@@ -56,6 +56,8 @@ public:
 
     QList<Notebook*> notebooks() const;
     Notebook* notebook(const QString &guid);
+    Q_INVOKABLE void createNotebook(const QString &name);
+    Q_INVOKABLE void expungeNotebook(const QString &guid);
 
 public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString());
@@ -71,6 +73,7 @@ signals:
 
     void notebookAdded(const QString &guid);
     void notebookChanged(const QString &guid);
+    void notebookRemoved(const QString &guid);
 
 private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
@@ -79,6 +82,8 @@ private slots:
     void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
+    void createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result);
+    void expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
 
 private:
     explicit NotesStore(QObject *parent = 0);

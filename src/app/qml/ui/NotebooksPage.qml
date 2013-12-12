@@ -30,6 +30,16 @@ Page {
         }
     }
 
+    tools: ToolbarItems {
+        ToolbarButton {
+            text: "add notebook"
+            enabled: notes.filterNotebookGuid.length > 0
+            onTriggered: {
+                NotesStore.createNotebook("new notebook");
+            }
+        }
+    }
+
     Notebooks {
         id: notebooks
     }
