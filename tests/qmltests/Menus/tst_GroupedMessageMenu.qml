@@ -42,10 +42,19 @@ Item {
 
             GroupedMessageMenu {
                 id: messageMenu
-                removable: true
+                removable: false
 
-                text: "Group Message"
+                text: "Group Message 1"
                 count: "3"
+            }
+
+            GroupedMessageMenu {
+                id: messageMenu2
+                removable: true
+                anchors.top: messageMenu.bottom
+
+                text: "Group Message 2"
+                count: "5"
             }
         }
     }
@@ -59,7 +68,7 @@ Item {
     SignalSpy {
         id: signalSpyDismiss
         signalName: "dismissed"
-        target: messageMenu
+        target: messageMenu2
     }
 
     UbuntuTestCase {
@@ -77,8 +86,8 @@ Item {
         }
 
         function test_dismiss() {
-            mouseFlick(messageMenu, messageMenu.width / 2, messageMenu.height / 2, messageMenu.width, messageMenu.height / 2, true, true, units.gu(1), 10);
-            tryCompare(function() { signalSpyDismiss.count > 0; }, true);
+            mouseFlick(messageMenu2, messageMenu2.width / 2, messageMenu2.height / 2, messageMenu2.width, messageMenu2.height / 2, true, true, units.gu(1), 10);
+            tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
     }
 }

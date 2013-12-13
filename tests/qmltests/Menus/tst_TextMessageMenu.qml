@@ -198,7 +198,7 @@ Item {
                        messageMenuRemovable.width,
                        messageMenuRemovable.height / 2,
                        true, true, units.gu(1), 10);
-            tryCompare(function() { return signalSpyDismiss.count > 0; }, true);
+            tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
 
         function test_replyEnabled_data() {
