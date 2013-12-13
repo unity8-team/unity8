@@ -65,9 +65,12 @@ Page {
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
+        clip: true
 
-        delegate: Standard {
-            text: title
+        delegate: NotesDelegate {
+            title: model.title
+            creationDate: model.created
+            content: NotesStore.note(model.guid).plaintextContent
 
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})

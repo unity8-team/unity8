@@ -15,6 +15,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime created READ created CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString content READ content WRITE setContent NOTIFY contentChanged)
+    Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
@@ -37,6 +38,9 @@ public:
 
     QString content() const;
     void setContent(const QString &content);
+
+    QString plaintextContent() const;
+    void setPlaintextContent(const QString &plaintextContent);
 
     // This is the QML representation as we don't want to deal with timestamps there.
     // setting it to false will reset the reminderOrder to 0, setting it to true will
@@ -83,6 +87,7 @@ private:
     QDateTime m_created;
     QString m_title;
     QString m_content;
+    QString m_plaintextContent;
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
