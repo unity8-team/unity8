@@ -20,12 +20,12 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
+import "../components"
 
 Page {
     id: notesPage
 
     property alias filter: notes.filterNotebookGuid
-    property bool showSearchResults: false
 
     onActiveChanged: {
         if (active) {
@@ -35,6 +35,16 @@ Page {
 
     // Just for testing
     tools: ToolbarItems {
+        ToolbarButton {
+            text: "search"
+            iconName: "search"
+            onTriggered: {
+                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+            }
+        }
+
+        ToolbarSpacer { }
+
         ToolbarButton {
             text: "add note"
             enabled: notes.filterNotebookGuid.length > 0
@@ -51,38 +61,20 @@ Page {
         id: notes
     }
 
-    Column {
-        anchors.fill: parent
-        TextField {
-            anchors { left: parent.left; right: parent.right }
+    ListView {
+        anchors { left: parent.left; right: parent.right }
+        height: parent.height - y
+        model: notes
 
-            onAccepted: {
-                NotesStore.findNotes(text);
-                notes.onlySearchResults = true;
+        delegate: Standard {
+            text: title
+
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
             }
 
-            onTextChanged: {
-                if (text == "") {
-                    notes.onlySearchResults = false;
-                }
-            }
-        }
-
-        ListView {
-            anchors { left: parent.left; right: parent.right }
-            height: parent.height - y
-            model: notes
-
-            delegate: Standard {
-                text: title
-
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
-                }
-
-                onPressAndHold: {
-                    NotesStore.deleteNote(guid);
-                }
+            onPressAndHold: {
+                NotesStore.deleteNote(guid);
             }
         }
     }
