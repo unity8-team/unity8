@@ -38,11 +38,12 @@ Rectangle {
 
     UnityMenuModel {
         id: menuModel
-        modelData: [{
-            "rowData": {
-                "actionState": { "label": Qt.formatTime(new Date("October 13, 1975 11:13:00")) }
-            }
-        }]
+    }
+
+    SignalSpy {
+        id: updateSpy
+        target: clock
+        signalName: "currentDateChanged"
     }
 
     UT.UnityTestCase {
@@ -52,40 +53,77 @@ Rectangle {
             var cachedModel = findChild(clock, "timeModel");
             verify(cachedModel !== undefined);
             cachedModel.model = menuModel;
+            var state = findInvisibleChild(clock, "timeState");
+            state.rightLabel = "foo";
+        }
+
+        function cleanup() {
+            var state = findInvisibleChild(clock, "timeState");
+            state.rightLabel = "foo";
+
+            updateSpy.clear();
         }
 
         function test_customDate() {
-            var dateObj = new Date("October 13, 1975 11:13:00")
-            var dateString = Qt.formatDate(dateObj, Qt.DefaultLocaleLongDate)
-            var timeString = Qt.formatTime(dateObj)
+            var dateObj = new Date("October 13, 1975 11:13:00");
+            var dateString = Qt.formatDate(dateObj, Qt.DefaultLocaleLongDate);
+            var timeString = Qt.formatTime(dateObj);
 
-            clock.currentDate = dateObj
-            var dateLabel = findChild(clock, "dateLabel")
-            compare(dateLabel.text, dateString, "Not the expected date")
-            var timeLabel = findChild(clock, "timeLabel")
-            compare(timeLabel.text, timeString, "Not the expected time")
+            var state = findInvisibleChild(clock, "timeState");
+            state.rightLabel = "bar";
+            state.updated();
+            clock.currentDate = dateObj;
+            var dateLabel = findChild(clock, "dateLabel");
+            compare(dateLabel.text, dateString, "Not the expected date");
+            var timeLabel = findChild(clock, "timeLabel");
+            compare(timeLabel.text, timeString, "Not the expected time");
         }
 
         function test_dateUpdate() {
             var dateObj = new Date("October 13, 1975 11:13:00")
-            var dateString = Qt.formatDate(dateObj, Qt.DefaultLocaleLongDate)
-            var timeString = Qt.formatTime(dateObj)
+            var dateString = Qt.formatDate(dateObj, Qt.DefaultLocaleLongDate);
+            var timeString = Qt.formatTime(dateObj);
 
-            clock.enabled = false
-            var timeModel = findInvisibleChild(clock, "timeModel")
+            clock.enabled = false;
+            var timeModel = findInvisibleChild(clock, "timeModel");
 
-            compare(timeModel.menuObjectPath, "", "Clock shouldn't be connected to Indicators when not active.")
+            compare(timeModel.menuObjectPath, "", "Clock shouldn't be connected to Indicators when not active.");
 
-            clock.currentDate = dateObj
+            var state = findInvisibleChild(clock, "timeState");
+            state.updated();
+            state.rightLabel = "bar";
+            clock.currentDate = dateObj;
 
-            var dateLabel = findChild(clock, "dateLabel")
-            compare(dateLabel.text, dateString, "Not the expected date")
-            var timeLabel = findChild(clock, "timeLabel")
-            compare(timeLabel.text, timeString, "Not the expected time")
+            var dateLabel = findChild(clock, "dateLabel");
+            compare(dateLabel.text, dateString, "Not the expected date");
+            var timeLabel = findChild(clock, "timeLabel");
+            compare(timeLabel.text, timeString, "Not the expected time");
 
-            clock.enabled = true
+            clock.enabled = true;
 
-            verify(timeModel.menuObjectPath != "", "Should be connected to Indicators.")
+            verify(timeModel.menuObjectPath != "", "Should be connected to Indicators.");
+        }
+
+        function test_triggerUpdate() {
+            var state = findInvisibleChild(clock, "timeState");
+            state.updated();
+
+            updateSpy.wait();
+        }
+
+        function test_currentTime() {
+            var state = findInvisibleChild(clock, "timeState");
+            state.rightLabel = "bar";
+            state.updated();
+
+            var dateObj = clock.currentDate;
+            var dateString = Qt.formatDate(dateObj, Qt.DefaultLocaleLongDate);
+            var timeString = Qt.formatTime(dateObj);
+
+            var dateLabel = findChild(clock, "dateLabel");
+            compare(dateLabel.text, dateString, "Not the expected date");
+            var timeLabel = findChild(clock, "timeLabel");
+            compare(timeLabel.text, timeString, "Not the expected time");
         }
     }
 }

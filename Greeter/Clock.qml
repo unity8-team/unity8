@@ -45,6 +45,7 @@ Item {
         menuObjectPath: clock.active ? "/com/canonical/indicator/datetime/phone" : ""
 
         Indicators.RootActionState {
+            objectName: "timeState"
             menu: timeModel.model
 
             property string timeLabel
