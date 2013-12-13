@@ -248,6 +248,9 @@ QVariant IndicatorsModel::data(const QModelIndex &index, int role) const
             }
             break;
         case IndicatorsModelRole::WidgetSource:
+            if (indicator && indicator->identifier() == "indicator-datetime") {
+                return shellAppDirectory()+"/Panel/Indicators/DateTimeIndicatorWidget.qml";
+            }
             return shellAppDirectory()+"/Panel/Indicators/DefaultIndicatorWidget.qml";
         case IndicatorsModelRole::PageSource:
             return shellAppDirectory()+"/Panel/Indicators/DefaultIndicatorPage.qml";
