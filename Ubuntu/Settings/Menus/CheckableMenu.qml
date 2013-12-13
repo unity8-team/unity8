@@ -33,14 +33,14 @@ ListItem.Empty {
         objectName: "checkbox"
         property bool enableCheckConnection: true
 
-        Component.onCompleted: {
-            checked = menu.checked;
-        }
-
         anchors {
             left: parent.left
             leftMargin: menu.__contentsMargins
             verticalCenter: parent.verticalCenter
+        }
+
+        Component.onCompleted: {
+            checked = menu.checked;
         }
 
         // FIXME : should use Checkbox.toggled signal
@@ -84,11 +84,11 @@ ListItem.Empty {
     Components.Label {
         id: label
         anchors {
-            verticalCenter: parent.verticalCenter
             left: checkbox.right
             leftMargin: menu.__contentsMargins
             right: parent.right
             rightMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
         elide: Text.ElideRight
         opacity: label.enabled ? 1.0 : 0.5
