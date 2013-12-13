@@ -32,7 +32,6 @@ ListItem.Standard {
     iconSource: Qt.resolvedUrl("artwork/default_app.svg")
 
     control: UbuntuShape {
-
         height: label.height + units.gu(2)
         width: label.width + units.gu(2)
         color: Theme.palette.normal.backgroundText
