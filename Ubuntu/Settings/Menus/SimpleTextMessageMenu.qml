@@ -67,11 +67,11 @@ HeroMessageMenu {
 
             anchors {
                 top: bodyText.bottom
-                topMargin: item !== undefined ? units.gu(2) : 0
+                topMargin: item ? units.gu(2) : 0
                 left: parent.left
                 right: parent.right
             }
-            height: item !== undefined ? units.gu(4) : 0
+            height: item ? units.gu(4) : 0
         }
 
         states: State {
