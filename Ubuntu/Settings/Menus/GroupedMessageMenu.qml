@@ -42,9 +42,10 @@ ListItem.Standard {
             id: label
             objectName: "messageCount"
 
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            anchors.verticalCenter: parent.verticalCenter
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                verticalCenter: parent.verticalCenter
+            }
             horizontalAlignment: Text.AlignRight
             font.weight: Font.DemiBold
             fontSize: "medium"
