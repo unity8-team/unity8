@@ -21,9 +21,10 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1 as Components
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
+ListItem.Empty {
     id: menu
 
+    property alias text: label.text
     property bool checked: false
     __acceptEvents: false
 
@@ -34,8 +35,12 @@ ListItem.Standard {
 
         Component.onCompleted: {
             checked = menu.checked;
-            icon = checkbox;
-            anchors.verticalCenter = parent.verticalCenter
+        }
+
+        anchors {
+            left: parent.left
+            leftMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
 
         // FIXME : should use Checkbox.toggled signal
@@ -74,5 +79,18 @@ ListItem.Standard {
                 checkbox.clicked();
             }
         }
+    }
+
+    Components.Label {
+        id: label
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: checkbox.right
+            leftMargin: menu.__contentsMargins
+            right: parent.right
+            rightMargin: menu.__contentsMargins
+        }
+        elide: Text.ElideRight
+        opacity: label.enabled ? 1.0 : 0.5
     }
 }

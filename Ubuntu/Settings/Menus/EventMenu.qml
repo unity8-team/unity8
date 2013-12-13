@@ -21,10 +21,11 @@ import Ubuntu.Components 0.1 as Components
 import Ubuntu.Settings.Components 0.1 as USC
 import Ubuntu.Components.ListItems 0.1 as ListItems
 
-ListItems.Standard {
+ListItems.Empty {
     id: menu
 
     property alias iconSource: iconVisual.source
+    property alias text: label.text
     property alias time: dateLabel.text
     property alias eventColor: iconVisual.color
 
@@ -36,21 +37,34 @@ ListItems.Standard {
         height: Math.min(units.gu(5), parent.height - units.gu(1))
         width: height
 
-        Component.onCompleted: {
-            icon = iconVisual;
-            anchors.verticalCenter = parent.verticalCenter
+        anchors {
+            left: parent.left
+            leftMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
     }
 
-    control: Components.Label {
+    Components.Label {
+        id: label
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: iconVisual.visible ? iconVisual.right : parent.left
+            leftMargin: menu.__contentsMargins
+            right: dateLabel.left
+            rightMargin: menu.__contentsMargins
+        }
+        elide: Text.ElideRight
+        opacity: label.enabled ? 1.0 : 0.5
+    }
+
+    Components.Label {
         id: dateLabel
         color: Theme.palette.normal.backgroundText
 
-        Connections {
-            target: menu.__mouseArea
-            onClicked: {
-                menu.clicked();
-            }
+        anchors {
+            verticalCenter: parent.verticalCenter
+            right: parent.right
+            rightMargin: menu.__contentsMargins
         }
     }
 }

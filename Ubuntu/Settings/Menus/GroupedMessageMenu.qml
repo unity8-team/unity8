@@ -29,7 +29,7 @@ ListItem.Standard {
 
     signal dismissed()
 
-    icon: Qt.resolvedUrl("artwork/default_app.svg")
+    iconSource: Qt.resolvedUrl("artwork/default_app.svg")
 
     control: UbuntuShape {
 
