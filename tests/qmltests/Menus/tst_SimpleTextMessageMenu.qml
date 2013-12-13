@@ -71,7 +71,7 @@ Item {
 
     SignalSpy {
         id: signalSpyDismiss
-        signalName: "dismiss"
+        signalName: "dismissed"
         target: messageMenuRemovable
     }
 

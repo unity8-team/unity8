@@ -42,7 +42,7 @@ Item {
             ProgressValueMenu {
                 id: progressMenu
                 text: i18n.tr("Progress Value")
-                icon: Qt.resolvedUrl("../../artwork/avatar.png")
+                iconSource: Qt.resolvedUrl("../../artwork/avatar.png")
                 value: 0
             }
         }
