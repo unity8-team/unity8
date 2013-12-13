@@ -113,7 +113,6 @@ QList<Note*> NotesStore::notes() const
 
 Note *NotesStore::note(const QString &guid)
 {
-    refreshNoteContent(guid);
     return m_notesHash.value(guid);
 }
 

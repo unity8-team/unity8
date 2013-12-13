@@ -24,6 +24,8 @@ Page {
     title: note.title
     property var note
 
+    Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
+
     Column {
         anchors.fill: parent
         spacing: units.gu(1)
