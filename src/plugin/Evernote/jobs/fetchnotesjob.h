@@ -7,7 +7,7 @@ class FetchNotesJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit FetchNotesJob(const QString &filterNotebookGuid, QObject *parent = 0);
+    explicit FetchNotesJob(const QString &filterNotebookGuid = QString(), const QString &searchWords = QString(), QObject *parent = 0);
 
 signals:
     void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
@@ -18,6 +18,7 @@ protected:
 
 private:
     QString m_filterNotebookGuid;
+    QString m_searchWords;
     evernote::edam::NotesMetadataList m_results;
 };
 

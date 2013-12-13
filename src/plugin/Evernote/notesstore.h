@@ -36,7 +36,8 @@ public:
         RoleReminder,
         RoleReminderTime,
         RoleReminderDone,
-        RoleReminderDoneTime
+        RoleReminderDoneTime,
+        RoleIsSearchResult
     };
 
     ~NotesStore();
@@ -53,6 +54,7 @@ public:
     Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &content);
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);
+    Q_INVOKABLE void findNotes(const QString &searchWords);
 
     QList<Notebook*> notebooks() const;
     Notebook* notebook(const QString &guid);

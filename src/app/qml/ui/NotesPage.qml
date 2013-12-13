@@ -25,6 +25,7 @@ Page {
     id: notesPage
 
     property alias filter: notes.filterNotebookGuid
+    property bool showSearchResults: false
 
     onActiveChanged: {
         if (active) {
@@ -50,19 +51,38 @@ Page {
         id: notes
     }
 
-    ListView {
+    Column {
         anchors.fill: parent
-        model: notes
+        TextField {
+            anchors { left: parent.left; right: parent.right }
 
-        delegate: Standard {
-            text: title
-
-            onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
+            onAccepted: {
+                NotesStore.findNotes(text);
+                notes.onlySearchResults = true;
             }
 
-            onPressAndHold: {
-                NotesStore.deleteNote(guid);
+            onTextChanged: {
+                if (text == "") {
+                    notes.onlySearchResults = false;
+                }
+            }
+        }
+
+        ListView {
+            anchors { left: parent.left; right: parent.right }
+            height: parent.height - y
+            model: notes
+
+            delegate: Standard {
+                text: title
+
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
+                }
+
+                onPressAndHold: {
+                    NotesStore.deleteNote(guid);
+                }
             }
         }
     }

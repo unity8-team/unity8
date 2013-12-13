@@ -27,9 +27,10 @@
 
 #include <QDebug>
 
-FetchNotesJob::FetchNotesJob( const QString &filterNotebookGuid, QObject *parent) :
+FetchNotesJob::FetchNotesJob(const QString &filterNotebookGuid, const QString &searchWords, QObject *parent) :
     NotesStoreJob(parent),
-    m_filterNotebookGuid(filterNotebookGuid)
+    m_filterNotebookGuid(filterNotebookGuid),
+    m_searchWords(searchWords)
 {
 }
 
@@ -44,6 +45,9 @@ void FetchNotesJob::startJob()
     evernote::edam::NoteFilter filter;
     filter.notebookGuid = m_filterNotebookGuid.toStdString();
     filter.__isset.notebookGuid = !m_filterNotebookGuid.isEmpty();
+
+    filter.words = m_searchWords.toStdString();
+    filter.__isset.words = !m_searchWords.isEmpty();
 
     // Prepare ResultSpec
     evernote::edam::NotesMetadataResultSpec resultSpec;
