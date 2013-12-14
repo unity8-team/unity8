@@ -23,7 +23,7 @@
 #include "notebooks.h"
 #include "notebook.h"
 #include "note.h"
-#include "utils/html2enmlconverter.h"
+#include "utils/enmldocument.h"
 
 #include "jobs/fetchnotesjob.h"
 #include "jobs/fetchnotebooksjob.h"
@@ -34,6 +34,7 @@
 #include "jobs/createnotebookjob.h"
 #include "jobs/expungenotebookjob.h"
 
+#include <QImage>
 #include <QDebug>
 
 NotesStore* NotesStore::s_instance = 0;
@@ -84,6 +85,14 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->reminderDone();
     case RoleReminderDoneTime:
         return m_notes.at(index.row())->reminderDoneTime();
+    case RoleEnmlContent:
+        return m_notes.at(index.row())->enmlContent();
+    case RoleHtmlContent:
+        return m_notes.at(index.row())->htmlContent();
+    case RolePlaintextContent:
+        return m_notes.at(index.row())->plaintextContent();
+    case RoleResources:
+        return m_notes.at(index.row())->resources();
     }
     return QVariant();
 }
@@ -99,6 +108,10 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleReminderTime, "reminderTime");
     roles.insert(RoleReminderDone, "reminderDone");
     roles.insert(RoleReminderDoneTime, "reminderDoneTime");
+    roles.insert(RoleEnmlContent, "enmlContent");
+    roles.insert(RoleHtmlContent, "htmlContent");
+    roles.insert(RolePlaintextContent, "plaintextContent");
+    roles.insert(RoleResources, "resources");
     return roles;
 }
 
@@ -209,7 +222,17 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
-    note->setContent(QString::fromStdString(result.content));
+
+    // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
+    for (int i = 0; i < result.resources.size(); ++i) {
+        evernote::edam::Resource resource = result.resources.at(i);
+        if (QString::fromStdString(resource.mime).startsWith("image/")) {
+            QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
+            note->addResource(QString::fromStdString(resource.data.bodyHash), image, QString::fromStdString(resource.mime));
+        }
+    }
+
+    note->setEnmlContent(QString::fromStdString(result.content));
     note->setReminderOrder(result.attributes.reminderOrder);
     QDateTime reminderDoneTime;
     if (result.attributes.reminderDoneTime > 0) {
@@ -274,7 +297,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     Note *note = new Note(guid, created, this);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
-    note->setContent(QString::fromStdString(result.content));
+    note->setEnmlContent(QString::fromStdString(result.content));
 
     beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
     m_notesHash.insert(note->guid(), note);
@@ -287,10 +310,6 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 void NotesStore::saveNote(const QString &guid)
 {
     Note *note = m_notesHash.value(guid);
-
-    QString enml = Html2EnmlConverter::html2enml(note->content());
-    note->setContent(enml);
-
     SaveNoteJob *job = new SaveNoteJob(note, this);
     connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);

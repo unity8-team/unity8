@@ -27,6 +27,7 @@ Empty {
     property string title
     property date creationDate
     property string content
+    property string resource
 
     Column {
         id: contentColumn
@@ -36,7 +37,7 @@ Empty {
             topMargin: units.gu(1)
             left: parent.left
             leftMargin: units.gu(2)
-            right: parent.right
+            right: resourceImage.left
             rightMargin: units.gu(2)
         }
         Label {
@@ -52,5 +53,12 @@ Empty {
             textFormat: Text.StyledText
             maximumLineCount: 2
         }
+    }
+
+    Image {
+        id: resourceImage
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+        source: root.resource
+        sourceSize.height: height
     }
 }

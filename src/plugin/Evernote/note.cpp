@@ -21,9 +21,10 @@
 #include "note.h"
 
 #include "notesstore.h"
-#include "utils/html2enmlconverter.h"
 
 #include <QDateTime>
+#include <QUrl>
+#include <QUrlQuery>
 #include <QDebug>
 
 Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
@@ -70,24 +71,35 @@ void Note::setTitle(const QString &title)
     }
 }
 
-QString Note::content() const
+QString Note::enmlContent() const
 {
-    return m_content;
+    return m_content.enml();
 }
 
-void Note::setContent(const QString &content)
+void Note::setEnmlContent(const QString &enmlContent)
 {
-    if (m_content != content) {
-        m_content = content;
-        m_plaintextContent = Html2EnmlConverter::enml2plaintext(content);
-        qDebug() << "plaintext content is" << m_plaintextContent;
+    if (m_content.enml() != enmlContent) {
+        m_content.setEnml(enmlContent);
+        emit contentChanged();
+    }
+}
+
+QString Note::htmlContent() const
+{
+    return m_content.html(m_guid);
+}
+
+void Note::setHtmlContent(const QString &htmlContent)
+{
+    if (m_content.html(m_guid) != htmlContent) {
+        m_content.setHtml(htmlContent);
         emit contentChanged();
     }
 }
 
 QString Note::plaintextContent() const
 {
-    return m_plaintextContent;
+    return m_content.plaintext();
 }
 
 bool Note::reminder() const
@@ -171,12 +183,37 @@ void Note::setIsSearchResult(bool isSearchResult)
     }
 }
 
+QStringList Note::resources() const
+{
+    QList<QString> ret;
+    foreach (const QString &hash, m_resources.keys()) {
+        QUrl url("image://resource/" + m_resourceTypes.value(hash));
+        QUrlQuery arguments;
+        arguments.addQueryItem("noteGuid", m_guid);
+        arguments.addQueryItem("hash", hash.toLocal8Bit().toHex());
+        url.setQuery(arguments);
+        ret << url.toString();
+    }
+    return ret;
+}
+
+QImage Note::resource(const QString &hash)
+{
+    return m_resources.value(hash);
+}
+
+void Note::addResource(const QString &hash, const QImage &image, const QString &type)
+{
+    m_resources.insert(hash, image);
+    m_resourceTypes.insert(hash, type);
+}
+
 Note *Note::clone()
 {
     Note *note = new Note(m_guid, m_created);
     note->setNotebookGuid(m_notebookGuid);
     note->setTitle(m_title);
-    note->setContent(m_content);
+    note->setEnmlContent(m_content.enml());
     note->setReminderOrder(m_reminderOrder);
     note->setReminderTime(m_reminderTime);
     note->setReminderDoneTime(m_reminderDoneTime);

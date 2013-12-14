@@ -83,7 +83,7 @@ void EvernoteJob::run()
 
 
     } catch (const evernote::edam::EDAMUserException &e) {
-        qWarning() << "EDAMUserException" << e.what();
+        qWarning() << "EDAMUserException" << e.what() << e.errorCode;
         emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
     } catch (const evernote::edam::EDAMSystemException &e) {
         qWarning() << "EDAMSystemException" << e.what();

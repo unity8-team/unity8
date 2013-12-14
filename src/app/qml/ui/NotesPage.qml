@@ -70,7 +70,8 @@ Page {
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
-            content: NotesStore.note(model.guid).plaintextContent
+            content: model.plaintextContent
+            resource: model.resources.length > 0 ? model.resources[0] : ""
 
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})

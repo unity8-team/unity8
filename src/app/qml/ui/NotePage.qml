@@ -33,7 +33,7 @@ Page {
             width: parent.width
             text: "save"
             onClicked: {
-                note.content = noteTextArea.text
+                note.htmlContent = noteTextArea.text
                 note.save();
             }
         }
@@ -44,7 +44,7 @@ Page {
             height: parent.height - y
 
             textFormat: TextEdit.RichText
-            text: note.content
+            text: note.htmlContent
         }
     }
 }
