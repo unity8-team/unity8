@@ -75,7 +75,7 @@ MainView {
             }
 
             Tab {
-                title: i18n.tr("Notebook")
+                title: i18n.tr("Notebooks")
                 page: NotebooksPage {
                     id: notebooksPage
                 }

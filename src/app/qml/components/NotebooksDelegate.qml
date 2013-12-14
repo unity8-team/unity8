@@ -22,16 +22,14 @@ import Ubuntu.Components.ListItems 0.1
 
 Empty {
     id: root
-    height: units.gu(9)
+    height: units.gu(6)
 
-    property string title
-    property date creationDate
-    property string content
-    property string resource
+    property string name
+    property int noteCount
+    property string shareStatus
 
     Column {
         id: contentColumn
-        spacing: units.gu(1)
         anchors {
             top: parent.top
             topMargin: units.gu(1)
@@ -42,24 +40,21 @@ Empty {
         }
         Label {
             anchors { left: parent.left; right: parent.right }
-            text: root.title
+            text: root.name
             font.bold: true
             elide: Text.ElideRight
         }
         Label {
             anchors { left: parent.left; right: parent.right }
-            text: "<font color=\"#dd4814\">"+ Qt.formatDate(root.creationDate) + "</font>  " + root.content
+            text: root.shareStatus
             wrapMode: Text.WordWrap
             textFormat: Text.StyledText
-            maximumLineCount: 2
-            fontSize: "small"
         }
     }
 
-    Image {
+    Label {
         id: resourceImage
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-        source: root.resource
-        sourceSize.height: height
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; topMargin: units.gu(1); rightMargin: units.gu(2) }
+        text: i18n.tr("%1 notes").arg(root.noteCount)
     }
 }

@@ -20,6 +20,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
+import "../components"
 
 Page {
     id: notebooksPage
@@ -47,8 +48,10 @@ Page {
         anchors.fill: parent
         model: notebooks
 
-        delegate: Standard {
-            text: name
+        delegate: NotebooksDelegate {
+            name: model.name
+            noteCount: model.noteCount
+            shareStatus: model.publised ? i18n.tr("shared") : i18n.tr("private")
 
             onClicked: {
                 pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
