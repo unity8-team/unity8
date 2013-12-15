@@ -33,28 +33,111 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: "add notebook"
+            text: "search"
+            iconName: "search"
             onTriggered: {
-                NotesStore.createNotebook("new notebook");
+                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+            }
+        }
+
+        ToolbarSpacer { }
+
+        ToolbarButton {
+            text: "add notebook"
+            iconName: "add"
+            onTriggered: {
+                contentColumn.newNotebook = true;
             }
         }
     }
+
 
     Notebooks {
         id: notebooks
     }
 
-    ListView {
+    Column {
+        id: contentColumn
         anchors.fill: parent
-        model: notebooks
+        property bool newNotebook: false
 
-        delegate: NotebooksDelegate {
-            name: model.name
-            noteCount: model.noteCount
-            shareStatus: model.publised ? i18n.tr("shared") : i18n.tr("private")
+        states: [
+            State {
+                name: "newNotebook"; when: contentColumn.newNotebook
+                PropertyChanges { target: newNotebookContainer; opacity: 1; height: newNotebookContainer.implicitHeight }
+                PropertyChanges { target: buttonRow; opacity: 1; height: cancelButton.height + units.gu(4) }
+            }
+        ]
 
-            onClicked: {
-                pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
+        Empty {
+            id: newNotebookContainer
+            height: 0
+            visible: opacity > 0
+            opacity: 0
+            clip: true
+
+            Behavior on height {
+                UbuntuNumberAnimation {}
+            }
+            Behavior on opacity {
+                UbuntuNumberAnimation {}
+            }
+
+            onVisibleChanged: {
+                newNoteTitleTextField.forceActiveFocus();
+            }
+
+            TextField {
+                id: newNoteTitleTextField
+                anchors { left: parent.left; right: parent.right; margins: units.gu(2); verticalCenter: parent.verticalCenter }
+            }
+        }
+
+        ListView {
+            model: notebooks
+            anchors { left: parent.left; right: parent.right }
+            height: parent.height - y - buttonRow.height
+
+            delegate: NotebooksDelegate {
+                name: model.name
+                noteCount: model.noteCount
+                shareStatus: model.publised ? i18n.tr("shared") : i18n.tr("private")
+
+                onClicked: {
+                    pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
+                }
+            }
+        }
+
+        Item {
+            id: buttonRow
+            anchors { left: parent.left; right: parent.right; margins: units.gu(2) }
+            height: 0
+            visible: height > 0
+            clip: true
+
+            Behavior on height {
+                UbuntuNumberAnimation {}
+            }
+
+            Button {
+                id: cancelButton
+                anchors { left: parent.left; verticalCenter: parent.verticalCenter }
+                text: i18n.tr("Cancel")
+                onClicked: {
+                    newNoteTitleTextField.text = "";
+                    contentColumn.newNotebook = false
+                }
+            }
+            Button {
+                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                text: i18n.tr("Save")
+                enabled: newNoteTitleTextField.text.length > 0
+                onClicked: {
+                    NotesStore.createNotebook(newNoteTitleTextField.text);
+                    newNoteTitleTextField.text = "";
+                    contentColumn.newNotebook = false
+                }
             }
         }
     }
