@@ -30,7 +30,6 @@ Notebook::Notebook(QString guid, QObject *parent) :
     m_noteCount(0),
     m_published(false)
 {
-    qDebug() << "notebook created. notes in store" << NotesStore::instance()->notes().count();
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
             m_noteCount++;
