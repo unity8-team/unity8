@@ -65,6 +65,11 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     return roles;
 }
 
+Notebook *Notebooks::notebook(int index)
+{
+    return NotesStore::instance()->notebook(m_list.at(index));
+}
+
 void Notebooks::refresh()
 {
     NotesStore::instance()->refreshNotebooks();

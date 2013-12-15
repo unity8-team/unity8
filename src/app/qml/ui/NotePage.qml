@@ -19,33 +19,52 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Evernote 0.1
+import "../components"
 
 Page {
+    id: root
     title: note.title
     property var note
 
     Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
 
-    Column {
-        anchors.fill: parent
-        spacing: units.gu(1)
-        Button {
-            width: parent.width
-            text: "save"
-            onClicked: {
-                note.htmlContent = noteTextArea.text
-                note.save();
+    tools: ToolbarItems {
+        ToolbarButton {
+            text: "delete"
+            iconName: "delete"
+            onTriggered: {
+                NotesStore.deleteNote(note.guid);
+                pagestack.pop();
             }
         }
-
-        TextArea {
-            id: noteTextArea
-            anchors { left: parent.left; right: parent.right }
-            height: parent.height - y
-
-            textFormat: TextEdit.RichText
-            text: note.htmlContent
+        ToolbarSpacer {}
+        ToolbarButton {
+            text: note.reminder ? "reminder (set)" : "reminder"
+            iconName: "alarm-clock"
+            onTriggered: {
+                note.reminder = !note.reminder
+                NotesStore.saveNote(note.guid)
+            }
         }
+        ToolbarButton {
+            text: "edit"
+            iconName: "edit"
+            onTriggered: {
+                pagestack.pop()
+                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"), {note: root.note})
+            }
+        }
+    }
+
+    TextArea {
+        id: noteTextArea
+        anchors { fill: parent; margins: units.gu(2) }
+        height: parent.height - y
+        highlighted: true
+        readOnly: true
+
+        textFormat: TextEdit.RichText
+        text: note.htmlContent
     }
 }
 

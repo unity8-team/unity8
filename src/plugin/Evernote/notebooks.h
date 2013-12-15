@@ -21,6 +21,8 @@ public:
     int rowCount(const QModelIndex &parent) const;
     QHash<int, QByteArray> roleNames() const;
 
+    Q_INVOKABLE Notebook *notebook(int index);
+
 public slots:
     void refresh();
 

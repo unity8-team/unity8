@@ -2,6 +2,7 @@
 #define NOTESSTORE_H
 
 #include "evernoteconnection.h"
+#include "utils/enmldocument.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -55,7 +56,8 @@ public:
     QList<Note*> notes() const;
 
     Q_INVOKABLE Note* note(const QString &guid);
-    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &content);
+    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &htmlContent);
+    void createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content);
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);
     Q_INVOKABLE void findNotes(const QString &searchWords);
