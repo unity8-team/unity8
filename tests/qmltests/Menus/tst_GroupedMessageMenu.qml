@@ -86,6 +86,7 @@ Item {
         }
 
         function test_dismiss() {
+            skip("QTBUG-35656");
             mouseFlick(messageMenu2, messageMenu2.width / 2, messageMenu2.height / 2, messageMenu2.width, messageMenu2.height / 2, true, true, units.gu(1), 10);
             tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
