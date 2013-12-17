@@ -92,7 +92,7 @@ ListItem.Empty {
 
             Button {
                 id: leftButton
-                visible: status === Image.Ready
+                visible: status === Button.Ready
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
@@ -106,10 +106,10 @@ ListItem.Empty {
                 id: slider
                 objectName: "slider"
                 anchors {
-                    left: leftImage.visible ? leftImage.right : row.left
-                    right: rightImage.visible ? rightImage.left : row.right
-                    leftMargin: leftImage.visible ? units.gu(0.5) : 0
-                    rightMargin: rightImage.visible ? units.gu(0.5) : 0
+                    left: leftButton.visible ? leftButton.right : row.left
+                    right: rightButton.visible ? rightButton.left : row.right
+                    leftMargin: leftButton.visible ? units.gu(0.5) : 0
+                    rightMargin: rightButton.visible ? units.gu(0.5) : 0
                 }
                 live: true
 
@@ -142,7 +142,7 @@ ListItem.Empty {
 
             Button {
                 id: rightButton
-                visible: status === Image.Ready
+                visible: status === Button.Ready
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
