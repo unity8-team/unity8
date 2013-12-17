@@ -105,10 +105,10 @@ ListItem.Empty {
                 id: slider
                 objectName: "slider"
                 anchors {
-                    left: leftButton.visible ? leftButton.right : row.left
-                    right: rightButton.visible ? rightButton.left : row.right
-                    leftMargin: leftButton.visible ? units.gu(0.5) : 0
-                    rightMargin: rightButton.visible ? units.gu(0.5) : 0
+                    left: leftButton.right
+                    right: rightButton.left
+                    leftMargin: units.gu(0.5)
+                    rightMargin: units.gu(0.5)
                 }
                 live: true
 
