@@ -125,7 +125,6 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
             if (reader.name() == "en-todo") {
                 bool checked = false;
                 foreach(const QXmlStreamAttribute &attr, reader.attributes().toList()) {
-                    qDebug() << "got todo" << attr.name() << attr.value();
                     if (attr.name() == "checked" && attr.value() == "true") {
                         checked = true;
                     }
@@ -293,7 +292,6 @@ void EnmlDocument::markTodo(const QString &todoId, bool checked)
             writer.writeStartElement(reader.name().toString());
 
             if (reader.name() == "en-todo" && todoCounter++ == todoIndex) {
-                qDebug() << "found todo";
                 if (checked) {
                     writer.writeAttribute("checked", "true");
                 }
