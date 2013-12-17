@@ -184,7 +184,6 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
         note->setReminderOrder(result.attributes.reminderOrder);
 
-        qDebug() << "got note" << note->title() << result.deleted;
         if (!results.searchedWords.empty()) {
             note->setIsSearchResult(true);
         }
