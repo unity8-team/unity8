@@ -36,7 +36,7 @@ HeroMessageMenu {
     property alias replyMessages: quickreply.messages
     property alias replyButtonText: quickreply.buttonText
 
-    expandedHeight: buttons.y + buttons.height + quickreply.height + units.gu(2)
+    expandedHeight: collapsedHeight + buttons.height + quickreply.height
     heroMessageHeader.titleText.text:  title
     heroMessageHeader.subtitleText.text: message
     heroMessageHeader.bodyText.text: time
@@ -126,13 +126,14 @@ HeroMessageMenu {
         opacity: 0.0
         enabled: false
         replyEnabled: menu.replyEnabled
+        messageMargins: __contentsMargins
 
         states: State {
             name: "expanded"
 
             PropertyChanges {
                 target: quickreply
-                height: expandedHeight
+                height: expandedHeight + units.gu(2)
                 opacity: 1.0
             }
 

@@ -43,7 +43,7 @@ Item {
                 id: buttonMenu
                 text: i18n.tr("Button")
                 buttonText: i18n.tr("Hello world!")
-                icon: Qt.resolvedUrl("../../artwork/avatar.png")
+                iconSource: Qt.resolvedUrl("../../artwork/avatar.png")
             }
             ButtonMenu {
                 id: buttonMenu2

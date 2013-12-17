@@ -28,6 +28,7 @@ Item {
     property real expandedHeight: childrenRect.height
     property alias messages : messagelistRepeater.model
     property alias replyEnabled: actionTextField.activateEnabled
+    property real messageMargins: units.gu(2)
 
     signal replied(var value)
 
@@ -41,10 +42,10 @@ Item {
         Row {
             anchors {
                 fill: parent
-                leftMargin: units.gu(2)
-                rightMargin: units.gu(2)
                 topMargin: units.gu(1)
                 bottomMargin: units.gu(1)
+                leftMargin: messageMargins
+                rightMargin: messageMargins
             }
             spacing: units.gu(1)
 
@@ -92,8 +93,8 @@ Item {
 
                     anchors {
                         fill: parent
-                        leftMargin: units.gu(2)
-                        rightMargin: units.gu(2)
+                        leftMargin: messageMargins
+                        rightMargin: messageMargins
                     }
                     verticalAlignment: Text.AlignVCenter
                     fontSize: "medium"
@@ -144,7 +145,12 @@ Item {
             id: actionTextField
 
             anchors.fill: parent
-            anchors.margins: units.gu(1)
+            anchors {
+                topMargin: units.gu(1)
+                bottomMargin: units.gu(1)
+                leftMargin: messageMargins
+                rightMargin: messageMargins
+            }
             activateEnabled: replyEnabled
 
             onActivated: {

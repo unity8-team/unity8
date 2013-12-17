@@ -206,7 +206,7 @@ Item {
                        messageMenuRemovable.width,
                        messageMenuRemovable.height / 2,
                        true, true, units.gu(1), 10);
-            tryCompare(function() { return signalSpyDismiss.count > 0; }, true);
+            tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
 
         function test_activateEnabled() {
@@ -251,7 +251,7 @@ Item {
 
             var messageButton = UtilsJS.findChild(messageMenuSelected, "messageButton");
             verify(messageButton !== undefined, "Message button not found");
-            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 200);
+            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 300);
 
             var sendButton = UtilsJS.findChild(messageMenuSelected, "sendButton");
             verify(sendButton !== undefined, "Send button not found");
@@ -269,7 +269,7 @@ Item {
 
             var messageButton = UtilsJS.findChild(messageMenuSelected, "messageButton");
             verify(messageButton !== undefined, "Message button not found");
-            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 200);
+            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 300);
 
             var sendButton = UtilsJS.findChild(messageMenuSelected, "sendButton");
             verify(sendButton !== undefined, "Send button not found");
@@ -294,9 +294,9 @@ Item {
 
             var messageButton = UtilsJS.findChild(messageMenuSelected, "messageButton");
             verify(messageButton !== undefined, "Message button not found");
-            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 200);
+            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 300);
 
-            tryCompare(function() { return messageMenuSelected.implicitHeight; }, messageMenuSelected.expandedHeight);
+            tryCompareFunction(function() { return messageMenuSelected.implicitHeight == messageMenuSelected.expandedHeight; }, true);
 
             var replyMessage = UtilsJS.findChild(messageMenuSelected, "replyMessage"+data.index);
             verify(replyMessage !== undefined, "Reply message not found");

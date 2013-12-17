@@ -29,7 +29,6 @@ ListItem.Header {
         id: indicator
         objectName: "indicator"
 
-        running: busy
         anchors {
             margins: units.gu(0.5)
             right: parent.right

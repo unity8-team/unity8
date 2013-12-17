@@ -42,24 +42,33 @@ Item {
 
             GroupedMessageMenu {
                 id: messageMenu
-                removable: true
+                removable: false
 
-                title: "Group Message"
+                text: "Group Message 1"
                 count: "3"
+            }
+
+            GroupedMessageMenu {
+                id: messageMenu2
+                removable: true
+                anchors.top: messageMenu.bottom
+
+                text: "Group Message 2"
+                count: "5"
             }
         }
     }
 
     SignalSpy {
-        id: signalSpyActivateApp
-        signalName: "appActivated"
+        id: signalSpyTriggered
+        signalName: "triggered"
         target: messageMenu
     }
 
     SignalSpy {
         id: signalSpyDismiss
         signalName: "dismissed"
-        target: messageMenu
+        target: messageMenu2
     }
 
     UbuntuTestCase {
@@ -67,62 +76,20 @@ Item {
         when: windowShown
 
         function init() {
-            signalSpyActivateApp.clear();
+            signalSpyTriggered.clear();
             signalSpyDismiss.clear();
         }
 
-        function test_title_data() {
-            return [
-                { title: "title1" },
-                { title: "title2" },
-            ];
-        }
-
-        function test_title(data) {
-            messageMenu.title = data.title;
-
-            var title = UtilsJS.findChild(messageMenu, "title");
-            verify(title !== undefined, "No title");
-            compare(title.text, data.title, "Title does not match set title.");
-        }
-
-        function test_appIcon_data() {
-            return [
-                { appIcon: Qt.resolvedUrl("../../artwork/avatar.png") },
-                { appIcon: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
-            ];
-        }
-
-        function test_appIcon(data) {
-            messageMenu.appIcon = data.appIcon;
-            var appIcon = UtilsJS.findChild(messageMenu, "appIcon");
-            verify(appIcon !== undefined, "No app icon");
-            compare(appIcon.source, data.appIcon, "App Icon does not match set icon.");
-        }
-
-        function test_count_data() {
-            return [
-                { count: "0" },
-                { count: "5" },
-            ];
-        }
-
-        function test_count(data) {
-            messageMenu.count = data.count;
-
-            var count = UtilsJS.findChild(messageMenu, "messageCount");
-            verify(count !== undefined, "No count");
-            compare(count.text, data.count, "Count does not match set count.");
-        }
-
-        function test_activate() {
+        function test_triggered() {
             mouseClick(messageMenu, messageMenu.width / 2, messageMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count > 0, true, "activate app should have been triggered");
+            compare(signalSpyTriggered.count > 0, true, "should have been triggered");
         }
 
         function test_dismiss() {
-            mouseFlick(messageMenu, messageMenu.width / 2, messageMenu.height / 2, messageMenu.width, messageMenu.height / 2, true, true, units.gu(1), 10);
-            tryCompare(function() { signalSpyDismiss.count > 0; }, true);
+            skip("QTBUG-35656");
+            // TODO - Remove skip once bug has been fixed. https://bugreports.qt-project.org/browse/QTBUG-35656
+            mouseFlick(messageMenu2, messageMenu2.width / 2, messageMenu2.height / 2, messageMenu2.width, messageMenu2.height / 2, true, true, units.gu(1), 10);
+            tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
     }
 }

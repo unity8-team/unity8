@@ -24,6 +24,7 @@ import Ubuntu.Components.ListItems 0.1 as ListItem
 ListItem.Empty {
     id: menu
 
+    property alias text: label.text
     property bool checked: false
     __acceptEvents: false
 
@@ -81,12 +82,15 @@ ListItem.Empty {
     }
 
     Components.Label {
-        text: menu.text
+        id: label
         anchors {
             left: checkbox.right
             leftMargin: menu.__contentsMargins
+            right: parent.right
             rightMargin: menu.__contentsMargins
             verticalCenter: parent.verticalCenter
         }
+        elide: Text.ElideRight
+        opacity: label.enabled ? 1.0 : 0.5
     }
 }

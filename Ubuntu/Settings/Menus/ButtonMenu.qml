@@ -29,6 +29,6 @@ ListItem.Standard {
     control: Button {
         id: button
         objectName: "button"
-        width: units.gu(20)
+        width: Math.max(units.gu(5), implicitWidth)
     }
 }

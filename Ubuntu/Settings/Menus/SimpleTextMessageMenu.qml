@@ -30,7 +30,7 @@ HeroMessageMenu {
 
     property alias footer: footerLoader.sourceComponent
 
-    expandedHeight: fullMessage.y + fullMessage.height + units.gu(2)
+    expandedHeight: collapsedHeight + fullMessage.height
     heroMessageHeader.titleText.text: title
     heroMessageHeader.subtitleText.text: time
     heroMessageHeader.bodyText.text: message
@@ -67,11 +67,11 @@ HeroMessageMenu {
 
             anchors {
                 top: bodyText.bottom
-                topMargin: units.gu(2)
+                topMargin: item ? units.gu(2) : 0
                 left: parent.left
                 right: parent.right
             }
-            height: item != undefined ? units.gu(4) : 0
+            height: item ? units.gu(4) : 0
         }
 
         states: State {

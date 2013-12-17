@@ -72,6 +72,8 @@ Item {
 
         function test_clickCheckBox() {
             var checkbox = UtilsJS.findChild(checkMenu, "checkbox");
+            verify(checkbox !== undefined);
+
             mouseClick(checkMenu, checkbox.width / 2, checkbox.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on checkbox click");
         }

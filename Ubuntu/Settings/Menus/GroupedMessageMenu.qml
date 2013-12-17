@@ -22,62 +22,42 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Empty {
+ListItem.Standard {
     id: menu
 
-    property alias title: __title.text
     property alias count: label.text
-    property url appIcon
 
-    signal appActivated()
     signal dismissed()
 
-    implicitHeight: units.gu(10)
+    iconSource: Qt.resolvedUrl("artwork/default_app.svg")
 
-    Row {
-        anchors.fill: parent
-        anchors.margins: units.gu(2)
-        spacing: units.gu(4)
-
-        UbuntuShape {
-            height: units.gu(6)
-            width: units.gu(6)
-            image: Image {
-                objectName: "appIcon"
-                source: appIcon != "" ? appIcon : "artwork/default_app.svg"
-                fillMode: Image.PreserveAspectFit
-            }
-        }
-
-        Label {
-            id: __title
-            objectName: "title"
-            anchors.verticalCenter: parent.verticalCenter
-            font.weight: Font.DemiBold
-            fontSize: "medium"
-        }
+    control: UbuntuShape {
+        height: label.height + units.gu(2)
+        width: label.width + units.gu(2)
+        color: Theme.palette.normal.backgroundText
+        radius: "medium"
 
         Label {
             id: label
             objectName: "messageCount"
 
-            anchors.verticalCenter: parent.verticalCenter
-            width: parent.width - x
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                verticalCenter: parent.verticalCenter
+            }
             horizontalAlignment: Text.AlignRight
             font.weight: Font.DemiBold
             fontSize: "medium"
             text: "0"
+
+            color: Theme.palette.normal.foregroundText
         }
-    }
 
-    ListItem.ThinDivider {
-        anchors.bottom: parent.bottom
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            menu.appActivated();
+        Connections {
+            target: menu.__mouseArea
+            onClicked: {
+                menu.clicked();
+            }
         }
     }
 

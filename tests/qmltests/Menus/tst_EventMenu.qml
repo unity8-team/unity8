@@ -41,11 +41,16 @@ Item {
             EventMenu {
                 id: eventMenu
                 eventColor: "yellow"
-                name: "Lunch with Lola"
-                description: "Some nice Thai food in the bay area"
-                date: "1:10 PM"
+                text: "Lunch with Lola"
+                time: "1:10 PM"
             }
         }
+    }
+
+    SignalSpy {
+        id: signalSpyTriggered
+        signalName: "triggered"
+        target: eventMenu
     }
 
     TestCase {
@@ -58,18 +63,18 @@ Item {
         }
 
         function test_name() {
-            eventMenu.name = "Gym"
-            compare(eventMenu.name, "Gym", "Cannot set name")
+            eventMenu.text = "Gym"
+            compare(eventMenu.text, "Gym", "Cannot set name")
         }
 
-        function test_description() {
-            eventMenu.description = "Workout with John"
-            compare(eventMenu.description, "Workout with John", "Cannot set description")
+        function test_time() {
+            eventMenu.time = "6:30 PM"
+            compare(eventMenu.time, "6:30 PM", "Cannot set date")
         }
 
-        function test_date() {
-            eventMenu.date = "6:30 PM"
-            compare(eventMenu.date, "6:30 PM", "Cannot set date")
+        function test_triggered() {
+            mouseClick(eventMenu, eventMenu.width / 2, eventMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            compare(signalSpyTriggered.count > 0, true, "should have been triggered");
         }
     }
 }

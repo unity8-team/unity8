@@ -42,13 +42,13 @@ Item {
             UserSessionMenu {
                 id: userSessionMenu
                 name: i18n.tr("Lola Chang")
-                icon: Qt.resolvedUrl("../../artwork/avatar.png")
+                iconSource: Qt.resolvedUrl("../../artwork/avatar.png")
                 active: true
             }
             UserSessionMenu {
                 id: userSessionMenu2
                 name: i18n.tr("Sponge Bob")
-                icon: Qt.resolvedUrl("../../artwork/avatar.png")
+                iconSource: Qt.resolvedUrl("../../artwork/avatar.png")
                 active: false
                 anchors.top: userSessionMenu.bottom
             }

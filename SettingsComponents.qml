@@ -43,9 +43,9 @@ MainView {
 
     ListModel {
         id: eventModel
-        ListElement { eventColor: "yellow"; name: "Lunch with Lola"; description: "Some nice Thai food in the bay area"; date: "1:10 PM" }
-        ListElement { eventColor: "green"; name: "Gym"; description: "Workout with John"; date: "6:30 PM" }
-        ListElement { eventColor: "red"; name: "Birthday Party"; description: "Don't forget your present!"; date: "9:00 PM" }
+        ListElement { icon: "image://theme/calendar"; eventColor: "yellow"; text: "Lunch with Lola"; time: "1:10 PM" }
+        ListElement { icon: "image://theme/calendar"; eventColor: "green"; text: "Gym"; time: "6:30 PM" }
+        ListElement { icon: "image://theme/calendar"; eventColor: "red"; text: "Birthday Party"; time: "9:00 PM" }
     }
 
     Page {
@@ -70,6 +70,9 @@ MainView {
                     minimumValue: 0
                     maximumValue: 100
                     value: 20
+
+                    minIcon: "image://theme/audio-volume-low"
+                    maxIcon: "image://theme/audio-volume-high"
                 }
 
                 ProgressBarMenu {
@@ -108,14 +111,11 @@ MainView {
 
                 CalendarMenu {
                     id: calendar
-//                    currentDate: new Date(2013, 6, 2) // june 2013
-//                    minimumDate: new Date(2013, 4, 2) // april 2013
-//                    maximumDate: new Date(2013, 7, 2) // july 2013
                 }
 
                 UserSessionMenu {
                     name: i18n.tr("Lola Chang")
-                    icon: Qt.resolvedUrl("tests/artwork/avatar.png")
+                    iconSource: Qt.resolvedUrl("tests/artwork/avatar.png")
                     active: true
                 }
 
@@ -151,7 +151,7 @@ MainView {
                 }
 
                 GroupedMessageMenu {
-                    title: "Group Message"
+                    text: "Group Message"
                     count: "4"
                 }
 
@@ -213,10 +213,10 @@ MainView {
                         model: eventModel
 
                         EventMenu {
-                            name: model.name
-                            description: model.description
+                            iconSource: model.icon
+                            text: model.text
                             eventColor: model.eventColor
-                            date: model.date
+                            time: model.time
                         }
                     }
                 }
