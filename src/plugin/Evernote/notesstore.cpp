@@ -232,7 +232,6 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         if (QString::fromStdString(resource.mime).startsWith("image/")) {
             QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
             QString hash = QByteArray::fromRawData(resource.data.bodyHash.c_str(), resource.data.bodyHash.length()).toHex();
-            qDebug() << "got from store:" << hash;
             note->addResource(hash, image, QString::fromStdString(resource.mime));
         }
     }
