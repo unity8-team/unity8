@@ -92,7 +92,6 @@ ListItem.Empty {
 
             Button {
                 id: leftButton
-                visible: status === Button.Ready
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
@@ -142,7 +141,6 @@ ListItem.Empty {
 
             Button {
                 id: rightButton
-                visible: status === Button.Ready
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
