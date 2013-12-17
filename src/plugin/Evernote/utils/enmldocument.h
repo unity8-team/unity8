@@ -12,10 +12,21 @@ public:
     void setEnml(const QString &enml);
 
     // noteGuid is required to convert en-media tags to urls for image provider
-    QString html(const QString &noteGuid) const;
-    void setHtml(const QString &html);
+    QString toHtml(const QString &noteGuid) const;
+    QString toRichText(const QString &noteGuid) const;
+    QString toPlaintext() const;
 
-    QString plaintext() const;
+    void setRichText(const QString &richText);
+
+    void markTodo(const QString &todoId, bool checked);
+
+private:
+    enum Type {
+        TypeRichText,
+        TypeHtml
+    };
+
+    QString convert(const QString &noteGuid, Type type) const;
 
 private:
     QString m_enml;

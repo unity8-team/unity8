@@ -18,6 +18,9 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Extras.Browser 0.1
+import QtWebKit 3.1
+import QtWebKit.experimental 1.0
 import Evernote 0.1
 import "../components"
 
@@ -56,15 +59,37 @@ Page {
         }
     }
 
-    TextArea {
-        id: noteTextArea
-        anchors { fill: parent; margins: units.gu(2) }
-        height: parent.height - y
-        highlighted: true
-        readOnly: true
+    Flickable {
+        anchors { fill: parent }
+        contentHeight: height
+        contentWidth: width
 
-        textFormat: TextEdit.RichText
-        text: note.htmlContent
+        UbuntuWebView {
+            id: noteTextArea
+            anchors { fill: parent}
+            property string html: note.htmlContent
+            onHtmlChanged: loadHtml(html, "file:///")
+
+            experimental.preferences.navigatorQtObjectEnabled: true
+            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
+            onTitleChanged: print("title:", title)
+            experimental.onMessageReceived: {
+                var data = null;
+                try {
+                    data = JSON.parse(message.data);
+                } catch (error) {
+                    print("Failed to parse message:", message.data, error);
+                }
+
+                switch (data.type) {
+                case "checkboxChanged":
+                    print("got checkbox change:", data.todoId, data.checked)
+                    note.markTodo(data.todoId, data.checked);
+                    NotesStore.saveNote(note.guid);
+                    break;
+                }
+            }
+        }
     }
 }
 

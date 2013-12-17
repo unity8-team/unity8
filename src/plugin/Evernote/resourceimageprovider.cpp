@@ -23,9 +23,7 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
         return QImage();
     }
 
-    QByteArray binHash = QByteArray::fromHex(resourceHash.toLatin1());
-
-    QImage image = NotesStore::instance()->note(noteGuid)->resource(binHash);
+    QImage image = NotesStore::instance()->note(noteGuid)->resource(resourceHash);
     *size = image.size();
 
     if (requestedSize.isValid()) {

@@ -89,6 +89,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->enmlContent();
     case RoleHtmlContent:
         return m_notes.at(index.row())->htmlContent();
+    case RoleRichTextContent:
+        return m_notes.at(index.row())->richTextContent();
     case RolePlaintextContent:
         return m_notes.at(index.row())->plaintextContent();
     case RoleResources:
@@ -109,6 +111,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleReminderDone, "reminderDone");
     roles.insert(RoleReminderDoneTime, "reminderDoneTime");
     roles.insert(RoleEnmlContent, "enmlContent");
+    roles.insert(RoleRichTextContent, "richTextContent");
     roles.insert(RoleHtmlContent, "htmlContent");
     roles.insert(RolePlaintextContent, "plaintextContent");
     roles.insert(RoleResources, "resources");
@@ -181,6 +184,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
         note->setReminderOrder(result.attributes.reminderOrder);
 
+        qDebug() << "got note" << note->title() << result.deleted;
         if (!results.searchedWords.empty()) {
             note->setIsSearchResult(true);
         }
@@ -228,7 +232,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         evernote::edam::Resource resource = result.resources.at(i);
         if (QString::fromStdString(resource.mime).startsWith("image/")) {
             QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
-            note->addResource(QString::fromStdString(resource.data.bodyHash), image, QString::fromStdString(resource.mime));
+            QString hash = QByteArray::fromRawData(resource.data.bodyHash.c_str(), resource.data.bodyHash.length()).toHex();
+            qDebug() << "got from store:" << hash;
+            note->addResource(hash, image, QString::fromStdString(resource.mime));
         }
     }
 
@@ -279,10 +285,10 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
     }
 }
 
-void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &htmlContent)
+void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &richTextContent)
 {
     EnmlDocument enmlDoc;
-    enmlDoc.setHtml(htmlContent);
+    enmlDoc.setRichText(richTextContent);
     createNote(title, notebookGuid, enmlDoc);
 }
 
