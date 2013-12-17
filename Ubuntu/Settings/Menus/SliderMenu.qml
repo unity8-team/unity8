@@ -92,23 +92,24 @@ ListItem.Empty {
 
             Button {
                 id: leftButton
+                visible: iconSource !== ""
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
                 color: "transparent"
 
-                onClicked: slider.value = 0.0
+                onClicked: slider.value = slider.minimumValue
             }
 
             Slider {
                 id: slider
                 objectName: "slider"
                 anchors {
-                    left: leftButton.right
-                    right: rightButton.left
-                    leftMargin: units.gu(0.5)
-                    rightMargin: units.gu(0.5)
+                    left: leftButton.visible ? leftButton.right : row.left
+                    right: rightButton.visible ? rightButton.left : row.right
+                    leftMargin: leftButton.visible ? units.gu(0.5) : 0
+                    rightMargin: rightButton.visible ? units.gu(0.5) : 0
                 }
                 live: true
 
@@ -141,13 +142,14 @@ ListItem.Empty {
 
             Button {
                 id: rightButton
+                visible: iconSource !== ""
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
                 color: "transparent"
 
-                onClicked: slider.value = 100.0
+                onClicked: slider.value =  slider.maximumValue
             }
         }
     }
