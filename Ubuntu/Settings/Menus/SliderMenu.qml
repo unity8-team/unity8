@@ -28,8 +28,8 @@ ListItem.Empty {
     property alias live: slider.live
     property double value: 0.0
 
-    property alias minIcon: leftButton.source
-    property alias maxIcon: righButton.source
+    property alias minIcon: leftButton.iconSource
+    property alias maxIcon: righButton.iconSource
 
     signal updated(real value)
 
