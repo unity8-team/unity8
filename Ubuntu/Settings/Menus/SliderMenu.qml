@@ -29,7 +29,7 @@ ListItem.Empty {
     property double value: 0.0
 
     property alias minIcon: leftButton.iconSource
-    property alias maxIcon: righButton.iconSource
+    property alias maxIcon: rightButton.iconSource
 
     signal updated(real value)
 
@@ -92,6 +92,7 @@ ListItem.Empty {
 
             Button {
                 id: leftButton
+                objectName: "leftButton"
                 visible: iconSource !== ""
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
@@ -142,6 +143,7 @@ ListItem.Empty {
 
             Button {
                 id: rightButton
+                objectName: "rightButton"
                 visible: iconSource !== ""
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter

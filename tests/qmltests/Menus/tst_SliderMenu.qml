@@ -97,5 +97,23 @@ Item {
             sliderMenu.value = 20;
             compare(slider.value, 20, "Menu value not updating slider value");
         }
+
+        // simulates clicking the min/max buttons
+        function test_minmaxButtons() {
+            var slider = UtilsJS.findChild(sliderMenu, "slider");
+            verify(slider !== undefined);
+
+            var leftButton = UtilsJS.findChild(sliderMenu, "leftButton");
+            verify(leftButton !== undefined);
+
+            var rightButton = UtilsJS.findChild(sliderMenu, "rightButton");
+            verify(rightButton !== undefined);
+
+            mouseClick(leftButton, leftButton.width / 2, leftButton.height / 2);
+            compare(slider.value, sliderMenu.minimumValue, "Min button not updating menu value");
+
+            mouseClick(rightButton, rightButton.width / 2, rightButton.height / 2);
+            compare(slider.value, sliderMenu.maximumValue, "Max button not updating menu value");
+        }
     }
 }
