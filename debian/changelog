@@ -1,3 +1,14 @@
+ubuntu-settings-components (0.1+14.04.20131217-0ubuntu1) trusty; urgency=low
+
+  [ Nick Dedekind ]
+  * Fixed visual design of EventMenu. Simplified Checkbox/GroupMessage.
+    (LP: #1237752)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 59
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 17 Dec 2013 12:49:47 +0000
+
 ubuntu-settings-components (0.1+14.04.20131120.1-0ubuntu1) trusty; urgency=low
 
   [ Robert Bruce Park ]
