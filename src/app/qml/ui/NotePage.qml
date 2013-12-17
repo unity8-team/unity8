@@ -82,7 +82,6 @@ Page {
 
                 switch (data.type) {
                 case "checkboxChanged":
-                    print("got checkbox change:", data.todoId, data.checked)
                     note.markTodo(data.todoId, data.checked);
                     NotesStore.saveNote(note.guid);
                     break;
