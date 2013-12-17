@@ -28,8 +28,8 @@ ListItem.Empty {
     property alias live: slider.live
     property double value: 0.0
 
-    property alias minIcon: leftImage.source
-    property alias maxIcon: rightImage.source
+    property alias minIcon: leftButton.source
+    property alias maxIcon: righButton.source
 
     signal updated(real value)
 
@@ -90,13 +90,16 @@ ListItem.Empty {
             }
             height: slider.height
 
-            Image {
-                id: leftImage
+            Button {
+                id: leftButton
                 visible: status === Image.Ready
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
+                color: "transparent"
+
+                onClicked: slider.value = 0.0
             }
 
             Slider {
@@ -137,13 +140,16 @@ ListItem.Empty {
                 }
             }
 
-            Image {
-                id: rightImage
+            Button {
+                id: rightButton
                 visible: status === Image.Ready
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
+                color: "transparent"
+
+                onClicked: slider.value = 100.0
             }
         }
     }
