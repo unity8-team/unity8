@@ -72,7 +72,6 @@ Page {
 
             experimental.preferences.navigatorQtObjectEnabled: true
             experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            onTitleChanged: print("title:", title)
             experimental.onMessageReceived: {
                 var data = null;
                 try {
@@ -92,4 +91,3 @@ Page {
         }
     }
 }
-
