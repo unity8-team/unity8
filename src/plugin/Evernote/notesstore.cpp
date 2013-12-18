@@ -168,6 +168,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
         note->setReminderOrder(result.attributes.reminderOrder);
+
+        if (!results.searchedWords.empty()) {
+            note->setIsSearchResult(true);
+        }
+
         QDateTime reminderDoneTime;
         if (result.attributes.reminderDoneTime > 0) {
             reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
@@ -315,6 +320,18 @@ void NotesStore::deleteNote(const QString &guid)
 {
     DeleteNoteJob *job = new DeleteNoteJob(guid, this);
     connect(job, &DeleteNoteJob::jobDone, this, &NotesStore::deleteNoteJobDone);
+    EvernoteConnection::instance()->enqueue(job);
+}
+
+void NotesStore::findNotes(const QString &searchWords)
+{
+    foreach (Note *note, m_notes) {
+        note->setIsSearchResult(false);
+    }
+    emit dataChanged(index(0), index(m_notes.count()), QVector<int>() << RoleIsSearchResult);
+
+    FetchNotesJob *job = new FetchNotesJob(QString(), searchWords);
+    connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
 

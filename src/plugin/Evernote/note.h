@@ -39,6 +39,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
+    Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     // Don't forget to update clone() if you add properties!
 
 public:
@@ -78,6 +79,9 @@ public:
     QDateTime reminderDoneTime() const;
     void setReminderDoneTime(const QDateTime &reminderDoneTime);
 
+    bool isSearchResult() const;
+    void setIsSearchResult(bool isSearchResult);
+
     Note* clone();
 
 public slots:
@@ -91,6 +95,7 @@ signals:
     void reminderChanged();
     void reminderTimeChanged();
     void reminderDoneChanged();
+    void isSearchResultChanged();
 
 private:
     QString m_guid;
@@ -101,6 +106,7 @@ private:
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
+    bool m_isSearchResult;
 };
 
 #endif // NOTE_H

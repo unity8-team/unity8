@@ -20,6 +20,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
+import "../components"
 
 Page {
     id: notesPage
@@ -34,6 +35,16 @@ Page {
 
     // Just for testing
     tools: ToolbarItems {
+        ToolbarButton {
+            text: "search"
+            iconName: "search"
+            onTriggered: {
+                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+            }
+        }
+
+        ToolbarSpacer { }
+
         ToolbarButton {
             text: "add note"
             enabled: notes.filterNotebookGuid.length > 0
@@ -51,7 +62,8 @@ Page {
     }
 
     ListView {
-        anchors.fill: parent
+        anchors { left: parent.left; right: parent.right }
+        height: parent.height - y
         model: notes
 
         delegate: Standard {

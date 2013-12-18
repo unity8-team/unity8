@@ -60,6 +60,20 @@ void Notes::setOnlyReminders(bool onlyReminders)
     }
 }
 
+bool Notes::onlySearchResults() const
+{
+    return m_onlySearchResults;
+}
+
+void Notes::setOnlySearchResults(bool onlySearchResults)
+{
+    if (m_onlySearchResults != onlySearchResults) {
+        m_onlySearchResults = onlySearchResults;
+        emit onlySearchResultsChanged();
+        invalidateFilter();
+    }
+}
+
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
@@ -70,6 +84,12 @@ bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) con
     }
     if (m_onlyReminders) {
         if (!sourceModel()->data(sourceIndex, NotesStore::RoleReminder).toBool()) {
+            return false;
+        }
+    }
+    if (m_onlySearchResults) {
+        Note *note = NotesStore::instance()->note(sourceModel()->data(sourceIndex, NotesStore::RoleGuid).toString());
+        if (!note->isSearchResult()) {
             return false;
         }
     }

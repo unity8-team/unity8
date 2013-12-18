@@ -27,7 +27,8 @@
 Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
     m_guid(guid),
-    m_created(created)
+    m_created(created),
+    m_isSearchResult(false)
 {
 }
 
@@ -148,6 +149,19 @@ void Note::setReminderDoneTime(const QDateTime &reminderDoneTime)
     }
 }
 
+bool Note::isSearchResult() const
+{
+    return m_isSearchResult;
+}
+
+void Note::setIsSearchResult(bool isSearchResult)
+{
+    if (m_isSearchResult != isSearchResult) {
+        m_isSearchResult = isSearchResult;
+        emit isSearchResultChanged();
+    }
+}
+
 Note *Note::clone()
 {
     Note *note = new Note(m_guid, m_created);
@@ -157,6 +171,7 @@ Note *Note::clone()
     note->setReminderOrder(m_reminderOrder);
     note->setReminderTime(m_reminderTime);
     note->setReminderDoneTime(m_reminderDoneTime);
+    note->setIsSearchResult(m_isSearchResult);
     return note;
 }
 
