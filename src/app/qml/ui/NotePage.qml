@@ -59,18 +59,23 @@ Page {
         }
     }
 
+    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
+    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
+    // another flickable prevents this from happening.
     Flickable {
-        anchors { fill: parent }
+        anchors { fill: parent}
         contentHeight: height
-        contentWidth: width
 
         UbuntuWebView {
             id: noteTextArea
             anchors { fill: parent}
             property string html: note.htmlContent
-            onHtmlChanged: loadHtml(html, "file:///")
+            onHtmlChanged: {
+                loadHtml(html, "file:///")
+            }
 
             experimental.preferences.navigatorQtObjectEnabled: true
+            experimental.preferredMinimumContentsWidth: root.width
             experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
             experimental.onMessageReceived: {
                 var data = null;

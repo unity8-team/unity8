@@ -58,6 +58,10 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
     QString html;
     QXmlStreamWriter writer(&html);
     writer.writeStartDocument();
+    writer.writeStartElement("meta");
+    writer.writeAttribute("name", "viewport");
+    writer.writeAttribute("content", "width=640px");
+    writer.writeEndElement();
 
     // input
     QXmlStreamReader reader(m_enml);
