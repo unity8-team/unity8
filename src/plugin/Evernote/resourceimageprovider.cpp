@@ -14,6 +14,7 @@ ResourceImageProvider::ResourceImageProvider():
 
 QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    QString mediaType = id.split("?").first();
     QUrlQuery arguments(id.split('?').last());
     QString noteGuid = arguments.queryItemValue("noteGuid");
     QString resourceHash = arguments.queryItemValue("hash");
@@ -23,7 +24,14 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
         return QImage();
     }
 
-    QImage image = NotesStore::instance()->note(noteGuid)->resource(resourceHash);
+    QImage image;
+    if (mediaType.startsWith("image")) {
+        image = NotesStore::instance()->note(noteGuid)->resource(resourceHash);
+    } else if (mediaType.startsWith("audio")) {
+        image.load("/usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg");
+    } else {
+        image.load("/usr/share/icons/ubuntu-mobile/actions/scalable/help.svg");
+    }
     *size = image.size();
 
     if (requestedSize.isValid()) {
