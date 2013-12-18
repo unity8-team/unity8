@@ -31,6 +31,8 @@
 #include "jobs/createnotejob.h"
 #include "jobs/savenotejob.h"
 #include "jobs/deletenotejob.h"
+#include "jobs/createnotebookjob.h"
+#include "jobs/expungenotebookjob.h"
 
 #include <QDebug>
 
@@ -46,6 +48,7 @@ NotesStore::NotesStore(QObject *parent) :
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
     qRegisterMetaType<std::vector<evernote::edam::Notebook> >("std::vector<evernote::edam::Notebook>");
+    qRegisterMetaType<evernote::edam::Notebook>("evernote::edam::Notebook");
 
 }
 
@@ -122,6 +125,20 @@ QList<Notebook *> NotesStore::notebooks() const
 Notebook *NotesStore::notebook(const QString &guid)
 {
     return m_notebooksHash.value(guid);
+}
+
+void NotesStore::createNotebook(const QString &name)
+{
+    CreateNotebookJob *job = new CreateNotebookJob(name);
+    connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
+    EvernoteConnection::instance()->enqueue(job);
+}
+
+void NotesStore::expungeNotebook(const QString &guid)
+{
+    ExpungeNotebookJob *job = new ExpungeNotebookJob(guid);
+    connect(job, &ExpungeNotebookJob::jobDone, this, &NotesStore::expungeNotebookJobDone);
+    EvernoteConnection::instance()->enqueue(job);
 }
 
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
@@ -315,4 +332,29 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     m_notes.takeAt(noteIndex);
     m_notesHash.take(guid)->deleteLater();
     endRemoveRows();
+}
+
+void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result)
+{
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error creating notebook:" << errorMessage;
+        return;
+    }
+    Notebook *notebook = new Notebook(QString::fromStdString(result.guid));
+    notebook->setName(QString::fromStdString(result.name));
+    m_notebooks.append(notebook);
+    m_notebooksHash.insert(notebook->guid(), notebook);
+    emit notebookAdded(notebook->guid());
+}
+
+void NotesStore::expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid)
+{
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error expunging notebook:" << errorMessage;
+        return;
+    }
+    emit notebookRemoved(guid);
+    Notebook *notebook = m_notebooksHash.take(guid);
+    m_notebooks.removeAll(notebook);
+    notebook->deleteLater();
 }
