@@ -1,3 +1,9 @@
+reminders-app (0.2) saucy; urgency=low
+
+  * Added authentication plugin dependencies, bumped package version
+
+ -- David Planella <david.planella@ubuntu.com>  Tue, 26 Nov 2013 12:18:20 +0100
+
 reminders-app (0.1) saucy; urgency=low
 
   * Initial release
