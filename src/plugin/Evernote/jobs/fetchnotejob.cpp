@@ -21,7 +21,7 @@
 #include "fetchnotejob.h"
 
 FetchNoteJob::FetchNoteJob(const QString &guid, QObject *parent) :
-    EvernoteJob(parent),
+    NotesStoreJob(parent),
     m_guid(guid)
 {
 }
@@ -31,7 +31,7 @@ void FetchNoteJob::startJob()
     client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, true, false, false);
 }
 
-void FetchNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+void FetchNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
     emit resultReady(errorCode, errorMessage, m_result);
 }

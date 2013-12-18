@@ -18,20 +18,22 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#include "deletenotejob.h"
+#include "userstorejob.h"
 
-DeleteNoteJob::DeleteNoteJob(const QString &guid, QObject *parent):
-    NotesStoreJob(parent),
-    m_guid(guid)
+#include "evernoteconnection.h"
+
+UserStoreJob::UserStoreJob(QObject *parent) :
+    EvernoteJob(parent)
 {
 }
 
-void DeleteNoteJob::startJob()
+void UserStoreJob::resetConnection()
 {
-    client()->deleteNote(token().toStdString(), m_guid.toStdString());
+    EvernoteConnection::instance()->m_userStoreHttpClient->close();
+    EvernoteConnection::instance()->m_userStoreHttpClient->open();
 }
 
-void DeleteNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
+evernote::edam::UserStoreClient *UserStoreJob::client() const
 {
-    emit jobDone(errorCode, errorMessage, m_guid);
+    return EvernoteConnection::instance()->m_userstoreClient;
 }

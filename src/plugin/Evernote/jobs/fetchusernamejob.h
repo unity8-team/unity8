@@ -18,20 +18,26 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#include "deletenotejob.h"
+#ifndef FETCHUSERNAMEJOB_H
+#define FETCHUSERNAMEJOB_H
 
-DeleteNoteJob::DeleteNoteJob(const QString &guid, QObject *parent):
-    NotesStoreJob(parent),
-    m_guid(guid)
-{
-}
+#include "userstorejob.h"
 
-void DeleteNoteJob::startJob()
+class FetchUsernameJob : public UserStoreJob
 {
-    client()->deleteNote(token().toStdString(), m_guid.toStdString());
-}
+    Q_OBJECT
+public:
+    explicit FetchUsernameJob(QObject *parent = 0);
 
-void DeleteNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
-{
-    emit jobDone(errorCode, errorMessage, m_guid);
-}
+signals:
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &result);
+
+protected:
+    void startJob();
+    void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
+
+private:
+    QString m_result;
+};
+
+#endif // FETCHUSERNAMEJOB_H

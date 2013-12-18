@@ -23,7 +23,7 @@
 #include <QDebug>
 
 CreateNoteJob::CreateNoteJob(const QString &title, const QString &notebookGuid, const QString &content, QObject *parent) :
-    EvernoteJob(parent),
+    NotesStoreJob(parent),
     m_title(title),
     m_notebookGuid(notebookGuid),
     m_content(content)
@@ -45,7 +45,7 @@ void CreateNoteJob::startJob()
     client()->createNote(m_resultNote, token().toStdString(), input);
 }
 
-void CreateNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+void CreateNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
     emit jobDone(errorCode, errorMessage, m_resultNote);
 }

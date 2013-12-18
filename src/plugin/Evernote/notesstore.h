@@ -1,8 +1,14 @@
 #ifndef NOTESSTORE_H
 #define NOTESSTORE_H
 
+#include "evernoteconnection.h"
+
 // Thrift
+#include <arpa/inet.h> // seems thrift forgot this one
+#include <protocol/TBinaryProtocol.h>
 #include <transport/THttpClient.h>
+#include <transport/TSSLSocket.h>
+#include <Thrift.h>
 
 // Evernote SDK
 #include <NoteStore.h>
@@ -12,8 +18,6 @@
 #include <QObject>
 #include <QHash>
 
-class EvernoteJob;
-
 class Notebook;
 class Note;
 
@@ -22,28 +26,13 @@ using namespace apache::thrift::transport;
 class NotesStore : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
-
-    friend class EvernoteJob;
 
 public:
-    enum ErrorCode {
-        ErrorCodeNoError,
-        ErrorCodeUserException,
-        ErrorCodeSystemException,
-        ErrorCodeNotFoundExcpetion,
-        ErrorCodeConnectionLost
-    };
-
     Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &content);
 
     static NotesStore *instance();
-    static QString errorCodeToString(ErrorCode errorCode);
 
     ~NotesStore();
-
-    QString token() const;
-    void setToken(const QString &token);
 
     QList<Note*> notes() const;
     Note* note(const QString &guid);
@@ -53,6 +42,7 @@ public:
     QList<Notebook*> notebooks() const;
     Notebook* notebook(const QString &guid);
 
+public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString());
     void refreshNoteContent(const QString &guid);
     void refreshNotebooks();
@@ -68,40 +58,19 @@ signals:
     void notebookChanged(const QString &guid);
 
 private slots:
-    void fetchNotesJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
-    void fetchNotebooksJobDone(ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
-    void fetchNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
-    void createNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
-    void saveNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
-    void deleteNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const QString &guid);
-
-    // Use this to enqueue a new job. It will automatically start it if there is no other job pending.
-    void enqueue(EvernoteJob *job);
-    void startJobQueue();
-
-    // You should not use this. It's called by the job queue.
-    // If you have a new job to run, just enqueue it. The queue will process it eventually.
-    void startNextJob();
+    void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
+    void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
+    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
 
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;
 
-    QString m_token;
-
     QHash<QString, Notebook*> m_notebooks;
     QHash<QString, Note*> m_notes;
-
-    // There must be only one job running at a time
-    // Do not start jobs other than with startJobQueue()
-    QList<EvernoteJob*> m_jobQueue;
-    EvernoteJob *m_currentJob;
-
-    // Those two are accessed from the job thread.
-    // Make sure to not access them while any jobs are running
-    // or we need to mutex them.
-    evernote::edam::NoteStoreClient *m_client;
-    boost::shared_ptr<THttpClient> m_httpClient;
 
 };
 

@@ -25,13 +25,14 @@
 #include <QDebug>
 
 FetchNotesJob::FetchNotesJob( const QString &filterNotebookGuid, QObject *parent) :
-    EvernoteJob(parent),
+    NotesStoreJob(parent),
     m_filterNotebookGuid(filterNotebookGuid)
 {
 }
 
 void FetchNotesJob::startJob()
 {
+    qDebug() << "starting fetch notes job";
     // TODO: fix start/end (use smaller chunks and continue fetching if there are more notes available)
     int32_t start = 0;
     int32_t end = 10000;
@@ -49,9 +50,10 @@ void FetchNotesJob::startJob()
     resultSpec.__isset.includeTitle = true;
 
     client()->findNotesMetadata(m_results, token().toStdString(), filter, start, end, resultSpec);
+    qDebug() << "ending fetch notes job";
 }
 
-void FetchNotesJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+void FetchNotesJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
     emit jobDone(errorCode, errorMessage, m_results);
 }

@@ -3,11 +3,6 @@
 
 #include "notesstore.h"
 
-// Evernote SDK
-#include <NoteStore.h>
-#include <NoteStore_constants.h>
-#include <Errors_types.h>
-
 #include <QThread>
 
 /* How to create a new Job type:
@@ -15,7 +10,7 @@
  * - Implement startJob() in which you do the call to evernote.
  *   - No need to catch exceptions, EvernoteJob will deal with those.
  * - Define a jobDone() signal with the result parameters you need.
- *   - Keep the convention of jobDone(NotesStore::ErrorCode errorCode, const QString &message [, ...])
+ *   - Keep the convention of jobDone(EvernoteConnection::ErrorCode errorCode, const QString &message [, ...])
  * - Emit jobDone() in your implementation of emitJobDone().
  *   - NOTE: emitJobDone() might be called with an error even before startJob() is triggered.
  *
@@ -36,10 +31,10 @@ signals:
     void connectionLost(const QString &errorMessage);
 
 protected:
+    virtual void resetConnection() = 0;
     virtual void startJob() = 0;
-    virtual void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage) = 0;
+    virtual void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage) = 0;
 
-    evernote::edam::NoteStoreClient* client();
     QString token();
 
 private:

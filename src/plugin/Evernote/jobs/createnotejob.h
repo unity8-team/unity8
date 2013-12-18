@@ -1,21 +1,20 @@
 #ifndef CREATENOTEJOB_H
 #define CREATENOTEJOB_H
 
-#include "evernotejob.h"
-#include "note.h"
+#include "notesstorejob.h"
 
-class CreateNoteJob : public EvernoteJob
+class CreateNoteJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
     explicit CreateNoteJob(const QString &title, const QString &notebookGuid, const QString &content, QObject *parent = 0);
 
 signals:
-    void jobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, evernote::edam::Note note);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, evernote::edam::Note note);
 
 protected:
     void startJob();
-    void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage);
+    void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
     QString m_title;

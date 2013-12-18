@@ -20,6 +20,7 @@
 
 #include "evernoteplugin.h"
 
+#include "evernoteconnection.h"
 #include "userstore.h"
 #include "notesstore.h"
 #include "notes.h"
@@ -28,16 +29,27 @@
 
 #include <QtQml>
 
+static QObject* userStoreProvider(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine */)
+{
+    return UserStore::instance();
+}
+
 static QObject* notesStoreProvider(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine */)
 {
     return NotesStore::instance();
 }
 
+static QObject* connectionProvider(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine */)
+{
+    return EvernoteConnection::instance();
+}
+
 void FitBitPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<UserStore>("Evernote", 0, 1, "UserStore");
-
+    qmlRegisterSingletonType<UserStore>("Evernote", 0, 1, "UserStore", userStoreProvider);
     qmlRegisterSingletonType<NotesStore>("Evernote", 0, 1, "NotesStore", notesStoreProvider);
+    qmlRegisterSingletonType<EvernoteConnection>("Evernote", 0, 1, "EvernoteConnection", connectionProvider);
+
     qmlRegisterType<Notes>("Evernote", 0, 1, "Notes");
     qmlRegisterType<Notebooks>("Evernote", 0, 1, "Notebooks");
     qmlRegisterUncreatableType<Note>("Evernote", 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
