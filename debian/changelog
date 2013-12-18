@@ -1,5 +1,88 @@
-ubuntu-settings-components (0.1-0ubuntu1) UNRELEASED; urgency=low
+ubuntu-settings-components (0.1+14.04.20131217-0ubuntu1) trusty; urgency=low
 
+  [ Nick Dedekind ]
+  * Fixed visual design of EventMenu. Simplified Checkbox/GroupMessage.
+    (LP: #1237752)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 59
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 17 Dec 2013 12:49:47 +0000
+
+ubuntu-settings-components (0.1+14.04.20131120.1-0ubuntu1) trusty; urgency=low
+
+  [ Robert Bruce Park ]
   * Initial release.
+  * Inline packaging.
 
- -- Robert Bruce Park <robert.park@canonical.com>  Wed, 07 Aug 2013 14:45:26 +0200
+  [ Andrea Cimitan ]
+  * Initial work
+  * Initial CMakeLists.txt
+  * Add basic test for ButtonMenu
+  * Add simple test for MediaPlayerMenu
+  * Added initial preliminar TODO
+  * Added tests for SliderMenu, expose some properties
+  * Removed not used id
+  * Added tests for ProgressBarMenu, exposed properties
+  * Updated TODO
+  * Added tests for MediaPlayerMenu, removed the listview here and used
+    a different approach
+  * Added test for UserSessionMenu
+  * updated todo
+  * Added tests for EventMenu and UserSessionMenu, split EventMenu in
+    single items
+  * Added testcase for TimeZone, split it into single items, use aliases
+    for name / text
+  * Updated TODO
+  * Just some refresh of the calendar review/work, WIP
+  * Simplified code
+  * Some alphabetical ordering
+  * Clamp dates within maximum and minimum
+  * Removed TODO
+  * Added label with month names
+  * Removed property not used
+  * React on currentDate changes
+  * Added empty test file
+  * Add back compressed property
+  * Added tests for Calendar component
+  * Added tests for CalendarMenu
+  * Add TODO
+  * Updated some tests to use _data()
+  * Some changes, renaming and new tests
+  * Fixed other tests...
+  * Some theming capabilities, waiting more support from SDK
+  * Some further tweaks
+  * Minimal changes to custom thindivider visibility
+  * Changed tests for Calendar compressed property
+  * Small fix to thindivider
+  * Move to use listitem.empty
+  * Fix tests
+  * Further changes and support pause for the mediaplayer through
+    playing bool property
+  * Some changes following nick's review
+  * Use ListModel for the calendar model
+  * Some refactoring of the calendar...
+  * Some renamings in code
+  * Latest fixes
+  * removed now useless properties
+  * Updated TODO
+  * Merged branch for removing itemstyle and fixed the calendar
+  * Change the way the model works...
+
+  [ Nick Dedekind ]
+  * Reworked directory, qml and resources into a more workable structure
+    for release.
+  * Copied indicator menu items from unity8.
+  * Changes to indicator menus required to sit into settings.
+  * Added tests for indicator menu components.
+  * Fixed test dependencies.
+  * Fixed tests broken by daylight savings time.
+
+  [ Łukasz 'sil2100' Zemczak ]
+  * Small changes to packaging.
+  * The newly added tests are copyrighted under GPL-3, not LGPL-3.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 57
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 20 Nov 2013 14:57:11 +0000
