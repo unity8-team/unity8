@@ -77,12 +77,12 @@ NotesStore::NotesStore(QObject *parent) :
         }
 
         boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
-        boost::shared_ptr<THttpClient> userStoreHttpClient (new THttpClient(bufferedTransport,
+        m_httpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
                                                                             EVERNOTE_HOST.toStdString(),
                                                                             EDAM_USER_STORE_PATH.toStdString()));
-        userStoreHttpClient->open();
+        m_httpClient->open();
 
-        boost::shared_ptr<TProtocol> iprot(new TBinaryProtocol(userStoreHttpClient));
+        boost::shared_ptr<TProtocol> iprot(new TBinaryProtocol(m_httpClient));
         m_client = new evernote::edam::NoteStoreClient(iprot);
 
         qDebug() << "NoteStore client created.";
@@ -153,27 +153,6 @@ Note *NotesStore::note(const QString &guid)
     return m_notes.value(guid);
 }
 
-void NotesStore::saveNote(const QString &guid)
-{
-    Note *note = m_notes.value(guid);
-
-    QString enml = Html2EnmlConverter::html2enml(note->content());
-    note->setContent(enml);
-
-    SaveNoteJob *job = new SaveNoteJob(note, this);
-    connect(job, &SaveNoteJob::resultReady, this, &NotesStore::saveNoteJobDone);
-    m_jobQueue.append(job);
-    startJobQueue();
-}
-
-void NotesStore::deleteNote(const QString &guid)
-{
-    DeleteNoteJob *job = new DeleteNoteJob(guid, this);
-    connect(job, &DeleteNoteJob::resultReady, this, &NotesStore::deleteNoteJobDone);
-    m_jobQueue.append(job);
-    startJobQueue();
-}
-
 QList<Notebook *> NotesStore::notebooks() const
 {
     return m_notebooks.values();
@@ -182,6 +161,12 @@ QList<Notebook *> NotesStore::notebooks() const
 Notebook *NotesStore::notebook(const QString &guid)
 {
     return m_notebooks.value(guid);
+}
+
+void NotesStore::enqueue(EvernoteJob *job)
+{
+    m_jobQueue.append(job);
+    startJobQueue();
 }
 
 void NotesStore::startJobQueue()
@@ -205,23 +190,15 @@ void NotesStore::startNextJob()
 
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
 {
-    if (m_token.isEmpty()) {
-        qWarning() << "No token set. Cannot fetch notes.";
-        return;
-    }
-
     FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
-    connect(job, &FetchNotesJob::resultReady, this, &NotesStore::fetchNotesJobDone);
-
-    m_jobQueue.append(job);
-    startJobQueue();
+    connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
+    enqueue(job);
 }
 
-void NotesStore::fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::NotesMetadataList &results)
+void NotesStore::fetchNotesJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results)
 {
     if (errorCode != ErrorCodeNoError) {
-        qWarning() << "Failed to fetch notes list:" << errorCodeToString(errorCode);
-        startNextJob();
+        qWarning() << "Failed to fetch notes list:" << errorMessage;
         return;
     }
 
@@ -240,29 +217,19 @@ void NotesStore::fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::No
             emit noteAdded(note->guid());
         }
     }
-
-    startNextJob();
 }
 
 void NotesStore::refreshNoteContent(const QString &guid)
 {
-    if (m_token.isEmpty()) {
-        qWarning() << "No token set. Cannot fetch note.";
-        return;
-    }
-
     FetchNoteJob *job = new FetchNoteJob(guid, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
-    m_jobQueue.append(job);
-
-    startJobQueue();
+    enqueue(job);
 }
 
-void NotesStore::fetchNoteJobDone(ErrorCode errorCode, const evernote::edam::Note &result)
+void NotesStore::fetchNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)
 {
     if (errorCode != ErrorCodeNoError) {
-        qWarning() << "Error fetching note:" << errorCode;
-        startNextJob();
+        qWarning() << "Error fetching note:" << errorMessage;
         return;
     }
 
@@ -271,29 +238,19 @@ void NotesStore::fetchNoteJobDone(ErrorCode errorCode, const evernote::edam::Not
     note->setTitle(QString::fromStdString(result.title));
     note->setContent(QString::fromStdString(result.content));
     emit noteChanged(note->guid());
-
-    startNextJob();
 }
 
 void NotesStore::refreshNotebooks()
 {
-    if (m_token.isEmpty()) {
-        qWarning() << "No token set. Cannot refresh notebooks.";
-        return;
-    }
-
     FetchNotebooksJob *job = new FetchNotebooksJob();
-    connect(job, &FetchNotebooksJob::resultReady, this, &NotesStore::fetchNotebooksJobDone);
-
-    m_jobQueue.append(job);
-    startJobQueue();
+    connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
+    enqueue(job);
 }
 
-void NotesStore::fetchNotebooksJobDone(ErrorCode errorCode, const std::vector<evernote::edam::Notebook> &results)
+void NotesStore::fetchNotebooksJobDone(ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results)
 {
     if (errorCode != ErrorCodeNoError) {
-        qWarning() << "Error fetching notebooks:" << errorCodeToString(errorCode);
-        startNextJob();
+        qWarning() << "Error fetching notebooks:" << errorMessage;
         return;
     }
 
@@ -312,51 +269,72 @@ void NotesStore::fetchNotebooksJobDone(ErrorCode errorCode, const std::vector<ev
             qDebug() << "got new notebook" << notebook->guid();
         }
     }
-
-    startNextJob();
 }
 
 void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &content)
 {
-    Note *note = new Note();
-    note->setTitle(title);
-    note->setNotebookGuid(notebookGuid);
-    note->setContent(content);
-    CreateNoteJob *job = new CreateNoteJob(note);
-    connect(job, &CreateNoteJob::resultReady, this, &NotesStore::createNoteJobDone);
-
-    m_jobQueue.append(job);
-    startJobQueue();
+    CreateNoteJob *job = new CreateNoteJob(title, notebookGuid, content);
+    connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
+    enqueue(job);
 }
 
-void NotesStore::createNoteJobDone(NotesStore::ErrorCode errorCode, Note *note)
+void NotesStore::createNoteJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)
 {
     if (errorCode != ErrorCodeNoError) {
-        qWarning() << "Error creating note:" << errorCodeToString(errorCode);
-        delete note;
-        startNextJob();
+        qWarning() << "Error creating note:" << errorMessage;
         return;
     }
 
+    Note *note = new Note(QString::fromStdString(result.guid));
+    note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+    note->setTitle(QString::fromStdString(result.title));
+    note->setContent(QString::fromStdString(result.content));
+
     m_notes.insert(note->guid(), note);
     noteAdded(note->guid());
-    startNextJob();
 }
 
-void NotesStore::saveNoteJobDone(NotesStore::ErrorCode errorCode, Note *note)
+void NotesStore::saveNote(const QString &guid)
 {
-    startNextJob();
+    Note *note = m_notes.value(guid);
+
+    QString enml = Html2EnmlConverter::html2enml(note->content());
+    note->setContent(enml);
+
+    SaveNoteJob *job = new SaveNoteJob(note, this);
+    connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
+    enqueue(job);
 }
 
-void NotesStore::deleteNoteJobDone(NotesStore::ErrorCode errorCode, const QString &guid)
+void NotesStore::saveNoteJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)
 {
     if (errorCode != ErrorCodeNoError) {
-        qWarning() << "Cannot delete note:" << errorCodeToString(errorCode);
-        startNextJob();
+        qWarning() << "error saving note" << errorMessage;
+        return;
+    }
+
+    Note *note = m_notes.value(QString::fromStdString(result.guid));
+    if (note) {
+        note->setTitle(QString::fromStdString(result.title));
+        note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+
+        emit noteChanged(note->guid());
+    }
+}
+
+void NotesStore::deleteNote(const QString &guid)
+{
+    DeleteNoteJob *job = new DeleteNoteJob(guid, this);
+    connect(job, &DeleteNoteJob::jobDone, this, &NotesStore::deleteNoteJobDone);
+    enqueue(job);
+}
+
+void NotesStore::deleteNoteJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const QString &guid)
+{
+    if (errorCode != ErrorCodeNoError) {
+        qWarning() << "Cannot delete note:" << errorMessage;
         return;
     }
     emit noteRemoved(guid);
     m_notes.take(guid)->deleteLater();
-    startNextJob();
 }
-

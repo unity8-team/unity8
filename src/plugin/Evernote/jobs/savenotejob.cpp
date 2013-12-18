@@ -25,36 +25,30 @@
 
 SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
     EvernoteJob(parent),
-    m_note(note)
+    m_guid(note->guid()),
+    m_title(note->title()),
+    m_notebookGuid(note->notebookGuid()),
+    m_content(note->content())
 {
 }
 
-void SaveNoteJob::run()
+void SaveNoteJob::startJob()
 {
-    NotesStore::ErrorCode errorCode = NotesStore::ErrorCodeNoError;
-    try {
-        evernote::edam::Note note;
-        note.guid = m_note->guid().toStdString();
-        note.__isset.guid = true;
-        note.title = m_note->title().toStdString();
-        note.__isset.title = true;
-        note.notebookGuid = m_note->notebookGuid().toStdString();
-        note.__isset.notebookGuid = true;
-        note.content = m_note->content().toStdString();
-        note.__isset.content = true;
-        note.contentLength = m_note->content().length();
+    evernote::edam::Note note;
+    note.guid = m_guid.toStdString();
+    note.__isset.guid = true;
+    note.title = m_title.toStdString();
+    note.__isset.title = true;
+    note.notebookGuid = m_notebookGuid.toStdString();
+    note.__isset.notebookGuid = true;
+    note.content = m_content.toStdString();
+    note.__isset.content = true;
+    note.contentLength = m_content.length();
 
-        client()->updateNote(note, token().toStdString(), note);
+    client()->updateNote(m_note, token().toStdString(), note);
+}
 
-    } catch (evernote::edam::EDAMUserException e) {
-        errorCode = NotesStore::ErrorCodeUserException;
-        qDebug() << QString::fromStdString(e.parameter);
-    } catch (evernote::edam::EDAMSystemException) {
-        errorCode = NotesStore::ErrorCodeSystemException;
-    } catch (...) {
-        catchTransportException();
-        errorCode = NotesStore::ErrorCodeConnectionLost;
-    }
-
-    emit resultReady(errorCode, m_note);
+void SaveNoteJob::emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage)
+{
+    emit jobDone(errorCode, errorMessage, m_note);
 }

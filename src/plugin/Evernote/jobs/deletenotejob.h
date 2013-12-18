@@ -9,10 +9,12 @@ class DeleteNoteJob : public EvernoteJob
 public:
     DeleteNoteJob(const QString &guid, QObject *parent = 0);
 
-    void run();
-
 signals:
-    void resultReady(NotesStore::ErrorCode errorCode, const QString &guid);
+    void jobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
+
+protected:
+    void startJob();
+    void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage);
 
 private:
     QString m_guid;

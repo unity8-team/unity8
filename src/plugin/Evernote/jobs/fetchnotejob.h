@@ -9,14 +9,20 @@ class FetchNoteJob : public EvernoteJob
 public:
     explicit FetchNoteJob(const QString &guid, QObject *parent = 0);
 
-    void run();
 signals:
-    void resultReady(NotesStore::ErrorCode error, const evernote::edam::Note &note);
+    void resultReady(NotesStore::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note);
+
+protected:
+    void startJob();
+    void emitJobDone(NotesStore::ErrorCode errorCode, const QString &errorMessage);
 
 private:
     evernote::edam::NoteStoreClient *m_client;
     QString m_token;
     QString m_guid;
+
+    evernote::edam::Note m_result;
+
 };
 
 #endif // FETCHNOTEJOB_H

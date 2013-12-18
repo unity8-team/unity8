@@ -1,6 +1,9 @@
 #ifndef NOTESSTORE_H
 #define NOTESSTORE_H
 
+// Thrift
+#include <transport/THttpClient.h>
+
 // Evernote SDK
 #include <NoteStore.h>
 #include <NoteStore_constants.h>
@@ -13,6 +16,8 @@ class EvernoteJob;
 
 class Notebook;
 class Note;
+
+using namespace apache::thrift::transport;
 
 class NotesStore : public QObject
 {
@@ -63,14 +68,19 @@ signals:
     void notebookChanged(const QString &guid);
 
 private slots:
-    void fetchNotesJobDone(ErrorCode errorCode, const evernote::edam::NotesMetadataList &results);
-    void fetchNotebooksJobDone(ErrorCode errorCode, const std::vector<evernote::edam::Notebook> &results);
-    void fetchNoteJobDone(ErrorCode errorCode, const evernote::edam::Note &result);
-    void createNoteJobDone(ErrorCode errorCode, Note *note);
-    void saveNoteJobDone(ErrorCode errorCode, Note *note);
-    void deleteNoteJobDone(ErrorCode errorCode, const QString &guid);
+    void fetchNotesJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
+    void fetchNotebooksJobDone(ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
+    void fetchNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void createNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void saveNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void deleteNoteJobDone(ErrorCode errorCode, const QString &errorMessage, const QString &guid);
 
+    // Use this to enqueue a new job. It will automatically start it if there is no other job pending.
+    void enqueue(EvernoteJob *job);
     void startJobQueue();
+
+    // You should not use this. It's called by the job queue.
+    // If you have a new job to run, just enqueue it. The queue will process it eventually.
     void startNextJob();
 
 private:
@@ -78,13 +88,21 @@ private:
     static NotesStore *s_instance;
 
     QString m_token;
-    evernote::edam::NoteStoreClient *m_client;
 
     QHash<QString, Notebook*> m_notebooks;
     QHash<QString, Note*> m_notes;
 
+    // There must be only one job running at a time
+    // Do not start jobs other than with startJobQueue()
     QList<EvernoteJob*> m_jobQueue;
-    QThread *m_currentJob;
+    EvernoteJob *m_currentJob;
+
+    // Those two are accessed from the job thread.
+    // Make sure to not access them while any jobs are running
+    // or we need to mutex them.
+    evernote::edam::NoteStoreClient *m_client;
+    boost::shared_ptr<THttpClient> m_httpClient;
+
 };
 
 #endif // NOTESSTORE_H
