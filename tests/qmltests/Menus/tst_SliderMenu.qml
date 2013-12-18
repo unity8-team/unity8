@@ -61,7 +61,10 @@ Item {
         when: windowShown
 
         function init() {
+            sliderMenu2.minimumValue = 20;
+            sliderMenu2.maximumValue = 80;
             sliderMenu.value = 0;
+            sliderMenu2.value = 20;
         }
 
         function test_minimumValue() {
@@ -96,6 +99,20 @@ Item {
 
             sliderMenu.value = 20;
             compare(slider.value, 20, "Menu value not updating slider value");
+        }
+
+        // tests that changing the Minimum value will update the value if originally set lower
+        function test_updateMinimumValue() {
+            sliderMenu2.value = 0;
+            sliderMenu2.minimumValue = 0;
+            compare(sliderMenu2.value, 0, "Minimum value should update the value if originally set lower");
+        }
+
+        // tests that changing the Minimum value will update the value if originally set lower
+        function test_updateMaximumValue() {
+            sliderMenu2.value = 100;
+            sliderMenu2.maximumValue = 100;
+            compare(sliderMenu2.value, 100, "Maximum value should update the value if originally set lower");
         }
     }
 }

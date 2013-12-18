@@ -35,12 +35,16 @@ ListItem.Empty {
 
     property QtObject d: QtObject {
         property bool enableValueConnection: true
+        property double originalValue: 0.0
 
         property Connections connections: Connections {
             target: d.enableValueConnection ? menu : null
             onValueChanged: {
                 var oldEnable = d.enableValueConnection
+                if (!oldEnable) return;
                 d.enableValueConnection = false;
+
+                d.originalValue = menu.value;
 
                 // Can't rely on binding. Slider value is assigned by user slide.
                 if (menu.value < minimumValue) {
@@ -55,6 +59,10 @@ ListItem.Empty {
 
                 d.enableValueConnection = oldEnable;
             }
+
+            // need to re-assert the reported value to the requested value.
+            onMinimumValueChanged: menu.value = d.originalValue;
+            onMaximumValueChanged: menu.value = d.originalValue;
         }
     }
 
@@ -127,9 +135,11 @@ ListItem.Empty {
                     target: d.enableValueConnection ? slider : null
                     onValueChanged: {
                         var oldEnable = d.enableValueConnection;
+                        if (!oldEnable) return;
                         d.enableValueConnection = false;
 
                         menu.value = slider.value;
+                        d.originalValue = menu.value;
                         menu.updated(slider.value);
 
                         d.enableValueConnection = oldEnable;
