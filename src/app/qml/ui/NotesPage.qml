@@ -28,8 +28,7 @@ Page {
 
     onActiveChanged: {
         if (active) {
-            print("refreshing notes")
-            notes.refresh();
+            NotesStore.refreshNotes();
         }
     }
 
@@ -59,7 +58,7 @@ Page {
             text: title
 
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: notes.note(guid)})
+                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
             }
 
             onPressAndHold: {

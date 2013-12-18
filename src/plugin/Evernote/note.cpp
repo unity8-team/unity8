@@ -22,23 +22,18 @@
 
 #include "notesstore.h"
 
-Note::Note(const QString &guid, QObject *parent) :
+#include <QDateTime>
+
+Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
-    m_guid(guid)
+    m_guid(guid),
+    m_created(created)
 {
 }
 
 QString Note::guid() const
 {
     return m_guid;
-}
-
-void Note::setGuid(const QString &guid)
-{
-    if (m_guid != guid) {
-        m_guid = guid;
-        emit guidChanged();
-    }
 }
 
 QString Note::notebookGuid() const
@@ -52,6 +47,11 @@ void Note::setNotebookGuid(const QString &notebookGuid)
         m_notebookGuid = notebookGuid;
         emit notebookGuidChanged();
     }
+}
+
+QDateTime Note::created() const
+{
+    return m_created;
 }
 
 QString Note::title() const
@@ -78,6 +78,86 @@ void Note::setContent(const QString &content)
         m_content = content;
         emit contentChanged();
     }
+}
+
+bool Note::reminder() const
+{
+    return m_reminderOrder > 0;
+}
+
+void Note::setReminder(bool reminder)
+{
+    if (reminder && m_reminderOrder == 0) {
+        m_reminderOrder = QDateTime::currentMSecsSinceEpoch();
+        emit reminderChanged();
+    } else if (!reminder && m_reminderOrder > 0) {
+        m_reminderOrder = 0;
+        emit reminderChanged();
+    }
+}
+
+qint64 Note::reminderOrder() const
+{
+    return m_reminderOrder;
+}
+
+void Note::setReminderOrder(qint64 reminderOrder)
+{
+    if (m_reminderOrder != reminderOrder) {
+        m_reminderOrder = reminderOrder;
+        emit reminderChanged();
+    }
+}
+
+QDateTime Note::reminderTime() const
+{
+    return m_reminderTime;
+}
+
+void Note::setReminderTime(const QDateTime &reminderTime)
+{
+    if (m_reminderTime != reminderTime) {
+        m_reminderTime = reminderTime;
+        emit reminderTimeChanged();
+    }
+}
+
+bool Note::reminderDone() const
+{
+    return !m_reminderDoneTime.isNull();
+}
+
+void Note::setReminderDone(bool reminderDone)
+{
+    if (reminderDone && m_reminderDoneTime.isNull()) {
+        m_reminderDoneTime = QDateTime::currentDateTime();
+        emit reminderDoneChanged();
+    }
+}
+
+QDateTime Note::reminderDoneTime() const
+{
+    return m_reminderDoneTime;
+}
+
+void Note::setReminderDoneTime(const QDateTime &reminderDoneTime)
+{
+    if (m_reminderDoneTime != reminderDoneTime) {
+        m_reminderDoneTime = reminderDoneTime;
+        emit reminderDoneChanged();
+    }
+}
+
+Note *Note::clone()
+{
+    Note *note = new Note(m_guid, m_created);
+    note->setNotebookGuid(m_notebookGuid);
+    note->setTitle(m_title);
+    note->setContent(m_content);
+    note->setReminderOrder(m_reminderOrder);
+    note->setReminderTime(m_reminderTime);
+    note->setReminderDoneTime(m_reminderDoneTime);
+    return note;
 }
 
 void Note::save()

@@ -22,6 +22,9 @@
 
 #include "notesstore.h"
 
+// evernote sdk
+#include "Limits_constants.h"
+
 #include <QDebug>
 
 FetchNotesJob::FetchNotesJob( const QString &filterNotebookGuid, QObject *parent) :
@@ -32,10 +35,10 @@ FetchNotesJob::FetchNotesJob( const QString &filterNotebookGuid, QObject *parent
 
 void FetchNotesJob::startJob()
 {
-    qDebug() << "starting fetch notes job";
     // TODO: fix start/end (use smaller chunks and continue fetching if there are more notes available)
     int32_t start = 0;
-    int32_t end = 10000;
+    evernote::limits::LimitsConstants limits;
+    int32_t end = limits.EDAM_USER_NOTES_MAX;
 
     // Prepare filter
     evernote::edam::NoteFilter filter;
@@ -44,13 +47,20 @@ void FetchNotesJob::startJob()
 
     // Prepare ResultSpec
     evernote::edam::NotesMetadataResultSpec resultSpec;
+
     resultSpec.includeNotebookGuid = true;
     resultSpec.__isset.includeNotebookGuid = true;
+
+    resultSpec.includeCreated = true;
+    resultSpec.__isset.includeCreated = true;
+
     resultSpec.includeTitle = true;
     resultSpec.__isset.includeTitle = true;
 
+    resultSpec.includeAttributes = true;
+    resultSpec.__isset.includeAttributes = true;
+
     client()->findNotesMetadata(m_results, token().toStdString(), filter, start, end, resultSpec);
-    qDebug() << "ending fetch notes job";
 }
 
 void FetchNotesJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
