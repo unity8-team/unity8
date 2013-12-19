@@ -98,7 +98,8 @@ public:
 
     QStringList resources() const;
     QImage resource(const QString &hash);
-    void addResource(const QString &hash, const QImage &image, const QString &type);
+    QString resourceName(const QString &hash);
+    void addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image = QImage());
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
 
@@ -129,6 +130,7 @@ private:
     bool m_isSearchResult;
     QHash<QString, QImage> m_resources;
     QHash<QString, QString> m_resourceTypes;
+    QHash<QString, QString> m_resourceNames;
 };
 
 #endif // NOTE_H

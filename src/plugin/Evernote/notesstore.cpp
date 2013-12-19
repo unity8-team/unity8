@@ -228,11 +228,18 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
     for (int i = 0; i < result.resources.size(); ++i) {
+
         evernote::edam::Resource resource = result.resources.at(i);
-        if (QString::fromStdString(resource.mime).startsWith("image/")) {
+
+        QString hash = QByteArray::fromRawData(resource.data.bodyHash.c_str(), resource.data.bodyHash.length()).toHex();
+        QString fileName = QString::fromStdString(resource.attributes.fileName);
+        QString mime = QString::fromStdString(resource.mime);
+
+        if (mime.startsWith("image/")) {
             QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
-            QString hash = QByteArray::fromRawData(resource.data.bodyHash.c_str(), resource.data.bodyHash.length()).toHex();
-            note->addResource(hash, image, QString::fromStdString(resource.mime));
+            note->addResource(hash, fileName, mime, image);
+        } else {
+            note->addResource(hash, fileName, mime);
         }
     }
 

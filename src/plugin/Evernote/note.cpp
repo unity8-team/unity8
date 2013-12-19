@@ -208,11 +208,19 @@ QImage Note::resource(const QString &hash)
     return m_resources.value(hash);
 }
 
-void Note::addResource(const QString &hash, const QImage &image, const QString &type)
+QString Note::resourceName(const QString &hash)
+{
+    return m_resourceNames.value(hash);
+}
+
+void Note::addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image)
 {
     image.save(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last());
-    m_resources.insert(hash, image);
+    if (!image.isNull()) {
+        m_resources.insert(hash, image);
+    }
     m_resourceTypes.insert(hash, type);
+    m_resourceNames.insert(hash, fileName);
 }
 
 void Note::markTodo(const QString &todoId, bool checked)

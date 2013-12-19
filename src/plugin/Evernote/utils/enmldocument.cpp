@@ -19,6 +19,8 @@
  */
 
 #include "enmldocument.h"
+#include "notesstore.h"
+#include "note.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -78,6 +80,10 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
     QString html;
     QXmlStreamWriter writer(&html);
     writer.writeStartDocument();
+    writer.writeStartElement("meta");
+    writer.writeAttribute("name", "viewport");
+    writer.writeAttribute("content", "width=640px");
+    writer.writeEndElement();
 
     // input
     QXmlStreamReader reader(m_enml);
@@ -122,22 +128,49 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
             }
 
             // Convert images
-            // TODO: what to do with music files etc?
             if (reader.name() == "en-media") {
-                writer.writeStartElement("img");
+                QString mediaType = reader.attributes().value("type").toString();
+                QString hash = reader.attributes().value("hash").toString();
 
-                if (type == TypeRichText) {
-                    QUrl url("image://resource/" + reader.attributes().value("type").toString());
-                    QUrlQuery arguments;
-                    arguments.addQueryItem("noteGuid", noteGuid);
-                    arguments.addQueryItem("hash", reader.attributes().value("hash").toString());
-                    url.setQuery(arguments);
-                    writer.writeAttribute("src", url.toString());
-                } else if (type  == TypeHtml) {
-                    QString hash = reader.attributes().value("hash").toString();
-                    QString type = reader.attributes().value("type").toString();
-                    QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last();
-                    writer.writeAttribute("src", imagePath);
+                writer.writeStartElement("img");
+                if (mediaType.startsWith("image")) {
+                    if (type == TypeRichText) {
+                        QUrl url("image://resource/" + mediaType);
+                        QUrlQuery arguments;
+                        arguments.addQueryItem("noteGuid", noteGuid);
+                        arguments.addQueryItem("hash", hash);
+                        url.setQuery(arguments);
+                        writer.writeAttribute("src", url.toString());
+                    } else if (type  == TypeHtml) {
+                        QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + mediaType.split('/').last();
+                        writer.writeAttribute("src", imagePath);
+                    }
+                } else if (mediaType.startsWith("audio")) {
+                    if (type == TypeRichText) {
+                        QUrl url("image://resource/" + mediaType);
+                        QUrlQuery arguments;
+                        arguments.addQueryItem("noteGuid", noteGuid);
+                        arguments.addQueryItem("hash", hash);
+                        url.setQuery(arguments);
+                        writer.writeAttribute("src", url.toString());
+                    } else if (type == TypeHtml) {
+                        QString imagePath = "file:///usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg";
+                        writer.writeAttribute("src", imagePath);
+                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resourceName(hash));
+                    }
+                } else {
+                    if (type == TypeRichText) {
+                        QUrl url("image://resource/" + mediaType);
+                        QUrlQuery arguments;
+                        arguments.addQueryItem("noteGuid", noteGuid);
+                        arguments.addQueryItem("hash", hash);
+                        url.setQuery(arguments);
+                        writer.writeAttribute("src", url.toString());
+                    } else if (type == TypeHtml) {
+                        QString imagePath = "file:///usr/share/icons/ubuntu-mobile/actions/scalable/help.svg";
+                        writer.writeAttribute("src", imagePath);
+                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resourceName(hash));
+                    }
                 }
             }
 
