@@ -37,3 +37,8 @@ class MainView(toolkit_emulators.MainView):
     def get_evernote_account(self):
         return self.wait_select_single(
             "Standard", objectName="EvernoteAccount")
+
+    def get_accountselectorpage(self):
+        return self.wait_select_single(
+            "Page", objectName="Accountselectorpage")
+

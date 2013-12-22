@@ -29,5 +29,14 @@ class TestMainWindow(RemindersAppTestCase):
         self.assertThat(self.main_view.visible, Eventually(Equals(True)))
 
     def test_logon_to_Evernote(self):
+        # Click on existing Evernote account
+        # (the account must have be added before running tests)
         Evernoteaccount = self.main_view.get_evernote_account()
+        accountselectorPage = self.main_view.get_accountselectorpage()
+        self.assertThat(accountselectorPage.visible, Eventually(Equals(True)))
+
         self.pointing_device.click_object(Evernoteaccount)
+
+        # verify we are logged on
+        notesTab = self.main_view.switch_to_tab("NotesTab")
+        self.assertThat(notesTab.visible, Eventually(Equals(True)))

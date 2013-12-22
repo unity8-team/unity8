@@ -24,6 +24,7 @@ import Evernote 0.1
 
 Page {
     id: root
+    objectName: "Accountselectorpage"
     title: "Select Evernote account"
 
     AccountServiceModel {

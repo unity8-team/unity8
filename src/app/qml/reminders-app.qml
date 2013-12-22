@@ -69,6 +69,7 @@ MainView {
 
             Tab {
                 title: i18n.tr("Notes")
+                objectName: "NotesTab"
                 page: NotesPage {
                     id: notesPage
                 }
