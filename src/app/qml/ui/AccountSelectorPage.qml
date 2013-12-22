@@ -41,6 +41,7 @@ Page {
             height: units.gu(10)
             model: accounts
             delegate: Standard {
+                objectName: "EvernoteAccount"
                 text: displayName
 
                 // FIXME: remove this Item wrapper once Ubuntu ListItems are fixed to hold non-visual items
