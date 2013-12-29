@@ -21,8 +21,10 @@
 #include "note.h"
 
 #include "notesstore.h"
+#include "utils/html2enmlconverter.h"
 
 #include <QDateTime>
+#include <QDebug>
 
 Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
@@ -77,8 +79,15 @@ void Note::setContent(const QString &content)
 {
     if (m_content != content) {
         m_content = content;
+        m_plaintextContent = Html2EnmlConverter::enml2plaintext(content);
+        qDebug() << "plaintext content is" << m_plaintextContent;
         emit contentChanged();
     }
+}
+
+QString Note::plaintextContent() const
+{
+    return m_plaintextContent;
 }
 
 bool Note::reminder() const

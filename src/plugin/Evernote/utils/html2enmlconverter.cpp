@@ -102,3 +102,25 @@ QString Html2EnmlConverter::html2enml(const QString &html)
 
     return evml;
 }
+
+QString Html2EnmlConverter::enml2plaintext(const QString &enml)
+{
+    // output
+    QString plaintext;
+
+    // input
+    QXmlStreamReader reader(enml);
+
+    while (!reader.atEnd() && !reader.hasError()) {
+        QXmlStreamReader::TokenType token = reader.readNext();
+
+        // Write all normal text inside <body> </body> to output
+        if (token == QXmlStreamReader::Characters) {
+            plaintext.append(reader.text().toString());
+            plaintext.append(' ');
+        }
+    }
+
+    plaintext.remove('\n');
+    return plaintext;
+}

@@ -18,34 +18,39 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Evernote 0.1
+import Ubuntu.Components.ListItems 0.1
 
-Page {
-    title: note.title
-    property var note
+Empty {
+    id: root
+    height: units.gu(9)
 
-    Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
+    property string title
+    property date creationDate
+    property string content
 
     Column {
-        anchors.fill: parent
+        id: contentColumn
         spacing: units.gu(1)
-        Button {
-            width: parent.width
-            text: "save"
-            onClicked: {
-                note.content = noteTextArea.text
-                note.save();
-            }
+        anchors {
+            top: parent.top
+            topMargin: units.gu(1)
+            left: parent.left
+            leftMargin: units.gu(2)
+            right: parent.right
+            rightMargin: units.gu(2)
         }
-
-        TextArea {
-            id: noteTextArea
+        Label {
             anchors { left: parent.left; right: parent.right }
-            height: parent.height - y
-
-            textFormat: TextEdit.RichText
-            text: note.content
+            text: root.title
+            font.bold: true
+            elide: Text.ElideRight
+        }
+        Label {
+            anchors { left: parent.left; right: parent.right }
+            text: "<font color=\"#dd4814\">"+ Qt.formatDate(root.creationDate) + "</font>  " + root.content
+            wrapMode: Text.WordWrap
+            textFormat: Text.StyledText
+            maximumLineCount: 2
         }
     }
 }
-

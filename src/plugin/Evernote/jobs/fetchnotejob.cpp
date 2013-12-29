@@ -28,7 +28,7 @@ FetchNoteJob::FetchNoteJob(const QString &guid, QObject *parent) :
 
 void FetchNoteJob::startJob()
 {
-    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, true, false, false);
+    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, false, false, false);
 }
 
 void FetchNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
