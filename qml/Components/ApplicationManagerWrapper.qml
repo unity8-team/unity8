@@ -124,6 +124,8 @@ Item {
 
     function unfocusCurrentApplication() {
         ApplicationManager.unfocusCurrentApplication();
+        mainStageFocusedApplication = null;
+        sideStageFocusedApplication = null;
     }
 
     function moveRunningApplicationStackPosition(from, to, stage) {
