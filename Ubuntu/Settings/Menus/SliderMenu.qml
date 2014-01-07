@@ -40,13 +40,9 @@ ListItem.Empty {
         property Connections connections: Connections {
             target: menu
             onValueChanged: {
-                var oldEnable = d.enableValueConnection
-                if (!oldEnable) return;
-                d.enableValueConnection = false;
+                if (!d.enableValueConnection) return;
 
                 d.originalValue = menu.value;
-
-                d.enableValueConnection = oldEnable;
 
                 d.checkValueMinMax();
             }
@@ -68,10 +64,19 @@ ListItem.Empty {
             }
         }
 
-        function checkValueMinMax() {
-            var oldEnable = d.enableValueConnection
-            if (!oldEnable) return;
+        function lockValue() {
+            if (!d.enableValueConnection) return false;
             d.enableValueConnection = false;
+            return true;
+        }
+
+        function unlockValue(oldValue) {
+            d.enableValueConnection = oldValue;
+        }
+
+        function checkValueMinMax() {
+            var oldEnable = lockValue();
+            if (!oldEnable) return;
 
             // Can't rely on binding. Slider value is assigned by user slide.
             if (menu.value < minimumValue) {
@@ -84,7 +89,7 @@ ListItem.Empty {
                 slider.value = menu.value;
             }
 
-            d.enableValueConnection = oldEnable;
+            unlockValue(oldEnable);
         }
     }
 
@@ -156,15 +161,14 @@ ListItem.Empty {
                 Connections {
                     target: slider
                     onValueChanged: {
-                        var oldEnable = d.enableValueConnection;
+                        var oldEnable = d.lockValue();
                         if (!oldEnable) return;
-                        d.enableValueConnection = false;
 
                         menu.value = slider.value;
                         d.originalValue = menu.value;
                         menu.updated(slider.value);
 
-                        d.enableValueConnection = oldEnable;
+                        d.unlockValue(oldEnable);
                     }
                 }
             }
