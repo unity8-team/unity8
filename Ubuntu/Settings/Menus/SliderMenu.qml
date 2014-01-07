@@ -38,7 +38,7 @@ ListItem.Empty {
         property double originalValue: 0.0
 
         property Connections connections: Connections {
-            target: d.enableValueConnection ? menu : null
+            target: menu
             onValueChanged: {
                 var oldEnable = d.enableValueConnection
                 if (!oldEnable) return;
@@ -46,23 +46,45 @@ ListItem.Empty {
 
                 d.originalValue = menu.value;
 
-                // Can't rely on binding. Slider value is assigned by user slide.
-                if (menu.value < minimumValue) {
-                    slider.value = minimumValue;
-                    menu.value = minimumValue;
-                } else if (menu.value > maximumValue) {
-                    slider.value = maximumValue;
-                    menu.value = maximumValue;
-                } else {
-                    slider.value = menu.value;
-                }
-
                 d.enableValueConnection = oldEnable;
+
+                d.checkValueMinMax();
             }
 
             // need to re-assert the reported value to the requested value.
-            onMinimumValueChanged: menu.value = d.originalValue;
-            onMaximumValueChanged: menu.value = d.originalValue;
+            onMinimumValueChanged: {
+                if (menu.value !== d.originalValue) {
+                    menu.value = d.originalValue;
+                } else {
+                    d.checkValueMinMax();
+                }
+            }
+            onMaximumValueChanged: {
+                if (menu.value !== d.originalValue) {
+                    menu.value = d.originalValue;
+                } else {
+                    d.checkValueMinMax();
+                }
+            }
+        }
+
+        function checkValueMinMax() {
+            var oldEnable = d.enableValueConnection
+            if (!oldEnable) return;
+            d.enableValueConnection = false;
+
+            // Can't rely on binding. Slider value is assigned by user slide.
+            if (menu.value < minimumValue) {
+                slider.value = minimumValue;
+                menu.value = minimumValue;
+            } else if (menu.value > maximumValue) {
+                slider.value = maximumValue;
+                menu.value = maximumValue;
+            } else if (slider.value != menu.value) {
+                slider.value = menu.value;
+            }
+
+            d.enableValueConnection = oldEnable;
         }
     }
 
@@ -132,7 +154,7 @@ ListItem.Empty {
                 }
 
                 Connections {
-                    target: d.enableValueConnection ? slider : null
+                    target: slider
                     onValueChanged: {
                         var oldEnable = d.enableValueConnection;
                         if (!oldEnable) return;
