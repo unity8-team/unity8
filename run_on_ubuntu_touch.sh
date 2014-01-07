@@ -16,7 +16,7 @@ CLICK=false
 SUDO="echo $PASSWORD | sudo -S"
 NUM_JOBS='$(( `grep -c ^processor /proc/cpuinfo` + 1 ))'
 FLIPPED=false
-DEPS="qt5-default qtbase5-dev qtdeclarative5-dev libboost-dev libssl-dev"
+DEPS="qt5-default qtbase5-dev qtdeclarative5-dev libboost-dev libssl-dev cmake"
 
 exec_with_ssh() {
     ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t $USER@$TARGET_IP -p $TARGET_SSH_PORT sudo -u $USER -i bash -ic \"$@\"
