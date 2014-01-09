@@ -10,7 +10,7 @@
 from __future__ import absolute_import
 
 from autopilot.matchers import Eventually
-from testtools.matchers import Is, Not, Equals
+from testtools.matchers import Is, Not, Equals, GreaterThan
 
 from reminders_app.tests import RemindersAppTestCase
 
@@ -40,3 +40,15 @@ class TestMainWindow(RemindersAppTestCase):
         # verify we are logged on
         notesTab = self.main_view.switch_to_tab("NotesTab")
         self.assertThat(notesTab.visible, Eventually(Equals(True)))
+
+    def test_download_list_of_notebooks(self):
+        """test to check whether downloading a list from Notebooks from
+           Evernote is successful or not """
+        Evernoteaccount = self.main_view.get_evernote_account()
+        self.pointing_device.click_object(Evernoteaccount)
+
+        notebookTab = self.main_view.switch_to_tab("NotebookTab")
+        self.assertThat(notebookTab.visible, Eventually(Equals(True)))
+
+        notebookslistview = self.main_view.get_notespageListview()
+        self.assertThat(notebookslistview.count,  Eventually(GreaterThan(0)))

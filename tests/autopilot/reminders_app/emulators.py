@@ -42,3 +42,6 @@ class MainView(toolkit_emulators.MainView):
         return self.wait_select_single(
             "Page", objectName="Accountselectorpage")
 
+    def get_notespageListview(self):
+        return self.wait_select_single(
+            "QQuickListView", objectName="notespageListview")
