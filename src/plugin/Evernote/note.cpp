@@ -25,6 +25,7 @@
 #include <QDateTime>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QStandardPaths>
 #include <QDebug>
 
 Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
@@ -86,20 +87,25 @@ void Note::setEnmlContent(const QString &enmlContent)
 
 QString Note::htmlContent() const
 {
-    return m_content.html(m_guid);
+    return m_content.toHtml(m_guid);
 }
 
-void Note::setHtmlContent(const QString &htmlContent)
+QString Note::richTextContent() const
 {
-    if (m_content.html(m_guid) != htmlContent) {
-        m_content.setHtml(htmlContent);
+    return m_content.toRichText(m_guid);
+}
+
+void Note::setRichTextContent(const QString &richTextContent)
+{
+    if (m_content.toRichText(m_guid) != richTextContent) {
+        m_content.setRichText(richTextContent);
         emit contentChanged();
     }
 }
 
 QString Note::plaintextContent() const
 {
-    return m_content.plaintext();
+    return m_content.toPlaintext();
 }
 
 bool Note::reminder() const
@@ -190,7 +196,7 @@ QStringList Note::resources() const
         QUrl url("image://resource/" + m_resourceTypes.value(hash));
         QUrlQuery arguments;
         arguments.addQueryItem("noteGuid", m_guid);
-        arguments.addQueryItem("hash", hash.toLocal8Bit().toHex());
+        arguments.addQueryItem("hash", hash);
         url.setQuery(arguments);
         ret << url.toString();
     }
@@ -202,10 +208,24 @@ QImage Note::resource(const QString &hash)
     return m_resources.value(hash);
 }
 
-void Note::addResource(const QString &hash, const QImage &image, const QString &type)
+QString Note::resourceName(const QString &hash)
 {
-    m_resources.insert(hash, image);
+    return m_resourceNames.value(hash);
+}
+
+void Note::addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image)
+{
+    image.save(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last());
+    if (!image.isNull()) {
+        m_resources.insert(hash, image);
+    }
     m_resourceTypes.insert(hash, type);
+    m_resourceNames.insert(hash, fileName);
+}
+
+void Note::markTodo(const QString &todoId, bool checked)
+{
+    m_content.markTodo(todoId, checked);
 }
 
 Note *Note::clone()

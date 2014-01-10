@@ -37,7 +37,8 @@ class Note : public QObject
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
-    Q_PROPERTY(QString htmlContent READ htmlContent WRITE setHtmlContent NOTIFY contentChanged)
+    Q_PROPERTY(QString htmlContent READ htmlContent NOTIFY contentChanged)
+    Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
     Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
     Q_PROPERTY(QList<QString> resources READ resources NOTIFY contentChanged)
@@ -65,7 +66,9 @@ public:
     void setEnmlContent(const QString &enmlContent);
 
     QString htmlContent() const;
-    void setHtmlContent(const QString &htmlContent);
+
+    QString richTextContent() const;
+    void setRichTextContent(const QString &richTextContent);
 
     QString plaintextContent() const;
 
@@ -95,7 +98,10 @@ public:
 
     QStringList resources() const;
     QImage resource(const QString &hash);
-    void addResource(const QString &hash, const QImage &image, const QString &type);
+    QString resourceName(const QString &hash);
+    void addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image = QImage());
+
+    Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
 
     Note* clone();
 
@@ -124,6 +130,7 @@ private:
     bool m_isSearchResult;
     QHash<QString, QImage> m_resources;
     QHash<QString, QString> m_resourceTypes;
+    QHash<QString, QString> m_resourceNames;
 };
 
 #endif // NOTE_H

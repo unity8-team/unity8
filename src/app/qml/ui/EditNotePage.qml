@@ -38,7 +38,7 @@ Page {
                 if (note) {
                     note.title = titleTextField.text
                     note.notebookGuid = notebookSelector.selectedGuid
-                    note.htmlContent = noteTextArea.text
+                    note.richTextContent = noteTextArea.text
                     NotesStore.saveNote(note.guid);
                 } else {
                     NotesStore.createNote(title, notebookGuid, text);
@@ -98,7 +98,8 @@ Page {
             highlighted: true
 
             textFormat: TextEdit.RichText
-            text: root.note ? root.note.htmlContent : ""
+            text: root.note ? root.note.richTextContent : ""
+
         }
     }
 }

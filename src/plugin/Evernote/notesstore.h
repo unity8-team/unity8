@@ -61,6 +61,7 @@ public:
         RoleIsSearchResult,
         RoleEnmlContent,
         RoleHtmlContent,
+        RoleRichTextContent,
         RolePlaintextContent,
         RoleResources
     };
@@ -76,7 +77,7 @@ public:
     QList<Note*> notes() const;
 
     Q_INVOKABLE Note* note(const QString &guid);
-    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &htmlContent);
+    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &richTextContent);
     void createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content);
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);

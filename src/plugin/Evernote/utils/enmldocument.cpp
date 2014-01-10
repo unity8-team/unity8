@@ -19,12 +19,15 @@
  */
 
 #include "enmldocument.h"
+#include "notesstore.h"
+#include "note.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QStringList>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QStandardPaths>
 #include <QDebug>
 
 // ENML spec: http://xml.evernote.com/pub/enml2.dtd
@@ -61,18 +64,33 @@ void EnmlDocument::setEnml(const QString &enml)
     m_enml = enml;
 }
 
-QString EnmlDocument::html(const QString &noteGuid) const
+QString EnmlDocument::toHtml(const QString &noteGuid) const
+{
+    return convert(noteGuid, TypeHtml);
+}
+
+QString EnmlDocument::toRichText(const QString &noteGuid) const
+{
+    return convert(noteGuid, TypeRichText);
+}
+
+QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) const
 {
     // output
     QString html;
     QXmlStreamWriter writer(&html);
     writer.writeStartDocument();
+    writer.writeStartElement("meta");
+    writer.writeAttribute("name", "viewport");
+    writer.writeAttribute("content", "width=640px");
+    writer.writeEndElement();
 
     // input
     QXmlStreamReader reader(m_enml);
 
     // state
     bool isBody = false;
+    int todoIndex = 0;
 
     while (!reader.atEnd() && !reader.hasError()) {
         QXmlStreamReader::TokenType token = reader.readNext();
@@ -110,15 +128,50 @@ QString EnmlDocument::html(const QString &noteGuid) const
             }
 
             // Convert images
-            // TODO: what to do with music files etc?
             if (reader.name() == "en-media") {
+                QString mediaType = reader.attributes().value("type").toString();
+                QString hash = reader.attributes().value("hash").toString();
+
                 writer.writeStartElement("img");
-                QUrl url("image://resource/" + reader.attributes().value("type").toString());
-                QUrlQuery arguments;
-                arguments.addQueryItem("noteGuid", noteGuid);
-                arguments.addQueryItem("hash", reader.attributes().value("hash").toString());
-                url.setQuery(arguments);
-                writer.writeAttribute("src", url.toString());
+                if (mediaType.startsWith("image")) {
+                    if (type == TypeRichText) {
+                        QUrl url("image://resource/" + mediaType);
+                        QUrlQuery arguments;
+                        arguments.addQueryItem("noteGuid", noteGuid);
+                        arguments.addQueryItem("hash", hash);
+                        url.setQuery(arguments);
+                        writer.writeAttribute("src", url.toString());
+                    } else if (type  == TypeHtml) {
+                        QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + mediaType.split('/').last();
+                        writer.writeAttribute("src", imagePath);
+                    }
+                } else if (mediaType.startsWith("audio")) {
+                    if (type == TypeRichText) {
+                        QUrl url("image://resource/" + mediaType);
+                        QUrlQuery arguments;
+                        arguments.addQueryItem("noteGuid", noteGuid);
+                        arguments.addQueryItem("hash", hash);
+                        url.setQuery(arguments);
+                        writer.writeAttribute("src", url.toString());
+                    } else if (type == TypeHtml) {
+                        QString imagePath = "file:///usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg";
+                        writer.writeAttribute("src", imagePath);
+                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resourceName(hash));
+                    }
+                } else {
+                    if (type == TypeRichText) {
+                        QUrl url("image://resource/" + mediaType);
+                        QUrlQuery arguments;
+                        arguments.addQueryItem("noteGuid", noteGuid);
+                        arguments.addQueryItem("hash", hash);
+                        url.setQuery(arguments);
+                        writer.writeAttribute("src", url.toString());
+                    } else if (type == TypeHtml) {
+                        QString imagePath = "file:///usr/share/icons/ubuntu-mobile/actions/scalable/help.svg";
+                        writer.writeAttribute("src", imagePath);
+                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resourceName(hash));
+                    }
+                }
             }
 
             // Convert todo checkboxes
@@ -130,8 +183,17 @@ QString EnmlDocument::html(const QString &noteGuid) const
                     }
                 }
 
-                writer.writeStartElement("img");
-                writer.writeAttribute("src", checked ? "image://theme/select" : "image://theme/help");
+                if (type == TypeRichText) {
+                    writer.writeStartElement("img");
+                    writer.writeAttribute("src", checked ? "image://theme/select" : "image://theme/help");
+                } else if (type == TypeHtml){
+                    writer.writeStartElement("input");
+                    writer.writeAttribute("id", "en-todo" + QString::number(todoIndex++));
+                    writer.writeAttribute("type", "checkbox");
+                    if (checked) {
+                        writer.writeAttribute("checked", "true");
+                    }
+                }
             }
 
             // We can't just copy over img tags with s_commonTags, because we generate img tags on our own.
@@ -172,7 +234,7 @@ QString EnmlDocument::html(const QString &noteGuid) const
     return html;
 }
 
-void EnmlDocument::setHtml(const QString &html)
+void EnmlDocument::setRichText(const QString &html)
 {
     // output
     m_enml.clear();
@@ -263,7 +325,45 @@ void EnmlDocument::setHtml(const QString &html)
     writer.writeEndDocument();
 }
 
-QString EnmlDocument::plaintext() const
+void EnmlDocument::markTodo(const QString &todoId, bool checked)
+{
+    QXmlStreamReader reader(m_enml);
+
+    QString output;
+    QXmlStreamWriter writer(&output);
+    writer.writeStartDocument();
+    writer.writeDTD("<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">");
+
+    QString tmp = todoId;
+    int todoIndex = tmp.remove("en-todo").toInt();
+    int todoCounter = 0;
+
+    while (!reader.atEnd() && !reader.hasError()) {
+        QXmlStreamReader::TokenType token = reader.readNext();
+
+        if (token == QXmlStreamReader::StartElement) {
+            writer.writeStartElement(reader.name().toString());
+
+            if (reader.name() == "en-todo" && todoCounter++ == todoIndex) {
+                if (checked) {
+                    writer.writeAttribute("checked", "true");
+                }
+            } else {
+                writer.writeAttributes(reader.attributes());
+            }
+        }
+
+        if (token == QXmlStreamReader::Characters) {
+            writer.writeCharacters(reader.text().toString());
+        }
+        if (token == QXmlStreamReader::EndElement) {
+            writer.writeEndElement();
+        }
+    }
+    m_enml = output;
+}
+
+QString EnmlDocument::toPlaintext() const
 {
     // output
     QString plaintext;
