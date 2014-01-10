@@ -19,11 +19,24 @@
  */
 
 #include "notebook.h"
+#include "notesstore.h"
+#include "note.h"
+
+#include <QDebug>
 
 Notebook::Notebook(QString guid, QObject *parent) :
     QObject(parent),
-    m_guid(guid)
+    m_guid(guid),
+    m_noteCount(0),
+    m_published(false)
 {
+    foreach (Note *note, NotesStore::instance()->notes()) {
+        if (note->notebookGuid() == m_guid) {
+            m_noteCount++;
+        }
+    }
+    connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Notebook::noteAdded);
+    connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notebook::noteRemoved);
 }
 
 QString Notebook::guid() const
@@ -41,5 +54,39 @@ void Notebook::setName(const QString &name)
     if (m_name != name) {
         m_name = name;
         emit nameChanged();
+    }
+}
+
+int Notebook::noteCount() const
+{
+    return m_noteCount;
+}
+
+bool Notebook::published() const
+{
+    return m_published;
+}
+
+void Notebook::setPublished(bool published)
+{
+    if (m_published != published) {
+        m_published = published;
+        emit publishedChanged();
+    }
+}
+
+void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
+{
+    if (notebookGuid == m_guid) {
+        m_noteCount++;
+        emit noteCountChanged();
+    }
+}
+
+void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
+{
+    if (notebookGuid == m_guid) {
+        m_noteCount--;
+        emit noteCountChanged();
     }
 }

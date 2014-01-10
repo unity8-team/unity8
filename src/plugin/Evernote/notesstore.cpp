@@ -196,11 +196,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             m_notesHash.insert(note->guid(), note);
             m_notes.append(note);
             endInsertRows();
-            emit noteAdded(note->guid());
+            emit noteAdded(note->guid(), note->notebookGuid());
         } else {
             QModelIndex noteIndex = index(m_notes.indexOf(note));
             emit dataChanged(noteIndex, noteIndex);
-            emit noteChanged(note->guid());
+            emit noteChanged(note->guid(), note->notebookGuid());
         }
     }
 }
@@ -239,7 +239,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
     }
     note->setReminderDoneTime(reminderDoneTime);
-    emit noteChanged(note->guid());
+    emit noteChanged(note->guid(), note->notebookGuid());
 
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     emit dataChanged(noteIndex, noteIndex);
@@ -267,6 +267,7 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
             notebook = new Notebook(QString::fromStdString(result.guid), this);
         }
         notebook->setName(QString::fromStdString(result.name));
+        notebook->setPublished(result.published);
 
         if (newNoteNotebook) {
             m_notebooksHash.insert(notebook->guid(), notebook);
@@ -304,7 +305,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     m_notes.append(note);
     endInsertRows();
 
-    emit noteAdded(note->guid());
+    emit noteAdded(note->guid(), note->notebookGuid());
 }
 
 void NotesStore::saveNote(const QString &guid)
@@ -327,7 +328,7 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
 
-        emit noteChanged(note->guid());
+        emit noteChanged(note->guid(), note->notebookGuid());
 
         QModelIndex noteIndex = index(m_notes.indexOf(note));
         emit dataChanged(noteIndex, noteIndex);
@@ -359,10 +360,11 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         qWarning() << "Cannot delete note:" << errorMessage;
         return;
     }
-    emit noteRemoved(guid);
-
     Note *note = m_notesHash.value(guid);
     int noteIndex = m_notes.indexOf(note);
+
+    emit noteRemoved(guid, note->notebookGuid());
+
     beginRemoveRows(QModelIndex(), noteIndex, noteIndex);
     m_notes.takeAt(noteIndex);
     m_notesHash.take(guid)->deleteLater();

@@ -31,7 +31,9 @@ class Notebooks : public QAbstractListModel
 public:
     enum Roles {
         RoleGuid,
-        RoleName
+        RoleName,
+        RoleNoteCount,
+        RolePublished
     };
     explicit Notebooks(QObject *parent = 0);
 
@@ -44,6 +46,7 @@ public slots:
 
 private slots:
     void notebookAdded(const QString &guid);
+    void noteCountChanged();
 
 private:
     QList<QString> m_list;

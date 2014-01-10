@@ -93,9 +93,9 @@ public slots:
 signals:
     void tokenChanged();
 
-    void noteAdded(const QString &guid);
-    void noteChanged(const QString &guid);
-    void noteRemoved(const QString &guid);
+    void noteAdded(const QString &guid, const QString &notebookGuid);
+    void noteChanged(const QString &guid, const QString &notebookGuid);
+    void noteRemoved(const QString &guid, const QString &notebookGuid);
 
     void notebookAdded(const QString &guid);
     void notebookChanged(const QString &guid);
