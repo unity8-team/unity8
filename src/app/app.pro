@@ -14,7 +14,8 @@ OTHER_FILES = qml/reminders-app.qml \
     qml/ui/SearchNotesPage.qml \
     qml/components/ToolbarSpacer.qml \
     qml/components/NotesDelegate.qml \
-    qml/components/NotebooksDelegate.qml
+    qml/components/NotebooksDelegate.qml \
+    qml/ui/EditNotePage.qml
 
 # Copy qml to build dir for running with qtcreator
 qmlfolder.source = src/app/qml

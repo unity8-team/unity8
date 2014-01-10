@@ -279,9 +279,16 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
     }
 }
 
-void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &content)
+void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &htmlContent)
 {
-    CreateNoteJob *job = new CreateNoteJob(title, notebookGuid, content);
+    EnmlDocument enmlDoc;
+    enmlDoc.setHtml(htmlContent);
+    createNote(title, notebookGuid, enmlDoc);
+}
+
+void NotesStore::createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content)
+{
+    CreateNoteJob *job = new CreateNoteJob(title, notebookGuid, content.enml());
     connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
