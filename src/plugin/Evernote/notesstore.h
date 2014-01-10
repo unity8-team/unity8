@@ -57,7 +57,11 @@ public:
         RoleReminderTime,
         RoleReminderDone,
         RoleReminderDoneTime,
-        RoleIsSearchResult
+        RoleIsSearchResult,
+        RoleEnmlContent,
+        RoleHtmlContent,
+        RolePlaintextContent,
+        RoleResources
     };
 
     ~NotesStore();

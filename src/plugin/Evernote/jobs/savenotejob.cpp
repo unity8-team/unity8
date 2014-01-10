@@ -42,9 +42,9 @@ void SaveNoteJob::startJob()
     note.__isset.title = true;
     note.notebookGuid = m_note->notebookGuid().toStdString();
     note.__isset.notebookGuid = true;
-    note.content = m_note->content().toStdString();
+    note.content = m_note->enmlContent().toStdString();
     note.__isset.content = true;
-    note.contentLength = m_note->content().length();
+    note.contentLength = m_note->enmlContent().length();
 
     note.__isset.attributes = true;
     note.attributes.reminderOrder = m_note->reminderOrder();

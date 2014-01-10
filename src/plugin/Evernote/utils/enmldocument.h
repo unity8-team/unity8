@@ -18,19 +18,31 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#ifndef HTML2ENMLCONVERTER_H
-#define HTML2ENMLCONVERTER_H
+#ifndef ENMLDOCUMENT_H
+#define ENMLDOCUMENT_H
 
 #include <QString>
 
-class Html2EnmlConverter
+class EnmlDocument
 {
 public:
-    Html2EnmlConverter();
+    EnmlDocument(const QString &enml = QString());
 
-    static QString html2enml(const QString &html);
+    QString enml() const;
+    void setEnml(const QString &enml);
 
-    static QString enml2plaintext(const QString &enml);
+    // noteGuid is required to convert en-media tags to urls for image provider
+    QString html(const QString &noteGuid) const;
+    void setHtml(const QString &html);
+
+    QString plaintext() const;
+
+private:
+    QString m_enml;
+
+    static QStringList s_commonTags;
+    static QStringList s_argumentBlackListTags;
+
 };
 
-#endif // HTML2ENMLCONVERTER_H
+#endif // ENMLDOCUMENT_H

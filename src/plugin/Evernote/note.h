@@ -21,9 +21,12 @@
 #ifndef NOTE_H
 #define NOTE_H
 
+#include "utils/enmldocument.h"
+
 #include <QObject>
 #include <QDateTime>
 #include <QStringList>
+#include <QImage>
 
 class Note : public QObject
 {
@@ -34,8 +37,10 @@ class Note : public QObject
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
-    Q_PROPERTY(QString content READ content WRITE setContent NOTIFY contentChanged)
+    Q_PROPERTY(QString htmlContent READ htmlContent WRITE setHtmlContent NOTIFY contentChanged)
+    Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
+    Q_PROPERTY(QList<QString> resources READ resources NOTIFY contentChanged)
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
@@ -56,11 +61,13 @@ public:
     QString title() const;
     void setTitle(const QString &title);
 
-    QString content() const;
-    void setContent(const QString &content);
+    QString enmlContent() const;
+    void setEnmlContent(const QString &enmlContent);
+
+    QString htmlContent() const;
+    void setHtmlContent(const QString &htmlContent);
 
     QString plaintextContent() const;
-    void setPlaintextContent(const QString &plaintextContent);
 
     // This is the QML representation as we don't want to deal with timestamps there.
     // setting it to false will reset the reminderOrder to 0, setting it to true will
@@ -86,6 +93,10 @@ public:
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
+    QStringList resources() const;
+    QImage resource(const QString &hash);
+    void addResource(const QString &hash, const QImage &image, const QString &type);
+
     Note* clone();
 
 public slots:
@@ -106,12 +117,13 @@ private:
     QString m_notebookGuid;
     QDateTime m_created;
     QString m_title;
-    QString m_content;
-    QString m_plaintextContent;
+    EnmlDocument m_content;
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
     bool m_isSearchResult;
+    QHash<QString, QImage> m_resources;
+    QHash<QString, QString> m_resourceTypes;
 };
 
 #endif // NOTE_H

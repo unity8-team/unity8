@@ -26,6 +26,7 @@
 #include "notes.h"
 #include "notebooks.h"
 #include "note.h"
+#include "resourceimageprovider.h"
 
 #include <QtQml>
 
@@ -44,7 +45,7 @@ static QObject* connectionProvider(QQmlEngine* /* engine */, QJSEngine* /* scrip
     return EvernoteConnection::instance();
 }
 
-void FitBitPlugin::registerTypes(const char *uri)
+void EvernotePlugin::registerTypes(const char *uri)
 {
     qmlRegisterSingletonType<UserStore>("Evernote", 0, 1, "UserStore", userStoreProvider);
     qmlRegisterSingletonType<NotesStore>("Evernote", 0, 1, "NotesStore", notesStoreProvider);
@@ -53,4 +54,9 @@ void FitBitPlugin::registerTypes(const char *uri)
     qmlRegisterType<Notes>("Evernote", 0, 1, "Notes");
     qmlRegisterType<Notebooks>("Evernote", 0, 1, "Notebooks");
     qmlRegisterUncreatableType<Note>("Evernote", 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
+}
+
+void EvernotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)
+{
+    engine->addImageProvider("resource", new ResourceImageProvider);
 }

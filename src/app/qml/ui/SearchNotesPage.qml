@@ -68,7 +68,7 @@ Page {
             delegate: NotesDelegate {
                 title: model.title
                 creationDate: model.created
-                content: NotesStore.note(model.guid).plaintextContent
+                content: model.plaintextContent
 
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
