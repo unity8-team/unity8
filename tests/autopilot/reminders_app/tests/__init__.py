@@ -41,6 +41,7 @@ def get_module_include_path():
             '..',
             '..',
             '..',
+            '..',
             'builddir/src/plugin/')
         )
 
@@ -80,7 +81,7 @@ class RemindersAppTestCase(AutopilotTestCase):
             base.get_qmlscene_launch_command(),
             "-I", get_module_include_path(),
             self.local_location,
-           "--desktop_file_hint=/usr/share/applications/"
+           "--desktop_file_hint=/home/phablet/reminders-app/"
             "reminders-app.desktop",
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
