@@ -18,32 +18,80 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Extras.Browser 0.1
+import QtWebKit 3.1
+import QtWebKit.experimental 1.0
 import Evernote 0.1
+import "../components"
 
 Page {
+    id: root
     title: note.title
     property var note
 
-    Column {
-        anchors.fill: parent
-        spacing: units.gu(1)
-        Button {
-            width: parent.width
-            text: "save"
-            onClicked: {
-                note.content = noteTextArea.text
-                note.save();
+    Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
+
+    tools: ToolbarItems {
+        ToolbarButton {
+            text: "delete"
+            iconName: "delete"
+            onTriggered: {
+                NotesStore.deleteNote(note.guid);
+                pagestack.pop();
             }
         }
+        ToolbarSpacer {}
+        ToolbarButton {
+            text: note.reminder ? "reminder (set)" : "reminder"
+            iconName: "alarm-clock"
+            onTriggered: {
+                note.reminder = !note.reminder
+                NotesStore.saveNote(note.guid)
+            }
+        }
+        ToolbarButton {
+            text: "edit"
+            iconName: "edit"
+            onTriggered: {
+                pagestack.pop()
+                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"), {note: root.note})
+            }
+        }
+    }
 
-        TextArea {
+    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
+    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
+    // another flickable prevents this from happening.
+    Flickable {
+        anchors { fill: parent}
+        contentHeight: height
+
+        UbuntuWebView {
             id: noteTextArea
-            anchors { left: parent.left; right: parent.right }
-            height: parent.height - y
+            anchors { fill: parent}
+            property string html: note.htmlContent
+            onHtmlChanged: {
+                loadHtml(html, "file:///")
+            }
 
-            textFormat: TextEdit.RichText
-            text: note.content
+            experimental.preferences.navigatorQtObjectEnabled: true
+            experimental.preferredMinimumContentsWidth: root.width
+            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
+            experimental.onMessageReceived: {
+                var data = null;
+                try {
+                    data = JSON.parse(message.data);
+                } catch (error) {
+                    print("Failed to parse message:", message.data, error);
+                }
+
+                switch (data.type) {
+                case "checkboxChanged":
+                    note.markTodo(data.todoId, data.checked);
+                    NotesStore.saveNote(note.guid);
+                    break;
+                }
+            }
         }
     }
 }
-

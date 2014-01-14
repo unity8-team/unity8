@@ -47,12 +47,9 @@ Page {
 
         ToolbarButton {
             text: "add note"
-            enabled: notes.filterNotebookGuid.length > 0
+            iconName: "add"
             onTriggered: {
-                var content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\"><en-note><div><br clear=\"none\"/>"
-                content = content + "fobar"
-                content = content + "<br clear=\"none\"/></div><div><br clear=\"none\"/></div></en-note>"
-                NotesStore.createNote("Untitled", notes.filterNotebookGuid, content);
+                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"));
             }
         }
     }
@@ -66,9 +63,13 @@ Page {
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
+        clip: true
 
-        delegate: Standard {
-            text: title
+        delegate: NotesDelegate {
+            title: model.title
+            creationDate: model.created
+            content: model.plaintextContent
+            resource: model.resources.length > 0 ? model.resources[0] : ""
 
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})

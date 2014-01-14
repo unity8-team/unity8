@@ -28,6 +28,7 @@ Notebooks::Notebooks(QObject *parent) :
 {
     foreach (Notebook *notebook, NotesStore::instance()->notebooks()) {
         m_list.append(notebook->guid());
+        connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
     }
 
     connect(NotesStore::instance(), SIGNAL(notebookAdded(const QString &)), SLOT(notebookAdded(const QString &)));
@@ -41,6 +42,10 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->guid();
     case RoleName:
         return notebook->name();
+    case RoleNoteCount:
+        return notebook->noteCount();
+    case RolePublished:
+        return notebook->published();
     }
     return QVariant();
 }
@@ -55,7 +60,14 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     QHash<int, QByteArray> roles;
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleName, "name");
+    roles.insert(RoleNoteCount, "noteCount");
+    roles.insert(RolePublished, "publised");
     return roles;
+}
+
+Notebook *Notebooks::notebook(int index)
+{
+    return NotesStore::instance()->notebook(m_list.at(index));
 }
 
 void Notebooks::refresh()
@@ -65,7 +77,17 @@ void Notebooks::refresh()
 
 void Notebooks::notebookAdded(const QString &guid)
 {
+    Notebook *notebook = NotesStore::instance()->notebook(guid);
+    connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
+
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
     endInsertRows();
+}
+
+void Notebooks::noteCountChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleNoteCount);
 }

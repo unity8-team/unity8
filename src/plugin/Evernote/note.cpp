@@ -23,6 +23,10 @@
 #include "notesstore.h"
 
 #include <QDateTime>
+#include <QUrl>
+#include <QUrlQuery>
+#include <QStandardPaths>
+#include <QDebug>
 
 Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
@@ -68,17 +72,40 @@ void Note::setTitle(const QString &title)
     }
 }
 
-QString Note::content() const
+QString Note::enmlContent() const
 {
-    return m_content;
+    return m_content.enml();
 }
 
-void Note::setContent(const QString &content)
+void Note::setEnmlContent(const QString &enmlContent)
 {
-    if (m_content != content) {
-        m_content = content;
+    if (m_content.enml() != enmlContent) {
+        m_content.setEnml(enmlContent);
         emit contentChanged();
     }
+}
+
+QString Note::htmlContent() const
+{
+    return m_content.toHtml(m_guid);
+}
+
+QString Note::richTextContent() const
+{
+    return m_content.toRichText(m_guid);
+}
+
+void Note::setRichTextContent(const QString &richTextContent)
+{
+    if (m_content.toRichText(m_guid) != richTextContent) {
+        m_content.setRichText(richTextContent);
+        emit contentChanged();
+    }
+}
+
+QString Note::plaintextContent() const
+{
+    return m_content.toPlaintext();
 }
 
 bool Note::reminder() const
@@ -162,12 +189,51 @@ void Note::setIsSearchResult(bool isSearchResult)
     }
 }
 
+QStringList Note::resources() const
+{
+    QList<QString> ret;
+    foreach (const QString &hash, m_resources.keys()) {
+        QUrl url("image://resource/" + m_resourceTypes.value(hash));
+        QUrlQuery arguments;
+        arguments.addQueryItem("noteGuid", m_guid);
+        arguments.addQueryItem("hash", hash);
+        url.setQuery(arguments);
+        ret << url.toString();
+    }
+    return ret;
+}
+
+QImage Note::resource(const QString &hash)
+{
+    return m_resources.value(hash);
+}
+
+QString Note::resourceName(const QString &hash)
+{
+    return m_resourceNames.value(hash);
+}
+
+void Note::addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image)
+{
+    image.save(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last());
+    if (!image.isNull()) {
+        m_resources.insert(hash, image);
+    }
+    m_resourceTypes.insert(hash, type);
+    m_resourceNames.insert(hash, fileName);
+}
+
+void Note::markTodo(const QString &todoId, bool checked)
+{
+    m_content.markTodo(todoId, checked);
+}
+
 Note *Note::clone()
 {
     Note *note = new Note(m_guid, m_created);
     note->setNotebookGuid(m_notebookGuid);
     note->setTitle(m_title);
-    note->setContent(m_content);
+    note->setEnmlContent(m_content.enml());
     note->setReminderOrder(m_reminderOrder);
     note->setReminderTime(m_reminderTime);
     note->setReminderDoneTime(m_reminderDoneTime);

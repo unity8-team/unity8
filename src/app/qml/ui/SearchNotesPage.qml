@@ -59,13 +59,20 @@ Page {
         ListView {
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y
+            clip: true
 
             model: Notes {
                 onlySearchResults: true
             }
 
-            delegate: Standard {
-                text: title
+            delegate: NotesDelegate {
+                title: model.title
+                creationDate: model.created
+                content: model.plaintextContent
+
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
+                }
             }
         }
 

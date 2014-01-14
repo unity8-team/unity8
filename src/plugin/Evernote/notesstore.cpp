@@ -23,7 +23,7 @@
 #include "notebooks.h"
 #include "notebook.h"
 #include "note.h"
-#include "utils/html2enmlconverter.h"
+#include "utils/enmldocument.h"
 
 #include "jobs/fetchnotesjob.h"
 #include "jobs/fetchnotebooksjob.h"
@@ -34,6 +34,7 @@
 #include "jobs/createnotebookjob.h"
 #include "jobs/expungenotebookjob.h"
 
+#include <QImage>
 #include <QDebug>
 
 NotesStore* NotesStore::s_instance = 0;
@@ -84,6 +85,16 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->reminderDone();
     case RoleReminderDoneTime:
         return m_notes.at(index.row())->reminderDoneTime();
+    case RoleEnmlContent:
+        return m_notes.at(index.row())->enmlContent();
+    case RoleHtmlContent:
+        return m_notes.at(index.row())->htmlContent();
+    case RoleRichTextContent:
+        return m_notes.at(index.row())->richTextContent();
+    case RolePlaintextContent:
+        return m_notes.at(index.row())->plaintextContent();
+    case RoleResources:
+        return m_notes.at(index.row())->resources();
     }
     return QVariant();
 }
@@ -99,6 +110,11 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleReminderTime, "reminderTime");
     roles.insert(RoleReminderDone, "reminderDone");
     roles.insert(RoleReminderDoneTime, "reminderDoneTime");
+    roles.insert(RoleEnmlContent, "enmlContent");
+    roles.insert(RoleRichTextContent, "richTextContent");
+    roles.insert(RoleHtmlContent, "htmlContent");
+    roles.insert(RolePlaintextContent, "plaintextContent");
+    roles.insert(RoleResources, "resources");
     return roles;
 }
 
@@ -113,7 +129,6 @@ QList<Note*> NotesStore::notes() const
 
 Note *NotesStore::note(const QString &guid)
 {
-    refreshNoteContent(guid);
     return m_notesHash.value(guid);
 }
 
@@ -184,11 +199,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             m_notesHash.insert(note->guid(), note);
             m_notes.append(note);
             endInsertRows();
-            emit noteAdded(note->guid());
+            emit noteAdded(note->guid(), note->notebookGuid());
         } else {
             QModelIndex noteIndex = index(m_notes.indexOf(note));
             emit dataChanged(noteIndex, noteIndex);
-            emit noteChanged(note->guid());
+            emit noteChanged(note->guid(), note->notebookGuid());
         }
     }
 }
@@ -210,14 +225,32 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
-    note->setContent(QString::fromStdString(result.content));
+
+    // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
+    for (int i = 0; i < result.resources.size(); ++i) {
+
+        evernote::edam::Resource resource = result.resources.at(i);
+
+        QString hash = QByteArray::fromRawData(resource.data.bodyHash.c_str(), resource.data.bodyHash.length()).toHex();
+        QString fileName = QString::fromStdString(resource.attributes.fileName);
+        QString mime = QString::fromStdString(resource.mime);
+
+        if (mime.startsWith("image/")) {
+            QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
+            note->addResource(hash, fileName, mime, image);
+        } else {
+            note->addResource(hash, fileName, mime);
+        }
+    }
+
+    note->setEnmlContent(QString::fromStdString(result.content));
     note->setReminderOrder(result.attributes.reminderOrder);
     QDateTime reminderDoneTime;
     if (result.attributes.reminderDoneTime > 0) {
         reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
     }
     note->setReminderDoneTime(reminderDoneTime);
-    emit noteChanged(note->guid());
+    emit noteChanged(note->guid(), note->notebookGuid());
 
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     emit dataChanged(noteIndex, noteIndex);
@@ -245,6 +278,7 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
             notebook = new Notebook(QString::fromStdString(result.guid), this);
         }
         notebook->setName(QString::fromStdString(result.name));
+        notebook->setPublished(result.published);
 
         if (newNoteNotebook) {
             m_notebooksHash.insert(notebook->guid(), notebook);
@@ -256,9 +290,16 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
     }
 }
 
-void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &content)
+void NotesStore::createNote(const QString &title, const QString &notebookGuid, const QString &richTextContent)
 {
-    CreateNoteJob *job = new CreateNoteJob(title, notebookGuid, content);
+    EnmlDocument enmlDoc;
+    enmlDoc.setRichText(richTextContent);
+    createNote(title, notebookGuid, enmlDoc);
+}
+
+void NotesStore::createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content)
+{
+    CreateNoteJob *job = new CreateNoteJob(title, notebookGuid, content.enml());
     connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
@@ -275,23 +316,19 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     Note *note = new Note(guid, created, this);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
-    note->setContent(QString::fromStdString(result.content));
+    note->setEnmlContent(QString::fromStdString(result.content));
 
     beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
     m_notesHash.insert(note->guid(), note);
     m_notes.append(note);
     endInsertRows();
 
-    emit noteAdded(note->guid());
+    emit noteAdded(note->guid(), note->notebookGuid());
 }
 
 void NotesStore::saveNote(const QString &guid)
 {
     Note *note = m_notesHash.value(guid);
-
-    QString enml = Html2EnmlConverter::html2enml(note->content());
-    note->setContent(enml);
-
     SaveNoteJob *job = new SaveNoteJob(note, this);
     connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
@@ -309,7 +346,7 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
 
-        emit noteChanged(note->guid());
+        emit noteChanged(note->guid(), note->notebookGuid());
 
         QModelIndex noteIndex = index(m_notes.indexOf(note));
         emit dataChanged(noteIndex, noteIndex);
@@ -341,10 +378,11 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         qWarning() << "Cannot delete note:" << errorMessage;
         return;
     }
-    emit noteRemoved(guid);
-
     Note *note = m_notesHash.value(guid);
     int noteIndex = m_notes.indexOf(note);
+
+    emit noteRemoved(guid, note->notebookGuid());
+
     beginRemoveRows(QModelIndex(), noteIndex, noteIndex);
     m_notes.takeAt(noteIndex);
     m_notesHash.take(guid)->deleteLater();

@@ -55,6 +55,7 @@ void EvernoteJob::run()
 
     try {
         startJob();
+        emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
     } catch (const TTransportException & e) {
 
         // The connection broke down. libthrift + evernote servers seem to be quite flaky
@@ -63,6 +64,7 @@ void EvernoteJob::run()
         try {
             resetConnection();
             startJob();
+            emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
         } catch (const TTransportException &e) {
             // Giving up... the connection seems to be down for real.
             qWarning() << "Cannot reestablish connection:" << e.what();
@@ -83,7 +85,7 @@ void EvernoteJob::run()
 
 
     } catch (const evernote::edam::EDAMUserException &e) {
-        qWarning() << "EDAMUserException" << e.what();
+        qWarning() << "EDAMUserException" << e.what() << e.errorCode;
         emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
     } catch (const evernote::edam::EDAMSystemException &e) {
         qWarning() << "EDAMSystemException" << e.what();
@@ -92,8 +94,6 @@ void EvernoteJob::run()
         qWarning() << "EDAMNotFoundException" << e.what();
         emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
     }
-
-    emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
 }
 
 QString EvernoteJob::token()
