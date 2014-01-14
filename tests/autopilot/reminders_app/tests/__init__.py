@@ -34,14 +34,15 @@ from reminders_app import emulators
 
 logger = logging.getLogger(__name__)
 
-#def get_module_include_path():
-    #return os.path.abspath(
-        #os.path.join(
-            #os.path.dirname(__file__),
-            #'..',
-            #'..',
-            #'src/plugin/')
-        #)
+def get_module_include_path():
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            '..',
+            '..',
+            'builddir/src/plugin/')
+        )
 
 class RemindersAppTestCase(AutopilotTestCase):
     """A common test case class that provides several useful methods for
@@ -77,7 +78,10 @@ class RemindersAppTestCase(AutopilotTestCase):
     def launch_test_local(self):
         self.app = self.launch_test_application(
             base.get_qmlscene_launch_command(),
+            "-I", get_module_include_path(),
             self.local_location,
+           "--desktop_file_hint=/usr/share/applications/"
+            "reminders-app.desktop",
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
