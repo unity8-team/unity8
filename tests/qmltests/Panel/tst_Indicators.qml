@@ -83,6 +83,8 @@ Item {
         when: windowShown
 
         function init() {
+            indicators.initialise();
+
             indicators.hide();
             tryCompare(indicators.hideAnimation, "running", false);
             tryCompare(indicators, "state", "initial");
@@ -101,10 +103,12 @@ Item {
             // tests changing the lateral position of the revealer activates the correct indicator items.
 
             var indicatorRow = findChild(indicators, "indicatorRow")
-            var rowRepeater = findChild(indicators, "rowRepeater")
+            verify(indicatorRow !== null)
+            var indicatorRowItems = findChild(indicatorRow, "indicatorRowItems");
+            verify(indicatorRowItems !== null)
 
-            for (var i = 0; i < rowRepeater.count; i++) {
-                var indicatorItem = rowRepeater.itemAt(i);
+            for (var i = 0; i < indicatorRowItems.count; i++) {
+                var indicatorItem = findChild(indicatorRowItems, "item" + i);
 
                 if (!indicatorItem.visible)
                     continue;
@@ -161,21 +165,77 @@ Item {
             compare(indicators.fullyOpened, true);
         }
 
+        function init_invisible_indicator(identifier) {
+            tryCompareFunction(function() { return findChild(indicators, identifier+"-delegate") !== undefined }, true);
+            var item = findChild(indicators, identifier+"-delegate");
+
+            item.enabled = false;
+        }
+
         function test_row_visible_menuContent_visible_data() { return [
-             {tag: "visible", index: 0, name: "indicator-fake1", visible: true },
-             {tag: "invisible", index: 1, name: "indicator-fake2", visible: false }]
+            {tag: "first", visible: [false, true, true, true, true] },
+            {tag: "adjacent", visible: [true, false, false, true, true] },
+            {tag: "bounds", visible: [false, true, true, true, false] },
+            {tag: "disjoint", visible: [true, false, true, false, true] },
+            {tag: "last", visible: [true, true, true, true, false] }];
         }
 
         function test_row_visible_menuContent_visible(data) {
+            indicators.show();
+
             var indicatorTabs = findChild(indicators, "tabs");
-            var rowRepeater = findChild(indicators, "rowRepeater");
+            var indicatorRowItems = findChild(indicators, "indicatorRowItems");
 
-            var indicatorItem = rowRepeater.itemAt(data.index);
-            tryCompareFunction(function() { return indicatorItem.width > 0}, true);
-            tryCompare(indicatorItem, "visible", data.visible);
 
-            var indicatorTab = findChild(indicatorTabs, data.name)
-            tryCompareFunction(function() { return indicatorTab !== null }, data.visible);
+            var count = data.visible.length
+            for (var i = 0; i< data.visible.length; i++) {
+                if (data.visible[i] === false) {
+                    init_invisible_indicator("indicator-fake" + (i + 1));
+                    count--;
+                }
+            }
+
+            tryCompare(indicatorRowItems, "count", count);
+
+            for (i = 0; i < data.visible.length; i++) {
+                var widgetName = "indicator-fake" + (i + 1 + "-widget");
+                var pageName = "indicator-fake" + (i + 1 + "-page");
+
+                // check for item
+                tryCompareFunction(function() { return findChild(indicatorRowItems, widgetName) !== null }, data.visible[i]);
+
+                // check for tab
+                tryCompareFunction(function() { return findChild(indicatorTabs, pageName) !== null }, data.visible[i]);
+            }
+        }
+
+        function test_indicator_visible_correct_tabs_data() { return [
+            {tag: "current-first", currentIndex: 0, visible: [false, true, true, true, true], expectedIndex: 0, expectedTab: "indicator-fake2"  },
+            {tag: "current-last", currentIndex: 4, visible: [true, true, true, true, false], expectedIndex: 3, expectedTab: "indicator-fake4" },
+            {tag: "after", currentIndex: 0, visible: [true, false, true, true, true], expectedIndex: 0, expectedTab: "indicator-fake1" },
+            {tag: "before", currentIndex: 1, visible: [false, true, true, true, true], expectedIndex: 1, expectedTab: "indicator-fake2" }];
+        }
+
+        function test_indicator_visible_correct_tabs(data) {
+            var indicatorTabs = findChild(indicators, "tabs");
+            var indicatorRow = findChild(indicators, "indicatorRow");
+
+            indicators.show();
+            indicatorRow.setCurrentItemIndex(data.currentIndex);
+            tryCompare(indicators, "fullyOpened", true);
+
+            for (var i = 0; i< data.visible.length; i++) {
+                if (data.visible[i] === false) {
+                    init_invisible_indicator("indicator-fake" + (i + 1));
+                }
+            }
+
+            // check for current selected item
+            tryCompare(indicatorRow, "currentItemIndex", data.expectedIndex);
+
+            // check for current selected tab
+            tryCompareFunction(function() { return findChild(indicatorTabs, data.expectedTab) === indicatorTabs.selectedTab }, true);
+
         }
     }
 }
