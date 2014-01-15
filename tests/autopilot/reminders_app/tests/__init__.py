@@ -18,7 +18,6 @@
 
 import os
 import os.path
-import shutil
 import logging
 
 from autopilot.input import Mouse, Touch, Pointer
@@ -34,6 +33,7 @@ from reminders_app import emulators
 
 logger = logging.getLogger(__name__)
 
+
 def get_module_include_path():
     return os.path.abspath(
         os.path.join(
@@ -45,6 +45,7 @@ def get_module_include_path():
             'builddir/src/plugin/')
         )
 
+
 class RemindersAppTestCase(AutopilotTestCase):
     """A common test case class that provides several useful methods for
        reminders-app tests."""
@@ -53,7 +54,6 @@ class RemindersAppTestCase(AutopilotTestCase):
         scenarios = [('with mouse', dict(input_device_class=Mouse))]
     else:
         scenarios = [('with touch', dict(input_device_class=Touch))]
-
 
     local_location = "../../src/app/qml/reminders-app.qml"
     installed_location = "/usr/share/reminders-app/qml/reminders-app.qml"
@@ -81,7 +81,7 @@ class RemindersAppTestCase(AutopilotTestCase):
             base.get_qmlscene_launch_command(),
             "-I", get_module_include_path(),
             self.local_location,
-           "--desktop_file_hint=/home/phablet/reminders-app/"
+            "--desktop_file_hint=/home/phablet/reminders-app/"
             "reminders-app.desktop",
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
