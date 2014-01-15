@@ -41,6 +41,7 @@ Build-Depends: cmake,
                qtdeclarative5-xmllistmodel-plugin,
                libqt5xmlpatterns5-dev,
                ttf-ubuntu-font-family,
+               ubuntu-purchase-service,
 Standards-Version: 3.9.4
 Homepage: http://launchpad.net/unity
 # If you aren't a member of ~unity-team but need to upload
@@ -79,6 +80,7 @@ Depends: gsettings-desktop-schemas,
          qtdeclarative5-ubuntu-ui-toolkit-plugin  (>= 0.1.46+13.10.20130829.1-0ubuntu1),
          qtdeclarative5-unity-notifications-plugin | unity-notifications-impl,
          qtdeclarative5-xmllistmodel-plugin,
+         ubuntu-purchase-service,
          unity-launcher-impl-3,
          unity-notifications-impl-2,
          unity8-fake-env | qtubuntu-shell,

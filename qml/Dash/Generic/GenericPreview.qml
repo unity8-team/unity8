@@ -18,6 +18,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItems
 import Ubuntu.DownloadDaemonListener 0.1
+import Ubuntu.Purchase 0.1
 import "../../Components"
 import ".."
 import "../Previews"
@@ -27,8 +28,18 @@ DashPreview {
 
     previewImages: previewImagesComponent
     header: headerComponent
-    actions: (previewData.infoMap !== undefined && previewData.infoMap["show_progressbar"]) ? progressComponent : actionsComponent
+    actions: loadActions()
     description: descriptionComponent
+
+    function loadActions() {
+        if (previewData.infoMap !== undefined && previewData.infoMap["show_progressbar"]) {
+            return progressComponent;
+        } else if (previewData.infoMap !== undefined && previewData.infoMap["show_purchase_overlay"]) {
+            return purchaseComponent;
+        } else {
+            return actionsComponent;
+        }
+    }
 
     Component {
         id: previewImagesComponent
@@ -107,6 +118,34 @@ DashPreview {
 
                 onError: {
                     previewData.execute(progressBar.model[1].id, { "error": error });
+                }
+            }
+
+        }
+    }
+
+    Component {
+        id: purchaseComponent
+
+        Label {
+            id: purchaseLabel
+            objectName: "purchaseLabel"
+            fontSize: "large"
+            text: i18n.tr("Loading Purchases...")
+
+            PurchaseClient {
+                id: client
+
+                Component.onCompleted: {
+                    client.purchaseItem({"package_name": previewData.infoMap["package_name"].value});
+                }
+
+                onFailed: {
+                    previewData.execute(previewData.actions[1].id, { "package_name": packageName });
+                }
+
+                onSucceeded: {
+                    previewData.execute(previewData.actions[0].id, { "package_name": packageName });
                 }
             }
 

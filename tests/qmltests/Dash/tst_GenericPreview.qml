@@ -57,6 +57,10 @@ Item {
             property var infoHints: [{displayName: "info 1", value: "value 1"},
                                     {displayName: "info 2", value: "value 2"}
                                     ]
+            property var infoMap: {
+                "show_progressbar": false,
+                "show_purchase_overlay": false,
+            }
         }
     }
 
@@ -67,6 +71,11 @@ Item {
         function init() {
             waitForRendering(genericPreview)
             root.calls = new Array();
+        }
+
+        function cleanup() {
+            genericPreview.previewData.infoMap["show_progressbar"] = false;
+            genericPreview.previewData.infoMap["show_purchase_overlay"] = false;
         }
 
         function test_actions() {
@@ -112,6 +121,26 @@ Item {
                 var value = findChild(infoItem, "valueLabel")
                 compare(value.text, dataObject.infoHints[i].value)
             }
+        }
+
+        function test_load_actions_component() {
+            genericPreview.actions = genericPreview.loadActions();
+            var buttons = findChild(genericPreview, "buttonList");
+            compare(buttons == undefined, false);
+        }
+
+        function test_load_progress_component() {
+            genericPreview.previewData.infoMap["show_progressbar"] = true;
+            genericPreview.actions = genericPreview.loadActions();
+            var progressBar = findChild(genericPreview, "progressBar");
+            compare(progressBar == undefined, false);
+        }
+
+        function test_load_purchase_component() {
+            genericPreview.previewData.infoMap["show_purchase_overlay"] = true;
+            genericPreview.actions = genericPreview.loadActions();
+            var purchaseLabel = findChild(genericPreview, "purchaseLabel");
+            compare(purchaseLabel == undefined, false);
         }
     }
 }
