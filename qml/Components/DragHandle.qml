@@ -104,6 +104,7 @@ EdgeDragArea {
                                                                 : startValue
 
         property var dragParent: dragArea.parent
+        property int touchSinceRollback: 0
 
         // The property of DragHandle's parent that will be modified
         property string targetProp: {
@@ -122,14 +123,17 @@ EdgeDragArea {
                 return step;
             }
 
-            // we should not go behind hintingAnimation's current value
-            if (Direction.isPositive(direction)) {
-                if (dragParent[targetProp] + step < hintingAnimation.to) {
-                    step = hintingAnimation.to - dragParent[targetProp];
-                }
-            } else {
-                if (dragParent[targetProp] + step > hintingAnimation.to) {
-                    step = hintingAnimation.to - dragParent[targetProp];
+            // if there is no rollback interval or this is the first touch;
+            if (hintRollbackInterval <= 0 || touchSinceRollback == 1) {
+                // we should not go behind hintingAnimation's current value.
+                if (Direction.isPositive(direction)) {
+                    if (dragParent[targetProp] + step < hintingAnimation.to) {
+                        step = hintingAnimation.to - dragParent[targetProp];
+                    }
+                } else {
+                    if (dragParent[targetProp] + step > hintingAnimation.to) {
+                        step = hintingAnimation.to - dragParent[targetProp];
+                    }
                 }
             }
 
@@ -141,8 +145,14 @@ EdgeDragArea {
                 completeDrag();
             } else {
                 if (hintRollbackInterval > 0) {
-                    hintingAnimation.start();
-                    hintRollback.start();
+                    // If the property is beyond the hint displacement then go back to hint
+                    if (dragParent[targetProp] > hintingAnimation.to) {
+                        hintingAnimation.start();
+                        hintRollback.start();
+                    } else { // otherwise rollback.
+                        d.rollbackDrag();
+                    }
+
                 } else {
                     d.rollbackDrag();
                 }
@@ -160,6 +170,7 @@ EdgeDragArea {
         }
 
         function rollbackDrag() {
+            touchSinceRollback = 0;
             hintRollback.stop();
 
             if (dragParent.shown) {
@@ -206,6 +217,12 @@ EdgeDragArea {
                 }
             }
         } else /* Undecided || Recognized */ {
+
+            if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
+                    d.previousStatus === undefined) {
+                d.touchSinceRollback++;
+            }
+
             if (!hintRollback.running) {
                 if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
                         d.previousStatus === undefined) {
