@@ -88,8 +88,8 @@ Item {
         opacity: indicatorsMenu.unitProgress * darkenedOpacity
         MouseArea {
             anchors.fill: parent
-            enabled: indicatorsMenu.shown
-            onClicked: if (indicatorsMenu.fullyOpened) indicatorsMenu.hide();
+            enabled: indicatorsMenu.partiallyOpened || indicatorsMenu.fullyOpened
+            onClicked: indicatorsMenu.hide();
         }
     }
 
@@ -105,6 +105,7 @@ Item {
         openedHeight: parent.height + (pinnedMode ? 0 : root.panelHeight)
         pinnedMode: !fullscreenMode
         overFlowWidth: search.state=="hidden" ? parent.width : parent.width - search.width
+        hintInterval: 3000
     }
 
     PanelSeparatorLine {

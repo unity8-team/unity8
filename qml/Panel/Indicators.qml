@@ -32,8 +32,9 @@ Showable {
     property alias overFlowWidth: indicatorRow.overFlowWidth
     property alias showAll: indicatorRow.showAll
 
-    readonly property real hintValue: panelHeight + menuContent.headerHeight
-    readonly property int lockThreshold: openedHeight / 2
+    property real hintValue: panelHeight + menuContent.headerHeight
+    property alias hintInterval: showDragHandle.hintRollbackInterval
+    property int lockThreshold: openedHeight / 2
     property bool fullyOpened: height == openedHeight
     property bool partiallyOpened: height > panelHeight && !fullyOpened
     property real visualBottom: Math.max(y+height, y+indicatorRow.y+indicatorRow.height)
@@ -66,9 +67,9 @@ Showable {
     }
 
     height: panelHeight
-    onHeightChanged: updateRevealProgressState(indicators.height - panelHeight, true)
+    onHeightChanged: updateRevealProgressState(indicators.height - panelHeight)
 
-    function updateRevealProgressState(revealProgress, enableRelease) {
+    function updateRevealProgressState(revealProgress) {
         if (!showAnimation.running && !hideAnimation.running) {
             if (revealProgress === 0) {
                 indicators.state = "initial";
@@ -79,10 +80,6 @@ Showable {
             } else if (revealProgress >= lockThreshold && lockThreshold > 0) {
                 indicators.state = "locked";
             }
-        }
-
-        if (enableRelease && revealProgress === 0) {
-            menuContent.releaseContent();
         }
     }
 
@@ -213,6 +210,12 @@ Showable {
             }
             opacity: 0.4
         }
+
+        onExpand: {
+            if (indicators.state == "hint") {
+                indicators.show();
+            }
+        }
     }
 
     Rectangle {
@@ -266,11 +269,11 @@ Showable {
             maxSilenceTime: 2000
             distanceThreshold: 0
 
-            enabled: fullyOpened
+            enabled: partiallyOpened || fullyOpened
             onDraggingChanged: {
                 if (dragging) {
                     initalizeItem = true;
-                    updateRevealProgressState(Math.max(touchSceneY - panelHeight, hintValue), false);
+                    updateRevealProgressState(Math.max(touchSceneY - panelHeight, hintValue));
                     indicators.calculateCurrentItem(touchX, false);
                 } else {
                     indicators.state = "commit";
@@ -281,7 +284,7 @@ Showable {
                 indicators.calculateCurrentItem(touchX, true);
             }
             onTouchSceneYChanged: {
-                updateRevealProgressState(Math.max(touchSceneY - panelHeight, hintValue), false);
+                updateRevealProgressState(Math.max(touchSceneY - panelHeight, hintValue));
                 yVelocityCalculator.trackedPosition = touchSceneY;
             }
         }
@@ -365,12 +368,6 @@ Showable {
         stretch: true
         maxTotalDragDistance: openedHeight - panelHeight
         distanceThreshold: pinnedMode ? 0 : units.gu(3)
-
-        onStatusChanged: {
-            if (status === DirectionalDragArea.Recognized) {
-                menuContent.activateContent();
-            }
-        }
     }
     DragHandle {
         id: hideDragHandle
@@ -391,6 +388,11 @@ Showable {
     states: [
         State {
             name: "initial"
+            StateChangeScript {
+                script: {
+                    menuContent.releaseContent();
+                }
+            }
         },
         State {
             name: "hint"
@@ -400,6 +402,7 @@ Showable {
             }
             StateChangeScript {
                 script: {
+                    menuContent.activateContent();
                     if (d.activeDragHandle) {
                         calculateCurrentItem(d.activeDragHandle.touchX, false);
                     }

@@ -28,6 +28,7 @@
 // local
 #include "albumartprovider.h"
 #include "bottombarvisibilitycommunicatorshell.h"
+#include "passthroughmousearea.h"
 #include "qlimitproxymodelqml.h"
 #include "qsortfilterproxymodelqml.h"
 #include "timeformatter.h"
@@ -45,6 +46,7 @@ void UtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<UnityMenuModelPaths>(uri, 0, 1, "UnityMenuModelPaths");
     qmlRegisterType<TimeFormatter>(uri, 0, 1, "TimeFormatter");
     qmlRegisterType<GDateTimeFormatter>(uri, 0, 1, "GDateTimeFormatter");
+    qmlRegisterType<PassthroughMouseArea>(uri, 0, 1, "PassthroughMouseArea");
     qmlRegisterUncreatableType<BottomBarVisibilityCommunicatorShell>(uri, 0, 1, "BottomBarVisibilityCommunicatorShell", "Can't create BottomBarVisibilityCommunicatorShell");
 }
 

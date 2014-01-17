@@ -67,30 +67,29 @@ EdgeDragArea {
         }
     }
 
+    function resetHint() {
+        if (hintRollback.running) {
+            hintRollback.restart();
+        }
+    }
+
     property real hintDisplacement: 0
+    property alias hintRollbackInterval: hintRollback.interval
     SmoothedAnimation {
         id: hintingAnimation
-        target: hintingAnimation
-        property: "targetValue"
+        target: parent
+        property: d.targetProp
         duration: 150
         velocity: -1
         to: Direction.isPositive(direction) ? d.startValue + hintDisplacement
                                             : d.startValue - hintDisplacement
-        property real targetValue
-        onTargetValueChanged: {
-            if (!running) {
-                return;
-            }
+    }
 
-            if (Direction.isPositive(direction)) {
-                if (parent[d.targetProp] < targetValue) {
-                    parent[d.targetProp] = targetValue;
-                }
-            } else {
-                if (parent[d.targetProp] > targetValue) {
-                    parent[d.targetProp] = targetValue;
-                }
-            }
+    Timer {
+        id: hintRollback
+        interval: 0
+        onTriggered: {
+            d.rollbackDrag();
         }
     }
 
@@ -125,12 +124,12 @@ EdgeDragArea {
 
             // we should not go behind hintingAnimation's current value
             if (Direction.isPositive(direction)) {
-                if (dragParent[targetProp] + step < hintingAnimation.targetValue) {
-                    step = hintingAnimation.targetValue - dragParent[targetProp];
+                if (dragParent[targetProp] + step < hintingAnimation.to) {
+                    step = hintingAnimation.to - dragParent[targetProp];
                 }
             } else {
-                if (dragParent[targetProp] + step > hintingAnimation.targetValue) {
-                    step = hintingAnimation.targetValue - dragParent[targetProp];
+                if (dragParent[targetProp] + step > hintingAnimation.to) {
+                    step = hintingAnimation.to - dragParent[targetProp];
                 }
             }
 
@@ -141,11 +140,18 @@ EdgeDragArea {
             if (dragEvaluator.shouldAutoComplete()) {
                 completeDrag();
             } else {
-                rollbackDrag();
+                if (hintRollbackInterval > 0) {
+                    hintingAnimation.start();
+                    hintRollback.start();
+                } else {
+                    d.rollbackDrag();
+                }
             }
         }
 
         function completeDrag() {
+            hintRollback.stop();
+
             if (dragParent.shown) {
                 dragParent.hide();
             } else {
@@ -154,6 +160,8 @@ EdgeDragArea {
         }
 
         function rollbackDrag() {
+            hintRollback.stop();
+
             if (dragParent.shown) {
                 dragParent.show();
             } else {
@@ -185,22 +193,34 @@ EdgeDragArea {
 
     onStatusChanged: {
         if (status === DirectionalDragArea.WaitingForTouch) {
-            hintingAnimation.stop();
             if (d.previousStatus === DirectionalDragArea.Recognized) {
                 d.onFinishedRecognizedGesture();
             } else /* d.previousStatus === DirectionalDragArea.Undecided */ {
                 // Gesture was rejected.
-                d.rollbackDrag();
+                if (hintRollbackInterval > 0) {
+                    // start timer on release
+                    hintingAnimation.start();
+                    hintRollback.start();
+                } else {
+                    d.rollbackDrag();
+                }
             }
         } else /* Undecided || Recognized */ {
-            if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
-                    d.previousStatus === undefined) {
-                dragEvaluator.reset();
-                d.startValue = parent[d.targetProp];
-            }
-            if (hintDisplacement > 0) {
-                hintingAnimation.targetValue = d.startValue;
-                hintingAnimation.start();
+            if (!hintRollback.running) {
+                if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
+                        d.previousStatus === undefined) {
+                    dragEvaluator.reset();
+                    d.startValue = parent[d.targetProp];
+                }
+                if (hintDisplacement > 0) {
+                    hintingAnimation.start();
+                }
+            } else {
+                if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
+                        d.previousStatus === undefined) {
+                    // stop rollback timer as we've started dragging again.
+                    hintRollback.stop();
+                }
             }
         }
 

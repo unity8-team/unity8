@@ -74,6 +74,12 @@ Item {
         }
     }
 
+    SignalSpy {
+        id: spyExpand
+        target: menuContent
+        signalName: "expand"
+    }
+
     function activate_next_content()
     {
         if (menuContent.currentMenuIndex == -1)
@@ -115,6 +121,7 @@ Item {
         when: windowShown
 
         function init() {
+            spyExpand.clear();
             if (menuContent.__contentActive)
                 menuContent.releaseContent();
             tryCompare(menuContent, "__contentActive", false);
@@ -184,6 +191,18 @@ Item {
                 compare(menuContent.currentMenuIndex, i%menuCount);
             }
             wait(100);
+        }
+
+        function test_expand() {
+            var tabs = menu_content_test.findChild(menuContent, "tabs");
+
+            menuContent.activeHeader = false;
+            tap(tabs.tabBar, tabs.tabBar.width/2, tabs.tabBar.height/2);
+            compare(spyExpand.count, 0, "Menu should not expand when header is not active")
+
+            menuContent.activeHeader = true;
+            tap(tabs.tabBar, tabs.tabBar.width/2, tabs.tabBar.height/2);
+            compare(spyExpand.count, 1, "Menu should expand when header is active")
         }
     }
 }

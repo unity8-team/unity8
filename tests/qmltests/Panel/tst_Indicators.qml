@@ -45,6 +45,8 @@ Item {
         shown: false
 
         openedHeight: parent.height - click_me.height
+        hintInterval: 1000
+        hintValue: units.gu(10)
     }
 
     // Just a rect for clicking to open the indicators.
@@ -83,6 +85,7 @@ Item {
         when: windowShown
 
         function init() {
+            indicators.hintInterval = 50;
             indicators.initialise();
 
             indicators.hide();
@@ -110,9 +113,6 @@ Item {
             for (var i = 0; i < indicatorRowItems.count; i++) {
                 var indicatorItem = findChild(indicatorRowItems, "item" + i);
 
-                if (!indicatorItem.visible)
-                    continue;
-
                 var indicatorPosition = indicators.mapFromItem(indicatorItem,
                         indicatorItem.width/2, indicatorItem.height/2)
 
@@ -132,6 +132,31 @@ Item {
                 // wait until fully closed
                 tryCompare(indicators, "height", indicators.panelHeight)
             }
+        }
+
+        function test_hint() {
+            indicators.hintInterval = 1000;
+
+            var indicatorRow = findChild(indicators, "indicatorRow")
+            verify(indicatorRow !== null)
+            var indicatorRowItems = findChild(indicatorRow, "indicatorRowItems");
+            verify(indicatorRowItems !== null)
+
+            var indicatorItem = findChild(indicatorRowItems, "item0");
+
+            var indicatorPosition = indicators.mapFromItem(indicatorItem,
+                    indicatorItem.width/2, indicatorItem.height/2)
+
+            touchPress(indicators, indicatorPosition.x, indicatorPosition.y);
+            tryCompareFunction(function() { return indicators.height > indicators.panelHeight}, true);
+
+            touchRelease(indicators, indicatorPosition.x, indicatorPosition.y);
+            tryCompare(indicators, "height", indicators.hintValue + indicators.panelHeight);
+            wait(indicators.hintInterval / 2);
+            tryCompare(indicators, "height", indicators.hintValue + indicators.panelHeight);
+
+            // wait until fully closed
+            tryCompare(indicators, "height", indicators.panelHeight);
         }
 
         // values for specific state changes are subject to internal decisions, so we can't
@@ -186,7 +211,6 @@ Item {
             var indicatorTabs = findChild(indicators, "tabs");
             var indicatorRowItems = findChild(indicators, "indicatorRowItems");
 
-
             var count = data.visible.length
             for (var i = 0; i< data.visible.length; i++) {
                 if (data.visible[i] === false) {
@@ -235,7 +259,6 @@ Item {
 
             // check for current selected tab
             tryCompareFunction(function() { return findChild(indicatorTabs, data.expectedTab) === indicatorTabs.selectedTab }, true);
-
         }
     }
 }

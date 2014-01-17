@@ -37,6 +37,8 @@ MainView {
     width: units.gu(40)
     height: units.gu(42)
 
+    signal expand
+
     function setCurrentMenuIndex(index, animate) {
         if (tabs.selectedTabIndex !== index) {
             if (tabs.selectedTabIndex === -1 || !animate) {
@@ -67,6 +69,14 @@ MainView {
         id: tabs
         objectName: "tabs"
         anchors.fill: parent
+
+        PassthroughMouseArea {
+            parent: tabs.tabBar
+            anchors.fill: parent
+
+            enabled: activeHeader
+            onClicked: expand()
+        }
 
         Repeater {
             id: repeater

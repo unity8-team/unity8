@@ -65,7 +65,7 @@ Indicators.IndicatorBase {
                 model: indicatorWidget.icons
 
                 Item {
-                    width: guRoundUp(itemImage.width)
+                    width: itemImage.status !== Image.Error ? guRoundUp(itemImage.width) : units.gu(1)
                     height: indicatorWidget.iconSize
 
                     Image {
@@ -101,7 +101,7 @@ Indicators.IndicatorBase {
 
     // TODO: Use toolkit function https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1242575
     function guRoundUp(width) {
-        if (width == 0) {
+        if (width === 0) {
             return 0;
         }
         var gu1 = units.gu(1.0);
