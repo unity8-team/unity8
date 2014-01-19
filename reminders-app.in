@@ -1,0 +1,3 @@
+#!/bin/sh
+export QT_SELECT=qt5
+qmlscene @CMAKE_INSTALL_PREFIX@/@DATA_DIR@/@MAIN_QML@

@@ -47,7 +47,6 @@ add_custom_target(evernoteplugin-qmldir ALL
 )
 
 # Install plugin file
-exec_program(qmake ARGS "-query QT_INSTALL_QML" OUTPUT_VARIABLE QT_IMPORTS_DIR)
 install(TARGETS evernoteplugin DESTINATION ${QT_IMPORTS_DIR}/Evernote/)
 install(FILES qmldir DESTINATION ${QT_IMPORTS_DIR}/Evernote/)
 
