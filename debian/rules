@@ -9,13 +9,3 @@
 
 override_dh_install:	
 	dh_install --fail-missing
-	appname=com.ubuntu.reminders-app; \
-	debname=reminders-app; \
-	for pofile in $(shell find ./po -name "*.po"); do \
-		pofilename="$${pofile##*/}"; \
-		langcode="$${pofilename%.*}"; \
-		localedir="debian/$$debname/usr/share/locale/$$langcode/LC_MESSAGES"; \
-		mkdir -p $$localedir; \
-		mofile="$$localedir/$$appname.mo"; \
-		msgfmt -o $$mofile $$pofile; \
-	done

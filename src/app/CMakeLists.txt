@@ -13,3 +13,5 @@ add_custom_target(reminders-app-qmlfiles ALL
     COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/qml ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${QMLFILES}
 )
+
+install(DIRECTORY qml DESTINATION ${DATA_DIR})
