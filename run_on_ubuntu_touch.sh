@@ -79,7 +79,6 @@ build_click_package() {
 }
 
 run() {
-    echo "running $CODE_DIR"
     exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/src/app/ && ./$BINARY --desktop_file_hint=/home/phablet/$CODE_DIR/reminders-app.desktop"
 }
 

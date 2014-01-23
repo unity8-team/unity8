@@ -43,7 +43,6 @@ void SaveNoteJob::startJob()
     note.notebookGuid = m_note->notebookGuid().toStdString();
     note.__isset.notebookGuid = true;
     note.content = m_note->enmlContent().toStdString();
-    qDebug() << "saving content" << m_note->enmlContent();
     note.__isset.content = true;
     note.contentLength = m_note->enmlContent().length();
 
@@ -57,7 +56,6 @@ void SaveNoteJob::startJob()
 
     note.resources.clear();
     foreach (Resource *resource, m_note->resources()) {
-        qDebug() << "saving resource" << resource->hash() << resource->type() << resource->fileName();
         evernote::edam::Resource evResource;
         evResource.noteGuid = m_note->guid().toStdString();
         evResource.__isset.noteGuid = true;
@@ -71,7 +69,6 @@ void SaveNoteJob::startJob()
         evResource.data.body.assign(data.data(), data.length());
         evResource.data.__isset.body = true;
 
-        qDebug() << "body length" << resource->data().length() << evResource.data.body.length();
         evResource.data.size = data.length();
         evResource.data.__isset.size = true;
         evResource.__isset.data = true;

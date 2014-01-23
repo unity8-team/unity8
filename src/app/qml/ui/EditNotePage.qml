@@ -128,10 +128,6 @@ Page {
 
             textFormat: TextEdit.RichText
             text: root.note ? root.note.richTextContent : ""
-
-            onCursorPositionChanged: {
-                print("cursor changed:", cursorPosition)
-            }
         }
     }
 }

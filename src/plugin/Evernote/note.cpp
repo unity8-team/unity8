@@ -217,7 +217,6 @@ QStringList Note::resourceUrls() const
 
 Resource* Note::resource(const QString &hash)
 {
-    qDebug() << "finding resource" << hash << "got:" << m_resources.keys();
     return m_resources.value(hash);
 }
 
@@ -243,7 +242,6 @@ void Note::markTodo(const QString &todoId, bool checked)
 
 void Note::attachFile(int position, const QUrl &fileName)
 {
-    qDebug() << "att:" << fileName << fileName.path();
     Resource *resource = addResource(fileName.path());
     m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
     emit contentChanged();

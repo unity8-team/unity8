@@ -46,8 +46,6 @@ void CreateNoteJob::startJob()
         input.__isset.contentLength = true;
     }
 
-    qDebug() << "creating note" << m_content;
-
     client()->createNote(m_resultNote, token().toStdString(), input);
 }
 
