@@ -93,8 +93,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->richTextContent();
     case RolePlaintextContent:
         return m_notes.at(index.row())->plaintextContent();
-    case RoleResources:
-        return m_notes.at(index.row())->resources();
+    case RoleResourceUrls:
+        return m_notes.at(index.row())->resourceUrls();
     }
     return QVariant();
 }
@@ -114,7 +114,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleRichTextContent, "richTextContent");
     roles.insert(RoleHtmlContent, "htmlContent");
     roles.insert(RolePlaintextContent, "plaintextContent");
-    roles.insert(RoleResources, "resources");
+    roles.insert(RoleResourceUrls, "resourceUrls");
     return roles;
 }
 
@@ -235,12 +235,8 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString fileName = QString::fromStdString(resource.attributes.fileName);
         QString mime = QString::fromStdString(resource.mime);
 
-        if (mime.startsWith("image/")) {
-            QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
-            note->addResource(hash, fileName, mime, image);
-        } else {
-            note->addResource(hash, fileName, mime);
-        }
+        QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
+        note->addResource(resourceData, hash, fileName, mime);
     }
 
     note->setEnmlContent(QString::fromStdString(result.content));
@@ -324,6 +320,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     endInsertRows();
 
     emit noteAdded(note->guid(), note->notebookGuid());
+    emit noteCreated(note->guid(), note->notebookGuid());
 }
 
 void NotesStore::saveNote(const QString &guid)

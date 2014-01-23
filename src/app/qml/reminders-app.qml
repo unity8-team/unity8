@@ -59,6 +59,18 @@ MainView {
         }
     }
 
+    Connections {
+        target: NotesStore
+        onNoteCreated: {
+            var note = NotesStore.note(guid);
+            print("note created:", note.guid);
+            var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
+            var page = component.createObject(pageStack)
+            page.note = note;
+            pagestack.push(page);
+        }
+    }
+
     PageStack {
         id: pagestack
 

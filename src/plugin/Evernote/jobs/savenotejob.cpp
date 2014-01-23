@@ -43,6 +43,7 @@ void SaveNoteJob::startJob()
     note.notebookGuid = m_note->notebookGuid().toStdString();
     note.__isset.notebookGuid = true;
     note.content = m_note->enmlContent().toStdString();
+    qDebug() << "saving content" << m_note->enmlContent();
     note.__isset.content = true;
     note.contentLength = m_note->enmlContent().length();
 
@@ -53,6 +54,35 @@ void SaveNoteJob::startJob()
     note.attributes.__isset.reminderTime = true;
     note.attributes.reminderDoneTime = m_note->reminderDoneTime().toMSecsSinceEpoch();
     note.attributes.__isset.reminderDoneTime = true;
+
+    note.resources.clear();
+    foreach (Resource *resource, m_note->resources()) {
+        qDebug() << "saving resource" << resource->hash() << resource->type() << resource->fileName();
+        evernote::edam::Resource evResource;
+        evResource.noteGuid = m_note->guid().toStdString();
+        evResource.__isset.noteGuid = true;
+        evResource.mime = resource->type().toStdString();
+        evResource.__isset.mime = true;
+
+        evResource.data.bodyHash = resource->hash().toStdString();
+        evResource.data.__isset.bodyHash = true;
+
+        QByteArray data = resource->data();
+        evResource.data.body.assign(data.data(), data.length());
+        evResource.data.__isset.body = true;
+
+        qDebug() << "body length" << resource->data().length() << evResource.data.body.length();
+        evResource.data.size = data.length();
+        evResource.data.__isset.size = true;
+        evResource.__isset.data = true;
+
+        evResource.attributes.fileName = resource->fileName().toStdString();
+        evResource.attributes.__isset.fileName = true;
+        evResource.__isset.attributes = true;
+
+        note.resources.push_back(evResource);
+    }
+    note.__isset.resources = true;
 
     client()->updateNote(m_resultNote, token().toStdString(), note);
 }

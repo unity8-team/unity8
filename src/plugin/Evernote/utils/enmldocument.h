@@ -38,6 +38,9 @@ public:
 
     void setRichText(const QString &richText);
 
+    // Will insert the file at position in the plaintext string
+    void attachFile(int position, const QString &file, const QString &hash, const QString &type);
+
     void markTodo(const QString &todoId, bool checked);
 
 private:
@@ -47,7 +50,6 @@ private:
     };
 
     QString convert(const QString &noteGuid, Type type) const;
-
 private:
     QString m_enml;
 

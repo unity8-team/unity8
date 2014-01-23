@@ -35,12 +35,18 @@ void CreateNoteJob::startJob()
     evernote::edam::Note input;
     input.title = m_title.toStdString();
     input.__isset.title = true;
-    input.notebookGuid = m_notebookGuid.toStdString();
-    input.__isset.notebookGuid = true;
-    input.content = m_content.toStdString();
-    input.__isset.content = true;
-    input.contentLength = m_content.length();
-    input.__isset.contentLength = true;
+    if (!m_notebookGuid.isEmpty()) {
+        input.notebookGuid = m_notebookGuid.toStdString();
+        input.__isset.notebookGuid = true;
+    }
+    if (!m_content.isEmpty()) {
+        input.content = m_content.toStdString();
+        input.__isset.content = true;
+        input.contentLength = m_content.length();
+        input.__isset.contentLength = true;
+    }
+
+    qDebug() << "creating note" << m_content;
 
     client()->createNote(m_resultNote, token().toStdString(), input);
 }

@@ -11,6 +11,7 @@ set(evernoteplugin_SRCS
     notebooks.cpp
     notes.cpp
     note.cpp
+    resource.cpp
     notebook.cpp
     jobs/fetchnotesjob.cpp
     jobs/fetchnotebooksjob.cpp
