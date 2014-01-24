@@ -171,6 +171,7 @@ Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    pagestack.push(Qt.resolvedUrl("CameraPage.qml"), {note: root.note, position: priv.insertPosition})
                 }
             }
         }

@@ -242,6 +242,7 @@ void Note::markTodo(const QString &todoId, bool checked)
 
 void Note::attachFile(int position, const QUrl &fileName)
 {
+    qDebug() << "attaching file" << position << fileName;
     Resource *resource = addResource(fileName.path());
     m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
     emit contentChanged();

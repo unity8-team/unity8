@@ -65,6 +65,7 @@ Resource::Resource(const QString &path, QObject *parent):
     } else {
         qWarning() << "cannot determine mime type of file" << m_fileName;
     }
+    qDebug() << "created resource" << m_hash;
 }
 
 QString Resource::hash() const
