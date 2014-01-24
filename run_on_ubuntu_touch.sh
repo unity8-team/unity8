@@ -79,7 +79,7 @@ build_click_package() {
 }
 
 run() {
-    exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/src/app/ && ./$BINARY --desktop_file_hint=$CODE_DIR/reminders-app.desktop"
+    exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/src/app/ && ./$BINARY --desktop_file_hint=/home/$USER/$CODE_DIR/$BUILD_DIR/com.ubuntu.reminders_reminders.desktop"
 }
 
 set -- `getopt -n$0 -u -a --longoptions="setup,gdb,click,help" "sgch" "$@"`
