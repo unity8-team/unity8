@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Content 0.1
 import Evernote 0.1
 import "../components"
 
@@ -29,26 +30,28 @@ Page {
     tools: ToolbarItems {
         locked: true
         opened: false
-        ToolbarButton {
-            text: "save"
-            iconName: "select"
-            onTriggered: {
-            }
-        }
-        ToolbarSpacer {}
-
-        ToolbarButton {
-            text: "attach"
-        }
-        ToolbarButton {
-            text: "camera"
-            iconName: "camera-symbolic"
-        }
-        ToolbarButton {
-            text: "rtf"
-        }
-
     }
+
+    QtObject {
+        id: priv
+        property int insertPosition
+        property var activeTransfer
+    }
+
+    ContentImportHint {
+        id: importHint
+        anchors.fill: parent
+        activeTransfer: root.activeTransfer
+    }
+    Connections {
+         target: priv.activeTransfer ? priv.activeTransfer : null
+         onStateChanged: {
+             if (priv.activeTransfer.state === ContentTransfer.Charged) {
+                 print("attaching", priv.activeTransfer.items[0].url.toString())
+                 note.attachFile(priv.insertPosition, priv.activeTransfer.items[0].url.toString())
+             }
+         }
+     }
 
     Column {
         anchors { left: parent.left; top: parent.top; right: parent.right; bottom: toolbox.top }
@@ -131,7 +134,6 @@ Page {
 
             textFormat: TextEdit.RichText
             text: root.note ? root.note.richTextContent : ""
-
         }
     }
 
@@ -151,6 +153,12 @@ Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    priv.insertPosition = noteTextArea.cursorPosition;
+                    note.richTextContent = noteTextArea.text;
+
+                    priv.activeTransfer = ContentHub.importContent(ContentType.Pictures);
+                    priv.activeTransfer.selectionType = ContentTransfer.Single;
+                    priv.activeTransfer.start();
                 }
             }
         }

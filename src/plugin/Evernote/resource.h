@@ -18,30 +18,35 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#ifndef CREATENOTEJOB_H
-#define CREATENOTEJOB_H
+#ifndef RESOURCE_H
+#define RESOURCE_H
 
-#include "notesstorejob.h"
+#include <QObject>
+#include <QString>
+#include <QImage>
 
-class CreateNoteJob : public NotesStoreJob
+class Resource: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QByteArray data READ data CONSTANT)
+    Q_PROPERTY(QString hash READ hash CONSTANT)
+    Q_PROPERTY(QString fileName READ fileName CONSTANT)
+    Q_PROPERTY(QString type READ type CONSTANT)
+
 public:
-    explicit CreateNoteJob(const QString &title, const QString &notebookGuid = QString(), const QString &content = QString(), QObject *parent = 0);
+    Resource(const QString &path, QObject *parent = 0);
+    Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent = 0);
 
-signals:
-    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, evernote::edam::Note note);
-
-protected:
-    void startJob();
-    void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
+    QByteArray data() const;
+    QString hash() const;
+    QString fileName() const;
+    QString type() const;
 
 private:
-    QString m_title;
-    QString m_notebookGuid;
-    QString m_content;
-
-    evernote::edam::Note m_resultNote;
+    QString m_hash;
+    QString m_fileName;
+    QString m_filePath;
+    QString m_type;
 };
 
-#endif // CREATENOTEJOB_H
+#endif

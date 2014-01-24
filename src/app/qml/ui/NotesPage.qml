@@ -49,7 +49,7 @@ Page {
             text: "add note"
             iconName: "add"
             onTriggered: {
-                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"));
+                NotesStore.createNote("Untitled");
             }
         }
     }
@@ -68,7 +68,7 @@ Page {
             title: model.title
             creationDate: model.created
             content: model.plaintextContent
-            resource: model.resources.length > 0 ? model.resources[0] : ""
+            resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
