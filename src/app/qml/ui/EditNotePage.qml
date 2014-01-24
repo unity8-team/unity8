@@ -28,46 +28,8 @@ Page {
     property var note
 
     tools: ToolbarItems {
-        ToolbarButton {
-            text: "save"
-            iconName: "select"
-            onTriggered: {
-                var title = titleTextField.text ? titleTextField.text : i18n.tr("Untitled");
-                var notebookGuid = notebookSelector.selectedGuid;
-                var text = noteTextArea.text;
-
-                if (note) {
-                    note.title = titleTextField.text
-                    note.notebookGuid = notebookSelector.selectedGuid
-                    note.richTextContent = noteTextArea.text
-                    NotesStore.saveNote(note.guid);
-                } else {
-                    NotesStore.createNote(title, notebookGuid, text);
-                }
-
-                pagestack.pop();
-            }
-        }
-        ToolbarSpacer {}
-
-        ToolbarButton {
-            text: "attach"
-            onTriggered: {
-                priv.insertPosition = noteTextArea.cursorPosition;
-                note.richTextContent = noteTextArea.text;
-
-                priv.activeTransfer = ContentHub.importContent(ContentType.Pictures);
-                priv.activeTransfer.selectionType = ContentTransfer.Single;
-                priv.activeTransfer.start();
-            }
-        }
-        ToolbarButton {
-            text: "camera"
-            iconName: "camera-symbolic"
-        }
-        ToolbarButton {
-            text: "rtf"
-        }
+        locked: true
+        opened: false
     }
 
     QtObject {
@@ -92,16 +54,61 @@ Page {
      }
 
     Column {
-        anchors.fill: parent
+        anchors { left: parent.left; top: parent.top; right: parent.right; bottom: toolbox.top }
         anchors.margins: units.gu(2)
         spacing: units.gu(1)
 
-        TextField {
-            id: titleTextField
-            text: root.note ? root.note.title : ""
-            placeholderText: "Untitled"
-            height: units.gu(5)
+        Row {
             anchors { left: parent.left; right: parent.right }
+            height: units.gu(5)
+            spacing: units.gu(2)
+            Icon {
+                id: backIcon
+                name: "back"
+                height: units.gu(3)
+                width: height
+                anchors.verticalCenter: parent.verticalCenter
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        pagestack.pop();
+                    }
+                }
+            }
+
+            TextField {
+                id: titleTextField
+                text: root.note ? root.note.title : ""
+                placeholderText: i18n.tr("Untitled")
+                height: units.gu(5)
+                width: parent.width - (backIcon.width + parent.spacing) * 2
+            }
+            Icon {
+                name: "save"
+                height: units.gu(3)
+                width: height
+                anchors.verticalCenter: parent.verticalCenter
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        var title = titleTextField.text ? titleTextField.text : i18n.tr("Untitled");
+                        var notebookGuid = notebookSelector.selectedGuid;
+                        var text = noteTextArea.text;
+
+                        if (note) {
+                            note.title = titleTextField.text
+                            note.notebookGuid = notebookSelector.selectedGuid
+                            note.richTextContent = noteTextArea.text
+                            NotesStore.saveNote(note.guid);
+                        } else {
+                            NotesStore.createNote(title, notebookGuid, text);
+                        }
+
+                        pagestack.pop();
+                    }
+                }
+            }
         }
 
         Divider {
@@ -111,7 +118,6 @@ Page {
 
         OptionSelector {
             id: notebookSelector
-            text: i18n.tr("Notebook")
             model: Notebooks {}
             property string selectedGuid: model.notebook(selectedIndex).guid
 
@@ -129,6 +135,67 @@ Page {
             textFormat: TextEdit.RichText
             text: root.note ? root.note.richTextContent : ""
         }
+    }
+
+    Rectangle {
+        id: toolbox
+        anchors { left: parent.left; right: parent.right; bottom: keyboardRect.top }
+        height: units.gu(6)
+        color: "white"
+
+        Icon {
+            name: "import-image"
+            height: units.gu(3)
+            width: height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.margins: units.gu(2)
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    priv.insertPosition = noteTextArea.cursorPosition;
+                    note.richTextContent = noteTextArea.text;
+
+                    priv.activeTransfer = ContentHub.importContent(ContentType.Pictures);
+                    priv.activeTransfer.selectionType = ContentTransfer.Single;
+                    priv.activeTransfer.start();
+                }
+            }
+        }
+
+        Icon {
+            name: "camera-symbolic"
+            height: units.gu(3)
+            width: height
+            anchors.centerIn: parent
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                }
+            }
+        }
+
+        Icon {
+            name: "edit"
+            height: units.gu(3)
+            width: height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.margins: units.gu(2)
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                }
+            }
+        }
+
+
+    }
+
+    Item {
+        id: keyboardRect
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
+        height: Qt.inputMethod.keyboardRectangle.height
     }
 }
 
