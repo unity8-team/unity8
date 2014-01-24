@@ -26,6 +26,7 @@
 #include "notes.h"
 #include "notebooks.h"
 #include "note.h"
+#include "resource.h"
 #include "notebook.h"
 #include "resourceimageprovider.h"
 
@@ -56,6 +57,7 @@ void EvernotePlugin::registerTypes(const char *uri)
     qmlRegisterType<Notebooks>("Evernote", 0, 1, "Notebooks");
     qmlRegisterUncreatableType<Note>("Evernote", 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
     qmlRegisterUncreatableType<Notebook>("Evernote", 0, 1, "Notebook", "Cannot create Notes in QML. Use NotesStore.createNotebook() instead.");
+    qmlRegisterUncreatableType<Resource>("Evernote", 0, 1, "Resource", "Cannot create Resources. Use Note.attachFile() instead.");
 }
 
 void EvernotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)

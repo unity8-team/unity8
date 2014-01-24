@@ -27,6 +27,8 @@
 #include <QUrlQuery>
 #include <QStandardPaths>
 #include <QDebug>
+#include <QCryptographicHash>
+#include <QFile>
 
 Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
@@ -34,6 +36,11 @@ Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     m_created(created),
     m_isSearchResult(false)
 {
+}
+
+Note::~Note()
+{
+    qDeleteAll(m_resources.values());
 }
 
 QString Note::guid() const
@@ -189,11 +196,16 @@ void Note::setIsSearchResult(bool isSearchResult)
     }
 }
 
-QStringList Note::resources() const
+QList<Resource*> Note::resources() const
+{
+    return m_resources.values();
+}
+
+QStringList Note::resourceUrls() const
 {
     QList<QString> ret;
     foreach (const QString &hash, m_resources.keys()) {
-        QUrl url("image://resource/" + m_resourceTypes.value(hash));
+        QUrl url("image://resource/" + m_resources.value(hash)->type());
         QUrlQuery arguments;
         arguments.addQueryItem("noteGuid", m_guid);
         arguments.addQueryItem("hash", hash);
@@ -203,29 +215,36 @@ QStringList Note::resources() const
     return ret;
 }
 
-QImage Note::resource(const QString &hash)
+Resource* Note::resource(const QString &hash)
 {
     return m_resources.value(hash);
 }
 
-QString Note::resourceName(const QString &hash)
+
+Resource* Note::addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type)
 {
-    return m_resourceNames.value(hash);
+    Resource *resource = new Resource(data, hash, fileName, type, this);
+    m_resources.insert(hash, resource);
+    return resource;
 }
 
-void Note::addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image)
+Resource *Note::addResource(const QString &fileName)
 {
-    image.save(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last());
-    if (!image.isNull()) {
-        m_resources.insert(hash, image);
-    }
-    m_resourceTypes.insert(hash, type);
-    m_resourceNames.insert(hash, fileName);
+    Resource *resource = new Resource(fileName);
+    m_resources.insert(resource->hash(), resource);
+    return resource;
 }
 
 void Note::markTodo(const QString &todoId, bool checked)
 {
     m_content.markTodo(todoId, checked);
+}
+
+void Note::attachFile(int position, const QUrl &fileName)
+{
+    Resource *resource = addResource(fileName.path());
+    m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
+    emit contentChanged();
 }
 
 Note *Note::clone()
@@ -238,6 +257,10 @@ Note *Note::clone()
     note->setReminderTime(m_reminderTime);
     note->setReminderDoneTime(m_reminderDoneTime);
     note->setIsSearchResult(m_isSearchResult);
+    foreach (Resource *resource, m_resources) {
+        note->addResource(resource->data(), resource->hash(), resource->fileName(), resource->type());
+    }
+
     return note;
 }
 

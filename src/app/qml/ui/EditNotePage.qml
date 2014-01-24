@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Content 0.1
 import Evernote 0.1
 import "../components"
 
@@ -51,6 +52,14 @@ Page {
 
         ToolbarButton {
             text: "attach"
+            onTriggered: {
+                priv.insertPosition = noteTextArea.cursorPosition;
+                note.richTextContent = noteTextArea.text;
+
+                priv.activeTransfer = ContentHub.importContent(ContentType.Pictures);
+                priv.activeTransfer.selectionType = ContentTransfer.Single;
+                priv.activeTransfer.start();
+            }
         }
         ToolbarButton {
             text: "camera"
@@ -59,8 +68,28 @@ Page {
         ToolbarButton {
             text: "rtf"
         }
-
     }
+
+    QtObject {
+        id: priv
+        property int insertPosition
+        property var activeTransfer
+    }
+
+    ContentImportHint {
+        id: importHint
+        anchors.fill: parent
+        activeTransfer: root.activeTransfer
+    }
+    Connections {
+         target: priv.activeTransfer ? priv.activeTransfer : null
+         onStateChanged: {
+             if (priv.activeTransfer.state === ContentTransfer.Charged) {
+                 print("attaching", priv.activeTransfer.items[0].url.toString())
+                 note.attachFile(priv.insertPosition, priv.activeTransfer.items[0].url.toString())
+             }
+         }
+     }
 
     Column {
         anchors.fill: parent
@@ -99,7 +128,6 @@ Page {
 
             textFormat: TextEdit.RichText
             text: root.note ? root.note.richTextContent : ""
-
         }
     }
 }

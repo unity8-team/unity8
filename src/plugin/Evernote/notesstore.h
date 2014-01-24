@@ -63,7 +63,7 @@ public:
         RoleHtmlContent,
         RoleRichTextContent,
         RolePlaintextContent,
-        RoleResources
+        RoleResourceUrls
     };
 
     ~NotesStore();
@@ -77,7 +77,7 @@ public:
     QList<Note*> notes() const;
 
     Q_INVOKABLE Note* note(const QString &guid);
-    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &richTextContent);
+    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid = QString(), const QString &richTextContent = QString());
     void createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content);
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);
@@ -96,6 +96,7 @@ public slots:
 signals:
     void tokenChanged();
 
+    void noteCreated(const QString &guid, const QString &notebookGuid);
     void noteAdded(const QString &guid, const QString &notebookGuid);
     void noteChanged(const QString &guid, const QString &notebookGuid);
     void noteRemoved(const QString &guid, const QString &notebookGuid);
