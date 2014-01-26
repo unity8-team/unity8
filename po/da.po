@@ -1,21 +1,21 @@
 # Danish translation for reminders-app
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the reminders-app package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# Folmer Fredslund <folmerf@gmail.com>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: Folmer Fredslund <folmerf@gmail.com>\n"
 "POT-Creation-Date: 2014-01-24 13:10+0100\n"
-"PO-Revision-Date: 2014-01-24 16:37+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Danish <da@li.org>\n"
+"PO-Revision-Date: 2014-01-25 23:56+0000\n"
+"Last-Translator: Folmer Fredslund <Unknown>\n"
+"Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-01-25 06:42+0000\n"
+"X-Launchpad-Export-Date: 2014-01-26 05:18+0000\n"
 "X-Generator: Launchpad (build 16914)\n"
 
 #: src/app/qml/components/NotebooksDelegate.qml:58
@@ -27,7 +27,7 @@ msgstr[1] ""
 
 #: src/app/qml/reminders-app.qml:71
 msgid "Notes"
-msgstr ""
+msgstr "Noter"
 
 #: src/app/qml/reminders-app.qml:78
 msgid "Notebooks"
@@ -35,7 +35,7 @@ msgstr ""
 
 #: src/app/qml/reminders-app.qml:85
 msgid "Reminders"
-msgstr ""
+msgstr "Påmindelser"
 
 #: src/app/qml/ui/EditNotePage.qml:31 src/app/qml/ui/NotebooksPage.qml:134
 msgid "Save"
@@ -55,7 +55,7 @@ msgstr ""
 
 #: src/app/qml/ui/EditNotePage.qml:86
 msgid "Notebook"
-msgstr ""
+msgstr "Notesbog"
 
 #: src/app/qml/ui/NotePage.qml:36
 msgid "Delete"
