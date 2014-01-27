@@ -1,14 +1,14 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -30,7 +30,7 @@
  * import path for the plugin preconfigured. This is just used for easier
  * development and while we can ship this, we could also run the app ourselves
  * with:
- * qmlscene -I /path/to/plugin/ reminders-app.qml
+ * qmlscene -I /path/to/plugin/ reminders.qml
  */
 
 int main(int argc, char *argv[])
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     view.engine()->setImportPathList(importPathList);
 
     // and directly load the qml file
-    view.setSource(QUrl::fromLocalFile("qml/reminders-app.qml"));
+    view.setSource(QUrl::fromLocalFile("qml/reminders.qml"));
 
     view.show();
 

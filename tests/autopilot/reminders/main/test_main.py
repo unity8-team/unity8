@@ -7,16 +7,16 @@ from textwrap import dedent
 from testtools.matchers import Is, Not, Equals
 from testtools import skip
 import os
-from reminders_app import UbuntuTouchAppTestCase
+from reminders import UbuntuTouchAppTestCase
 
 
 class GenericTests(UbuntuTouchAppTestCase):
     """Generic tests for the Hello World"""
 
     if os.path.realpath(__file__).startswith("/usr/"):
-        test_qml_file = "/usr/share/reminders-app/qml/reminders-app.qml"
+        test_qml_file = "/usr/share/reminders/qml/reminders.qml"
     else:
-        test_qml_file = "%s/%s.qml" % (os.path.dirname(os.path.realpath(__file__)),"../../../../src/app/qml/reminders-app")
+        test_qml_file = "%s/%s.qml" % (os.path.dirname(os.path.realpath(__file__)),"../../../../src/app/qml/reminders")
 
     def test_0_can_select_mainView(self):
         """Must be able to select the mainview."""
