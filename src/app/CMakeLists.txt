@@ -15,3 +15,6 @@ add_custom_target(reminders-qmlfiles ALL
 )
 
 install(DIRECTORY qml DESTINATION ${DATA_DIR})
+if(NOT CLICK_MODE)
+  install(TARGETS reminders RUNTIME DESTINATION bin)
+endif()
