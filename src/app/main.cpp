@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
     importPathList.append(QDir::currentPath() + "/../plugin/");
 
     QStringList args = a.arguments();
-    qDebug() << "got args" << args;
     for (int i = 0; i < args.count(); i++) {
         if (args.at(i) == "-I" && args.count() > i + 1) {
             QString addedPath = args.at(i+1);
@@ -46,13 +45,11 @@ int main(int argc, char *argv[])
                 addedPath = addedPath.right(addedPath.length() - 1);
                 addedPath.prepend(QDir::currentPath());
             }
-            qDebug() << "appending import path:" << addedPath;
             importPathList.append(addedPath);
         }
     }
 
     view.engine()->setImportPathList(importPathList);
-    qDebug() << "final import paths:" << importPathList;
 
     // Set up camera helper
     CameraHelper helper;
