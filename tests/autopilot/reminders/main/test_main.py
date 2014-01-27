@@ -7,7 +7,7 @@ from textwrap import dedent
 from testtools.matchers import Is, Not, Equals
 from testtools import skip
 import os
-from reminders_app import UbuntuTouchAppTestCase
+from reminders import UbuntuTouchAppTestCase
 
 
 class GenericTests(UbuntuTouchAppTestCase):
