@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import QtMultimedia 5.0
+import QtQuick.Window 2.0
 
 Page {
     id: root
@@ -57,9 +58,8 @@ Page {
             fill: parent
         }
         fillMode: Image.PreserveAspectCrop
-        orientation: device.naturalOrientation === "portrait"  ? -90 : 0
+        orientation: Screen.primaryOrientation === Qt.PortraitOrientation  ? -90 : 0
         source: camera
         focus: visible
-
     }
 }
