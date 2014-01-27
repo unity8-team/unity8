@@ -20,6 +20,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import QtMultimedia 5.0
 import QtQuick.Window 2.0
+import Evernote 0.1
 
 Page {
     id: root
@@ -32,7 +33,7 @@ Page {
         ToolbarButton {
             text: "Shoot"
             iconName: "camera-symbolic"
-            onTriggered: camera.imageCapture.captureToLocation("/home/phablet/.config/" + applicationName + "/camerimport.jpg");
+            onTriggered: camera.imageCapture.captureToLocation(cameraHelper.importLocation);
         }
     }
 
@@ -45,6 +46,10 @@ Page {
         imageCapture {
 
             onImageSaved: {
+                if (videoOutput.orientation != 0) {
+                    cameraHelper.rotate(path, -videoOutput.orientation)
+                }
+
                 root.note.attachFile(root.position, path)
                 print("got image", path)
                 pagestack.pop();
