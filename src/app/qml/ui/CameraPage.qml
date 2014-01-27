@@ -32,7 +32,7 @@ Page {
         ToolbarButton {
             text: "Shoot"
             iconName: "camera-symbolic"
-            onTriggered: camera.imageCapture.capture();
+            onTriggered: camera.imageCapture.captureToLocation("/home/phablet/.config/" + applicationName + "/camerimport.jpg");
         }
     }
 
