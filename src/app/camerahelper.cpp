@@ -48,5 +48,5 @@ bool CameraHelper::rotate(const QString &imageFile, int angle)
     QTransform transform;
     transform.rotate(angle);
     image = image.transformed(transform);
-    image.save(imageFile);
+    return image.save(imageFile);
 }
