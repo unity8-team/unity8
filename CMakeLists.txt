@@ -44,7 +44,7 @@ endif(CLICK_MODE)
 
 file(GLOB_RECURSE I18N_SRC_FILES
      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-     rc/**.qml desktop/**.desktop.in)
+     src/app/qml/*.qml *.desktop.in)
 list(SORT I18N_SRC_FILES)
 
 

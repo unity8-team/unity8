@@ -33,7 +33,7 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: "search"
+            text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
                 pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
@@ -43,7 +43,7 @@ Page {
         ToolbarSpacer { }
 
         ToolbarButton {
-            text: "add notebook"
+            text: i18n.tr("Add notebook")
             iconName: "add"
             onTriggered: {
                 contentColumn.newNotebook = true;
@@ -101,7 +101,7 @@ Page {
             delegate: NotebooksDelegate {
                 name: model.name
                 noteCount: model.noteCount
-                shareStatus: model.publised ? i18n.tr("shared") : i18n.tr("private")
+                shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
 
                 onClicked: {
                     pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
