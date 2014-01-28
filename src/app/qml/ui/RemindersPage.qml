@@ -53,10 +53,8 @@ Page {
 
         anchors.fill: parent
 
-        delegate: Subtitled {
-            text: '<b>Name:</b> ' + model.title
-            subText: '<b>Date:</b> ' + Qt.formatDateTime(model.created) +
-                     (model.reminderDone ? " - <b>Done:</b> " + Qt.formatDate(model.reminderDoneTime) : "")
+        delegate: RemindersDelegate {
+            note: notes.note(guid)
         }
 
         model: notes
