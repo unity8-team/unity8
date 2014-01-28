@@ -1,8 +1,16 @@
+# add_qml_test macro
+include(QmlTest)
+
 include_directories(
     ${UtilsQmlPlugin_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../plugins/Utils
     ${CMAKE_CURRENT_BINARY_DIR}
     )
+
+set(qmltest_DEFAULT_IMPORT_PATHS
+  ${CMAKE_BINARY_DIR}/tests/utils/modules
+  ${CMAKE_BINARY_DIR}/tests/mocks
+)
 
 macro(run_tests)
     set(_test_list "")
@@ -26,3 +34,6 @@ run_tests(
     qsortfilterproxymodeltest
     timeformattertest
     )
+
+set(qmltest_DEFAULT_NO_ADD_TEST TRUE)
+add_qml_test(. PassthroughMouseArea IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS})
