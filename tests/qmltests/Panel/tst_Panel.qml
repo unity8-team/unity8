@@ -180,7 +180,7 @@ Item {
                 touchFlick(panel,
                            indicatorItemCoord.x, panel.panelHeight / 2,
                            indicatorItemCoord.x, panel.height * 0.8,
-                           false /* beginTouch */, false /* endTouch */);
+                           false /* beginTouch */, false /* endTouch */, units.gu(10), 20);
 
                 // Indicators height should follow the drag, and therefore increase accordingly.
                 // They should be at least half-way through the screen
@@ -251,7 +251,7 @@ Item {
             touchFlick(panel,
                        indicatorItemCoordFirst.x, panel.panelHeight / 2,
                        indicatorItemCoordFirst.x, panel.panelHeight * 2,
-                       false /* beginTouch */, false /* endTouch */);
+                       false /* beginTouch */, false /* endTouch */, units.gu(10), 20);
 
             tryCompare(indicatorRow, "currentItem", indicatorItemFirst)
 

@@ -37,3 +37,4 @@ run_tests(
 
 set(qmltest_DEFAULT_NO_ADD_TEST TRUE)
 add_qml_test(. PassthroughMouseArea IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS})
+add_dependencies(qmluitests testPassthroughMouseArea)

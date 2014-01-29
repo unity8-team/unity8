@@ -94,7 +94,7 @@ Rectangle {
             touchRelease(main, main.width / 2, main.height / 2);
             compare(mouseAreaReleased.count, 1, "Mouse area should not have been pressed again");
             compare(passThroughAreaReleased.count, 1, "Passthrough area should not have been pressed again");
-            compare(mouseAreaReleased.count, 1, "Mouse area should have been pressed");
+            compare(mouseAreaPressed.count, 1, "Mouse area should have been pressed");
             compare(passThroughAreaPressed.count, 1, "Passthrough should have been released");
 
             compare(mouseAreaClicked.count, 1, "Mouse area should have been released");

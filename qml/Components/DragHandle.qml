@@ -129,10 +129,16 @@ EdgeDragArea {
                 if (Direction.isPositive(direction)) {
                     if (dragParent[targetProp] + step < hintingAnimation.to) {
                         step = hintingAnimation.to - dragParent[targetProp];
+                    } else if (hintingAnimation.running) {
+                        // stop hint animation if we've gone beyond the hintDisplacement
+                        hintingAnimation.stop();
                     }
                 } else {
                     if (dragParent[targetProp] + step > hintingAnimation.to) {
                         step = hintingAnimation.to - dragParent[targetProp];
+                    } else if (hintingAnimation.running) {
+                        // stop hint animation if we've gone beyond the hintDisplacement
+                        hintingAnimation.stop();
                     }
                 }
             }
@@ -146,7 +152,7 @@ EdgeDragArea {
             } else {
                 if (hintRollbackInterval > 0) {
                     // If the property is beyond the hint displacement then go back to hint
-                    if (dragParent[targetProp] > hintingAnimation.to) {
+                    if (dragParent[targetProp] > hintingAnimation.to || touchSinceRollback == 1) {
                         hintingAnimation.start();
                         hintRollback.start();
                     } else { // otherwise rollback.
@@ -160,6 +166,7 @@ EdgeDragArea {
         }
 
         function completeDrag() {
+            touchSinceRollback = 0;
             hintRollback.stop();
 
             if (dragParent.shown) {
@@ -228,9 +235,10 @@ EdgeDragArea {
                         d.previousStatus === undefined) {
                     dragEvaluator.reset();
                     d.startValue = parent[d.targetProp];
-                }
-                if (hintDisplacement > 0) {
-                    hintingAnimation.start();
+
+                    if (hintDisplacement > 0) {
+                        hintingAnimation.start();
+                    }
                 }
             } else {
                 if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
