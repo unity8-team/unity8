@@ -37,5 +37,7 @@ public:
 
     TextFormat(QObject *parent = 0);
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(TextFormat::Formats)
+Q_DECLARE_METATYPE(TextFormat::Format)
 
 #endif

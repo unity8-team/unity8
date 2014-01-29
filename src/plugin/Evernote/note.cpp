@@ -247,6 +247,11 @@ void Note::attachFile(int position, const QUrl &fileName)
     emit contentChanged();
 }
 
+void Note::format(int startPos, int endPos, TextFormat::Format format)
+{
+    qDebug() << "Should format from" << startPos << "to" << endPos << "with format:" << format;
+}
+
 Note *Note::clone()
 {
     Note *note = new Note(m_guid, m_created);
