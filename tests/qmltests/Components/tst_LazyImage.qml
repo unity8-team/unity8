@@ -27,15 +27,21 @@ Rectangle {
 
     Rectangle {
         id: baseRect
+        color: "grey"
+        anchors.fill: parent
+    }
+
+    Flickable {
         anchors {
             fill: parent
+            margins: units.gu(3)
             rightMargin: 2 * parent.width / 3
         }
 
-        color: "grey"
+        contentHeight: column.height
 
         Column {
-            anchors { fill: parent; margins: units.gu(5) }
+            id: column
 
             Label {
                 height: units.gu(4)
@@ -87,6 +93,20 @@ Rectangle {
                 width: units.gu(12)
                 scaleTo: "fit"
             }
+
+            Label {
+                height: units.gu(4)
+                text: "Crop"
+                color: "white"
+                verticalAlignment: Text.AlignBottom
+            }
+
+            LazyImage {
+                id: lazy5
+                height: units.gu(12)
+                width: units.gu(12)
+                scaleTo: "crop"
+            }
         }
     }
 
@@ -109,6 +129,7 @@ Rectangle {
             ImageControls { id: controls2; image: lazy2 }
             ImageControls { id: controls3; image: lazy3 }
             ImageControls { id: controls4; image: lazy4 }
+            ImageControls { id: controls5; image: lazy5 }
         }
     }
 
@@ -123,6 +144,8 @@ Rectangle {
             tryCompare(lazy2, "height", units.gu(10));
             controls3.blank();
             tryCompare(lazy3, "width", units.gu(10));
+            controls4.blank();
+            controls5.blank();
         }
 
         function test_lazyimage_data() {
@@ -147,6 +170,11 @@ Rectangle {
                 {tag: "Fit Square", image: lazy4, func: controls4.square, transition: "readyTransition", width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12)},
                 {tag: "Fit Portrait", image: lazy4, func: controls4.portrait, transition: "readyTransition", width: units.gu(12), height: units.gu(12), imageWidth: units.gu(6), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12)},
                 {tag: "Fit Bad path", image: lazy4, func: controls4.badpath, transition: "genericTransition", width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12), placeholder: true, error: true},
+                {tag: "Crop Blank", image: lazy5, func: controls5.blank, width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12), placeholder: true},
+                {tag: "Crop Wide", image: lazy5, func: controls5.wide, width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12)},
+                {tag: "Crop Square", image: lazy5, func: controls5.square, width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12)},
+                {tag: "Crop Portrait", image: lazy5, func: controls5.portrait, width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12)},
+                {tag: "Crop Bad path", image: lazy5, func: controls5.badpath, width: units.gu(12), height: units.gu(12), imageWidth: units.gu(12), imageHeight: units.gu(12), initialWidth: units.gu(12), initialHeight: units.gu(12), placeholder: true, error: true},
             ]
         }
 
@@ -175,7 +203,7 @@ Rectangle {
 
             // check the placeholder
             var placeholder = findChild(data.image, "placeholder");
-            compare(placeholder.visible, data.placeholder ? true : false);
+            tryCompare(placeholder, "visible", data.placeholder ? true : false);
 
             // check the error image
             var error = findChild(data.image, "errorImage");

@@ -27,8 +27,8 @@ Item {
     // TODO convert into enums when available in QML
     property string scaleTo
 
-    property real initialWidth: scaleTo == "width" || scaleTo == "fit" ? width : units.gu(10)
-    property real initialHeight: scaleTo == "height" || scaleTo == "fit" ? height : units.gu(10)
+    property real initialWidth: scaleTo == "width" || scaleTo == "fit" || scaleTo == "crop" ? width : units.gu(10)
+    property real initialHeight: scaleTo == "height" || scaleTo == "fit" || scaleTo == "crop" ? height : units.gu(10)
 
     property alias sourceSize: image.sourceSize
     property alias fillMode: image.fillMode
@@ -93,7 +93,7 @@ Item {
             property url nextSource
             property string format: image.implicitWidth > image.implicitHeight ? "landscape" : "portrait"
 
-            fillMode: Image.PreserveAspectFit
+            fillMode: root.scaleTo == "crop" ? Image.PreserveAspectCrop : Image.PreserveAspectFit
             asynchronous: true
             cache: false
             horizontalAlignment: Image.AlignHCenter
@@ -126,9 +126,9 @@ Item {
             PropertyChanges { target: root; implicitWidth: shape.width; implicitHeight: shape.height }
             PropertyChanges { target: placeholder; opacity: 0 }
             PropertyChanges { target: shape; opacity: 1
-                width: root.scaleTo == "width" || (root.scaleTo == "fit" && image.format == "landscape") ? root.width
-                    : root.scaleTo == "" ?  image.implicitWidth : image.implicitWidth * height / image.implicitHeight
-                height: root.scaleTo == "height" || (root.scaleTo == "fit" && image.format == "portrait") ? root.height
+                width: root.scaleTo == "width" || root.scaleTo == "crop" || (root.scaleTo == "fit" && image.format == "landscape") ? root.width
+                    : root.scaleTo == "" ? image.implicitWidth : image.implicitWidth * height / image.implicitHeight
+                height: root.scaleTo == "height" || root.scaleTo == "crop" || (root.scaleTo == "fit" && image.format == "portrait") ? root.height
                     : root.scaleTo == "" ? image.implicitHeight : image.implicitHeight * width / image.implicitWidth
             }
         },
