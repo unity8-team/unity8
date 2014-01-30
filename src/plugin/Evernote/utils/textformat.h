@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders
+ * This file is part of reminders-app
  *
- * reminders is free software: you can redistribute it and/or modify
+ * reminders-app is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders is distributed in the hope that it will be useful,
+ * reminders-app is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -18,29 +18,26 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#ifndef USERSTOREJOB_H
-#define USERSTOREJOB_H
+#ifndef TEXTFORMAT_H
+#define TEXTFORMAT_H
 
-#include "evernotejob.h"
+#include <QObject>
 
-// Evernote SDK
-#include <UserStore.h>
-#include <UserStore_constants.h>
-#include <Errors_types.h>
-
-class UserStoreJob : public EvernoteJob
+class TextFormat: public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Format)
 public:
-    explicit UserStoreJob(QObject *parent = 0);
+    enum Format {
+        Bold,
+        Italic,
+        Underlined
+    };
+    Q_DECLARE_FLAGS(Formats, Format)
 
-protected:
-    void resetConnection() final;
-
-    evernote::edam::UserStoreClient* client() const;
-
-public slots:
-
+    TextFormat(QObject *parent = 0);
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(TextFormat::Formats)
+Q_DECLARE_METATYPE(TextFormat::Format)
 
-#endif // USERSTOREJOB_H
+#endif

@@ -20,8 +20,8 @@ option(CLICK_MODE "Installs to a contained location" off)
 set(APP_NAME reminders)
 set(DESKTOP_FILE "${PROJECT_NAME}_${APP_NAME}.desktop")
 set(ICON ${APP_NAME}.png)
-set(AUTOPILOT_DIR reminders_app)
-set(APP_HARDCODE reminders-app)
+set(AUTOPILOT_DIR reminders)
+set(APP_HARDCODE reminders)
 set(MAIN_QML ${APP_HARDCODE}.qml)
 
 if(CLICK_MODE)
@@ -37,10 +37,6 @@ if(CLICK_MODE)
 	set(DESKTOP_DIR ${DATA_DIR})
 else(CLICK_MODE)
 	set(DATA_DIR ${CMAKE_INSTALL_DATADIR}/${APP_HARDCODE})
-	configure_file(${APP_HARDCODE}.in
-		${CMAKE_CURRENT_BINARY_DIR}/${APP_HARDCODE})
-	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${APP_HARDCODE}
-		DESTINATION ${CMAKE_INSTALL_BINDIR})
 	set(EXEC "qmlscene $@ ${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/qml/${MAIN_QML}")
 	set(ICON "${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/${ICON}")
 	set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
@@ -48,7 +44,7 @@ endif(CLICK_MODE)
 
 file(GLOB_RECURSE I18N_SRC_FILES
      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-     rc/**.qml desktop/**.desktop.in)
+     src/app/qml/*.qml *.desktop.in)
 list(SORT I18N_SRC_FILES)
 
 
