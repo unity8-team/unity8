@@ -1,2 +1,11 @@
+*.log
+*.substvars
+debian/account-plugin-evernote/
+debian/files
+debian/qtdeclarative5-evernote0.1/
+debian/reminders-app/
+debian/reminders-app-autopilot/
+debian/tmp/
+obj-*/
 reminders-app.qmlproject.user
 reminders-app.pro.user

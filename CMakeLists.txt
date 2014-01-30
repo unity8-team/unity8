@@ -63,6 +63,9 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} DESTINATION ${DESKTOP_
 # Tests
 enable_testing()
 
+if(NOT CLICK_MODE)
+add_subdirectory(account-plugin)
+endif(NOT CLICK_MODE)
 add_subdirectory(click)
 add_subdirectory(po)
 add_subdirectory(tests)
