@@ -55,6 +55,6 @@ Empty {
     Label {
         id: resourceImage
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom; topMargin: units.gu(1); rightMargin: units.gu(2) }
-        text: i18n.tr("%1 notes").arg(root.noteCount)
+        text: i18n.tr("%1 note", "%1 notes", root.noteCount).arg(root.noteCount)
     }
 }

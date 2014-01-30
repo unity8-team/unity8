@@ -27,7 +27,7 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: "search"
+            text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
                 pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
@@ -37,7 +37,7 @@ Page {
         ToolbarSpacer { }
 
         ToolbarButton {
-            text: "add"
+            text: i18n.tr("Add reminder")
             iconName: "add"
             onTriggered: {
             }

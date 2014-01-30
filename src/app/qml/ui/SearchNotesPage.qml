@@ -49,7 +49,7 @@ Page {
             Button {
                 id: searchButton
                 height: searchField.height
-                text: "search"
+                text: i18n.tr("Search")
                 onClicked: {
                     NotesStore.findNotes(searchField.text + "*")
                 }

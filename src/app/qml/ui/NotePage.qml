@@ -33,7 +33,7 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: "delete"
+            text: i18n.tr("Delete")
             iconName: "delete"
             onTriggered: {
                 NotesStore.deleteNote(note.guid);
@@ -42,7 +42,7 @@ Page {
         }
         ToolbarSpacer {}
         ToolbarButton {
-            text: note.reminder ? "reminder (set)" : "reminder"
+            text: note.reminder ? "Reminder (set)" : "Reminder"
             iconName: "alarm-clock"
             onTriggered: {
                 note.reminder = !note.reminder
@@ -50,7 +50,7 @@ Page {
             }
         }
         ToolbarButton {
-            text: "edit"
+            text: i18n.tr("Edit")
             iconName: "edit"
             onTriggered: {
                 pagestack.pop()

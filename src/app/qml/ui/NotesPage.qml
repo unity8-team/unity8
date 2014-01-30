@@ -36,7 +36,7 @@ Page {
     // Just for testing
     tools: ToolbarItems {
         ToolbarButton {
-            text: "search"
+            text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
                 pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
@@ -46,7 +46,7 @@ Page {
         ToolbarSpacer { }
 
         ToolbarButton {
-            text: "add note"
+            text: i18n.tr("Add note")
             iconName: "add"
             onTriggered: {
                 NotesStore.createNote("Untitled");
