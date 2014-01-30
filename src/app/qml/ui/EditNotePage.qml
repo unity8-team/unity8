@@ -72,7 +72,6 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        NotesStore.deleteNote(note.guid);
                         pagestack.pop();
                     }
                 }
