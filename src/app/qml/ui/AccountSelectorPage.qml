@@ -37,9 +37,11 @@ Page {
         spacing: units.gu(1)
 
         ListView {
+            id: listView
             width: parent.width
             height: units.gu(10)
             model: accounts
+
             delegate: Standard {
                 text: displayName
 
@@ -60,6 +62,12 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: accountService.authenticate(null)
+                }
+
+                Component.onCompleted: {
+                    console.log('Found ' + listView.count + ' accounts');
+                    if (listView.count === 1)
+                        accountService.authenticate(null)
                 }
             }
         }
