@@ -1,2 +1,5 @@
+if(NOT CLICK_MODE)
+add_subdirectory(account-plugin)
+endif(NOT CLICK_MODE)
 add_subdirectory(plugin)
 add_subdirectory(app)
