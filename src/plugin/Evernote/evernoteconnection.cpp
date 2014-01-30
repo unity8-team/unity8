@@ -57,6 +57,7 @@ EvernoteConnection::EvernoteConnection(QObject *parent) :
     m_currentJob(0),
     m_useSSL(true)
 {
+    qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
     setupUserStore();
     setupNotesStore();
 }

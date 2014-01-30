@@ -45,7 +45,6 @@ NotesStore::NotesStore(QObject *parent) :
     connect(EvernoteConnection::instance(), &EvernoteConnection::tokenChanged, this, &NotesStore::refreshNotebooks);
     connect(EvernoteConnection::instance(), SIGNAL(tokenChanged()), this, SLOT(refreshNotes()));
 
-    qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
     qRegisterMetaType<std::vector<evernote::edam::Notebook> >("std::vector<evernote::edam::Notebook>");
