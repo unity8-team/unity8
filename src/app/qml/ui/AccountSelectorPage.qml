@@ -26,11 +26,9 @@ Page {
     id: root
     title: "Select Evernote account"
 
-    AccountServiceModel {
-        id: accounts
-        // Use the Evernote service
-        service: "evernote"
-    }
+    property alias accounts: listView.model
+
+    signal accountSelected(var handle)
 
     Column {
         anchors { fill: parent; margins: units.gu(2) }
@@ -44,33 +42,11 @@ Page {
 
             delegate: Standard {
                 text: displayName
-
-                // FIXME: remove this Item wrapper once Ubuntu ListItems are fixed to hold non-visual items
-                Item {
-                    AccountService {
-                        id: accountService
-                        objectHandle: accountServiceHandle
-                        // Print the access token on the console
-                        onAuthenticated: {
-                            console.log("Access token is " + reply.AccessToken)
-                            EvernoteConnection.token = reply.AccessToken;
-                            pagestack.pop();
-                        }
-                        onAuthenticationError: { console.log("Authentication failed, code " + error.code) }
-                    }
-                }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: accountService.authenticate(null)
-                }
-
-                Component.onCompleted: {
-                    console.log('Found ' + listView.count + ' accounts');
-                    if (listView.count === 1)
-                        accountService.authenticate(null)
+                    onClicked: root.accountSelected(accountServiceHandle)
                 }
             }
         }
-
     }
 }
