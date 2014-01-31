@@ -20,6 +20,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.OnlineAccounts 0.1
+import Ubuntu.OnlineAccounts.Client 0.1
 import Evernote 0.1
 
 Page {
@@ -30,6 +31,12 @@ Page {
         id: accounts
         // Use the Evernote service
         service: "evernote"
+    }
+
+    Setup {
+        id: setup
+        applicationId: "com.ubuntu.reminders_reminders"
+        providerId: "evernote"
     }
 
     Column {
@@ -61,6 +68,11 @@ Page {
                     anchors.fill: parent
                     onClicked: accountService.authenticate(null)
                 }
+            }
+
+            footer: Button {
+                text: "Add account"
+                onClicked: setup.exec()
             }
         }
 
