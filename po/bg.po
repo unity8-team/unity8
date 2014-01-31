@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-01-24 13:10+0100\n"
+"POT-Creation-Date: 2014-01-28 09:36+0100\n"
 "PO-Revision-Date: 2014-01-28 19:32+0000\n"
 "Last-Translator: Atanas Kovachki <Unknown>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-01-29 06:08+0000\n"
+"X-Launchpad-Export-Date: 2014-01-31 06:29+0000\n"
 "X-Generator: Launchpad (build 16916)\n"
 
 #: src/app/qml/components/NotebooksDelegate.qml:58
@@ -25,37 +25,21 @@ msgid_plural "%1 notes"
 msgstr[0] "%1 бележка"
 msgstr[1] "%1 бележки"
 
-#: src/app/qml/reminders-app.qml:71
+#: src/app/qml/reminders.qml:83
 msgid "Notes"
 msgstr "Бележки"
 
-#: src/app/qml/reminders-app.qml:78
+#: src/app/qml/reminders.qml:90
 msgid "Notebooks"
 msgstr "Бележници"
 
-#: src/app/qml/reminders-app.qml:85
+#: src/app/qml/reminders.qml:97
 msgid "Reminders"
 msgstr "Напомняния"
 
-#: src/app/qml/ui/EditNotePage.qml:31 src/app/qml/ui/NotebooksPage.qml:134
-msgid "Save"
-msgstr "Съхрани"
-
-#: src/app/qml/ui/EditNotePage.qml:34 src/app/qml/ui/EditNotePage.qml:74
+#: src/app/qml/ui/EditNotePage.qml:83 src/app/qml/ui/EditNotePage.qml:95
 msgid "Untitled"
 msgstr "Неозаглавено"
-
-#: src/app/qml/ui/EditNotePage.qml:53
-msgid "Attach"
-msgstr "Прикачи"
-
-#: src/app/qml/ui/EditNotePage.qml:57
-msgid "Shot"
-msgstr "Снимка"
-
-#: src/app/qml/ui/EditNotePage.qml:86
-msgid "Notebook"
-msgstr "Бележник"
 
 #: src/app/qml/ui/NotePage.qml:36
 msgid "Delete"
@@ -86,6 +70,10 @@ msgstr "Лични"
 msgid "Cancel"
 msgstr "Отмени"
 
+#: src/app/qml/ui/NotebooksPage.qml:134
+msgid "Save"
+msgstr "Съхрани"
+
 #: src/app/qml/ui/NotesPage.qml:49
 msgid "Add note"
 msgstr "Добави бележка"
@@ -93,3 +81,12 @@ msgstr "Добави бележка"
 #: src/app/qml/ui/RemindersPage.qml:40
 msgid "Add reminder"
 msgstr "Добави напомняне"
+
+#~ msgid "Attach"
+#~ msgstr "Прикачи"
+
+#~ msgid "Shot"
+#~ msgstr "Снимка"
+
+#~ msgid "Notebook"
+#~ msgstr "Бележник"
