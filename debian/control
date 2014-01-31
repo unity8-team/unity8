@@ -19,7 +19,7 @@ Section: misc
 Architecture: any
 Depends: ${misc:Depends},
          account-plugin-evernote,
-         qmlscene,
+         qtdeclarative5-accounts-plugin,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          qtdeclarative5-localstorage-plugin,
          qtdeclarative5-qtquick2-plugin,
