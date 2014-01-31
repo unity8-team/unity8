@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -23,6 +23,7 @@
 
 #include "utils/enmldocument.h"
 #include "resource.h"
+#include "utils/textformat.h"
 
 #include <QObject>
 #include <QDateTime>
@@ -106,6 +107,7 @@ public:
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
+    Q_INVOKABLE void format(int startPos, int endPos, TextFormat::Format format);
 
     Note* clone();
 

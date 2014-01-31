@@ -28,6 +28,7 @@ set(evernoteplugin_SRCS
     jobs/expungenotebookjob.cpp
     resourceimageprovider.cpp
     utils/enmldocument.cpp
+    utils/textformat.cpp
 )
 
 add_library(evernoteplugin MODULE
