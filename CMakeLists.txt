@@ -19,7 +19,7 @@ option(CLICK_MODE "Installs to a contained location" off)
 
 set(APP_NAME reminders)
 set(DESKTOP_FILE "${PROJECT_NAME}_${APP_NAME}.desktop")
-set(ICON ${APP_NAME}.svg)
+set(ICON ${APP_NAME}.png)
 set(AUTOPILOT_DIR reminders)
 set(APP_HARDCODE reminders)
 set(MAIN_QML ${APP_HARDCODE}.qml)
