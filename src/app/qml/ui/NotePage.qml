@@ -28,8 +28,16 @@ Page {
     id: root
     title: note.title
     property var note
+    property bool noteReady: false
 
-    Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
+    Component.onCompleted: {
+        noteReady=false;
+        NotesStore.refreshNoteContent(note.guid)
+    }
+    Connections{ //set noteReady when note is fetched
+        target: NotesStore
+        onNoteChanged: noteReady=true;
+    }
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -59,10 +67,17 @@ Page {
         }
     }
 
+    ActivityIndicator {
+        id: activityIndicator
+        running: !noteReady
+        visible: running
+        anchors.centerIn: parent
+    }
     // FIXME: This is a workaround for an issue in the WebView. For some reason certain
     // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
     // another flickable prevents this from happening.
     Flickable {
+        visible: noteReady
         anchors { fill: parent}
         contentHeight: height
 
