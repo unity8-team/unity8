@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2014-01-31 06:29+0000\n"
+"X-Launchpad-Export-Date: 2014-02-01 06:56+0000\n"
 "X-Generator: Launchpad (build 16916)\n"
 
 #: src/app/qml/components/NotebooksDelegate.qml:58
@@ -81,9 +81,3 @@ msgstr ""
 #: src/app/qml/ui/RemindersPage.qml:40
 msgid "Add reminder"
 msgstr ""
-
-#~ msgid "Attach"
-#~ msgstr "添付"
-
-#~ msgid "Notebook"
-#~ msgstr "ノートブック"
