@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -22,6 +22,8 @@
 #define NOTE_H
 
 #include "utils/enmldocument.h"
+#include "resource.h"
+#include "utils/textformat.h"
 
 #include <QObject>
 #include <QDateTime>
@@ -41,7 +43,7 @@ class Note : public QObject
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
     Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
-    Q_PROPERTY(QList<QString> resources READ resources NOTIFY contentChanged)
+    Q_PROPERTY(QStringList resourceUrls READ resourceUrls NOTIFY contentChanged)
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
@@ -51,6 +53,7 @@ class Note : public QObject
 
 public:
     explicit Note(const QString &guid, const QDateTime &created, QObject *parent = 0);
+    ~Note();
 
     QString guid() const;
 
@@ -96,12 +99,15 @@ public:
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
-    QStringList resources() const;
-    QImage resource(const QString &hash);
-    QString resourceName(const QString &hash);
-    void addResource(const QString &hash, const QString &fileName, const QString &type, const QImage &image = QImage());
+    QStringList resourceUrls() const;
+    Resource* resource(const QString &hash);
+    QList<Resource*> resources() const;
+    Resource *addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type);
+    Resource *addResource(const QString &fileName);
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
+    Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
+    Q_INVOKABLE void format(int startPos, int endPos, TextFormat::Format format);
 
     Note* clone();
 
@@ -128,9 +134,7 @@ private:
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
     bool m_isSearchResult;
-    QHash<QString, QImage> m_resources;
-    QHash<QString, QString> m_resourceTypes;
-    QHash<QString, QString> m_resourceNames;
+    QHash<QString, Resource*> m_resources;
 };
 
 #endif // NOTE_H

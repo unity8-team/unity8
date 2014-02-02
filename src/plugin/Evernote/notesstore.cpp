@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -45,7 +45,6 @@ NotesStore::NotesStore(QObject *parent) :
     connect(EvernoteConnection::instance(), &EvernoteConnection::tokenChanged, this, &NotesStore::refreshNotebooks);
     connect(EvernoteConnection::instance(), SIGNAL(tokenChanged()), this, SLOT(refreshNotes()));
 
-    qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
     qRegisterMetaType<std::vector<evernote::edam::Notebook> >("std::vector<evernote::edam::Notebook>");
@@ -93,8 +92,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->richTextContent();
     case RolePlaintextContent:
         return m_notes.at(index.row())->plaintextContent();
-    case RoleResources:
-        return m_notes.at(index.row())->resources();
+    case RoleResourceUrls:
+        return m_notes.at(index.row())->resourceUrls();
     }
     return QVariant();
 }
@@ -114,7 +113,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleRichTextContent, "richTextContent");
     roles.insert(RoleHtmlContent, "htmlContent");
     roles.insert(RolePlaintextContent, "plaintextContent");
-    roles.insert(RoleResources, "resources");
+    roles.insert(RoleResourceUrls, "resourceUrls");
     return roles;
 }
 
@@ -235,12 +234,8 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString fileName = QString::fromStdString(resource.attributes.fileName);
         QString mime = QString::fromStdString(resource.mime);
 
-        if (mime.startsWith("image/")) {
-            QImage image = QImage::fromData((const uchar*)resource.data.body.data(), resource.data.size);
-            note->addResource(hash, fileName, mime, image);
-        } else {
-            note->addResource(hash, fileName, mime);
-        }
+        QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
+        note->addResource(resourceData, hash, fileName, mime);
     }
 
     note->setEnmlContent(QString::fromStdString(result.content));
@@ -324,6 +319,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     endInsertRows();
 
     emit noteAdded(note->guid(), note->notebookGuid());
+    emit noteCreated(note->guid(), note->notebookGuid());
 }
 
 void NotesStore::saveNote(const QString &guid)

@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -31,7 +31,7 @@ MainView {
     objectName: "mainView"
 
     // Note! applicationName needs to match the "name" field of the click manifest
-    applicationName: "com.ubuntu.reminders-app"
+    applicationName: "com.ubuntu.reminders"
 
     /*
      This property enables the application to change orientation
@@ -56,6 +56,18 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username)
+        }
+    }
+
+    Connections {
+        target: NotesStore
+        onNoteCreated: {
+            var note = NotesStore.note(guid);
+            print("note created:", note.guid);
+            var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
+            var page = component.createObject(pageStack)
+            page.note = note;
+            pagestack.push(page);
         }
     }
 

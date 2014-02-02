@@ -7,5 +7,5 @@ fi
 
 SCRIPTPATH=`dirname $0`
 pushd ${SCRIPTPATH}
-autopilot run reminders-app
+autopilot run reminders
 popd

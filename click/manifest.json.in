@@ -1,0 +1,22 @@
+{
+    "description": "Ubuntu Reminders app, powered by Evernote",
+    "framework": "ubuntu-sdk-13.10",
+    "architecture": "armhf",
+    "hooks": {
+        "@APP_NAME@": {
+            "apparmor": "apparmor.json",
+            "desktop": "@DESKTOP_FILE@"
+        }
+    },
+    "maintainer": "Ubuntu Reminders app developers <ubuntu-phone@lists.launchpad.net>",
+    "name": "@PROJECT_NAME@",
+    "title": "Reminders",
+    "version": "0.1.@BZR_REVNO@",
+    "x-source": {
+        "vcs-bzr": "@BZR_SOURCE@", 
+        "vcs-bzr-revno": "@BZR_REVNO@"
+    },
+    "x-test": {
+        "autopilot": "@AUTOPILOT_DIR@"
+	}
+}

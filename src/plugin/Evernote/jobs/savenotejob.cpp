@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -53,6 +53,33 @@ void SaveNoteJob::startJob()
     note.attributes.__isset.reminderTime = true;
     note.attributes.reminderDoneTime = m_note->reminderDoneTime().toMSecsSinceEpoch();
     note.attributes.__isset.reminderDoneTime = true;
+
+    note.resources.clear();
+    foreach (Resource *resource, m_note->resources()) {
+        evernote::edam::Resource evResource;
+        evResource.noteGuid = m_note->guid().toStdString();
+        evResource.__isset.noteGuid = true;
+        evResource.mime = resource->type().toStdString();
+        evResource.__isset.mime = true;
+
+        evResource.data.bodyHash = resource->hash().toStdString();
+        evResource.data.__isset.bodyHash = true;
+
+        QByteArray data = resource->data();
+        evResource.data.body.assign(data.data(), data.length());
+        evResource.data.__isset.body = true;
+
+        evResource.data.size = data.length();
+        evResource.data.__isset.size = true;
+        evResource.__isset.data = true;
+
+        evResource.attributes.fileName = resource->fileName().toStdString();
+        evResource.attributes.__isset.fileName = true;
+        evResource.__isset.attributes = true;
+
+        note.resources.push_back(evResource);
+    }
+    note.__isset.resources = true;
 
     client()->updateNote(m_resultNote, token().toStdString(), note);
 }

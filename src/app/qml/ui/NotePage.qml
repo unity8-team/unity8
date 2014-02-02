@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -28,12 +28,20 @@ Page {
     id: root
     title: note.title
     property var note
+    property bool noteReady: false
 
-    Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
+    Component.onCompleted: {
+        noteReady=false;
+        NotesStore.refreshNoteContent(note.guid)
+    }
+    Connections{ //set noteReady when note is fetched
+        target: NotesStore
+        onNoteChanged: noteReady=true;
+    }
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: "delete"
+            text: i18n.tr("Delete")
             iconName: "delete"
             onTriggered: {
                 NotesStore.deleteNote(note.guid);
@@ -42,7 +50,7 @@ Page {
         }
         ToolbarSpacer {}
         ToolbarButton {
-            text: note.reminder ? "reminder (set)" : "reminder"
+            text: note.reminder ? "Reminder (set)" : "Reminder"
             iconName: "alarm-clock"
             onTriggered: {
                 note.reminder = !note.reminder
@@ -50,7 +58,7 @@ Page {
             }
         }
         ToolbarButton {
-            text: "edit"
+            text: i18n.tr("Edit")
             iconName: "edit"
             onTriggered: {
                 pagestack.pop()
@@ -59,10 +67,17 @@ Page {
         }
     }
 
+    ActivityIndicator {
+        id: activityIndicator
+        running: !noteReady
+        visible: running
+        anchors.centerIn: parent
+    }
     // FIXME: This is a workaround for an issue in the WebView. For some reason certain
     // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
     // another flickable prevents this from happening.
     Flickable {
+        visible: noteReady
         anchors { fill: parent}
         contentHeight: height
 

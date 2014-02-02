@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -33,7 +33,7 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: "search"
+            text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
                 pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
@@ -43,7 +43,7 @@ Page {
         ToolbarSpacer { }
 
         ToolbarButton {
-            text: "add notebook"
+            text: i18n.tr("Add notebook")
             iconName: "add"
             onTriggered: {
                 contentColumn.newNotebook = true;
@@ -101,7 +101,7 @@ Page {
             delegate: NotebooksDelegate {
                 name: model.name
                 noteCount: model.noteCount
-                shareStatus: model.publised ? i18n.tr("shared") : i18n.tr("private")
+                shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
 
                 onClicked: {
                     pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});

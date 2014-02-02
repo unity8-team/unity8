@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -63,7 +63,7 @@ public:
         RoleHtmlContent,
         RoleRichTextContent,
         RolePlaintextContent,
-        RoleResources
+        RoleResourceUrls
     };
 
     ~NotesStore();
@@ -77,7 +77,7 @@ public:
     QList<Note*> notes() const;
 
     Q_INVOKABLE Note* note(const QString &guid);
-    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid, const QString &richTextContent);
+    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid = QString(), const QString &richTextContent = QString());
     void createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content);
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);
@@ -96,6 +96,7 @@ public slots:
 signals:
     void tokenChanged();
 
+    void noteCreated(const QString &guid, const QString &notebookGuid);
     void noteAdded(const QString &guid, const QString &notebookGuid);
     void noteChanged(const QString &guid, const QString &notebookGuid);
     void noteRemoved(const QString &guid, const QString &notebookGuid);

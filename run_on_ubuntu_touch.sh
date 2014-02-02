@@ -1,11 +1,11 @@
 #!/bin/sh
-CODE_DIR=reminders-app
+CODE_DIR=reminders
 BUILD_DIR=builddir
 USER=phablet
 USER_ID=32011
 PASSWORD=phablet
-PACKAGE=reminders-app
-BINARY=reminders-app
+PACKAGE=reminders
+BINARY=reminders
 TARGET_IP=${TARGET_IP-127.0.0.1}
 TARGET_SSH_PORT=${TARGET_SSH_PORT-2222}
 TARGET_DEBUG_PORT=3768
@@ -16,7 +16,7 @@ CLICK=false
 SUDO="echo $PASSWORD | sudo -S"
 NUM_JOBS='$(( `grep -c ^processor /proc/cpuinfo` + 1 ))'
 FLIPPED=false
-DEPS="qt5-default qtbase5-dev qtdeclarative5-dev libboost-dev libssl-dev"
+DEPS="qt5-default qtbase5-dev qtdeclarative5-dev libboost-dev libssl-dev cmake"
 
 exec_with_ssh() {
     ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t $USER@$TARGET_IP -p $TARGET_SSH_PORT sudo -u $USER -i bash -ic \"$@\"
@@ -61,26 +61,19 @@ sync_code() {
 
 build() {
     exec_with_ssh mkdir -p $CODE_DIR/$BUILD_DIR
-    exec_with_ssh PATH=/usr/lib/ccache:$PATH "cd $CODE_DIR/$BUILD_DIR && PATH=/usr/lib/ccache:$PATH qmake --version"
-    exec_with_ssh PATH=/usr/lib/ccache:$PATH "cd $CODE_DIR/$BUILD_DIR && PATH=/usr/lib/ccache:$PATH QT_SELECT=qt5 qmake .."
+    exec_with_ssh PATH=/usr/lib/ccache:$PATH "cd $CODE_DIR/$BUILD_DIR && PATH=/usr/lib/ccache:$PATH QT_SELECT=qt5 cmake .. -DCLICK_MODE=1"
     exec_with_ssh PATH=/usr/lib/ccache:$PATH "cd $CODE_DIR/$BUILD_DIR && PATH=/usr/lib/ccache:$PATH make -j2"
 }
 
 build_click_package() {
-    exec_with_ssh mkdir -p $CODE_DIR/$BUILD_DIR/install
-    exec_with_ssh rm -rf $CODE_DIR/$BUILD_DIR/install/*
-    exec_with_ssh cp -r $CODE_DIR/src/app/qml $CODE_DIR/$BUILD_DIR/install
-    exec_with_ssh cp $CODE_DIR/*.json $CODE_DIR/$BUILD_DIR/install
-    exec_with_ssh cp $CODE_DIR/apparmor/*.json $CODE_DIR/$BUILD_DIR/install
-    exec_with_ssh cp $CODE_DIR/$PACKAGE.desktop $CODE_DIR/$BUILD_DIR/install
-    exec_with_ssh cp $CODE_DIR/$PACKAGE.png $CODE_DIR/$BUILD_DIR/install
-    exec_with_ssh cp -r $CODE_DIR/$BUILD_DIR/src/plugin/Evernote $CODE_DIR/$BUILD_DIR/install/
+    exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/ && make install DESTDIR=install"
     exec_with_ssh click build $CODE_DIR/$BUILD_DIR/install
+
     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P $TARGET_SSH_PORT $USER@$TARGET_IP:/home/phablet/com.ubuntu*$PACKAGE*.click .
 }
 
 run() {
-    exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/src/app/ && ./$BINARY --desktop_file_hint=$CODE_DIR/reminders-app.desktop"
+    exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/src/app/ && ./$BINARY --desktop_file_hint=/home/$USER/$CODE_DIR/$BUILD_DIR/com.ubuntu.reminders_reminders.desktop"
 }
 
 set -- `getopt -n$0 -u -a --longoptions="setup,gdb,click,help" "sgch" "$@"`

@@ -1,13 +1,13 @@
 /*
  * Copyright: 2013 Canonical, Ltd
  *
- * This file is part of reminders-app
+ * This file is part of reminders
  *
- * reminders-app is free software: you can redistribute it and/or modify
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * reminders-app is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -26,8 +26,11 @@
 #include "notes.h"
 #include "notebooks.h"
 #include "note.h"
+#include "resource.h"
 #include "notebook.h"
 #include "resourceimageprovider.h"
+
+#include "utils/textformat.h"
 
 #include <QtQml>
 
@@ -56,6 +59,9 @@ void EvernotePlugin::registerTypes(const char *uri)
     qmlRegisterType<Notebooks>("Evernote", 0, 1, "Notebooks");
     qmlRegisterUncreatableType<Note>("Evernote", 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
     qmlRegisterUncreatableType<Notebook>("Evernote", 0, 1, "Notebook", "Cannot create Notes in QML. Use NotesStore.createNotebook() instead.");
+    qmlRegisterUncreatableType<Resource>("Evernote", 0, 1, "Resource", "Cannot create Resources. Use Note.attachFile() instead.");
+
+    qmlRegisterUncreatableType<TextFormat>("Evernote", 0, 1, "TextFormat", "TextFormat is not creatable. It's just here to export enums to QML");
 }
 
 void EvernotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)

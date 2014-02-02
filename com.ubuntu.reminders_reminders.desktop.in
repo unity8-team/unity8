@@ -1,9 +1,9 @@
 [Desktop Entry]
 Name=Reminders
 Comment=Ubuntu Reminders app, powered by Evernote
-Exec=/usr/bin/qmlscene $@ -I . qml/reminders-app.qml
-Icon=reminders-app.png
+Exec=@EXEC@
+Icon=@ICON@
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true
-X-Ubuntu-Gettext-Domain=com.ubuntu.reminders-app
+X-Ubuntu-Gettext-Domain=@PROJECT_NAME@
