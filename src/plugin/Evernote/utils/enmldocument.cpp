@@ -104,6 +104,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
             if (!isBody) {
                 if (reader.name() == "en-note") {
                     writer.writeStartElement("body");
+                    writer.writeAttributes(reader.attributes());
                     isBody = true;
                 }
                 continue;
@@ -144,6 +145,17 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     } else if (type  == TypeHtml) {
                         QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + mediaType.split('/').last();
                         writer.writeAttribute("src", imagePath);
+                    }
+
+                    //set the width
+                    if(reader.attributes().hasAttribute("width")){
+                        writer.writeAttribute("width", reader.attributes().value("width").toString());
+                    }else{
+                        if(type == TypeRichText){
+                            writer.writeAttribute("width", "640");
+                        }else if(type== TypeHtml){
+                            writer.writeAttribute("style", "max-width: 100%");
+                        }
                     }
                 } else if (mediaType.startsWith("audio")) {
                     if (type == TypeRichText) {
@@ -266,6 +278,7 @@ void EnmlDocument::setRichText(const QString &richText)
             if (!isBody) {
                 if (reader.name() == "body") {
                     writer.writeStartElement("en-note");
+                    writer.writeAttributes(reader.attributes());
                     isBody = true;
                 }
                 continue;
