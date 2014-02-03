@@ -35,6 +35,7 @@ Page {
         spacing: units.gu(1)
 
         ListView {
+            id: listView
             width: parent.width
             height: units.gu(10)
             model: accounts
