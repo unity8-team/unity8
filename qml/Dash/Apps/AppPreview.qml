@@ -97,7 +97,6 @@ GenericPreview {
             spacing: units.gu(1)
 
             Label {
-                objectName: "descriptionLabel"
                 anchors { left: parent.left; right: parent.right }
                 text: root.previewData.description
                 fontSize: "medium"

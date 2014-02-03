@@ -11,7 +11,6 @@ include_directories(
     ${LIBLIGHTDM_INCLUDE_DIRS}
     )
 
-add_dependencies(test-lightdm-dbus MockLightDM-full)
 target_link_libraries(test-lightdm-dbus
     -L${CMAKE_BINARY_DIR}/tests/mocks/LightDM/full
     -llightdm-qt5-2

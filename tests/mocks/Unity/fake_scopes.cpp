@@ -35,7 +35,6 @@ Scopes::Scopes(QObject *parent)
     m_roles[Scopes::RoleScope] = "scope";
     m_roles[Scopes::RoleId] = "id";
     m_roles[Scopes::RoleVisible] = "visible";
-    m_roles[Scopes::RoleTitle] = "title";
 
     QObject::connect(this, SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SIGNAL(countChanged()));
     QObject::connect(this, SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SIGNAL(countChanged()));
@@ -111,8 +110,6 @@ QVariant Scopes::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(scope->id());
     } else if (role == Scopes::RoleVisible) {
         return QVariant::fromValue(scope->visible());
-    } else if (role == Scopes::RoleTitle) {
-        return QVariant::fromValue(scope->name());
     } else {
         return QVariant();
     }

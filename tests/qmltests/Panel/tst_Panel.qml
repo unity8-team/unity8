@@ -56,8 +56,6 @@ Item {
         }
 
         function init() {
-            panel.indicators.initialise();
-
             searchClicked = false;
             panel.indicators.hide();
             tryCompare(panel.indicators.hideAnimation, "running", false);
@@ -65,18 +63,17 @@ Item {
         }
 
         function get_indicator_item(index) {
-            var indicatorRow = findChild(panel.indicators, "indicatorRow");
-            verify(indicatorRow !== null);
-
-            return findChild(indicatorRow.row, "item" + index);
+            var rowRepeater = findChild(panel.indicators, "rowRepeater");
+            verify(rowRepeater != undefined);
+            return rowRepeater.itemAt(index);
         }
 
         function get_indicator_item_position(index) {
             var indicatorRow = findChild(panel.indicators, "indicatorRow");
-            verify(indicatorRow !== null);
+            verify(indicatorRow != undefined);
 
             var indicatorItem = get_indicator_item(index);
-            verify(indicatorItem !== null);
+            verify(indicatorItem != undefined);
 
             return panel.mapFromItem(indicatorItem, indicatorItem.width/2, indicatorItem.height/2);
         }
@@ -121,7 +118,7 @@ Item {
             // no hint animation when fullscreen
             compare(panel.indicators.y, -panel.panelHeight);
             var indicatorRow = findChild(panel.indicators, "indicatorRow");
-            verify(indicatorRow !== null);
+            verify(indicatorRow != undefined);
             compare(indicatorRow.y, 0);
             compare(panel.indicators.height, panel.indicators.panelHeight);
             compare(panel.indicators.partiallyOpened, false,
@@ -145,14 +142,14 @@ Item {
                 tryCompare(panel.indicators, "fullyOpened", true);
             }
 
-           var indicatorRow = findChild(panel.indicators, "indicatorRow");
-            verify(indicatorRow !== null);
+            var indicatorRow = findChild(panel.indicators, "indicatorRow");
+            verify(indicatorRow != undefined);
+
+            var rowRepeater = findChild(panel.indicators, "rowRepeater");
+            verify(indicatorRow != undefined);
 
             var menuContent = findChild(panel.indicators, "menuContent");
-            verify(indicatorRow !== null);
-
-            var menuContent = findChild(panel.indicators, "menuContent");
-            verify(indicatorRow !== null);
+            verify(indicatorRow != undefined);
 
             // Wait for the indicators to get into position.
             // (switches between normal and fullscreen modes are animated)
@@ -163,10 +160,10 @@ Item {
             }
 
             // do this for each indicator item
-            for (var i = 0; i < indicatorRow.row.count; i++) {
+            for (var i = 0; i < rowRepeater.count; i++) {
 
                 var indicatorItem = get_indicator_item(i);
-                verify(indicatorItem !== null);
+                verify(indicatorItem != undefined);
 
                 if (!indicatorItem.visible)
                     continue;
@@ -206,7 +203,7 @@ Item {
             panel.searchVisible = true;
 
             var searchIndicator = findChild(panel, "search");
-            verify(searchIndicator !== null);
+            verify(searchIndicator != undefined);
 
             tap(searchIndicator, 1, 1);
 
@@ -219,7 +216,7 @@ Item {
             panel.searchVisible = false;
 
             var searchIndicator = findChild(panel, "search");
-            verify(searchIndicator !== null);
+            verify(searchIndicator != undefined);
 
             tap(searchIndicator, 1, 1);
 
@@ -235,14 +232,17 @@ Item {
             panel.searchVisible = false;
 
             var indicatorRow = findChild(panel.indicators, "indicatorRow");
-            verify(indicatorRow !== null);
+            verify(indicatorRow != undefined);
+
+            var rowRepeater = findChild(panel.indicators, "rowRepeater");
+            verify(indicatorRow != undefined);
 
             // Get the first indicator
             var indicatorItemFirst = get_indicator_item(0);
-            verify(indicatorItemFirst !== null);
+            verify(indicatorItemFirst != undefined);
 
             var indicatorItemCoordFirst = get_indicator_item_position(0);
-            var indicatorItemCoordNext = get_indicator_item_position(indicatorRow.row.count - 1);
+            var indicatorItemCoordNext = get_indicator_item_position(indicatorRow.count - 1);
 
             touchPress(panel,
                        indicatorItemCoordFirst.x, panel.panelHeight / 2);

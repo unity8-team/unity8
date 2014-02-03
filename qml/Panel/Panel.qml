@@ -50,7 +50,7 @@ Item {
 
     Connections {
         target: indicatorsMenu
-        onShownChanged: hideTimer.stop()
+        onShown: hideTimer.stop()
     }
 
     PanelBackground {
@@ -101,10 +101,13 @@ Item {
         y: panelBackground.y
         width: root.indicatorsMenuWidth
         shown: false
+        hintValue: __panelMinusSeparatorLineHeight * 3
         panelHeight: __panelMinusSeparatorLineHeight
         openedHeight: parent.height + (pinnedMode ? 0 : root.panelHeight)
         pinnedMode: !fullscreenMode
         overFlowWidth: search.state=="hidden" ? parent.width : parent.width - search.width
+
+        property real unitProgress: (height - panelHeight) / (openedHeight - panelHeight)
     }
 
     PanelSeparatorLine {
