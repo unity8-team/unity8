@@ -40,6 +40,7 @@ Item {
         "com.canonical.indicator.switch"        : switchMenu,
         "com.canonical.indicator.alarm"         : alarmMenu,
         "com.canonical.indicator.appointment"   : appointmentMenu,
+        "com.canonical.indicator.bluetooth"     : bluetoothMenu,
 
         "com.canonical.indicator.messages.messageitem"  : messageItem,
         "com.canonical.indicator.messages.sourceitem"   : groupedMessage,
@@ -478,6 +479,42 @@ Item {
                 menuModel.loadExtendedAttributes(modelIndex, {'x-canonical-play-action': 'string',
                                                               'x-canonical-next-action': 'string',
                                                               'x-canonical-previous-action': 'string'});
+            }
+        }
+    }
+
+    Component {
+        id: bluetoothMenu
+        Menus.BluetoothMenu {
+            objectName: "bluetoothMenu"
+            property QtObject menuData: null
+            property int menuIndex: -1
+            property var extendedData: menuData && menuData.ext || undefined
+
+            signal menuSelected
+            signal menuDeselected
+
+            property var connectAction: QMenuModel.UnityMenuAction {
+                model: menuModel
+                index: menuIndex
+                name: getExtendedProperty(extendedData, "xCanonicalConnectAction", "")
+            }
+
+            text: menuData && menuData.label || ""
+            iconSource: menuData && menuData.icon || ""
+            enabled: menuData && menuData.sensitive || false
+            connectEnabled: connectAction.valid && connectAction.enabled
+
+            onConnect: {
+                connectAction.activate(value);
+                shell.hideIndicatorMenu(UbuntuAnimation.BriskDuration);
+            }
+            onClicked: {
+                if (selected) {
+                    menuDeselected();
+                } else {
+                    menuSelected();
+                }
             }
         }
     }

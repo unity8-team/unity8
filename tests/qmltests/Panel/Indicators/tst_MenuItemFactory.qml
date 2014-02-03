@@ -91,6 +91,7 @@ Item {
                 { tag: 'switch2', type: "com.canonical.indicator.switch", objectName: "switchMenu" },
                 { tag: 'alarm', type: "com.canonical.indicator.alarm", objectName: "alarmMenu" },
                 { tag: 'appointment', type: "com.canonical.indicator.appointment", objectName: "appointmentMenu" },
+                { tag: 'bluetooth', type: "com.canonical.indicator.bluetooth", objectName: "bluetoothMenu" },
 
                 { tag: 'messageItem', type: "com.canonical.indicator.messages.messageitem", objectName: "messageItem" },
                 { tag: 'sourceItem', type: "com.canonical.indicator.messages.sourceitem", objectName: "groupedMessage" },
@@ -261,7 +262,7 @@ Item {
             compare(loader.item.objectName, "standardMenu", "Should have created a standard menu");
 
             compare(loader.item.text, data.label, "Label does not match data");
-            compare(loader.item.iconSource, data.icon, "MaxIcon does not match data");
+            compare(loader.item.iconSource, data.icon, "Icon does not match data");
             compare(loader.item.enabled, data.enabled, "Enabled does not match data");
         }
 
@@ -540,6 +541,34 @@ Item {
             compare(loader.item.canGoNext, false, "CanGoNext should be false");
             compare(loader.item.canGoPrevious, false, "CanGoPrevious should be false");
             compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+        }
+
+        function test_create_bluetoothMenu_data() {
+            return [
+                {label: "testLabel1", enabled: true, icon: "file:///testIcon1,", connectAction: "action::connect" },
+                {label: "testLabel2", enabled: false, icon: "file:///testIcon1", connectAction: "action::connect2" },
+            ];
+        }
+
+        function test_create_bluetoothMenu(data) {
+            menuData.type = "com.canonical.indicator.bluetooth";
+            menuData.label = data.label;
+            menuData.sensitive = data.enabled;
+            menuData.icon = data.icon;
+            menuData.ext = {
+                'xCanonicalConnectAction': data.connectAction,
+            };
+
+            loader.data = menuData;
+            loader.sourceComponent = factory.load(menuData);
+            tryCompareFunction(function() { return loader.item != undefined; }, true);
+            compare(loader.item.objectName, "bluetoothMenu", "Should have created a bluetooth menu");
+
+            compare(loader.item.text, data.label, "Label does not match data");
+            compare(loader.item.iconSource, data.icon, "MaxIcon does not match data");
+            compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+            compare(loader.item.connectAction.name, data.connectAction, "Connect action incorrect");
+            compare(loader.item.connectEnabled, false, "ConnectEnabled should be false");
         }
     }
 }
