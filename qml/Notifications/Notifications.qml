@@ -25,6 +25,7 @@ ListView {
     interactive: false
 
     property real margin
+    property real fullHeight
 
     delegate: Notification {
         objectName: "notification" + index
@@ -41,8 +42,6 @@ ListView {
         actions: model.actions
         notificationId: model.id
         notification: notificationList.model.getRaw(notificationId)
-        maxHeight: notificationList.height
-        margins: notificationList.margin
 
         // make sure there's no opacity-difference between the several
         // elements in a notification

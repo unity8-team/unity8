@@ -35,17 +35,19 @@ Item {
 
     /* Whether, when collapsed, a button should be displayed enabling the user to expand
        the grid to its full size. */
-    readonly property bool expandable: model.count > rowsWhenCollapsed * iconTileGrid.columns
+    readonly property bool expandable: model.count > collapsedRowCount * iconTileGrid.columns
 
     property var model: null
 
     /* Maximum number of rows to be show when filter=true. */
     property int collapsedRowCount: 2
     property int uncollapsedRowCount: Math.ceil(model.count / columns)
-    /* Never show more rows than model would fill up. */
-    readonly property int rowsWhenCollapsed: Math.min(collapsedRowCount, uncollapsedRowCount)
-    readonly property int collapsedHeight: iconTileGrid.contentHeightForRows(rowsWhenCollapsed)
-    readonly property int uncollapsedHeight: iconTileGrid.contentHeightForRows(uncollapsedRowCount)
+    readonly property int collapsedHeight: {
+        return iconTileGrid.contentHeightForRows(Math.min(collapsedRowCount, Math.ceil(model.count / columns)))
+    }
+    readonly property int uncollapsedHeight: {
+        return iconTileGrid.contentHeightForRows(uncollapsedRowCount)
+    }
 
     property alias minimumHorizontalSpacing: iconTileGrid.minimumHorizontalSpacing
     property alias maximumNumberOfColumns: iconTileGrid.maximumNumberOfColumns
@@ -104,7 +106,7 @@ Item {
 
         model: LimitProxyModel {
             model: root.model
-            limit: (filter && !filterAnimation.running) ? rowsWhenCollapsed * iconTileGrid.columns : -1
+            limit: (filter && !filterAnimation.running) ? collapsedRowCount * iconTileGrid.columns : -1
         }
     }
 }

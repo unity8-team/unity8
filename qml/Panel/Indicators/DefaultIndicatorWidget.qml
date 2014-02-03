@@ -21,16 +21,14 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Unity.Indicators 0.1 as Indicators
 
-Indicators.IndicatorBase {
+Indicators.IndicatorWidget {
     id: indicatorWidget
 
-    property int iconSize: height
+    width: itemRow.width
+
     property alias leftLabel: itemLeftLabel.text
     property alias rightLabel: itemRightLabel.text
     property var icons: undefined
-
-    width: itemRow.width
-    enabled: false
 
     Row {
         id: itemRow

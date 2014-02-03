@@ -28,21 +28,23 @@ MainView {
 
     property QtObject indicatorsModel: null
     property bool __contentActive: false
-    readonly property int currentMenuIndex: tabs.selectedTabIndex
+    readonly property int currentMenuIndex : filteredIndicators.mapToSource(tabs.selectedTabIndex)
     backgroundColor: "#221e1c" // FIXME not in palette yet
     property int contentReleaseInterval: 20000
     property bool activeHeader: false
-    property real headerHeight: tabs.tabBar.height
+    property alias visibleIndicators: visibleIndicatorsModel.visible
 
     width: units.gu(40)
     height: units.gu(42)
 
-    function setCurrentMenuIndex(index, animate) {
-        if (tabs.selectedTabIndex !== index) {
-            if (tabs.selectedTabIndex === -1 || !animate) {
+    function setCurrentMenuIndex(index) {
+        var filteredIndex = filteredIndicators.mapFromSource(index)
+
+        if (tabs.selectedTabIndex !== filteredIndex) {
+            if (tabs.selectedTabIndex == -1) {
                 tabs.tabBar.animate = false;
             }
-            tabs.selectedTabIndex = index;
+            tabs.selectedTabIndex = filteredIndex;
             tabs.tabBar.animate = true;
         }
     }
@@ -63,14 +65,29 @@ MainView {
         tabs.tabBar.alwaysSelectionMode = activeHeader;
     }
 
+    SortFilterProxyModel {
+        id: filteredIndicators
+        model: visibleIndicatorsModel
+        dynamicSortFilter: true
+
+        filterRole: Indicators.IndicatorsModelRole.IsVisible
+        filterRegExp: RegExp("^true$")
+    }
+
+    Indicators.VisibleIndicatorsModel {
+        id: visibleIndicatorsModel
+        model: indicatorsModel
+    }
+
     Tabs {
         id: tabs
         objectName: "tabs"
         anchors.fill: parent
+        selectedTabIndex: -1
 
         Repeater {
             id: repeater
-            model: content.indicatorsModel ? content.indicatorsModel : null
+            model: filteredIndicators
             objectName: "tabsRepeater"
 
             // FIXME: This is needed because tabs dont handle repeaters well.
@@ -125,12 +142,6 @@ MainView {
                             target: tab
                             property: "title"
                             value: loader.item && loader.item.hasOwnProperty("title") && loader.item.title !== "" ? loader.item.title : model.identifier
-                        }
-
-                        Binding {
-                            target: loader.item
-                            property: "objectName"
-                            value: identifier + "-page"
                         }
                     }
                 }

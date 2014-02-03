@@ -141,6 +141,7 @@ Row {
             id: notifications
 
             margin: units.gu(1)
+            fullHeight: parent.height
 
             anchors.fill: parent
             model: mockModel
@@ -225,6 +226,7 @@ Row {
                           { id: "nada_id", label: "Nada"}],
                 summaryVisible: true,
                 bodyVisible: true,
+                interactiveAreaEnabled: false,
                 iconVisible: true,
                 shapedIcon: true,
                 nonShapedIcon: false,
@@ -243,6 +245,7 @@ Row {
                 actions: [],
                 summaryVisible: true,
                 bodyVisible: false,
+                interactiveAreaEnabled: false,
                 iconVisible: false,
                 shapedIcon: false,
                 nonShapedIcon: false,
@@ -280,6 +283,7 @@ Row {
                 actions: [{ id: "reply_id", label: "Dummy"}],
                 summaryVisible: true,
                 bodyVisible: true,
+                interactiveAreaEnabled: true,
                 iconVisible: true,
                 shapedIcon: true,
                 nonShapedIcon: false,
@@ -299,6 +303,7 @@ Row {
                           { id: "reject_id", label: "Reject"}],
                 summaryVisible: true,
                 bodyVisible: true,
+                interactiveAreaEnabled: false,
                 iconVisible: true,
                 shapedIcon: true,
                 nonShapedIcon: false,
@@ -317,6 +322,7 @@ Row {
                 actions: [],
                 summaryVisible: true,
                 bodyVisible: true,
+                interactiveAreaEnabled: false,
                 iconVisible: true,
                 shapedIcon: true,
                 nonShapedIcon: false,
@@ -336,6 +342,7 @@ Row {
                 actions: [],
                 summaryVisible: true,
                 bodyVisible: true,
+                interactiveAreaEnabled: false,
                 iconVisible: true,
                 shapedIcon: false,
                 nonShapedIcon: true,
@@ -389,14 +396,14 @@ Row {
             compare(icon.visible, data.iconVisible, "avatar-icon visibility is incorrect")
             compare(shapedIcon.visible, data.shapedIcon, "shaped-icon visibility is incorrect")
             compare(nonShapedIcon.visible, data.nonShapedIcon, "non-shaped-icon visibility is incorrect")
+            compare(interactiveArea.enabled, data.interactiveAreaEnabled, "check for interactive area")
 
-            // test input does not fall through
-            mouseClick(notification, notification.width / 2, notification.height / 2)
-            if(data.type == Notification.Interactive) {
+            if(data.interactiveAreaEnabled) {
+                mouseClick(notification, notification.width / 2, notification.height / 2)
                 actionSpy.wait()
                 compare(actionSpy.signalArguments[0][0], data.actions[0]["id"], "got wrong id for interactive action")
+                compare(clickThroughSpy.count, 0, "click on interactive notification fell through")
             }
-            compare(clickThroughSpy.count, 0, "click on notification fell through")
 
             compare(secondaryIcon.visible, data.secondaryIconVisible, "secondary-icon visibility is incorrect")
             compare(summaryLabel.visible, data.summaryVisible, "summary-text visibility is incorrect")

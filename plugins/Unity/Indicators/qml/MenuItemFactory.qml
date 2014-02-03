@@ -18,10 +18,11 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Settings.Menus 0.1 as Menus
+import Unity.Indicators 0.1 as Indicators
+import Unity.Indicators.Network 0.1 as ICNetwork
+import Unity.Indicators.Messaging 0.1 as ICMessaging
 import QMenuModel 0.1 as QMenuModel
-import Utils 0.1 as Utils
-import Ubuntu.Components.ListItems 0.1 as ListItems
+import Ubuntu.Components 0.1
 
 Item {
     id: menuFactory
@@ -32,23 +33,18 @@ Item {
         "unity.widgets.systemsettings.tablet.volumecontrol" : sliderMenu,
         "unity.widgets.systemsettings.tablet.switch"        : switchMenu,
 
-        "com.canonical.indicator.button"        : buttonMenu,
-        "com.canonical.indicator.div"           : separatorMenu,
-        "com.canonical.indicator.section"       : sectionMenu,
-        "com.canonical.indicator.progress"      : progressMenu,
-        "com.canonical.indicator.slider"        : sliderMenu,
-        "com.canonical.indicator.switch"        : switchMenu,
-        "com.canonical.indicator.alarm"         : alarmMenu,
-        "com.canonical.indicator.appointment"   : appointmentMenu,
+        "com.canonical.indicator.button"    : buttonMenu,
+        "com.canonical.indicator.div"       : divMenu,
+        "com.canonical.indicator.section"   : sectionMenu,
+        "com.canonical.indicator.progress"  : progressMenu,
+        "com.canonical.indicator.slider"    : sliderMenu,
+        "com.canonical.indicator.switch"    : switchMenu,
 
         "com.canonical.indicator.messages.messageitem"  : messageItem,
         "com.canonical.indicator.messages.sourceitem"   : groupedMessage,
 
         "com.canonical.unity.slider"    : sliderMenu,
         "com.canonical.unity.switch"    : switchMenu,
-
-        "com.canonical.unity.media-player"    : mediaPayerMenu,
-        "com.canonical.unity.playback-item"   : playbackItemMenu,
 
         "unity.widgets.systemsettings.tablet.wifisection" : wifiSection,
         "unity.widgets.systemsettings.tablet.accesspoint" : accessPoint,
@@ -61,17 +57,11 @@ Item {
         return defaultValue;
     }
 
-    Component {
-        id: separatorMenu;
-        Menus.SeparatorMenu {
-            objectName: "separatorMenu"
-        }
-    }
+    Component { id: divMenu; Indicators.DivMenuItem {} }
 
     Component {
         id: sliderMenu;
-        Menus.SliderMenu {
-            objectName: "sliderMenu"
+        Indicators.SliderMenuItem {
             property QtObject menuData: null
             property var menuModel: menuFactory.menuModel
             property int menuIndex: -1
@@ -99,12 +89,12 @@ Item {
             onMenuIndexChanged: {
                 loadAttributes();
             }
-            onUpdated: {
+            onChangeState: {
                 menuModel.changeState(menuIndex, value);
             }
 
             function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
+                if (!menuModel || menuIndex == undefined) return;
                 menuModel.loadExtendedAttributes(menuIndex, {'min-value': 'double',
                                                              'max-value': 'double',
                                                              'min-icon': 'icon',
@@ -115,16 +105,15 @@ Item {
 
     Component {
         id: buttonMenu;
-        Menus.ButtonMenu {
-            objectName: "buttonMenu"
+        Indicators.ButtonMenuItem {
             property QtObject menuData: null
             property var menuModel: menuFactory.menuModel
             property int menuIndex: -1
 
-            buttonText: menuData && menuData.label || ""
+            text: menuData && menuData.label || ""
             enabled: menuData && menuData.sensitive || false
 
-            onTriggered: {
+            onActivate: {
                 menuModel.activate(menuIndex);
                 shell.hideIndicatorMenu(UbuntuAnimation.FastDuration);
             }
@@ -132,20 +121,17 @@ Item {
     }
     Component {
         id: sectionMenu;
-        Menus.SectionMenu {
-            objectName: "sectionMenu"
+        Indicators.SectionMenuItem {
             property QtObject menuData: null
             property var menuIndex: undefined
 
             text: menuData && menuData.label || ""
-            busy: false
         }
     }
 
     Component {
         id: progressMenu;
-        Menus.ProgressValueMenu {
-            objectName: "progressMenu"
+        Indicators.ProgressMenuItem {
             property QtObject menuData: null
             property int menuIndex: -1
 
@@ -158,140 +144,44 @@ Item {
 
     Component {
         id: standardMenu;
-        ListItems.Standard {
-            objectName: "standardMenu"
+        Indicators.StandardMenuItem {
             property QtObject menuData: null
             property int menuIndex: -1
 
             text: menuData && menuData.label || ""
             iconSource: menuData && menuData.icon || ""
             enabled: menuData && menuData.sensitive || false
+            checkable: menuData ? (menuData.isCheck || menuData.isRadio) : false
+            checked: checkable ? menuData.isToggled : false
 
-            onTriggered: {
+            onActivate: {
                 menuModel.activate(menuIndex);
                 shell.hideIndicatorMenu(UbuntuAnimation.BriskDuration);
             }
         }
     }
-
-    Component {
-        id: checkableMenu;
-        Menus.CheckableMenu {
-            objectName: "checkableMenu"
-            property QtObject menuData: null
-            property int menuIndex: -1
-
-            text: menuData && menuData.label || ""
-            enabled: menuData && menuData.sensitive || false
-            checked: menuData && menuData.isToggled || false
-
-            onTriggered: {
-                menuModel.activate(menuIndex);
-                shell.hideIndicatorMenu(UbuntuAnimation.BriskDuration);
-            }
-        }
-    }
-
 
     Component {
         id: switchMenu;
-        Menus.SwitchMenu {
-            objectName: "switchMenu"
+        Indicators.SwitchMenuItem {
             property QtObject menuData: null
             property int menuIndex: -1
 
             text: menuData && menuData.label || ""
             iconSource: menuData && menuData.icon || ""
             enabled: menuData && menuData.sensitive || false
-            checked: menuData && menuData.isToggled || false
+            checked: menuData ? menuData.isToggled : false
 
-            onTriggered: {
+            onActivate: {
                 menuModel.activate(menuIndex);
                 shell.hideIndicatorMenu(UbuntuAnimation.BriskDuration);
-            }
-        }
-    }
-
-    Component {
-        id: alarmMenu;
-        Menus.EventMenu {
-            objectName: "alarmMenu"
-            property QtObject menuData: null
-            property var menuModel: menuFactory.menuModel
-            property int menuIndex: -1
-            property var extendedData: menuData && menuData.ext || undefined
-            // TODO - bug #1260728
-            property var timeFormatter: Utils.GDateTimeFormatter {
-                time: getExtendedProperty(extendedData, "xCanonicalTime", 0)
-                format: getExtendedProperty(extendedData, "xCanonicalTimeFormat", "")
-            }
-
-            text: menuData && menuData.label || ""
-            iconSource: menuData && menuData.icon || "image://theme/alarm-clock"
-            time: timeFormatter.timeString
-            enabled: menuData && menuData.sensitive || false
-
-            onMenuModelChanged: {
-                loadAttributes();
-            }
-            onMenuIndexChanged: {
-                loadAttributes();
-            }
-            onTriggered: {
-                menuModel.activate(menuIndex);
-            }
-
-            function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
-                menuModel.loadExtendedAttributes(menuIndex, {'x-canonical-time': 'int64',
-                                                             'x-canonical-time-format': 'string'});
-            }
-        }
-    }
-
-    Component {
-        id: appointmentMenu;
-        Menus.EventMenu {
-            objectName: "appointmentMenu"
-            property QtObject menuData: null
-            property var menuModel: menuFactory.menuModel
-            property int menuIndex: -1
-            property var extendedData: menuData && menuData.ext || undefined
-            // TODO - bug #1260728
-            property var timeFormatter: Utils.GDateTimeFormatter {
-                time: getExtendedProperty(extendedData, "xCanonicalTime", 0)
-                format: getExtendedProperty(extendedData, "xCanonicalTimeFormat", "")
-            }
-
-            text: menuData && menuData.label || ""
-            iconSource: menuData && menuData.icon || "image://theme/calendar"
-            time: timeFormatter.timeString
-            eventColor: menu && menu.ext.hasOwnProperty("xCanonicalColor") ? menu.ext.xCanonicalColor : Qt.rgba(0.0, 0.0, 0.0, 0.0)
-            enabled: menuData && menuData.sensitive || false
-
-            onMenuModelChanged: {
-                loadAttributes();
-            }
-            onMenuIndexChanged: {
-                loadAttributes();
-            }
-            onTriggered: {
-                menuModel.activate(menuIndex);
-            }
-
-            function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
-                menuModel.loadExtendedAttributes(menuIndex, {'x-canonical-color': 'string',
-                                                             'x-canonical-time': 'int64',
-                                                             'x-canonical-time-format': 'string'});
             }
         }
     }
 
     Component {
         id: wifiSection;
-        Menus.SectionMenu {
-            objectName: "wifiSection"
+        Indicators.SectionMenuItem {
             property QtObject menuData: null
             property var menuModel: menuFactory.menuModel
             property int menuIndex: -1
@@ -308,7 +198,7 @@ Item {
             }
 
             function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
+                if (!menuModel || menuIndex == undefined) return;
                 menuModel.loadExtendedAttributes(menuIndex, {'x-canonical-busy-action': 'bool'})
             }
         }
@@ -316,8 +206,7 @@ Item {
 
     Component {
         id: accessPoint;
-        Menus.AccessPointMenu {
-            objectName: "accessPoint"
+        ICNetwork.AccessPoint {
             property QtObject menuData: null
             property var menuModel: menuFactory.menuModel
             property int menuIndex: -1
@@ -331,9 +220,9 @@ Item {
 
             text: menuData && menuData.label || ""
             enabled: menuData && menuData.sensitive || false
-            checked: menuData && menuData.isToggled || false
             secure: getExtendedProperty(extendedData, "xCanonicalWifiApIsSecure", false)
             adHoc: getExtendedProperty(extendedData, "xCanonicalWifiApIsAdhoc", false)
+            checked: menuData ? menuData.isToggled : false
             signalStrength: strengthAction.valid ? strengthAction.state : 0
 
             onMenuModelChanged: {
@@ -342,13 +231,13 @@ Item {
             onMenuIndexChanged: {
                 loadAttributes();
             }
-            onTriggered: {
+            onActivate: {
                 menuModel.activate(menuIndex);
                 shell.hideIndicatorMenu(UbuntuAnimation.BriskDuration);
             }
 
             function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
+                if (!menuModel || menuIndex == undefined) return;
                 menuModel.loadExtendedAttributes(menuIndex, {'x-canonical-wifi-ap-is-adhoc': 'bool',
                                                              'x-canonical-wifi-ap-is-secure': 'bool',
                                                              'x-canonical-wifi-ap-strength-action': 'string'});
@@ -358,26 +247,23 @@ Item {
 
     Component {
         id: messageItem
-        MessageMenuItemFactory {
-            objectName: "messageItem"
+        ICMessaging.MessageMenuItemFactory {
             menuModel: menuFactory.menuModel
         }
     }
 
     Component {
         id: groupedMessage
-        Menus.GroupedMessageMenu {
-            objectName: "groupedMessage"
+        ICMessaging.GroupedMessage {
             property QtObject menuData: null
             property var menuModel: menuFactory.menuModel
             property int menuIndex: -1
             property var extendedData: menuData && menuData.ext || undefined
 
-            text: menuData && menuData.label || ""
-            iconSource: getExtendedProperty(extendedData, "icon", "qrc:/indicators/artwork/messaging/default_app.svg")
+            title: menuData && menuData.label || ""
+            appIcon: getExtendedProperty(extendedData, "icon", "qrc:/indicators/artwork/messaging/default_app.svg")
             count: menuData && menuData.actionState.length > 0 ? menuData.actionState[0] : "0"
             enabled: menuData && menuData.sensitive || false
-            removable: true
 
             onMenuModelChanged: {
                 loadAttributes();
@@ -385,99 +271,17 @@ Item {
             onMenuIndexChanged: {
                 loadAttributes();
             }
-            onClicked: {
+            onActivateApp: {
                 menuModel.activate(menuIndex, true);
                 shell.hideIndicatorMenu(UbuntuAnimation.FastDuration);
             }
-            onDismissed: {
+            onDismiss: {
                 menuModel.activate(menuIndex, false);
             }
 
             function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
+                if (!menuModel || menuIndex == undefined) return;
                 menuModel.loadExtendedAttributes(modelIndex, {'icon': 'icon'});
-            }
-        }
-    }
-
-    Component {
-        id: mediaPayerMenu;
-        Menus.MediaPlayerMenu {
-            objectName: "mediaPayerMenu"
-            property QtObject menuData: null
-            property var menuModel: menuFactory.menuModel
-            property int menuIndex: -1
-            property var actionState: menuData && menuData.actionState || undefined
-
-            playerIcon: menuData && menuData.icon || ""
-            playerName: menuData && menuData.label || ""
-
-            albumArt: getExtendedProperty(actionState, "art-url", "")
-            song: getExtendedProperty(actionState, "title", "unknown")
-            artist: getExtendedProperty(actionState, "artist", "unknown")
-            album: getExtendedProperty(actionState, "album", "unknown")
-            running: getExtendedProperty(actionState, "running", false)
-            state: getExtendedProperty(actionState, "state", "")
-            enabled: menuData && menuData.sensitive || false
-
-            onTriggered: {
-                model.activate(modelIndex);
-            }
-        }
-    }
-
-    Component {
-        id: playbackItemMenu;
-        Menus.PlaybackItemMenu {
-            objectName: "playbackItemMenu"
-            property QtObject menuData: null
-            property var menuModel: menuFactory.menuModel
-            property int menuIndex: -1
-            property var extendedData: menuData && menuData.ext || undefined
-
-            property var playAction: QMenuModel.UnityMenuAction {
-                model: menuModel
-                index: menuIndex
-                name: getExtendedProperty(extendedData, "xCanonicalPlayAction", "")
-            }
-            property var nextAction: QMenuModel.UnityMenuAction {
-                model: menuModel
-                index: menuIndex
-                name: getExtendedProperty(extendedData, "xCanonicalNextAction", "")
-            }
-            property var previousAction: QMenuModel.UnityMenuAction {
-                model: menuModel
-                index: menuIndex
-                name: getExtendedProperty(extendedData, "xCanonicalPreviousAction", "")
-            }
-
-            playing: playAction.state === "Playing"
-            canPlay: playAction.valid
-            canGoNext: nextAction.valid
-            canGoPrevious: previousAction.valid
-            enabled: menuData && menuData.sensitive || false
-
-            onPlay: {
-                playAction.activate();
-            }
-            onNext: {
-                nextAction.activate();
-            }
-            onPrevious: {
-                previousAction.activate();
-            }
-            onMenuModelChanged: {
-                loadAttributes();
-            }
-            onMenuIndexChanged: {
-                loadAttributes();
-            }
-
-            function loadAttributes() {
-                if (!menuModel || menuIndex == -1) return;
-                menuModel.loadExtendedAttributes(modelIndex, {'x-canonical-play-action': 'string',
-                                                              'x-canonical-next-action': 'string',
-                                                              'x-canonical-previous-action': 'string'});
             }
         }
     }
@@ -489,11 +293,8 @@ Item {
                 return component;
             }
         }
-        if (modelData.isCheck || modelData.isRadio) {
-            return checkableMenu;
-        }
         if (modelData.isSeparator) {
-            return separatorMenu;
+            return divMenu;
         }
         return standardMenu;
     }

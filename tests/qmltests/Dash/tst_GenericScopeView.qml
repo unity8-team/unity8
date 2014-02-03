@@ -41,89 +41,54 @@ Item {
         signal mainStageFocusedApplicationChanged()
     }
 
-    PreviewListView {
-        id: previewListView
-        anchors.fill: parent
-        openEffect: openEffect
-        categoryView: genericScopeView.categoryView
-        scope: genericScopeView.scope
-    }
-
-    DashContentOpenEffect {
-        id: openEffect
-        previewListView: previewListView
-    }
-
-    PageHeaderLabel {
-        id: pageHeader
-        searchHistory: SearchHistoryModel {}
-    }
-
     GenericScopeView {
         id: genericScopeView
         anchors.fill: parent
-        previewListView: previewListView
-        openEffect: openEffect
-        pageHeader: pageHeader
-        tabBarHeight: pageHeader.implicitHeight
+        searchHistory: SearchHistoryModel {}
 
         UT.UnityTestCase {
             name: "GenericScopeView"
             when: scopes.loaded
 
-            function init() {
-                shell.width = units.gu(120)
-                genericScopeView.categoryView.positionAtBeginning();
-                tryCompare(genericScopeView.categoryView.contentY, 0)
-            }
-
             function test_isCurrent() {
+                var pageHeader = findChild(genericScopeView, "pageHeader");
+                var previewListView = findChild(genericScopeView, "previewListView");
                 genericScopeView.isCurrent = true
                 pageHeader.searchQuery = "test"
                 previewListView.open = true
                 genericScopeView.isCurrent = false
                 tryCompare(pageHeader, "searchQuery", "")
-                tryCompare(previewListView, "open", false);
+                tryCompare(genericScopeView, "previewShown", false);
             }
 
             function test_showDash() {
+                var previewListView = findChild(genericScopeView, "previewListView");
                 previewListView.open = true;
-                tryCompare(openEffect, "live", true);
                 scopes.get(0).showDash();
-                tryCompare(previewListView, "open", false);
-                tryCompare(openEffect, "live", true);
+                tryCompare(genericScopeView, "previewShown", false);
             }
 
             function test_hideDash() {
+                var previewListView = findChild(genericScopeView, "previewListView");
                 previewListView.open = true;
                 scopes.get(0).hideDash();
-                tryCompare(previewListView, "open", false);
+                tryCompare(genericScopeView, "previewShown", false);
             }
 
             function openPreview() {
                 var categoryListView = findChild(genericScopeView, "categoryListView");
                 categoryListView.positionAtBeginning();
 
-                tryCompareFunction(function() {
-                                       var tile = findChild(findChild(genericScopeView, "0"), "delegate0");
-                                       return tile != undefined;
-                                   },
-                                   true);
                 var tile = findChild(findChild(genericScopeView, "0"), "delegate0");
                 mouseClick(tile, tile.width / 2, tile.height / 2);
-                tryCompare(previewListView, "open", true);
+                var openEffect = findChild(genericScopeView, "openEffect");
                 tryCompare(openEffect, "gap", 1);
             }
 
             function checkArrowPosition(index) {
-                tryCompareFunction(function() {
-                                       var tile = findChild(findChild(genericScopeView, "0"), "delegate" + index);
-                                       return tile != undefined;
-                                   },
-                                   true);
                 var tile = findChild(findChild(genericScopeView, "0"), "delegate" + index);
                 var tileCenter = tile.x + tile.width/2;
-                var pointerArrow = findChild(previewListView, "pointerArrow");
+                var pointerArrow = findChild(genericScopeView, "pointerArrow");
                 var pointerArrowCenter = pointerArrow.x + pointerArrow.width/2;
                 compare(pointerArrowCenter, tileCenter, "Pointer did not move to tile");
             }
@@ -132,7 +97,9 @@ Item {
                 var closePreviewMouseArea = findChild(genericScopeView, "closePreviewMouseArea");
                 mouseClick(closePreviewMouseArea, closePreviewMouseArea.width / 2, closePreviewMouseArea.height / 2);
 
+                var previewListView = findChild(genericScopeView, "previewListView");
                 tryCompare(previewListView, "open", false);
+                var openEffect = findChild(genericScopeView, "openEffect");
                 tryCompare(openEffect, "gap", 0);
 
                 var categoryListView = findChild(genericScopeView, "categoryListView");
@@ -141,12 +108,13 @@ Item {
             }
 
             function test_previewOpenClose() {
+                var previewListView = findChild(genericScopeView, "previewListView");
                 tryCompare(previewListView, "open", false);
 
                 openPreview();
 
                 // check for it opening successfully
-                var currentPreviewItem = findChild(previewListView, "previewLoader0");
+                var currentPreviewItem = findChild(genericScopeView, "previewLoader0");
                 tryCompareFunction(function() {
                                        var parts = currentPreviewItem.source.toString().split("/");
                                        var name = parts[parts.length - 1];
@@ -170,23 +138,26 @@ Item {
                 var categoryListView = findChild(genericScopeView, "categoryListView");
                 categoryListView.positionAtBeginning();
                 waitForRendering(categoryListView);
-                categoryListView.flick(0, -units.gu(60));
+                categoryListView.flick(0, -units.gu(80));
                 tryCompare(categoryListView.flicking, false);
 
                 var tile = findChild(findChild(genericScopeView, "0"), "delegate0");
                 mouseClick(tile, tile.width / 2, tile.height - 1);
+                var openEffect = findChild(genericScopeView, "openEffect");
                 tryCompare(openEffect, "gap", 1);
 
+                var pageHeader = findChild(genericScopeView, "pageHeader");
                 verify(openEffect.positionPx >= pageHeader.height + categoryListView.stickyHeaderHeight);
             }
 
             function test_previewCycle() {
+                var previewListView = findChild(genericScopeView, "previewListView");
                 tryCompare(previewListView, "open", false);
 
                 openPreview();
 
                 // wait for it to be loaded
-                var currentPreviewItem = findChild(previewListView, "previewLoader0");
+                var currentPreviewItem = findChild(genericScopeView, "previewLoader0");
                 tryCompareFunction(function() {
                                        var parts = currentPreviewItem.source.toString().split("/");
                                        var name = parts[parts.length - 1];
@@ -208,7 +179,7 @@ Item {
                                                 previewListView.height / 2);
 
                     // wait for it to be loaded
-                    var nextPreviewItem = findChild(previewListView, "previewLoader" + i);
+                    var nextPreviewItem = findChild(genericScopeView, "previewLoader" + i);
                     tryCompareFunction(function() {
                                            var parts = nextPreviewItem.source.toString().split("/");
                                            var name = parts[parts.length - 1];
@@ -235,12 +206,11 @@ Item {
 
             function test_show_spinner() {
                 openPreview();
-                var previewLoader = findChild(previewListView, "previewLoader0");
-                tryCompare(previewLoader, "progress", 1.0);
-                tryCompareFunction(function() { return previewLoader.item != undefined; }, true);
+                var previewListView = findChild(genericScopeView, "previewListView");
+                var previewLoader = findChild(genericScopeView, "previewLoader0");
 
                 previewLoader.item.showProcessingAction = true;
-                var waitingForAction = findChild(previewListView, "waitingForActionMouseArea");
+                var waitingForAction = findChild(genericScopeView, "waitingForActionMouseArea");
                 tryCompare(waitingForAction, "enabled", true);
                 previewLoader.closePreviewSpinner();
                 tryCompare(waitingForAction, "enabled", false);
@@ -278,29 +248,16 @@ Item {
                 tryCompare(category, "filtered", true);
             }
 
-            function test_getRendererCarouselGridFallback() {
-                var rendererId = "carousel"
-                var contentType = ""
-                var rendererHint = ""
-                var results = new Object()
-
-                results.count = 7
-                var renderer = genericScopeView.getRenderer(rendererId, contentType, rendererHint, results)
-                compare(renderer, "Generic/GenericCarousel.qml")
-
-                results.count = 6
-                renderer = genericScopeView.getRenderer(rendererId, contentType, rendererHint, results)
-                compare(renderer, "Generic/GenericFilterGrid.qml")
-            }
-
             function test_showPreviewCarousel() {
                 tryCompareFunction(function() { return findChild(genericScopeView, "carouselDelegate") != undefined; }, true);
                 var tile = findChild(genericScopeView, "carouselDelegate");
                 mouseClick(tile, tile.width / 2, tile.height / 2);
+                var openEffect = findChild(genericScopeView, "openEffect");
                 tryCompare(openEffect, "gap", 1);
 
                 // check for it opening successfully
-                var currentPreviewItem = findChild(previewListView, "previewLoader0");
+                var previewListView = findChild(genericScopeView, "previewListView");
+                var currentPreviewItem = findChild(genericScopeView, "previewLoader0");
                 tryCompareFunction(function() {
                                        var parts = currentPreviewItem.source.toString().split("/");
                                        var name = parts[parts.length - 1];
@@ -342,35 +299,12 @@ Item {
 
                 categoryListView.positionAtBeginning();
 
-                // wait for the header0 to be on its position
-                tryCompareFunction(
-                    function() {
-                        var header0 = findChild(genericScopeView, "dashSectionHeader0")
-                        return header0.y == pageHeader.height;
-                    },
-                    true);
-
                 var header0 = findChild(genericScopeView, "dashSectionHeader0")
                 var category0 = findChild(genericScopeView, "dashCategory0")
                 mouseClick(header0, header0.width / 2, header0.height / 2);
                 tryCompare(category0, "filtered", false);
                 tryCompare(category2, "filtered", true);
                 tryCompare(category2FilterGrid, "filter", true);
-            }
-
-            function test_narrow_delegate_ranges_expand() {
-                tryCompareFunction(function() { return findChild(genericScopeView, "dashCategory0") != undefined; }, true);
-                var category = findChild(genericScopeView, "dashCategory0")
-
-                shell.width = units.gu(20)
-                var categoryListView = findChild(genericScopeView, "categoryListView");
-                categoryListView.contentY = units.gu(20);
-                var header0 = findChild(genericScopeView, "dashSectionHeader0")
-                mouseClick(header0, header0.width / 2, header0.height / 2);
-                tryCompare(category, "filtered", false);
-                tryCompare(category.item, "delegateCreationEnd", category.item.delegateCreationBegin + genericScopeView.height);
-                mouseClick(header0, header0.width / 2, header0.height / 2);
-                tryCompare(category, "filtered", true);
             }
         }
     }

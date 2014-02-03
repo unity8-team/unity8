@@ -27,11 +27,11 @@ Item {
     height: units.gu(70)
 
     property var indicator_status: {
-        'indicator-fake1-page': { 'started': false, 'reset': 0 },
-        'indicator-fake2-page': { 'started': false, 'reset': 0 },
-        'indicator-fake3-page': { 'started': false, 'reset': 0 },
-        'indicator-fake4-page': { 'started': false, 'reset': 0 },
-        'indicator-fake5-page': { 'started': false, 'reset': 0 }
+        'menu_page1': { 'started': false, 'reset': 0 },
+        'menu_page2': { 'started': false, 'reset': 0 },
+        'menu_page3': { 'started': false, 'reset': 0 },
+        'menu_page4': { 'started': false, 'reset': 0 },
+        'menu_page5': { 'started': false, 'reset': 0 }
     }
 
     // Dummy objects
@@ -49,6 +49,14 @@ Item {
         indicatorsModel: indicatorsModel
         contentReleaseInterval: 50
         height: parent.height - 50
+
+        visibleIndicators: {
+           'indicator-fake1': true,
+           'indicator-fake2': true,
+           'indicator-fake3': true,
+           'indicator-fake4': true,
+           'indicator-fake5': true
+       }
     }
 
     Rectangle {
@@ -88,20 +96,20 @@ Item {
     }
 
     function get_test_menu_objecName(index) {
-        return "indicator-fake" + (index + 1) + "-page";
+        return "menu_page"+(index+1);
     }
 
     property string testTabObjectName : ""
 
     function selected_tab_equals_test_tab() {
         var currentTab = menu_content_test.findChild(menuContent, "tabs").selectedTab
-        if (currentTab === null) {
+        if (currentTab == undefined) {
             console.log("selected tab undefined");
             return false;
         }
 
         var testTab = menu_content_test.findChild(menuContent, testTabObjectName);
-        if (testTab === null) {
+        if (testTab == undefined) {
             console.log("test_tab " + testTabObjectName + " undefined");
             return false;
         }

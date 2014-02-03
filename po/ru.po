@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-11-29 09:21+0100\n"
-"PO-Revision-Date: 2014-01-26 15:56+0000\n"
+"PO-Revision-Date: 2013-10-01 05:55+0000\n"
 "Last-Translator: Zonov Roman <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2014-01-27 05:48+0000\n"
-"X-Generator: Launchpad (build 16914)\n"
+"X-Launchpad-Export-Date: 2013-11-30 05:33+0000\n"
+"X-Generator: Launchpad (build 16856)\n"
 
 #: Components/EdgeDemoOverlay.qml:151
 msgid "Skip intro"
@@ -69,8 +69,6 @@ msgid ""
 "You have now mastered the edge gestures and can start using the "
 "phone<br><br>Tap anywhere to start"
 msgstr ""
-"Теперь, когда вы изучили основные движения, вы можете начать использовать "
-"телефон.<br><br>Нажмите, чтобы начать"
 
 #: Components/PageHeader.qml:364
 msgid "Recent searches"
@@ -92,8 +90,6 @@ msgstr "(%1)"
 msgid "%1 review"
 msgid_plural "%1 reviews"
 msgstr[0] "%1 отзыв"
-msgstr[1] "%1 отзыва"
-msgstr[2] "%1 отзывов"
 
 #: Dash/Previews/Reviews.qml:74
 msgid "Add a review"
@@ -146,7 +142,7 @@ msgstr "Говорите..."
 
 #: Notifications/NotificationMenuItemFactory.qml:89
 msgid "Show password"
-msgstr "Показать пароль"
+msgstr ""
 
 #: Panel/SearchIndicator.qml:27
 msgid "Search"
@@ -155,11 +151,11 @@ msgstr "Поиск"
 #: plugins/Unity/Launcher/launcheritem.cpp:43
 #: plugins/Unity/Launcher/launcheritem.cpp:73
 msgid "Lock to Launcher"
-msgstr "Закрепить на панели"
+msgstr ""
 
 #: plugins/Unity/Launcher/launcheritem.cpp:73
 msgid "Unlock from Launcher"
-msgstr "Убрать с панели"
+msgstr ""
 
 #: Shell.qml:439
 #, qt-format

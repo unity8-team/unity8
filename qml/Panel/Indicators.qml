@@ -21,7 +21,6 @@ import Unity.Indicators 0.1 as Indicators
 
 import "../Components"
 import "../Components/ListItems"
-import "Indicators"
 
 Showable {
     id: indicators
@@ -32,7 +31,7 @@ Showable {
     property alias overFlowWidth: indicatorRow.overFlowWidth
     property alias showAll: indicatorRow.showAll
 
-    readonly property real hintValue: panelHeight + menuContent.headerHeight
+    property int hintValue
     readonly property int lockThreshold: openedHeight / 2
     property bool fullyOpened: height == openedHeight
     property bool partiallyOpened: height > panelHeight && !fullyOpened
@@ -40,7 +39,6 @@ Showable {
     property bool contentEnabled: true
     property bool initalizeItem: true
     readonly property alias content: menuContent
-    property real unitProgress: (height - panelHeight) / (openedHeight - panelHeight)
 
     // TODO: Perhaps we need a animation standard for showing/hiding? Each showable seems to
     // use its own values. Need to ask design about this.
@@ -129,32 +127,24 @@ Showable {
 
         rowCoordinates = indicatorRow.mapToItem(indicatorRow.row, xValue, 0);
         // get the current delegate
-        currentItem = indicatorRow.row.itemAt(rowCoordinates.x, 0);
-        if (currentItem) {
+        currentItem = indicatorRow.row.childAt(rowCoordinates.x, 0);
+        if (currentItem && currentItem != indicatorRow.currentItem ) {
             itemCoordinates = indicatorRow.row.mapToItem(currentItem, rowCoordinates.x, 0);
             distanceFromRightEdge = (currentItem.width - itemCoordinates.x) / (currentItem.width);
-            if (currentItem != indicatorRow.currentItem) {
-                if (Math.abs(currentItem.ownIndex - indicatorRow.currentItemIndex) > 1) {
+            if (Math.abs(currentItem.ownIndex - indicatorRow.currentItemIndex) > 1) {
+                bufferExceeded = true;
+            } else {
+                if (indicatorRow.currentItemIndex < currentItem.ownIndex && distanceFromRightEdge < (1 - effectiveBufferThreshold)) {
                     bufferExceeded = true;
-                } else {
-                    if (indicatorRow.currentItemIndex < currentItem.ownIndex && distanceFromRightEdge < (1 - effectiveBufferThreshold)) {
-                        bufferExceeded = true;
-                    } else if (indicatorRow.currentItemIndex > currentItem.ownIndex && distanceFromRightEdge > effectiveBufferThreshold) {
-                        bufferExceeded = true;
-                    }
+                } else if (indicatorRow.currentItemIndex > currentItem.ownIndex && distanceFromRightEdge > effectiveBufferThreshold) {
+                    bufferExceeded = true;
                 }
-                if ((!useBuffer || (useBuffer && bufferExceeded)) || indicatorRow.currentItemIndex < 0 || indicatorRow.currentItem == null)  {
-                    indicatorRow.setCurrentItem(currentItem);
-                }
-
-                // need to re-init the distanceFromRightEdge for offset calculation
-                itemCoordinates = indicatorRow.row.mapToItem(indicatorRow.currentItem, rowCoordinates.x, 0);
-                distanceFromRightEdge = (indicatorRow.currentItem.width - itemCoordinates.x) / (indicatorRow.currentItem.width);
             }
-            indicatorRow.currentItemOffset = 1 - (distanceFromRightEdge * 2);
-        } else if (initalizeItem) {
+            if ((!useBuffer || (useBuffer && bufferExceeded)) || indicatorRow.currentItem < 0 || indicatorRow.currentItem == null)  {
+                indicatorRow.currentItem = currentItem;
+            }
+        } else if (!currentItem) {
             indicatorRow.setDefaultItem();
-            indicatorRow.currentItemOffset = 0;
         }
         initalizeItem = indicatorRow.currentItem == null;
     }
@@ -180,10 +170,6 @@ Showable {
         source: "graphics/VerticalDivider.png"
     }
 
-    VisibleIndicators {
-        id: visibleIndicators
-    }
-
     MenuContent {
         id: menuContent
         objectName: "menuContent"
@@ -194,10 +180,25 @@ Showable {
             top: indicatorRow.bottom
             bottom: handle.top
         }
-        indicatorsModel: visibleIndicators.model
+        indicatorsModel: indicatorsModel
         clip: !indicators.fullyOpened
         activeHeader: indicators.state == "hint" || indicators.state == "reveal"
         enabled: contentEnabled
+        visibleIndicators: indicatorRow.visibleIndicators
+
+        Connections {
+            property bool enableIndexChangeSignal: true
+
+            target: enableIndexChangeSignal ? indicatorRow : null
+            onCurrentItemIndexChanged: {
+                var oldActive = enableIndexChangeSignal;
+                enableIndexChangeSignal = false;
+
+                menuContent.setCurrentMenuIndex(indicatorRow.currentItemIndex);
+
+                enableIndexChangeSignal = oldActive;
+            }
+        }
 
         //small shadow gradient at bottom of menu
         Rectangle {
@@ -225,8 +226,12 @@ Showable {
             right: parent.right
             bottom: parent.bottom
         }
-        height: Math.max(Math.min(handleImage.height, indicators.height - handleImage.height), 0)
+        height: get_height()
         clip: height < handleImage.height
+
+        function get_height() {
+            return Math.max(Math.min(handleImage.height, indicators.height - handleImage.height), 0);
+        }
 
         BorderImage {
             id: handleImage
@@ -247,6 +252,12 @@ Showable {
         anchors.fill: indicatorRow
     }
 
+    Indicators.IndicatorsModel {
+        id: indicatorsModel
+
+        Component.onCompleted: load()
+    }
+
     IndicatorRow {
         id: indicatorRow
         objectName: "indicatorRow"
@@ -255,9 +266,22 @@ Showable {
             right: parent.right
         }
         height: indicators.panelHeight
-        indicatorsModel: visibleIndicators.model
+        indicatorsModel: indicatorsModel
         state: indicators.state
-        unitProgress: indicators.unitProgress
+
+        Connections {
+            property bool enableIndexChangeSignal: true
+
+            target: enableIndexChangeSignal ? menuContent : null
+            onCurrentMenuIndexChanged: {
+                var oldActive = enableIndexChangeSignal;
+                enableIndexChangeSignal = false;
+
+                indicatorRow.setCurrentItem(menuContent.currentMenuIndex);
+
+                enableIndexChangeSignal = oldActive;
+            }
+        }
 
         EdgeDragArea {
             id: rowDragArea
@@ -292,7 +316,6 @@ Showable {
         onRunningChanged: {
             if (showAnimation.running) {
                 indicators.state = "commit";
-                indicatorRow.currentItemOffset = 0;
             }
         }
     }
@@ -303,50 +326,19 @@ Showable {
             if (hideAnimation.running) {
                 indicators.state = "initial";
                 initalizeItem = true;
-                indicatorRow.currentItemOffset = 0;
             }
         }
     }
 
-    QtObject {
-        id: d
-        property bool enableIndexChangeSignal: true
-        property var activeDragHandle: showDragHandle.dragging ? showDragHandle : hideDragHandle.dragging ? hideDragHandle : null
-    }
-
-    Connections {
-        target: menuContent
-        onCurrentMenuIndexChanged: {
-            var oldActive = d.enableIndexChangeSignal;
-            if (!oldActive) return;
-            d.enableIndexChangeSignal = false;
-
-            indicatorRow.setCurrentItemIndex(menuContent.currentMenuIndex);
-
-            d.enableIndexChangeSignal = oldActive;
-        }
-    }
-
-    Connections {
-        target: indicatorRow
-        onCurrentItemIndexChanged: {
-            var oldActive = d.enableIndexChangeSignal;
-            if (!oldActive) return;
-            d.enableIndexChangeSignal = false;
-
-            menuContent.setCurrentMenuIndex(indicatorRow.currentItemIndex, fullyOpened || partiallyOpened);
-
-            d.enableIndexChangeSignal = oldActive;
-        }
-    }
+    property var activeDragHandle: showDragHandle.dragging ? showDragHandle : hideDragHandle.dragging ? hideDragHandle : null
     // connections to the active drag handle
     Connections {
-        target: d.activeDragHandle
+        target: activeDragHandle
         onTouchXChanged: {
-            indicators.calculateCurrentItem(d.activeDragHandle.touchX, true);
+            indicators.calculateCurrentItem(activeDragHandle.touchX, true);
         }
         onTouchSceneYChanged: {
-            yVelocityCalculator.trackedPosition = d.activeDragHandle.touchSceneY;
+            yVelocityCalculator.trackedPosition = activeDragHandle.touchSceneY;
         }
     }
 
@@ -400,8 +392,8 @@ Showable {
             }
             StateChangeScript {
                 script: {
-                    if (d.activeDragHandle) {
-                        calculateCurrentItem(d.activeDragHandle.touchX, false);
+                    if (activeDragHandle) {
+                        calculateCurrentItem(activeDragHandle.touchX, false);
                     }
                 }
             }
@@ -426,9 +418,4 @@ Showable {
             NumberAnimation {targets: [indicatorRow, menuContent]; property: "y"; duration: 300; easing.type: Easing.OutCubic}
         }
     ]
-
-    Component.onCompleted: initialise();
-    function initialise() {
-        visibleIndicators.load();
-    }
 }

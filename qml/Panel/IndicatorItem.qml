@@ -23,13 +23,13 @@ Item {
     id: indicatorItem
 
     property alias widgetSource: loader.source
+    property bool highlighted: false
     property bool dimmed: false
     property var indicatorProperties: undefined
     property bool indicatorVisible: loader.item ? loader.item.enabled : false
-    property string identifier
 
     opacity: dimmed ? 0.4 : 1
-    Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.BriskDuration } }
+    Behavior on opacity { StandardAnimation {} }
 
     width: loader.item ? loader.item.width : 0
 
@@ -45,11 +45,17 @@ Item {
                 }
             }
         }
+    }
 
-        Binding {
-            target: loader.item
-            property: "objectName"
-            value: identifier + "-widget"
-        }
+    Rectangle {
+        color: Theme.palette.selected.foreground
+        objectName: "highlight"
+        height: units.dp(2)
+        width: parent.width
+        anchors.top: parent.bottom
+        visible: highlighted
+
+        opacity: highlighted ? 1 : 0
+        Behavior on opacity { StandardAnimation {} }
     }
 }

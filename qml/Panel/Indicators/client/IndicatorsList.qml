@@ -40,25 +40,24 @@ Page {
         anchors.fill: parent
         model: indicatorsModel
 
-        delegate: Rectangle {
-            color: "#221e1c"
-
+        delegate: Indicators.FramedMenuItem {
             anchors.left: parent.left
             anchors.right: parent.right
-            height: menuItem.height
+            objectName: identifier
 
-            ListItem.Standard {
-                id: menuItem
-                anchors.left: parent.left
-                anchors.right: parent.right
-                objectName: identifier
+            text: identifier
 
-                text: identifier
+            onClicked: {
+                var new_page = Qt.createComponent("IndicatorsPage.qml");
+                page.pageStack.push(new_page.createObject(pages), {"indicatorProperties" : model.indicatorProperties, "pageSource" : model.pageSource});
+            }
 
-                onClicked: {
-                    var new_page = Qt.createComponent("IndicatorsPage.qml");
-                    page.pageStack.push(new_page.createObject(pages), {"indicatorProperties" : model.indicatorProperties, "pageSource" : model.pageSource});
-                }
+            Rectangle {
+                id: background
+
+                anchors.fill: parent
+                color: "#221e1c"
+                z: -1
             }
         }
     }

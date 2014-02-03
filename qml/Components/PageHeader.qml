@@ -21,12 +21,17 @@ import Ubuntu.Components.ListItems 0.1 as ListItem
 import Unity 0.1
 
 Item {
-    id: root
+    /*!
+     \preliminary
+     The text that is shown inside the Page Header
+     \qmlproperty string text
+    */
+    property alias text: label.text
+
     property bool searchEntryEnabled: false
     property alias searchQuery: searchField.text
     property ListModel searchHistory
     property Scope scope
-    property alias childItem: itemContainer.children
 
     height: units.gu(8.5)
     implicitHeight: units.gu(8.5)
@@ -77,10 +82,29 @@ Item {
             height: childrenRect.height
 
             Item {
-                id: itemContainer
+                id: textContainer
 
-                width: searchContainer.narrowMode ? header.width : header.width - searchContainer.width
+                width: header.width
                 height: header.height
+
+                Label {
+                    id: label
+                    anchors {
+                        left: parent.left
+                        leftMargin: units.gu(2)
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    color: Theme.palette.selected.backgroundText
+                    opacity: 0.8
+                    font.family: "Ubuntu"
+                    font.weight: Font.Light
+                    fontSize: "x-large"
+                    elide: Text.ElideRight
+                    style: Text.Raised
+                    styleColor: "black"
+                }
             }
 
             Item {
@@ -91,12 +115,12 @@ Item {
                 property bool popoverShouldOpen: false
                 property bool popoverShouldClose: false
 
-                property bool narrowMode: parent.width < units.gu(80)
+                property bool narrowMode: parent.width < label.contentWidth + units.gu(50)
 
                 property bool active: searchField.text != "" || searchField.activeFocus
                 property var popover: null
 
-                anchors.right: headerContainer.right
+                anchors.right: textContainer.right
                 height: header.height
 
                 state:
@@ -117,8 +141,9 @@ Item {
 
                 function openPopover() {
                     if (searchHistory.count > 0) {
-                        searchContainer.popover = PopupUtils.open(popoverComponent, pointerPositioner,
+                        searchContainer.popover = PopupUtils.open(popoverComponent, searchField,
                                                                   {
+                                                                      "pointerTarget": pointerPositioner,
                                                                       "contentWidth": searchField.width,
                                                                       "edgeMargins": units.gu(1)
                                                                   }
@@ -145,7 +170,6 @@ Item {
                     anchors.fill: parent
                     anchors.margins: units.gu(1)
 
-                    inputMethodHints: Qt.ImhNoPredictiveText
                     hasClearButton: false
 
                     primaryItem: AbstractButton {
@@ -232,13 +256,13 @@ Item {
                 states: [
                     State {
                         name: "wide"
-                        AnchorChanges { target: itemContainer; anchors.top: headerContainer.top }
-                        AnchorChanges { target: searchContainer; anchors.left: undefined; anchors.top: itemContainer.top }
+                        AnchorChanges { target: textContainer; anchors.top: headerContainer.top }
+                        AnchorChanges { target: searchContainer; anchors.left: undefined; anchors.top: textContainer.top }
                     },
                     State {
                         name: "narrow"
                         PropertyChanges { target: searchField; highlighted: true }
-                        AnchorChanges { target: itemContainer; anchors.top: searchContainer.bottom }
+                        AnchorChanges { target: textContainer; anchors.top: searchContainer.bottom }
                         AnchorChanges { target: searchContainer; anchors.left: headerContainer.left; anchors.top: headerContainer.top }
                     },
                     State {
@@ -276,7 +300,7 @@ Item {
                             ParallelAnimation {
                                 NumberAnimation { targets: [searchContainer, searchField]; property: "width"; duration: 200; easing.type: Easing.InOutQuad }
                                 PropertyAction  { target: primaryImage; property: "source" }
-                                AnchorAnimation { targets: [searchContainer, itemContainer]; duration: 200; easing.type: Easing.InOutQuad }
+                                AnchorAnimation { targets: [searchContainer, textContainer]; duration: 200; easing.type: Easing.InOutQuad }
                             }
                             ScriptAction { script: if (searchContainer.popoverShouldOpen) { searchContainer.openPopover(); } }
                         }
@@ -285,14 +309,14 @@ Item {
                         to: "inactive"
                         ScriptAction { script: if (searchContainer.popoverShouldClose) { searchContainer.closePopover(); } }
                         NumberAnimation { targets: [searchContainer, searchField] ; property: "width"; duration: 200; easing.type: Easing.InOutQuad }
-                        AnchorAnimation { targets: [searchContainer, itemContainer]; duration: 200; easing.type: Easing.InOutQuad }
+                        AnchorAnimation { targets: [searchContainer, textContainer]; duration: 200; easing.type: Easing.InOutQuad }
                     },
                     Transition {
                         to: "narrowActive"
                         SequentialAnimation {
                             ParallelAnimation {
                                 NumberAnimation { targets: [searchContainer, searchField] ; property: "width"; duration: 200; easing.type: Easing.OutQuad }
-                                AnchorAnimation { targets: [searchContainer, itemContainer]; duration: 200; easing.type: Easing.InOutQuad }
+                                AnchorAnimation { targets: [searchContainer, textContainer]; duration: 200; easing.type: Easing.InOutQuad }
                             }
                             ScriptAction { script: if (searchContainer.popoverShouldOpen) { searchContainer.openPopover(); } }
                         }
@@ -301,7 +325,7 @@ Item {
                         to: "narrowInactive"
                         ScriptAction { script: if (searchContainer.popoverShouldClose) { searchContainer.closePopover(); } }
                         NumberAnimation { targets: [searchContainer, searchField] ; property: "width"; duration: 200; easing.type: Easing.OutQuad }
-                        AnchorAnimation { targets: [searchContainer, itemContainer]; duration: 200; easing.type: Easing.InOutQuad }
+                        AnchorAnimation { targets: [searchContainer, textContainer]; duration: 200; easing.type: Easing.InOutQuad }
                     }
                 ]
 

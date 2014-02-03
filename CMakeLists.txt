@@ -96,7 +96,6 @@ include(autopilot)
 declare_autopilot_test(shell unity8.shell ${CMAKE_SOURCE_DIR}/tests/autopilot/)
 
 set(SHELL_APP unity8)
-set(SCOPE_TOOL unity-scope-tool)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -106,7 +105,6 @@ include_directories(
 # add subdirectories to build
 add_subdirectory(include)
 add_subdirectory(src)
-add_subdirectory(tools)
 add_subdirectory(qml)
 add_subdirectory(tests)
 add_subdirectory(plugins)
