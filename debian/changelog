@@ -1,10 +1,33 @@
-unity8 (7.84+14.04.20140130.is.7.84+14.04.20131220-0ubuntu1) trusty; urgency=medium
+unity8 (7.84+14.04.20140204-0ubuntu1) trusty; urgency=low
 
-  * Reverting to last known good version, as after installing a click
-    application, it redirects you to the first click application everytime.
-    (LP: #1275832)
+  [ Michael Terry ]
+  * Disable NM integration test, jenkins has a problem with it because
+    logind isn't configured
 
- -- Didier Roche <didrocks@ubuntu.com>  Mon, 03 Feb 2014 16:56:47 +0000
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+  [ Michał Sawicz ]
+  * Add ubuntu-settings-components to build script. Revert workaround
+    for bug #1268578, got fixed upstream. Drop GenericName from
+    unity8.desktop. (LP: #1268578)
+  * Improve Card and CardHeader layouts: anchor summary to art when no
+    header. don't indent header when no mascot. reduce header and
+    summary font sizes and weights. increase art shape radius .
+  * Add doxygen-based documentation generator.
+  * Add CardTool to determine category-wide card properties based on the
+    category template. Clean up test configurations, too.
+  * Move upstart kill timeout to the unity8 job itself.
+  * Don't treat scope as active when preview open to inhibit model
+    updates and reset processing on previewData changes. (LP: #1275832)
+
+  [ Leo Arias ]
+  * Added the DashPreview autopilot helper.
+
+  [ Michał Karnicki ]
+  * CardHeader mascot improvements.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 04 Feb 2014 14:09:14 +0000
 
 unity8 (7.84+14.04.20140130-0ubuntu1) trusty; urgency=low
 
