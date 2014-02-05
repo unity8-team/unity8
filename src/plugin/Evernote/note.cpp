@@ -144,6 +144,22 @@ void Note::setReminderOrder(qint64 reminderOrder)
     }
 }
 
+bool Note::hasReminderTime() const
+{
+    return !m_reminderTime.isNull();
+}
+
+void Note::setHasReminderTime(bool hasReminderTime)
+{
+    if (hasReminderTime && m_reminderTime.isNull()) {
+        m_reminderTime = QDateTime::currentDateTime();
+        emit reminderTimeChanged();
+    } else if (!hasReminderTime && !m_reminderTime.isNull()) {
+        m_reminderTime = QDateTime();
+        emit reminderTimeChanged();
+    }
+}
+
 QDateTime Note::reminderTime() const
 {
     return m_reminderTime;
@@ -166,6 +182,9 @@ void Note::setReminderDone(bool reminderDone)
 {
     if (reminderDone && m_reminderDoneTime.isNull()) {
         m_reminderDoneTime = QDateTime::currentDateTime();
+        emit reminderDoneChanged();
+    } else if (!reminderDone && !m_reminderDoneTime.isNull()) {
+        m_reminderDoneTime = QDateTime();
         emit reminderDoneChanged();
     }
 }

@@ -74,6 +74,11 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
     }
 }
 
+Note *Notes::note(const QString &guid)
+{
+    return NotesStore::instance()->note(guid);
+}
+
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);

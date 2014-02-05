@@ -187,6 +187,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             note->setIsSearchResult(true);
         }
 
+        QDateTime reminderTime;
+        if (result.attributes.reminderTime > 0) {
+            reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
+        }
+        note->setReminderTime(reminderTime);
         QDateTime reminderDoneTime;
         if (result.attributes.reminderDoneTime > 0) {
             reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
@@ -240,6 +245,11 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     note->setEnmlContent(QString::fromStdString(result.content));
     note->setReminderOrder(result.attributes.reminderOrder);
+    QDateTime reminderTime;
+    if (result.attributes.reminderTime > 0) {
+        reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
+    }
+    note->setReminderTime(reminderTime);
     QDateTime reminderDoneTime;
     if (result.attributes.reminderDoneTime > 0) {
         reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
