@@ -148,12 +148,12 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     }
 
                     //set the width
-                    if(reader.attributes().hasAttribute("width")){
+                    if (reader.attributes().hasAttribute("width")) {
                         writer.writeAttribute("width", reader.attributes().value("width").toString());
-                    }else{
-                        if(type == TypeRichText){
+                    } else {
+                        if (type == TypeRichText) {
                             writer.writeAttribute("width", "640");
-                        }else if(type== TypeHtml){
+                        } else if (type == TypeHtml) {
                             writer.writeAttribute("style", "max-width: 100%");
                         }
                     }
