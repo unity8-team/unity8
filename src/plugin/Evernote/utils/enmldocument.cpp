@@ -379,6 +379,7 @@ void EnmlDocument::attachFile(int position, const QString &file, const QString &
     writer.writeDTD("<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">");
 
     int textPos = 0;
+    bool inserted = false;
 
     while (!reader.atEnd() && !reader.hasError()) {
         QXmlStreamReader::TokenType token = reader.readNext();
@@ -397,6 +398,7 @@ void EnmlDocument::attachFile(int position, const QString &file, const QString &
                 writer.writeAttribute("hash", hash);
                 writer.writeAttribute("type", type);
                 writer.writeEndElement();
+                inserted = true;
 
                 writer.writeCharacters(textString.right(textString.length() - (position - textPos)));
             } else {
@@ -405,6 +407,15 @@ void EnmlDocument::attachFile(int position, const QString &file, const QString &
             textPos += textString.length();
         }
         if (token == QXmlStreamReader::EndElement) {
+
+            // The above logic would fail on an empty note
+            if (reader.name() == "en-note" && !inserted) {
+                writer.writeStartElement("en-media");
+                writer.writeAttribute("hash", hash);
+                writer.writeAttribute("type", type);
+                writer.writeEndElement();
+            }
+
             writer.writeEndElement();
         }
     }

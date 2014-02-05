@@ -171,6 +171,10 @@ Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    priv.insertPosition = noteTextArea.cursorPosition;
+                    note.richTextContent = noteTextArea.text;
+
+                    pagestack.push(Qt.resolvedUrl("CameraPage.qml"), {note: root.note, position: priv.insertPosition})
                 }
             }
         }

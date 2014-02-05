@@ -19,34 +19,43 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
+#include "camerahelper.h"
+
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickView>
 #include <QtQml/QtQml>
 
 #include <QDebug>
 
-/*
- * This is just a minimalistic main to fire up our own qml scene which has the
- * import path for the plugin preconfigured. This is just used for easier
- * development and while we can ship this, we could also run the app ourselves
- * with:
- * qmlscene -I /path/to/plugin/ reminders.qml
- */
-
 int main(int argc, char *argv[])
 {
-
-    // Do the same as qmlscene does
     QGuiApplication a(argc, argv);
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
 
-    // Additionally add the -I ../plugin to load the plugin
+    // Set up import paths
     QStringList importPathList = view.engine()->importPathList();
     importPathList.append(QDir::currentPath() + "/../plugin/");
+
+    QStringList args = a.arguments();
+    for (int i = 0; i < args.count(); i++) {
+        if (args.at(i) == "-I" && args.count() > i + 1) {
+            QString addedPath = args.at(i+1);
+            if (addedPath.startsWith('.')) {
+                addedPath = addedPath.right(addedPath.length() - 1);
+                addedPath.prepend(QDir::currentPath());
+            }
+            importPathList.append(addedPath);
+        }
+    }
+
     view.engine()->setImportPathList(importPathList);
 
-    // and directly load the qml file
+    // Set up camera helper
+    CameraHelper helper;
+    view.engine()->rootContext()->setContextProperty("cameraHelper", &helper);
+
+    // load the qml file
     view.setSource(QUrl::fromLocalFile("qml/reminders.qml"));
 
     view.show();

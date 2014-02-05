@@ -242,9 +242,20 @@ void Note::markTodo(const QString &todoId, bool checked)
 
 void Note::attachFile(int position, const QUrl &fileName)
 {
+    QFile importedFile(fileName.toString());
+    if (!importedFile.exists()) {
+        return;
+    }
+
+    qDebug() << "attaching file" << position << fileName;
     Resource *resource = addResource(fileName.path());
     m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
     emit contentChanged();
+
+    // Cleanup imported file.
+    // TODO: If the app should be extended to allow attaching other files, and we somehow
+    // can browse to unconfined files, this needs to be made conditional to not delete those files!
+    importedFile.remove();
 }
 
 void Note::format(int startPos, int endPos, TextFormat::Format format)

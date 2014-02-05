@@ -2,6 +2,7 @@ file(GLOB_RECURSE QML_SRCS *.qml *.js)
 
 set(reminders_SRCS
     main.cpp
+    camerahelper.cpp
     ${QML_SRCS}
 )
 
@@ -15,6 +16,8 @@ add_custom_target(reminders-qmlfiles ALL
 )
 
 install(DIRECTORY qml DESTINATION ${DATA_DIR})
-if(NOT CLICK_MODE)
+if(CLICK_MODE)
+  install(TARGETS reminders DESTINATION ${DATA_DIR})
+else()
   install(TARGETS reminders RUNTIME DESTINATION bin)
 endif()
