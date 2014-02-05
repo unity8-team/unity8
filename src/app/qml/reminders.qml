@@ -21,12 +21,14 @@ import Ubuntu.Components 0.1
 //import "components"
 import "ui"
 import Evernote 0.1
+import Ubuntu.OnlineAccounts 0.1
 
 /*!
     \brief MainView with a Label and Button elements.
 */
 
 MainView {
+    id: root
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
 
@@ -45,10 +47,38 @@ MainView {
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
 
+    AccountServiceModel {
+        id: accounts
+        service: "evernote"
+    }
+
+    AccountService {
+        id: accountService
+        onObjectHandleChanged: authenticate(null);
+        onAuthenticated: {
+            console.log("Access token is " + reply.AccessToken)
+            EvernoteConnection.token = reply.AccessToken;
+        }
+        onAuthenticationError: {
+            console.log("Authentication failed, code " + error.code)
+        }
+    }
+
     Component.onCompleted: {
         pagestack.push(rootTabs)
-        if (EvernoteConnection.token.length === 0) {
-            pagestack.push(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
+        print("got accounts:", accounts.count)
+        switch (accounts.count) {
+        case 0:
+            print("No account available! Please setup an account in the system settings");
+            break;
+        case 1:
+            accountService.objectHandle = accounts.get(0, "accountServiceHandle");
+            break;
+        default:
+            var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
+            var page = component.createObject(root, {accounts: accounts});
+            page.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); });
+            pagestack.push(page);
         }
     }
 
