@@ -47,6 +47,18 @@ MainView {
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
 
+    property var accountPage;
+
+    function openAccountPage(isChangingAccount) {
+        if (accountPage) {
+            accountPage.destroy(100)
+        }
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
+        accountPage = component.createObject(root, {accounts: accounts, isChangingAccount: isChangingAccount});
+        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); });
+        pagestack.push(accountPage);
+    }
+
     AccountServiceModel {
         id: accounts
         service: "evernote"
@@ -75,10 +87,7 @@ MainView {
             accountService.objectHandle = accounts.get(0, "accountServiceHandle");
             break;
         default:
-            var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-            var page = component.createObject(root, {accounts: accounts});
-            page.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); });
-            pagestack.push(page);
+            openAccountPage(false);
         }
     }
 

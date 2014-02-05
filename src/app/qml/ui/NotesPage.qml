@@ -46,6 +46,15 @@ Page {
         ToolbarSpacer { }
 
         ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: contacts-app-symbolic
+            visible: accounts.count
+            onTriggered: {
+                openAccountPage(true);
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Add note")
             iconName: "add"
             onTriggered: {

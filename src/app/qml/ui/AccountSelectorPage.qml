@@ -27,6 +27,7 @@ Page {
     title: "Select Evernote account"
 
     property alias accounts: listView.model
+    property bool isChangingAccount
 
     signal accountSelected(var handle)
 
@@ -48,5 +49,10 @@ Page {
                 }
             }
         }
+    }
+
+    tools: ToolbarItems {
+        locked: !isChangingAccount
+        opened: isChangingAccount
     }
 }
