@@ -157,9 +157,19 @@ void NotesStore::expungeNotebook(const QString &guid)
 
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
 {
-    FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
-    connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    if (EvernoteConnection::instance()->token().isEmpty()) {
+        beginResetModel();
+        foreach (Note *note, m_notes) {
+            emit noteRemoved(note->guid(), note->notebookGuid());
+            note->deleteLater();
+        }
+        m_notes.clear();
+        endResetModel();
+    } else {
+        FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
+        connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results)
@@ -227,6 +237,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     }
 
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
+    if (note) {
+        qWarning() << "can't find note for this update... ignoring...";
+        return;
+    }
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
 
@@ -263,9 +277,17 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
 void NotesStore::refreshNotebooks()
 {
-    FetchNotebooksJob *job = new FetchNotebooksJob();
-    connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    if (EvernoteConnection::instance()->token().isEmpty()) {
+        foreach (Notebook *notebook, m_notebooks) {
+            emit notebookRemoved(notebook->guid());
+            notebook->deleteLater();
+        }
+        m_notebooks.clear();
+    } else {
+        FetchNotebooksJob *job = new FetchNotebooksJob();
+        connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
 void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results)
