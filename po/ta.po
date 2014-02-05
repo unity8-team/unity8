@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-01-24 13:10+0100\n"
+"POT-Creation-Date: 2014-01-28 09:36+0100\n"
 "PO-Revision-Date: 2014-01-24 12:59+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Tamil <ta@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-01-25 06:42+0000\n"
-"X-Generator: Launchpad (build 16914)\n"
+"X-Launchpad-Export-Date: 2014-02-01 06:57+0000\n"
+"X-Generator: Launchpad (build 16916)\n"
 
 #: src/app/qml/components/NotebooksDelegate.qml:58
 #, qt-format
@@ -25,36 +25,20 @@ msgid_plural "%1 notes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/app/qml/reminders-app.qml:71
+#: src/app/qml/reminders.qml:83
 msgid "Notes"
 msgstr ""
 
-#: src/app/qml/reminders-app.qml:78
+#: src/app/qml/reminders.qml:90
 msgid "Notebooks"
 msgstr ""
 
-#: src/app/qml/reminders-app.qml:85
+#: src/app/qml/reminders.qml:97
 msgid "Reminders"
 msgstr ""
 
-#: src/app/qml/ui/EditNotePage.qml:31 src/app/qml/ui/NotebooksPage.qml:134
-msgid "Save"
-msgstr ""
-
-#: src/app/qml/ui/EditNotePage.qml:34 src/app/qml/ui/EditNotePage.qml:74
+#: src/app/qml/ui/EditNotePage.qml:83 src/app/qml/ui/EditNotePage.qml:95
 msgid "Untitled"
-msgstr ""
-
-#: src/app/qml/ui/EditNotePage.qml:53
-msgid "Attach"
-msgstr ""
-
-#: src/app/qml/ui/EditNotePage.qml:57
-msgid "Shot"
-msgstr ""
-
-#: src/app/qml/ui/EditNotePage.qml:86
-msgid "Notebook"
 msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:36
@@ -84,6 +68,10 @@ msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:126
 msgid "Cancel"
+msgstr ""
+
+#: src/app/qml/ui/NotebooksPage.qml:134
+msgid "Save"
 msgstr ""
 
 #: src/app/qml/ui/NotesPage.qml:49
