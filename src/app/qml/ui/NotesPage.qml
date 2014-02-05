@@ -70,6 +70,8 @@ Page {
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
+            Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
+
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
             }
