@@ -28,15 +28,26 @@ Page {
     id: root
     title: note.title
     property var note
-    property bool noteReady: false
+
+    QtObject {
+        id: priv
+        property bool loading: false
+    }
 
     Component.onCompleted: {
-        noteReady=false;
-        NotesStore.refreshNoteContent(note.guid)
+        if (note.enmlContent.length === 0) {
+            NotesStore.refreshNoteContent(root.note.guid)
+            priv.loading = true;
+        }
     }
-    Connections{ //set noteReady when note is fetched
+
+    Connections {
         target: NotesStore
-        onNoteChanged: noteReady=true;
+        onNoteChanged: {
+            if (guid === root.note.guid) {
+                priv.loading = false;
+            }
+        }
     }
 
     tools: ToolbarItems {
@@ -68,18 +79,18 @@ Page {
     }
 
     ActivityIndicator {
-        id: activityIndicator
-        running: !noteReady
-        visible: running
         anchors.centerIn: parent
+        running: priv.loading
+        visible: running
     }
+
     // FIXME: This is a workaround for an issue in the WebView. For some reason certain
     // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
     // another flickable prevents this from happening.
     Flickable {
-        visible: noteReady
-        anchors { fill: parent}
+        anchors { fill: parent }
         contentHeight: height
+        visible: !priv.loading
 
         UbuntuWebView {
             id: noteTextArea
