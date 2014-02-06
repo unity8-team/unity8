@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -47,7 +47,7 @@ Page {
 
         ToolbarButton {
             text: i18n.tr("Accounts")
-            iconName: contacts-app-symbolic
+            iconName: "contacts-app-symbolic"
             visible: accounts.count
             onTriggered: {
                 openAccountPage(true);
