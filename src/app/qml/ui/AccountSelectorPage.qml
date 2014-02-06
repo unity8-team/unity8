@@ -40,7 +40,6 @@ Page {
             width: parent.width
             height: units.gu(10)
             model: accounts
-            currentIndex: -1
 
             delegate: Standard {
                 text: displayName

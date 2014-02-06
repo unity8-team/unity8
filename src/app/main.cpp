@@ -57,7 +57,9 @@ int main(int argc, char *argv[])
     CameraHelper helper;
     view.engine()->rootContext()->setContextProperty("cameraHelper", &helper);
 
-    view.engine()->rootContext()->setContextProperty("accountPreference", new AccountPreference());
+    // Set up account preferences
+    AccountPreference preferences;
+    view.engine()->rootContext()->setContextProperty("accountPreference", &preferences);
 
     // load the qml file
     view.setSource(QUrl::fromLocalFile("qml/reminders.qml"));

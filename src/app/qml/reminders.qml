@@ -72,6 +72,7 @@ MainView {
                 EvernoteConnection.clearToken();
             }
             EvernoteConnection.token = reply.AccessToken;
+            accountPreference.accountToken = reply.AccessToken;
         }
         onAuthenticationError: {
             console.log("Authentication failed, code " + error.code)
@@ -81,16 +82,11 @@ MainView {
     Component.onCompleted: {
         pagestack.push(rootTabs)
         print("got accounts:", accounts.count)
-        var accountName = accountPreference.accountName;
-        if (accountName) {
-            var i;
-            for (i = 0; i < accounts.count; i++) {
-                if (accounts.get(i, "displayName") == accountName) {
-                    accountService.objectHandle = accounts.get(i, "accountServiceHandle");
-                }
-            }
+        var accountToken = accountPreference.accountToken;
+        if (accountToken) {
+            EvernoteConnection.token = accountToken;
         }
-        if (!accountService.objectHandle) {
+        if (!EvernoteConnection.token) {
             switch (accounts.count) {
             case 0:
                 print("No account available! Please setup an account in the system settings");
@@ -108,7 +104,6 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
-            accountPreference.accountName = UserStore.username;
         }
     }
 

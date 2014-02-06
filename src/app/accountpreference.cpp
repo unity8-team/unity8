@@ -27,13 +27,13 @@ AccountPreference::AccountPreference(QObject *parent): QObject(parent),
 
 }
 
-QString AccountPreference::accountName() const
+QString AccountPreference::accountToken() const
 {
-    return m_settings.value("accountName").toString();
+    return m_settings.value("accountToken").toString();
 }
 
-void AccountPreference::setAccountName(const QString &accountName)
+void AccountPreference::setAccountToken(const QString &accountToken)
 {
-    m_settings.setValue("accountName", accountName);
-    emit accountNameChanged();
+    m_settings.setValue("accountToken", accountToken);
+    emit accountTokenChanged();
 }

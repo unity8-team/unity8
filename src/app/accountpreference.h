@@ -31,14 +31,14 @@
 class AccountPreference: public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString accountName READ accountName WRITE setAccountName NOTIFY accountNameChanged)
+    Q_PROPERTY(QString accountToken READ accountToken WRITE setAccountToken NOTIFY accountTokenChanged)
 public:
     AccountPreference(QObject *parent = 0);
-    QString accountName() const;
-    void setAccountName(const QString &accountName);
+    QString accountToken() const;
+    void setAccountToken(const QString &accountToken);
 
 signals:
-    void accountNameChanged();
+    void accountTokenChanged();
 
 private:
     QSettings m_settings;

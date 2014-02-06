@@ -167,8 +167,7 @@ void EvernoteConnection::setToken(const QString &token)
 void EvernoteConnection::clearToken()
 {
     if (!EvernoteConnection::instance()->token().isEmpty()) {
-        setToken(NULL);
-        emit tokenChanged();
+        setToken(QString());
     }
 }
 
