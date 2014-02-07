@@ -1,6 +1,8 @@
 {
     "policy_groups": [
-        "networking", "accounts"
+        "networking",
+        "accounts",
+	"content_exchange"
     ],
     "policy_version": 1
 }
