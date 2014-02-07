@@ -158,7 +158,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                             ResourceImageProvider rip;
                             QSize qSize;
                             rip.requestImage(mediaType+"?noteGuid="+noteGuid+"&hash="+hash, &qSize, QSize());
-                            if(qSize.width() > EnmlDocument::s_richtextContentWidth)
+                            if (qSize.width() > EnmlDocument::s_richtextContentWidth)
                                 writer.writeAttribute("width", QString::number(EnmlDocument::s_richtextContentWidth));
                         } else if (type == TypeHtml) {
                             writer.writeAttribute("style", "max-width: 100%");
