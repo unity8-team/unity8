@@ -21,6 +21,7 @@
 #include "enmldocument.h"
 #include "notesstore.h"
 #include "note.h"
+#include "../resourceimageprovider.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -49,6 +50,7 @@ QStringList EnmlDocument::s_commonTags = QStringList()
 QStringList EnmlDocument::s_argumentBlackListTags = QStringList()
         << "ul" << "li" << "ol";
 
+int EnmlDocument::s_richtextContentWidth = 640;
 EnmlDocument::EnmlDocument(const QString &enml):
     m_enml(enml)
 {
@@ -82,7 +84,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
     writer.writeStartDocument();
     writer.writeStartElement("meta");
     writer.writeAttribute("name", "viewport");
-    writer.writeAttribute("content", "width=640px");
+    writer.writeAttribute("content", "width="+QString::number(EnmlDocument::s_richtextContentWidth)+"px");
     writer.writeEndElement();
 
     // input
@@ -152,7 +154,12 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                         writer.writeAttribute("width", reader.attributes().value("width").toString());
                     } else {
                         if (type == TypeRichText) {
-                            writer.writeAttribute("width", "640");
+                            //get the size of the original image
+                            ResourceImageProvider rip;
+                            QSize qSize;
+                            rip.requestImage(mediaType+"?noteGuid="+noteGuid+"&hash="+hash, &qSize, QSize());
+                            if(qSize.width() > EnmlDocument::s_richtextContentWidth)
+                                writer.writeAttribute("width", QString::number(EnmlDocument::s_richtextContentWidth));
                         } else if (type == TypeHtml) {
                             writer.writeAttribute("style", "max-width: 100%");
                         }
