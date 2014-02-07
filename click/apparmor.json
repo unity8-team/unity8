@@ -2,7 +2,7 @@
     "policy_groups": [
         "networking",
         "accounts",
-	"content_exchange"
+        "content_exchange"
     ],
     "policy_version": 1
 }
