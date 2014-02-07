@@ -237,7 +237,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     }
 
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
-    if (note) {
+    if (!note) {
         qWarning() << "can't find note for this update... ignoring...";
         return;
     }
