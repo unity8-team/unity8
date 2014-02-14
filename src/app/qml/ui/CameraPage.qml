@@ -26,6 +26,15 @@ Page {
     id: root
     property var note
     property int position
+    property var imageLocation
+
+    signal imageConfirmed();
+
+    onImageConfirmed: {
+        root.note.attachFile(root.position, imageLocation)
+        print("got image", imageLocation)
+        pagestack.pop();
+    }
 
     tools: ToolbarItems {
         locked: true
@@ -33,7 +42,7 @@ Page {
         ToolbarButton {
             text: "Shoot"
             iconName: "camera-symbolic"
-            onTriggered: camera.imageCapture.captureToLocation(cameraHelper.importLocation);
+            onTriggered: camera.imageCapture.captureToLocation(cameraHelper.importLocation)
         }
     }
 
@@ -44,15 +53,14 @@ Page {
         focus.focusPointMode: Camera.FocusPointAuto
 
         imageCapture {
-
             onImageSaved: {
                 if (videoOutput.orientation != 0) {
                     cameraHelper.rotate(path, -videoOutput.orientation)
                 }
-
-                root.note.attachFile(root.position, path)
-                print("got image", path)
-                pagestack.pop();
+                imageLocation = path
+                var component = Qt.createComponent(Qt.resolvedUrl("CameraConfirm.qml"));
+                var page = component.createObject(root, {imageLocation: imageLocation});
+                pagestack.push(page);
             }
         }
     }
