@@ -105,7 +105,7 @@ Page {
         ListView {
             model: notebooks
             anchors { left: parent.left; right: parent.right }
-            height: parent.height - y - buttonRow.height
+            height: parent.height - y - buttonRow.height - keyboardRect.height
 
             delegate: NotebooksDelegate {
                 name: model.name
@@ -148,6 +148,11 @@ Page {
                     contentColumn.newNotebook = false
                 }
             }
+        }
+        Item {
+            id: keyboardRect
+            anchors { left: parent.left; right: parent.right }
+            height: Qt.inputMethod.keyboardRectangle.height
         }
     }
 }
