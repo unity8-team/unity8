@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -27,6 +27,7 @@ Page {
     title: "Select Evernote account"
 
     property alias accounts: listView.model
+    property bool isChangingAccount
 
     signal accountSelected(var handle)
 
@@ -39,6 +40,7 @@ Page {
             width: parent.width
             height: units.gu(10)
             model: accounts
+            currentIndex: -1
 
             delegate: Standard {
                 text: displayName
@@ -48,5 +50,10 @@ Page {
                 }
             }
         }
+    }
+
+    tools: ToolbarItems {
+        locked: !isChangingAccount
+        opened: isChangingAccount
     }
 }
