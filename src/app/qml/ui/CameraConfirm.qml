@@ -23,12 +23,12 @@ import Evernote 0.1
 Page {
     id: confirmPage
 
-    property var imageLocation;
+    property var imageLocation
 
     Image {
-    	source: imageLocation;
+    	source: imageLocation
     	anchors {
-            fill: parent
+            fill: parent;
         }
     }
 
@@ -37,8 +37,8 @@ Page {
         opened: true
 
         ToolbarButton {
-            text: "Done"
-            iconName: "camera-symbolic"
+            text:  i18n.tr("Use it!");
+            iconName: "camera-symbolic";
             onTriggered: {
             	root.imageConfirmed();
             	pagestack.pop();

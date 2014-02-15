@@ -28,11 +28,11 @@ Page {
     property int position
     property var imageLocation
 
-    signal imageConfirmed();
+    signal imageConfirmed()
 
     onImageConfirmed: {
-        root.note.attachFile(root.position, imageLocation)
-        print("got image", imageLocation)
+        root.note.attachFile(root.position, imageLocation);
+        print("got image", imageLocation);
         pagestack.pop();
     }
 
@@ -40,9 +40,9 @@ Page {
         locked: true
         opened: true
         ToolbarButton {
-            text: "Shoot"
-            iconName: "camera-symbolic"
-            onTriggered: camera.imageCapture.captureToLocation(cameraHelper.importLocation)
+            text:  i18n.tr("Shoot");
+            iconName: "camera-symbolic";
+            onTriggered: camera.imageCapture.captureToLocation(cameraHelper.importLocation);
         }
     }
 
@@ -55,9 +55,9 @@ Page {
         imageCapture {
             onImageSaved: {
                 if (videoOutput.orientation != 0) {
-                    cameraHelper.rotate(path, -videoOutput.orientation)
+                    cameraHelper.rotate(path, -videoOutput.orientation);
                 }
-                imageLocation = path
+                imageLocation = path;
                 var component = Qt.createComponent(Qt.resolvedUrl("CameraConfirm.qml"));
                 var page = component.createObject(root, {imageLocation: imageLocation});
                 pagestack.push(page);
@@ -68,7 +68,7 @@ Page {
     VideoOutput {
         id: videoOutput
         anchors {
-            fill: parent
+            fill: parent;
         }
         fillMode: Image.PreserveAspectCrop
         orientation: Screen.primaryOrientation === Qt.PortraitOrientation  ? -90 : 0
