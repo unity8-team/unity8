@@ -3,7 +3,7 @@
         "networking",
         "accounts",
         "content_exchange",
-	"audio"
+        "audio"
     ],
     "policy_version": 1
 }

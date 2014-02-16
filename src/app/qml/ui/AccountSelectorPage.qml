@@ -24,7 +24,7 @@ import Evernote 0.1
 
 Page {
     id: root
-    title: i18n.tr("Select an account")
+    title: "Select Evernote account"
 
     property alias accounts: listView.model
     property bool isChangingAccount
