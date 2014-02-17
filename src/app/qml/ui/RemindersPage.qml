@@ -67,6 +67,13 @@ Page {
         }
 
         model: notes
+
+        section.criteria: ViewSection.FullString
+        section.property: "reminderTimeString"
+        section.delegate: Standard {
+            height: units.gu(3)
+            text: section
+        }
     }
 
 }

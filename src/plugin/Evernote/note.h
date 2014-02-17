@@ -47,6 +47,7 @@ class Note : public QObject
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
     Q_PROPERTY(bool hasReminderTime READ hasReminderTime WRITE setHasReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
+    Q_PROPERTY(QString reminderTimeString READ reminderTimeString NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
@@ -97,6 +98,8 @@ public:
     // create a new timestamp for it.
     bool reminderDone() const;
     void setReminderDone(bool reminderDone);
+
+    QString reminderTimeString() const;
 
     QDateTime reminderDoneTime() const;
     void setReminderDoneTime(const QDateTime &reminderDoneTime);

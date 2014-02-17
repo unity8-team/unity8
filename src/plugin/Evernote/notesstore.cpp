@@ -80,6 +80,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->reminder();
     case RoleReminderTime:
         return m_notes.at(index.row())->reminderTime();
+    case RoleReminderTimeString:
+        return m_notes.at(index.row())->reminderTimeString();
     case RoleReminderDone:
         return m_notes.at(index.row())->reminderDone();
     case RoleReminderDoneTime:
@@ -107,6 +109,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleTitle, "title");
     roles.insert(RoleReminder, "reminder");
     roles.insert(RoleReminderTime, "reminderTime");
+    roles.insert(RoleReminderTimeString, "reminderTimeString");
     roles.insert(RoleReminderDone, "reminderDone");
     roles.insert(RoleReminderDoneTime, "reminderDoneTime");
     roles.insert(RoleEnmlContent, "enmlContent");

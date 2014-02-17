@@ -189,6 +189,27 @@ void Note::setReminderDone(bool reminderDone)
     }
 }
 
+QString Note::reminderTimeString() const
+{
+    if (m_reminderOrder == 0) {
+        return QString();
+    }
+
+    if (m_reminderTime < QDateTime::currentDateTime().addDays(1)) {
+        return QStringLiteral("today");
+    }
+    if (m_reminderTime < QDateTime::currentDateTime().addDays(2)) {
+        return QStringLiteral("tomorrow");
+    }
+    if (m_reminderTime < QDateTime::currentDateTime().addDays(7)) {
+        return QStringLiteral("next week");
+    }
+    if (m_reminderTime < QDateTime::currentDateTime().addDays(14)) {
+        return QStringLiteral("two weeks");
+    }
+    return QStringLiteral("more than two weeks");
+}
+
 QDateTime Note::reminderDoneTime() const
 {
     return m_reminderDoneTime;
