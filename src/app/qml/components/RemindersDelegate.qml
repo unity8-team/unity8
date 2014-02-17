@@ -34,7 +34,7 @@ Empty {
     onExpandedChanged: {
         if (expanded) {
             if (note.hasReminderTime) {
-                date.setDate(note.reminderTime.getDate())
+                datePicker.date.setDate(note.reminderTime.getDate())
             }
         } else {
             note.save();

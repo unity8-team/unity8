@@ -195,16 +195,21 @@ QString Note::reminderTimeString() const
         return QString();
     }
 
-    if (m_reminderTime < QDateTime::currentDateTime().addDays(1)) {
+    QDate reminderDate = m_reminderTime.date();
+    QDate today = QDate::currentDate();
+    if (reminderDate < today) {
+        return QStringLiteral("missed");
+    }
+    if (reminderDate == today) {
         return QStringLiteral("today");
     }
-    if (m_reminderTime < QDateTime::currentDateTime().addDays(2)) {
+    if (reminderDate == today.addDays(1)) {
         return QStringLiteral("tomorrow");
     }
-    if (m_reminderTime < QDateTime::currentDateTime().addDays(7)) {
+    if (reminderDate <= today.addDays(7)) {
         return QStringLiteral("next week");
     }
-    if (m_reminderTime < QDateTime::currentDateTime().addDays(14)) {
+    if (reminderDate <= today.addDays(14)) {
         return QStringLiteral("two weeks");
     }
     return QStringLiteral("more than two weeks");
