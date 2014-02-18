@@ -45,8 +45,9 @@ Item {
          target: priv.activeTransfer ? priv.activeTransfer : null
          onStateChanged: {
              if (priv.activeTransfer.state === ContentTransfer.Charged) {
-                 print("attaching", priv.activeTransfer.items[0].url.toString())
-                 note.attachFile(priv.insertPosition, priv.activeTransfer.items[0].url.toString())
+                 var file = priv.activeTransfer.items[0].url.toString()
+                 print("attaching file", file, "on note", note)
+                 note.attachFile(priv.insertPosition, file);
              }
          }
      }

@@ -55,8 +55,8 @@ QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
 EvernoteConnection::EvernoteConnection(QObject *parent) :
     QObject(parent),
-    m_currentJob(0),
-    m_useSSL(true)
+    m_useSSL(true),
+    m_currentJob(0)
 {
     qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
     setupUserStore();
