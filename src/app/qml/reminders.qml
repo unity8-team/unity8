@@ -28,53 +28,10 @@ import Ubuntu.OnlineAccounts 0.1
     \brief MainView with a Label and Button elements.
 */
 
-Item {
+MainView {
+
     id: root
 
-    // This is only for easier simulating form factors when running on desktop. Do NOT use this somewhere else.
-    property bool tablet: true
-
-    property bool narrowMode: root.width < units.gu(80)
-    width: tablet ? units.gu(100) : units.gu(50)
-    height: units.gu(75)
-
-    function viewNote(note) {
-        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-        var page = component.createObject();
-        page.note = note;
-        if (root.narrowMode) {
-            pagestack.push(page)
-        } else {
-            sideViewLoader.item.clear();
-            sideViewLoader.item.push(page)
-        }
-        page.editNote.connect(function(note) {root.switchToEditMode(note)})
-    }
-
-    function switchToEditMode(note) {
-        var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
-        var page = component.createObject();
-        page.note = note;
-        if (root.narrowMode) {
-            pagestack.pop();
-            pagestack.push(page)
-        } else {
-            sideViewLoader.item.clear();
-            sideViewLoader.item.push(page)
-        }
-        page.exitEditMode.connect(function() {
-            if (root.narrowMode) {
-                pagestack.pop();
-            } else {
-                sideViewLoader.item.pop();
-            }
-        })
-    }
-
-
-MainView {
-    anchors { fill: null; left: parent.left; top: parent.top; bottom: parent.bottom }
-    width: units.gu(50)
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
 
@@ -87,6 +44,11 @@ MainView {
     */
     //automaticOrientation: true
 
+
+    property bool narrowMode: root.width < units.gu(80)
+    height: units.gu(75)
+
+    width: tablet ? units.gu(100) : units.gu(40)
 
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
@@ -101,6 +63,34 @@ MainView {
         accountPage = component.createObject(root, {accounts: accounts, isChangingAccount: isChangingAccount});
         accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); });
         pagestack.push(accountPage);
+    }
+
+    function displayNote(note) {
+        if (root.narrowMode) {
+            var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
+            var page = component.createObject();
+            page.editNote.connect(function(note) {root.switchToEditMode(note)})
+            pagestack.push(page, {note: note})
+        } else {
+            var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
+            view.note = note;
+        }
+    }
+
+    function switchToEditMode(note) {
+        if (root.narrowMode) {
+            pagestack.pop();
+            var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
+            var page = component.createObject();
+            page.exitEditMode.connect(function() {pagestack.pop()});
+            pagestack.push(page, {note: note});
+        } else {
+            sideViewLoader.clear();
+            var view = sideViewLoader.embed(Qt.resolvedUrl("ui/EditNoteView.qml"))
+            print("--- setting note:", note)
+            view.note = note;
+            view.exitEditMode.connect(function(note) {print("**** note", note); root.displayNote(note)});
+        }
     }
 
     AccountServiceModel {
@@ -161,10 +151,17 @@ MainView {
         onNoteCreated: {
             var note = NotesStore.note(guid);
             print("note created:", note.guid);
-            var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
-            var page = component.createObject(pagestack)
-            page.note = note;
-            pagestack.push(page);
+            if (root.narrowMode) {
+                var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
+                var page = component.createObject();
+                page.exitEditMode.connect(function() {pagestack.pop();});
+                pagestack.push(page, {note: note});
+            } else {
+                notesPage.selectedNote = note;
+                var view = sideViewLoader.embed(Qt.resolvedUrl("ui/EditNoteView.qml"));
+                view.note = note;
+                view.exitEditMode.connect(function(note) {root.displayNote(note)});
+            }
         }
     }
 
@@ -183,14 +180,23 @@ MainView {
                 title: i18n.tr("Notes")
                 page: NotesPage {
                     id: notesPage
-                    onNoteSelected: {
-                        root.viewNote(note);
+
+                    onEditNote: {
+                        root.switchToEditMode(note)
+                    }
+
+                    onSelectedNoteChanged: {
+                        if (selectedNote !== null) {
+                            root.displayNote(selectedNote);
+                        } else {
+                            sideViewLoader.clear();
+                        }
                     }
                     onOpenSearch: {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/SearchNotesPage.qml"))
                         var page = component.createObject();
                         pagestack.push(page)
-                        page.noteSelected.connect(function(note) {root.viewNote(note)})
+                        page.noteSelected.connect(function(note) {root.displayNote(note)})
                     }
                 }
             }
@@ -205,7 +211,15 @@ MainView {
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
                         pagestack.push(page, {title: title/*, filter: notebookGuid*/});
-                        page.noteSelected.connect(function(note) {root.viewNote(note)})
+                        page.selectedNoteChanged.connect(function() {
+                            print("foo", page.selectedNote);
+                            if (page.selectedNote) {
+                                root.displayNote(page.selectedNote);
+                            }
+                        })
+                        page.editNote.connect(function(note) {
+                            root.switchToEditMode(note)
+                        })
                         NotesStore.refreshNotes();
                     }
                 }
@@ -219,74 +233,44 @@ MainView {
             }
         }
     }
-}
 
-Loader {
-    id: sideViewLoader
-    anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-    width: root.width - pagestack.width
-
-    sourceComponent: root.narrowMode ? null : sidePageStackComponent
-
-    ThinDivider {
-        width: root.height
-        rotation: 90
-        anchors { left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: - parent.width }
-
-        z: 5
+    Label {
+        anchors.centerIn: parent
+        anchors.horizontalCenterOffset: pagestack.width / 2
+        visible: !root.narrowMode
+        text: "No note selected.\nSelect a note to see it in detail."
+        wrapMode: Text.WordWrap
+        horizontalAlignment: Text.AlignHCenter
+        fontSize: "large"
+        width: parent.width - pagestack.width
     }
-}
 
-Component {
-    id: sidePageStackComponent
-    MainView {
-        anchors { fill: null; right: parent.right; top: parent.top; bottom: parent.bottom }
-        width: root.width - units.gu(50)
-        // objectName for functional testing purposes (autopilot-qt5)
-        objectName: "mainView"
+    Loader {
+        id: sideViewLoader
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; topMargin: units.gu(10) }
+        width: root.width - pagestack.width
 
-        // Note! applicationName needs to match the "name" field of the click manifest
-        applicationName: "com.ubuntu.reminders"
+        sourceComponent: root.narrowMode ? null : sidePageStackComponent
 
-        /*
-         This property enables the application to change orientation
-         when the device is rotated. The default is false.
-        */
-        //automaticOrientation: true
+        ThinDivider {
+            width: sideViewLoader.height
+            anchors { right: null; left: parent.left; }
 
+            z: 5
 
-        // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
-        backgroundColor: UbuntuColors.coolGrey
-
-
-        function push(page) {
-            pageStack.push(page);
-        }
-
-        function clear() {
-            while (pageStack.depth > 0) {
-                pageStack.pop();
+            transform: Rotation {
+                angle: 90
             }
         }
 
-        function pop() {
-            pageStack.pop();
+        function embed(view, args) {
+            print("should embed view")
+            source = view;
+            return item;
         }
 
-        Label {
-            anchors.centerIn: parent
-            text: "No note selected.\nSelect a note to see it in detail."
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-            fontSize: "large"
-            width: parent.width
-        }
-
-        PageStack {
-            id: pageStack
+        function clear() {
+            source = "";
         }
     }
-}
-
-
 }

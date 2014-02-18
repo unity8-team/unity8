@@ -40,6 +40,14 @@ int main(int argc, char *argv[])
     importPathList.append(QDir::currentPath() + "/../plugin/");
 
     QStringList args = a.arguments();
+    if (args.contains("-h") || args.contains("--help")) {
+        qDebug() << "usage: ./" + args.at(0) + " [-p|--phone] [-t|--tablet] [-h|--help] [-I <path>]";
+        qDebug() << "    -p|--phone    If running on Desktop, start in a phone sized window.";
+        qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
+        qDebug() << "    -h|--help     Print this help.";
+        qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
+    }
+
     for (int i = 0; i < args.count(); i++) {
         if (args.at(i) == "-I" && args.count() > i + 1) {
             QString addedPath = args.at(i+1);
@@ -49,6 +57,14 @@ int main(int argc, char *argv[])
             }
             importPathList.append(addedPath);
         }
+    }
+
+    if (args.contains("-t") || args.contains("--tablet")) {
+        qDebug() << "running in tablet mode";
+        view.engine()->rootContext()->setContextProperty("tablet", true);
+    } else {
+        qDebug() << "running in phone mode";
+        view.engine()->rootContext()->setContextProperty("tablet", false);
     }
 
     view.engine()->setImportPathList(importPathList);
