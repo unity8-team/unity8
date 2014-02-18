@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1
 //import "components"
 import "ui"
 import Evernote 0.1
@@ -226,6 +227,14 @@ Loader {
     width: root.width - pagestack.width
 
     sourceComponent: root.narrowMode ? null : sidePageStackComponent
+
+    ThinDivider {
+        width: root.height
+        rotation: 90
+        anchors { left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: - parent.width }
+
+        z: 5
+    }
 }
 
 Component {
@@ -249,6 +258,7 @@ Component {
         // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
         backgroundColor: UbuntuColors.coolGrey
 
+
         function push(page) {
             pageStack.push(page);
         }
@@ -265,7 +275,7 @@ Component {
 
         Label {
             anchors.centerIn: parent
-            text: "Not note selected.\nSelect a note to see it in detail."
+            text: "No note selected.\nSelect a note to see it in detail."
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
             fontSize: "large"
