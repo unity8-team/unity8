@@ -29,6 +29,8 @@ Page {
     title: note.title
     property var note
 
+    signal editNote(var note)
+
     QtObject {
         id: priv
         property bool loading: false
@@ -72,8 +74,7 @@ Page {
             text: i18n.tr("Edit")
             iconName: "edit"
             onTriggered: {
-                pagestack.pop()
-                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"), {note: root.note})
+                root.editNote(root.note)
             }
         }
     }

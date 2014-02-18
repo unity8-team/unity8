@@ -27,6 +27,8 @@ Page {
     id: root
     property var note
 
+    signal exitEditMode()
+
     tools: ToolbarItems {
         locked: true
         opened: false
@@ -72,7 +74,7 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        pagestack.pop();
+                        root.exitEditMode();
                     }
                 }
             }

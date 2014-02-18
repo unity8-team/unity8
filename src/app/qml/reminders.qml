@@ -41,7 +41,11 @@ MainView {
     */
     //automaticOrientation: true
 
-    width: units.gu(50)
+    // This is only for easier simulating form factors when running on desktop. Do NOT use this somewhere else.
+    property bool tablet: true
+
+    property bool narrowMode: root.width < units.gu(80)
+    width: tablet ? units.gu(100) : units.gu(50)
     height: units.gu(75)
 
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
@@ -118,14 +122,50 @@ MainView {
             var note = NotesStore.note(guid);
             print("note created:", note.guid);
             var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
-            var page = component.createObject(pageStack)
+            var page = component.createObject(pagestack)
             page.note = note;
             pagestack.push(page);
         }
     }
 
+    function viewNote(note) {
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
+        var page = component.createObject();
+        page.note = note;
+        if (root.narrowMode) {
+            pagestack.push(page)
+        } else {
+            sideViewLoader.clear();
+            sideViewLoader.item.push(page)
+        }
+        page.editNote.connect(function(note) {root.switchToEditMode(note)})
+    }
+
+    function switchToEditMode(note) {
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
+        var page = component.createObject();
+        if (root.narrowMode) {
+            pagestack.pop();
+            pagestack.push(page, {note: note})
+        } else {
+            sideViewLoader.clear();
+            sideViewLoader.item.push(page, {note: note})
+        }
+        page.exitEditMode.connect(function() {
+            if (root.narrowMode) {
+                pagestack.pop();
+            } else {
+                sideViewLoader.item.pop();
+            }
+        })
+
+    }
+
     PageStack {
         id: pagestack
+        anchors { fill: null; left: parent.left; top: parent.top; bottom: parent.bottom }
+
+        width: root.narrowMode ? root.width : units.gu(40)
 
         Tabs {
             id: rootTabs
@@ -136,6 +176,9 @@ MainView {
                 title: i18n.tr("Notes")
                 page: NotesPage {
                     id: notesPage
+                    onNoteSelected: {
+                        root.viewNote(note);
+                    }
                 }
             }
 
@@ -143,6 +186,15 @@ MainView {
                 title: i18n.tr("Notebooks")
                 page: NotebooksPage {
                     id: notebooksPage
+
+                    onOpenNotebook: {
+                        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
+                        var page = component.createObject();
+                        print("opening note page for notebook", notebookGuid)
+                        pagestack.push(page, {title: title/*, filter: notebookGuid*/});
+                        page.noteSelected.connect(function(note) {root.viewNote(note)})
+                        NotesStore.refreshNotes();
+                    }
                 }
             }
 
@@ -154,4 +206,27 @@ MainView {
             }
         }
     }
+
+    Loader {
+        id: sideViewLoader
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+        width: root.width - pagestack.width
+
+        sourceComponent: root.narrowMode ? null : sidePageStackComponent
+
+        function clear() {
+            while (sideViewLoader.item.depth > 0) {
+                sideViewLoader.item.pop();
+            }
+        }
+    }
+
+    Component {
+        id: sidePageStackComponent
+        PageStack {
+
+        }
+    }
+
+
 }

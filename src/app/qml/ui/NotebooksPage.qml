@@ -23,7 +23,9 @@ import Evernote 0.1
 import "../components"
 
 Page {
-    id: notebooksPage
+    id: root
+
+    signal openNotebook(string title, string notebookGuid)
 
     onActiveChanged: {
         if (active) {
@@ -113,7 +115,8 @@ Page {
                 shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
 
                 onClicked: {
-                    pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
+                    print("selected notebook:", model.guid)
+                    root.openNotebook(name, model.guid)
                 }
             }
         }

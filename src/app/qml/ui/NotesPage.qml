@@ -23,9 +23,11 @@ import Evernote 0.1
 import "../components"
 
 Page {
-    id: notesPage
+    id: root
 
     property alias filter: notes.filterNotebookGuid
+
+    signal noteSelected(var note)
 
     onActiveChanged: {
         if (active) {
@@ -82,11 +84,7 @@ Page {
             Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
 
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
-            }
-
-            onPressAndHold: {
-                NotesStore.deleteNote(guid);
+                root.noteSelected(NotesStore.note(guid));
             }
         }
     }
