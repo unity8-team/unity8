@@ -27,8 +27,53 @@ import Ubuntu.OnlineAccounts 0.1
     \brief MainView with a Label and Button elements.
 */
 
-MainView {
+Item {
     id: root
+
+    // This is only for easier simulating form factors when running on desktop. Do NOT use this somewhere else.
+    property bool tablet: true
+
+    property bool narrowMode: root.width < units.gu(80)
+    width: tablet ? units.gu(100) : units.gu(50)
+    height: units.gu(75)
+
+    function viewNote(note) {
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
+        var page = component.createObject();
+        page.note = note;
+        if (root.narrowMode) {
+            pagestack.push(page)
+        } else {
+            sideViewLoader.item.clear();
+            sideViewLoader.item.push(page)
+        }
+        page.editNote.connect(function(note) {root.switchToEditMode(note)})
+    }
+
+    function switchToEditMode(note) {
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
+        var page = component.createObject();
+        page.note = note;
+        if (root.narrowMode) {
+            pagestack.pop();
+            pagestack.push(page)
+        } else {
+            sideViewLoader.item.clear();
+            sideViewLoader.item.push(page)
+        }
+        page.exitEditMode.connect(function() {
+            if (root.narrowMode) {
+                pagestack.pop();
+            } else {
+                sideViewLoader.item.pop();
+            }
+        })
+    }
+
+
+MainView {
+    anchors { fill: null; left: parent.left; top: parent.top; bottom: parent.bottom }
+    width: units.gu(50)
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
 
@@ -41,12 +86,6 @@ MainView {
     */
     //automaticOrientation: true
 
-    // This is only for easier simulating form factors when running on desktop. Do NOT use this somewhere else.
-    property bool tablet: true
-
-    property bool narrowMode: root.width < units.gu(80)
-    width: tablet ? units.gu(100) : units.gu(50)
-    height: units.gu(75)
 
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
@@ -128,39 +167,6 @@ MainView {
         }
     }
 
-    function viewNote(note) {
-        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-        var page = component.createObject();
-        page.note = note;
-        if (root.narrowMode) {
-            pagestack.push(page)
-        } else {
-            sideViewLoader.clear();
-            sideViewLoader.item.push(page)
-        }
-        page.editNote.connect(function(note) {root.switchToEditMode(note)})
-    }
-
-    function switchToEditMode(note) {
-        var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
-        var page = component.createObject();
-        if (root.narrowMode) {
-            pagestack.pop();
-            pagestack.push(page, {note: note})
-        } else {
-            sideViewLoader.clear();
-            sideViewLoader.item.push(page, {note: note})
-        }
-        page.exitEditMode.connect(function() {
-            if (root.narrowMode) {
-                pagestack.pop();
-            } else {
-                sideViewLoader.item.pop();
-            }
-        })
-
-    }
-
     PageStack {
         id: pagestack
         anchors { fill: null; left: parent.left; top: parent.top; bottom: parent.bottom }
@@ -212,27 +218,65 @@ MainView {
             }
         }
     }
+}
 
-    Loader {
-        id: sideViewLoader
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-        width: root.width - pagestack.width
+Loader {
+    id: sideViewLoader
+    anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+    width: root.width - pagestack.width
 
-        sourceComponent: root.narrowMode ? null : sidePageStackComponent
+    sourceComponent: root.narrowMode ? null : sidePageStackComponent
+}
+
+Component {
+    id: sidePageStackComponent
+    MainView {
+        anchors { fill: null; right: parent.right; top: parent.top; bottom: parent.bottom }
+        width: root.width - units.gu(50)
+        // objectName for functional testing purposes (autopilot-qt5)
+        objectName: "mainView"
+
+        // Note! applicationName needs to match the "name" field of the click manifest
+        applicationName: "com.ubuntu.reminders"
+
+        /*
+         This property enables the application to change orientation
+         when the device is rotated. The default is false.
+        */
+        //automaticOrientation: true
+
+
+        // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
+        backgroundColor: UbuntuColors.coolGrey
+
+        function push(page) {
+            pageStack.push(page);
+        }
 
         function clear() {
-            while (sideViewLoader.item.depth > 0) {
-                sideViewLoader.item.pop();
+            while (pageStack.depth > 0) {
+                pageStack.pop();
             }
         }
-    }
 
-    Component {
-        id: sidePageStackComponent
+        function pop() {
+            pageStack.pop();
+        }
+
+        Label {
+            anchors.centerIn: parent
+            text: "Not note selected.\nSelect a note to see it in detail."
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            fontSize: "large"
+            width: parent.width
+        }
+
         PageStack {
-
+            id: pageStack
         }
     }
+}
 
 
 }
