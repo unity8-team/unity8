@@ -179,6 +179,12 @@ MainView {
                     onNoteSelected: {
                         root.viewNote(note);
                     }
+                    onOpenSearch: {
+                        var component = Qt.createComponent(Qt.resolvedUrl("ui/SearchNotesPage.qml"))
+                        var page = component.createObject();
+                        pagestack.push(page)
+                        page.noteSelected.connect(function(note) {root.viewNote(note)})
+                    }
                 }
             }
 

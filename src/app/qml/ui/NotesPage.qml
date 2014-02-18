@@ -28,6 +28,7 @@ Page {
     property alias filter: notes.filterNotebookGuid
 
     signal noteSelected(var note)
+    signal openSearch()
 
     onActiveChanged: {
         if (active) {
@@ -41,7 +42,7 @@ Page {
             text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
-                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                root.openSearch();
             }
         }
 
