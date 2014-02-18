@@ -41,11 +41,12 @@ int main(int argc, char *argv[])
 
     QStringList args = a.arguments();
     if (args.contains("-h") || args.contains("--help")) {
-        qDebug() << "usage: ./" + args.at(0) + " [-p|--phone] [-t|--tablet] [-h|--help] [-I <path>]";
+        qDebug() << "usage: " + args.at(0) + " [-p|--phone] [-t|--tablet] [-h|--help] [-I <path>]";
         qDebug() << "    -p|--phone    If running on Desktop, start in a phone sized window.";
         qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
         qDebug() << "    -h|--help     Print this help.";
         qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
+        return 0;
     }
 
     for (int i = 0; i < args.count(); i++) {
