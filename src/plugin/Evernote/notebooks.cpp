@@ -53,6 +53,7 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
 
 int Notebooks::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_list.count();
 }
 
