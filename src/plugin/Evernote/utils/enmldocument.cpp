@@ -369,7 +369,7 @@ void EnmlDocument::markTodo(const QString &todoId, bool checked)
     m_enml = output;
 }
 
-void EnmlDocument::attachFile(int position, const QString &file, const QString &hash, const QString &type)
+void EnmlDocument::attachFile(int position, const QString &hash, const QString &type)
 {
     QXmlStreamReader reader(m_enml);
 

@@ -62,6 +62,7 @@ NotesStore *NotesStore::instance()
 
 int NotesStore::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_notes.count();
 }
 
@@ -182,7 +183,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         return;
     }
 
-    for (int i = 0; i < results.notes.size(); ++i) {
+    for (unsigned int i = 0; i < results.notes.size(); ++i) {
         evernote::edam::NoteMetadata result = results.notes.at(i);
         Note *note = m_notesHash.value(QString::fromStdString(result.guid));
         bool newNote = note == 0;
@@ -248,7 +249,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     note->setTitle(QString::fromStdString(result.title));
 
     // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
-    for (int i = 0; i < result.resources.size(); ++i) {
+    for (unsigned int i = 0; i < result.resources.size(); ++i) {
 
         evernote::edam::Resource resource = result.resources.at(i);
 
@@ -300,7 +301,7 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         return;
     }
 
-    for (int i = 0; i < results.size(); ++i) {
+    for (unsigned int i = 0; i < results.size(); ++i) {
         evernote::edam::Notebook result = results.at(i);
         Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
         bool newNoteNotebook = notebook == 0;

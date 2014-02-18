@@ -294,7 +294,7 @@ void Note::attachFile(int position, const QUrl &fileName)
     }
 
     Resource *resource = addResource(fileName.path());
-    m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
+    m_content.attachFile(position, resource->hash(), resource->type());
     emit contentChanged();
 
     // Cleanup imported file.
