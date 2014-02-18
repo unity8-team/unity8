@@ -287,12 +287,12 @@ void Note::markTodo(const QString &todoId, bool checked)
 
 void Note::attachFile(int position, const QUrl &fileName)
 {
-    QFile importedFile(fileName.toString());
+    QFile importedFile(fileName.path());
     if (!importedFile.exists()) {
+        qWarning() << "File doesn't exist. Cannot attach.";
         return;
     }
 
-    qDebug() << "attaching file" << position << fileName;
     Resource *resource = addResource(fileName.path());
     m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
     emit contentChanged();
