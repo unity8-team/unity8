@@ -72,7 +72,6 @@ Page {
             fill: parent;
         }
         fillMode: Image.PreserveAspectCrop
-        orientation: Screen.primaryOrientation === Qt.PortraitOrientation  ? -90 : 0
         source: camera
         focus: visible
 
@@ -162,7 +161,8 @@ Page {
     Item {
         id: controlsArea
         anchors.centerIn: parent
-
+        anchors.fill: parent
+        
         ZoomControl {
             id: zoomControl
             maximumValue: camera.maximumZoom
@@ -170,6 +170,7 @@ Page {
 
             anchors.left: parent.left
             anchors.right: parent.right
+            anchors.bottom: toolbar.top
             anchors.leftMargin: units.gu(0.75)
             anchors.rightMargin: units.gu(0.75)
             anchors.bottomMargin: units.gu(0.5)

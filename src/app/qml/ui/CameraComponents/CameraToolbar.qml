@@ -32,13 +32,6 @@ Item {
     property int iconHeight: units.gu(5)
     property bool canCapture
 
-    function shoot() {
-        var orientation = 90
-
-        camera.imageCapture.setMetadata("Orientation", orientation)
-        camera.imageCapture.capture()
-    }
-
     function switchFlashMode() {
         if (flashButton.torchMode) {
             camera.flash.mode = (flashButton.flashState == "on") ?
@@ -100,15 +93,27 @@ Item {
         height: shootButton.height + units.gu(1)
         source: "assets/toolbar-middle.sci"
 
-        ShootButton {
+        CameraToolbarButton {
             id: shootButton
             anchors.centerIn: parent
             iconWidth: units.gu(8)
             iconHeight: units.gu(8)
+            iconSource: "assets/shoot.png"
 
-            onClicked: toolbar.shoot()
+            onClicked: camera.imageCapture.capture()
             enabled: toolbar.canCapture
             opacity: enabled ? 1.0 : 0.5
         }
+    }
+
+    BorderImage {
+        id: rightBackground
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: middle.right
+        anchors.topMargin: units.dp(2)
+        anchors.bottomMargin: units.dp(2)
+        source: "assets/toolbar-right.sci"
     }
 }
