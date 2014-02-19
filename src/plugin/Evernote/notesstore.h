@@ -56,6 +56,7 @@ public:
         RoleTitle,
         RoleReminder,
         RoleReminderTime,
+        RoleReminderTimeString,
         RoleReminderDone,
         RoleReminderDoneTime,
         RoleIsSearchResult,

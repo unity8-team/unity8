@@ -27,6 +27,7 @@
 #include <QFileInfo>
 
 Resource::Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent):
+    QObject(parent),
     m_hash(hash),
     m_fileName(fileName),
     m_type(type)
@@ -46,7 +47,8 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     }
 }
 
-Resource::Resource(const QString &path, QObject *parent)
+Resource::Resource(const QString &path, QObject *parent):
+    QObject(parent)
 {
 
     QFile file(path);
