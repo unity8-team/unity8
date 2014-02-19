@@ -54,6 +54,9 @@ Page {
 
         imageCapture {
             onImageSaved: {
+                if (videoOutput.orientation != 0) {
+                    cameraHelper.rotate(path, -videoOutput.orientation)
+                }
                 imageLocation = path;
                 var component = Qt.createComponent(Qt.resolvedUrl("CameraConfirm.qml"));
                 var page = component.createObject(root, {imageLocation: imageLocation});
