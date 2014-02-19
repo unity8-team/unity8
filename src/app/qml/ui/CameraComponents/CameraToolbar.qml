@@ -119,8 +119,8 @@ Item {
         CameraToolbarButton {
             id: closeButton
             anchors.centerIn: parent
-            iconWidth: units.gu(8)
-            iconHeight: units.gu(8)
+            iconWidth: toolbar.iconWidth
+            iconHeight: toolbar.iconHeight
             iconSource: "assets/close.png"
 
             onClicked: pagestack.pop();
