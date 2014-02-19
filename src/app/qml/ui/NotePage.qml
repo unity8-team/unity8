@@ -26,29 +26,10 @@ import "../components"
 
 Page {
     id: root
-    title: note.title
-    property var note
+    title: noteView.title
+    property alias note: noteView.note
 
-    QtObject {
-        id: priv
-        property bool loading: false
-    }
-
-    Component.onCompleted: {
-        if (note.enmlContent.length === 0) {
-            NotesStore.refreshNoteContent(root.note.guid)
-            priv.loading = true;
-        }
-    }
-
-    Connections {
-        target: NotesStore
-        onNoteChanged: {
-            if (guid === root.note.guid) {
-                priv.loading = false;
-            }
-        }
-    }
+    signal editNote(var note)
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -72,52 +53,17 @@ Page {
             text: i18n.tr("Edit")
             iconName: "edit"
             onTriggered: {
-                pagestack.pop()
-                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"), {note: root.note})
+                root.editNote(root.note)
             }
         }
     }
 
-    ActivityIndicator {
-        anchors.centerIn: parent
-        running: priv.loading
-        visible: running
-    }
+    NoteView {
+        id: noteView
+        anchors.fill: parent
 
-    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
-    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
-    // another flickable prevents this from happening.
-    Flickable {
-        anchors { fill: parent }
-        contentHeight: height
-        visible: !priv.loading
-
-        UbuntuWebView {
-            id: noteTextArea
-            anchors { fill: parent}
-            property string html: note.htmlContent
-            onHtmlChanged: {
-                loadHtml(html, "file:///")
-            }
-
-            experimental.preferences.navigatorQtObjectEnabled: true
-            experimental.preferredMinimumContentsWidth: root.width
-            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            experimental.onMessageReceived: {
-                var data = null;
-                try {
-                    data = JSON.parse(message.data);
-                } catch (error) {
-                    print("Failed to parse message:", message.data, error);
-                }
-
-                switch (data.type) {
-                case "checkboxChanged":
-                    note.markTodo(data.todoId, data.checked);
-                    NotesStore.saveNote(note.guid);
-                    break;
-                }
-            }
+        onEditNote: {
+            root.editNote(note) ;
         }
     }
 }
