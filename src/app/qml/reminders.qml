@@ -43,12 +43,11 @@ MainView {
      when the device is rotated. The default is false.
     */
     //automaticOrientation: true
-
+    onWidthChanged: print("********************* width", width)
 
     property bool narrowMode: root.width < units.gu(80)
-    height: units.gu(75)
 
-    width: tablet ? units.gu(100) : units.gu(40)
+    onNarrowModeChanged: print("#################################", narrowMode)
 
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
@@ -113,6 +112,14 @@ MainView {
     }
 
     Component.onCompleted: {
+        if (tablet) {
+            width = units.gu(100);
+            height = units.gu(75);
+        } else if (phone) {
+            width = units.gu(40);
+            height = units.gu(75);
+        }
+
         pagestack.push(rootTabs)
         print("got accounts:", accounts.count)
         var accountName = accountPreference.accountName;
@@ -167,9 +174,7 @@ MainView {
 
     PageStack {
         id: pagestack
-        anchors { fill: null; left: parent.left; top: parent.top; bottom: parent.bottom }
-
-        width: root.narrowMode ? root.width : units.gu(40)
+        anchors.rightMargin: root.narrowMode ? 0 : root.width - units.gu(40)
 
         Tabs {
             id: rootTabs
@@ -250,12 +255,9 @@ MainView {
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom; topMargin: units.gu(10) }
         width: root.width - pagestack.width
 
-        sourceComponent: root.narrowMode ? null : sidePageStackComponent
-
         ThinDivider {
             width: sideViewLoader.height
             anchors { right: null; left: parent.left; }
-
             z: 5
 
             transform: Rotation {
@@ -264,7 +266,6 @@ MainView {
         }
 
         function embed(view, args) {
-            print("should embed view")
             source = view;
             return item;
         }
