@@ -15,14 +15,13 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1// as SDK
+import Ubuntu.Components 0.1
 
 Item {
     id: zoom
     property alias maximumValue: slider.maximumValue
     property alias value: slider.value
     property real zoomStep: (slider.maximumValue - slider.minimumValue) / 20
-    property int iconsRotation
 
     AbstractButton {
         id: minus

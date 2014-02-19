@@ -54,9 +54,6 @@ Page {
 
         imageCapture {
             onImageSaved: {
-                if (videoOutput.orientation != 0) {
-                    cameraHelper.rotate(path, -videoOutput.orientation);
-                }
                 imageLocation = path;
                 var component = Qt.createComponent(Qt.resolvedUrl("CameraConfirm.qml"));
                 var page = component.createObject(root, {imageLocation: imageLocation});
@@ -68,9 +65,10 @@ Page {
     VideoOutput {
         id: videoOutput
         anchors {
-            fill: parent;
+            fill: parent
         }
         fillMode: Image.PreserveAspectCrop
+        orientation: Screen.primaryOrientation === Qt.PortraitOrientation  ? -90 : 0
         source: camera
         focus: visible
 
