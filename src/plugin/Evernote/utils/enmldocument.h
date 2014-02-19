@@ -55,6 +55,7 @@ private:
 
     static QStringList s_commonTags;
     static QStringList s_argumentBlackListTags;
+    static int s_richtextContentWidth;
 
 };
 
