@@ -47,7 +47,7 @@ Page {
         id: camera
         flash.mode: Camera.FlashOff
         focus.focusMode: Camera.FocusAuto
-        focus.focusPointMode: focusRing.opacity > 0 ? Camera.FocusPointCustom : Camera.FocusPointAuto
+        focus.focusPointMode: Camera.FocusPointAuto
 
         property alias currentZoom: camera.digitalZoom
         property alias maximumZoom: camera.maximumDigitalZoom
@@ -83,69 +83,7 @@ Page {
                 id: itemScale
                 visible: false
             }
-
-            PinchArea {
-                id: area
-
-                anchors.left: viewFinderGeometry.left
-                anchors.right: viewFinderGeometry.right
-
-                pinch.minimumScale: 0.0
-                pinch.maximumScale: camera.maximumZoom
-                pinch.target: itemScale
-
-                onPinchStarted: {
-                    focusRing.center = main.mapFromItem(area, pinch.center.x, pinch.center.y);
-                }
-
-                onPinchFinished: {
-                    focusRing.restartTimeout()
-                    var center = pinch.center
-                    var focusPoint = viewFinder.mapPointToSourceNormalized(pinch.center);
-                    camera.focus.customFocusPoint = focusPoint;
-                }
-
-                onPinchUpdated: {
-                    focusRing.center = main.mapFromItem(area, pinch.center.x, pinch.center.y);
-                    camera.currentZoom = itemScale.scale
-                }
-
-                MouseArea {
-                    id: mouseArea
-
-                    anchors.fill: parent
-
-                    onPressed: {
-                        if (!area.pinch.active)
-                            focusRing.center = main.mapFromItem(area, mouse.x, mouse.y);
-                    }
-
-                    onReleased:  {
-                        if (!area.pinch.active) {
-                            var focusPoint = viewFinder.mapPointToSourceNormalized(Qt.point(mouse.x, mouse.y))
-
-                            focusRing.restartTimeout()
-                            camera.focus.customFocusPoint = focusPoint;
-                        }
-                    }
-
-                    drag {
-                        target: focusRing
-                        minimumY: area.y - focusRing.height / 2
-                        maximumY: area.y + area.height - focusRing.height / 2
-                        minimumX: area.x - focusRing.width / 2
-                        maximumX: area.x + area.width - focusRing.width / 2
-                    }
-                }
-            }
         }
-    }
-
-    FocusRing {
-        id: focusRing
-        height: units.gu(13)
-        width: units.gu(13)
-        opacity: 0.0
     }
 
     Item {
