@@ -198,21 +198,21 @@ QString Note::reminderTimeString() const
     QDate reminderDate = m_reminderTime.date();
     QDate today = QDate::currentDate();
     if (reminderDate < today) {
-        return QStringLiteral("missed");
+        return QStringLiteral("Overdue");
     }
     if (reminderDate == today) {
-        return QStringLiteral("today");
+        return QStringLiteral("Today");
     }
     if (reminderDate == today.addDays(1)) {
-        return QStringLiteral("tomorrow");
+        return QStringLiteral("Tomorrow");
     }
     if (reminderDate <= today.addDays(7)) {
-        return QStringLiteral("next week");
+        return QStringLiteral("Next week");
     }
     if (reminderDate <= today.addDays(14)) {
-        return QStringLiteral("two weeks");
+        return QStringLiteral("In two weeks");
     }
-    return QStringLiteral("more than two weeks");
+    return QStringLiteral("Later");
 }
 
 QDateTime Note::reminderDoneTime() const
