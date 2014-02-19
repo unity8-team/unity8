@@ -115,5 +115,15 @@ Item {
         anchors.topMargin: units.dp(2)
         anchors.bottomMargin: units.dp(2)
         source: "assets/toolbar-right.sci"
+
+        CameraToolbarButton {
+            id: closeButton
+            anchors.centerIn: parent
+            iconWidth: units.gu(8)
+            iconHeight: units.gu(8)
+            iconSource: "assets/close.png"
+
+            onClicked: pagestack.pop();
+        }
     }
 }

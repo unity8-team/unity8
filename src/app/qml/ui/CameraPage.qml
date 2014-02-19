@@ -73,7 +73,6 @@ Page {
         fillMode: Image.PreserveAspectCrop
         source: camera
         focus: visible
-        orientation: device.naturalOrientation === "portrait"  ? -90 : 0
 
         ViewFinderGeometry {
             id: viewFinderGeometry
