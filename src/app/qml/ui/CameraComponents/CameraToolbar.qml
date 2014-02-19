@@ -100,7 +100,7 @@ Item {
             iconHeight: units.gu(8)
             iconSource: "assets/shoot.png"
 
-            onClicked: camera.imageCapture.capture()
+            onClicked: camera.imageCapture.captureToLocation(cameraHelper.importLocation);
             enabled: toolbar.canCapture
             opacity: enabled ? 1.0 : 0.5
         }

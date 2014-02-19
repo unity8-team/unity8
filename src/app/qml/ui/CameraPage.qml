@@ -18,7 +18,6 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Unity.Action 1.0 as UnityActions
 import QtMultimedia 5.0
 import QtQuick.Window 2.0
 import Evernote 0.1
@@ -46,9 +45,9 @@ Page {
 
     Camera {
         id: camera
-        flash.mode: Camera.FlashTorch
-        focus.focusMode: Camera.FocusContinuous
-        focus.focusPointMode: Camera.FocusPointAuto
+        flash.mode: Camera.FlashOff
+        focus.focusMode: Camera.FocusAuto
+        focus.focusPointMode: focusRing.opacity > 0 ? Camera.FocusPointCustom : Camera.FocusPointAuto
 
         property alias currentZoom: camera.digitalZoom
         property alias maximumZoom: camera.maximumDigitalZoom
@@ -74,6 +73,7 @@ Page {
         fillMode: Image.PreserveAspectCrop
         source: camera
         focus: visible
+        orientation: device.naturalOrientation === "portrait"  ? -90 : 0
 
         ViewFinderGeometry {
             id: viewFinderGeometry
@@ -136,17 +136,7 @@ Page {
                         minimumX: area.x - focusRing.width / 2
                         maximumX: area.x + area.width - focusRing.width / 2
                     }
-
                 }
-            }
-
-            Snapshot {
-                id: snapshot
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: parent.height
-                y: 0
-                geometry: viewFinderGeometry
             }
         }
     }
@@ -195,7 +185,7 @@ Page {
             anchors.rightMargin: units.gu(1)
 
             camera: camera
-            canCapture: camera.imageCapture.ready && !snapshot.sliding
+            canCapture: camera.imageCapture.ready
         }
     }
 }
