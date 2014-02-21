@@ -33,6 +33,7 @@ Description: Ubuntu Settings Components
 
 Package: qtdeclarative5-ubuntu-settings-components-assets
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends},
          ${shlibs:Depends},
 Description: Ubuntu Settings Components
