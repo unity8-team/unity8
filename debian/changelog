@@ -1,3 +1,15 @@
+ubuntu-settings-components (0.1+14.04.20140221-0ubuntu1) trusty; urgency=low
+
+  [ Nick Dedekind ]
+  * Fixed slider issue where if minimum/maximum set after value, the
+    original value would be lost.
+
+  [ Dimitri John Ledkov ]
+  * Specify assets package to be Multi-Arch:foreign, to allow cross-
+    compilation of reverse-dependencies.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 21 Feb 2014 09:09:52 +0000
+
 ubuntu-settings-components (0.1+14.04.20131217-0ubuntu1) trusty; urgency=low
 
   [ Nick Dedekind ]
