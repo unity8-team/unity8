@@ -26,8 +26,7 @@ Item {
     AbstractButton {
         id: minus
         objectName: "zoomMinus"
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors {left: parent.left; verticalCenter: parent.verticalCenter}
         width: minusIcon.width
         height: minusIcon.height
         onClicked: slider.value = Math.max(value - zoom.zoomStep, slider.minimumValue)
@@ -52,9 +51,7 @@ Item {
     Slider {
         id: slider
         style: ThinSliderStyle {}
-        anchors.left: minus.right
-        anchors.right: plus.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors { left: minus.right; right: plus.left; verticalCenter: parent.verticalCenter }
         live: true
         minimumValue: 1.0 // No zoom => 1.0 zoom factor
         value: minimumValue
@@ -64,8 +61,7 @@ Item {
     AbstractButton {
         id: plus
         objectName: "zoomPlus"
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors { right: parent.right; verticalCenter: parent.verticalCenter }
         width: plusIcon.width
         height: plusIcon.height
         onClicked: slider.value = Math.min(value + zoom.zoomStep, slider.maximumValue)

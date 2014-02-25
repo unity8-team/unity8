@@ -39,21 +39,17 @@ Item {
 
     BorderImage {
         id: leftBackground
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: middle.left
-        anchors.topMargin: units.dp(2)
-        anchors.bottomMargin: units.dp(2)
+        anchors {
+            left: parent.left; top: parent.top; bottom: parent.bottom; right: middle.left; 
+            topMargin: units.dp(2); bottomMargin: units.dp(2) 
+        }
         source: "assets/toolbar-left.sci"
 
         property int iconSpacing: (width - toolbar.iconWidth * children.length) / 3
 
         FlashButton {
             id: flashButton
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: parent.iconSpacing
+            anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: parent.iconSpacing }
 
             height: toolbar.iconHeight
             width: toolbar.iconWidth
@@ -75,9 +71,7 @@ Item {
 
     BorderImage {
         id: middle
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter }
         height: shootButton.height + units.gu(1)
         source: "assets/toolbar-middle.sci"
 
@@ -96,12 +90,10 @@ Item {
 
     BorderImage {
         id: rightBackground
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: middle.right
-        anchors.topMargin: units.dp(2)
-        anchors.bottomMargin: units.dp(2)
+        anchors { 
+            right: parent.right; top: parent.top; bottom: parent.bottom; left: middle.right; 
+            topMargin: units.dp(2); bottomMargin: units.dp(2) 
+        }
         source: "assets/toolbar-right.sci"
 
         CameraToolbarButton {

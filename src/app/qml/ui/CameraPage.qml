@@ -88,21 +88,20 @@ Page {
 
     Item {
         id: controlsArea
-        anchors.centerIn: parent
-        anchors.fill: parent
+        anchors {
+            centerIn: parent;
+            fill: parent
+        }
         
         ZoomControl {
             id: zoomControl
             maximumValue: camera.maximumZoom
             height: units.gu(4.5)
 
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: toolbar.top
-            anchors.leftMargin: units.gu(0.75)
-            anchors.rightMargin: units.gu(0.75)
-            anchors.bottomMargin: units.gu(0.5)
-            anchors.topMargin: units.gu(0.5)
+            anchors {
+                left: parent.left; right: parent.right; bottom: toolbar.top; 
+                leftMargin: units.gu(0.75); rightMargin: units.gu(0.75); bottomMargin: units.gu(0.5); topMargin: units.gu(0.5)
+            }
 
             visible: camera.maximumZoom > 1
 
@@ -115,12 +114,10 @@ Page {
         CameraToolbar {
             id: toolbar
 
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottomMargin: units.gu(1)
-            anchors.leftMargin: units.gu(1)
-            anchors.rightMargin: units.gu(1)
+            anchors {
+                bottom: parent.bottom; left: parent.left; right: parent.right;
+                bottomMargin: units.gu(1); leftMargin: units.gu(1); rightMargin: units.gu(1)
+            }
 
             camera: camera
             canCapture: camera.imageCapture.ready
