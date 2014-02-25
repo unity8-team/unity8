@@ -84,7 +84,12 @@ int main(int argc, char *argv[])
     view.engine()->rootContext()->setContextProperty("accountPreference", &preferences);
 
     // load the qml file
-    view.setSource(QUrl::fromLocalFile("qml/reminders.qml"));
+    QFileInfo fi("qml/reminders.qml");
+    if (fi.exists()) {
+        view.setSource(QUrl::fromLocalFile("qml/reminders.qml"));
+    } else {
+        view.setSource(QUrl::fromLocalFile("/usr/share/reminders/qml/reminders.qml"));
+    }
 
     view.show();
 
