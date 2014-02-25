@@ -33,8 +33,13 @@ Item {
     property bool canCapture
 
     function switchFlashMode() {
-        camera.flash.mode = (flashButton.flashState == "off") ? Camera.FlashOn :
-        ((flashButton.flashState == "on") ? Camera.FlashAuto : Camera.FlashOff);
+        if (flashButton.torchMode) {
+            camera.flash.mode = (flashButton.flashState == "on") ?
+                                Camera.FlashOff : Camera.FlashVideoLight;
+        } else {
+            camera.flash.mode = (flashButton.flashState == "off") ? Camera.FlashOn :
+                                ((flashButton.flashState == "on") ? Camera.FlashAuto : Camera.FlashOff);
+        }
     }
 
     BorderImage {
@@ -49,21 +54,17 @@ Item {
 
         property int iconSpacing: (width - toolbar.iconWidth * children.length) / 3
 
-        CameraToolbarButton {
+        FlashButton {
             id: flashButton
-
-            property bool flashAllowed: true
-            property string flashState: "off"
-
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: parent.iconSpacing
-            anchors.fill: parent
 
             height: toolbar.iconHeight
             width: toolbar.iconWidth
             enabled: toolbar.opacity > 0.0
 
+            torchMode: camera.captureMode == Camera.CaptureVideo
             flashState: { switch (camera.flash.mode) {
                 case Camera.FlashAuto: return "auto";
                 case Camera.FlashOn:
@@ -72,12 +73,15 @@ Item {
                 default: return "off"
             }}
 
-            iconSource: (flashState == "off") ? "assets/flash_off.png" :
-                    ((flashState == "on") ? "assets/flash_on.png" : "assets/flash_auto.png")
-
             onClicked: toolbar.switchFlashMode()
 
             property variant previousFlashMode: Camera.FlashOff
+
+            onTorchModeChanged: {
+                var previous = camera.flash.mode;
+                camera.flash.mode = previousFlashMode;
+                previousFlashMode = previous;
+            }
         }
     }
 
