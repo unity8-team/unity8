@@ -32,7 +32,6 @@ Item {
         height: minusIcon.height
         onClicked: slider.value = Math.max(value - zoom.zoomStep, slider.minimumValue)
         onPressedChanged: if (pressed) minusTimer.restart(); else minusTimer.stop();
-        rotation: iconsRotation
 
         Image {
             id: minusIcon
@@ -71,7 +70,6 @@ Item {
         height: plusIcon.height
         onClicked: slider.value = Math.min(value + zoom.zoomStep, slider.maximumValue)
         onPressedChanged: if (pressed) plusTimer.restart(); else plusTimer.stop();
-        rotation: iconsRotation
 
         Image {
             id: plusIcon
