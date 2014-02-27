@@ -53,12 +53,12 @@ bool CameraHelper::rotate(const QString &imageFile, int angle)
     return image.save(imageFile);
 }
 
-bool CameraHelper::removeTemp() {
+bool CameraHelper::removeTemp() 
+{
     const char* location = importLocation().toUtf8();
     if(remove(location) != 0 ) {
         qDebug() << "Error deleting temporary image";
-    }
-    else {
+    } else {
         qDebug() << "Temporary image deleted";
     }
   return 0;
