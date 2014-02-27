@@ -36,6 +36,15 @@ Page {
         locked: true
         opened: true
 
+        back: ToolbarButton {
+            text: i18n.tr("Back");
+            iconName: "back";
+            onTriggered: {
+                cameraHelper.removeTemp();
+                pagestack.pop();
+            }
+        }
+
         ToolbarButton {
             text:  i18n.tr("Use it!");
             iconName: "camera-symbolic";

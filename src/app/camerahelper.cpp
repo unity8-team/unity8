@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
+ *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
 
 #include "camerahelper.h"
@@ -25,6 +26,7 @@
 #include <QCoreApplication>
 #include <QImage>
 #include <QTransform>
+#include <QDebug>
 
 CameraHelper::CameraHelper(QObject *parent):
     QObject(parent)
@@ -36,7 +38,7 @@ QString CameraHelper::importLocation() const
 {
     QString homePath = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
     QString appName = QCoreApplication::applicationName();
-    return  homePath + "/.cache/" + appName + '/';
+    return  homePath + "/.cache/" + appName + "/tempImage.jpg";
 }
 
 bool CameraHelper::rotate(const QString &imageFile, int angle)
@@ -49,4 +51,15 @@ bool CameraHelper::rotate(const QString &imageFile, int angle)
     transform.rotate(angle);
     image = image.transformed(transform);
     return image.save(imageFile);
+}
+
+bool CameraHelper::removeTemp() {
+    const char* location = importLocation().toUtf8();
+    if(remove(location) != 0 ) {
+        qDebug() << "Error deleting temporary image";
+    }
+    else {
+        qDebug() << "Temporary image deleted";
+    }
+  return 0;
 }
