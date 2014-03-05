@@ -27,6 +27,7 @@
 #include <QImage>
 #include <QTransform>
 #include <QDebug>
+#include <QFile>
 
 CameraHelper::CameraHelper(QObject *parent):
     QObject(parent)
@@ -56,10 +57,8 @@ bool CameraHelper::rotate(const QString &imageFile, int angle)
 bool CameraHelper::removeTemp() 
 {
     const char* location = importLocation().toUtf8();
-    if(remove(location) != 0 ) {
-        qDebug() << "Error deleting temporary image";
-    } else {
-        qDebug() << "Temporary image deleted";
+    if(QFile::remove(location) != true ) {
+        qWarning() << "Error deleting temporary image";
     }
   return 0;
 }
