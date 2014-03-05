@@ -1,0 +1,83 @@
+# English (United Kingdom) translation for reminders-app
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the reminders-app package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: reminders-app\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-01-28 09:36+0100\n"
+"PO-Revision-Date: 2014-03-04 18:21+0000\n"
+"Last-Translator: Andi Chandler <Unknown>\n"
+"Language-Team: English (United Kingdom) <en_GB@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2014-03-05 06:02+0000\n"
+"X-Generator: Launchpad (build 16948)\n"
+
+#: src/app/qml/components/NotebooksDelegate.qml:58
+#, qt-format
+msgid "%1 note"
+msgid_plural "%1 notes"
+msgstr[0] "%1 note"
+msgstr[1] "%1 notes"
+
+#: src/app/qml/reminders.qml:83
+msgid "Notes"
+msgstr "Notes"
+
+#: src/app/qml/reminders.qml:90
+msgid "Notebooks"
+msgstr "Notebooks"
+
+#: src/app/qml/reminders.qml:97
+msgid "Reminders"
+msgstr "Reminders"
+
+#: src/app/qml/ui/EditNotePage.qml:83 src/app/qml/ui/EditNotePage.qml:95
+msgid "Untitled"
+msgstr "Untitled"
+
+#: src/app/qml/ui/NotePage.qml:36
+msgid "Delete"
+msgstr "Delete"
+
+#: src/app/qml/ui/NotePage.qml:53
+msgid "Edit"
+msgstr "Edit"
+
+#: src/app/qml/ui/NotebooksPage.qml:36 src/app/qml/ui/NotesPage.qml:39
+#: src/app/qml/ui/RemindersPage.qml:30 src/app/qml/ui/SearchNotesPage.qml:52
+msgid "Search"
+msgstr "Search"
+
+#: src/app/qml/ui/NotebooksPage.qml:46
+msgid "Add notebook"
+msgstr "Add notebook"
+
+#: src/app/qml/ui/NotebooksPage.qml:104
+msgid "Shared"
+msgstr "Shared"
+
+#: src/app/qml/ui/NotebooksPage.qml:104
+msgid "Private"
+msgstr "Private"
+
+#: src/app/qml/ui/NotebooksPage.qml:126
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/app/qml/ui/NotebooksPage.qml:134
+msgid "Save"
+msgstr "Save"
+
+#: src/app/qml/ui/NotesPage.qml:49
+msgid "Add note"
+msgstr "Add note"
+
+#: src/app/qml/ui/RemindersPage.qml:40
+msgid "Add reminder"
+msgstr "Add reminder"
