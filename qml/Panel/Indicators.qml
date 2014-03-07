@@ -31,6 +31,8 @@ Showable {
     property bool pinnedMode: true  //should be set true if indicators menu can cover whole screen
     property alias overFlowWidth: indicatorRow.overFlowWidth
     property alias showAll: indicatorRow.showAll
+    // TODO: This should be sourced by device type (eg "desktop", "tablet", "phone"...)
+    property string profile: indicatorProfile
 
     property real hintValue: panelHeight + menuContent.headerHeight
     property alias hintInterval: showDragHandle.hintRollbackInterval
@@ -432,6 +434,6 @@ Showable {
 
     Component.onCompleted: initialise();
     function initialise() {
-        visibleIndicators.load();
+        visibleIndicators.load(profile);
     }
 }

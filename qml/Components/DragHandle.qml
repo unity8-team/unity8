@@ -193,7 +193,8 @@ EdgeDragArea {
     EdgeDragEvaluator {
         objectName: "edgeDragEvaluator"
         id: dragEvaluator
-        trackedPosition: sceneDistance
+        // Effectively convert distance into the drag position projected onto the gesture direction axis
+        trackedPosition: Direction.isPositive(dragArea.direction) ? sceneDistance : -sceneDistance
         maxDragDistance: maxTotalDragDistance
         direction: dragArea.direction
     }
