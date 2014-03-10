@@ -38,6 +38,8 @@ MainView {
     height: units.gu(42)
 
     signal expand
+    signal continueHint
+    signal resetHint
 
     function setCurrentMenuIndex(index, animate) {
         if (tabs.selectedTabIndex !== index) {
@@ -76,6 +78,17 @@ MainView {
 
             enabled: activeHeader
             onClicked: expand()
+        }
+
+        Connections {
+            target: tabs.tabBar
+            onPressedChanged: {
+                if (tabs.tabBar.pressed) {
+                    continueHint();
+                } else {
+                    resetHint();
+                }
+            }
         }
 
         Repeater {

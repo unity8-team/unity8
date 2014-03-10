@@ -218,6 +218,20 @@ Showable {
                 indicators.show();
             }
         }
+
+        onContinueHint: {
+            if (indicators.state == "hint") {
+                console.log("continueHint")
+                showDragHandle.continueHint();
+            }
+        }
+
+        onResetHint: {
+            if (indicators.state == "hint") {
+                console.log("resetHint")
+                showDragHandle.resetHint();
+            }
+        }
     }
 
     Rectangle {

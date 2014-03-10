@@ -67,10 +67,14 @@ EdgeDragArea {
         }
     }
 
-    function resetHint() {
+    function continueHint() {
         if (rollbackDragTimer.running) {
-            rollbackDragTimer.restart();
+            rollbackDragTimer.stop();
         }
+    }
+
+    function resetHint() {
+        rollbackDragTimer.restart();
     }
 
     property real hintDisplacement: 0
