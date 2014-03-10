@@ -82,22 +82,35 @@ Rectangle {
             passThroughAreaClicked.clear();
             passThroughAreaPressed.clear();
             passThroughAreaReleased.clear();
+
+            mouseArea.enabled = true;
+            passThroughArea.enabled = true;
         }
 
-        function test_press_release_click() {
+        function test_press_release_click_data() {
+            return [
+                { tag: "mouseArea::enabled", enabled: true },
+                { tag: "mouseArea::disabled", enabled: false },
+            ];
+        }
+
+        function test_press_release_click(data) {
+            mouseArea.enabled = data.enabled;
+            var expectedMouseArea = data.enabled ? 1 : 0;
+
             touchPress(main, main.width / 2, main.height / 2);
-            compare(mouseAreaPressed.count, 1, "Mouse area should have been pressed");
+            compare(mouseAreaPressed.count, expectedMouseArea, "Mouse area should have been pressed");
             compare(passThroughAreaPressed.count, 1, "Passthrough area should have been pressed");
             compare(mouseAreaReleased.count, 0, "Mouse area should not have been released");
             compare(passThroughAreaReleased.count, 0, "Passthrough area should not have been released");
 
             touchRelease(main, main.width / 2, main.height / 2);
-            compare(mouseAreaReleased.count, 1, "Mouse area should not have been pressed again");
-            compare(passThroughAreaReleased.count, 1, "Passthrough area should not have been pressed again");
-            compare(mouseAreaPressed.count, 1, "Mouse area should have been pressed");
-            compare(passThroughAreaPressed.count, 1, "Passthrough should have been released");
+            compare(mouseAreaReleased.count, expectedMouseArea, "Mouse area should been released");
+            compare(passThroughAreaReleased.count, 1, "Passthrough area should been released");
+            compare(mouseAreaPressed.count, expectedMouseArea, "Mouse area should not have been pressed again");
+            compare(passThroughAreaPressed.count, 1, "Passthrough area should not have been pressed again");
 
-            compare(mouseAreaClicked.count, 1, "Mouse area should have been released");
+            compare(mouseAreaClicked.count, expectedMouseArea, "Mouse area should have been released");
             compare(passThroughAreaClicked.count, 1, "Passthrough should have been pressed");
         }
     }

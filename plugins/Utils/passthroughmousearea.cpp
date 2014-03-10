@@ -48,33 +48,40 @@ void PassthroughMouseArea::mousePressEvent(QMouseEvent *event)
             m_enabledEvents = true;
             return;
         }
+
         if (w->mouseGrabberItem() == this) {
             QQuickItem::ungrabMouse();
-        }
 
-        QMouseEvent ev(*event);
-        QCoreApplication::sendEvent(w, &ev);
+            QMouseEvent ev(*event);
+            QCoreApplication::sendEvent(w, &ev);
 
-        m_passthroughGrabbed = NULL;
-        QQuickItem* currentGrab = w->mouseGrabberItem();
-        if (currentGrab != this) {
-            m_passthroughGrabbed = currentGrab;
+            m_passthroughGrabbed = NULL;
+            QQuickItem* currentGrab = w->mouseGrabberItem();
+            if (currentGrab && currentGrab != this) {
+                m_passthroughGrabbed = currentGrab;
 
-            connect(currentGrab, SIGNAL(clicked(QQuickMouseEvent*)), SIGNAL(clicked(QQuickMouseEvent*)));
-            connect(currentGrab, SIGNAL(doubleClicked(QQuickMouseEvent*)), SIGNAL(doubleClicked(QQuickMouseEvent*)));
-            connect(currentGrab, SIGNAL(pressAndHold(QQuickMouseEvent*)), SIGNAL(pressAndHold(QQuickMouseEvent*)));
+                if (currentGrab) {
+                    connect(currentGrab, SIGNAL(clicked(QQuickMouseEvent*)), SIGNAL(clicked(QQuickMouseEvent*)));
+                    connect(currentGrab, SIGNAL(doubleClicked(QQuickMouseEvent*)), SIGNAL(doubleClicked(QQuickMouseEvent*)));
+                    connect(currentGrab, SIGNAL(pressAndHold(QQuickMouseEvent*)), SIGNAL(pressAndHold(QQuickMouseEvent*)));
 
-            connect(currentGrab, SIGNAL(released(QQuickMouseEvent*)), SLOT(onReleased(QQuickMouseEvent*)));
-            connect(currentGrab, SIGNAL(canceled()), SLOT(clearConnected()));
-            connect(currentGrab, SIGNAL(canceled()), SIGNAL(canceled()));
+                    connect(currentGrab, SIGNAL(released(QQuickMouseEvent*)), SLOT(onGrabbedReleased(QQuickMouseEvent*)));
+                    connect(currentGrab, SIGNAL(canceled()), SLOT(clearConnected()));
+                    connect(currentGrab, SIGNAL(canceled()), SIGNAL(canceled()));
+                }
+            } else if (!currentGrab) {
+                // need to re-grab the mouse area
+                QQuickMouseArea::grabMouse();
+            }
         }
 
         m_enabledEvents = true;
     }
 }
 
-void PassthroughMouseArea::onReleased(QQuickMouseEvent* event)
+void PassthroughMouseArea::onGrabbedReleased(QQuickMouseEvent* event)
 {
+    QQuickMouseArea::mouseUngrabEvent();
     Q_EMIT released(event);
 
     // Needs to be queued, otherwise we will miss the click event.
@@ -87,4 +94,12 @@ void PassthroughMouseArea::clearConnected()
         disconnect(m_passthroughGrabbed, 0, this, 0);
         m_passthroughGrabbed = NULL;
     }
+}
+
+void PassthroughMouseArea::mouseUngrabEvent()
+{
+    if (!m_enabledEvents) {
+        return;
+    }
+    QQuickMouseArea::mouseUngrabEvent();
 }

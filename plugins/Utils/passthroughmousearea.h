@@ -20,7 +20,8 @@
 #include <private/qquickmousearea_p.h>
 #include <QPointer>
 
-class QQuickItem;
+// Reports all mouse events received, like a regular MouseArea,
+// but also let them pass through to reach items behind it
 class PassthroughMouseArea : public QQuickMouseArea
 {
     Q_OBJECT
@@ -30,9 +31,10 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *event);
+    void mouseUngrabEvent();
 
 private Q_SLOTS:
-    void onReleased(QQuickMouseEvent* event);
+    void onGrabbedReleased(QQuickMouseEvent* event);
     void clearConnected();
 
 private:
