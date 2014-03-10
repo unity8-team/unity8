@@ -35,7 +35,7 @@ Showable {
     property string profile: indicatorProfile
 
     property real hintValue: panelHeight + menuContent.headerHeight
-    property alias hintInterval: showDragHandle.hintRollbackInterval
+    property alias hintPersistencyDuration: showDragHandle.hintPersistencyDuration
     property int lockThreshold: openedHeight / 2
     property bool fullyOpened: height == openedHeight
     property bool partiallyOpened: height > panelHeight && !fullyOpened

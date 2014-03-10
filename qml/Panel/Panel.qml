@@ -105,7 +105,7 @@ Item {
         openedHeight: parent.height + (pinnedMode ? 0 : root.panelHeight)
         pinnedMode: !fullscreenMode
         overFlowWidth: search.state=="hidden" ? parent.width : parent.width - search.width
-        hintInterval: 3000
+        hintPersistencyDuration: 3000
     }
 
     PanelSeparatorLine {

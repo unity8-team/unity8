@@ -46,7 +46,7 @@ Item {
         profile: "test1"
 
         openedHeight: parent.height - click_me.height
-        hintInterval: 1000
+        hintPersistencyDuration: 1000
         hintValue: units.gu(10)
     }
 
@@ -86,7 +86,7 @@ Item {
         when: windowShown
 
         function init() {
-            indicators.hintInterval = 50;
+            indicators.hintPersistencyDuration = 50;
             indicators.initialise();
 
             indicators.hide();
@@ -136,7 +136,7 @@ Item {
         }
 
         function test_hint() {
-            indicators.hintInterval = 1000;
+            indicators.hintPersistencyDuration = 1000;
 
             var indicatorRow = findChild(indicators, "indicatorRow")
             verify(indicatorRow !== null)
@@ -153,7 +153,7 @@ Item {
 
             touchRelease(indicators, indicatorPosition.x, indicatorPosition.y);
             tryCompare(indicators, "height", indicators.hintValue + indicators.panelHeight);
-            wait(indicators.hintInterval / 2);
+            wait(indicators.hintPersistencyDuration / 2);
             tryCompare(indicators, "height", indicators.hintValue + indicators.panelHeight);
 
             // wait until fully closed

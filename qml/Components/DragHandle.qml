@@ -68,13 +68,16 @@ EdgeDragArea {
     }
 
     function resetHint() {
-        if (hintRollback.running) {
-            hintRollback.restart();
+        if (rollbackDragTimer.running) {
+            rollbackDragTimer.restart();
         }
     }
 
     property real hintDisplacement: 0
-    property alias hintRollbackInterval: hintRollback.interval
+
+    // If the drag is being rolled back, this property defines for how long it will stick around
+    // on hint value before completing the rollback
+    property alias hintPersistencyDuration: rollbackDragTimer.interval
     SmoothedAnimation {
         id: hintingAnimation
         target: parent
@@ -86,7 +89,7 @@ EdgeDragArea {
     }
 
     Timer {
-        id: hintRollback
+        id: rollbackDragTimer
         interval: 0
         onTriggered: {
             d.rollbackDrag();
@@ -124,7 +127,7 @@ EdgeDragArea {
             }
 
             // if there is no rollback interval or this is the first touch;
-            if (hintRollbackInterval <= 0 || touchSinceRollback == 1) {
+            if (hintPersistencyDuration <= 0 || touchSinceRollback == 1) {
                 // we should not go behind hintingAnimation's current value.
                 if (Direction.isPositive(direction)) {
                     if (dragParent[targetProp] + step < hintingAnimation.to) {
@@ -150,11 +153,11 @@ EdgeDragArea {
             if (dragEvaluator.shouldAutoComplete()) {
                 completeDrag();
             } else {
-                if (hintRollbackInterval > 0) {
+                if (hintPersistencyDuration > 0) {
                     // If the property is beyond the hint displacement then go back to hint
                     if (dragParent[targetProp] > hintingAnimation.to || touchSinceRollback == 1) {
                         hintingAnimation.start();
-                        hintRollback.start();
+                        rollbackDragTimer.start();
                     } else { // otherwise rollback.
                         d.rollbackDrag();
                     }
@@ -167,7 +170,7 @@ EdgeDragArea {
 
         function completeDrag() {
             touchSinceRollback = 0;
-            hintRollback.stop();
+            rollbackDragTimer.stop();
 
             if (dragParent.shown) {
                 dragParent.hide();
@@ -178,7 +181,7 @@ EdgeDragArea {
 
         function rollbackDrag() {
             touchSinceRollback = 0;
-            hintRollback.stop();
+            rollbackDragTimer.stop();
 
             if (dragParent.shown) {
                 dragParent.show();
@@ -216,10 +219,10 @@ EdgeDragArea {
                 d.onFinishedRecognizedGesture();
             } else /* d.previousStatus === DirectionalDragArea.Undecided */ {
                 // Gesture was rejected.
-                if (hintRollbackInterval > 0) {
+                if (hintPersistencyDuration > 0) {
                     // start timer on release
                     hintingAnimation.start();
-                    hintRollback.start();
+                    rollbackDragTimer.start();
                 } else {
                     d.rollbackDrag();
                 }
@@ -231,7 +234,7 @@ EdgeDragArea {
                 d.touchSinceRollback++;
             }
 
-            if (!hintRollback.running) {
+            if (!rollbackDragTimer.running) {
                 if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
                         d.previousStatus === undefined) {
                     dragEvaluator.reset();
@@ -245,7 +248,7 @@ EdgeDragArea {
                 if (d.previousStatus === DirectionalDragArea.WaitingForTouch ||
                         d.previousStatus === undefined) {
                     // stop rollback timer as we've started dragging again.
-                    hintRollback.stop();
+                    rollbackDragTimer.stop();
                 }
             }
         }
