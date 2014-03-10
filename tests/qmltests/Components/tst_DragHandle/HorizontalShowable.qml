@@ -27,6 +27,7 @@ Showable {
 
     property bool stretch
     property real hintDisplacement
+    property real hintPersistencyDuration
 
     onStretchChanged: {
         if (stretch) {
@@ -64,6 +65,7 @@ Showable {
         stretch: showable.stretch
         maxTotalDragDistance: showable.parent.width
         hintDisplacement: showable.hintDisplacement
+        hintPersistencyDuration: showable.hintPersistencyDuration
 
         onStatusChanged: {
             if (status === DirectionalDragArea.Recognized) {
@@ -87,6 +89,7 @@ Showable {
         stretch: showable.stretch
         maxTotalDragDistance: showable.parent.width
         hintDisplacement: showable.hintDisplacement
+        hintPersistencyDuration: showable.hintPersistencyDuration
 
         onStatusChanged: {
             if (status === DirectionalDragArea.Recognized) {

@@ -36,6 +36,7 @@ Item {
 
     property bool stretch: false
     property real hintDisplacement: 0
+    property real hintPersistencyDuration: 0
 
     Item {
         id: baseItem
@@ -46,12 +47,14 @@ Item {
             onDragHandleRecognizedGesture: { root.dragHandle = dragHandle }
             stretch: root.stretch
             hintDisplacement: root.hintDisplacement
+            hintPersistencyDuration: root.hintPersistencyDuration
         }
 
         HorizontalShowable {
             onDragHandleRecognizedGesture: { root.dragHandle = dragHandle }
             stretch: root.stretch
             hintDisplacement: root.hintDisplacement
+            hintPersistencyDuration: root.hintPersistencyDuration
         }
 
         // Visually mark drag threshold
@@ -126,6 +129,7 @@ Item {
     }
 
     Row {
+        objectName: "buttonRow"
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: units.gu(1)
@@ -144,6 +148,18 @@ Item {
                     root.hintDisplacement = 0;
                 } else {
                     root.hintDisplacement = units.gu(6);
+                }
+            }
+        }
+
+        Button {
+            enabled: root.hintDisplacement > 0
+            text: root.hintDisplacement > 0 ? root.hintPersistencyDuration > 0 ? "persistant hint" : "non-persistant hint" : "n/a"
+            onClicked: {
+                if (root.hintPersistencyDuration > 0) {
+                    root.hintPersistencyDuration = 0;
+                } else {
+                    root.hintPersistencyDuration = 1000;
                 }
             }
         }

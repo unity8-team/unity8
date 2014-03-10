@@ -127,18 +127,26 @@ EdgeDragArea {
             }
 
             // if there is no rollback interval or this is the first touch;
-            if (hintPersistencyDuration <= 0 || touchSinceRollback == 1) {
+            if ((hintDisplacement > 0 && hintPersistencyDuration <= 0) || touchSinceRollback == 1) {
                 // we should not go behind hintingAnimation's current value.
                 if (Direction.isPositive(direction)) {
                     if (dragParent[targetProp] + step < hintingAnimation.to) {
-                        step = hintingAnimation.to - dragParent[targetProp];
+                        if (!hintingAnimation.running) {
+                            step = hintingAnimation.to - dragParent[targetProp];
+                        } else {
+                            step = 0;
+                        }
                     } else if (hintingAnimation.running) {
                         // stop hint animation if we've gone beyond the hintDisplacement
                         hintingAnimation.stop();
                     }
                 } else {
                     if (dragParent[targetProp] + step > hintingAnimation.to) {
-                        step = hintingAnimation.to - dragParent[targetProp];
+                        if (!hintingAnimation.running) {
+                            step = hintingAnimation.to - dragParent[targetProp];
+                        } else {
+                            step = 0;
+                        }
                     } else if (hintingAnimation.running) {
                         // stop hint animation if we've gone beyond the hintDisplacement
                         hintingAnimation.stop();
@@ -153,7 +161,7 @@ EdgeDragArea {
             if (dragEvaluator.shouldAutoComplete()) {
                 completeDrag();
             } else {
-                if (hintPersistencyDuration > 0) {
+                if (hintDisplacement > 0 && hintPersistencyDuration > 0) {
                     // If the property is beyond the hint displacement then go back to hint
                     if (dragParent[targetProp] > hintingAnimation.to || touchSinceRollback == 1) {
                         hintingAnimation.start();
@@ -219,7 +227,7 @@ EdgeDragArea {
                 d.onFinishedRecognizedGesture();
             } else /* d.previousStatus === DirectionalDragArea.Undecided */ {
                 // Gesture was rejected.
-                if (hintPersistencyDuration > 0) {
+                if (hintDisplacement > 0 && hintPersistencyDuration > 0) {
                     // start timer on release
                     hintingAnimation.start();
                     rollbackDragTimer.start();

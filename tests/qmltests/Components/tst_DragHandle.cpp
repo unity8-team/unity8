@@ -102,6 +102,7 @@ void tst_DragHandle::init()
 {
     m_view = createView();
     m_view->setSource(QUrl::fromLocalFile(TEST_DIR"/tst_DragHandle.qml"));
+
     m_view->show();
     QVERIFY(QTest::qWaitForWindowExposed(m_view));
     QVERIFY(m_view->rootObject() != 0);
@@ -109,6 +110,12 @@ void tst_DragHandle::init()
 
     m_fakeTimer = new FakeTimer;
     m_fakeTimeSource.reset(new FakeTimeSource);
+
+    // disable the button row so that it wont steal mouse events.
+    QQuickItem *buttonRow =  m_view->rootObject()->findChild<QQuickItem*>("buttonRow");
+    if (buttonRow) {
+        buttonRow->setEnabled(false);
+    }
 }
 
 void tst_DragHandle::cleanup()
