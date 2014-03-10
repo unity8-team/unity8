@@ -65,6 +65,7 @@ private Q_SLOTS:
     void stretch_vertical();
     void hintingAnimation();
     void hintingAnimation_dontRestartAfterFinishedAndStillPressed();
+    void persistent_hintingAnimation();
 
 
 private:
@@ -489,6 +490,44 @@ void tst_DragHandle::hintingAnimation_dontRestartAfterFinishedAndStillPressed()
 
     // parentItem height shouldn't have changed at all
     QVERIFY(parentHeightChangedSpy.isEmpty());
+}
+
+/*
+    Set DragHandle.hintDisplacement & DragHandle.hintPersistencyDuration to a value bigger than zero.
+    Then lay a finger on the DragHandle.
+    The expected behavior is that it will move or strech its parent Showable
+    by hintDisplacement pixels and remain at that position for DragHandle.hintPersistencyDuration ms when
+    finger is removed.
+ */
+void tst_DragHandle::persistent_hintingAnimation()
+{
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    qreal hintPersistencyDuration = 200.0;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+
+    QCOMPARE(parentItem->height(), 0.0);
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // Pressing causes the Showable to be stretched by hintDisplacement pixels
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+
+    // Releasing causes the Showable to shrink back to 0 pixels.
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+    QTest::qWait(hintPersistencyDuration/2);
+    QCOMPARE(parentItem->height(), hintDisplacement);
+    tryCompare([&](){ return parentItem->height(); }, 0.0);
+
+    QCOMPARE(parentItem->property("shown").toBool(), false);
 }
 
 QTEST_MAIN(tst_DragHandle)
