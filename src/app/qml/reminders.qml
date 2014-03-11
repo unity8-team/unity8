@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components.ListItems 0.1
 //import "components"
 import "ui"
@@ -134,6 +135,7 @@ MainView {
         if (!accountService.objectHandle) {
             switch (accounts.count) {
             case 0:
+                PopupUtils.open(noAccountDialog)
                 print("No account available! Please setup an account in the system settings");
                 break;
             case 1:
@@ -273,5 +275,14 @@ MainView {
         function clear() {
             source = "";
         }
+    }
+
+    Component {
+         id: noAccountDialog
+         Dialog {
+             id: noAccount
+             title: i18n.tr("No account available")
+             text: i18n.tr("Please setup an account in the system settings")
+         }
     }
 }
