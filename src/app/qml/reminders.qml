@@ -278,11 +278,16 @@ MainView {
     }
 
     Component {
-         id: noAccountDialog
-         Dialog {
-             id: noAccount
-             title: i18n.tr("No account available")
-             text: i18n.tr("Please setup an account in the system settings")
-         }
-    }
+        id: noAccountDialog
+        Dialog {
+            id: noAccount
+            title: i18n.tr("No account available")
+            text: i18n.tr("Please setup an account in the system settings")
+            Button {
+                text: i18n.tr("Open account settings")
+                color: UbuntuColors.orange
+                onClicked: Qt.openUrlExternally("settings:///system/online-accounts") 
+            }
+        }
+   }
 }
