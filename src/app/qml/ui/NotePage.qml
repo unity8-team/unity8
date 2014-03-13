@@ -26,18 +26,10 @@ import "../components"
 
 Page {
     id: root
-    title: note.title
-    property var note
-    property bool noteReady: false
+    title: noteView.title
+    property alias note: noteView.note
 
-    Component.onCompleted: {
-        noteReady=false;
-        NotesStore.refreshNoteContent(note.guid)
-    }
-    Connections{ //set noteReady when note is fetched
-        target: NotesStore
-        onNoteChanged: noteReady=true;
-    }
+    signal editNote(var note)
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -61,52 +53,17 @@ Page {
             text: i18n.tr("Edit")
             iconName: "edit"
             onTriggered: {
-                pagestack.pop()
-                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"), {note: root.note})
+                root.editNote(root.note)
             }
         }
     }
 
-    ActivityIndicator {
-        id: activityIndicator
-        running: !noteReady
-        visible: running
-        anchors.centerIn: parent
-    }
-    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
-    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
-    // another flickable prevents this from happening.
-    Flickable {
-        visible: noteReady
-        anchors { fill: parent}
-        contentHeight: height
+    NoteView {
+        id: noteView
+        anchors.fill: parent
 
-        UbuntuWebView {
-            id: noteTextArea
-            anchors { fill: parent}
-            property string html: note.htmlContent
-            onHtmlChanged: {
-                loadHtml(html, "file:///")
-            }
-
-            experimental.preferences.navigatorQtObjectEnabled: true
-            experimental.preferredMinimumContentsWidth: root.width
-            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            experimental.onMessageReceived: {
-                var data = null;
-                try {
-                    data = JSON.parse(message.data);
-                } catch (error) {
-                    print("Failed to parse message:", message.data, error);
-                }
-
-                switch (data.type) {
-                case "checkboxChanged":
-                    note.markTodo(data.todoId, data.checked);
-                    NotesStore.saveNote(note.guid);
-                    break;
-                }
-            }
+        onEditNote: {
+            root.editNote(note) ;
         }
     }
 }

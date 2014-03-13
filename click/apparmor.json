@@ -1,6 +1,9 @@
 {
     "policy_groups": [
-        "networking", "accounts"
+        "networking",
+        "accounts",
+        "content_exchange",
+        "audio"
     ],
     "policy_version": 1
 }

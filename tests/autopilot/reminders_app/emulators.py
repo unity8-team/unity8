@@ -14,9 +14,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
+from autopilot import logging as autopilot_logging
 from ubuntuuitoolkit import emulators as toolkit_emulators
 from time import sleep
 
+logger = logging.getLogger(__name__)
 
 class MainView(toolkit_emulators.MainView):
 
@@ -34,14 +38,8 @@ class MainView(toolkit_emulators.MainView):
             tries = tries - 1
         return items
 
-    def get_evernote_account(self):
-        return self.wait_select_single(
-            "Standard", objectName="EvernoteAccount")
-
-    def get_accountselectorpage(self):
-        return self.wait_select_single(
-            "Page", objectName="Accountselectorpage")
-
+    @autopilot_logging.log_action(logger.info)
     def get_notespageListview(self):
+        """Get notes page list view """
         return self.wait_select_single(
             "QQuickListView", objectName="notespageListview")

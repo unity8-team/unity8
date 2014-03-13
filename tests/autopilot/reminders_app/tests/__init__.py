@@ -42,7 +42,7 @@ def get_module_include_path():
             '..',
             '..',
             '..',
-            'builddir/src/plugin/')
+            'builddir/src/plugin/Evernote')
         )
 
 
@@ -55,8 +55,8 @@ class RemindersAppTestCase(AutopilotTestCase):
     else:
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
-    local_location = "../../src/app/qml/reminders-app.qml"
-    installed_location = "/usr/share/reminders-app/qml/reminders-app.qml"
+    local_location = "../../src/app/qml/reminders.qml"
+    installed_location = "/usr/share/reminders/qml/reminders.qml"
 
     def setUp(self):
         self.pointing_device = Pointer(self.input_device_class.create())
@@ -69,9 +69,14 @@ class RemindersAppTestCase(AutopilotTestCase):
             #disabling for now
             #self.addCleanup(os.system("start maliit-server"))
 
-        if os.path.exists(self.local_location):
-            self.launch_test_local()
-        elif os.path.exists(self.installed_location):
+        #if os.path.exists(self.local_location):
+            #self.launch_test_local()
+        #elif os.path.exists(self.installed_location):
+            #self.launch_test_installed()
+        #else:
+            #self.launch_test_click()
+
+        if os.path.exists(self.installed_location):
             self.launch_test_installed()
         else:
             self.launch_test_click()
@@ -81,7 +86,7 @@ class RemindersAppTestCase(AutopilotTestCase):
             base.get_qmlscene_launch_command(),
             "-I", get_module_include_path(),
             self.local_location,
-            "--desktop_file_hint=/home/phablet/reminders-app/"
+            "--desktop_file_hint=/home/phablet/reminders/"
             "reminders-app.desktop",
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
@@ -91,7 +96,7 @@ class RemindersAppTestCase(AutopilotTestCase):
             base.get_qmlscene_launch_command(),
             self.installed_location,
             "--desktop_file_hint=/usr/share/applications/"
-            "reminders-app.desktop",
+            "reminders.desktop",
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 

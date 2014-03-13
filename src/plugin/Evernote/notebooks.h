@@ -48,6 +48,7 @@ public slots:
 
 private slots:
     void notebookAdded(const QString &guid);
+    void notebookRemoved(const QString &guid);
     void noteCountChanged();
 
 private:

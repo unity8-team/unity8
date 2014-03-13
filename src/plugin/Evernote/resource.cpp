@@ -24,8 +24,10 @@
 #include <QStandardPaths>
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QFileInfo>
 
 Resource::Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent):
+    QObject(parent),
     m_hash(hash),
     m_fileName(fileName),
     m_type(type)
@@ -46,17 +48,18 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
 }
 
 Resource::Resource(const QString &path, QObject *parent):
-    m_filePath(path)
+    QObject(parent)
 {
+
     QFile file(path);
     if (!file.open(QFile::ReadOnly)) {
         qWarning() << "Cannot open file for reading...";
         return;
     }
-
     QByteArray fileContent = file.readAll();
-    m_hash = QCryptographicHash::hash(fileContent, QCryptographicHash::Md5).toHex();
+    file.close();
 
+    m_hash = QCryptographicHash::hash(fileContent, QCryptographicHash::Md5).toHex();    
     m_fileName = path.split('/').last();
     if (m_fileName.endsWith(".png")) {
         m_type = "image/png";
@@ -65,6 +68,22 @@ Resource::Resource(const QString &path, QObject *parent):
     } else {
         qWarning() << "cannot determine mime type of file" << m_fileName;
     }
+
+    m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + m_hash + "." + m_type.split('/').last();
+
+    QFile copy(m_filePath);
+    if (!copy.exists()) {
+
+        if (!copy.open(QFile::WriteOnly)) {
+            qWarning() << "error writing file" << m_filePath;
+            return;
+        }
+        copy.write(fileContent);
+        copy.close();
+    }
+
+
+    qDebug() << "created resource" << m_hash;
 }
 
 QString Resource::hash() const

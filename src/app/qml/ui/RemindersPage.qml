@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -37,6 +37,15 @@ Page {
         ToolbarSpacer { }
 
         ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: "contacts-app-symbolic"
+            visible: accounts.count > 1
+            onTriggered: {
+                openAccountPage(true);
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Add reminder")
             iconName: "add"
             onTriggered: {
@@ -53,13 +62,18 @@ Page {
 
         anchors.fill: parent
 
-        delegate: Subtitled {
-            text: '<b>Name:</b> ' + model.title
-            subText: '<b>Date:</b> ' + Qt.formatDateTime(model.created) +
-                     (model.reminderDone ? " - <b>Done:</b> " + Qt.formatDate(model.reminderDoneTime) : "")
+        delegate: RemindersDelegate {
+            note: notes.note(guid)
         }
 
         model: notes
+
+        section.criteria: ViewSection.FullString
+        section.property: "reminderTimeString"
+        section.delegate: Standard {
+            height: units.gu(3)
+            text: section
+        }
     }
 
 }

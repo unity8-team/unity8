@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
+ *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
 
 #include "evernoteconnection.h"
@@ -54,8 +55,8 @@ QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
 EvernoteConnection::EvernoteConnection(QObject *parent) :
     QObject(parent),
-    m_currentJob(0),
-    m_useSSL(true)
+    m_useSSL(true),
+    m_currentJob(0)
 {
     qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
     setupUserStore();
@@ -160,6 +161,13 @@ void EvernoteConnection::setToken(const QString &token)
     if (token != m_token) {
         m_token = token;
         emit tokenChanged();
+    }
+}
+
+void EvernoteConnection::clearToken()
+{
+    if (!EvernoteConnection::instance()->token().isEmpty()) {
+        setToken(QString());
     }
 }
 

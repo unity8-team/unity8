@@ -18,6 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from time import sleep
 
 class TestMainWindow(RemindersAppTestCase):
 
@@ -26,27 +27,16 @@ class TestMainWindow(RemindersAppTestCase):
 
         self.assertThat(self.main_view.visible, Eventually(Equals(True)))
 
-    def test_logon_to_Evernote(self):
-        # Click on existing Evernote account
-        # (the account must have be added before running tests)
-        accountselectorPage = self.main_view.get_accountselectorpage()
-        self.assertThat(accountselectorPage.visible, Eventually(Equals(True)))
-        Evernoteaccount = self.main_view.get_evernote_account()
-
-        self.pointing_device.click_object(Evernoteaccount)
-
-        # verify we are logged on
-        notesTab = self.main_view.switch_to_tab("NotesTab")
-        self.assertThat(notesTab.visible, Eventually(Equals(True)))
-
     def test_download_list_of_notebooks(self):
         """test to check whether downloading a list from Notebooks from
            Evernote is successful or not """
-        Evernoteaccount = self.main_view.get_evernote_account()
-        self.pointing_device.click_object(Evernoteaccount)
+        #Evernoteaccount = self.main_view.get_evernote_account()
+        #self.pointing_device.click_object(Evernoteaccount)
 
+        sleep(10)
         notebookTab = self.main_view.switch_to_tab("NotebookTab")
         self.assertThat(notebookTab.visible, Eventually(Equals(True)))
 
         notebookslistview = self.main_view.get_notespageListview()
         self.assertThat(notebookslistview.count,  Eventually(GreaterThan(0)))
+

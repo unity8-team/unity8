@@ -77,6 +77,7 @@ void Notebook::setPublished(bool published)
 
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
+    Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
         m_noteCount++;
         emit noteCountChanged();
@@ -85,6 +86,7 @@ void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 
 void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 {
+    Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
         m_noteCount--;
         emit noteCountChanged();

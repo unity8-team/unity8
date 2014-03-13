@@ -38,8 +38,8 @@ public:
 
     void setRichText(const QString &richText);
 
-    // Will insert the file at position in the plaintext string
-    void attachFile(int position, const QString &file, const QString &hash, const QString &type);
+    // Will insert the file described by hash at position in the plaintext string
+    void attachFile(int position, const QString &hash, const QString &type);
 
     void markTodo(const QString &todoId, bool checked);
 
@@ -55,6 +55,7 @@ private:
 
     static QStringList s_commonTags;
     static QStringList s_argumentBlackListTags;
+    static int s_richtextContentWidth;
 
 };
 

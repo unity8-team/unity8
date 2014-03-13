@@ -44,6 +44,8 @@ public:
     bool onlySearchResults() const;
     void setOnlySearchResults(bool onlySearchResults);
 
+    Q_INVOKABLE Note* note(const QString &guid);
+
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 

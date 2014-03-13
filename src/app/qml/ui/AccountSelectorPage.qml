@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -27,44 +27,35 @@ Page {
     objectName: "Accountselectorpage"
     title: "Select Evernote account"
 
-    AccountServiceModel {
-        id: accounts
-        // Use the Evernote service
-        service: "evernote"
-    }
+    property alias accounts: listView.model
+    property bool isChangingAccount
+
+    signal accountSelected(var handle)
 
     Column {
         anchors { fill: parent; margins: units.gu(2) }
         spacing: units.gu(1)
 
         ListView {
+            id: listView
             width: parent.width
             height: units.gu(10)
             model: accounts
+            currentIndex: -1
+
             delegate: Standard {
                 objectName: "EvernoteAccount"
                 text: displayName
-
-                // FIXME: remove this Item wrapper once Ubuntu ListItems are fixed to hold non-visual items
-                Item {
-                    AccountService {
-                        id: accountService
-                        objectHandle: accountServiceHandle
-                        // Print the access token on the console
-                        onAuthenticated: {
-                            console.log("Access token is " + reply.AccessToken)
-                            EvernoteConnection.token = reply.AccessToken;
-                            pagestack.pop();
-                        }
-                        onAuthenticationError: { console.log("Authentication failed, code " + error.code) }
-                    }
-                }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: accountService.authenticate(null)
+                    onClicked: root.accountSelected(accountServiceHandle)
                 }
             }
         }
+    }
 
+    tools: ToolbarItems {
+        locked: !isChangingAccount
+        opened: isChangingAccount
     }
 }

@@ -144,6 +144,22 @@ void Note::setReminderOrder(qint64 reminderOrder)
     }
 }
 
+bool Note::hasReminderTime() const
+{
+    return !m_reminderTime.isNull();
+}
+
+void Note::setHasReminderTime(bool hasReminderTime)
+{
+    if (hasReminderTime && m_reminderTime.isNull()) {
+        m_reminderTime = QDateTime::currentDateTime();
+        emit reminderTimeChanged();
+    } else if (!hasReminderTime && !m_reminderTime.isNull()) {
+        m_reminderTime = QDateTime();
+        emit reminderTimeChanged();
+    }
+}
+
 QDateTime Note::reminderTime() const
 {
     return m_reminderTime;
@@ -167,7 +183,36 @@ void Note::setReminderDone(bool reminderDone)
     if (reminderDone && m_reminderDoneTime.isNull()) {
         m_reminderDoneTime = QDateTime::currentDateTime();
         emit reminderDoneChanged();
+    } else if (!reminderDone && !m_reminderDoneTime.isNull()) {
+        m_reminderDoneTime = QDateTime();
+        emit reminderDoneChanged();
     }
+}
+
+QString Note::reminderTimeString() const
+{
+    if (m_reminderOrder == 0) {
+        return QString();
+    }
+
+    QDate reminderDate = m_reminderTime.date();
+    QDate today = QDate::currentDate();
+    if (reminderDate < today) {
+        return QStringLiteral("Overdue");
+    }
+    if (reminderDate == today) {
+        return QStringLiteral("Today");
+    }
+    if (reminderDate == today.addDays(1)) {
+        return QStringLiteral("Tomorrow");
+    }
+    if (reminderDate <= today.addDays(7)) {
+        return QStringLiteral("Next week");
+    }
+    if (reminderDate <= today.addDays(14)) {
+        return QStringLiteral("In two weeks");
+    }
+    return QStringLiteral("Later");
 }
 
 QDateTime Note::reminderDoneTime() const
@@ -242,9 +287,20 @@ void Note::markTodo(const QString &todoId, bool checked)
 
 void Note::attachFile(int position, const QUrl &fileName)
 {
+    QFile importedFile(fileName.path());
+    if (!importedFile.exists()) {
+        qWarning() << "File doesn't exist. Cannot attach.";
+        return;
+    }
+
     Resource *resource = addResource(fileName.path());
-    m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
+    m_content.attachFile(position, resource->hash(), resource->type());
     emit contentChanged();
+
+    // Cleanup imported file.
+    // TODO: If the app should be extended to allow attaching other files, and we somehow
+    // can browse to unconfined files, this needs to be made conditional to not delete those files!
+    importedFile.remove();
 }
 
 void Note::format(int startPos, int endPos, TextFormat::Format format)

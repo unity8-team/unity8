@@ -62,6 +62,7 @@ NotesStore *NotesStore::instance()
 
 int NotesStore::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_notes.count();
 }
 
@@ -80,6 +81,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->reminder();
     case RoleReminderTime:
         return m_notes.at(index.row())->reminderTime();
+    case RoleReminderTimeString:
+        return m_notes.at(index.row())->reminderTimeString();
     case RoleReminderDone:
         return m_notes.at(index.row())->reminderDone();
     case RoleReminderDoneTime:
@@ -107,6 +110,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleTitle, "title");
     roles.insert(RoleReminder, "reminder");
     roles.insert(RoleReminderTime, "reminderTime");
+    roles.insert(RoleReminderTimeString, "reminderTimeString");
     roles.insert(RoleReminderDone, "reminderDone");
     roles.insert(RoleReminderDoneTime, "reminderDoneTime");
     roles.insert(RoleEnmlContent, "enmlContent");
@@ -157,9 +161,19 @@ void NotesStore::expungeNotebook(const QString &guid)
 
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
 {
-    FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
-    connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    if (EvernoteConnection::instance()->token().isEmpty()) {
+        beginResetModel();
+        foreach (Note *note, m_notes) {
+            emit noteRemoved(note->guid(), note->notebookGuid());
+            note->deleteLater();
+        }
+        m_notes.clear();
+        endResetModel();
+    } else {
+        FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
+        connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results)
@@ -169,7 +183,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         return;
     }
 
-    for (int i = 0; i < results.notes.size(); ++i) {
+    for (unsigned int i = 0; i < results.notes.size(); ++i) {
         evernote::edam::NoteMetadata result = results.notes.at(i);
         Note *note = m_notesHash.value(QString::fromStdString(result.guid));
         bool newNote = note == 0;
@@ -187,6 +201,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             note->setIsSearchResult(true);
         }
 
+        QDateTime reminderTime;
+        if (result.attributes.reminderTime > 0) {
+            reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
+        }
+        note->setReminderTime(reminderTime);
         QDateTime reminderDoneTime;
         if (result.attributes.reminderDoneTime > 0) {
             reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
@@ -222,11 +241,15 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     }
 
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
+    if (!note) {
+        qWarning() << "can't find note for this update... ignoring...";
+        return;
+    }
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
 
     // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
-    for (int i = 0; i < result.resources.size(); ++i) {
+    for (unsigned int i = 0; i < result.resources.size(); ++i) {
 
         evernote::edam::Resource resource = result.resources.at(i);
 
@@ -240,6 +263,11 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     note->setEnmlContent(QString::fromStdString(result.content));
     note->setReminderOrder(result.attributes.reminderOrder);
+    QDateTime reminderTime;
+    if (result.attributes.reminderTime > 0) {
+        reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
+    }
+    note->setReminderTime(reminderTime);
     QDateTime reminderDoneTime;
     if (result.attributes.reminderDoneTime > 0) {
         reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
@@ -253,9 +281,17 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
 void NotesStore::refreshNotebooks()
 {
-    FetchNotebooksJob *job = new FetchNotebooksJob();
-    connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    if (EvernoteConnection::instance()->token().isEmpty()) {
+        foreach (Notebook *notebook, m_notebooks) {
+            emit notebookRemoved(notebook->guid());
+            notebook->deleteLater();
+        }
+        m_notebooks.clear();
+    } else {
+        FetchNotebooksJob *job = new FetchNotebooksJob();
+        connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
 void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results)
@@ -265,7 +301,7 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         return;
     }
 
-    for (int i = 0; i < results.size(); ++i) {
+    for (unsigned int i = 0; i < results.size(); ++i) {
         evernote::edam::Notebook result = results.at(i);
         Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
         bool newNoteNotebook = notebook == 0;

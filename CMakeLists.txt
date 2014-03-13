@@ -7,13 +7,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wa
 # Standard install paths
 include(GNUInstallDirs)
 
-# components PATH
-execute_process(
-    COMMAND qmake -query QT_INSTALL_QML
-    OUTPUT_VARIABLE QT_IMPORTS_DIR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
 option(INSTALL_TESTS "Install the tests on make install" on)
 option(CLICK_MODE "Installs to a contained location" off)
 
@@ -23,21 +16,31 @@ set(ICON ${APP_NAME}.png)
 set(AUTOPILOT_DIR reminders)
 set(APP_HARDCODE reminders)
 set(MAIN_QML ${APP_HARDCODE}.qml)
+set(EXEC "reminders")
 
 if(CLICK_MODE)
     if(NOT DEFINED BZR_SOURCE)
 		set(BZR_SOURCE "lp:${APP_HARDCODE}")
 		message("-- Setting BZR_SOURCE to ${BZR_SOURCE}")
     endif(NOT DEFINED BZR_SOURCE)
-    STRING(REPLACE "/usr/" "/"  QT_IMPORTS_DIR  ${QT_IMPORTS_DIR})
+    execute_process(
+		COMMAND dpkg-architecture -qDEB_HOST_MULTIARCH
+        OUTPUT_VARIABLE ARCH_TRIPLET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
     set(CMAKE_INSTALL_PREFIX /)
-    set(CMAKE_INSTALL_BINDIR /)
+    set(QT_IMPORTS_DIR "/lib/${ARCH_TRIPLET}")
+	set(BIN_DIR /lib/${ARCH_TRIPLET}/bin)
 	set(DATA_DIR /)
-	set(EXEC "qmlscene $@ -I .${QT_IMPORTS_DIR} qml/${MAIN_QML}")
 	set(DESKTOP_DIR ${DATA_DIR})
 else(CLICK_MODE)
+	# components PATH
+	execute_process(
+		COMMAND qmake -query QT_INSTALL_QML
+		OUTPUT_VARIABLE QT_IMPORTS_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
 	set(DATA_DIR ${CMAKE_INSTALL_DATADIR}/${APP_HARDCODE})
-	set(EXEC "qmlscene $@ ${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/qml/${MAIN_QML}")
 	set(ICON "${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/${ICON}")
 	set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
 endif(CLICK_MODE)

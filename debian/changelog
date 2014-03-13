@@ -1,8 +1,9 @@
-reminders-app (0.2ubuntu1) UNRELEASED; urgency=medium
+reminders-app (0.4) trusty; urgency=medium
 
+  [ Sergio Schvezov ]
   * Adding common cmake. 
 
- -- Sergio Schvezov <sergio.schvezov@canonical.com>  Sun, 19 Jan 2014 10:30:23 -0300
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Fri, 07 Feb 2014 19:22:48 +0100
 
 reminders-app (0.2) saucy; urgency=low
 

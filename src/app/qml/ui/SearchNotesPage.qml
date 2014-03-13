@@ -23,6 +23,10 @@ import Evernote 0.1
 import "../components"
 
 Page {
+    id: root
+
+    signal noteSelected(var note)
+
     Column {
         anchors { fill: parent; topMargin: units.gu(2); bottomMargin: units.gu(2) }
         spacing: units.gu(2)
@@ -71,7 +75,7 @@ Page {
                 content: model.plaintextContent
 
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
+                    root.noteSelected(NotesStore.note(guid))
                 }
             }
         }

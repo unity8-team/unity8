@@ -56,6 +56,13 @@ void Notes::setOnlyReminders(bool onlyReminders)
     if (m_onlyReminders != onlyReminders) {
         m_onlyReminders = onlyReminders;
         emit onlyRemindersChanged();
+        if (onlyReminders) {
+            setSortRole(NotesStore::RoleReminderTime);
+        } else {
+            setSortRole(NotesStore::RoleCreated);
+        }
+        sort(0, Qt::AscendingOrder);
+
         invalidateFilter();
     }
 }
@@ -72,6 +79,11 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
         emit onlySearchResultsChanged();
         invalidateFilter();
     }
+}
+
+Note *Notes::note(const QString &guid)
+{
+    return NotesStore::instance()->note(guid);
 }
 
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

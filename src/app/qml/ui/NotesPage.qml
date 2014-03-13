@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -23,9 +23,14 @@ import Evernote 0.1
 import "../components"
 
 Page {
-    id: notesPage
+    id: root
+
+    property var selectedNote: null
 
     property alias filter: notes.filterNotebookGuid
+
+    signal openSearch()
+    signal editNote(var note)
 
     onActiveChanged: {
         if (active) {
@@ -33,17 +38,52 @@ Page {
         }
     }
 
-    // Just for testing
     tools: ToolbarItems {
         ToolbarButton {
             text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
-                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                root.openSearch();
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: "contacts-app-symbolic"
+            visible: accounts.count > 1
+            onTriggered: {
+                openAccountPage(true);
             }
         }
 
         ToolbarSpacer { }
+
+        ToolbarButton {
+            text: i18n.tr("Delete")
+            iconName: "delete"
+            visible: root.selectedNote !== null
+            onTriggered: {
+                NotesStore.deleteNote(root.selectedNote.guid);
+            }
+        }
+        ToolbarButton {
+            text: root.selectedNote.reminder ? "Reminder (set)" : "Reminder"
+            iconName: "alarm-clock"
+            visible: root.selectedNote !== null
+            onTriggered: {
+                root.selectedNote.reminder = !root.selectedNote.reminder
+                NotesStore.saveNote(root.selectedNote.guid)
+            }
+        }
+        ToolbarButton {
+            text: i18n.tr("Edit")
+            iconName: "edit"
+            visible: root.selectedNote !== null
+            onTriggered: {
+                print("should edit note")
+                root.editNote(root.selectedNote)
+            }
+        }
 
         ToolbarButton {
             text: i18n.tr("Add note")
@@ -71,12 +111,10 @@ Page {
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
-            onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
-            }
+            Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
 
-            onPressAndHold: {
-                NotesStore.deleteNote(guid);
+            onClicked: {
+                root.selectedNote = NotesStore.note(guid);
             }
         }
     }

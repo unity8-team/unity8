@@ -32,6 +32,7 @@ Notebooks::Notebooks(QObject *parent) :
     }
 
     connect(NotesStore::instance(), SIGNAL(notebookAdded(const QString &)), SLOT(notebookAdded(const QString &)));
+    connect(NotesStore::instance(), SIGNAL(notebookRemoved(const QString &)), SLOT(notebookRemoved(const QString &)));
 }
 
 QVariant Notebooks::data(const QModelIndex &index, int role) const
@@ -52,6 +53,7 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
 
 int Notebooks::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_list.count();
 }
 
@@ -83,6 +85,13 @@ void Notebooks::notebookAdded(const QString &guid)
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
     endInsertRows();
+}
+
+void Notebooks::notebookRemoved(const QString &guid)
+{
+    beginRemoveRows(QModelIndex(), m_list.indexOf(guid), m_list.indexOf(guid));
+    m_list.removeAll(guid);
+    endRemoveRows();
 }
 
 void Notebooks::noteCountChanged()

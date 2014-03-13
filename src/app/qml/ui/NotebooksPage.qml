@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -23,7 +23,9 @@ import Evernote 0.1
 import "../components"
 
 Page {
-    id: notebooksPage
+    id: root
+
+    signal openNotebook(string title, string notebookGuid)
 
     onActiveChanged: {
         if (active) {
@@ -41,6 +43,15 @@ Page {
         }
 
         ToolbarSpacer { }
+
+        ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: "contacts-app-symbolic"
+            visible: accounts.count > 1
+            onTriggered: {
+                openAccountPage(true);
+            }
+        }
 
         ToolbarButton {
             text: i18n.tr("Add notebook")
@@ -104,7 +115,8 @@ Page {
                 shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
 
                 onClicked: {
-                    pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
+                    print("selected notebook:", model.guid)
+                    root.openNotebook(name, model.guid)
                 }
             }
         }

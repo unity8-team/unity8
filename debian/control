@@ -19,7 +19,7 @@ Section: misc
 Architecture: any
 Depends: ${misc:Depends},
          account-plugin-evernote,
-         qmlscene,
+         qtdeclarative5-accounts-plugin,
          qtdeclarative5-evernote0.1,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          qtdeclarative5-localstorage-plugin,
@@ -29,7 +29,7 @@ Description: Reminders application
  Note taking application powered by Evernote
 
 Package: qtdeclarative5-evernote0.1
-Architecture: all
+Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
 Description: Expose the Evernote API to QML applications
