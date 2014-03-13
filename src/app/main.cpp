@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
         qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
         qDebug() << "    -h|--help     Print this help.";
         qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
+        qDebug() << "    -q <qmlfile>  Give an alternative location for the main qml file.";
         return 0;
     }
 
