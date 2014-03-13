@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
+ *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
 
 #ifndef CAMERAHELPER_H
@@ -34,6 +35,8 @@ public:
     QString importLocation() const;
 
     Q_INVOKABLE bool rotate(const QString &imageFile, int angle);
+
+    Q_INVOKABLE bool removeTemp();
 };
 
 #endif
