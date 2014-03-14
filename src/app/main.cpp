@@ -46,9 +46,11 @@ int main(int argc, char *argv[])
         qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
         qDebug() << "    -h|--help     Print this help.";
         qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
+        qDebug() << "    -q <qmlfile>  Give an alternative location for the main qml file.";
         return 0;
     }
 
+    QString qmlfile;
     for (int i = 0; i < args.count(); i++) {
         if (args.at(i) == "-I" && args.count() > i + 1) {
             QString addedPath = args.at(i+1);
@@ -57,6 +59,8 @@ int main(int argc, char *argv[])
                 addedPath.prepend(QDir::currentPath());
             }
             importPathList.append(addedPath);
+        } else if (args.at(i) == "-q" && args.count() > i + 1) {
+            qmlfile = args.at(i+1);
         }
     }
 
@@ -84,13 +88,20 @@ int main(int argc, char *argv[])
     view.engine()->rootContext()->setContextProperty("accountPreference", &preferences);
 
     // load the qml file
-    QFileInfo fi("qml/reminders.qml");
-    if (fi.exists()) {
-        view.setSource(QUrl::fromLocalFile("qml/reminders.qml"));
-    } else {
-        view.setSource(QUrl::fromLocalFile("/usr/share/reminders/qml/reminders.qml"));
-    }
+    if (qmlfile.isEmpty()) {
+        QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+        paths.prepend(".");
 
+        foreach (const QString &path, paths) {
+            QFileInfo fi(path + "/qml/reminders.qml");
+            if (fi.exists()) {
+                qmlfile = path +  "/qml/reminders.qml";
+                break;
+            }
+        }
+    }
+    qDebug() << "using main qml file from:" << qmlfile;
+    view.setSource(QUrl::fromLocalFile(qmlfile));
     view.show();
 
     return a.exec();
