@@ -69,22 +69,17 @@ class RemindersAppTestCase(AutopilotTestCase):
             #disabling for now
             #self.addCleanup(os.system("start maliit-server"))
 
-        #if os.path.exists(self.local_location):
-            #self.launch_test_local()
-        #elif os.path.exists(self.installed_location):
-            #self.launch_test_installed()
-        #else:
-            #self.launch_test_click()
-
         if os.path.exists(self.installed_location):
             self.launch_test_installed()
         else:
-            self.launch_test_click()
+            self.launch_test_local()
+            #self.launch_test_click()
 
     def launch_test_local(self):
         self.app = self.launch_test_application(
-            base.get_qmlscene_launch_command(),
-            "-I", get_module_include_path(),
+#            base.get_qmlscene_launch_command(),
+            "../../builddir/src/app/reminders",
+            "-I", "../../builddir/src/plugin/",
             self.local_location,
             "--desktop_file_hint=/home/phablet/reminders/"
             "reminders-app.desktop",
@@ -93,8 +88,7 @@ class RemindersAppTestCase(AutopilotTestCase):
 
     def launch_test_installed(self):
         self.app = self.launch_test_application(
-            base.get_qmlscene_launch_command(),
-            self.installed_location,
+            "reminders",
             "--desktop_file_hint=/usr/share/applications/"
             "reminders.desktop",
             app_type='qt',

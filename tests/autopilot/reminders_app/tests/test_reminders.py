@@ -18,7 +18,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from time import sleep
 
 class TestMainWindow(RemindersAppTestCase):
 
@@ -33,7 +32,6 @@ class TestMainWindow(RemindersAppTestCase):
         #Evernoteaccount = self.main_view.get_evernote_account()
         #self.pointing_device.click_object(Evernoteaccount)
 
-        sleep(10)
         notebookTab = self.main_view.switch_to_tab("NotebookTab")
         self.assertThat(notebookTab.visible, Eventually(Equals(True)))
 

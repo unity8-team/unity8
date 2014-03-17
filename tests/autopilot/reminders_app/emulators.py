@@ -38,6 +38,18 @@ class MainView(toolkit_emulators.MainView):
             tries = tries - 1
         return items
 
+    #@autopilot_logging.log_action(logger.info)
+    #def get_evernote_account(self):
+         #"""Get Evernote account """
+        #return self.wait_select_single(
+        #"Standard", objectName="EvernoteAccount")
+
+    #@autopilot_logging.log_action(logger.info)
+    #def get_accountselectorpage(self):
+        #"""Get Account selector page  """
+        #return self.wait_select_single(
+            #"Page", objectName="Accountselectorpage")
+
     @autopilot_logging.log_action(logger.info)
     def get_notespageListview(self):
         """Get notes page list view """
