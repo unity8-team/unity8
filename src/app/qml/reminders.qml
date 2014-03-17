@@ -185,6 +185,7 @@ MainView {
 
             Tab {
                 title: i18n.tr("Notes")
+                objectName: "NotesTab"
                 page: NotesPage {
                     id: notesPage
 
@@ -210,6 +211,7 @@ MainView {
 
             Tab {
                 title: i18n.tr("Notebooks")
+                objectName: "NotebookTab"
                 page: NotebooksPage {
                     id: notebooksPage
 
