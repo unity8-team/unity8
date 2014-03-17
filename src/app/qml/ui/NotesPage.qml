@@ -99,7 +99,7 @@ Page {
     }
 
     ListView {
-        id: noteListView
+        id: notesListView
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
@@ -113,8 +113,8 @@ Page {
 
             Component.onCompleted: {
                 NotesStore.refreshNoteContent(model.guid)
-                if (index == noteListView.count - 1) {
-                    noteLoadIndicator.running = false;
+                if (index == notesListView.count - 1) {
+                    notesLoadIndicator.running = false;
                 }
             }
 
@@ -124,7 +124,7 @@ Page {
         }
 
         ActivityIndicator {
-            id: noteLoadIndicator
+            id: notesLoadIndicator
             anchors.centerIn: parent
             running: true
             visible: running
