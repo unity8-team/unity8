@@ -33,19 +33,6 @@ from reminders_app import emulators
 
 logger = logging.getLogger(__name__)
 
-
-def get_module_include_path():
-    return os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '..',
-            '..',
-            '..',
-            '..',
-            'builddir/src/plugin/Evernote')
-        )
-
-
 class RemindersAppTestCase(AutopilotTestCase):
     """A common test case class that provides several useful methods for
        reminders-app tests."""
@@ -55,8 +42,10 @@ class RemindersAppTestCase(AutopilotTestCase):
     else:
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
-    local_location = "../../src/app/qml/reminders.qml"
-    installed_location = "/usr/share/reminders/qml/reminders.qml"
+    local_location_binary = "../../src/app/reminders"
+    local_location_qml = "../../src/app/qml/reminders.qml"
+    installed_location_binary= "/usr/bin/reminders"
+    installed_location_qml = "/usr/share/reminders/qml/reminders.qml"
 
     def setUp(self):
         self.pointing_device = Pointer(self.input_device_class.create())
@@ -65,36 +54,36 @@ class RemindersAppTestCase(AutopilotTestCase):
         #turn off the OSK so it doesn't block screen elements
         if model() != 'Desktop':
             os.system("stop maliit-server")
-            #adding cleanup step seems to restart service immeadiately
-            #disabling for now
-            #self.addCleanup(os.system("start maliit-server"))
+            self.addCleanup(os.system, "start maliit-server")
 
-        if os.path.exists(self.installed_location):
+        if os.path.exists(self.local_location_qml):
+            self.launch_test_local()
+        elif os.path.exists(self.installed_location_binary):
             self.launch_test_installed()
         else:
-            self.launch_test_local()
-            #self.launch_test_click()
+            self.launch_test_click()
 
     def launch_test_local(self):
+        logger.debug("Launching via local")
         self.app = self.launch_test_application(
-#            base.get_qmlscene_launch_command(),
-            "../../builddir/src/app/reminders",
-            "-I", "../../builddir/src/plugin/",
-            self.local_location,
-            "--desktop_file_hint=/home/phablet/reminders/"
-            "reminders-app.desktop",
+            self.local_location_binary,
+            "-q " + self.local_location_qml,
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
     def launch_test_installed(self):
+        logger.debug("Launching via installation")
         self.app = self.launch_test_application(
-            "reminders",
+            self.installed_location_binary,
+            "-q " + self.installed_location_qml,
             "--desktop_file_hint=/usr/share/applications/"
             "reminders.desktop",
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
+
     def launch_test_click(self):
+        logger.debug("Launching via click")
         self.app = self.launch_click_package(
             "com.ubuntu.reminders-app",
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
