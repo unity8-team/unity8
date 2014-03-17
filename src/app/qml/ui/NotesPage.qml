@@ -99,6 +99,7 @@ Page {
     }
 
     ListView {
+        id: noteListView
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
@@ -110,11 +111,23 @@ Page {
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
-            Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
+            Component.onCompleted: {
+                NotesStore.refreshNoteContent(model.guid)
+                if (index == noteListView.count - 1) {
+                    noteLoadIndicator.running = false;
+                }
+            }
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
             }
+        }
+
+        ActivityIndicator {
+            id: noteLoadIndicator
+            anchors.centerIn: parent
+            running: true
+            visible: running
         }
     }
 }
