@@ -26,6 +26,7 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickView>
 #include <QtQml/QtQml>
+#include <QLibrary>
 
 #include <QDebug>
 
@@ -61,6 +62,21 @@ int main(int argc, char *argv[])
             importPathList.append(addedPath);
         } else if (args.at(i) == "-q" && args.count() > i + 1) {
             qmlfile = args.at(i+1);
+        }
+    }
+
+    if (args.contains(QLatin1String("-testability")) || getenv("QT_LOAD_TESTABILITY")) {
+        QLibrary testLib(QLatin1String("qttestability"));
+        if (testLib.load()) {
+            typedef void (*TasInitialize)(void);
+            TasInitialize initFunction = (TasInitialize)testLib.resolve("qt_testability_init");
+            if (initFunction) {
+                initFunction();
+            } else {
+                qCritical("Library qttestability resolve failed!");
+            }
+        } else {
+            qCritical("Library qttestability load failed!");
         }
     }
 
