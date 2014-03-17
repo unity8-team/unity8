@@ -105,6 +105,7 @@ Page {
         }
 
         ListView {
+            id: notebooksListView
             model: notebooks
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height
@@ -118,6 +119,19 @@ Page {
                     print("selected notebook:", model.guid)
                     root.openNotebook(name, model.guid)
                 }
+
+                Component.onCompleted: {
+                    if (index == notebooksListView.count - 1) {
+                        notebooksLoadIndicator.running = false;
+                    }
+                }
+            }
+
+            ActivityIndicator {
+                id: notebooksLoadIndicator
+                anchors.centerIn: parent
+                running: true
+                visible: running
             }
         }
 

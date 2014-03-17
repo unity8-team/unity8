@@ -59,11 +59,17 @@ Page {
     }
 
     ListView {
-
+        id: remindersListView
         anchors.fill: parent
 
         delegate: RemindersDelegate {
             note: notes.note(guid)
+
+            Component.onCompleted: {
+                if (index == remindersListView.count - 1) {
+                    remindersLoadIndicator.running = false;
+                }
+            }
         }
 
         model: notes
@@ -73,6 +79,13 @@ Page {
         section.delegate: Standard {
             height: units.gu(3)
             text: section
+        }
+
+        ActivityIndicator {
+            id: remindersLoadIndicator
+            anchors.centerIn: parent
+            running: true
+            visible: running
         }
     }
 
