@@ -29,7 +29,7 @@ from ubuntuuitoolkit import (
     emulators as toolkit_emulators
 )
 
-from reminders_app import emulators
+from reminders import emulators
 
 logger = logging.getLogger(__name__)
 

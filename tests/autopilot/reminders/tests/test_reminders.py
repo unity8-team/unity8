@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals, GreaterThan
 
-from reminders_app.tests import RemindersAppTestCase
+from reminders.tests import RemindersAppTestCase
 
 import logging
 
