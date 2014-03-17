@@ -51,12 +51,7 @@ class RemindersAppTestCase(AutopilotTestCase):
         self.pointing_device = Pointer(self.input_device_class.create())
         super(RemindersAppTestCase, self).setUp()
 
-        #turn off the OSK so it doesn't block screen elements
-        if model() != 'Desktop':
-            os.system("stop maliit-server")
-            self.addCleanup(os.system, "start maliit-server")
-
-        if os.path.exists(self.local_location_qml):
+        if os.path.exists(self.local_location_binary):
             self.launch_test_local()
         elif os.path.exists(self.installed_location_binary):
             self.launch_test_installed()
