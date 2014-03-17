@@ -24,6 +24,7 @@ import Evernote 0.1
 
 Page {
     id: root
+    objectName: "Accountselectorpage"
     title: "Select Evernote account"
 
     property alias accounts: listView.model
@@ -43,6 +44,7 @@ Page {
             currentIndex: -1
 
             delegate: Standard {
+                objectName: "EvernoteAccount"
                 text: displayName
                 MouseArea {
                     anchors.fill: parent
