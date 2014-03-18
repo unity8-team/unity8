@@ -100,6 +100,7 @@ Page {
 
     ListView {
         id: notesListView
+        objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
