@@ -36,6 +36,31 @@ class Dash(emulators.UnityEmulatorBase):
         self.dash_content_list = self.wait_select_single(
             'QQuickListView', objectName='dashContentList')
 
+    def get_suggested_applications_grid(self):
+        # TODO remove time import
+        import time
+        # switch to the app scope
+        app_scope = self.open_scope('applications')
+
+        # try to open the 'more suggestions' header, if this fails open/close the installed apps section to display it
+        try:
+            suggested_section = app_scope.select_single('Header', objectName='dashSectionHeadermore')
+        except dbus.StateNotFoundError:
+            # the 'More suggestions' section is not shown, click 'installed' twice
+            # this will open and close it and make the more suggestions grid visible
+            installed_header = app_scope.select_single('Header', objectName='dashSectionHeaderinstalled')
+            self.pointing_device.click_object(installed_header)
+            # TODO find a better way to wait for all apps to be listed
+            time.sleep(10)
+            self.pointing_device.click_object(installed_header)
+            # now check the 'more suggestions' section header is visible
+            # TODO change to an assert?
+            suggested_section = app_scope.wait_select_single('Header', objectName='dashSectionHeadermore')
+
+        # return the grid of 'more suggestions' apps
+        app_grid = app_scope.select_single('GenericFilterGrid', objectName='more')
+        return app_grid        
+    
     def get_home_applications_grid(self):
         get_grid = self.get_scope('home').wait_select_single(
             "GenericFilterGrid",

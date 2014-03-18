@@ -137,6 +137,16 @@ class DashEmulatorTestCase(DashBaseTestCase):
         self._assert_scope_is_opened(scope, scope_id)
         self.assertIsInstance(scope, dash_emulators.DashApps)
 
+    def test_select_first_suggested_app(self):
+        # get grid of suggested apps for install
+        app_grid = self.dash.get_suggested_applications_grid()
+        # select the first one in the list
+        suggested_app = app_grid.select_many('Tile')[0]
+        self.touch.tap_object(suggested_app)
+        ## TODO remove sleep and add assertion
+        import time
+        time.sleep(10)
+
 
 class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
 
