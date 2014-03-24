@@ -143,9 +143,10 @@ class DashEmulatorTestCase(DashBaseTestCase):
         # select the first one in the list
         suggested_app = app_grid.select_many('Tile')[0]
         self.touch.tap_object(suggested_app)
-        ## TODO remove sleep and add assertion
-        import time
-        time.sleep(10)
+        # press the install button
+        app_preview = self.dash.wait_select_single('PreviewListView')
+        install_button = app_preview.wait_select_single('Label', text='Install')
+        self.touch.tap_object(install_button)
 
 
 class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
