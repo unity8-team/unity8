@@ -38,6 +38,8 @@ from unity8 import process_helpers
 from unity8.shell import emulators, fixture_setup, tests
 from unity8.shell.emulators import dash as dash_emulators
 
+from autopilot.introspection import dbus
+
 
 class DashBaseTestCase(tests.UnityTestCase):
 
@@ -147,6 +149,19 @@ class DashEmulatorTestCase(DashBaseTestCase):
         app_preview = self.dash.wait_select_single('PreviewListView')
         install_button = app_preview.wait_select_single('Label', text='Install')
         self.touch.tap_object(install_button)
+        # validate that it installs by looking for the 'Open' button
+        open_button = None
+        for counter in range(1, 6):
+            # each wait is 10 secs, so wait 60 secs total
+            try:
+                open_button = app_preview.wait_select_single('Label', text='Open')
+            except dbus.StateNotFoundError:
+                # carry on waiting
+                pass
+
+        # press the open button
+        self.touch.tap_object(open_button)
+
 
 
 class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
