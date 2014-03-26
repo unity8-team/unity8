@@ -33,12 +33,12 @@ MainView {
     property int contentReleaseInterval: 20000
     property bool activeHeader: false
     property real headerHeight: tabs.tabBar.height
+    property bool headerPressed: false
 
     width: units.gu(40)
     height: units.gu(42)
 
-    signal expand
-    signal continueHinting(bool shouldContinue)
+    signal headerClicked()
 
     function setCurrentMenuIndex(index, animate) {
         if (tabs.selectedTabIndex !== index) {
@@ -76,13 +76,13 @@ MainView {
             anchors.fill: parent
 
             enabled: activeHeader
-            onClicked: expand()
+            onClicked: headerClicked()
         }
 
         Connections {
             target: tabs.tabBar
             onPressedChanged: {
-                continueHinting(tabs.tabBar.pressed);
+                headerPressed = tabs.tabBar.pressed;
             }
         }
 

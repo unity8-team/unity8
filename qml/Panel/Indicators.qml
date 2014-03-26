@@ -213,15 +213,14 @@ Showable {
             opacity: 0.4
         }
 
-        onExpand: {
+        onHeaderClicked: {
             if (indicators.state == "hint") {
                 indicators.show();
             }
         }
-
-        onContinueHinting: {
+        onHeaderPressedChanged: {
             if (indicators.state == "hint") {
-                showDragHandle.persistHint(shouldContinue);
+                showDragHandle.persistHint(headerPressed);
             }
         }
     }

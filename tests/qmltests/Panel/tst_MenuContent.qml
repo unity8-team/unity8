@@ -75,9 +75,9 @@ Item {
     }
 
     SignalSpy {
-        id: spyExpand
+        id: spyHeaderClicked
         target: menuContent
-        signalName: "expand"
+        signalName: "headerClicked"
     }
 
     function activate_next_content()
@@ -193,16 +193,26 @@ Item {
             wait(100);
         }
 
-        function test_expand() {
+        function test_headerClicked() {
             var tabs = menu_content_test.findChild(menuContent, "tabs");
 
             menuContent.activeHeader = false;
             tap(tabs.tabBar, tabs.tabBar.width/2, tabs.tabBar.height/2);
-            compare(spyExpand.count, 0, "Menu should not expand when header is not active")
+            compare(spyHeaderClicked.count, 0, "Menu should not expand when header is not active")
 
             menuContent.activeHeader = true;
             tap(tabs.tabBar, tabs.tabBar.width/2, tabs.tabBar.height/2);
-            compare(spyExpand.count, 1, "Menu should expand when header is active")
+            compare(spyHeaderClicked.count, 1, "Menu should expand when header is active")
+        }
+
+        function test_headerPressed() {
+            var tabs = menu_content_test.findChild(menuContent, "tabs");
+
+            touchPress(tabs.tabBar, tabs.tabBar.width/2, tabs.tabBar.height/2);
+            compare(menuContent.headerPressed, true);
+
+            touchRelease(tabs.tabBar, tabs.tabBar.width/2, tabs.tabBar.height/2);
+            compare(menuContent.headerPressed, false);
         }
     }
 }
