@@ -65,8 +65,8 @@ private Q_SLOTS:
     void stretch_vertical();
     void hintingAnimation();
     void hintingAnimation_dontRestartAfterFinishedAndStillPressed();
-    void persistent_hintingAnimation();
-    void long_hintingAnimation();
+    void hintingAnimation_persistent();
+    void hintingAnimation_long();
 
 
 private:
@@ -499,7 +499,7 @@ void tst_DragHandle::hintingAnimation_dontRestartAfterFinishedAndStillPressed()
     by hintDisplacement pixels and remain at that position for DragHandle.hintPersistencyDuration ms when
     finger is removed.
  */
-void tst_DragHandle::persistent_hintingAnimation()
+void tst_DragHandle::hintingAnimation_persistent()
 {
     DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
     QQuickItem *parentItem = dragHandle->parentItem();
@@ -534,7 +534,7 @@ void tst_DragHandle::persistent_hintingAnimation()
 /*
     Same as hintingAnimation test, but using a larger duration
  */
-void tst_DragHandle::long_hintingAnimation()
+void tst_DragHandle::hintingAnimation_long()
 {
     DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
     QQuickItem *parentItem = dragHandle->parentItem();
