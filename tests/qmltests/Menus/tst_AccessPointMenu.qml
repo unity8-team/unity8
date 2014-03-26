@@ -135,5 +135,12 @@ Item {
             accessPoint.checked = false;
             compare(checkBox.checked, false, "Checkbox should not be checked when access point is not checked");
         }
+
+        function test_checkBox_on_default_checked() {
+            var checkBox = UtilsJS.findChild(accessPoint2, "checkBox");
+            verify(checkBox !== undefined);
+
+            compare(checkBox.checked, true, "Check box should be checked if default to checked")
+        }
     }
 }

@@ -47,6 +47,12 @@ ListItem.Empty {
             verticalCenter: parent.verticalCenter
         }
 
+        Component.onCompleted: {
+            enableCheckConnection = false;
+            checked = menu.checked;
+            enableCheckConnection = true;
+        }
+
         // FIXME : should use Checkbox.toggled signal
         // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
         onCheckedChanged: {
