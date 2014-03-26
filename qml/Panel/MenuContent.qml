@@ -38,8 +38,7 @@ MainView {
     height: units.gu(42)
 
     signal expand
-    signal continueHint
-    signal resetHint
+    signal continueHinting(bool shouldContinue)
 
     function setCurrentMenuIndex(index, animate) {
         if (tabs.selectedTabIndex !== index) {
@@ -83,11 +82,7 @@ MainView {
         Connections {
             target: tabs.tabBar
             onPressedChanged: {
-                if (tabs.tabBar.pressed) {
-                    continueHint();
-                } else {
-                    resetHint();
-                }
+                continueHinting(tabs.tabBar.pressed);
             }
         }
 

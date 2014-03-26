@@ -35,6 +35,11 @@ Item {
         anchors.fill: indicators
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onClicked: indicators.hide()
+    }
+
     Indicators {
         id: indicators
         anchors {
@@ -49,7 +54,6 @@ Item {
         hintPersistencyDuration: 1000
         hintValue: units.gu(10)
     }
-
     // Just a rect for clicking to open the indicators.
     Rectangle {
         id: click_me
@@ -158,6 +162,39 @@ Item {
 
             // wait until fully closed
             tryCompare(indicators, "height", indicators.panelHeight);
+        }
+
+        function test_hide_when_hinting() {
+            // Basically, dont roll back...
+            indicators.hintPersistencyDuration = 20000;
+
+            var indicatorRow = findChild(indicators, "indicatorRow")
+            verify(indicatorRow !== null)
+            var indicatorRowItems = findChild(indicatorRow, "indicatorRowItems");
+            verify(indicatorRowItems !== null)
+
+            var indicatorItem = findChild(indicatorRowItems, "item0");
+
+            var indicatorPosition = indicators.mapFromItem(indicatorItem,
+                    indicatorItem.width/2, indicatorItem.height/2)
+
+            for (var i = 0; i < 3; i ++) {
+                touchFlick(indicators,
+                           indicatorPosition.x, indicatorPosition.y,
+                           indicatorPosition.x, indicators.panelHeight + units.gu(2),
+                           true /* beginTouch */, false /* endTouch */);
+
+                tryCompareFunction(function() { return indicators.height > indicators.panelHeight}, true);
+
+                touchRelease(indicators, indicatorPosition.x, indicatorPosition.y);
+                tryCompare(indicators, "height", indicators.hintValue + indicators.panelHeight);
+
+                // Cancel the hint
+                indicators.hide();
+
+                // wait until fully closed
+                tryCompare(indicators, "height", indicators.panelHeight);
+            }
         }
 
         // values for specific state changes are subject to internal decisions, so we can't

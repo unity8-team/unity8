@@ -219,17 +219,9 @@ Showable {
             }
         }
 
-        onContinueHint: {
+        onContinueHinting: {
             if (indicators.state == "hint") {
-                console.log("continueHint")
-                showDragHandle.continueHint();
-            }
-        }
-
-        onResetHint: {
-            if (indicators.state == "hint") {
-                console.log("resetHint")
-                showDragHandle.resetHint();
+                showDragHandle.persistHint(shouldContinue);
             }
         }
     }
@@ -291,8 +283,6 @@ Showable {
                     initalizeItem = true;
                     updateRevealProgressState(Math.max(touchSceneY - panelHeight, hintValue));
                     indicators.calculateCurrentItem(touchX, false);
-                } else {
-                    indicators.state = "commit";
                 }
             }
 
@@ -341,6 +331,9 @@ Showable {
             d.enableIndexChangeSignal = false;
 
             indicatorRow.setCurrentItemIndex(menuContent.currentMenuIndex);
+            if (indicators.state == "hint") {
+                showDragHandle.resetHintRollbackTimer();
+            }
 
             d.enableIndexChangeSignal = oldActive;
         }
@@ -354,6 +347,9 @@ Showable {
             d.enableIndexChangeSignal = false;
 
             menuContent.setCurrentMenuIndex(indicatorRow.currentItemIndex, fullyOpened || partiallyOpened);
+            if (indicators.state == "hint") {
+                showDragHandle.resetHintRollbackTimer();
+            }
 
             d.enableIndexChangeSignal = oldActive;
         }

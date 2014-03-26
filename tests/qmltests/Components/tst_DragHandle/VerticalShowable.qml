@@ -27,6 +27,7 @@ Showable {
 
     property bool stretch
     property real hintDisplacement
+    property real hintAnimationDuration
     property real hintPersistencyDuration
 
     onStretchChanged: {
@@ -65,6 +66,7 @@ Showable {
         stretch: showable.stretch
         maxTotalDragDistance: showable.parent.height
         hintDisplacement: showable.hintDisplacement
+        hintAnimationDuration: showable.hintAnimationDuration
         hintPersistencyDuration: showable.hintPersistencyDuration
 
         onStatusChanged: {
@@ -89,6 +91,7 @@ Showable {
         stretch: showable.stretch
         maxTotalDragDistance: showable.parent.height
         hintDisplacement: showable.hintDisplacement
+        hintAnimationDuration: showable.hintAnimationDuration
         hintPersistencyDuration: showable.hintPersistencyDuration
 
         onStatusChanged: {

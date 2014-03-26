@@ -36,6 +36,7 @@ Item {
 
     property bool stretch: false
     property real hintDisplacement: 0
+    property real hintAnimationDuration: 150
     property real hintPersistencyDuration: 0
 
     Item {
@@ -48,6 +49,7 @@ Item {
             stretch: root.stretch
             hintDisplacement: root.hintDisplacement
             hintPersistencyDuration: root.hintPersistencyDuration
+            hintAnimationDuration: root.hintAnimationDuration
         }
 
         HorizontalShowable {
@@ -55,6 +57,7 @@ Item {
             stretch: root.stretch
             hintDisplacement: root.hintDisplacement
             hintPersistencyDuration: root.hintPersistencyDuration
+            hintAnimationDuration: root.hintAnimationDuration
         }
 
         // Visually mark drag threshold

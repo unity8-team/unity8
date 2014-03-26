@@ -66,6 +66,7 @@ private Q_SLOTS:
     void hintingAnimation();
     void hintingAnimation_dontRestartAfterFinishedAndStillPressed();
     void persistent_hintingAnimation();
+    void long_hintingAnimation();
 
 
 private:
@@ -518,12 +519,47 @@ void tst_DragHandle::persistent_hintingAnimation()
 
     // Pressing causes the Showable to be stretched by hintDisplacement pixels
     QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
     tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
 
-    // Releasing causes the Showable to shrink back to 0 pixels.
-    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+    // Releasing causes the Showable to shrink back to 0 pixels
+    // after the hintPersistencyDuration interval.
     QTest::qWait(hintPersistencyDuration/2);
     QCOMPARE(parentItem->height(), hintDisplacement);
+    tryCompare([&](){ return parentItem->height(); }, 0.0);
+
+    QCOMPARE(parentItem->property("shown").toBool(), false);
+}
+
+/*
+    Same as hintingAnimation test, but using a larger duration
+ */
+void tst_DragHandle::long_hintingAnimation()
+{
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    qreal hintAnimationDuration = 2000.0;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+    // change the hint duration
+    m_view->rootObject()->setProperty("hintAnimationDuration", QVariant(hintAnimationDuration));
+
+    QCOMPARE(parentItem->height(), 0.0);
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // Pressing causes the Showable to be stretched by hintDisplacement pixels
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    // Should go to hint, but it will not persist, so test for > 0
+    tryCompare([&](){ return parentItem->height() > 0.0; }, true);
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    // Releasing causes the Showable to shrink back to 0 pixels.
     tryCompare([&](){ return parentItem->height(); }, 0.0);
 
     QCOMPARE(parentItem->property("shown").toBool(), false);
