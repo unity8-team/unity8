@@ -151,17 +151,22 @@ class DashEmulatorTestCase(DashBaseTestCase):
         self.touch.tap_object(install_button)
         # validate that it installs by looking for the 'Open' button
         open_button = None
-        for counter in range(1, 6):
-            # each wait is 10 secs, so wait 60 secs total
+        for counter in range(1, 12):
+            # each wait is 10 secs, so wait 120 secs total
             try:
                 open_button = app_preview.wait_select_single('Label', text='Open')
             except dbus.StateNotFoundError:
                 # carry on waiting
                 pass
+            else:
+                # exit the wait loop
+                print 'Found the open button!'
+                break
 
-        # press the open button
+        self.assertTrue(open_button != None)
         self.touch.tap_object(open_button)
-
+        import time
+        time.sleep(10)
 
 
 class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
