@@ -40,25 +40,26 @@ class Dash(emulators.UnityEmulatorBase):
         # TODO remove time import
         import time
         # switch to the app scope
-        app_scope = self.open_scope('applications')
+        app_scope = self.open_scope('clickscope')
+        
 
         # try to open the 'more suggestions' header, if this fails open/close the installed apps section to display it
         try:
-            suggested_section = app_scope.select_single('Header', objectName='dashSectionHeadermore')
+            suggested_section = app_scope.select_single('Header', objectName='dashSectionHeaderappstore')
         except dbus.StateNotFoundError:
             # the 'More suggestions' section is not shown, click 'installed' twice
             # this will open and close it and make the more suggestions grid visible
-            installed_header = app_scope.select_single('Header', objectName='dashSectionHeaderinstalled')
+            installed_header = app_scope.select_single('Header', objectName='dashSectionHeaderlocal')
             self.pointing_device.click_object(installed_header)
             # TODO find a better way to wait for all apps to be listed
             time.sleep(10)
             self.pointing_device.click_object(installed_header)
             # now check the 'more suggestions' section header is visible
             # TODO change to an assert?
-            suggested_section = app_scope.wait_select_single('Header', objectName='dashSectionHeadermore')
+            suggested_section = app_scope.wait_select_single('Header', objectName='dashSectionHeaderappstore')
 
         # return the grid of 'more suggestions' apps
-        app_grid = app_scope.select_single('GenericFilterGrid', objectName='more')
+        app_grid = app_scope.select_single('CardFilterGrid', objectName='appstore')
         return app_grid        
     
     def get_applications_grid(self):

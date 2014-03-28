@@ -136,30 +136,20 @@ class DashEmulatorTestCase(DashBaseTestCase):
         # get grid of suggested apps for install
         app_grid = self.dash.get_suggested_applications_grid()
         # select the first one in the list
-        suggested_app = app_grid.select_many('Tile')[0]
+        suggested_app = app_grid.select_many('Card')[0]
         self.touch.tap_object(suggested_app)
-        # press the install button
-        app_preview = self.dash.wait_select_single('PreviewListView')
-        install_button = app_preview.wait_select_single('Label', text='Install')
-        self.touch.tap_object(install_button)
+        # wait for the app preview info to be displayed
+        app_preview = self.dash.wait_select_single('PreviewListView', objectName='dashContentPreviewList')
+        # find the install button, for some reason there are 3 returned, so select first
+        buttons = app_preview.select_many('PreviewActionButton', objectName='buttoninstall_click')
+        self.touch.tap_object(buttons[0])
         # validate that it installs by looking for the 'Open' button
-        open_button = None
-        for counter in range(1, 12):
-            # each wait is 10 secs, so wait 120 secs total
-            try:
-                open_button = app_preview.wait_select_single('Label', text='Open')
-            except dbus.StateNotFoundError:
-                # carry on waiting
-                pass
-            else:
-                # exit the wait loop
-                print 'Found the open button!'
-                break
-
-        self.assertTrue(open_button != None)
+        # whilst there is no timeout parameter for wait_select_single()
+        # set the _poll_time variable instead
+        app_preview._poll_time = 120
+        open_button = app_preview.wait_select_single('Label', text='Open')
+        app_preview._poll_time = 10
         self.touch.tap_object(open_button)
-        import time
-        time.sleep(10)
 
 
 class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
