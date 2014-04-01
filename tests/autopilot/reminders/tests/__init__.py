@@ -43,6 +43,7 @@ class RemindersAppTestCase(AutopilotTestCase):
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
     local_location_binary = "../../src/app/reminders"
+    local_location_qml = "../../src/app/qml/reminders.qml"
     installed_location_binary= "/usr/bin/reminders"
     installed_location_qml = "/usr/share/reminders/qml/reminders.qml"
 
@@ -61,6 +62,7 @@ class RemindersAppTestCase(AutopilotTestCase):
         logger.debug("Launching via local")
         self.app = self.launch_test_application(
             self.local_location_binary,
+            "-q " + self.local_location_qml,
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
