@@ -18,23 +18,26 @@
 
 from __future__ import absolute_import
 
-from autopilot.matchers import Eventually
-from testtools.matchers import Equals
-
-from reminders.tests import RemindersAppTestCase
+from reminders import fixture_setup, tests
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class TestMainWindow(RemindersAppTestCase):
+class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 
-    def setUp(self):
-        super(TestMainWindow, self).setUp()
+    def test_open_application_without_account(self):
+        """Test that the No account dialog is visible."""
+        self.assertTrue(self.app.main_view.no_account_dialog.visible)
 
-        self.assertThat(self.main_view.visible, Eventually(Equals(True)))
+    def test_go_to_account_settings(self):
+        """Test that the Go to account settings button calls url-dispatcher."""
+        fake_url_dispatcher = fixture_setup.FakeURLDispatcher()
+        self.useFixture(fake_url_dispatcher)
 
-    def test_blank(setup):
-        #jenkins requires at least one test
-        return 0
+        self.app.main_view.no_account_dialog.open_account_settings()
+        import pdb; pdb.set_trace()
+        self.assertEqual(
+            fake_url_dispatcher.get_last_dispatch_url_call_parameter(),
+            'settings:///system/online-accounts')

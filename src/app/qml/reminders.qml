@@ -283,12 +283,14 @@ MainView {
         id: noAccountDialog
         Dialog {
             id: noAccount
+            objectName: "noAccountDialog"
             title: i18n.tr("No account available")
             text: i18n.tr("Please setup an account in the system settings")
             Button {
+                objectName: "openAccountButton"
                 text: i18n.tr("Open account settings")
                 color: UbuntuColors.orange
-                onClicked: Qt.openUrlExternally("settings:///system/online-accounts") 
+                onClicked: Qt.openUrlExternally("settings:///system/online-accounts")
             }
         }
    }
