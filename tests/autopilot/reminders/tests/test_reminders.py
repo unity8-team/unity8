@@ -37,7 +37,6 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.useFixture(fake_url_dispatcher)
 
         self.app.main_view.no_account_dialog.open_account_settings()
-        import pdb; pdb.set_trace()
         self.assertEqual(
             fake_url_dispatcher.get_last_dispatch_url_call_parameter(),
             'settings:///system/online-accounts')
