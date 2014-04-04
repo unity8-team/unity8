@@ -1,5 +1,5 @@
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
-# Copyright 2013 Canonical
+# Copyright 2013, 2014 Canonical
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -10,7 +10,7 @@
 from __future__ import absolute_import
 
 from autopilot.matchers import Eventually
-from testtools.matchers import Equals, GreaterThan
+from testtools.matchers import Equals
 
 from reminders.tests import RemindersAppTestCase
 
@@ -29,4 +29,3 @@ class TestMainWindow(RemindersAppTestCase):
     def test_blank(setup):
         #jenkins requires at least one test
         return 0
-
