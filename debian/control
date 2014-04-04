@@ -3,7 +3,7 @@ Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: cmake,
                debhelper (>= 9),
-   	           gettext,
+               gettext,
                libboost-dev,
                libssl-dev,
                python,
