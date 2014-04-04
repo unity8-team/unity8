@@ -1,6 +1,6 @@
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 #
-# Copyright (C) 2013 Canonical Ltd
+# Copyright (C) 2013, 2014 Canonical Ltd
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -24,14 +24,12 @@ from autopilot.input import Mouse, Touch, Pointer
 from autopilot.platform import model
 from autopilot.testcase import AutopilotTestCase
 
-from ubuntuuitoolkit import (
-    base,
-    emulators as toolkit_emulators
-)
+from ubuntuuitoolkit import emulators as toolkit_emulators
 
 from reminders import emulators
 
 logger = logging.getLogger(__name__)
+
 
 class RemindersAppTestCase(AutopilotTestCase):
     """A common test case class that provides several useful methods for
@@ -42,9 +40,9 @@ class RemindersAppTestCase(AutopilotTestCase):
     else:
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
-    local_location_binary = "../../src/app/reminders"
-    installed_location_binary= "/usr/bin/reminders"
-    installed_location_qml = "/usr/share/reminders/qml/reminders.qml"
+    local_location_binary = '../../src/app/reminders'
+    installed_location_binary = '/usr/bin/reminders'
+    installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
     def setUp(self):
         self.pointing_device = Pointer(self.input_device_class.create())
@@ -58,27 +56,26 @@ class RemindersAppTestCase(AutopilotTestCase):
             self.launch_test_click()
 
     def launch_test_local(self):
-        logger.debug("Launching via local")
+        logger.debug('Launching via local')
         self.app = self.launch_test_application(
             self.local_location_binary,
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
     def launch_test_installed(self):
-        logger.debug("Launching via installation")
+        logger.debug('Launching via installation')
         self.app = self.launch_test_application(
             self.installed_location_binary,
-            "-q " + self.installed_location_qml,
-            "--desktop_file_hint=/usr/share/applications/"
-            "reminders.desktop",
+            '-q ' + self.installed_location_qml,
+            '--desktop_file_hint=/usr/share/applications/'
+            'reminders.desktop',
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
-
     def launch_test_click(self):
-        logger.debug("Launching via click")
+        logger.debug('Launching via click')
         self.app = self.launch_click_package(
-            "com.ubuntu.reminders-app",
+            'com.ubuntu.reminders-app',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
     @property
