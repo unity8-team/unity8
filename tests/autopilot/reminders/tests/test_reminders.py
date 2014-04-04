@@ -18,23 +18,15 @@
 
 from __future__ import absolute_import
 
-from autopilot.matchers import Eventually
-from testtools.matchers import Equals
-
-from reminders.tests import RemindersAppTestCase
+from reminders import tests
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class TestMainWindow(RemindersAppTestCase):
+class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 
-    def setUp(self):
-        super(TestMainWindow, self).setUp()
-
-        self.assertThat(self.main_view.visible, Eventually(Equals(True)))
-
-    def test_blank(setup):
-        #jenkins requires at least one test
-        return 0
+    def test_open_application_without_account(self):
+        """Test that the No account dialog is visible."""
+        self.assertTrue(self.app.main_view.no_account_dialog.visible)

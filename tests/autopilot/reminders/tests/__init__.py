@@ -27,7 +27,7 @@ from autopilot.platform import model
 from autopilot.testcase import AutopilotTestCase
 from ubuntuuitoolkit import emulators as toolkit_emulators
 
-from reminders import emulators
+import reminders
 
 logger = logging.getLogger(__name__)
 
@@ -50,24 +50,26 @@ class RemindersAppTestCase(AutopilotTestCase):
         super(RemindersAppTestCase, self).setUp()
 
         if os.path.exists(self.local_location_binary):
-            self.launch_test_local()
+            app_proxy = self.launch_test_local()
         elif os.path.exists(self.installed_location_binary):
-            self.launch_test_installed()
+            app_proxy = self.launch_test_installed()
         else:
-            self.launch_test_click()
+            app_proxy = self.launch_test_click()
+
+        self.app = reminders.RemindersApp(app_proxy)
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
         self.useFixture(fixtures.EnvironmentVariable(
             'QML2_IMPORT_PATH', newvalue='../../src/plugin'))
-        self.app = self.launch_test_application(
+        return self.launch_test_application(
             self.local_location_binary,
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_installed(self):
-        self.app = self.launch_test_application(
+        return self.launch_test_application(
             self.installed_location_binary,
             '-q ' + self.installed_location_qml,
             '--desktop_file_hint=/usr/share/applications/'
@@ -77,10 +79,6 @@ class RemindersAppTestCase(AutopilotTestCase):
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_click(self):
-        self.app = self.launch_click_package(
+        return self.launch_click_package(
             'com.ubuntu.reminders-app',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
-
-    @property
-    def main_view(self):
-        return self.app.select_single(emulators.MainView)

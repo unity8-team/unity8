@@ -17,3 +17,50 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """Reminders app tests and emulators - top level package."""
+
+import logging
+
+from autopilot import logging as autopilot_logging
+from autopilot.introspection import dbus
+from ubuntuuitoolkit import emulators as toolkit_emulators
+
+
+logger = logging.getLogger(__name__)
+
+
+class RemindersApp(object):
+    """Autopilot helper object for the Reminders application."""
+
+    def __init__(self, app_proxy):
+        self.app = app_proxy
+        self.main_view = self.app.select_single(MainView)
+
+
+class MainView(toolkit_emulators.MainView):
+    """Autopilot custom proxy object for the MainView."""
+
+    def __init__(self, *args):
+        super(MainView, self).__init__(*args)
+        self.visible.wait_for(True)
+        try:
+            self.no_account_dialog = self.select_single(
+                objectName='noAccountDialog')
+        except dbus.StateNotFoundError:
+            # Just don't add the dialog as an attribute.
+            pass
+
+
+class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+
+    @classmethod
+    def validate_dbus_object(cls, path, state):
+        name = dbus.get_classname_from_path(path)
+        if name == 'Dialog':
+            if 'noAccountDialog' == state['objectName'][1]:
+                return True
+        return False
+
+    @autopilot_logging.log_action(logger.info)
+    def open_account_settings(self):
+        button = self.select_single('Button', objectName='openAccountButton')
+        self.pointing_device.click_object(button)
