@@ -18,7 +18,7 @@
 
 from __future__ import absolute_import
 
-from reminders import tests
+from reminders import fixture_setup, tests
 
 import logging
 
@@ -30,3 +30,13 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
     def test_open_application_without_account(self):
         """Test that the No account dialog is visible."""
         self.assertTrue(self.app.main_view.no_account_dialog.visible)
+
+    def test_go_to_account_settings(self):
+        """Test that the Go to account settings button calls url-dispatcher."""
+        fake_url_dispatcher = fixture_setup.FakeURLDispatcher()
+        self.useFixture(fake_url_dispatcher)
+
+        self.app.main_view.no_account_dialog.open_account_settings()
+        self.assertEqual(
+            fake_url_dispatcher.get_last_dispatch_url_call_parameter(),
+            'settings:///system/online-accounts')
