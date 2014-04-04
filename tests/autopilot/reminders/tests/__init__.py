@@ -20,10 +20,11 @@ import os
 import os.path
 import logging
 
+import fixtures
+from autopilot import logging as autopilot_logging
 from autopilot.input import Mouse, Touch, Pointer
 from autopilot.platform import model
 from autopilot.testcase import AutopilotTestCase
-
 from ubuntuuitoolkit import emulators as toolkit_emulators
 
 from reminders import emulators
@@ -55,15 +56,17 @@ class RemindersAppTestCase(AutopilotTestCase):
         else:
             self.launch_test_click()
 
+    @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
-        logger.debug('Launching via local')
+        self.useFixture(fixtures.EnvironmentVariable(
+            'QML2_IMPORT_PATH', newvalue='../../src/plugin'))
         self.app = self.launch_test_application(
             self.local_location_binary,
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
+    @autopilot_logging.log_action(logger.info)
     def launch_test_installed(self):
-        logger.debug('Launching via installation')
         self.app = self.launch_test_application(
             self.installed_location_binary,
             '-q ' + self.installed_location_qml,
@@ -72,8 +75,8 @@ class RemindersAppTestCase(AutopilotTestCase):
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
+    @autopilot_logging.log_action(logger.info)
     def launch_test_click(self):
-        logger.debug('Launching via click')
         self.app = self.launch_click_package(
             'com.ubuntu.reminders-app',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
