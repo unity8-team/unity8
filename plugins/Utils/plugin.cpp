@@ -26,13 +26,13 @@
 #include "plugin.h"
 
 // local
-#include "albumartprovider.h"
 #include "passthroughmousearea.h"
 #include "bottombarvisibilitycommunicatorshell.h"
 #include "qlimitproxymodelqml.h"
 #include "qsortfilterproxymodelqml.h"
 #include "timeformatter.h"
 #include "unitymenumodelpaths.h"
+#include "easingcurve.h"
 
 static const char* BOTTOM_BAR_VISIBILITY_COMMUNICATOR_DBUS_PATH = "/BottomBarVisibilityCommunicator";
 static const char* DBUS_SERVICE = "com.canonical.Shell.BottomBarVisibilityCommunicator";
@@ -48,24 +48,12 @@ void UtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<GDateTimeFormatter>(uri, 0, 1, "GDateTimeFormatter");
     qmlRegisterType<PassthroughMouseArea>(uri, 0, 1, "PassthroughMouseArea");
     qmlRegisterUncreatableType<BottomBarVisibilityCommunicatorShell>(uri, 0, 1, "BottomBarVisibilityCommunicatorShell", "Can't create BottomBarVisibilityCommunicatorShell");
+    qmlRegisterType<EasingCurve>(uri, 0, 1, "EasingCurve");
 }
 
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
-
-    try
-    {
-        engine->addImageProvider(QLatin1String("albumart"), new AlbumArtProvider);
-    }
-    catch (const std::runtime_error &e)
-    {
-        qWarning() << "Failed to register image provider for albumart:" << e.what();
-    }
-    catch (...)
-    {
-        qWarning() << "Failed to register image provider for albumart (unknown error)";
-    }
 
     QDBusConnection::sessionBus().registerService(DBUS_SERVICE);
     BottomBarVisibilityCommunicatorShell *bottomBarVisibilityCommunicator = &BottomBarVisibilityCommunicatorShell::instance();
