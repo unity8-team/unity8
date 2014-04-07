@@ -14,7 +14,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/plugins/Utils
-    ${CMAKE_SOURCE_DIR}/tests/mocks/libusermetrics
 )
 
 set(QMLPLUGIN_SRC
@@ -33,12 +32,9 @@ add_library(MockLightDM-qml MODULE
 # installed on the system.  So we make sure we link to our full fake version
 # At run time, we can point to whichever version we happen to be using via
 # LD_LIBRARY_PATH.
-add_dependencies(MockLightDM-qml MockLightDM-full MockUserMetrics)
 target_link_libraries(MockLightDM-qml
     -L${CMAKE_CURRENT_BINARY_DIR}/full
     -llightdm-qt5-2
-    -L${CMAKE_BINARY_DIR}/tests/mocks/libusermetrics
-    -lusermetricsoutput
     )
 
 qt5_use_modules(MockLightDM-qml DBus Gui Qml)

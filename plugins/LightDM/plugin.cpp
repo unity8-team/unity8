@@ -21,8 +21,6 @@
 #include "DBusGreeterList.h"
 #include "Greeter.h"
 #include "UsersModel.h"
-#include <libusermetricsoutput/ColorTheme.h>
-#include <libusermetricsoutput/UserMetrics.h>
 #include <QLightDM/UsersModel>
 
 #include <QAbstractItemModel>
@@ -53,21 +51,12 @@ static QObject *users_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
     return new UsersModel();
 }
 
-static QObject *infographic_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
-{
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-    return UserMetricsOutput::UserMetrics::getInstance();
-}
-
 void LightDMPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<QAbstractItemModel>();
-    qmlRegisterType<UserMetricsOutput::ColorTheme>();
 
     Q_ASSERT(uri == QLatin1String("LightDM"));
     qmlRegisterSingletonType<Greeter>(uri, 0, 1, "Greeter", greeter_provider);
     qmlRegisterSingletonType<UsersModel>(uri, 0, 1, "Users", users_provider);
     qmlRegisterUncreatableType<QLightDM::UsersModel>(uri, 0, 1, "UserRoles", "Type is not instantiable");
-    qmlRegisterSingletonType<UserMetricsOutput::UserMetrics>(uri, 0, 1, "Infographic", infographic_provider);
 }

@@ -39,7 +39,6 @@ from unity8 import (
     get_lib_path,
     get_binary_path,
     get_mocks_library_path,
-    get_default_extra_mock_libraries,
     get_data_dirs
 )
 from unity8.process_helpers import restart_unity_with_testability
@@ -330,7 +329,6 @@ class UnityTestCase(AutopilotTestCase):
         self._lightdm_mock_type = mock_type
         logger.info("Setting up LightDM mock type '%s'", mock_type)
         new_ld_library_path = [
-            get_default_extra_mock_libraries(),
             self._get_lightdm_mock_path(mock_type)
         ]
         if os.getenv('LD_LIBRARY_PATH') is not None:

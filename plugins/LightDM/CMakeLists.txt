@@ -3,7 +3,6 @@ include(Plugins)
 
 # Dependencies
 include(FindPkgConfig)
-pkg_check_modules(LIBUSERMETRICSOUTPUT REQUIRED libusermetricsoutput-1)
 # TODO: Once we split out a separate greeter process, uncomment these lines
 #pkg_check_modules(LIBLIGHTDM REQUIRED liblightdm-qt5-2)
 
@@ -13,7 +12,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/plugins/Utils
     ${CMAKE_SOURCE_DIR}/tests/mocks/LightDM
     #${LIBLIGHTDM_INCLUDE_DIRS}
-    ${LIBUSERMETRICSOUTPUT_INCLUDE_DIRS}
 )
 
 set(QMLPLUGIN_SRC
@@ -32,7 +30,6 @@ target_link_libraries(LightDM-qml
     MockLightDM-demo
 # TODO: Once we split out a separate greeter process, uncomment these lines
 #    ${LIBLIGHTDM_LDFLAGS}
-    ${LIBUSERMETRICSOUTPUT_LDFLAGS}
     )
 
 qt5_use_modules(LightDM-qml DBus Gui Qml)
