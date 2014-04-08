@@ -67,15 +67,6 @@ EdgeDragArea {
         }
     }
 
-    function persistHint(persist) {
-        if (persist) {
-            rollbackDragTimer.stop();
-        } else if (d.persistingHint) {
-           rollbackDragTimer.restart();
-        }
-        d.persistingHint = persist;
-    }
-
     function resetHintRollbackTimer() {
         if (rollbackDragTimer.running && !d.persistingHint) {
             rollbackDragTimer.restart();
@@ -88,6 +79,22 @@ EdgeDragArea {
     // If the drag is being rolled back, this property defines for how long it will stick around
     // on hint value before completing the rollback
     property int hintPersistencyDuration: 0
+
+    onHintPersistencyDurationChanged: {
+        var persist = hintPersistencyDuration < 0;
+        if (persist) {
+            rollbackDragTimer.stop();
+        } else {
+            rollbackDragTimer.interval = hintPersistencyDuration + hintingAnimation.duration
+            if (d.persistingHint) {
+                rollbackDragTimer.restart();
+            }
+        }
+        d.persistingHint = persist;
+    }
+
+
+
     SmoothedAnimation {
         id: hintingAnimation
         target: hintingAnimation
@@ -103,7 +110,7 @@ EdgeDragArea {
                 // not touching
                 if (dragArea.status == DirectionalDragArea.WaitingForTouch) {
                     d.dragParent[d.targetProp] = animatedValue;
-                } else {
+                } else if (d.touchesSinceFirstMovement == 1 && !d.movedPastHintDisplacement) {
                     if (Direction.isPositive(direction)) {
                         if (d.dragParent[d.targetProp] < animatedValue) {
                             d.dragParent[d.targetProp] = animatedValue;
@@ -120,7 +127,6 @@ EdgeDragArea {
 
     Timer {
         id: rollbackDragTimer
-        interval: hintPersistencyDuration + hintingAnimation.duration
         onTriggered: {
             d.rollbackDrag();
         }
@@ -131,6 +137,7 @@ EdgeDragArea {
         onRunningChanged: {
             if (parent.showAnimation.running) {
                 d.touchesSinceFirstMovement = 0;
+                d.movedPastHintDisplacement = false;
                 d.persistingHint = false;
             }
         }
@@ -140,6 +147,7 @@ EdgeDragArea {
         onRunningChanged: {
             if (parent.hideAnimation.running) {
                 d.touchesSinceFirstMovement = 0;
+                d.movedPastHintDisplacement = false;
                 d.persistingHint = false;
             }
         }
@@ -148,9 +156,31 @@ EdgeDragArea {
         target: parent
         onShownChanged: {
             d.touchesSinceFirstMovement = 0;
+            d.movedPastHintDisplacement = false;
             d.persistingHint = false;
         }
     }
+
+//    states: [
+//        State {
+//            name: "hidden"
+//            StateChangeScript { script: {
+//                hide();
+//            }}
+//        },
+//        State {
+//            name: "dragging"
+//        },
+//        State {
+//            name: "hinting"
+//        },
+//        State {
+//            name: "shown"
+//            StateChangeScript { script: {
+//                show();
+//            }}
+//        }
+//    ]
 
     // Private stuff
     QtObject {
@@ -164,6 +194,7 @@ EdgeDragArea {
 
         property var dragParent: dragArea.parent
         property int touchesSinceFirstMovement: 0
+        property bool movedPastHintDisplacement: false
         property bool persistingHint: false
 
         // The property of DragHandle's parent that will be modified
@@ -179,24 +210,26 @@ EdgeDragArea {
             var targetValue = MathUtils.clamp(dragParent[targetProp] + inputStep, minValue, maxValue);
             var step = targetValue - dragParent[targetProp];
 
-            if (hintDisplacement == 0) {
+            if (hintDisplacement == 0 || touchesSinceFirstMovement > 1) {
                 return step;
             }
 
-            // if there is no rollback interval or this is the first touch;
-            if (hintPersistencyDuration <= 0 || touchesSinceFirstMovement == 1) {
-                // we should not go behind hintingAnimation's current value.
-
-                if (!isParentInPositiveHintArea(step)) {
-                    if (!hintingAnimation.running) {
-                        // finished hinting? block changes
-                        step = 0;
-                    } else if (Direction.isPositive(direction) && step < 0) {
-                        // block reversed direction during hinting
-                        step = 0;
-                    } else if (!Direction.isPositive(direction) && step > 0) {
-                        // block reversed direction during hinting
-                        step = 0;
+            if (!isParentPastHintDisplacementArea(step)) {
+                if (Direction.isPositive(direction)) {
+                    if (d.dragParent[d.targetProp] + step < hintingAnimation.to) {
+                        if (!d.movedPastHintDisplacement) {
+                            if (step < 0) {
+                                step = 0;
+                            }
+                        }
+                    }
+                } else {
+                    if (d.dragParent[d.targetProp] + step > hintingAnimation.to) {
+                        if (!d.movedPastHintDisplacement) {
+                            if (step > 0) {
+                                step = 0;
+                            }
+                        }
                     }
                 }
             }
@@ -204,7 +237,7 @@ EdgeDragArea {
             return step;
         }
 
-        function isParentInPositiveHintArea(adjustment) {
+        function isParentPastHintDisplacementArea(adjustment) {
             if (Direction.isPositive(direction) && dragParent[targetProp] + adjustment > hintingAnimation.to) {
                 return true;
             } else if (!Direction.isPositive(direction) && dragParent[targetProp] + adjustment < hintingAnimation.to) {
@@ -214,6 +247,7 @@ EdgeDragArea {
         }
 
         function completeDrag() {
+            console.log("COMPLETE")
             if (dragParent.shown) {
                 d.hide();
             } else {
@@ -222,6 +256,7 @@ EdgeDragArea {
         }
 
         function rollbackDrag() {
+            console.log("ROLLBACK")
             if (dragParent.shown) {
                 d.show();
             } else {
@@ -243,15 +278,12 @@ EdgeDragArea {
             d.dragParent.hide();
         }
 
-        function hint(startRollbackTimer) {
+        function hint() {
             rollbackDragTimer.stop();
             hintingAnimation.stop();
             hintingAnimation.animatedValue = dragParent[d.targetProp];
 
             hintingAnimation.start();
-            if (startRollbackTimer) {
-                rollbackDragTimer.start();
-            }
         }
     }
 
@@ -271,6 +303,18 @@ EdgeDragArea {
             // don't go the whole distance in order to smooth out the movement
             var step = distance * 0.3;
 
+            if (!d.movedPastHintDisplacement && hintDisplacement) {
+                if (Direction.isPositive(direction)) {
+                    if (d.dragParent[d.targetProp] + step > hintingAnimation.to) {
+                        d.movedPastHintDisplacement = true;
+                    }
+                } else {
+                    if (d.dragParent[d.targetProp] + step <  hintingAnimation.to) {
+                        d.movedPastHintDisplacement = true;
+                    }
+                }
+            }
+
             step = d.limitMovement(step);
 
             d.dragParent[d.targetProp] += step;
@@ -288,12 +332,14 @@ EdgeDragArea {
                         if (dragEvaluator.shouldAutoComplete()) {
                             d.completeDrag();
                         } else {
-                            if (hintDisplacement == 0 ||
-                                d.touchesSinceFirstMovement == 1 ||
-                                d.isParentInPositiveHintArea(0)) {
-
-                                if (hintDisplacement > 0 && hintPersistencyDuration > 0) {
-                                    d.hint(true);
+                            if (hintDisplacement > 0 && hintPersistencyDuration !== 0) {
+                                // If dropped when we're in first touch, and we haven't moved past the hint displacement area before
+                                // Or, if dropped when were past the hint displacement.
+                                if ((d.touchesSinceFirstMovement == 1 && !d.movedPastHintDisplacement) || d.isParentPastHintDisplacementArea(0)) {
+                                    d.hint();
+                                    if (hintPersistencyDuration > 0) {
+                                        rollbackDragTimer.start();
+                                    }
                                 } else {
                                     d.rollbackDrag();
                                 }
@@ -305,8 +351,11 @@ EdgeDragArea {
 
                     // we released the touch after not yet recognising the touch event
                     case DirectionalDragArea.Undecided:
-                        if (hintDisplacement > 0 && hintPersistencyDuration > 0) {
-                            d.hint(true);
+                        if (hintDisplacement > 0 && hintPersistencyDuration !== 0) {
+                            d.hint();
+                            if (hintPersistencyDuration > 0) {
+                                rollbackDragTimer.start();
+                            }
                         } else {
                             d.rollbackDrag();
                         }
@@ -316,11 +365,15 @@ EdgeDragArea {
 
             // first touch
             case DirectionalDragArea.Undecided:
+                rollbackDragTimer.stop();
+                hintingAnimation.stop();
+
                 if (d.touchesSinceFirstMovement == 0) {
                     d.startValue = d.dragParent[d.targetProp];
-                }
-                if (hintDisplacement > 0) {
-                    d.hint(false);
+
+                    if (hintDisplacement > 0) {
+                        d.hint();
+                    }
                 }
                 d.touchesSinceFirstMovement++;
 

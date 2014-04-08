@@ -35,7 +35,7 @@ Showable {
     property string profile: indicatorProfile
 
     property real hintValue: panelHeight + menuContent.headerHeight
-    property alias hintPersistencyDuration: showDragHandle.hintPersistencyDuration
+    property int hintPersistencyDuration: 0
     property int lockThreshold: openedHeight / 2
     property bool fullyOpened: height == openedHeight
     property bool partiallyOpened: height > panelHeight && !fullyOpened
@@ -218,11 +218,6 @@ Showable {
                 indicators.show();
             }
         }
-        onHeaderPressedChanged: {
-            if (indicators.state == "hint") {
-                showDragHandle.persistHint(headerPressed);
-            }
-        }
     }
 
     Rectangle {
@@ -379,6 +374,14 @@ Showable {
         stretch: true
         maxTotalDragDistance: openedHeight - panelHeight
         distanceThreshold: pinnedMode ? 0 : units.gu(3)
+
+        hintPersistencyDuration: {
+            if (indicators.state == "hint" && menuContent.headerPressed) {
+                return -1;
+            } else {
+                return indicators.hintPersistencyDuration;
+            }
+        }
     }
     DragHandle {
         id: hideDragHandle
