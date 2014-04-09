@@ -64,10 +64,26 @@ private Q_SLOTS:
     void stretch_horizontal();
     void stretch_vertical();
     void hintingAnimation();
+    void hintingAnimation_data();
     void hintingAnimation_dontRestartAfterFinishedAndStillPressed();
-    void hintingAnimation_persistent();
-    void hintingAnimation_long();
-
+    void hintingAnimation_persistentHint();
+    void hintingAnimation_persistentHint_data();
+    void hintingAnimation_releaseAfterPersistentHint();
+    void hintingAnimation_releaseAfterPersistentHint_data();
+    void hintingAnimation_rollbackPersistentHint();
+    void hintingAnimation_rollbackPersistentHint_data();
+    void hintingAnimation_tapThenShowWithHandle();
+    void hintingAnimation_tapThenShowWithHandle_data();
+    void hintingAnimation_tapThenHideParent();
+    void hintingAnimation_tapThenHideParent_data();
+    void hintingAnimation_tapThenShowParent();
+    void hintingAnimation_tapThenShowParent_data();
+    void hintingAnimation_changingPersistencyDuration();
+    void hintingAnimation_changingPersistencyDuration_data();
+    void hintingAnimation_resetHintRollbackTimer();
+    void hintingAnimation_resetHintRollbackTimer_data();
+    void hintingAnimation_resetHintRollbackTimerDuringDrag();
+    void hintingAnimation_resetHintRollbackTimerDuringDrag_data();
 
 private:
     void flickAndHold(DirectionalDragArea *dragHandle, qreal distance);
@@ -420,15 +436,29 @@ void tst_DragHandle::stretch_vertical()
  */
 void tst_DragHandle::hintingAnimation()
 {
-    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
+    QFETCH(QString, handle);
+    QFETCH(int, hintAnimationDuration);
+    QFETCH(bool, partialHint);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
     QQuickItem *parentItem = dragHandle->parentItem();
     qreal hintDisplacement = 100.0;
 
     // enable hinting animations and stretch mode
     m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
     m_view->rootObject()->setProperty("stretch", QVariant(true));
+    m_view->rootObject()->setProperty("hintAnimationDuration", QVariant(hintAnimationDuration));
 
-    QCOMPARE(parentItem->height(), 0.0);
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            QCOMPARE(parentItem->height(), 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            QCOMPARE(parentItem->width(), 0.0);
+            break;
+    }
 
     QPointF initialTouchPos = dragHandle->mapToScene(
         QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
@@ -436,13 +466,55 @@ void tst_DragHandle::hintingAnimation()
 
     // Pressing causes the Showable to be stretched by hintDisplacement pixels
     QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
-    tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+                if (partialHint) {
+                    tryCompare([&](){ return parentItem->height() > 0.0; }, true);
+                } else {
+                    tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+                }
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            if (partialHint) {
+                tryCompare([&](){ return parentItem->width() > 0.0; }, true);
+            } else {
+                tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            }
+            break;
+    }
 
     // Releasing causes the Showable to shrink back to 0 pixels.
     QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
-    tryCompare([&](){ return parentItem->height(); }, 0.0);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+        tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+        tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
 
     QCOMPARE(parentItem->property("shown").toBool(), false);
+}
+
+void tst_DragHandle::hintingAnimation_data()
+{
+    QTest::addColumn<QString>("handle");
+    QTest::addColumn<int>("hintAnimationDuration");
+    QTest::addColumn<bool>("partialHint");
+
+    QTest::newRow("downwards") << "downwardsDragHandle" << 150 << false;
+    QTest::newRow("rightwards")  << "rightwardsDragHandle" << 150 << false;
+    QTest::newRow("downwards_longAnimation") << "downwardsDragHandle" << 500 << false;
+    QTest::newRow("rightwards_longAnimation")  << "rightwardsDragHandle" << 500 << false;
+    QTest::newRow("downwards_longAnimation_partialHint") << "downwardsDragHandle" << 500 << true;
+    QTest::newRow("rightwards_longAnimation_partialHint")  << "rightwardsDragHandle" << 500 << true;
 }
 
 /*
@@ -499,70 +571,704 @@ void tst_DragHandle::hintingAnimation_dontRestartAfterFinishedAndStillPressed()
     by hintDisplacement pixels and remain at that position for DragHandle.hintPersistencyDuration ms when
     finger is removed.
  */
-void tst_DragHandle::hintingAnimation_persistent()
+void tst_DragHandle::hintingAnimation_persistentHint()
 {
-    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
+    QFETCH(QString, handle);
+    QFETCH(int, hintAnimationDuration);
+    QFETCH(bool, tap);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
     QQuickItem *parentItem = dragHandle->parentItem();
     qreal hintDisplacement = 100.0;
-    qreal hintPersistencyDuration = 200.0;
+    int hintPersistencyDuration = 200;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintAnimationDuration", QVariant(hintAnimationDuration));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            QCOMPARE(parentItem->height(), 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            QCOMPARE(parentItem->width(), 0.0);
+            break;
+    }
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // Pressing causes the Showable to be stretched by hintDisplacement pixels
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    if (tap) {
+        QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+    }
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+
+    if (!tap) {
+        QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+    }
+
+    // Releasing causes the Showable to shrink back to 0 pixels
+    // after the hintPersistencyDuration interval.
+    QTest::qWait(hintPersistencyDuration/2);
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            QCOMPARE(parentItem->height(), hintDisplacement);
+            tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            QCOMPARE(parentItem->width(), hintDisplacement);
+            tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
+
+    QCOMPARE(parentItem->property("shown").toBool(), false);
+}
+
+void tst_DragHandle::hintingAnimation_persistentHint_data()
+{
+    QTest::addColumn<QString>("handle");
+    QTest::addColumn<int>("hintAnimationDuration");
+    QTest::addColumn<bool>("tap");
+
+    QTest::newRow("downwards_hold") << "downwardsDragHandle" << 150 << false;
+    QTest::newRow("rightwards_hold")  << "rightwardsDragHandle" << 150 << false;
+    QTest::newRow("downwards_tap") << "downwardsDragHandle" << 150 << true;
+    QTest::newRow("rightwards_tap")  << "rightwardsDragHandle" << 150 << true;
+    QTest::newRow("downwards_longAnimation_hold") << "downwardsDragHandle" << 500 << false;
+    QTest::newRow("rightwards_longAnimation_hold")  << "rightwardsDragHandle" << 500 << false;
+    QTest::newRow("downwards_longAnimation_tap") << "downwardsDragHandle" << 500 << true;
+    QTest::newRow("rightwards_longAnimation_tap")  << "rightwardsDragHandle" << 500 << true;
+}
+
+/*
+1 - tap on DragHandle
+* DragHandle moves to hintDisplacement and stays there
+2 - press on the DragHandle, drag it to more than hintDisplacement but less the half of the screen and release it.
+* DragHandle moves back to hintDisplacement and stays there
+3 - wait beyond persistencyDuration time
+* DragHandle finally rolls back its parent to the original hidden position.
+ */
+void tst_DragHandle::hintingAnimation_releaseAfterPersistentHint()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = 200;
 
     // enable hinting animations and stretch mode
     m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
     m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
     m_view->rootObject()->setProperty("stretch", QVariant(true));
 
-    QCOMPARE(parentItem->height(), 0.0);
-
     QPointF initialTouchPos = dragHandle->mapToScene(
         QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
-    QPointF touchPoint = initialTouchPos;
 
-    // Pressing causes the Showable to be stretched by hintDisplacement pixels
-    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
-    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
-    tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, initialTouchPos.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, initialTouchPos.toPoint());
 
-    // Releasing causes the Showable to shrink back to 0 pixels
-    // after the hintPersistencyDuration interval.
-    QTest::qWait(hintPersistencyDuration/2);
-    QCOMPARE(parentItem->height(), hintDisplacement);
-    tryCompare([&](){ return parentItem->height(); }, 0.0);
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
 
-    QCOMPARE(parentItem->property("shown").toBool(), false);
+    // 2 - press on the DragHandle, drag it to more than hintDisplacement but less the half of the screen and release it.
+    QPointF hintTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+
+    QPointF dragDirectionVector = calculateDirectionVector(dragHandle);
+    QTest::touchEvent(m_view, m_device).press(0, hintTouchPos.toPoint());
+    drag(hintTouchPos, dragDirectionVector, hintDisplacement * 1.2, 20);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height() > hintDisplacement; }, true);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width() > hintDisplacement; }, true);
+            break;
+    }
+
+    QTest::touchEvent(m_view, m_device).release(0, hintTouchPos.toPoint());
+
+    // 3 - wait beyond persistencyDuration time
+    QTest::qWait(hintPersistencyDuration * 1.5);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+        tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
+}
+
+void tst_DragHandle::hintingAnimation_releaseAfterPersistentHint_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
 }
 
 /*
-    Same as hintingAnimation test, but using a larger duration
+1 - tap on DragHandle
+* DragHandle moves to hintDisplacement and stays there
+2 - press on the DragHandle, drag it to less than hintDisplacement and release it.
+* DragHandle rolls back its parent to the original hidden position.
  */
-void tst_DragHandle::hintingAnimation_long()
+void tst_DragHandle::hintingAnimation_rollbackPersistentHint()
 {
-    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle("downwardsDragHandle");
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
     QQuickItem *parentItem = dragHandle->parentItem();
     qreal hintDisplacement = 100.0;
-    qreal hintAnimationDuration = 2000.0;
+    int hintPersistencyDuration = -1; // infinite
 
     // enable hinting animations and stretch mode
     m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
     m_view->rootObject()->setProperty("stretch", QVariant(true));
-    // change the hint duration
-    m_view->rootObject()->setProperty("hintAnimationDuration", QVariant(hintAnimationDuration));
-
-    QCOMPARE(parentItem->height(), 0.0);
 
     QPointF initialTouchPos = dragHandle->mapToScene(
         QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
     QPointF touchPoint = initialTouchPos;
 
-    // Pressing causes the Showable to be stretched by hintDisplacement pixels
+    // 1 - tap on DragHandle
     QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
-    // Should go to hint, but it will not persist, so test for > 0
-    tryCompare([&](){ return parentItem->height() > 0.0; }, true);
     QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
 
-    // Releasing causes the Showable to shrink back to 0 pixels.
-    tryCompare([&](){ return parentItem->height(); }, 0.0);
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
 
-    QCOMPARE(parentItem->property("shown").toBool(), false);
+    // 2 - press on the DragHandle, drag it to less than hintDisplacement and release it.
+    flickAndHold(dragHandle, -hintDisplacement/2);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+        tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
+}
+
+void tst_DragHandle::hintingAnimation_rollbackPersistentHint_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
+}
+
+/*
+1 - tap on DragHandle
+* DragHandle moves to hintDisplacement and stays there
+2 - press on the DragHandle, drag it beyond half of the screen and release it.
+* DragHandle calls show() on its parent, making it move all the way to its shown position.
+ */
+void tst_DragHandle::hintingAnimation_tapThenShowWithHandle()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = -1; // infinite
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->y(); }, -parentItem->height() + hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->x(); }, -parentItem->width() + hintDisplacement);
+            break;
+    }
+
+    // 2 - press on the DragHandle, drag it beyond half of the screen and release it.
+    qreal dragThreshold = fetchDragThreshold(dragHandle);
+    flickAndHold(dragHandle, dragThreshold * 1.2);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->y(); }, 0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+        tryCompare([&](){ return parentItem->x(); }, 0);
+            break;
+    }
+    QCOMPARE(parentItem->property("shown").toBool(), true);
+}
+
+void tst_DragHandle::hintingAnimation_tapThenShowWithHandle_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
+}
+
+/*
+1 - tap on DragHandle
+* DragHandle moves to hintDisplacement and stays there
+2 - hide() the parent
+* parent moves back to its original, hidden, position.
+3 - tap on DragHandle once again
+* DragHandle moves to hintDisplacement and stays there
+ */
+void tst_DragHandle::hintingAnimation_tapThenHideParent()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = -1; // infinite
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+
+    // 2 - hide() the parent
+    QMetaObject::invokeMethod(parentItem, "hide");
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
+
+    // 3 - tap on DragHandle once again
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+}
+
+void tst_DragHandle::hintingAnimation_tapThenHideParent_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
+}
+
+/*
+1 - tap on DragHandle
+* DragHandle moves to hintDisplacement and stays there
+2 - show() the parent
+* parent moves all the way to its shown position
+3 - wait beyond persistencyDuration time
+* parent stays put
+ */
+void tst_DragHandle::hintingAnimation_tapThenShowParent()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = 200;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->y(); }, -parentItem->height() + hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->x(); }, -parentItem->width() + hintDisplacement);
+            break;
+    }
+
+    // 2 - show() the parent
+    QMetaObject::invokeMethod(parentItem, "show");
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->y(); }, 0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->x(); }, 0);
+            break;
+    }
+    QCOMPARE(parentItem->property("shown").toBool(), true);
+
+    // 3 - wait beyond persistencyDuration time
+    QTest::qWait(hintPersistencyDuration * 1.5);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->y(); }, 0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->x(); }, 0);
+            break;
+    }
+    QCOMPARE(parentItem->property("shown").toBool(), true);
+}
+
+void tst_DragHandle::hintingAnimation_tapThenShowParent_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
+}
+
+/*
+1 - tap on DragHandle
+* DragHandle moves to hintDisplacement and stays there
+2 - set infinite hintPersistencyDuration and wait beyond old hintPersistencyDuration time
+* parent stays put
+3 - set finite hintPersistencyDuration and wait for less than hintPersistencyDuration time
+* parent stays put
+4 - wait beyond hintPersistencyDuration time
+* DragHandle rolls back its parent to the original hidden position.
+ */
+void tst_DragHandle::hintingAnimation_changingPersistencyDuration()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = 200;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            QTest::qWait(hintPersistencyDuration / 2);
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            QTest::qWait(hintPersistencyDuration / 2);
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+
+    // 2 - set infinite hintPersistencyDuration
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(-1));
+    QTest::qWait(hintPersistencyDuration * 1.5);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            QTest::qWait(hintPersistencyDuration / 2);
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+
+    // 2 - set infinite hintPersistencyDuration
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    QTest::qWait(hintPersistencyDuration / 2);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            QTest::qWait(hintPersistencyDuration);
+            tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            QTest::qWait(hintPersistencyDuration);
+            tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
+}
+
+void tst_DragHandle::hintingAnimation_changingPersistencyDuration_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
+}
+
+/*
+1 - tap on DragHandle
+* DragHandle moves parent hintDisplacement position
+2 - wait 0.5*persistencyDuration time
+* parent stays put
+3.1-3.x - call resetHintRollbackTimer() and wait 0.5*persistencyDuration time
+* parent stays put
+* DragHandle rolls back its parent to the original hidden position.
+ */
+void tst_DragHandle::hintingAnimation_resetHintRollbackTimer()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = 200;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            QTest::qWait(hintPersistencyDuration / 2);
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            QTest::qWait(hintPersistencyDuration / 2);
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+
+    for (int i = 0; i < 3; i ++)
+    {
+        QMetaObject::invokeMethod(dragHandle, "resetHintRollbackTimer");
+        QTest::qWait(hintPersistencyDuration / 2);
+
+        switch (dragHandle->direction()) {
+            case Direction::Upwards:
+            case Direction::Downwards:
+                tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+                break;
+            case Direction::Leftwards:
+            default: // Direction::Rightwards:
+                tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+                break;
+        }
+    }
+
+    QTest::qWait(hintPersistencyDuration);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, 0.0);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, 0.0);
+            break;
+    }
+}
+
+void tst_DragHandle::hintingAnimation_resetHintRollbackTimer_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
+}
+
+/*
+1 - press on DragHandle
+* DragHandle moves parent hintDisplacement position
+2 - drag the DragHandle half-way to completion.
+* DragHandle moves parent to drag position accordingly
+3 - call resetHintRollbackTimer() and wait beyond persistencyDuration time
+* parent didn't move, stayed at drag position.
+ */
+void tst_DragHandle::hintingAnimation_resetHintRollbackTimerDuringDrag()
+{
+    QFETCH(QString, handle);
+
+    DirectionalDragArea *dragHandle = fetchAndSetupDragHandle(handle.toUtf8().data());
+    QQuickItem *parentItem = dragHandle->parentItem();
+    qreal hintDisplacement = 100.0;
+    int hintPersistencyDuration = 200;
+
+    // enable hinting animations and stretch mode
+    m_view->rootObject()->setProperty("hintDisplacement", QVariant(hintDisplacement));
+    m_view->rootObject()->setProperty("hintPersistencyDuration", QVariant(hintPersistencyDuration));
+    m_view->rootObject()->setProperty("stretch", QVariant(true));
+
+    QPointF initialTouchPos = dragHandle->mapToScene(
+        QPointF(dragHandle->width() / 2.0, dragHandle->height() / 2.0));
+    QPointF touchPoint = initialTouchPos;
+
+    // 1 - tap on DragHandle
+    QTest::touchEvent(m_view, m_device).press(0, touchPoint.toPoint());
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height(); }, hintDisplacement);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width(); }, hintDisplacement);
+            break;
+    }
+
+    QPointF dragDirectionVector = calculateDirectionVector(dragHandle);
+    qreal dragThreshold = fetchDragThreshold(dragHandle);
+    drag(touchPoint, dragDirectionVector, dragThreshold, 20);
+
+    switch (dragHandle->direction()) {
+        case Direction::Upwards:
+        case Direction::Downwards:
+            tryCompare([&](){ return parentItem->height() > hintDisplacement; }, true);
+            break;
+        case Direction::Leftwards:
+        default: // Direction::Rightwards:
+            tryCompare([&](){ return parentItem->width() > hintDisplacement; }, true);
+            break;
+    }
+
+    QMetaObject::invokeMethod(dragHandle, "resetHintRollbackTimer");
+    QTest::qWait(hintPersistencyDuration * 1.5);
+
+    tryCompare([&](){ return parentItem->height() > hintDisplacement; }, true);
+
+    QTest::touchEvent(m_view, m_device).release(0, touchPoint.toPoint());
+}
+
+void tst_DragHandle::hintingAnimation_resetHintRollbackTimerDuringDrag_data()
+{
+    QTest::addColumn<QString>("handle");
+
+    QTest::newRow("downwards") << "downwardsDragHandle";
+    QTest::newRow("rightwards")  << "rightwardsDragHandle";
 }
 
 QTEST_MAIN(tst_DragHandle)

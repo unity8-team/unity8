@@ -157,7 +157,15 @@ Item {
 
         Button {
             enabled: root.hintDisplacement > 0
-            text: root.hintDisplacement > 0 ? root.hintPersistencyDuration > 0 ? "persistant hint" : "non-persistant hint" : "n/a"
+            text: {
+                if (root.hintDisplacement > 0) {
+                    if (root.hintPersistencyDuration > 0) {
+                        return "persistant hint";
+                    }
+                    return "non-persistant hint";
+                }
+                return "n/a";
+            }
             onClicked: {
                 if (root.hintPersistencyDuration > 0) {
                     root.hintPersistencyDuration = 0;
