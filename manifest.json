@@ -1,6 +1,6 @@
 {
     "description": "Ubuntu Reminders app, powered by Evernote",
-    "framework": "ubuntu-sdk-14.04",
+    "framework": "ubuntu-sdk-14.04-dev1",
     "architecture": "armhf",
     "hooks": {
         "reminders": {
@@ -13,7 +13,7 @@
     "title": "Reminders",
     "version": "0.5",
     "x-source": {
-        "vcs-bzr": "lp:reminders", 
+        "vcs-bzr": "lp:reminders",
         "vcs-bzr-revno": "latest"
     },
     "x-test": {
