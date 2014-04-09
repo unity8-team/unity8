@@ -57,6 +57,8 @@ install(FILES ${SRC_FILES}  DESTINATION ${DATA_DIR})
 
 configure_file(${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} DESTINATION ${DESKTOP_DIR})
+
+install(FILES manifest.json apparmor.json DESTINATION ${CMAKE_INSTALL_PREFIX})
  
 # Tests
 enable_testing()
