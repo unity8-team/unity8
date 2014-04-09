@@ -11,7 +11,7 @@
     "maintainer": "Ubuntu Reminders app developers <ubuntu-phone@lists.launchpad.net>",
     "name": "com.ubuntu.reminders",
     "title": "Reminders",
-    "version": "0.5",
+    "version": "0.5.1",
     "x-source": {
         "vcs-bzr": "lp:reminders",
         "vcs-bzr-revno": "latest"
