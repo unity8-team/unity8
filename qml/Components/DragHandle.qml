@@ -173,6 +173,9 @@ EdgeDragArea {
             StateChangeScript { script: {
                 rollbackDragTimer.stop();
                 hintingAnimation.stop();
+
+                // mark the offset when we start dragging.
+                d.dragDistanceOffset = d.parentProgress;
             }}
         },
         State {
@@ -211,6 +214,23 @@ EdgeDragArea {
         property bool movedPastHintDisplacement: false
         property bool persistingHint: false
 
+        property real dragDistanceOffset: 0
+        property real parentProgress: {
+            if (stretch) {
+                if (Direction.isPositive(direction)) {
+                    return (Direction.isHorizontal(direction) ? parent.width : parent.height);
+                } else {
+                    return maxTotalDragDistance - (Direction.isHorizontal(direction) ? parent.width : parent.height);
+                }
+            } else {
+                if (Direction.isPositive(direction)) {
+                    return Direction.isHorizontal(direction) ? parent.width + parent.x : parent.height + parent.y;
+                } else {
+                    return Direction.isHorizontal(direction) ? -parent.x : -parent.y;
+                }
+            }
+        }
+
         // The property of DragHandle's parent that will be modified
         property string targetProp: {
             if (stretch) {
@@ -229,21 +249,18 @@ EdgeDragArea {
             }
 
             if (!isParentBeyondHintDisplacement(step)) {
+                // reject backward movement if havent gone past hint displacement yet.
                 if (Direction.isPositive(direction)) {
-                    if (d.dragParent[d.targetProp] + step < hintingAnimation.to) {
-                        if (!d.movedPastHintDisplacement) {
-                            if (step < 0) {
-                                step = 0;
-                            }
-                        }
+                    if (step < 0 &&
+                        d.dragParent[d.targetProp] + step < hintingAnimation.to &&
+                        !d.movedPastHintDisplacement) {
+                        step = 0;
                     }
                 } else {
-                    if (d.dragParent[d.targetProp] + step > hintingAnimation.to) {
-                        if (!d.movedPastHintDisplacement) {
-                            if (step > 0) {
-                                step = 0;
-                            }
-                        }
+                    if (step > 0 &&
+                        d.dragParent[d.targetProp] + step > hintingAnimation.to &&
+                        !d.movedPastHintDisplacement) {
+                        step = 0;
                     }
                 }
             }
@@ -283,7 +300,9 @@ EdgeDragArea {
         objectName: "edgeDragEvaluator"
         id: dragEvaluator
         // Effectively convert distance into the drag position projected onto the gesture direction axis
-        trackedPosition: Direction.isPositive(dragArea.direction) ? sceneDistance : -sceneDistance
+        trackedPosition: d.dragDistanceOffset +
+                         Direction.isPositive(dragArea.direction) ? sceneDistance : -sceneDistance
+
         maxDragDistance: maxTotalDragDistance
         direction: dragArea.direction
     }
@@ -359,17 +378,16 @@ EdgeDragArea {
 
             // first touch
             case DirectionalDragArea.Undecided:
+                state = "dragging";
+
                 if (d.touchesSinceFirstMovement == 0) {
                     d.startValue = d.dragParent[d.targetProp];
 
                     if (hintDisplacement > 0) {
                         state = "hinting";
-                    } else {
-                        state = "dragging";
                     }
-                } else {
-                    state = "dragging";
                 }
+
                 d.touchesSinceFirstMovement++;
                 break;
         }
