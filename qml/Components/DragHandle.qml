@@ -68,14 +68,14 @@ EdgeDragArea {
     }
 
     function resetHintRollbackTimer() {
-        if (rollbackDragTimer.running && !d.persistingHint) {
+        if (rollbackDragTimer.running) {
             rollbackDragTimer.restart();
         }
     }
 
     property real hintDisplacement: 0
 
-    property alias hintAnimationDuration: hintingAnimation.duration
+    property int hintAnimationDuration: 150
     // If the drag is being rolled back, this property defines for how long it will stick around
     // on hint value before completing the rollback
     property int hintPersistencyDuration: 0
@@ -85,21 +85,19 @@ EdgeDragArea {
         if (persist) {
             rollbackDragTimer.stop();
         } else {
-            rollbackDragTimer.interval = hintPersistencyDuration + hintingAnimation.duration
-            if (d.persistingHint) {
+            rollbackDragTimer.hintPersistencyInterval = hintPersistencyDuration;
+            if (d.persistingHint && state == "hinting") {
                 rollbackDragTimer.restart();
             }
         }
         d.persistingHint = persist;
     }
 
-
-
     SmoothedAnimation {
         id: hintingAnimation
         target: hintingAnimation
         property: "animatedValue"
-        duration: 150
+        duration: hintAnimationDuration
         velocity: -1
         to: Direction.isPositive(direction) ? d.startValue + hintDisplacement
                                             : d.startValue - hintDisplacement
@@ -127,6 +125,9 @@ EdgeDragArea {
 
     Timer {
         id: rollbackDragTimer
+        property int hintPersistencyInterval: hintPersistencyDuration
+        interval: hintPersistencyInterval + hintAnimationDuration
+
         onTriggered: {
             d.rollbackDrag();
         }
@@ -136,9 +137,7 @@ EdgeDragArea {
         target: parent.showAnimation !== undefined ? parent.showAnimation : null
         onRunningChanged: {
             if (parent.showAnimation.running) {
-                d.touchesSinceFirstMovement = 0;
-                d.movedPastHintDisplacement = false;
-                d.persistingHint = false;
+                dragArea.state = "shown";
             }
         }
     }
@@ -146,41 +145,56 @@ EdgeDragArea {
         target: parent.hideAnimation !== undefined ? parent.hideAnimation : null
         onRunningChanged: {
             if (parent.hideAnimation.running) {
-                d.touchesSinceFirstMovement = 0;
-                d.movedPastHintDisplacement = false;
-                d.persistingHint = false;
+                dragArea.state = "hidden";
             }
         }
     }
     Connections {
         target: parent
         onShownChanged: {
-            d.touchesSinceFirstMovement = 0;
-            d.movedPastHintDisplacement = false;
-            d.persistingHint = false;
+            dragArea.state = parent.shown ? "shown" : "hidden";
         }
     }
 
-//    states: [
-//        State {
-//            name: "hidden"
-//            StateChangeScript { script: {
-//                hide();
-//            }}
-//        },
-//        State {
-//            name: "dragging"
-//        },
-//        State {
-//            name: "hinting"
-//        },
-//        State {
-//            name: "shown"
-//            StateChangeScript { script: {
-//                show();
-//            }}
-//        }
-//    ]
+    state: parent.shown ? "shown" : "hidden";
+
+    states: [
+        State {
+            name: "hidden"
+            StateChangeScript { script: {
+                rollbackDragTimer.stop();
+                hintingAnimation.stop();
+                d.touchesSinceFirstMovement = 0;
+                d.movedPastHintDisplacement = false;
+            }}
+        },
+        State {
+            name: "dragging"
+            StateChangeScript { script: {
+                rollbackDragTimer.stop();
+                hintingAnimation.stop();
+            }}
+        },
+        State {
+            name: "hinting"
+            StateChangeScript { script: {
+                rollbackDragTimer.stop();
+                hintingAnimation.stop();
+
+                hintingAnimation.animatedValue = d.dragParent[d.targetProp];
+                hintingAnimation.start();
+            }}
+        },
+        State {
+            name: "shown"
+            StateChangeScript { script: {
+                rollbackDragTimer.stop();
+                hintingAnimation.stop();
+                d.touchesSinceFirstMovement = 0;
+                d.movedPastHintDisplacement = false;
+            }}
+        }
+    ]
 
     // Private stuff
     QtObject {
@@ -214,7 +228,7 @@ EdgeDragArea {
                 return step;
             }
 
-            if (!isParentPastHintDisplacementArea(step)) {
+            if (!isParentBeyondHintDisplacement(step)) {
                 if (Direction.isPositive(direction)) {
                     if (d.dragParent[d.targetProp] + step < hintingAnimation.to) {
                         if (!d.movedPastHintDisplacement) {
@@ -237,7 +251,7 @@ EdgeDragArea {
             return step;
         }
 
-        function isParentPastHintDisplacementArea(adjustment) {
+        function isParentBeyondHintDisplacement(adjustment) {
             if (Direction.isPositive(direction) && dragParent[targetProp] + adjustment > hintingAnimation.to) {
                 return true;
             } else if (!Direction.isPositive(direction) && dragParent[targetProp] + adjustment < hintingAnimation.to) {
@@ -247,43 +261,19 @@ EdgeDragArea {
         }
 
         function completeDrag() {
-            console.log("COMPLETE")
             if (dragParent.shown) {
-                d.hide();
+                d.dragParent.hide();
             } else {
-                d.show();
+                d.dragParent.show();
             }
         }
 
         function rollbackDrag() {
-            console.log("ROLLBACK")
             if (dragParent.shown) {
-                d.show();
+                d.dragParent.show();
             } else {
-                d.hide();
+                d.dragParent.hide();
             }
-        }
-
-        function show() {
-            rollbackDragTimer.stop();
-            hintingAnimation.stop();
-
-            d.dragParent.show();
-        }
-
-        function hide() {
-            rollbackDragTimer.stop();
-            hintingAnimation.stop();
-
-            d.dragParent.hide();
-        }
-
-        function hint() {
-            rollbackDragTimer.stop();
-            hintingAnimation.stop();
-            hintingAnimation.animatedValue = dragParent[d.targetProp];
-
-            hintingAnimation.start();
         }
     }
 
@@ -307,10 +297,14 @@ EdgeDragArea {
                 if (Direction.isPositive(direction)) {
                     if (d.dragParent[d.targetProp] + step > hintingAnimation.to) {
                         d.movedPastHintDisplacement = true;
+                        // not hinting anymore.
+                        dragArea.state = "dragging";
                     }
                 } else {
                     if (d.dragParent[d.targetProp] + step <  hintingAnimation.to) {
                         d.movedPastHintDisplacement = true;
+                        // not hinting anymore.
+                        dragArea.state = "dragging";
                     }
                 }
             }
@@ -335,8 +329,8 @@ EdgeDragArea {
                             if (hintDisplacement > 0 && hintPersistencyDuration !== 0) {
                                 // If dropped when we're in first touch, and we haven't moved past the hint displacement area before
                                 // Or, if dropped when were past the hint displacement.
-                                if ((d.touchesSinceFirstMovement == 1 && !d.movedPastHintDisplacement) || d.isParentPastHintDisplacementArea(0)) {
-                                    d.hint();
+                                if ((d.touchesSinceFirstMovement == 1 && !d.movedPastHintDisplacement) || d.isParentBeyondHintDisplacement(0)) {
+                                    state = "hinting";
                                     if (hintPersistencyDuration > 0) {
                                         rollbackDragTimer.start();
                                     }
@@ -352,7 +346,7 @@ EdgeDragArea {
                     // we released the touch after not yet recognising the touch event
                     case DirectionalDragArea.Undecided:
                         if (hintDisplacement > 0 && hintPersistencyDuration !== 0) {
-                            d.hint();
+                            state = "hinting";
                             if (hintPersistencyDuration > 0) {
                                 rollbackDragTimer.start();
                             }
@@ -365,18 +359,18 @@ EdgeDragArea {
 
             // first touch
             case DirectionalDragArea.Undecided:
-                rollbackDragTimer.stop();
-                hintingAnimation.stop();
-
                 if (d.touchesSinceFirstMovement == 0) {
                     d.startValue = d.dragParent[d.targetProp];
 
                     if (hintDisplacement > 0) {
-                        d.hint();
+                        state = "hinting";
+                    } else {
+                        state = "dragging";
                     }
+                } else {
+                    state = "dragging";
                 }
                 d.touchesSinceFirstMovement++;
-
                 break;
         }
 
