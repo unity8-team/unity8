@@ -20,40 +20,39 @@ set(EXEC "reminders")
 
 if(CLICK_MODE)
     if(NOT DEFINED BZR_SOURCE)
-		set(BZR_SOURCE "lp:${APP_HARDCODE}")
-		message("-- Setting BZR_SOURCE to ${BZR_SOURCE}")
+        set(BZR_SOURCE "lp:${APP_HARDCODE}")
+        message("-- Setting BZR_SOURCE to ${BZR_SOURCE}")
     endif(NOT DEFINED BZR_SOURCE)
     execute_process(
-		COMMAND dpkg-architecture -qDEB_HOST_MULTIARCH
-        OUTPUT_VARIABLE ARCH_TRIPLET
-        OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND dpkg-architecture -qDEB_HOST_MULTIARCH
+            OUTPUT_VARIABLE ARCH_TRIPLET
+            OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     set(CMAKE_INSTALL_PREFIX /)
     set(QT_IMPORTS_DIR "/lib/${ARCH_TRIPLET}")
-	set(BIN_DIR /lib/${ARCH_TRIPLET}/bin)
-	set(DATA_DIR /)
-	set(DESKTOP_DIR ${DATA_DIR})
+    set(BIN_DIR /lib/${ARCH_TRIPLET}/bin)
+    set(DATA_DIR /)
+    set(DESKTOP_DIR ${DATA_DIR})
 else(CLICK_MODE)
-	# components PATH
-	execute_process(
-		COMMAND qmake -query QT_INSTALL_QML
-		OUTPUT_VARIABLE QT_IMPORTS_DIR
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	set(DATA_DIR ${CMAKE_INSTALL_DATADIR}/${APP_HARDCODE})
-	set(ICON "${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/${ICON}")
-	set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
+    # components PATH
+    execute_process(
+        COMMAND qmake -query QT_INSTALL_QML
+            OUTPUT_VARIABLE QT_IMPORTS_DIR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    set(DATA_DIR ${CMAKE_INSTALL_DATADIR}/${APP_HARDCODE})
+    set(ICON "${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/${ICON}")
+    set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
 endif(CLICK_MODE)
 
 file(GLOB_RECURSE I18N_SRC_FILES
-     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-     src/app/qml/*.qml *.desktop.in)
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    src/app/qml/*.qml *.desktop.in)
 list(SORT I18N_SRC_FILES)
 
-
 file(GLOB SRC_FILES
-     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-     *.qml *.js *.png *.js)
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.qml *.js *.png *.js)
 install(FILES ${SRC_FILES}  DESTINATION ${DATA_DIR})
 
 configure_file(${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
