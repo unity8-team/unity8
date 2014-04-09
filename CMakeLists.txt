@@ -33,6 +33,7 @@ if(CLICK_MODE)
     set(BIN_DIR /lib/${ARCH_TRIPLET}/bin)
     set(DATA_DIR /)
     set(DESKTOP_DIR ${DATA_DIR})
+    install(FILES manifest.json apparmor.json DESTINATION ${CMAKE_INSTALL_PREFIX})
 else(CLICK_MODE)
     # components PATH
     execute_process(
@@ -57,8 +58,6 @@ install(FILES ${SRC_FILES}  DESTINATION ${DATA_DIR})
 
 configure_file(${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} DESTINATION ${DESKTOP_DIR})
-
-install(FILES manifest.json apparmor.json DESTINATION ${CMAKE_INSTALL_PREFIX})
  
 # Tests
 enable_testing()
