@@ -121,7 +121,7 @@ Item {
         when: windowShown
 
         function init() {
-            spyExpand.clear();
+            spyHeaderClicked.clear();
             if (menuContent.__contentActive)
                 menuContent.releaseContent();
             tryCompare(menuContent, "__contentActive", false);
