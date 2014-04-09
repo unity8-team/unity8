@@ -28,6 +28,10 @@ from ubuntuuitoolkit import emulators as toolkit_emulators
 logger = logging.getLogger(__name__)
 
 
+class RemindersAppException(Exception):
+    """Exception raised when there's an error in the Reminders App."""
+
+
 class RemindersApp(object):
     """Autopilot helper object for the Reminders application."""
 
@@ -43,11 +47,18 @@ class MainView(toolkit_emulators.MainView):
         super(MainView, self).__init__(*args)
         self.visible.wait_for(True)
         try:
-            self.no_account_dialog = self.select_single(
+            self._no_account_dialog = self.select_single(
                 objectName='noAccountDialog')
         except dbus.StateNotFoundError:
-            # Just don't add the dialog as an attribute.
-            pass
+            self._no_account_dialog = None
+
+    @property
+    def no_account_dialog(self):
+        if self._no_account_dialog is None:
+            raise RemindersAppException(
+                'The No Account dialog is not present')
+        else:
+            return self._no_account_dialog
 
 
 class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
