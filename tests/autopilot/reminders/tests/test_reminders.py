@@ -18,9 +18,12 @@
 
 from __future__ import absolute_import
 
+import logging
+
+from autopilot import platform
+
 from reminders import fixture_setup, tests
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,8 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 
     def test_go_to_account_settings(self):
         """Test that the Go to account settings button calls url-dispatcher."""
+        if platform.model() == 'Desktop':
+             self.skipTest("URL dispatcher doesn't work on the desktop.")
         fake_url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(fake_url_dispatcher)
 
