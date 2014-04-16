@@ -27,6 +27,7 @@
 #include <QtQuick/QQuickView>
 #include <QtQml/QtQml>
 #include <QLibrary>
+#include <QDir>
 
 #include <QDebug>
 
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
     QString qmlfile;
     const QString filePath = QLatin1String("qml/reminders.qml");
     QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
-    paths.prepend(QCoreApplication::applicationDirPath());
+    paths.prepend(QDir::currentPath());
     Q_FOREACH (const QString &path, paths) {
         QString myPath = path + QLatin1Char('/') + filePath;
         if (QFile::exists(myPath)) {
