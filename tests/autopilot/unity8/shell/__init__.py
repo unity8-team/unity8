@@ -20,10 +20,14 @@
 """unity shell autopilot tests and emulators - sub level package."""
 
 from time import sleep
+
 from functools import wraps
 from gi.repository import Notify
 
 import logging
+import os
+import signal
+import subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -73,49 +77,149 @@ class DragMixin(object):
             self.touch._device.finger_move(int(x2), int(y2))
 
 
-def create_ephemeral_notification(
-    summary='',
-    body='',
-    icon=None,
-    hints=[],
-    urgency='NORMAL'
-):
-    """Create an ephemeral (non-interactive) notification
+class EphemeralNotification():
+    """Ephemeral notification class"""
+
+    def __init__(
+        self,
+        summary='',
+        body='',
+        icon=None,
+        hints=[],
+        urgency='NORMAL'
+    ):
+        """Create an ephemeral (non-interactive) notification
+
+            :param summary: Summary text for the notification
+            :param body: Body text to display in the notification
+            :param icon: Path string to the icon to use
+            :param hint_strings: List of tuples containing the 'name' and value
+                for setting the hint strings for the notification
+            :param urgency: Urgency string for the noticiation, either: 'LOW',
+                'NORMAL', 'CRITICAL'
+
+        """
+        # Because we are using the Notify library we need to init and un-init
+        # otherwise we get crashes.
+        Notify.init('Autopilot Ephemeral Notification Tests')
+
+        logger.info(
+            "Creating ephemeral: summary(%s), body(%s), urgency(%r) "
+            "and Icon(%s)",
+            summary,
+            body,
+            urgency,
+            icon
+        )
+
+        notification = Notify.Notification.new(summary, body, icon)
+
+        for hint in hints:
+            key, value = hint
+            notification.set_hint_string(key, value)
+            logger.info("Adding hint to notification: (%s, %s)", key, value)
+        notification.set_urgency(self._get_urgency(urgency))
+
+        self.notification = notification
+
+    def __del__(self):
+        """Destructor"""
+        Notify.uninit()
+
+    def show(self):
+        """Show notification"""
+        self.notification.show()
+
+    def _get_urgency(self, urgency):
+        """Translates urgency string to enum."""
+        _urgency_enums = {'LOW': Notify.Urgency.LOW,
+                          'NORMAL': Notify.Urgency.NORMAL,
+                          'CRITICAL': Notify.Urgency.CRITICAL}
+        return _urgency_enums.get(urgency.upper())
+
+
+class InteractiveNotification():
+    """Interactive notification class"""
+    def __init__(
+        self,
+        summary="",
+        body="",
+        icon=None,
+        urgency="NORMAL",
+        actions=[],
+        hints=[],
+    ):
+        """Create a interactive notification command.
 
         :param summary: Summary text for the notification
         :param body: Body text to display in the notification
         :param icon: Path string to the icon to use
-        :param hint_strings: List of tuples containing the 'name' and value
-            for setting the hint strings for the notification
         :param urgency: Urgency string for the noticiation, either: 'LOW',
             'NORMAL', 'CRITICAL'
+        :param actions: List of tuples containing the 'id' and 'label' for all
+            the actions to add
+        :param hint_strings: List of tuples containing the 'name' and value for
+            setting the hint strings for the notification
 
-    """
-    Notify.init('Unity8')
+        """
 
-    logger.info(
-        "Creating ephemeral: summary(%s), body(%s), urgency(%r) "
-        "and Icon(%s)",
-        summary,
-        body,
-        urgency,
-        icon
-    )
+        logger.info(
+            "Creating snap-decision notification with summary(%s), body(%s) "
+            "and urgency(%r)",
+            summary,
+            body,
+            urgency
+        )
 
-    notification = Notify.Notification.new(summary, body, icon)
+        script_args = [
+            '--summary', summary,
+            '--body', body,
+            '--urgency', urgency
+        ]
 
-    for hint in hints:
-        key, value = hint
-        notification.set_hint_string(key, value)
-        logger.info("Adding hint to notification: (%s, %s)", key, value)
-    notification.set_urgency(_get_urgency(urgency))
+        if icon is not None:
+            script_args.extend(['--icon', icon])
 
-    return notification
+        for hint in hints:
+            key, value = hint
+            script_args.extend(['--hint', "%s,%s" % (key, value)])
 
+        for action in actions:
+            action_id, action_label = action
+            action_string = "%s,%s" % (action_id, action_label)
+            script_args.extend(['--action', action_string])
 
-def _get_urgency(urgency):
-    """Translates urgency string to enum."""
-    _urgency_enums = {'LOW': Notify.Urgency.LOW,
-                      'NORMAL': Notify.Urgency.NORMAL,
-                      'CRITICAL': Notify.Urgency.CRITICAL}
-    return _urgency_enums.get(urgency.upper())
+        python_bin = subprocess.check_output(['which', 'python']).strip()
+        command = [python_bin, self._get_notify_script()] + script_args
+        logger.info("Launching snap-decision notification as: %s", command)
+        self._notify_proc = subprocess.Popen(
+            command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            universal_newlines=True,
+        )
+
+        poll_result = self._notify_proc.poll()
+        if poll_result is not None and self._notify_proc.returncode != 0:
+            error_output = self._notify_proc.communicate()[1]
+            raise RuntimeError("Call to script failed with: %s" % error_output)
+
+    def __del__(self):
+        """Destructor"""
+        self._tidy_up_script_process()
+
+    def _get_notify_script(self):
+        """Returns the path to the interactive notification creation script."""
+        file_path = "../emulators/create_interactive_notification.py"
+
+        the_path = os.path.abspath(
+            os.path.join(__file__, file_path))
+
+        return the_path
+
+    def _tidy_up_script_process(self):
+        if self._notify_proc is not None and self._notify_proc.poll() is None:
+            logger.error("Notification process wasn't killed, killing now.")
+            os.killpg(self._notify_proc.pid, signal.SIGTERM)

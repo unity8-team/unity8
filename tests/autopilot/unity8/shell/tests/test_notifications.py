@@ -141,7 +141,7 @@ class InteractiveNotificationBase(NotificationsBase):
             )
         ]
 
-        self._create_interactive_notification(
+        interactive_notification = shell.InteractiveNotification(
             summary,
             body,
             icon_path,
@@ -185,7 +185,7 @@ class InteractiveNotificationBase(NotificationsBase):
             ('action_decline_4', 'Send custom message...'),
         ]
 
-        self._create_interactive_notification(
+        interactive_notification = shell.InteractiveNotification(
             summary,
             body,
             icon_path,
@@ -210,88 +210,6 @@ class InteractiveNotificationBase(NotificationsBase):
                                   objectName="button4").height)))
         self.touch.tap_object(notification.select_single(objectName="button4"))
         self.assert_notification_action_id_was_called("action_decline_4")
-
-    def _create_interactive_notification(
-        self,
-        summary="",
-        body="",
-        icon=None,
-        urgency="NORMAL",
-        actions=[],
-        hints=[]
-    ):
-        """Create a interactive notification command.
-
-        :param summary: Summary text for the notification
-        :param body: Body text to display in the notification
-        :param icon: Path string to the icon to use
-        :param urgency: Urgency string for the noticiation, either: 'LOW',
-            'NORMAL', 'CRITICAL'
-        :param actions: List of tuples containing the 'id' and 'label' for all
-            the actions to add
-        :param hint_strings: List of tuples containing the 'name' and value for
-            setting the hint strings for the notification
-
-        """
-
-        logger.info(
-            "Creating snap-decision notification with summary(%s), body(%s) "
-            "and urgency(%r)",
-            summary,
-            body,
-            urgency
-        )
-
-        script_args = [
-            '--summary', summary,
-            '--body', body,
-            '--urgency', urgency
-        ]
-
-        if icon is not None:
-            script_args.extend(['--icon', icon])
-
-        for hint in hints:
-            key, value = hint
-            script_args.extend(['--hint', "%s,%s" % (key, value)])
-
-        for action in actions:
-            action_id, action_label = action
-            action_string = "%s,%s" % (action_id, action_label)
-            script_args.extend(['--action', action_string])
-
-        python_bin = subprocess.check_output(['which', 'python']).strip()
-        command = [python_bin, self._get_notify_script()] + script_args
-        logger.info("Launching snap-decision notification as: %s", command)
-        self._notify_proc = subprocess.Popen(
-            command,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            close_fds=True,
-            universal_newlines=True,
-        )
-
-        self.addCleanup(self._tidy_up_script_process)
-
-        poll_result = self._notify_proc.poll()
-        if poll_result is not None and self._notify_proc.returncode != 0:
-            error_output = self._notify_proc.communicate()[1]
-            raise RuntimeError("Call to script failed with: %s" % error_output)
-
-    def _get_notify_script(self):
-        """Returns the path to the interactive notification creation script."""
-        file_path = "../../emulators/create_interactive_notification.py"
-
-        the_path = os.path.abspath(
-            os.path.join(__file__, file_path))
-
-        return the_path
-
-    def _tidy_up_script_process(self):
-        if self._notify_proc is not None and self._notify_proc.poll() is None:
-            logger.error("Notification process wasn't killed, killing now.")
-            os.killpg(self._notify_proc.pid, signal.SIGTERM)
 
     def assert_notification_action_id_was_called(self, action_id, timeout=10):
         """Assert that the interactive notification callback of id *action_id*
@@ -356,7 +274,7 @@ class EphemeralNotificationsTests(NotificationsBase):
             )
         ]
 
-        notification = shell.create_ephemeral_notification(
+        notification = shell.EphemeralNotification(
             summary,
             body,
             icon_path,
@@ -393,7 +311,7 @@ class EphemeralNotificationsTests(NotificationsBase):
             )
         ]
 
-        notification = shell.create_ephemeral_notification(
+        notification = shell.EphemeralNotification(
             summary,
             None,
             None,
@@ -436,7 +354,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         body_critical = 'Dude, this is so urgent you have no idea :)'
         icon_path_critical = self._get_icon_path('avatars/anna_olsson.png')
 
-        notification_normal = shell.create_ephemeral_notification(
+        notification_normal = shell.EphemeralNotification(
             summary_normal,
             body_normal,
             icon_path_normal,
@@ -444,7 +362,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         )
         notification_normal.show()
 
-        notification_low = shell.create_ephemeral_notification(
+        notification_low = shell.EphemeralNotification(
             summary_low,
             body_low,
             icon_path_low,
@@ -452,7 +370,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         )
         notification_low.show()
 
-        notification_critical = shell.create_ephemeral_notification(
+        notification_critical = shell.EphemeralNotification(
             summary_critical,
             body_critical,
             icon_path_critical,
@@ -513,7 +431,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         summary = 'Summary-Body'
         body = 'This is a superfluous notification'
 
-        notification = shell.create_ephemeral_notification(summary, body)
+        notification = shell.EphemeralNotification(summary, body)
         notification.show()
 
         notification = notify_list.wait_select_single(
@@ -537,7 +455,7 @@ class EphemeralNotificationsTests(NotificationsBase):
 
         summary = 'Summary-Only'
 
-        notification = shell.create_ephemeral_notification(summary)
+        notification = shell.EphemeralNotification(summary)
         notification.show()
 
         notification = notify_list.wait_select_single(
@@ -557,7 +475,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         body = 'This is the original content of this notification-bubble.'
         icon_path = self._get_icon_path('avatars/funky.png')
 
-        notification = shell.create_ephemeral_notification(
+        notification = shell.EphemeralNotification(
             summary,
             body,
             icon_path
@@ -597,7 +515,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         icon_path = self._get_icon_path('avatars/anna_olsson.png')
         hint_icon = self._get_icon_path('applicationIcons/phone-app.png')
 
-        notification = shell.create_ephemeral_notification(
+        notification = shell.EphemeralNotification(
             summary,
             body,
             icon_path
@@ -641,7 +559,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         body = 'Hey Bro Coly!'
         icon_path = self._get_icon_path('avatars/amanda.png')
         body_sum = body
-        notification = shell.create_ephemeral_notification(
+        notification = shell.EphemeralNotification(
             summary,
             body,
             icon_path,
@@ -677,7 +595,7 @@ class EphemeralNotificationsTests(NotificationsBase):
         for new_body in bodies:
             body = new_body
             body_sum += '\n' + body
-            notification = shell.create_ephemeral_notification(
+            notification = shell.EphemeralNotification(
                 summary,
                 body,
                 icon_path,
