@@ -21,6 +21,8 @@ import subprocess
 import dbus
 import dbusmock
 
+import reminders
+
 
 class FakeURLDispatcherService(object):
     """Fake URL Dispatcher service using a dbusmock interface."""
@@ -53,5 +55,9 @@ class FakeURLDispatcherService(object):
         self.dbus_mock_server.wait()
 
     def get_last_dispatch_url_call_parameter(self):
+        calls = self.mock.GetCalls()
+        if len(calls) == 0:
+            raise reminders.RemindersAppException(
+                'URL Dispatcher was not called.')
         last_call = self.mock.GetCalls()[-1]
         return last_call[2][0]
