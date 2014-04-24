@@ -21,6 +21,8 @@ from __future__ import absolute_import
 import logging
 
 from autopilot import platform
+from autopilot.matchers import Eventually
+from testtools.matchers import Equals
 
 from reminders import fixture_setup, tests
 
@@ -42,6 +44,6 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.useFixture(fake_url_dispatcher)
 
         self.app.main_view.no_account_dialog.open_account_settings()
-        self.assertEqual(
-            fake_url_dispatcher.get_last_dispatch_url_call_parameter(),
-            'settings:///system/online-accounts')
+        self.assertThat(
+            fake_url_dispatcher.get_last_dispatch_url_call_parameter,
+            Eventually(Equals('settings:///system/online-accounts')))
