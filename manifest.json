@@ -8,7 +8,7 @@
             "desktop": "com.ubuntu.reminders.desktop"
         }
     },
-    "maintainer": "Leo Arias <leo.arias@canonical.com>",
+    "maintainer": "Ubuntu Reminders app developers <ubuntu-phone@lists.launchpad.net>"
     "name": "com.ubuntu.reminders",
     "title": "Reminders",
     "version": "0.5",
