@@ -99,13 +99,16 @@ Loader {
         id: pinLock
 
         Lockscreen {
+            id: lockscreen
             anchors.left: parent.left; anchors.right: parent.right
             height: menuFactory.maxHeight
-            placeholderText: i18n.tr("Please enter SIM PIN")
+            placeholderText: notification.summary
             background: shell.background
+            pinMinMax: [4, 8]
 
             onEntered: {
                 menuModel.changeState(menuIndex, passphrase);
+                lockscreen.clear(false);
                 entryEnabled = false;
             }
 

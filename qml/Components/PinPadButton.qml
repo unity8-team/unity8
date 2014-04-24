@@ -62,7 +62,7 @@ Item {
         Label {
             id: subTextLabel
             fontSize: "small"
-            color: "grey"
+            color: root.enabled ? "#f3f3e7" : "grey"
             anchors.horizontalCenter: parent.horizontalCenter
             visible: text.length > 0
         }

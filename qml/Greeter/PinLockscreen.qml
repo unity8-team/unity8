@@ -28,6 +28,7 @@ Column {
     property int padWidth: units.gu(34)
     property int padHeight: units.gu(28)
     property int pinLength: -1
+    property var pinMinMax : [4, 8]
 
     signal entered(string passphrase)
     signal cancel()
@@ -53,13 +54,21 @@ Column {
         property string text: ""
         property string placeholderText: ""
         onTextChanged: {
+            /// todo: get rid of the pinLength and replace with MinMax
+            if (root.pinMinMax != null) {
+                if (text.length > root.pinMinMax[1]) {
+                    text = text.substring(0, text.length-1);
+                    return;
+                }
+            }
+
             pinentryFieldLabel.text = "";
             for (var i = 0; i < text.length; ++i) {
                 pinentryFieldLabel.text += "•";
             }
             if (text.length === root.pinLength) {
                 root.entered(text);
-            }
+            }            
         }
 
         Label {
@@ -203,7 +212,17 @@ Column {
                         root.entered(pinentryField.text);
                     }
                 }
-                enabled: entryEnabled
+                enabled: {
+                    if (root.pinMinMax == null) {
+                        return true;
+                    } else {
+                        if (root.pinMinMax[0] <= pinentryField.text.length) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
             }
         }
     }

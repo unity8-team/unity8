@@ -34,6 +34,11 @@ Showable {
     // This is ignored by the alphaNumeric lockscreen as that one is confirmed with pressing enter on the OSK.
     property int pinLength: -1
 
+    // min and max of the pin
+    // null - not set
+    // array of two integers: [min, max]
+    property var pinMinMax : null
+
     property url background: ""
 
     signal entered(string passphrase)
@@ -107,6 +112,11 @@ Showable {
             target: pinPadLoader.item
             property: "pinLength"
             value: root.pinLength
+        }
+        Binding {
+            target: pinPadLoader.item
+            property: "pinMinMax"
+            value: root.pinMinMax
         }
         Binding {
             target: pinPadLoader.item
