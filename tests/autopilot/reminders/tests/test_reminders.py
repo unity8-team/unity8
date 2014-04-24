@@ -24,6 +24,7 @@ from autopilot import platform
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
 
+import reminders
 from reminders import fixture_setup, tests
 
 
@@ -40,10 +41,17 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         """Test that the Go to account settings button calls url-dispatcher."""
         if platform.model() == 'Desktop':
              self.skipTest("URL dispatcher doesn't work on the desktop.")
-        fake_url_dispatcher = fixture_setup.FakeURLDispatcher()
-        self.useFixture(fake_url_dispatcher)
+        url_dispatcher = fixture_setup.FakeURLDispatcher()
+        self.useFixture(url_dispatcher)
 
         self.app.main_view.no_account_dialog.open_account_settings()
+
+        def get_last_dispatch_url_call_parameter():
+            try:
+                return url_dispatcher.get_last_dispatch_url_call_parameter()
+            except reminders.RemindersAppException:
+                return None
+
         self.assertThat(
-            fake_url_dispatcher.get_last_dispatch_url_call_parameter,
+            get_last_dispatch_url_call_parameter,
             Eventually(Equals('settings:///system/online-accounts')))

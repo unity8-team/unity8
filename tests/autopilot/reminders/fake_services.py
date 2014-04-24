@@ -32,6 +32,7 @@ class FakeURLDispatcherService(object):
         self.dbus_connection = dbusmock.DBusTestCase.get_dbus(system_bus=False)
 
     def start(self):
+        """Start the fake URL Dispatcher service."""
         # Stop the real url-dispatcher.
         subprocess.call(['initctl', 'stop', 'url-dispatcher'])
         self.dbus_mock_server = dbusmock.DBusTestCase.spawn_server(
@@ -51,12 +52,15 @@ class FakeURLDispatcherService(object):
             dbusmock.MOCK_IFACE)
 
     def stop(self):
+        """Stop the fake URL Dispatcher service."""
         self.dbus_mock_server.terminate()
         self.dbus_mock_server.wait()
 
     def get_last_dispatch_url_call_parameter(self):
+        """Return the parameter used in the last call to dispatch URL."""
         calls = self.mock.GetCalls()
         if len(calls) == 0:
-            return None
+            raise reminders.RemindersAppException(
+                'URL dispatcher has not been called.')
         last_call = self.mock.GetCalls()[-1]
         return last_call[2][0]
