@@ -47,6 +47,7 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.app.main_view.no_account_dialog.open_account_settings()
 
         def get_last_dispatch_url_call_parameter():
+            # Workaround for http://pad.lv/1312384
             try:
                 return url_dispatcher.get_last_dispatch_url_call_parameter()
             except reminders.RemindersAppException:
