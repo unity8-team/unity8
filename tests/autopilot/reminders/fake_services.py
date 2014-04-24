@@ -57,7 +57,6 @@ class FakeURLDispatcherService(object):
     def get_last_dispatch_url_call_parameter(self):
         calls = self.mock.GetCalls()
         if len(calls) == 0:
-            raise reminders.RemindersAppException(
-                'URL Dispatcher was not called.')
+            return None
         last_call = self.mock.GetCalls()[-1]
         return last_call[2][0]
