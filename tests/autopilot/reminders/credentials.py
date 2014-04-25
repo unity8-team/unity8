@@ -90,7 +90,7 @@ class AccountManager(object):
         auth_data = account_service.get_auth_data()
         identity = auth_data.get_credentials_id()
         method = auth_data.get_method()
-        mechanism = auth_data.get_method()
+        mechanism = auth_data.get_mechanism()
         session_data = auth_data.get_parameters()
         session = Signon.AuthSession.new(identity, method)
         session.process(

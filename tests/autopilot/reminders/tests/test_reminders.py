@@ -67,7 +67,7 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
     def add_evernote_credentials(self):
         account_manager = credentials.AccountManager()
         account = account_manager.add_evernote_credentials(
-            'dummy@example.com', 'dummy')
+            'u1test@canonical.com', 'password')
         self.addCleanup(account_manager.delete_account, account)
 
     def test(self):
