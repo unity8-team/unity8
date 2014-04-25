@@ -49,7 +49,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#55000000"
         width:root.padWidth
-        height: units.gu(5)
+        height: units.gu(6)
         radius: "medium"
         property string text: ""
         property string placeholderText: ""
@@ -80,6 +80,7 @@ Column {
             font.pixelSize: units.dp(44)
             color: "#f3f3e7"
             opacity: 0.6
+            textFormat: Text.RichText
         }
         Label {
             id: pinentryFieldPlaceHolder
