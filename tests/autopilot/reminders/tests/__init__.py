@@ -80,5 +80,5 @@ class RemindersAppTestCase(AutopilotTestCase):
     @autopilot_logging.log_action(logger.info)
     def launch_test_click(self):
         return self.launch_click_package(
-            'com.ubuntu.reminders-app',
+            'com.ubuntu.reminders',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
