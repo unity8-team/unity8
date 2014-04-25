@@ -28,8 +28,9 @@ cross-compile the app. Here's how:
   - On the terminal prompt that is started, type 
     apt-get install libssl-dev:armhf libboost-dev:armhf'
   - Close the terminal when the installation finishes
-5. Now you can either do a clean checkout and wait to be prompted by Qt Creator
-   to add the armhf kit, or alternatively:
+5. Now you can either do a clean checkout/remove the CMakeLists.txt.user file
+   and wait to be prompted by Qt Creator to add the armhf kit, or
+   alternatively:
 6. Go to the Projects tab > Add kit and then select the UbuntuSDK armhf kit
 
 Additionally, you'll have to tell Qt Creator that you are doing a build for a
