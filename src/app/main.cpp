@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
     const QString filePath = QLatin1String("qml/reminders.qml");
     QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
     paths.prepend(QDir::currentPath());
+    paths.prepend(QCoreApplication::applicationDirPath());
     Q_FOREACH (const QString &path, paths) {
         QString myPath = path + QLatin1Char('/') + filePath;
         if (QFile::exists(myPath)) {
