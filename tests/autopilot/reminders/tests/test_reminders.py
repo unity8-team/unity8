@@ -25,7 +25,7 @@ from autopilot.matchers import Eventually
 from testtools.matchers import Equals
 
 import reminders
-from reminders import fixture_setup, tests
+from reminders import credentials, fixture_setup, tests
 
 
 logger = logging.getLogger(__name__)
@@ -56,3 +56,19 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.assertThat(
             get_last_dispatch_url_call_parameter,
             Eventually(Equals('settings:///system/online-accounts')))
+
+
+class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
+
+    def setUp(self):
+        self.add_evernote_credentials()
+        super(RemindersTestCaseWithAccount, self).setUp()
+
+    def add_evernote_credentials(self):
+        account_manager = credentials.AccountManager()
+        account = account_manager.add_evernote_credentials(
+            'dummy@example.com', 'dummy')
+        self.addCleanup(account_manager.delete_account, account)
+
+    def test(self):
+        import pdb; pdb.set_trace()
