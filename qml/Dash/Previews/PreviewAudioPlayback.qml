@@ -101,6 +101,7 @@ PreviewWidget {
                     property int column1Width: units.gu(3)
                     property int column2Width: width - (2 * spacing) - column1Width - column3Width
                     property int column3Width: units.gu(4)
+                    property int progressBarMaxWidth: progressBarImage.width - units.dp(4)
 
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width
@@ -161,17 +162,12 @@ PreviewWidget {
                         }
 
                         UbuntuShape {
-                            id: progressBarFillBuffer
-                            objectName: "progressBarFillBuffer"
-
-                            property int maxWidth: progressBarImage.width - units.dp(4)
-
                             anchors {
                                 left: progressBarImage.left
                                 right: progressBarImage.right
                                 verticalCenter: progressBarImage.verticalCenter
                                 margins: units.dp(2)
-                                rightMargin: maxWidth - (maxWidth * audio.bufferProgress) + units.dp(2)
+                                rightMargin: trackRow.progressBarMaxWidth - (trackRow.progressBarMaxWidth * audio.bufferProgress) + units.dp(2)
                             }
                             height: units.dp(2)
                             visible: progressBarImage.visible && audio.bufferProgress > 0
@@ -182,14 +178,12 @@ PreviewWidget {
                             id: progressBarFill
                             objectName: "progressBarFill"
 
-                            property int maxWidth: progressBarImage.width - units.dp(4)
-
                             anchors {
                                 left: progressBarImage.left
                                 right: progressBarImage.right
                                 verticalCenter: progressBarImage.verticalCenter
                                 margins: units.dp(2)
-                                rightMargin: maxWidth - (maxWidth * audio.progress) + units.dp(2)
+                                rightMargin: trackRow.progressBarMaxWidth - (trackRow.progressBarMaxWidth * audio.progress) + units.dp(2)
                             }
                             height: units.dp(2)
                             visible: progressBarImage.visible
