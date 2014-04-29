@@ -119,10 +119,6 @@ Rectangle {
             var track1ProgressBar = findChild(track1Item, "progressBarFill");
             var track2ProgressBar = findChild(track2Item, "progressBarFill");
 
-            var track0ProgressBarBuffer = findChild(track0Item, "progressBarFillBuffer");
-            var track1ProgressBarBuffer = findChild(track1Item, "progressBarFillBuffer");
-            var track2ProgressBarBuffer = findChild(track2Item, "progressBarFillBuffer");
-
             var track0PlayButton = findChild(track0Item, "playButton");
             var track1PlayButton = findChild(track1Item, "playButton");
             var track2PlayButton = findChild(track2Item, "playButton");
@@ -139,10 +135,6 @@ Rectangle {
 
             tryCompare(audio, "playbackState", Audio.PlayingState);
             checkPlayerSource(0);
-
-            tryCompare(track0ProgressBarBuffer, "visible", true);
-            tryCompare(track1ProgressBarBuffer, "visible", false);
-            tryCompare(track2ProgressBarBuffer, "visible", false);
 
             tryCompare(track0ProgressBar, "visible", true);
             tryCompare(track1ProgressBar, "visible", false);
@@ -165,10 +157,6 @@ Rectangle {
             tryCompare(audio, "playbackState", Audio.PlayingState);
             checkPlayerSource(1);
 
-            tryCompare(track0ProgressBarBuffer, "visible", false);
-            tryCompare(track1ProgressBarBuffer, "visible", true);
-            tryCompare(track2ProgressBarBuffer, "visible", false);
-
             tryCompare(track0ProgressBar, "visible", false);
             tryCompare(track1ProgressBar, "visible", true);
             tryCompare(track2ProgressBar, "visible", false);
@@ -178,10 +166,6 @@ Rectangle {
 
             tryCompare(audio, "playbackState", Audio.PlayingState);
             checkPlayerSource(2);
-
-            tryCompare(track0ProgressBarBuffer, "visible", false);
-            tryCompare(track1ProgressBarBuffer, "visible", true);
-            tryCompare(track2ProgressBarBuffer, "visible", false);
 
             tryCompare(track0ProgressBar, "visible", false);
             tryCompare(track1ProgressBar, "visible", false);
