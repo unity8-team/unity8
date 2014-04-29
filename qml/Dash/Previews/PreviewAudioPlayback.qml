@@ -161,6 +161,24 @@ PreviewWidget {
                         }
 
                         UbuntuShape {
+                            id: progressBarFillBuffer
+                            objectName: "progressBarFillBuffer"
+
+                            property int maxWidth: progressBarImage.width - units.dp(4)
+
+                            anchors {
+                                left: progressBarImage.left
+                                right: progressBarImage.right
+                                verticalCenter: progressBarImage.verticalCenter
+                                margins: units.dp(2)
+                                rightMargin: maxWidth - (maxWidth * audio.bufferProgress) + units.dp(2)
+                            }
+                            height: units.dp(2)
+                            visible: progressBarImage.visible && audio.bufferProgress > 0
+                            color: UbuntuColors.warmGrey
+                        }
+
+                        UbuntuShape {
                             id: progressBarFill
                             objectName: "progressBarFill"
 
