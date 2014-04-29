@@ -167,7 +167,7 @@ PreviewWidget {
                                 right: progressBarImage.right
                                 verticalCenter: progressBarImage.verticalCenter
                                 margins: units.dp(2)
-                                rightMargin: trackRow.progressBarMaxWidth - (trackRow.progressBarMaxWidth * audio.bufferProgress) + units.dp(2)
+                                rightMargin: visible ? trackRow.progressBarMaxWidth - (trackRow.progressBarMaxWidth * audio.bufferProgress) + units.dp(2) : undefined
                             }
                             height: units.dp(2)
                             visible: progressBarImage.visible && audio.bufferProgress > 0
@@ -183,7 +183,7 @@ PreviewWidget {
                                 right: progressBarImage.right
                                 verticalCenter: progressBarImage.verticalCenter
                                 margins: units.dp(2)
-                                rightMargin: trackRow.progressBarMaxWidth - (trackRow.progressBarMaxWidth * audio.progress) + units.dp(2)
+                                rightMargin: visible ? trackRow.progressBarMaxWidth - (trackRow.progressBarMaxWidth * audio.progress) + units.dp(2) : undefined
                             }
                             height: units.dp(2)
                             visible: progressBarImage.visible
