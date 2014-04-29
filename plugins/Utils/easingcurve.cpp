@@ -18,6 +18,7 @@
 
 #include "easingcurve.h"
 
+#include <QDebug>
 
 EasingCurve::EasingCurve(QObject *parent):
     QObject(parent)
@@ -57,6 +58,11 @@ void EasingCurve::setProgress(qreal progress)
     if (m_progress != progress) {
         m_progress = progress;
         m_value = m_easingCurve.valueForProgress(m_progress);
+        qDebug() << "calculated progress. input:" << progress << "output" << m_value << "type:" << m_easingCurve.type() << "period" << m_easingCurve.period();
+//        m_easingCurve.setType(QEasingCurve::OutBounce);
+//        qDebug() << "bounced:" << m_easingCurve.valueForProgress(m_progress);
+//        m_easingCurve.setType(QEasingCurve::OutSine);
+//        qDebug() << "again sine:" << m_easingCurve.valueForProgress(m_progress);
         Q_EMIT progressChanged();
     }
 }

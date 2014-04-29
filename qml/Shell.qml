@@ -38,9 +38,10 @@ FocusScope {
     id: shell
 
     // this is only here to select the width / height of the window if not running fullscreen
-    property bool tablet: false
-    width: tablet ? units.gu(160) : applicationArguments.hasGeometry() ? applicationArguments.width() : units.gu(40)
-    height: tablet ? units.gu(100) : applicationArguments.hasGeometry() ? applicationArguments.height() : units.gu(71)
+    property bool tablet: true
+    width: tablet ? units.gu(100) : applicationArguments.hasGeometry() ? applicationArguments.width() : units.gu(40)
+    height: tablet ? units.gu(62.5) : applicationArguments.hasGeometry() ? applicationArguments.height() : units.gu(71)
+    onWidthChanged: print("shell width is", width / units.gu(1))
 
     property real edgeSize: units.gu(2)
     property url defaultBackground: Qt.resolvedUrl(shell.width >= units.gu(60) ? "graphics/tablet_background.jpg" : "graphics/phone_background.jpg")
@@ -286,7 +287,7 @@ FocusScope {
             id: applicationsDisplayLoader
             anchors.fill: parent
 
-            source: shell.sideStageEnabled ? "Stages/StageWithSideStage.qml" : "Stages/PhoneStage.qml"
+            source: shell.sideStageEnabled ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
 
             Binding {
                 target: applicationsDisplayLoader.item
