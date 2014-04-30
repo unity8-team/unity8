@@ -99,6 +99,7 @@ Page {
     }
 
     ListView {
+        id: notesListView
         objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
@@ -111,11 +112,19 @@ Page {
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
-            Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
+            Component.onCompleted: {
+                NotesStore.refreshNoteContent(model.guid)
+            }
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
             }
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
         }
     }
 }

@@ -27,6 +27,7 @@ Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false)
 {
+    connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleCreated);
     sort(0, Qt::DescendingOrder);
@@ -79,6 +80,11 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
         emit onlySearchResultsChanged();
         invalidateFilter();
     }
+}
+
+bool Notes::loading() const
+{
+    return NotesStore::instance()->loading();
 }
 
 Note *Notes::note(const QString &guid)

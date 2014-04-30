@@ -105,6 +105,7 @@ Page {
         }
 
         ListView {
+            id: notebooksListView
             model: notebooks
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height - keyboardRect.height
@@ -118,6 +119,12 @@ Page {
                     print("selected notebook:", model.guid)
                     root.openNotebook(name, model.guid)
                 }
+            }
+
+            ActivityIndicator {
+                anchors.centerIn: parent
+                running: notebooks.loading
+                visible: running
             }
         }
 
