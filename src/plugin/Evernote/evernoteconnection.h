@@ -72,6 +72,8 @@ signals:
     void tokenChanged();
 
 private slots:
+    void connectToEvernote();
+
     void startJobQueue();
     void startNextJob();
 
@@ -79,11 +81,10 @@ private:
     explicit EvernoteConnection(QObject *parent = 0);
     static EvernoteConnection *s_instance;
 
-    bool setupUserStore();
-    bool setupNotesStore();
+    void setupUserStore();
+    void setupNotesStore();
 
     bool m_useSSL;
-
     QString m_token;
 
     // There must be only one job running at a time
