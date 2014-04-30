@@ -36,7 +36,7 @@ Notebooks::Notebooks(QObject *parent) :
     connect(NotesStore::instance(), SIGNAL(notebookRemoved(const QString &)), SLOT(notebookRemoved(const QString &)));
 }
 
-bool Notebooks::loading()
+bool Notebooks::loading() const
 {
     return NotesStore::instance()->notebooksLoading();
 }

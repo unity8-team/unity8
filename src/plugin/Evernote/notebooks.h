@@ -39,7 +39,7 @@ public:
     };
     explicit Notebooks(QObject *parent = 0);
 
-    bool loading();
+    bool loading() const;
 
     QVariant data(const QModelIndex &index, int role) const;
     int rowCount(const QModelIndex &parent) const;
