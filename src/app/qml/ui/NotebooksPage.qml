@@ -119,18 +119,11 @@ Page {
                     print("selected notebook:", model.guid)
                     root.openNotebook(name, model.guid)
                 }
-
-                Component.onCompleted: {
-                    if (index == notebooksListView.count - 1) {
-                        notebooksLoadIndicator.running = false;
-                    }
-                }
             }
 
             ActivityIndicator {
-                id: notebooksLoadIndicator
                 anchors.centerIn: parent
-                running: true
+                running: notebooks.loading
                 visible: running
             }
         }

@@ -114,9 +114,6 @@ Page {
 
             Component.onCompleted: {
                 NotesStore.refreshNoteContent(model.guid)
-                if (index == notesListView.count - 1) {
-                    notesLoadIndicator.running = false;
-                }
             }
 
             onClicked: {
@@ -125,9 +122,8 @@ Page {
         }
 
         ActivityIndicator {
-            id: notesLoadIndicator
             anchors.centerIn: parent
-            running: true
+            running: notes.loading
             visible: running
         }
     }
