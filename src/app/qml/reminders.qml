@@ -30,7 +30,6 @@ import Ubuntu.OnlineAccounts 0.1
 */
 
 MainView {
-
     id: root
 
     // objectName for functional testing purposes (autopilot-qt5)
@@ -93,6 +92,32 @@ MainView {
         }
     }
 
+    function doLogin() {
+        print("got accounts:", accounts.count)
+        var accountName = accountPreference.accountName;
+        if (accountName) {
+            var i;
+            for (i = 0; i < accounts.count; i++) {
+                if (accounts.get(i, "displayName") == accountName) {
+                    accountService.objectHandle = accounts.get(i, "accountServiceHandle");
+                }
+            }
+        }
+        if (!accountService.objectHandle) {
+            switch (accounts.count) {
+            case 0:
+                PopupUtils.open(noAccountDialog)
+                print("No account available! Please setup an account in the system settings");
+                break;
+            case 1:
+                accountService.objectHandle = accounts.get(0, "accountServiceHandle");
+                break;
+            default:
+                openAccountPage(false);
+            }
+        }
+    }
+
     AccountServiceModel {
         id: accounts
         service: "evernote"
@@ -121,30 +146,8 @@ MainView {
             height = units.gu(75);
         }
 
-        pagestack.push(rootTabs)
-        print("got accounts:", accounts.count)
-        var accountName = accountPreference.accountName;
-        if (accountName) {
-            var i;
-            for (i = 0; i < accounts.count; i++) {
-                if (accounts.get(i, "displayName") == accountName) {
-                    accountService.objectHandle = accounts.get(i, "accountServiceHandle");
-                }
-            }
-        }
-        if (!accountService.objectHandle) {
-            switch (accounts.count) {
-            case 0:
-                PopupUtils.open(noAccountDialog)
-                print("No account available! Please setup an account in the system settings");
-                break;
-            case 1:
-                accountService.objectHandle = accounts.get(0, "accountServiceHandle");
-                break;
-            default:
-                openAccountPage(false);
-            }
-        }
+        pagestack.push(rootTabs);
+        doLogin();
     }
 
     Connections {
@@ -283,12 +286,25 @@ MainView {
         id: noAccountDialog
         Dialog {
             id: noAccount
+            objectName: "noAccountDialog"
             title: i18n.tr("No account available")
             text: i18n.tr("Please setup an account in the system settings")
+
+            Connections {
+                target: accounts
+                onCountChanged: {
+                    if (accounts.count == 1) {
+                        PopupUtils.close(noAccount)
+                        doLogin();
+                    }
+                }
+            }
+
             Button {
+                objectName: "openAccountButton"
                 text: i18n.tr("Open account settings")
                 color: UbuntuColors.orange
-                onClicked: Qt.openUrlExternally("settings:///system/online-accounts") 
+                onClicked: Qt.openUrlExternally("settings:///system/online-accounts")
             }
         }
    }
