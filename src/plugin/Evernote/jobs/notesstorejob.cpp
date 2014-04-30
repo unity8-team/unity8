@@ -29,7 +29,9 @@ NotesStoreJob::NotesStoreJob(QObject *parent) :
 
 void NotesStoreJob::resetConnection()
 {
-    EvernoteConnection::instance()->m_notesStoreHttpClient->close();
+    if (EvernoteConnection::instance()->m_notesStoreHttpClient->isOpen()) {
+        EvernoteConnection::instance()->m_notesStoreHttpClient->close();
+    }
     EvernoteConnection::instance()->m_notesStoreHttpClient->open();
 }
 
