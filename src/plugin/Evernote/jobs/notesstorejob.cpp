@@ -32,6 +32,9 @@ void NotesStoreJob::resetConnection()
     if (EvernoteConnection::instance()->m_notesStoreHttpClient->isOpen()) {
         EvernoteConnection::instance()->m_notesStoreHttpClient->close();
     }
+    try {
+        EvernoteConnection::instance()->m_notesStoreHttpClient->readEnd();
+    } catch(...) {}
     EvernoteConnection::instance()->m_notesStoreHttpClient->open();
 }
 
