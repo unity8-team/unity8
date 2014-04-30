@@ -69,8 +69,6 @@ void EvernoteConnection::setupUserStore()
 {
     boost::shared_ptr<TSocket> socket;
 
-    qDebug() << "1";
-
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
         socket = sslSocketFactory->createSocket(EVERNOTE_HOST.toStdString(), 443);
@@ -81,8 +79,6 @@ void EvernoteConnection::setupUserStore()
         qDebug() << "created insecure UserStore socket";
     }
 
-    qDebug() << "2";
-
     // setup UserStore client
     boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
     m_userStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
@@ -91,8 +87,6 @@ void EvernoteConnection::setupUserStore()
 
     boost::shared_ptr<TProtocol> userstoreiprot(new TBinaryProtocol(m_userStoreHttpClient));
     m_userstoreClient = new evernote::edam::UserStoreClient(userstoreiprot);
-
-    qDebug() << "3";
 }
 
 void EvernoteConnection::setupNotesStore()
