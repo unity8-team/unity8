@@ -1,3 +1,10 @@
+add_executable(qmlscene ALIAS uqmlscene)
+
+if(DEFINED QMLTESTRUNNER_EXECUTABLE)
+    add_executable(qmltestrunner IMPORTED)
+    set_target_properties(qmltestrunner PROPERTIES IMPORTED_LOCATION "${QMLTESTRUNNER_EXECUTABLE}")
+endif()
+
 # add_qml_test macro
 include(QmlTest)
 

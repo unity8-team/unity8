@@ -19,19 +19,39 @@
 # qmltest_DEFAULT_IMPORT_PATHS
 # qmltest_DEFAULT_PROPERTIES
 
-find_program(qmltestrunner_exe qmltestrunner)
+if(NOT TARGET qmltestrunner)
+    find_program(qmltestrunner_exe qmltestrunner)
 
-if(NOT qmltestrunner_exe)
-  msg(FATAL_ERROR "Could not locate qmltestrunner.")
+    if(NOT qmltestrunner_exe)
+      msg(FATAL_ERROR "Could not locate qmltestrunner.")
+    endif()
+
+    add_executable(qmltestrunner IMPORTED)
+    set_target_properties(qmltestrunner PROPERTIES IMPORTED_LOCATION ${qmltestrunner_exe})
 endif()
 
-set(qmlscene_exe ${CMAKE_BINARY_DIR}/tests/uqmlscene/uqmlscene)
+if(NOT TARGET qmlscene)
+    find_program(qmlscene_exe qmlscene)
+
+    if(NOT qmlscene_exe)
+      msg(FATAL_ERROR "Could not locate qmlscene.")
+    endif()
+
+    add_executable(qmlscene IMPORTED)
+    set_target_properties(qmlscene PROPERTIES IMPORTED_LOCATION ${qmlscene_exe})
+endif()
+
+if(NOT DEFINED ARTIFACTS_DIR)
+    set(ARTIFACTS_DIR ${CMAKE_BINARY_DIR})
+endif()
 
 macro(add_manual_qml_test SUBPATH COMPONENT_NAME)
     set(options NO_ADD_TEST NO_TARGETS)
     set(multi_value_keywords IMPORT_PATHS TARGETS PROPERTIES ENVIRONMENT)
 
     cmake_parse_arguments(qmltest "${options}" "" "${multi_value_keywords}" ${ARGN})
+
+    get_target_property(qmlscene_executable qmlscene LOCATION)
 
     set(qmlscene_TARGET try${COMPONENT_NAME})
     set(qmltest_FILE ${SUBPATH}/tst_${COMPONENT_NAME})
@@ -51,7 +71,7 @@ macro(add_manual_qml_test SUBPATH COMPONENT_NAME)
 
     set(qmlscene_command
         env ${qmltest_ENVIRONMENT}
-        ${qmlscene_exe} ${CMAKE_CURRENT_SOURCE_DIR}/${qmltest_FILE}.qml
+        ${qmlscene_executable} ${CMAKE_CURRENT_SOURCE_DIR}/${qmltest_FILE}.qml
             ${qmlscene_imports}
     )
     add_custom_target(${qmlscene_TARGET} ${qmlscene_command})
@@ -75,6 +95,8 @@ macro(add_qml_test_internal SUBPATH COMPONENT_NAME ITERATIONS)
     set(qmltest_TARGET test${COMPONENT_NAME})
     set(qmltest_xvfb_TARGET xvfbtest${COMPONENT_NAME})
     set(qmltest_FILE ${SUBPATH}/tst_${COMPONENT_NAME})
+
+    get_target_property(qmltestrunner_executable qmltestrunner LOCATION)
 
     set(qmltestrunner_imports "")
     if(NOT "${qmltest_IMPORT_PATHS}" STREQUAL "")
@@ -104,10 +126,10 @@ macro(add_qml_test_internal SUBPATH COMPONENT_NAME ITERATIONS)
 
     set(qmltest_command
         env ${qmltest_ENVIRONMENT}
-        ${qmltestrunner_exe} -input ${CMAKE_CURRENT_SOURCE_DIR}/${qmltest_FILE}.qml
+        ${qmltestrunner_executable} -input ${CMAKE_CURRENT_SOURCE_DIR}/${qmltest_FILE}.qml
             ${qmltestrunner_imports}
             ${ITERATIONS_STRING}
-            -o ${CMAKE_BINARY_DIR}/${qmltest_TARGET}.xml,xunitxml
+            -o ${ARTIFACTS_DIR}/${qmltest_TARGET}.xml,xunitxml
             -o -,txt
             ${function_ARGS}
     )
@@ -119,9 +141,9 @@ macro(add_qml_test_internal SUBPATH COMPONENT_NAME ITERATIONS)
     set(qmltest_xvfb_command
         env ${qmltest_ENVIRONMENT} ${LD_PRELOAD_PATH}
         xvfb-run --server-args "-screen 0 1024x768x24" --auto-servernum
-        ${qmltestrunner_exe} -input ${CMAKE_CURRENT_SOURCE_DIR}/${qmltest_FILE}.qml
+        ${qmltestrunner_executable} -input ${CMAKE_CURRENT_SOURCE_DIR}/${qmltest_FILE}.qml
         ${qmltestrunner_imports}
-            -o ${CMAKE_BINARY_DIR}/${qmltest_TARGET}.xml,xunitxml
+            -o ${ARTIFACTS_DIR}/${qmltest_TARGET}.xml,xunitxml
             -o -,txt
             ${function_ARGS}
     )
@@ -135,7 +157,7 @@ macro(add_binary_qml_test CLASS_NAME LD_PATH DEPS)
     set(testCommand
           LD_LIBRARY_PATH=${LD_PATH}
           ${CMAKE_CURRENT_BINARY_DIR}/${CLASS_NAME}TestExec
-          -o ${CMAKE_BINARY_DIR}/${CLASSNAME}Test.xml,xunitxml
+          -o ${ARTIFACTS_DIR}/${CLASSNAME}Test.xml,xunitxml
           -o -,txt)
 
     add_qmltest_target(test${CLASS_NAME} "${testCommand}" FALSE TRUE)
@@ -151,7 +173,7 @@ macro(add_binary_qml_test CLASS_NAME LD_PATH DEPS)
           LD_LIBRARY_PATH=${LD_PATH}
           xvfb-run --server-args "-screen 0 1024x768x24" --auto-servernum
           ${CMAKE_CURRENT_BINARY_DIR}/${CLASS_NAME}TestExec
-          -o ${CMAKE_BINARY_DIR}/${CLASS_NAME}Test.xml,xunitxml
+          -o ${ARTIFACTS_DIR}/${CLASS_NAME}Test.xml,xunitxml
           -o -,txt)
 
     add_qmltest_target(xvfbtest${CLASS_NAME} "${xvfbtestCommand}" FALSE TRUE)
