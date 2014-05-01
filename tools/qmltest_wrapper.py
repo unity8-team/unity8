@@ -6,7 +6,7 @@ import subprocess
 import shutil
 import tempfile
 
-ENCODE_LIMIT=60
+ENCODE_LIMIT=120
 GRACE_TIME=5
 
 recordmydesktop_args = [
@@ -62,18 +62,25 @@ if __name__ == "__main__":
                 
                 # stop recording, give 60 seconds to encode
                 recorder.terminate()
-                recorder.wait(ENCODE_LIMIT)
-                if recorder.returncode is None:
+                try:
+                    recorder.wait(ENCODE_LIMIT)
+                except subprocess.TimeoutExpired:
                     print("===== Recorder took too long to encode, recording will be incomplete =====")
                     recorder.terminate()
-                    recorder.wait(GRACE_TIME)
+                    try:
+                        recorder.wait(GRACE_TIME)
+                    except subprocess.TimeoutExpired:
+                        pass
                 if recorder.returncode is 0:
                     # only store the file if recorder exited cleanly
                     shutil.move(tmpname, outfile)
             else:
                 # abort the recording, test passed  
                 recorder.send_signal(subprocess.signal.SIGABRT)
-                recorder.wait(GRACE_TIME)
+                try:
+                    recorder.wait(GRACE_TIME)
+                except subprocess.TimeoutExpired:
+                    pass
             finally:
                 recorder.poll()
                 # kill the recording if still running
