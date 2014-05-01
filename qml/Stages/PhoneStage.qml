@@ -478,7 +478,7 @@ Item {
 
                     EasingCurve {
                         id: snappingCurve
-                        type: EasingCurve.OutQuad
+                        type: EasingCurve.Linear
                         period: 0.05
                         progress: appDelegate.progress - spreadView.positionMarker1
                     }

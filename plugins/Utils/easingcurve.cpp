@@ -33,7 +33,11 @@ QEasingCurve::Type EasingCurve::type() const
 
 void EasingCurve::setType(const QEasingCurve::Type &type)
 {
-    m_easingCurve.setType(type);
+    // FIXME: Working around bug https://bugreports.qt-project.org/browse/QTBUG-38686 here
+    QEasingCurve newCurve;
+    newCurve.setType(type);
+    newCurve.setPeriod(m_easingCurve.period());
+    m_easingCurve = newCurve;
     Q_EMIT typeChanged();
 }
 
@@ -58,11 +62,6 @@ void EasingCurve::setProgress(qreal progress)
     if (m_progress != progress) {
         m_progress = progress;
         m_value = m_easingCurve.valueForProgress(m_progress);
-        qDebug() << "calculated progress. input:" << progress << "output" << m_value << "type:" << m_easingCurve.type() << "period" << m_easingCurve.period();
-//        m_easingCurve.setType(QEasingCurve::OutBounce);
-//        qDebug() << "bounced:" << m_easingCurve.valueForProgress(m_progress);
-//        m_easingCurve.setType(QEasingCurve::OutSine);
-//        qDebug() << "again sine:" << m_easingCurve.valueForProgress(m_progress);
         Q_EMIT progressChanged();
     }
 }

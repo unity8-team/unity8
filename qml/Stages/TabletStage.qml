@@ -16,10 +16,10 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import "../Components"
-import Unity.Application 0.1
 import Ubuntu.Gestures 0.1
+import Unity.Application 0.1
 import Utils 0.1
+import "../Components"
 
 Item {
     id: root
@@ -63,12 +63,26 @@ Item {
             appId0 = ApplicationManager.get(0).appId;
             appId1 = ApplicationManager.get(1).appId;
         }
+
+        function indexOf(appId) {
+            for (var i = 0; i < ApplicationManager.count; i++) {
+                if (ApplicationManager.get(i).appId == appId) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
     Connections {
         target: ApplicationManager
         onFocusRequested: {
-            ApplicationManager.focusApplication(appId)
+            if (spreadView.visible) {
+                spreadView.snapTo(priv.indexOf(appId));
+            } else {
+                priv.switchToApp(appId);
+                ApplicationManager.focusApplication(appId)
+            }
         }
     }
 
@@ -77,7 +91,7 @@ Item {
         anchors.fill: parent
         contentWidth: spreadRow.width
 
-        property int tileDistance: units.gu(10)
+        property int tileDistance: units.gu(20)
         property int sideStageWidth: units.gu(40)
         property bool sideStageVisible: priv.sideStageAppId
 
@@ -85,6 +99,8 @@ Item {
 
         property int phase0Width: sideStageWidth
         property int phase1Width: sideStageWidth
+
+        property int selectedIndex: -1
 
         property int nextInStack: {
             switch (state) {
@@ -141,12 +157,67 @@ Item {
             return "invalid";
         }
 
+        onContentXChanged: {
+            if (spreadView.phase == 0 && spreadView.contentX > spreadView.phase0Width) {
+                spreadView.phase = 1;
+            } else if (spreadView.phase == 1 && spreadView.contentX - spreadView.phase0Width > spreadView.phase1Width) {
+                spreadView.phase = 2;
+            } else if (spreadView.phase == 1 && spreadView.contentX < spreadView.phase0Width) {
+                spreadView.phase = 0;
+            }
+        }
+
+        function snap() {
+            if (contentX < phase0Width) {
+                snapAnimation.targetContentX = 0;
+                snapAnimation.start();
+            } else if (contentX < phase1Width) {
+                snapTo(1)
+            } else if (contentX < phase1Width + units.gu(5)) {
+                snapTo(1)
+            } else {
+                // Add 1 pixel to make sure we definitely hit positionMarker4 even with rounding errors of the animation.
+                snapAnimation.targetContentX = phase0Width + phase1Width + 1;
+                snapAnimation.start();
+            }
+        }
+        function snapTo(index) {
+            spreadView.selectedIndex = index;
+//            root.fullscreen = ApplicationManager.get(index).fullscreen;
+            snapAnimation.targetContentX = 0;
+            snapAnimation.start();
+        }
+
+        SequentialAnimation {
+            id: snapAnimation
+            property int targetContentX: 0
+
+            UbuntuNumberAnimation {
+                target: spreadView
+                property: "contentX"
+                to: snapAnimation.targetContentX
+                duration: UbuntuAnimation.SlowDuration
+//                duration: UbuntuAnimation.FastDuration
+            }
+
+            ScriptAction {
+                script: {
+                    if (spreadView.selectedIndex >= 0) {
+                        ApplicationManager.focusApplication(ApplicationManager.get(spreadView.selectedIndex).appId);
+                        spreadView.selectedIndex = -1
+                        spreadView.phase = 0;
+                        spreadView.contentX = 0;
+                    }
+                }
+            }
+        }
+
         Rectangle {
             id: spreadRow
             x: spreadView.contentX
             height: root.height
 //            width: root.width
-            width: Math.max(6, ApplicationManager.count) * spreadView.tileDistance + (spreadView.width - spreadView.tileDistance) * 1.5
+            width: spreadView.width + Math.max(4, ApplicationManager.count) * spreadView.tileDistance
 
             color: "black"
 
@@ -180,10 +251,12 @@ Item {
                         id: spreadTile
                         height: spreadView.height
                         width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
-                        opacity: .3
+//                        opacity: .3
 
                         active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
                         zIndex: parent.z
+                        selected: spreadView.selectedIndex == index
+                        otherSelected: spreadView.selectedIndex >= 0 && !selected
 
                         progress: {
                             var prog = 0;
@@ -198,10 +271,19 @@ Item {
                             case 2:
                                 prog = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
                             }
-                            print("*** INDEX:", zIndex, " PHASE:", spreadView.phase, " PROGRESS:", prog, "contentX", spreadView.contentX);
+//                            print("*** INDEX:", zIndex, " PHASE:", spreadView.phase, " PROGRESS:", prog, "contentX", spreadView.contentX);
                             return prog;
                         }
 
+                        onClicked: {
+                            if (spreadView.phase == 2) {
+                                if (ApplicationManager.focusedApplicationId == ApplicationManager.get(index).appId) {
+                                    spreadView.snapTo(index);
+                                } else {
+                                    ApplicationManager.requestFocusApplication(ApplicationManager.get(index).appId);
+                                }
+                            }
+                        }
 
                         EasingCurve {
                             id: snappingCurve
@@ -210,16 +292,16 @@ Item {
                             progress: spreadTile.progress
                         }
 
-                        Rectangle {
-                            anchors.fill: parent; color: "#FF00FF"
-                            border.width: units.gu(1)
-                            border.color: "black"
-                            Label {
-                                anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: units.gu(2) }
-                                fontSize: "x-large"
-                                text: spreadTile.zIndex + "/" + model.index
-                            }
-                        }
+//                        Rectangle {
+//                            anchors.fill: parent; color: "#FF00FF"
+//                            border.width: units.gu(1)
+//                            border.color: "black"
+//                            Label {
+//                                anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: units.gu(2) }
+//                                fontSize: "x-large"
+//                                text: spreadTile.zIndex + "/" + model.index
+//                            }
+//                        }
                     }
                 }
             }
@@ -233,23 +315,28 @@ Item {
 
         Rectangle { anchors.fill: parent; color: "#4400FF00"}
 
+        property bool attachedToView: false
+
         onTouchXChanged: {
             print("touchX changed. dragging", dragging)
             if (!dragging) {
                 spreadView.phase = 0;
                 spreadView.contentX = 0;
-            } else {
+            }
+
+            if (attachedToView) {
                 spreadView.contentX = -touchX + spreadDragArea.width
+                if (spreadView.contentX > spreadView.phase0Width + spreadView.phase1Width / 2) {
+                    attachedToView = false;
+                    spreadView.snap();
+                }
             }
+        }
 
-            if (spreadView.phase == 0 && spreadView.contentX > spreadView.phase0Width) {
-                spreadView.phase = 1;
-            } else if (spreadView.phase == 1 && spreadView.contentX - spreadView.phase0Width > spreadView.phase1Width) {
-                spreadView.phase = 2;
-            } else if (spreadView.phase == 1 && spreadView.contentX < spreadView.phase0Width) {
-                spreadView.phase = 0;
+        onDraggingChanged: {
+            if (dragging) {
+                attachedToView = true;
             }
-
         }
     }
 }
