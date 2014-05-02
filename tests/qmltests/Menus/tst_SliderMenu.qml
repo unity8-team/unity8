@@ -145,5 +145,23 @@ Item {
             sliderMenu.maximumValue = data.newMaximum;
             compare(sliderMenu.value, data.value, "Maximum value (" + data.newMaximum + ") should update the value if originally set higher");
         }
+
+        // simulates clicking the min/max buttons
+        function test_minmaxButtons() {
+            var slider = UtilsJS.findChild(sliderMenu, "slider");
+            verify(slider !== undefined);
+
+            var leftButton = UtilsJS.findChild(sliderMenu, "leftButton");
+            verify(leftButton !== undefined);
+
+            var rightButton = UtilsJS.findChild(sliderMenu, "rightButton");
+            verify(rightButton !== undefined);
+
+            mouseClick(leftButton, leftButton.width / 2, leftButton.height / 2);
+            compare(slider.value, sliderMenu.minimumValue, "Min button not updating menu value");
+
+            mouseClick(rightButton, rightButton.width / 2, rightButton.height / 2);
+            compare(slider.value, sliderMenu.maximumValue, "Max button not updating menu value");
+        }
     }
 }
