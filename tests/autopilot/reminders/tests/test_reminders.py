@@ -18,9 +18,15 @@
 
 from __future__ import absolute_import
 
-from reminders import tests
-
 import logging
+
+from autopilot import platform
+from autopilot.matchers import Eventually
+from testtools.matchers import Equals
+
+import reminders
+from reminders import fixture_setup, tests
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,3 +36,23 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
     def test_open_application_without_account(self):
         """Test that the No account dialog is visible."""
         self.assertTrue(self.app.main_view.no_account_dialog.visible)
+
+    def test_go_to_account_settings(self):
+        """Test that the Go to account settings button calls url-dispatcher."""
+        if platform.model() == 'Desktop':
+             self.skipTest("URL dispatcher doesn't work on the desktop.")
+        url_dispatcher = fixture_setup.FakeURLDispatcher()
+        self.useFixture(url_dispatcher)
+
+        self.app.main_view.no_account_dialog.open_account_settings()
+
+        def get_last_dispatch_url_call_parameter():
+            # Workaround for http://pad.lv/1312384
+            try:
+                return url_dispatcher.get_last_dispatch_url_call_parameter()
+            except reminders.RemindersAppException:
+                return None
+
+        self.assertThat(
+            get_last_dispatch_url_call_parameter,
+            Eventually(Equals('settings:///system/online-accounts')))
