@@ -1,3 +1,14 @@
+ubuntu-settings-components (0.1+14.10.20140502-0ubuntu1) utopic; urgency=low
+
+  [ daker ]
+  * Use Button instead of Image to avoid the MouseArea Made Min/Max
+    buttons clickable
+
+  [ Nick Dedekind ]
+  * Fixed issue with Access Point checkbox not fetching initial value.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 02 May 2014 13:50:39 +0000
+
 ubuntu-settings-components (0.1+14.04.20140306-0ubuntu1) trusty; urgency=low
 
   * New rebuild forced
