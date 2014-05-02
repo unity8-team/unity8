@@ -1,3 +1,9 @@
+unity8 (7.86-0ubuntu1) UNRELEASED; urgency=medium
+
+  * SRU from trunk r864: Split out unity8-common package
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Fri, 02 May 2014 15:11:48 +0200
+
 unity8 (7.85+14.04.20140416-0ubuntu1) trusty; urgency=low
 
   [ Albert Astals ]
