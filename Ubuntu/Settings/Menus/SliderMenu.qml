@@ -35,26 +35,61 @@ ListItem.Empty {
 
     property QtObject d: QtObject {
         property bool enableValueConnection: true
+        property double originalValue: 0.0
 
         property Connections connections: Connections {
-            target: d.enableValueConnection ? menu : null
+            target: menu
             onValueChanged: {
-                var oldEnable = d.enableValueConnection
-                d.enableValueConnection = false;
+                if (!d.enableValueConnection) return;
 
-                // Can't rely on binding. Slider value is assigned by user slide.
-                if (menu.value < minimumValue) {
-                    slider.value = minimumValue;
-                    menu.value = minimumValue;
-                } else if (menu.value > maximumValue) {
-                    slider.value = maximumValue;
-                    menu.value = maximumValue;
-                } else {
-                    slider.value = menu.value;
-                }
+                d.originalValue = menu.value;
 
-                d.enableValueConnection = oldEnable;
+                d.checkValueMinMax();
             }
+
+            // need to re-assert the reported value to the requested value.
+            onMinimumValueChanged: {
+                if (menu.value !== d.originalValue) {
+                    menu.value = d.originalValue;
+                } else {
+                    d.checkValueMinMax();
+                }
+            }
+            onMaximumValueChanged: {
+                if (menu.value !== d.originalValue) {
+                    menu.value = d.originalValue;
+                } else {
+                    d.checkValueMinMax();
+                }
+            }
+        }
+
+        function lockValue() {
+            if (!d.enableValueConnection) return false;
+            d.enableValueConnection = false;
+            return true;
+        }
+
+        function unlockValue(oldValue) {
+            d.enableValueConnection = oldValue;
+        }
+
+        function checkValueMinMax() {
+            var oldEnable = lockValue();
+            if (!oldEnable) return;
+
+            // Can't rely on binding. Slider value is assigned by user slide.
+            if (menu.value < minimumValue) {
+                slider.value = minimumValue;
+                menu.value = minimumValue;
+            } else if (menu.value > maximumValue) {
+                slider.value = maximumValue;
+                menu.value = maximumValue;
+            } else if (slider.value != menu.value) {
+                slider.value = menu.value;
+            }
+
+            unlockValue(oldEnable);
         }
     }
 
@@ -128,15 +163,16 @@ ListItem.Empty {
                 }
 
                 Connections {
-                    target: d.enableValueConnection ? slider : null
+                    target: slider
                     onValueChanged: {
-                        var oldEnable = d.enableValueConnection;
-                        d.enableValueConnection = false;
+                        var oldEnable = d.lockValue();
+                        if (!oldEnable) return;
 
                         menu.value = slider.value;
+                        d.originalValue = menu.value;
                         menu.updated(slider.value);
 
-                        d.enableValueConnection = oldEnable;
+                        d.unlockValue(oldEnable);
                     }
                 }
             }

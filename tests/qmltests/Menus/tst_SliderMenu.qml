@@ -61,23 +61,37 @@ Item {
         when: windowShown
 
         function init() {
+            sliderMenu.minimumValue = 0;
+            sliderMenu.maximumValue = 100;
             sliderMenu.value = 0;
         }
 
-        function test_minimumValue() {
-            sliderMenu.value = 0;
-            compare(sliderMenu.value, 0, "Minimum value not functioning");
-
-            sliderMenu2.value = 0;
-            compare(sliderMenu2.value, 20, "Minimum value not functioning");
+        function test_minimumValue_data() {
+            return [
+                { tag: "less", minimum: 20, value: 0, expected: 20 },
+                { tag: "equal", minimum: 0, value: 0, expected: 0 },
+                { tag: "greater", minimum: 0, value: 20, expected: 20 },
+            ];
         }
 
-        function test_maximumValue() {
-            sliderMenu.value = 100;
-            compare(sliderMenu.value, 100, "Minimum value not functioning");
+        function test_minimumValue(data) {
+            sliderMenu.minimumValue = data.minimum;
+            sliderMenu.value = data.value;
+            compare(sliderMenu.value, data.expected, "Minimum value (" + data.minimum + ") not functioning");
+        }
 
-            sliderMenu2.value = 100;
-            compare(sliderMenu2.value, 80, "Maximum value not functioning");
+        function test_maximumValue_data() {
+            return [
+                { tag: "less", maximum: 80, value: 100, expected: 80 },
+                { tag: "equal", maximum: 100, value: 100, expected: 100 },
+                { tag: "greater", maximum: 100, value: 120, expected: 100 },
+            ];
+        }
+
+        function test_maximumValue(data) {
+            sliderMenu.maximumValue = data.maximum;
+            sliderMenu.value = data.value;
+            compare(sliderMenu.value, data.expected, "Maximum value (" + data.minimum + ") not functioning");
         }
 
         // simulates dragging the slider to a value
@@ -96,6 +110,40 @@ Item {
 
             sliderMenu.value = 20;
             compare(slider.value, 20, "Menu value not updating slider value");
+        }
+
+        function test_updateMinimumValue_data() {
+            return [
+                { tag: "less", originalMinimum: 20, value: 0, newMinimum: 0 },
+                { tag: "greater", originalMinimum: 0, value: 20, newMinimum: 20 },
+            ];
+        }
+
+        // tests that changing the Minimum value will update the value if originally set lower
+        function test_updateMinimumValue(data) {
+            sliderMenu.minimumValue = data.originalMinimum;
+            sliderMenu.value = data.value;
+            compare(sliderMenu.value, data.originalMinimum > data.value ? sliderMenu.minimumValue : data.value);
+
+            sliderMenu.minimumValue = data.newMinimum;
+            compare(sliderMenu.value, data.value, "Minimum value (" + data.newMinimum + ") should update the value if originally set lower");
+        }
+
+        function test_updateMaximumValue_data() {
+            return [
+                { tag: "less", originalMaximum: 100, value: 80, newMaximum: 80 },
+                { tag: "greater", originalMaximum: 80, value: 100, newMaximum: 100 },
+            ];
+        }
+
+        // tests that changing the Maximum value will update the value if originally set higher
+        function test_updateMaximumValue(data) {
+            sliderMenu.maximumValue = data.originalMaximum;
+            sliderMenu.value = data.value;
+            compare(sliderMenu.value, data.originalMaximum < data.value ? sliderMenu.maximumValue : data.value);
+
+            sliderMenu.maximumValue = data.newMaximum;
+            compare(sliderMenu.value, data.value, "Maximum value (" + data.newMaximum + ") should update the value if originally set higher");
         }
 
         // simulates clicking the min/max buttons
