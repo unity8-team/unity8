@@ -96,17 +96,18 @@ class AccountManager(object):
         oauth_token = (
             'S=s1:U=8e6bf:E=14d08e375ff:C=145b1324a03:P=1cd:A=en-devtoken:'
             'V=2:H=79b946c32b4515ee52b387f7b68baa69')
-        session_data['ProvidedTokens'] = {
-            'TokenSecret': '',
-            'edam_userId': '583359',
-            'edam_noteStoreUrl': note_store_url,
-            'oauth_token_secret': '',
-            'oauth_token': oauth_token,
-            'edam_shard': 's1',
-            'AccessToken': oauth_token,
-            'edam_webApiUrlPrefix': 'https://sandbox.evernote.com/shard/s1/',
-            'edam_expires': '1430347980'
-        }
+        session_data['ProvidedTokens'] = GLib.Variant('a{sv}', {
+            'TokenSecret': GLib.Variant('s', ''),
+            'edam_userId': GLib.Variant('s', '583359'),
+            'edam_noteStoreUrl': GLib.Variant('s', note_store_url),
+            'oauth_token_secret': GLib.Variant('s', ''),
+            'oauth_token': GLib.Variant('s', oauth_token),
+            'edam_shard': GLib.Variant('s', 's1'),
+            'AccessToken': GLib.Variant('s', oauth_token),
+            'edam_webApiUrlPrefix': GLib.Variant(
+                's', 'https://sandbox.evernote.com/shard/s1/'),
+            'edam_expires': GLib.Variant('s', '1430347980')
+        })
         session = Signon.AuthSession.new(identity, method)
         session.process(
             session_data, mechanism, self._on_login_processed, None)
