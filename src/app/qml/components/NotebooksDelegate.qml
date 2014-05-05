@@ -25,11 +25,7 @@ Empty {
     id: root
     height: units.gu(9)
 
-    property string name
-    property string lastUpdatedString
-    property int noteCount
-    property string shareStatus
-    property color notebookColor
+    property string notebookColor: preferences.colorForNotebook(model.guid)
 
     Rectangle {
         anchors.fill: parent
@@ -43,7 +39,7 @@ Empty {
 
         Item {
             anchors { top: parent.top; bottom: parent.bottom }
-            width: units.gu(2)
+            width: units.gu(1)
             Rectangle {
                 anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
                 width: units.gu(.5)
@@ -57,61 +53,31 @@ Empty {
             Layout.fillWidth: true
 
             Label {
-                text: root.name
+                text: model.name
                 color: root.notebookColor
                 fontSize: "medium"
                 font.bold: true
             }
             Label {
-                text: i18n.tr("Last edited %1").arg(root.lastUpdatedString)
+                text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
                 fontSize: "small"
                 color: "black"
             }
             Label {
                 Layout.fillHeight: true
-                text: "foooo"
-                color: "#b3b3b3"
+                text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
+                color: model.published ? "black" : "#b3b3b3"
                 fontSize: "x-small"
                 verticalAlignment: Text.AlignVCenter
+                font.bold: model.published
             }
         }
 
         Label {
             Layout.fillHeight: true
             verticalAlignment: Text.AlignVCenter
-            text: "(" + root.noteCount + ")"
+            text: "(" + model.noteCount + ")"
             color: "#b3b3b3"
         }
     }
-
-//    Column {
-//        id: contentColumn
-//        anchors {
-//            top: parent.top
-//            topMargin: units.gu(1)
-//            left: parent.left
-//            leftMargin: units.gu(2)
-//            right: resourceImage.left
-//            rightMargin: units.gu(2)
-//        }
-//        Label {
-//            anchors { left: parent.left; right: parent.right }
-//            text: root.name
-//            font.bold: true
-//            elide: Text.ElideRight
-//            color: root.notebookColor
-//        }
-//        Label {
-//            anchors { left: parent.left; right: parent.right }
-//            text: root.shareStatus
-//            wrapMode: Text.WordWrap
-//            textFormat: Text.StyledText
-//        }
-//    }
-
-//    Label {
-//        id: resourceImage
-//        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; topMargin: units.gu(1); rightMargin: units.gu(2) }
-//        text: i18n.tr("%1 note", "%1 notes", root.noteCount).arg(root.noteCount)
-//    }
 }

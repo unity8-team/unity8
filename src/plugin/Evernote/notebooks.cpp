@@ -67,7 +67,7 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleName, "name");
     roles.insert(RoleNoteCount, "noteCount");
-    roles.insert(RolePublished, "publised");
+    roles.insert(RolePublished, "published");
     roles.insert(RoleLastUpdated, "lastUpdated");
     roles.insert(RoleLastUpdatedString, "lastUpdatedString");
     return roles;
