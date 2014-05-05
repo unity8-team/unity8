@@ -3,7 +3,7 @@ file(GLOB_RECURSE QML_SRCS *.qml *.js)
 set(reminders_SRCS
     main.cpp
     camerahelper.cpp
-    accountpreference.cpp
+    preferences.cpp
     ${QML_SRCS}
 )
 

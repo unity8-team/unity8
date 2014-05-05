@@ -28,6 +28,7 @@ Empty {
     property date creationDate
     property string content
     property string resource
+    property color notebookColor
 
     Column {
         id: contentColumn
@@ -45,6 +46,7 @@ Empty {
             text: root.title
             font.bold: true
             elide: Text.ElideRight
+            color: root.notebookColor
         }
         Label {
             anchors { left: parent.left; right: parent.right }
