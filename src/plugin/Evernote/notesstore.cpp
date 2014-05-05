@@ -40,7 +40,9 @@
 NotesStore* NotesStore::s_instance = 0;
 
 NotesStore::NotesStore(QObject *parent) :
-    QAbstractListModel(parent)
+    QAbstractListModel(parent),
+    m_loading(false),
+    m_notebooksLoading(false)
 {
     connect(EvernoteConnection::instance(), &EvernoteConnection::tokenChanged, this, &NotesStore::refreshNotebooks);
     connect(EvernoteConnection::instance(), SIGNAL(tokenChanged()), this, SLOT(refreshNotes()));
@@ -58,6 +60,26 @@ NotesStore *NotesStore::instance()
         s_instance = new NotesStore();
     }
     return s_instance;
+}
+
+bool NotesStore::loading() const
+{
+    return m_loading;
+}
+
+bool NotesStore::notebooksLoading() const
+{
+    return m_notebooksLoading;
+}
+
+QString NotesStore::error() const
+{
+    return m_error;
+}
+
+QString NotesStore::notebooksError() const
+{
+    return m_notebooksError;
 }
 
 int NotesStore::rowCount(const QModelIndex &parent) const
@@ -170,6 +192,8 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
         m_notes.clear();
         endResetModel();
     } else {
+        m_loading = true;
+        emit loadingChanged();
         FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
         connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
         EvernoteConnection::instance()->enqueue(job);
@@ -178,9 +202,18 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results)
 {
+    m_loading = false;
+    emit loadingChanged();
+
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
+        m_error = tr("Error refreshing notes: %1").arg(errorMessage);
+        emit errorChanged();
         return;
+    }
+    if (!m_error.isEmpty()) {
+        m_error.clear();
+        emit errorChanged();
     }
 
     for (unsigned int i = 0; i < results.notes.size(); ++i) {
@@ -228,6 +261,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
 void NotesStore::refreshNoteContent(const QString &guid)
 {
+    Note *note = m_notesHash.value(guid);
+    if (note) {
+        note->setLoading(true);
+    }
+
     FetchNoteJob *job = new FetchNoteJob(guid, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
@@ -245,6 +283,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         qWarning() << "can't find note for this update... ignoring...";
         return;
     }
+    note->setLoading(false);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
 
@@ -288,6 +327,8 @@ void NotesStore::refreshNotebooks()
         }
         m_notebooks.clear();
     } else {
+        m_notebooksLoading = true;
+        emit notebooksLoadingChanged();
         FetchNotebooksJob *job = new FetchNotebooksJob();
         connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
         EvernoteConnection::instance()->enqueue(job);
@@ -296,9 +337,18 @@ void NotesStore::refreshNotebooks()
 
 void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results)
 {
+    m_notebooksLoading = false;
+    emit notebooksLoadingChanged();
+
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error fetching notebooks:" << errorMessage;
+        m_notebooksError = tr("Error refreshing notebooks: %1").arg(errorMessage);
+        emit notebooksErrorChanged();
         return;
+    }
+    if (!m_notebooksError.isEmpty()) {
+        m_notebooksError.clear();
+        emit notebooksErrorChanged();
     }
 
     for (unsigned int i = 0; i < results.size(); ++i) {

@@ -36,8 +36,8 @@ Item {
         property var activeTransfer
     }
 
-    ContentImportHint {
-        id: importHint
+    ContentTransferHint {
+        id: transferHint
         anchors.fill: parent
         activeTransfer: root.activeTransfer
     }

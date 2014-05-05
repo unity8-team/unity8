@@ -3,7 +3,7 @@ Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: cmake,
                debhelper (>= 9),
-	       gettext,
+               gettext,
                libboost-dev,
                libssl-dev,
                python,
@@ -51,6 +51,9 @@ Depends: ${misc:Depends},
          reminders-app (= ${source:Version}),
          libautopilot-qt,
          libqt5test5,
+         python-dbus,
+         python-dbusmock,
+         python-fixtures,
          ubuntu-ui-toolkit-autopilot,
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package
