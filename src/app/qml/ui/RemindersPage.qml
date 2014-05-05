@@ -59,7 +59,7 @@ Page {
     }
 
     ListView {
-
+        id: remindersListView
         anchors.fill: parent
 
         delegate: RemindersDelegate {
@@ -74,6 +74,20 @@ Page {
             height: units.gu(3)
             text: section
         }
-    }
 
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
+        }
+        Label {
+            anchors.centerIn: parent
+            visible: !notes.loading && (notes.error || remindersListView.count == 0)
+            width: parent.width - units.gu(4)
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: notes.error ? notes.error :
+                                i18n.tr("No reminders available. You can create new reminders using the \"Add reminder\" button or by setting a reminder when viewing a note.")
+        }
+    }
 }

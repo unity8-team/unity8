@@ -27,6 +27,7 @@
 #include <QtQuick/QQuickView>
 #include <QtQml/QtQml>
 #include <QLibrary>
+#include <QDir>
 
 #include <QDebug>
 
@@ -47,11 +48,10 @@ int main(int argc, char *argv[])
         qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
         qDebug() << "    -h|--help     Print this help.";
         qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
-        qDebug() << "    -q <qmlfile>  Give an alternative location for the main qml file.";
         return 0;
     }
 
-    QString qmlfile;
+
     for (int i = 0; i < args.count(); i++) {
         if (args.at(i) == "-I" && args.count() > i + 1) {
             QString addedPath = args.at(i+1);
@@ -60,8 +60,6 @@ int main(int argc, char *argv[])
                 addedPath.prepend(QDir::currentPath());
             }
             importPathList.append(addedPath);
-        } else if (args.at(i) == "-q" && args.count() > i + 1) {
-            qmlfile = args.at(i+1);
         }
     }
 
@@ -80,17 +78,17 @@ int main(int argc, char *argv[])
         }
     }
 
-    view.engine()->rootContext()->setContextProperty("tablet", false);
-    view.engine()->rootContext()->setContextProperty("phone", false);
+    view.engine()->rootContext()->setContextProperty("tablet", QVariant(false));
+    view.engine()->rootContext()->setContextProperty("phone", QVariant(false));
     if (args.contains("-t") || args.contains("--tablet")) {
         qDebug() << "running in tablet mode";
-        view.engine()->rootContext()->setContextProperty("tablet", true);
+        view.engine()->rootContext()->setContextProperty("tablet", QVariant(true));
     } else if (args.contains("-p") || args.contains("--phone")){
         qDebug() << "running in phone mode";
-        view.engine()->rootContext()->setContextProperty("phone", true);
+        view.engine()->rootContext()->setContextProperty("phone", QVariant(true));
     } else if (qgetenv("QT_QPA_PLATFORM") != "ubuntumirclient") {
         // Default to tablet size on X11
-        view.engine()->rootContext()->setContextProperty("tablet", true);
+        view.engine()->rootContext()->setContextProperty("tablet", QVariant(true));
     }
 
     view.engine()->setImportPathList(importPathList);
@@ -103,18 +101,21 @@ int main(int argc, char *argv[])
     Preferences preferences;
     view.engine()->rootContext()->setContextProperty("preferences", &preferences);
 
-    // load the qml file
-    if (qmlfile.isEmpty()) {
-        QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
-        paths.prepend(".");
-
-        foreach (const QString &path, paths) {
-            QFileInfo fi(path + "/qml/reminders.qml");
-            if (fi.exists()) {
-                qmlfile = path +  "/qml/reminders.qml";
-                break;
-            }
+    QString qmlfile;
+    const QString filePath = QLatin1String("qml/reminders.qml");
+    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    paths.prepend(QDir::currentPath());
+    paths.prepend(QCoreApplication::applicationDirPath());
+    Q_FOREACH (const QString &path, paths) {
+        QString myPath = path + QLatin1Char('/') + filePath;
+        if (QFile::exists(myPath)) {
+            qmlfile = myPath;
+            break;
         }
+    }
+    // sanity check
+    if (qmlfile.isEmpty()) {
+        qFatal("File: %s does not exist at any of the standard paths!", qPrintable(filePath));
     }
     qDebug() << "using main qml file from:" << qmlfile;
     view.setSource(QUrl::fromLocalFile(qmlfile));
