@@ -72,6 +72,16 @@ bool NotesStore::notebooksLoading() const
     return m_notebooksLoading;
 }
 
+QString NotesStore::error() const
+{
+    return m_error;
+}
+
+QString NotesStore::notebooksError() const
+{
+    return m_notebooksError;
+}
+
 int NotesStore::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
@@ -197,7 +207,13 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
+        m_error = tr("Error refreshing notes: %1").arg(errorMessage);
+        emit errorChanged();
         return;
+    }
+    if (!m_error.isEmpty()) {
+        m_error.clear();
+        emit errorChanged();
     }
 
     for (unsigned int i = 0; i < results.notes.size(); ++i) {
@@ -326,7 +342,13 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error fetching notebooks:" << errorMessage;
+        m_notebooksError = tr("Error refreshing notebooks: %1").arg(errorMessage);
+        emit notebooksErrorChanged();
         return;
+    }
+    if (!m_notebooksError.isEmpty()) {
+        m_notebooksError.clear();
+        emit notebooksErrorChanged();
     }
 
     for (unsigned int i = 0; i < results.size(); ++i) {

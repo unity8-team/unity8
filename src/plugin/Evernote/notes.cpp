@@ -28,6 +28,7 @@ Notes::Notes(QObject *parent) :
     m_onlyReminders(false)
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
+    connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleCreated);
     sort(0, Qt::DescendingOrder);
@@ -85,6 +86,11 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
 bool Notes::loading() const
 {
     return NotesStore::instance()->loading();
+}
+
+QString Notes::error() const
+{
+    return NotesStore::instance()->error();
 }
 
 Note *Notes::note(const QString &guid)
