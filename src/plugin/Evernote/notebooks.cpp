@@ -31,8 +31,14 @@ Notebooks::Notebooks(QObject *parent) :
         connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
     }
 
+    connect(NotesStore::instance(), &NotesStore::notebooksLoadingChanged, this, &Notebooks::loadingChanged);
     connect(NotesStore::instance(), SIGNAL(notebookAdded(const QString &)), SLOT(notebookAdded(const QString &)));
     connect(NotesStore::instance(), SIGNAL(notebookRemoved(const QString &)), SLOT(notebookRemoved(const QString &)));
+}
+
+bool Notebooks::loading() const
+{
+    return NotesStore::instance()->notebooksLoading();
 }
 
 QVariant Notebooks::data(const QModelIndex &index, int role) const

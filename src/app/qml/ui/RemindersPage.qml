@@ -59,7 +59,7 @@ Page {
     }
 
     ListView {
-
+        id: remindersListView
         anchors.fill: parent
 
         delegate: RemindersDelegate {
@@ -73,6 +73,12 @@ Page {
         section.delegate: Standard {
             height: units.gu(3)
             text: section
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
         }
     }
 
