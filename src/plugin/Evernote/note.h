@@ -38,6 +38,7 @@ class Note : public QObject
     Q_PROPERTY(QString guid READ guid CONSTANT)
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
+    Q_PROPERTY(QString createdString READ createdString CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString htmlContent READ htmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
@@ -53,9 +54,14 @@ class Note : public QObject
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     // Don't forget to update clone() if you add properties!
 
+    // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+
 public:
     explicit Note(const QString &guid, const QDateTime &created, QObject *parent = 0);
     ~Note();
+
+    bool loading() const;
 
     QString guid() const;
 
@@ -63,6 +69,7 @@ public:
     void setNotebookGuid(const QString &notebookGuid);
 
     QDateTime created() const;
+    QString createdString() const;
 
     QString title() const;
     void setTitle(const QString &title);
@@ -132,6 +139,11 @@ signals:
     void reminderDoneChanged();
     void isSearchResultChanged();
 
+    void loadingChanged();
+
+private:
+    void setLoading(bool loading);
+
 private:
     QString m_guid;
     QString m_notebookGuid;
@@ -143,6 +155,11 @@ private:
     QDateTime m_reminderDoneTime;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
+
+    bool m_loading;
+
+    // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
+    friend class NotesStore;
 };
 
 #endif // NOTE_H

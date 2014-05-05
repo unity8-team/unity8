@@ -47,12 +47,17 @@ using namespace apache::thrift::transport;
 class NotesStore : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(bool notebooksLoading READ notebooksLoading NOTIFY notebooksLoadingChanged)
+    Q_PROPERTY(QString error READ error NOTIFY errorChanged)
+    Q_PROPERTY(QString notebooksError READ notebooksError NOTIFY notebooksErrorChanged)
 
 public:
-    enum Roles {
+    enum Role {
         RoleGuid,
         RoleNotebookGuid,
         RoleCreated,
+        RoleCreatedString,
         RoleTitle,
         RoleReminder,
         RoleReminderTime,
@@ -69,6 +74,12 @@ public:
 
     ~NotesStore();
     static NotesStore *instance();
+
+    bool loading() const;
+    bool notebooksLoading() const;
+
+    QString error() const;
+    QString notebooksError() const;
 
     // reimplemented from QAbstractListModel
     int rowCount(const QModelIndex &parent) const;
@@ -96,6 +107,10 @@ public slots:
 
 signals:
     void tokenChanged();
+    void loadingChanged();
+    void notebooksLoadingChanged();
+    void errorChanged();
+    void notebooksErrorChanged();
 
     void noteCreated(const QString &guid, const QString &notebookGuid);
     void noteAdded(const QString &guid, const QString &notebookGuid);
@@ -119,6 +134,12 @@ private slots:
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;
+
+    bool m_loading;
+    bool m_notebooksLoading;
+
+    QString m_error;
+    QString m_notebooksError;
 
     QList<Note*> m_notes;
     QList<Notebook*> m_notebooks;

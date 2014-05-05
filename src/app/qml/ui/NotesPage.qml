@@ -17,6 +17,7 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
@@ -99,6 +100,7 @@ Page {
     }
 
     ListView {
+        id: notesListView
         objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
@@ -112,11 +114,43 @@ Page {
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
-            Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
+            Component.onCompleted: {
+                NotesStore.refreshNoteContent(model.guid)
+            }
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
             }
+        }
+
+        section.criteria: ViewSection.FullString
+        section.property: "createdString"
+        section.delegate: Empty {
+            height: units.gu(5)
+            RowLayout {
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(1) }
+                Label {
+                    text: section
+                    Layout.fillWidth: true
+                }
+                Label {
+                    text: "(" + notes.sectionCount("createdString", section) + ")"
+                }
+            }
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
+        }
+        Label {
+            anchors.centerIn: parent
+            visible: !notes.loading && (notes.error || notesListView.count == 0)
+            width: parent.width - units.gu(4)
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
         }
     }
 }

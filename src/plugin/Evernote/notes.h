@@ -31,6 +31,8 @@ class Notes : public QSortFilterProxyModel
     Q_PROPERTY(QString filterNotebookGuid READ filterNotebookGuid WRITE setFilterNotebookGuid NOTIFY filterNotebookGuidChanged)
     Q_PROPERTY(bool onlyReminders READ onlyReminders WRITE setOnlyReminders NOTIFY onlyRemindersChanged)
     Q_PROPERTY(bool onlySearchResults READ onlySearchResults WRITE setOnlySearchResults NOTIFY onlySearchResultsChanged)
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(QString error READ error NOTIFY errorChanged)
 
 public:
     explicit Notes(QObject *parent = 0);
@@ -44,7 +46,12 @@ public:
     bool onlySearchResults() const;
     void setOnlySearchResults(bool onlySearchResults);
 
+    bool loading() const;
+    QString error() const;
+
     Q_INVOKABLE Note* note(const QString &guid);
+
+    Q_INVOKABLE int sectionCount(const QString &sectionRole, const QString &section);
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
@@ -53,6 +60,8 @@ signals:
     void filterNotebookGuidChanged();
     void onlyRemindersChanged();
     void onlySearchResultsChanged();
+    void loadingChanged();
+    void errorChanged();
 
 private:
     QString m_filterNotebookGuid;

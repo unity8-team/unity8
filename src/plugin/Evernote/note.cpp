@@ -34,13 +34,19 @@ Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
     m_guid(guid),
     m_created(created),
-    m_isSearchResult(false)
+    m_isSearchResult(false),
+    m_loading(false)
 {
 }
 
 Note::~Note()
 {
     qDeleteAll(m_resources.values());
+}
+
+bool Note::loading() const
+{
+    return m_loading;
 }
 
 QString Note::guid() const
@@ -64,6 +70,25 @@ void Note::setNotebookGuid(const QString &notebookGuid)
 QDateTime Note::created() const
 {
     return m_created;
+}
+
+QString Note::createdString() const
+{
+    QDate createdDate = m_created.date();
+    QDate today = QDate::currentDate();
+    if (createdDate == today) {
+        return QStringLiteral("Today");
+    }
+    if (createdDate == today.addDays(-1)) {
+        return QStringLiteral("Yesterday");
+    }
+    if (createdDate <= today.addDays(-7)) {
+        return QStringLiteral("Last week");
+    }
+    if (createdDate <= today.addDays(-14)) {
+        return QStringLiteral("Two weeks ago");
+    }
+    return createdDate.toString("MMMM yyyy");
 }
 
 QString Note::title() const
@@ -333,4 +358,12 @@ void Note::save()
 void Note::remove()
 {
     NotesStore::instance()->deleteNote(m_guid);
+}
+
+void Note::setLoading(bool loading)
+{
+    if (m_loading != loading) {
+        m_loading = loading;
+        emit loadingChanged();
+    }
 }

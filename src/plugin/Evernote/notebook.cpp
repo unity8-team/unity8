@@ -75,6 +75,38 @@ void Notebook::setPublished(bool published)
     }
 }
 
+QDateTime Notebook::lastUpdated() const
+{
+    return m_lastUpdated;
+}
+
+void Notebook::setLastUpdated(const QDateTime &lastUpdated)
+{
+    if (m_lastUpdated != lastUpdated) {
+        m_lastUpdated = lastUpdated;
+        emit lastUpdatedChanged();
+    }
+}
+
+QString Notebook::lastUpdatedString() const
+{
+    QDate updateDate = m_lastUpdated.date();
+    QDate today = QDate::currentDate();
+    if (updateDate == today) {
+        return QStringLiteral("today");
+    }
+    if (updateDate == today.addDays(-1)) {
+        return QStringLiteral("yesterday");
+    }
+    if (updateDate <= today.addDays(-7)) {
+        return QStringLiteral("last week");
+    }
+    if (updateDate <= today.addDays(-14)) {
+        return QStringLiteral("two weeks ago");
+    }
+    return QString("on %1").arg(updateDate.toString("MMMM yyyy"));
+}
+
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(noteGuid)

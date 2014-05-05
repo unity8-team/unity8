@@ -114,6 +114,7 @@ Page {
                 noteCount: model.noteCount
                 shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
                 notebookColor: preferences.colorForNotebook(model.guid)
+                lastUpdatedString: model.lastUpdatedString
 
                 onClicked: {
                     print("selected notebook:", model.guid)
