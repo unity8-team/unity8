@@ -27,6 +27,7 @@ Empty {
     property string name
     property int noteCount
     property string shareStatus
+    property color notebookColor
 
     Column {
         id: contentColumn
@@ -43,6 +44,7 @@ Empty {
             text: root.name
             font.bold: true
             elide: Text.ElideRight
+            color: root.notebookColor
         }
         Label {
             anchors { left: parent.left; right: parent.right }

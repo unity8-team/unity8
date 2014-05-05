@@ -110,6 +110,7 @@ Page {
             creationDate: model.created
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
+            notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
             Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
 

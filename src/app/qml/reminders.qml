@@ -123,7 +123,7 @@ MainView {
 
         pagestack.push(rootTabs)
         print("got accounts:", accounts.count)
-        var accountName = accountPreference.accountName;
+        var accountName = preferences.accountName;
         if (accountName) {
             var i;
             for (i = 0; i < accounts.count; i++) {
@@ -151,7 +151,7 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
-            accountPreference.accountName = UserStore.username;
+            preferences.accountName = UserStore.username;
         }
     }
 
@@ -219,7 +219,7 @@ MainView {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title/*, filter: notebookGuid*/});
+                        pagestack.push(page, {title: title, filter: notebookGuid});
                         page.selectedNoteChanged.connect(function() {
                             print("foo", page.selectedNote);
                             if (page.selectedNote) {

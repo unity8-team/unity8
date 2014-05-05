@@ -20,28 +20,34 @@
  *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
 
-#ifndef ACCOUNTPREFERENCE_H
-#define ACCOUNTPREFERENCE_H
+#ifndef PREFERENCE_H
+#define PREFERENCE_H
 
 #include <QSettings>
 #include <QStandardPaths>
 #include <QObject>
 #include <QDebug>
+#include <QList>
+#include <QColor>
 
-class AccountPreference: public QObject
+class Preferences: public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString accountName READ accountName WRITE setAccountName NOTIFY accountNameChanged)
+
 public:
-    AccountPreference(QObject *parent = 0);
+    Preferences(QObject *parent = 0);
     QString accountName() const;
     void setAccountName(const QString &accountName);
+
+    Q_INVOKABLE QString colorForNotebook(const QString &notebookGuid);
 
 signals:
     void accountNameChanged();
 
 private:
     QSettings m_settings;
+    QList<QString> m_notebookColors;
 };
 
 #endif
