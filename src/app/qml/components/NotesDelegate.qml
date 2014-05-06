@@ -23,7 +23,7 @@ import Ubuntu.Components.ListItems 0.1
 
 Empty {
     id: root
-    height: units.gu(9)
+    height: units.gu(12)
 
     property string title
     property date creationDate
@@ -34,7 +34,7 @@ Empty {
     showDivider: false;
 
     RowLayout {
-        anchors { fill: parent; leftMargin: units.gu(1); rightMargin: units.gu(1) }
+        anchors { fill: parent; leftMargin: units.gu(1.5); rightMargin: units.gu(1.5) }
 
         ColumnLayout {
             id: contentColumn
@@ -42,7 +42,7 @@ Empty {
 
             Rectangle {
                 id: colorRectangle
-                height: units.gu(0.5)
+                height: units.gu(0.4)
                 color: root.notebookColor
                 anchors { left: parent.left; right: parent.right }
             }
@@ -56,14 +56,13 @@ Empty {
                     id: titleLabel
                     anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; top: parent.top; topMargin: units.gu(0.5) }
                     text: root.title
-                    fontSize: 'large'
                     font.weight: Font.Light
                     elide: Text.ElideRight
                     color: root.notebookColor
                 }
 
                 Label {
-                    anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; top: titleLabel.bottom; topMargin: units.gu(0.5) }
+                    anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; rightMargin: units.gu(3); top: titleLabel.bottom; topMargin: units.gu(0.5) }
                     text: root.content
                     wrapMode: Text.WordWrap
                     textFormat: Text.StyledText
@@ -75,7 +74,8 @@ Empty {
                 Label {
                     anchors {right: parent.right; rightMargin: units.gu(1); bottom: parent.bottom; bottomMargin: units.gu(0.5) }
                     text: Qt.formatDate(root.creationDate)
-                    color: "#cccccc"
+                    color: "#b3b3b3"
+                    fontSize: "small"
                 }
             }
 
