@@ -39,7 +39,10 @@ int main(int argc, char *argv[])
 
     // Set up import paths
     QStringList importPathList = view.engine()->importPathList();
-    importPathList.append(QDir::currentPath() + "/../plugin/");
+    // Prepend the location of the plugin in the build dir,
+    // so that Qt Creator finds it there, thus overriding the one installed
+    // in the sistem if there is one
+    importPathList.prepend(QCoreApplication::applicationDirPath() + "/../plugin/");
 
     QStringList args = a.arguments();
     if (args.contains("-h") || args.contains("--help")) {
