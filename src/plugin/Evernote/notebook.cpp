@@ -110,7 +110,8 @@ QString Notebook::lastUpdatedString() const
         // TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
         return gettext("two weeks ago");
     }
-    // TRANSLATORS: this is part of a longer string - "Last updated: on May 2014"
+    // TRANSLATORS: this is used in the notes list to group notes created on the same month
+    // the first parameter refers to a month name and the second to a year
     return QString(gettext("on %1 %2")).arg(QLocale::system().standaloneMonthName(updateDate.month())).arg(updateDate.year());
 }
 
