@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QCryptographicHash>
 #include <QFileInfo>
+#include <QDir>
 
 Resource::Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent):
     QObject(parent),
@@ -36,7 +37,7 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last();
 
     QFile file(m_filePath);
-    if (!file.exists()) {
+    if (!data.isEmpty() && !file.exists()) {
 
         if (!file.open(QFile::WriteOnly)) {
             qWarning() << "error writing file" << m_filePath;
@@ -45,6 +46,17 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
         file.write(data);
         file.close();
     }
+}
+
+bool Resource::isCached(const QString &hash)
+{
+    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first());
+    foreach (const QString fi, cacheDir.entryList()) {
+        if (fi.contains(hash)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 Resource::Resource(const QString &path, QObject *parent):
@@ -81,9 +93,6 @@ Resource::Resource(const QString &path, QObject *parent):
         copy.write(fileContent);
         copy.close();
     }
-
-
-    qDebug() << "created resource" << m_hash;
 }
 
 QString Resource::hash() const
@@ -94,6 +103,35 @@ QString Resource::hash() const
 QString Resource::type() const
 {
     return m_type;
+}
+
+QByteArray Resource::imageData(const QSize &size)
+{
+    if (!m_type.startsWith("image/")) {
+        return QByteArray();
+    }
+
+    QString finalFilePath = m_filePath;
+    if (size.isValid() && !size.isNull()) {
+        finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + "_" + m_fileName;
+        QFileInfo fi(finalFilePath);
+        if (!fi.exists()) {
+            QImage image(m_filePath);
+            if (size.height() > 0 && size.width() > 0) {
+                image = image.scaled(size);
+            } else if (size.height() > 0) {
+                image = image.scaledToHeight(size.height());
+            } else {
+                image = image.scaledToWidth(size.width());
+            }
+        }
+    }
+
+    QFile file(finalFilePath);
+    if (file.open(QFile::ReadOnly)) {
+        return file.readAll();
+    }
+    return QByteArray();
 }
 
 QString Resource::fileName() const

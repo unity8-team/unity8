@@ -27,10 +27,10 @@ class FetchNoteJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit FetchNoteJob(const QString &guid, QObject *parent = 0);
+    explicit FetchNoteJob(const QString &guid, bool withResources, QObject *parent = 0);
 
 signals:
-    void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note);
+    void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note, bool withResourceContent);
 
 protected:
     void startJob();
@@ -40,6 +40,7 @@ private:
     evernote::edam::NoteStoreClient *m_client;
     QString m_token;
     QString m_guid;
+    bool m_withResources;
 
     evernote::edam::Note m_result;
 
