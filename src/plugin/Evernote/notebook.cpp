@@ -22,6 +22,8 @@
 #include "notesstore.h"
 #include "note.h"
 
+#include <libintl.h>
+
 #include <QDebug>
 
 Notebook::Notebook(QString guid, QObject *parent) :
@@ -93,18 +95,18 @@ QString Notebook::lastUpdatedString() const
     QDate updateDate = m_lastUpdated.date();
     QDate today = QDate::currentDate();
     if (updateDate == today) {
-        return QStringLiteral("today");
+        return gettext("today");
     }
     if (updateDate == today.addDays(-1)) {
-        return QStringLiteral("yesterday");
+        return gettext("yesterday");
     }
     if (updateDate <= today.addDays(-7)) {
-        return QStringLiteral("last week");
+        return gettext("last week");
     }
     if (updateDate <= today.addDays(-14)) {
-        return QStringLiteral("two weeks ago");
+        return gettext("two weeks ago");
     }
-    return QString("on %1").arg(updateDate.toString("MMMM yyyy"));
+    return QString(gettext("on %1 %2")).arg(QLocale::system().standaloneMonthName(updateDate.month())).arg(updateDate.year());
 }
 
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
