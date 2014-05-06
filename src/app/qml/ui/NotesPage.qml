@@ -120,6 +120,26 @@ Page {
                 root.selectedNote = NotesStore.note(guid);
             }
         }
+
+        section.criteria: ViewSection.FullString
+        section.property: "createdString"
+        section.delegate: Empty {
+            height: units.gu(5)
+            Item {
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(1) }
+                Label {
+                    text: section
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Label {
+                    text: "(" + notes.sectionCount("createdString", section) + ")"
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+
         ActivityIndicator {
             anchors.centerIn: parent
             running: notes.loading

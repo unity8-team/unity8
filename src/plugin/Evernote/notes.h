@@ -51,6 +51,8 @@ public:
 
     Q_INVOKABLE Note* note(const QString &guid);
 
+    Q_INVOKABLE int sectionCount(const QString &sectionRole, const QString &section);
+
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 

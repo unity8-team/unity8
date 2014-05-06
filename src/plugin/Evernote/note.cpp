@@ -22,6 +22,8 @@
 
 #include "notesstore.h"
 
+#include <libintl.h>
+
 #include <QDateTime>
 #include <QUrl>
 #include <QUrlQuery>
@@ -70,6 +72,26 @@ void Note::setNotebookGuid(const QString &notebookGuid)
 QDateTime Note::created() const
 {
     return m_created;
+}
+
+QString Note::createdString() const
+{
+    QDate createdDate = m_created.date();
+    QDate today = QDate::currentDate();
+    if (createdDate == today) {
+        return gettext("Today");
+    }
+    if (createdDate == today.addDays(-1)) {
+        return gettext("Yesterday");
+    }
+    if (createdDate >= today.addDays(-7)) {
+        return gettext("Last week");
+    }
+    if (createdDate >= today.addDays(-14)) {
+        return gettext("Two weeks ago");
+    }
+
+    return QString(gettext("%1 %2")).arg(QLocale::system().standaloneMonthName(createdDate.month())).arg(createdDate.year());
 }
 
 QString Note::title() const
@@ -204,21 +226,21 @@ QString Note::reminderTimeString() const
     QDate reminderDate = m_reminderTime.date();
     QDate today = QDate::currentDate();
     if (reminderDate < today) {
-        return QStringLiteral("Overdue");
+        return gettext("Overdue");
     }
     if (reminderDate == today) {
-        return QStringLiteral("Today");
+        return gettext("Today");
     }
     if (reminderDate == today.addDays(1)) {
-        return QStringLiteral("Tomorrow");
+        return gettext("Tomorrow");
     }
     if (reminderDate <= today.addDays(7)) {
-        return QStringLiteral("Next week");
+        return gettext("Next week");
     }
     if (reminderDate <= today.addDays(14)) {
-        return QStringLiteral("In two weeks");
+        return gettext("In two weeks");
     }
-    return QStringLiteral("Later");
+    return gettext("Later");
 }
 
 QDateTime Note::reminderDoneTime() const

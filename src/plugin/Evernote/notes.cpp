@@ -98,6 +98,20 @@ Note *Notes::note(const QString &guid)
     return NotesStore::instance()->note(guid);
 }
 
+int Notes::sectionCount(const QString &sectionRole, const QString &section)
+{
+    NotesStore::Role role = (NotesStore::Role)roleNames().key(sectionRole.toLatin1());
+    int count = 0;
+    for (int i = 0; i < rowCount(); i++) {
+        QString itemSection;
+        itemSection = data(index(i, 0), role).toString();
+        if (section == itemSection) {
+            count++;
+        }
+    }
+    return count;
+}
+
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
