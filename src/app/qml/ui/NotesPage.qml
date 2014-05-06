@@ -113,7 +113,9 @@ Page {
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
             Component.onCompleted: {
-                NotesStore.refreshNoteContent(model.guid)
+                if (!model.plaintextContent) {
+                    NotesStore.refreshNoteContent(model.guid);
+                }
             }
 
             onClicked: {
