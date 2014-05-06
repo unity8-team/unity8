@@ -49,7 +49,7 @@ MainView {
 
     onNarrowModeChanged: print("#################################", narrowMode)
 
-    backgroundColor: "#cccccc"
+    backgroundColor: "#dddddd"
 
     property var accountPage;
 

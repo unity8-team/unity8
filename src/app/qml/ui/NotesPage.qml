@@ -17,6 +17,7 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
@@ -126,17 +127,14 @@ Page {
         section.property: "createdString"
         section.delegate: Empty {
             height: units.gu(5)
-            Item {
+            RowLayout {
                 anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(1) }
                 Label {
                     text: section
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.fillWidth: true
                 }
                 Label {
                     text: "(" + notes.sectionCount("createdString", section) + ")"
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
         }

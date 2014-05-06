@@ -363,6 +363,7 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         }
         notebook->setName(QString::fromStdString(result.name));
         notebook->setPublished(result.published);
+        notebook->setLastUpdated(QDateTime::fromMSecsSinceEpoch(result.serviceUpdated));
 
         if (newNoteNotebook) {
             m_notebooksHash.insert(notebook->guid(), notebook);
