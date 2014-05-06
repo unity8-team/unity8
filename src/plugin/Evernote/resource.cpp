@@ -107,7 +107,6 @@ QString Resource::type() const
 
 QByteArray Resource::imageData(const QSize &size)
 {
-    qDebug() << "image requested" << m_hash << size << m_type;
     if (!m_type.startsWith("image/")) {
         return QByteArray();
     }
@@ -115,10 +114,8 @@ QByteArray Resource::imageData(const QSize &size)
     QString finalFilePath = m_filePath;
     if (size.isValid() && !size.isNull()) {
         finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + "_" + m_fileName;
-        qDebug() << "finalFilePath" << finalFilePath;
         QFileInfo fi(finalFilePath);
         if (!fi.exists()) {
-            qDebug() << "scaled down file doesn't exist yet. Scaling now.";
             QImage image(m_filePath);
             if (size.height() > 0 && size.width() > 0) {
                 image = image.scaled(size);
@@ -127,7 +124,7 @@ QByteArray Resource::imageData(const QSize &size)
             } else {
                 image = image.scaledToWidth(size.width());
             }
-            qDebug() << "saving scaled down image image" << image.save(finalFilePath);
+            image.save(finalFilePath);
         }
     }
 
@@ -135,7 +132,6 @@ QByteArray Resource::imageData(const QSize &size)
     if (file.open(QFile::ReadOnly)) {
         return file.readAll();
     }
-    qDebug() << "huh! could not open image file";
     return QByteArray();
 }
 
