@@ -49,8 +49,7 @@ MainView {
 
     onNarrowModeChanged: print("#################################", narrowMode)
 
-    // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
-    backgroundColor: UbuntuColors.coolGrey
+    backgroundColor: "#cccccc"
 
     property var accountPage;
 
