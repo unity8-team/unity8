@@ -78,7 +78,6 @@ QString Note::createdString() const
 {
     QDate createdDate = m_created.date();
     QDate today = QDate::currentDate();
-    qDebug() << "comparing createdDate:" << createdDate << "with today" << today;
     if (createdDate == today) {
         return gettext("Today");
     }
@@ -91,7 +90,8 @@ QString Note::createdString() const
     if (createdDate >= today.addDays(-14)) {
         return gettext("Two weeks ago");
     }
-    return createdDate.toString("MMMM yyyy");
+
+    return QString(gettext("%1 %2")).arg(QLocale::system().standaloneMonthName(createdDate.month())).arg(createdDate.year());
 }
 
 QString Note::title() const
