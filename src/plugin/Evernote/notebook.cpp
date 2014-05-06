@@ -95,17 +95,22 @@ QString Notebook::lastUpdatedString() const
     QDate updateDate = m_lastUpdated.date();
     QDate today = QDate::currentDate();
     if (updateDate == today) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: today"
         return gettext("today");
     }
     if (updateDate == today.addDays(-1)) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
         return gettext("yesterday");
     }
     if (updateDate <= today.addDays(-7)) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: last week"
         return gettext("last week");
     }
     if (updateDate <= today.addDays(-14)) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
         return gettext("two weeks ago");
     }
+    // TRANSLATORS: this is part of a longer string - "Last updated: on May 2014"
     return QString(gettext("on %1 %2")).arg(QLocale::system().standaloneMonthName(updateDate.month())).arg(updateDate.year());
 }
 
