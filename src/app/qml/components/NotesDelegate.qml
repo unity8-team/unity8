@@ -17,6 +17,7 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 
@@ -28,40 +29,69 @@ Empty {
     property date creationDate
     property string content
     property string resource
-    property color notebookColor
+    property string notebookColor: preferences.colorForNotebook(model.guid)
 
-    Column {
-        id: contentColumn
-        spacing: units.gu(1)
-        anchors {
-            top: parent.top
-            topMargin: units.gu(1)
-            left: parent.left
-            leftMargin: units.gu(2)
-            right: resourceImage.left
-            rightMargin: units.gu(2)
-        }
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            text: root.title
-            font.bold: true
-            elide: Text.ElideRight
-            color: root.notebookColor
-        }
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            text: "<font color=\"#dd4814\">"+ Qt.formatDate(root.creationDate) + "</font>  " + root.content
-            wrapMode: Text.WordWrap
-            textFormat: Text.StyledText
-            maximumLineCount: 2
-            fontSize: "small"
-        }
-    }
+    showDivider: false;
 
-    Image {
-        id: resourceImage
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-        source: root.resource
-        sourceSize.height: height
+    RowLayout {
+        anchors { fill: parent; leftMargin: units.gu(1); rightMargin: units.gu(1) }
+
+        ColumnLayout {
+            id: contentColumn
+            anchors.fill: parent
+
+            Rectangle {
+                id: colorRectangle
+                height: units.gu(0.5)
+                color: root.notebookColor
+                anchors { left: parent.left; right: parent.right }
+            }
+
+            Rectangle {
+                id: contentRectangle
+                anchors {left: parent.left; right: resourceImage.left; top: colorRectangle.bottom; bottom: parent.bottom }
+                color: "white"
+
+                Label {
+                    id: titleLabel
+                    anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; top: parent.top; topMargin: units.gu(0.5) }
+                    text: root.title
+                    fontSize: 'large'
+                    font.weight: Font.Light
+                    elide: Text.ElideRight
+                    color: root.notebookColor
+                }
+
+                Label {
+                    anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; top: titleLabel.bottom; topMargin: units.gu(0.5) }
+                    text: root.content
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.StyledText
+                    maximumLineCount: 2
+                    fontSize: "small"
+                    color: "black"
+                }
+
+                Label {
+                    anchors {right: parent.right; rightMargin: units.gu(1); bottom: parent.bottom; bottomMargin: units.gu(0.5) }
+                    text: Qt.formatDate(root.creationDate)
+                    color: "#cccccc"
+                }
+            }
+
+            Image {
+                id: arrowImage
+                anchors { right: resourceImage.left; rightMargin: units.gu(1); verticalCenter: parent.verticalCenter }
+                source: Qt.resolvedUrl('../images/arrowRight.png') // TODO: Improve this image. Seriously. It's horrible.
+                sourceSize.height: units.gu(4)
+            }
+
+            Image {
+                id: resourceImage
+                anchors { top: colorRectangle.bottom; right: parent.right; bottom: parent.bottom }
+                source: root.resource
+                sourceSize.height: units.gu(9)
+            }
+        }
     }
 }
