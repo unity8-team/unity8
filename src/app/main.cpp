@@ -120,6 +120,19 @@ int main(int argc, char *argv[])
     if (qmlfile.isEmpty()) {
         qFatal("File: %s does not exist at any of the standard paths!", qPrintable(filePath));
     }
+
+    // Make sure our cache dir exists. It'll be used all over in this app.
+    // We need to set the applicationName for that.
+    // It'll be overwritten again when qml loads but we need it already now.
+    // So if you want to change it, make sure to find all the places where it is set, not just here :D
+    QCoreApplication::setApplicationName("com.ubuntu.reminders");
+
+    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first());
+    if (!cacheDir.exists()) {
+        qDebug() << "creating cacheDir:" << cacheDir.absolutePath();
+        cacheDir.mkpath(cacheDir.absolutePath());
+    }
+
     qDebug() << "using main qml file from:" << qmlfile;
     view.setSource(QUrl::fromLocalFile(qmlfile));
     view.show();
