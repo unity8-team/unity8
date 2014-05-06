@@ -97,6 +97,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->notebookGuid();
     case RoleCreated:
         return m_notes.at(index.row())->created();
+    case RoleCreatedString:
+        return m_notes.at(index.row())->createdString();
     case RoleTitle:
         return m_notes.at(index.row())->title();
     case RoleReminder:
@@ -129,6 +131,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleNotebookGuid, "notebookGuid");
     roles.insert(RoleCreated, "created");
+    roles.insert(RoleCreatedString, "createdString");
     roles.insert(RoleTitle, "title");
     roles.insert(RoleReminder, "reminder");
     roles.insert(RoleReminderTime, "reminderTime");

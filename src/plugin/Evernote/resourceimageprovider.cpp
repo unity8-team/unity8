@@ -34,7 +34,7 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
     }
     *size = image.size();
 
-    if (requestedSize.isValid()) {
+    if (requestedSize.isValid() && !requestedSize.isNull()) {
         if (requestedSize.height() > 0 && requestedSize.width() > 0) {
             image = image.scaled(requestedSize);
         } else if (requestedSize.height() > 0) {
