@@ -127,7 +127,7 @@ QByteArray Resource::imageData(const QSize &size)
             } else {
                 image = image.scaledToWidth(size.width());
             }
-            qDebug() << "image scaled. new image size:" << image.size();
+            qDebug() << "saving scaled down image image" << image.save(finalFilePath);
         }
     }
 
