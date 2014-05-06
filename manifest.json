@@ -13,7 +13,7 @@
     "title": "Reminders",
     "version": "0.5.@BZR_REVNO@",
     "x-source": {
-        "vcs-bzr": "lp:reminders",
+        "vcs-bzr": "lp:reminders-app",
         "vcs-bzr-revno": "@BZR_REVNO@"
     },
     "x-test": {
