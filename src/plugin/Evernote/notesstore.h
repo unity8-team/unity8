@@ -53,10 +53,11 @@ class NotesStore : public QAbstractListModel
     Q_PROPERTY(QString notebooksError READ notebooksError NOTIFY notebooksErrorChanged)
 
 public:
-    enum Roles {
+    enum Role {
         RoleGuid,
         RoleNotebookGuid,
         RoleCreated,
+        RoleCreatedString,
         RoleTitle,
         RoleReminder,
         RoleReminderTime,

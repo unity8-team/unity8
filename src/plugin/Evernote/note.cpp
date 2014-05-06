@@ -72,6 +72,25 @@ QDateTime Note::created() const
     return m_created;
 }
 
+QString Note::createdString() const
+{
+    QDate createdDate = m_created.date();
+    QDate today = QDate::currentDate();
+    if (createdDate == today) {
+        return QStringLiteral("Today");
+    }
+    if (createdDate == today.addDays(-1)) {
+        return QStringLiteral("Yesterday");
+    }
+    if (createdDate <= today.addDays(-7)) {
+        return QStringLiteral("Last week");
+    }
+    if (createdDate <= today.addDays(-14)) {
+        return QStringLiteral("Two weeks ago");
+    }
+    return createdDate.toString("MMMM yyyy");
+}
+
 QString Note::title() const
 {
     return m_title;
