@@ -23,7 +23,6 @@ Depends: ${misc:Depends},
          qtdeclarative5-evernote0.1,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          qtdeclarative5-localstorage-plugin,
-         qtdeclarative5-quicklayouts-plugin,
          qtdeclarative5-qtquick2-plugin,
          signon-plugin-oauth2 (>= 0.19-0~57~)
 Description: Reminders application
