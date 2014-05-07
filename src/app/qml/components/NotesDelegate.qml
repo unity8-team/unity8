@@ -34,23 +34,26 @@ Empty {
     showDivider: false;
 
     RowLayout {
+        id: contentRow
+
         anchors { fill: parent; leftMargin: units.gu(1.5); rightMargin: units.gu(1.5) }
 
         ColumnLayout {
-            id: contentColumn
-            anchors.fill: parent
+            Layout.fillHeight: true  
+            Layout.maximumHeight: units.gu(12.5)
 
             Rectangle {
                 id: colorRectangle
                 height: units.gu(0.4)
                 color: root.notebookColor
-                anchors { left: parent.left; right: parent.right }
+                Layout.fillWidth: true
             }
 
             Rectangle {
-                id: contentRectangle
-                anchors {left: parent.left; right: resourceImage.left; top: colorRectangle.bottom; bottom: parent.bottom }
+                anchors { top: colorRectangle.bottom; bottom: parent.bottom }
                 color: "white"
+                Layout.fillWidth: true
+                Layout.maximumWidth: contentRow.width - resourceImage.sourceSize.width
 
                 Label {
                     id: titleLabel
@@ -72,7 +75,7 @@ Empty {
                 }
 
                 Label {
-                    anchors {right: parent.right; rightMargin: units.gu(1); bottom: parent.bottom; bottomMargin: units.gu(0.5) }
+                    anchors { right: parent.right; rightMargin: units.gu(1) + resourceImage.width ; bottom: parent.bottom; bottomMargin: units.gu(0.5) }
                     text: Qt.formatDate(root.creationDate)
                     color: "#b3b3b3"
                     fontSize: "small"
