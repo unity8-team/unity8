@@ -33,76 +33,73 @@ Empty {
 
     showDivider: false;
 
-    RowLayout {
-        id: contentRow
+    ColumnLayout {
+        anchors { fill: parent; leftMargin: units.gu(1); rightMargin: units.gu(1) }
+        spacing: 0
 
-        anchors { fill: parent; leftMargin: units.gu(1.5); rightMargin: units.gu(1.5) }
+        Rectangle {
+            Layout.fillWidth: true
+            height: units.gu(0.4)
+            color: root.notebookColor
+        }
 
-        ColumnLayout {
-            Layout.fillHeight: true  
-            Layout.maximumHeight: units.gu(12)
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "white"
 
-            Rectangle {
-                id: colorRectangle
-                height: units.gu(0.4)
-                color: root.notebookColor
-                Layout.fillWidth: true
-            }
+            RowLayout {
+                anchors.fill: parent
 
-            Rectangle {
-                anchors { top: colorRectangle.bottom; bottom: parent.bottom }
-                color: "#f9f9f9"
-                Layout.fillWidth: true
-                Layout.maximumWidth: contentRow.width - resourceImage.sourceSize.width
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                Label {
-                    id: titleLabel
-                    anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; top: parent.top; topMargin: units.gu(0.5) }
-                    text: root.title
-                    font.weight: Font.Light
-                    elide: Text.ElideRight
-                    color: root.notebookColor
+                    gradient: Gradient {
+                        GradientStop{ position: 0.9; color: "transparent" }
+                        GradientStop{ position: 1; color: "#d9d9d9" }
+                    }
+
+                    Base {
+                        anchors.fill: parent
+                        progression: true
+
+                        ColumnLayout {
+                            anchors { fill: parent; bottomMargin: units.gu(0.5) }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: root.title
+                                font.weight: Font.Light
+                                elide: Text.ElideRight
+                                color: root.notebookColor
+                            } 
+
+                            Label {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                text: root.content
+                                wrapMode: Text.WordWrap
+                                textFormat: Text.StyledText
+                                maximumLineCount: 2
+                                fontSize: "small"
+                                color: "black"
+                            }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: Qt.formatDate(root.creationDate)
+                                color: "#b3b3b3"
+                                fontSize: "small"
+                                horizontalAlignment: Text.AlignRight
+                            }
+                        }
+                    }
                 }
 
-                Label {
-                    anchors { left: parent.left; leftMargin: units.gu(0.5); right: parent.right; rightMargin: units.gu(3); top: titleLabel.bottom; topMargin: units.gu(0.5) }
-                    text: root.content
-                    wrapMode: Text.WordWrap
-                    textFormat: Text.StyledText
-                    maximumLineCount: 2
-                    fontSize: "small"
-                    color: "black"
-                }
-
-                Label {
-                    anchors { right: parent.right; rightMargin: units.gu(1) + resourceImage.width ; bottom: parent.bottom; bottomMargin: units.gu(0.5) }
-                    text: Qt.formatDate(root.creationDate)
-                    color: "#b3b3b3"
-                    fontSize: "small"
-                }
-            }
-
-            Image {
-                id: arrowImage
-                anchors { right: resourceImage.left; rightMargin: units.gu(1); verticalCenter: parent.verticalCenter }
-                source: Qt.resolvedUrl('../images/arrowRight.png') // TODO: Improve this image. Seriously. It's horrible.
-                sourceSize.height: units.gu(4)
-            }
-
-            Image {
-                id: resourceImage
-                anchors { top: colorRectangle.bottom; right: parent.right; bottom: parent.bottom }
-                source: root.resource
-                sourceSize.height: units.gu(9)
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                anchors { bottom: parent.bottom }
-                height: units.gu(1.5)
-                gradient: Gradient {
-                    GradientStop{ position: 0.0; color: "transparent" }
-                    GradientStop{ position: 1.0; color: "#d9d9d9" }
+                Image {
+                    source: root.resource
+                    sourceSize.height: units.gu(11.6)
                 }
             }
         }
