@@ -70,5 +70,6 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
             'u1test@canonical.com', 'password')
         self.addCleanup(account_manager.delete_account, account)
 
-    def test(self):
-        import pdb; pdb.set_trace()
+    def testopen_application_with_account(self):
+        """Test that the No account dialog is not visible."""
+        self.assertFalse(self.app.main_view.no_account_dialog.visible)

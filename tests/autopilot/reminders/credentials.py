@@ -92,21 +92,12 @@ class AccountManager(object):
         method = auth_data.get_method()
         mechanism = auth_data.get_mechanism()
         session_data = auth_data.get_parameters()
-        note_store_url = 'https://sandbox.evernote.com/shard/s1/notestore'
         oauth_token = (
             'S=s1:U=8e6bf:E=14d08e375ff:C=145b1324a03:P=1cd:A=en-devtoken:'
             'V=2:H=79b946c32b4515ee52b387f7b68baa69')
         session_data['ProvidedTokens'] = GLib.Variant('a{sv}', {
-            'TokenSecret': GLib.Variant('s', ''),
-            'edam_userId': GLib.Variant('s', '583359'),
-            'edam_noteStoreUrl': GLib.Variant('s', note_store_url),
-            'oauth_token_secret': GLib.Variant('s', ''),
-            'oauth_token': GLib.Variant('s', oauth_token),
-            'edam_shard': GLib.Variant('s', 's1'),
+            'TokenSecret': GLib.Variant('s', 'dummy'),
             'AccessToken': GLib.Variant('s', oauth_token),
-            'edam_webApiUrlPrefix': GLib.Variant(
-                's', 'https://sandbox.evernote.com/shard/s1/'),
-            'edam_expires': GLib.Variant('s', '1430347980')
         })
         session = Signon.AuthSession.new(identity, method)
         session.process(
