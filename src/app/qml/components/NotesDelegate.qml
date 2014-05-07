@@ -63,6 +63,9 @@ Empty {
                     Base {
                         anchors.fill: parent
                         progression: true
+                        showDivider: false
+
+                        onClicked: root.clicked()   // Propagate the signal
 
                         ColumnLayout {
                             anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
