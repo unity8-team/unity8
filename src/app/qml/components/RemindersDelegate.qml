@@ -25,23 +25,11 @@ import Ubuntu.Components.Pickers 0.1
 
 Base {
     id: root
-    height: expanded ? mainColumn.height : units.gu(10)
+    height: units.gu(10)
     clip: true
     progression: true
 
     property var note
-
-    property bool expanded: false
-
-    onExpandedChanged: {
-        if (expanded) {
-            if (note.hasReminderTime) {
-                datePicker.date.setDate(note.reminderTime.getDate())
-            }
-        } else {
-            note.save();
-        }
-    }
 
     Behavior on height {
         UbuntuNumberAnimation {}
@@ -49,7 +37,7 @@ Base {
 
     Column {
         id: mainColumn
-        anchors { left: parent.left; right: parent.right; top: parent.top; leftMargin: units.gu(2); rightMargin: units.gu(2); topMargin: units.gu(1) }
+        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(1) }
         spacing: units.gu(2)
         height: implicitHeight + units.gu(1)
 
