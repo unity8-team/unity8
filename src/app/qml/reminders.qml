@@ -47,7 +47,13 @@ MainView {
 
     property bool narrowMode: root.width < units.gu(80)
 
-    onNarrowModeChanged: print("#################################", narrowMode)
+    onNarrowModeChanged: {
+        print("#################################", narrowMode)
+        if (narrowMode) {
+            // Clean the toolbar
+            notesPage.selectedNote = null;
+        }
+    }
 
     // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
     backgroundColor: UbuntuColors.coolGrey
@@ -199,6 +205,9 @@ MainView {
                     onSelectedNoteChanged: {
                         if (selectedNote !== null) {
                             root.displayNote(selectedNote);
+                            if (root.narrowMode) {
+                                selectedNote = null;
+                            }
                         } else {
                             sideViewLoader.clear();
                         }
