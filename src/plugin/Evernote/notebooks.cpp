@@ -59,6 +59,10 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->noteCount();
     case RolePublished:
         return notebook->published();
+    case RoleLastUpdated:
+        return notebook->lastUpdated();
+    case RoleLastUpdatedString:
+        return notebook->lastUpdatedString();
     }
     return QVariant();
 }
@@ -75,7 +79,9 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleName, "name");
     roles.insert(RoleNoteCount, "noteCount");
-    roles.insert(RolePublished, "publised");
+    roles.insert(RolePublished, "published");
+    roles.insert(RoleLastUpdated, "lastUpdated");
+    roles.insert(RoleLastUpdatedString, "lastUpdatedString");
     return roles;
 }
 

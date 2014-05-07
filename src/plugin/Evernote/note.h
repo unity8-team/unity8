@@ -38,6 +38,7 @@ class Note : public QObject
     Q_PROPERTY(QString guid READ guid CONSTANT)
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
+    Q_PROPERTY(QString createdString READ createdString CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString htmlContent READ htmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
@@ -68,6 +69,7 @@ public:
     void setNotebookGuid(const QString &notebookGuid);
 
     QDateTime created() const;
+    QString createdString() const;
 
     QString title() const;
     void setTitle(const QString &title);

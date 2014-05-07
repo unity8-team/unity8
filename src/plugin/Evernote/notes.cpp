@@ -31,7 +31,7 @@ Notes::Notes(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleCreated);
-    sort(0, Qt::DescendingOrder);
+//    sort(0, Qt::DescendingOrder);
 }
 
 QString Notes::filterNotebookGuid() const
@@ -63,7 +63,7 @@ void Notes::setOnlyReminders(bool onlyReminders)
         } else {
             setSortRole(NotesStore::RoleCreated);
         }
-        sort(0, Qt::AscendingOrder);
+//        sort(0, Qt::AscendingOrder);
 
         invalidateFilter();
     }
@@ -96,6 +96,20 @@ QString Notes::error() const
 Note *Notes::note(const QString &guid)
 {
     return NotesStore::instance()->note(guid);
+}
+
+int Notes::sectionCount(const QString &sectionRole, const QString &section)
+{
+    NotesStore::Role role = (NotesStore::Role)roleNames().key(sectionRole.toLatin1());
+    int count = 0;
+    for (int i = 0; i < rowCount(); i++) {
+        QString itemSection;
+        itemSection = data(index(i, 0), role).toString();
+        if (section == itemSection) {
+            count++;
+        }
+    }
+    return count;
 }
 
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

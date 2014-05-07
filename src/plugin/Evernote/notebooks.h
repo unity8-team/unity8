@@ -36,7 +36,9 @@ public:
         RoleGuid,
         RoleName,
         RoleNoteCount,
-        RolePublished
+        RolePublished,
+        RoleLastUpdated,
+        RoleLastUpdatedString
     };
     explicit Notebooks(QObject *parent = 0);
 

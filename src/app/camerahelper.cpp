@@ -37,9 +37,8 @@ CameraHelper::CameraHelper(QObject *parent):
 
 QString CameraHelper::importLocation() const
 {
-    QString homePath = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
-    QString appName = QCoreApplication::applicationName();
-    return  homePath + "/.cache/" + appName + "/tempImage.jpg";
+    QString cachePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first();
+    return  cachePath + "/tempImage.jpg";
 }
 
 bool CameraHelper::rotate(const QString &imageFile, int angle)
