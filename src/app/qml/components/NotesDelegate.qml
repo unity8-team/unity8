@@ -65,7 +65,7 @@ Empty {
                         progression: true
 
                         ColumnLayout {
-                            anchors { fill: parent; bottomMargin: units.gu(0.5) }
+                            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
 
                             Label {
                                 Layout.fillWidth: true
