@@ -23,6 +23,7 @@ import logging
 from autopilot import platform
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
+from testtools import ExpectedException
 
 import reminders
 from reminders import credentials, fixture_setup, tests
@@ -40,7 +41,7 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
     def test_go_to_account_settings(self):
         """Test that the Go to account settings button calls url-dispatcher."""
         if platform.model() == 'Desktop':
-             self.skipTest("URL dispatcher doesn't work on the desktop.")
+            self.skipTest("URL dispatcher doesn't work on the desktop.")
         url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(url_dispatcher)
 
@@ -72,4 +73,5 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def testopen_application_with_account(self):
         """Test that the No account dialog is not visible."""
-        self.assertFalse(self.app.main_view.no_account_dialog.visible)
+        with ExpectedException(reminders.RemindersAppException):
+            self.app.main_view.no_account_dialog

@@ -53,6 +53,9 @@ class AccountManager(object):
             info, self._set_credentials_id_to_account, account)
 
         self._join_main_loop()
+
+        self._enable_evernote_service(account)
+
         return account
 
     def _create_account(self):
@@ -108,6 +111,12 @@ class AccountManager(object):
             self.error = error
 
         self._main_loop.quit()
+
+    def _enable_evernote_service(self, account):
+        service = self._manager.get_service('evernote')
+        account.select_service(service)
+        account.set_enabled(True)
+        account.store(self._on_account_created, None)
 
     def delete_account(self, account):
         self._start_main_loop()
