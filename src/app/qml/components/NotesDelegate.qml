@@ -40,7 +40,7 @@ Empty {
 
         ColumnLayout {
             Layout.fillHeight: true  
-            Layout.maximumHeight: units.gu(12.5)
+            Layout.maximumHeight: units.gu(12)
 
             Rectangle {
                 id: colorRectangle
@@ -51,7 +51,7 @@ Empty {
 
             Rectangle {
                 anchors { top: colorRectangle.bottom; bottom: parent.bottom }
-                color: "white"
+                color: "#f9f9f9"
                 Layout.fillWidth: true
                 Layout.maximumWidth: contentRow.width - resourceImage.sourceSize.width
 
@@ -94,6 +94,16 @@ Empty {
                 anchors { top: colorRectangle.bottom; right: parent.right; bottom: parent.bottom }
                 source: root.resource
                 sourceSize.height: units.gu(9)
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                anchors { bottom: parent.bottom }
+                height: units.gu(1.5)
+                gradient: Gradient {
+                    GradientStop{ position: 0.0; color: "transparent" }
+                    GradientStop{ position: 1.0; color: "#d9d9d9" }
+                }
             }
         }
     }
