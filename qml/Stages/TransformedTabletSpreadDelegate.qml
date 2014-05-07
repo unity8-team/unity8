@@ -27,6 +27,7 @@ SpreadDelegate {
     property bool active: false
     property int zIndex
     property real progress: 0
+    property real animatedProgress: 0
     property bool selected: false
     property bool otherSelected: false
 
@@ -122,7 +123,6 @@ SpreadDelegate {
         property real xTranslate: {
             var newTranslate = 0;
 
-            print("**** otherSelected", priv.otherSelected)
             if (otherSelected) {
                 return priv.selectedXTranslate
             }
@@ -145,22 +145,21 @@ SpreadDelegate {
                         // Move it so it appears from behind the side stage immediately
                         newTranslate += -spreadView.sideStageWidth;
                     }
-                    newTranslate += linearAnimation(0, 1, 0, -spreadView.sideStageWidth, root.progress)
+                    newTranslate += linearAnimation(0, 1, 0, -spreadView.sideStageWidth, root.animatedProgress)
                 } else {
-                    newTranslate += linearAnimation(0, 1, 0, -spreadView.sideStageWidth, root.progress)
+                    newTranslate += linearAnimation(0, 1, 0, -spreadView.sideStageWidth, root.animatedProgress)
                 }
             }
 
             if (spreadView.phase == 1) {
-                print("endValue for", root.zIndex, "is", priv.phase2StartTranslate)
                 if (nextInStack) {
                     if (model.stage == ApplicationInfoInterface.MainStage) {
                         var startValue = -spreadView.sideStageWidth + (spreadView.sideStageVisible ? -spreadView.sideStageWidth : 0)
 //                        var endValue = -spreadView.width + spreadView.width * root.zIndex / 6;
-                        newTranslate += linearAnimation(0, 1, startValue, priv.phase2StartTranslate, root.progress);
+                        newTranslate += linearAnimation(0, 1, startValue, priv.phase2StartTranslate, root.animatedProgress);
                     } else {
                         var endValue = -spreadView.width + spreadView.width * root.zIndex / 6;
-                        newTranslate += linearAnimation(0, 1, -spreadView.sideStageWidth, priv.phase2StartTranslate, root.progress);
+                        newTranslate += linearAnimation(0, 1, -spreadView.sideStageWidth, priv.phase2StartTranslate, root.animatedProgress);
                     }
                 } else if (root.active) {
                     var endValue = -spreadView.width + spreadView.width * root.zIndex / 6;
@@ -189,7 +188,7 @@ SpreadDelegate {
 
             if (spreadView.phase == 0) {
                 if (nextInStack) {
-                    return linearAnimation(0, 1, root.dragStartScale, 1, root.progress);
+                    return linearAnimation(0, 1, root.dragStartScale, 1, root.animatedProgress);
                 } else if (active) {
                     return 1;
                 } else {
@@ -221,10 +220,14 @@ SpreadDelegate {
 
             if (spreadView.phase == 0) {
                 if (nextInStack) {
-                    return linearAnimation(0, 1, root.startAngle, 0, root.progress)
+                    return linearAnimation(0, 1, root.startAngle, 0, root.animatedProgress)
                 }
             }
             if (spreadView.phase == 1) {
+                if (nextInStack) {
+                    return linearAnimation(0, 1, root.startAngle, priv.phase2StartAngle, root.animatedProgress)
+                }
+
                 return linearAnimation(0, 1, 0, priv.phase2StartAngle, root.progress)
             }
             if (spreadView.phase == 2) {

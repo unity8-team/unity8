@@ -100,6 +100,9 @@ Item {
         property int phase0Width: sideStageWidth
         property int phase1Width: sideStageWidth
 
+        property int startSnapPosition: phase0Width * 0.5
+        property int endSnapPosition: phase0Width * 0.75
+
         property int selectedIndex: -1
 
         property int nextInStack: {
@@ -275,6 +278,34 @@ Item {
                             return prog;
                         }
 
+                        animatedProgress: {
+                            if (spreadView.nextInStack == index) {
+                                if (spreadView.contentX < spreadView.startSnapPosition) {
+                                    return progress;
+                                }
+                                if (spreadView.contentX < spreadView.startSnapPosition + units.gu(3)) {
+                                    var startProgress = spreadView.startSnapPosition / spreadView.phase0Width;
+                                    var endProgress = (spreadView.startSnapPosition + units.gu(3)) / spreadView.phase0Width;
+                                    var startValue = startProgress;
+                                    var endValue = spreadView.endSnapPosition / spreadView.phase0Width;
+                                    return (progress - startProgress) * (endValue - startValue) / (endProgress - startProgress) + startValue;
+                                }
+                                if (spreadView.contentX < spreadView.phase0Width) {
+                                    return spreadView.endSnapPosition / spreadView.phase0Width;
+                                }
+                                if (spreadView.contentX < spreadView.phase1Width + spreadView.phase0Width) {
+                                    var startProgress = 0;
+                                    print("startValue is" << startProgress)
+                                    var endProgress = 1;
+                                    var startValue = (spreadView.startSnapPosition + units.gu(3)) / spreadView.phase0Width - 1;;
+                                    var endValue = endProgress;
+                                    return (progress - startProgress) * (endValue - startValue) / (endProgress - startProgress) + startValue;
+                                }
+                            }
+
+                            return progress;
+                        }
+
                         onClicked: {
                             if (spreadView.phase == 2) {
                                 if (ApplicationManager.focusedApplicationId == ApplicationManager.get(index).appId) {
@@ -287,7 +318,7 @@ Item {
 
                         EasingCurve {
                             id: snappingCurve
-                            type: EasingCurve.OutQuad
+                            type: EasingCurve.Linear
                             period: 0.05
                             progress: spreadTile.progress
                         }
