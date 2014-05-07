@@ -39,8 +39,16 @@ Item {
     ContentTransferHint {
         id: transferHint
         anchors.fill: parent
-        activeTransfer: root.activeTransfer
+        activeTransfer: priv.activeTransfer
     }
+
+    ContentPeer {
+        id: picSource
+        contentType: ContentType.Pictures
+        handler: ContentHandler.Source
+        selectionType: ContentTransfer.Single
+    }
+
     Connections {
          target: priv.activeTransfer ? priv.activeTransfer : null
          onStateChanged: {
@@ -153,10 +161,7 @@ Item {
                 onClicked: {
                     priv.insertPosition = noteTextArea.cursorPosition;
                     note.richTextContent = noteTextArea.text;
-
-                    priv.activeTransfer = ContentHub.importContent(ContentType.Pictures);
-                    priv.activeTransfer.selectionType = ContentTransfer.Single;
-                    priv.activeTransfer.start();
+                    priv.activeTransfer = picSource.request();
                 }
             }
         }
