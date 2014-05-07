@@ -88,7 +88,7 @@ Empty {
 
                             Label {
                                 Layout.fillWidth: true
-                                text: Qt.formatDate(root.creationDate)
+                                text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
                                 color: "#b3b3b3"
                                 fontSize: "small"
                                 horizontalAlignment: Text.AlignRight
