@@ -45,16 +45,16 @@ class RemindersAppTestCase(AutopilotTestCase):
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
     local_location = os.path.dirname(os.path.dirname(os.getcwd()))
-    local_location_qml = local_location + "/reminders.qml"
+    local_location_qml = os.path.join(local_location, 'src/qml/reminders.qml')
     local_location_binary = os.path.join(local_location, 'src/app/reminders')
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
     def get_launcher_and_type(self):
-        if os.path.exists(self.local_location_qml):
+        if os.path.exists(self.local_location_binary):
             launcher = self.launch_test_local
             test_type = 'local'
-        elif os.path.exists(self.installed_location_qml):
+        elif os.path.exists(self.installed_location_binary):
             launcher = self.launch_test_installed
             test_type = 'deb'
         else:
@@ -109,7 +109,7 @@ class RemindersAppTestCase(AutopilotTestCase):
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
         self.useFixture(fixtures.EnvironmentVariable(
-            'QML2_IMPORT_PATH', newvalue='../../src/plugin'))
+            'QML2_IMPORT_PATH', newvalue=os.path.join(self.local_location, 'src/plugin')))
         return self.launch_test_application(
             self.local_location_binary,
             '-q', self.local_location_qml,
