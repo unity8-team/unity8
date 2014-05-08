@@ -19,7 +19,6 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
-import Ubuntu.Content 0.1
 import Evernote 0.1
 import "../components"
 
