@@ -104,6 +104,22 @@ Empty {
                 Image {
                     source: root.resource
                     sourceSize.height: units.gu(11.6)
+                    Layout.maximumWidth: parent.width / 2
+
+                    Rectangle {
+                        height: parent.width 
+                        width: parent.height
+
+                        anchors.centerIn: parent
+                        rotation: 90
+                        
+                        gradient: Gradient {
+                            GradientStop{ position: 0.0; color: "black" }
+                            GradientStop{ position: 0.2; color: "transparent" }
+                            GradientStop{ position: 0.8; color: "transparent" }
+                            GradientStop{ position: 1; color: "black" }
+                        }
+                    }
                 }
             }
         }
