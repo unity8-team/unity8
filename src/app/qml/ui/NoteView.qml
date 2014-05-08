@@ -19,8 +19,6 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.Extras.Browser 0.1
-import QtWebKit 3.1
-import QtWebKit.experimental 1.0
 import Evernote 0.1
 import "../components"
 

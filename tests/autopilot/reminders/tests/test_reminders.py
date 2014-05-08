@@ -62,6 +62,10 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def setUp(self):
+        # We need to change the home dir before adding the account, otherwise
+        # the account will not be found when the app is opened.
+        _, test_type = self.get_launcher_and_type()
+        self.home_dir = self._patch_home(test_type)
         self.add_evernote_account()
         super(RemindersTestCaseWithAccount, self).setUp()
 

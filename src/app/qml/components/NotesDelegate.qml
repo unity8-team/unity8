@@ -60,6 +60,6 @@ Empty {
         id: resourceImage
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
         source: root.resource
-        sourceSize.height: height
+        sourceSize.height: units.gu(9)
     }
 }

@@ -39,7 +39,10 @@ int main(int argc, char *argv[])
 
     // Set up import paths
     QStringList importPathList = view.engine()->importPathList();
-    importPathList.append(QDir::currentPath() + "/../plugin/");
+    // Prepend the location of the plugin in the build dir,
+    // so that Qt Creator finds it there, thus overriding the one installed
+    // in the sistem if there is one
+    importPathList.prepend(QCoreApplication::applicationDirPath() + "/../plugin/");
 
     QStringList args = a.arguments();
     if (args.contains("-h") || args.contains("--help")) {
@@ -105,6 +108,7 @@ int main(int argc, char *argv[])
     const QString filePath = QLatin1String("qml/reminders.qml");
     QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
     paths.prepend(QDir::currentPath());
+    paths.prepend(QCoreApplication::applicationDirPath());
     Q_FOREACH (const QString &path, paths) {
         QString myPath = path + QLatin1Char('/') + filePath;
         if (QFile::exists(myPath)) {
@@ -116,6 +120,19 @@ int main(int argc, char *argv[])
     if (qmlfile.isEmpty()) {
         qFatal("File: %s does not exist at any of the standard paths!", qPrintable(filePath));
     }
+
+    // Make sure our cache dir exists. It'll be used all over in this app.
+    // We need to set the applicationName for that.
+    // It'll be overwritten again when qml loads but we need it already now.
+    // So if you want to change it, make sure to find all the places where it is set, not just here :D
+    QCoreApplication::setApplicationName("com.ubuntu.reminders");
+
+    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first());
+    if (!cacheDir.exists()) {
+        qDebug() << "creating cacheDir:" << cacheDir.absolutePath();
+        cacheDir.mkpath(cacheDir.absolutePath());
+    }
+
     qDebug() << "using main qml file from:" << qmlfile;
     view.setSource(QUrl::fromLocalFile(qmlfile));
     view.show();

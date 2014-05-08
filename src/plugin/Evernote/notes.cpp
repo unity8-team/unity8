@@ -27,6 +27,8 @@ Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false)
 {
+    connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
+    connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleCreated);
     sort(0, Qt::DescendingOrder);
@@ -81,9 +83,33 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
     }
 }
 
+bool Notes::loading() const
+{
+    return NotesStore::instance()->loading();
+}
+
+QString Notes::error() const
+{
+    return NotesStore::instance()->error();
+}
+
 Note *Notes::note(const QString &guid)
 {
     return NotesStore::instance()->note(guid);
+}
+
+int Notes::sectionCount(const QString &sectionRole, const QString &section)
+{
+    NotesStore::Role role = (NotesStore::Role)roleNames().key(sectionRole.toLatin1());
+    int count = 0;
+    for (int i = 0; i < rowCount(); i++) {
+        QString itemSection;
+        itemSection = data(index(i, 0), role).toString();
+        if (section == itemSection) {
+            count++;
+        }
+    }
+    return count;
 }
 
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

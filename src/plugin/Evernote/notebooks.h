@@ -28,6 +28,9 @@
 class Notebooks : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(QString error READ error NOTIFY errorChanged)
+
 public:
     enum Roles {
         RoleGuid,
@@ -37,6 +40,9 @@ public:
     };
     explicit Notebooks(QObject *parent = 0);
 
+    bool loading() const;
+    QString error() const;
+
     QVariant data(const QModelIndex &index, int role) const;
     int rowCount(const QModelIndex &parent) const;
     QHash<int, QByteArray> roleNames() const;
@@ -45,6 +51,10 @@ public:
 
 public slots:
     void refresh();
+
+signals:
+    void loadingChanged();
+    void errorChanged();
 
 private slots:
     void notebookAdded(const QString &guid);

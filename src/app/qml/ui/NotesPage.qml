@@ -48,6 +48,14 @@ Page {
         }
 
         ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotes();
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Accounts")
             iconName: "contacts-app-symbolic"
             visible: accounts.count > 1
@@ -99,6 +107,7 @@ Page {
     }
 
     ListView {
+        id: notesListView
         objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
@@ -111,11 +120,48 @@ Page {
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
 
-            Component.onCompleted: NotesStore.refreshNoteContent(model.guid)
+            Component.onCompleted: {
+                if (!model.plaintextContent) {
+                    NotesStore.refreshNoteContent(model.guid);
+                }
+            }
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
             }
+        }
+
+        section.criteria: ViewSection.FullString
+        section.property: "createdString"
+        section.delegate: Empty {
+            height: units.gu(5)
+            Item {
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(1) }
+                Label {
+                    text: section
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Label {
+                    text: "(" + notes.sectionCount("createdString", section) + ")"
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
+        }
+        Label {
+            anchors.centerIn: parent
+            visible: !notes.loading && (notes.error || notesListView.count == 0)
+            width: parent.width - units.gu(4)
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
         }
     }
 }
