@@ -115,8 +115,8 @@ Empty {
                         
                         gradient: Gradient {
                             GradientStop{ position: 0.0; color: "black" }
-                            GradientStop{ position: 0.2; color: "transparent" }
-                            GradientStop{ position: 0.8; color: "transparent" }
+                            GradientStop{ position: 0.1; color: "transparent" }
+                            GradientStop{ position: 0.9; color: "transparent" }
                             GradientStop{ position: 1; color: "black" }
                         }
                     }
