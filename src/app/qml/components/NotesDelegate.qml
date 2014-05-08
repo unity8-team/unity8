@@ -91,7 +91,7 @@ Empty {
                             }
 
                             Label {
-                                Layout.fillWidth: true
+                                Layout.minimumWidth: parent.width + units.gu(2)
                                 text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
                                 color: "#b3b3b3"
                                 fontSize: "small"
