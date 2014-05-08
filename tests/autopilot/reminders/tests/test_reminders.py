@@ -62,13 +62,16 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def setUp(self):
-        self.add_evernote_credentials()
+        self.add_evernote_account()
         super(RemindersTestCaseWithAccount, self).setUp()
 
-    def add_evernote_credentials(self):
+    def add_evernote_account(self):
         account_manager = credentials.AccountManager()
-        account = account_manager.add_evernote_credentials(
-            'u1test@canonical.com', 'password')
+        oauth_token = (
+            'S=s1:U=8e6bf:E=14d08e375ff:C=145b1324a03:P=1cd:A=en-devtoken:'
+            'V=2:H=79b946c32b4515ee52b387f7b68baa69')
+        account = account_manager.add_evernote_account(
+            'dummy', 'dummy', oauth_token)
         self.addCleanup(account_manager.delete_account, account)
 
     def test_open_application_with_account(self):

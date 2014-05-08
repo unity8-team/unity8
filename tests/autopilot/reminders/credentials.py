@@ -25,6 +25,7 @@ class CredentialsException(Exception):
 
 
 class AccountManager(object):
+    """Manager for online accounts."""
 
     def __init__(self):
         self._manager = Accounts.Manager()
@@ -41,7 +42,14 @@ class AccountManager(object):
         if self.error is not None:
             raise CredentialsException(self.error.message)
 
-    def add_evernote_credentials(self, user_name, password):
+    def add_evernote_account(self, user_name, password, oauth_token):
+        """Add an evernote account.
+
+        :param user_name: The user name of the account.
+        :param password: The password of the account.
+        :param oauth_token: The oauth token of the account.
+
+        """
         self._start_main_loop()
 
         account = self._create_account()
@@ -50,7 +58,8 @@ class AccountManager(object):
 
         identity = Signon.Identity.new()
         identity.store_credentials_with_info(
-            info, self._set_credentials_id_to_account, account)
+            info, self._set_credentials_id_to_account,
+            {'account': account, 'oauth_token': oauth_token})
 
         self._join_main_loop()
 
@@ -76,15 +85,18 @@ class AccountManager(object):
         info.set_secret(password, True)
         return info
 
-    def _set_credentials_id_to_account(self, identity, id, error, account):
+    def _set_credentials_id_to_account(
+            self, identity, id_, error, account_dict):
         if error:
             self.error = error
             self._main_loop.quit()
 
-        account.set_variant('CredentialsId', GLib.Variant('u', id))
-        account.store(self._process_session, None)
+        account = account_dict.get('account')
+        oauth_token = account_dict.get('oauth_token')
+        account.set_variant('CredentialsId', GLib.Variant('u', id_))
+        account.store(self._process_session, oauth_token)
 
-    def _process_session(self, account, error, _):
+    def _process_session(self, account, error, oauth_token):
         if error:
             self.error = error
             self._main_loop.quit()
@@ -95,9 +107,6 @@ class AccountManager(object):
         method = auth_data.get_method()
         mechanism = auth_data.get_mechanism()
         session_data = auth_data.get_parameters()
-        oauth_token = (
-            'S=s1:U=8e6bf:E=14d08e375ff:C=145b1324a03:P=1cd:A=en-devtoken:'
-            'V=2:H=79b946c32b4515ee52b387f7b68baa69')
         session_data['ProvidedTokens'] = GLib.Variant('a{sv}', {
             'TokenSecret': GLib.Variant('s', 'dummy'),
             'AccessToken': GLib.Variant('s', oauth_token),
@@ -119,6 +128,11 @@ class AccountManager(object):
         account.store(self._on_account_created, None)
 
     def delete_account(self, account):
+        """Delete an account.
+
+        :param account: The account to delete.
+
+        """
         self._start_main_loop()
         account.delete()
         account.store(self._on_account_deleted, None)
