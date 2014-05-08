@@ -124,7 +124,7 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
     case RoleReminderSorting:
         // done reminders get +1000000000000 (this will break sorting in year 2286 :P)
         return QVariant::fromValue(m_notes.at(index.row())->reminderTime().toMSecsSinceEpoch() +
-                (m_notes.at(index.row())->reminderDone() ? 1000000000000 : 0));
+                (m_notes.at(index.row())->reminderDone() ? 10000000000000 : 0));
     }
     return QVariant();
 }
