@@ -22,17 +22,25 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components.Pickers 0.1
+import Evernote 0.1
 
 Base {
     id: root
     height: units.gu(10)
     clip: true
     progression: true
+    removable: true
 
     property var note
 
     Behavior on height {
         UbuntuNumberAnimation {}
+    }
+
+    onItemRemoved: {
+        root.cancelItemRemoval();
+        note.reminderDone = true;
+        NotesStore.saveNote(note.guid)
     }
 
     Column {
@@ -57,14 +65,14 @@ Base {
                     Label {
                         text: note.hasReminderTime ? Qt.formatDateTime(note.reminderTime, "hh") : "00"
                         color: "white"
-                        horizontalAlignment: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
                         font.bold: true
                         fontSize: "large"
                     }
                     Label {
                         text: note.hasReminderTime ? Qt.formatDateTime(note.reminderTime, "mm") : "00"
                         color: "white"
-                        horizontalAlignment: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
                         fontSize: "large"
                     }
                 }

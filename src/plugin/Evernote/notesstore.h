@@ -69,7 +69,8 @@ public:
         RoleHtmlContent,
         RoleRichTextContent,
         RolePlaintextContent,
-        RoleResourceUrls
+        RoleResourceUrls,
+        RoleReminderSorting
     };
 
     ~NotesStore();

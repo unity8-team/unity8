@@ -121,6 +121,10 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->plaintextContent();
     case RoleResourceUrls:
         return m_notes.at(index.row())->resourceUrls();
+    case RoleReminderSorting:
+        // done reminders get +1000000000000 (this will break sorting in year 2286 :P)
+        return QVariant::fromValue(m_notes.at(index.row())->reminderTime().toMSecsSinceEpoch() +
+                (m_notes.at(index.row())->reminderDone() ? 1000000000000 : 0));
     }
     return QVariant();
 }
@@ -415,6 +419,10 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 void NotesStore::saveNote(const QString &guid)
 {
     Note *note = m_notesHash.value(guid);
+    if (!note) {
+        qWarning() << "Can't save note. Guid not found:" << guid;
+        return;
+    }
     SaveNoteJob *job = new SaveNoteJob(note, this);
     connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);

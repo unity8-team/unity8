@@ -66,6 +66,7 @@ Page {
         anchors.fill: parent
 
         delegate: RemindersDelegate {
+            width: remindersListView.width
             note: notes.note(guid)
 
             Component.onCompleted: {
