@@ -50,14 +50,13 @@ Empty {
 
             RowLayout {
                 anchors.fill: parent
-                spacing: 0
 
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
                     gradient: Gradient {
-                        GradientStop{ position: 0.8; color: "transparent" }
+                        GradientStop{ position: 0.9; color: "transparent" }
                         GradientStop{ position: 1; color: "#d9d9d9" }
                     }
 
@@ -104,6 +103,7 @@ Empty {
                 Image {
                     source: root.resource
                     sourceSize.height: units.gu(11.6)
+
                     Layout.maximumWidth: parent.width / 2
 
                     Rectangle {
