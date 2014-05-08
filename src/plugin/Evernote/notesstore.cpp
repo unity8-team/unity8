@@ -231,6 +231,8 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             QString guid = QString::fromStdString(result.guid);
             QDateTime created = QDateTime::fromMSecsSinceEpoch(result.created);
             note = new Note(guid, created, this);
+            connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
+            connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
         }
 
         note->setTitle(QString::fromStdString(result.title));
@@ -403,6 +405,8 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     QString guid = QString::fromStdString(result.guid);
     QDateTime created = QDateTime::fromMSecsSinceEpoch(result.created);
     Note *note = new Note(guid, created, this);
+    connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
+    connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
     note->setEnmlContent(QString::fromStdString(result.content));
@@ -506,4 +510,14 @@ void NotesStore::expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode,
     Notebook *notebook = m_notebooksHash.take(guid);
     m_notebooks.removeAll(notebook);
     notebook->deleteLater();
+}
+
+void NotesStore::emitDataChanged()
+{
+    Note *note = qobject_cast<Note*>(sender());
+    if (!note) {
+        return;
+    }
+    int idx = m_notes.indexOf(note);
+    emit dataChanged(index(idx), index(idx));
 }

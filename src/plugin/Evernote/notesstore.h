@@ -132,6 +132,7 @@ private slots:
     void createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result);
     void expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
 
+    void emitDataChanged();
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;

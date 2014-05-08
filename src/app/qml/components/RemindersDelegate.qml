@@ -31,6 +31,27 @@ Base {
     progression: true
     removable: true
 
+    backgroundIndicator: Row {
+        x: root.__contents.x > 0 ? root.__contents.x - width : 0
+        height: childrenRect.height
+        width: childrenRect.width
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: units.gu(1)
+
+        Icon {
+            height: units.gu(3)
+            width: height
+            anchors.verticalCenter: parent.verticalCenter
+            name: root.note.reminderDone ? "clear" : "select"
+        }
+
+        Label {
+            id: confirmRemovalDialog
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.note.reminderDone ? i18n.tr("Clear reminder") : i18n.tr("Mark as done")
+        }
+    }
+
     property var note
 
     Behavior on height {
@@ -41,7 +62,13 @@ Base {
         // Revert "removal"
         root.cancelItemRemoval();
         root.height = units.gu(10)
-        note.reminderDone = true;
+        print("marking reminder as", !note.reminderDone, " done for note", note.title);
+        if (!note.reminderDone) {
+            note.reminderDone = true;
+        } else {
+            note.reminder = false;
+        }
+
         NotesStore.saveNote(note.guid)
     }
 
