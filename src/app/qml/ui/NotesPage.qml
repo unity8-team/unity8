@@ -49,6 +49,14 @@ Page {
         }
 
         ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotes();
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Accounts")
             iconName: "contacts-app-symbolic"
             visible: accounts.count > 1
@@ -115,7 +123,9 @@ Page {
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
             Component.onCompleted: {
-                NotesStore.refreshNoteContent(model.guid)
+                if (!model.plaintextContent) {
+                    NotesStore.refreshNoteContent(model.guid);
+                }
             }
 
             onClicked: {

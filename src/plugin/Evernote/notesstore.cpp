@@ -262,19 +262,19 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
     }
 }
 
-void NotesStore::refreshNoteContent(const QString &guid)
+void NotesStore::refreshNoteContent(const QString &guid, bool withResourceContent)
 {
     Note *note = m_notesHash.value(guid);
     if (note) {
         note->setLoading(true);
     }
 
-    FetchNoteJob *job = new FetchNoteJob(guid, this);
+    FetchNoteJob *job = new FetchNoteJob(guid, withResourceContent, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
 
-void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)
+void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, bool withResourceContent)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error fetching note:" << errorMessage;
@@ -290,6 +290,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
 
+    // Notes are fetched without resources by default. if we discover one or more resources where we don't have
+    // data in the cache, just refresh the note again with resource data.
+    bool refreshWithResourceData = false;
+
     // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
     for (unsigned int i = 0; i < result.resources.size(); ++i) {
 
@@ -299,8 +303,14 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString fileName = QString::fromStdString(resource.attributes.fileName);
         QString mime = QString::fromStdString(resource.mime);
 
-        QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
-        note->addResource(resourceData, hash, fileName, mime);
+        if (withResourceContent) {
+            QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
+            note->addResource(resourceData, hash, fileName, mime);
+        } else if (Resource::isCached(hash)) {
+            note->addResource(QByteArray(), hash, fileName, mime);
+        } else {
+            refreshWithResourceData = true;
+        }
     }
 
     note->setEnmlContent(QString::fromStdString(result.content));
@@ -319,6 +329,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     emit dataChanged(noteIndex, noteIndex);
+
+    if (refreshWithResourceData) {
+        refreshNoteContent(note->guid(), true);
+    }
 }
 
 void NotesStore::refreshNotebooks()
