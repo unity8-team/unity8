@@ -140,7 +140,7 @@ void Note::setRichTextContent(const QString &richTextContent)
 
 QString Note::plaintextContent() const
 {
-    return m_content.toPlaintext();
+    return m_content.toPlaintext().trimmed();
 }
 
 bool Note::reminder() const
