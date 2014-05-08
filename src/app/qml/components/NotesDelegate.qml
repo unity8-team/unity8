@@ -114,10 +114,10 @@ Empty {
                         rotation: 90
                         
                         gradient: Gradient {
-                            GradientStop{ position: 0.0; color: "black" }
+                            GradientStop{ position: 0; color: "#383838" }
                             GradientStop{ position: 0.1; color: "transparent" }
                             GradientStop{ position: 0.9; color: "transparent" }
-                            GradientStop{ position: 1; color: "black" }
+                            GradientStop{ position: 1; color: "#383838" }
                         }
                     }
                 }
