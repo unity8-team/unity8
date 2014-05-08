@@ -50,6 +50,7 @@ Empty {
 
             RowLayout {
                 anchors.fill: parent
+                spacing: 0
 
                 Rectangle {
                     Layout.fillWidth: true
