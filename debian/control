@@ -15,7 +15,6 @@ Homepage: https://launchpad.net/reminders-app
 Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 
 Package: reminders-app
-Section: misc
 Architecture: any
 Depends: ${misc:Depends},
          account-plugin-evernote,
