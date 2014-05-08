@@ -17,51 +17,94 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 
 Empty {
     id: root
-    height: units.gu(9)
+    height: units.gu(12)
 
     property string title
     property date creationDate
     property string content
     property string resource
-    property color notebookColor
+    property string notebookColor: preferences.colorForNotebook(model.guid)
 
-    Column {
-        id: contentColumn
-        spacing: units.gu(1)
-        anchors {
-            top: parent.top
-            topMargin: units.gu(1)
-            left: parent.left
-            leftMargin: units.gu(2)
-            right: resourceImage.left
-            rightMargin: units.gu(2)
-        }
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            text: root.title
-            font.bold: true
-            elide: Text.ElideRight
+    showDivider: false;
+
+    ColumnLayout {
+        anchors { fill: parent; leftMargin: units.gu(1); rightMargin: units.gu(1) }
+        spacing: 0
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: units.gu(0.4)
             color: root.notebookColor
         }
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            text: "<font color=\"#dd4814\">"+ Qt.formatDate(root.creationDate) + "</font>  " + root.content
-            wrapMode: Text.WordWrap
-            textFormat: Text.StyledText
-            maximumLineCount: 2
-            fontSize: "small"
-        }
-    }
 
-    Image {
-        id: resourceImage
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-        source: root.resource
-        sourceSize.height: height
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "white"
+
+            RowLayout {
+                anchors.fill: parent
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    gradient: Gradient {
+                        GradientStop{ position: 0.9; color: "transparent" }
+                        GradientStop{ position: 1; color: "#d9d9d9" }
+                    }
+
+                    Base {
+                        anchors.fill: parent
+                        progression: true
+                        showDivider: false
+
+                        onClicked: root.clicked()   // Propagate the signal
+
+                        ColumnLayout {
+                            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: root.title
+                                font.weight: Font.Light
+                                elide: Text.ElideRight
+                                color: root.notebookColor
+                            } 
+
+                            Label {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                text: root.content
+                                wrapMode: Text.WordWrap
+                                textFormat: Text.StyledText
+                                maximumLineCount: 2
+                                fontSize: "small"
+                                color: "black"
+                            }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
+                                color: "#b3b3b3"
+                                fontSize: "small"
+                                horizontalAlignment: Text.AlignRight
+                            }
+                        }
+                    }
+                }
+
+                Image {
+                    source: root.resource
+                    sourceSize.height: units.gu(11.6)
+                }
+            }
+        }
     }
 }
