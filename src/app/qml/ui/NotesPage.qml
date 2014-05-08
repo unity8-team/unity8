@@ -126,10 +126,9 @@ Page {
         section.criteria: ViewSection.FullString
         section.property: "createdString"
         section.delegate: Empty {
-            showDivider: false;
             height: units.gu(5)
             RowLayout {
-                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(1) }
                 Label {
                     text: section
                     Layout.fillWidth: true
