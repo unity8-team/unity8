@@ -38,7 +38,8 @@ Base {
     }
 
     onItemRemoved: {
-        root.cancelItemRemoval();
+        // Revert "removal"
+        root.height = units.gu(10)
         note.reminderDone = true;
         NotesStore.saveNote(note.guid)
     }
