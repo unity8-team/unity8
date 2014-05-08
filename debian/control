@@ -16,7 +16,7 @@ Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 
 Package: reminders-app
 Architecture: any
-Depends: ${misc:Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends},
          account-plugin-evernote,
          qtdeclarative5-accounts-plugin,
          qtdeclarative5-evernote0.1,
