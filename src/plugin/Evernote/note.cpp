@@ -233,7 +233,6 @@ QString Note::reminderTimeString() const
         return gettext("No date");
     }
     if (reminderDate < today) {
-        qDebug() << "overdue!";
         return gettext("Overdue");
     }
     if (reminderDate == today) {
@@ -248,7 +247,6 @@ QString Note::reminderTimeString() const
     if (reminderDate <= today.addDays(14)) {
         return gettext("In two weeks");
     }
-    qDebug() << "later";
     return gettext("Later");
 }
 
