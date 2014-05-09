@@ -137,6 +137,7 @@ Page {
         section.property: "createdString"
         section.delegate: Empty {
             height: units.gu(5)
+            showDivider: false
             RowLayout {
                 anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
                 Label {

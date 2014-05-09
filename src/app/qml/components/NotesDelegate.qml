@@ -50,13 +50,14 @@ Empty {
 
             RowLayout {
                 anchors.fill: parent
+                spacing: 0
 
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
                     gradient: Gradient {
-                        GradientStop{ position: 0.9; color: "transparent" }
+                        GradientStop{ position: 0.8; color: "transparent" }
                         GradientStop{ position: 1; color: "#d9d9d9" }
                     }
 
@@ -90,7 +91,7 @@ Empty {
                             }
 
                             Label {
-                                Layout.fillWidth: true
+                                Layout.minimumWidth: parent.width + units.gu(2)
                                 text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
                                 color: "#b3b3b3"
                                 fontSize: "small"
@@ -103,6 +104,23 @@ Empty {
                 Image {
                     source: root.resource
                     sourceSize.height: units.gu(11.6)
+
+                    Layout.maximumWidth: parent.width / 2
+
+                    Rectangle {
+                        height: parent.width 
+                        width: parent.height
+
+                        anchors.centerIn: parent
+                        rotation: 90
+                        
+                        gradient: Gradient {
+                            GradientStop{ position: 0; color: "#383838" }
+                            GradientStop{ position: 0.1; color: "transparent" }
+                            GradientStop{ position: 0.9; color: "transparent" }
+                            GradientStop{ position: 1; color: "#383838" }
+                        }
+                    }
                 }
             }
         }
