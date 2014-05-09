@@ -23,7 +23,7 @@ import Ubuntu.Components.ListItems 0.1
 
 Empty {
     id: root
-    height: units.gu(9)
+    height: units.gu(10)
 
     property string notebookColor: preferences.colorForNotebook(model.guid)
 
@@ -33,51 +33,56 @@ Empty {
         anchors.bottomMargin: units.dp(1)
     }
 
-    RowLayout {
+    Base {
         anchors.fill: parent
-        anchors.margins: units.gu(1)
+        progression: true
 
-        Item {
-            anchors { top: parent.top; bottom: parent.bottom }
-            width: units.gu(1)
-            Rectangle {
-                anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
-                width: units.gu(.5)
-                color: root.notebookColor
-                radius: width / 2
-            }
-        }
+        onClicked: root.clicked()
 
-        ColumnLayout {
-            height: parent.height
-            Layout.fillWidth: true
+        RowLayout {
+            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
 
-            Label {
-                text: model.name
-                color: root.notebookColor
-                fontSize: "medium"
-                font.bold: true
+            Item {
+                anchors { top: parent.top; bottom: parent.bottom }
+                width: units.gu(1)
+                Rectangle {
+                    anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
+                    width: units.gu(.5)
+                    color: root.notebookColor
+                    radius: width / 2
+                }
             }
-            Label {
-                text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
-                fontSize: "small"
-                color: "black"
+
+            ColumnLayout {
+                height: parent.height
+                Layout.fillWidth: true
+
+                Label {
+                    text: model.name
+                    color: root.notebookColor
+                    fontSize: "large"
+                }
+                Label {
+                    text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
+                    fontSize: "small"
+                    color: "black"
+                }
+                Label {
+                    Layout.fillHeight: true
+                    text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
+                    color: model.published ? "black" : "#b3b3b3"
+                    fontSize: "x-small"
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: model.published
+                }
             }
+
             Label {
                 Layout.fillHeight: true
-                text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
-                color: model.published ? "black" : "#b3b3b3"
-                fontSize: "x-small"
                 verticalAlignment: Text.AlignVCenter
-                font.bold: model.published
+                text: "(" + model.noteCount + ")"
+                color: "#b3b3b3"
             }
-        }
-
-        Label {
-            Layout.fillHeight: true
-            verticalAlignment: Text.AlignVCenter
-            text: "(" + model.noteCount + ")"
-            color: "#b3b3b3"
         }
     }
 }

@@ -42,8 +42,7 @@ Page {
             text: note.reminder ? "Reminder (set)" : "Reminder"
             iconName: "alarm-clock"
             onTriggered: {
-                note.reminder = !note.reminder
-                NotesStore.saveNote(note.guid)
+                pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), {title: root.title, note: root.note});
             }
         }
         ToolbarButton {

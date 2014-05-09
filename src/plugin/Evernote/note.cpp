@@ -140,7 +140,7 @@ void Note::setRichTextContent(const QString &richTextContent)
 
 QString Note::plaintextContent() const
 {
-    return m_content.toPlaintext();
+    return m_content.toPlaintext().trimmed();
 }
 
 bool Note::reminder() const
@@ -223,8 +223,15 @@ QString Note::reminderTimeString() const
         return QString();
     }
 
+    if (reminderDone()) {
+        return gettext("Done");
+    }
+
     QDate reminderDate = m_reminderTime.date();
     QDate today = QDate::currentDate();
+    if (m_reminderTime.isNull()) {
+        return gettext("No date");
+    }
     if (reminderDate < today) {
         return gettext("Overdue");
     }

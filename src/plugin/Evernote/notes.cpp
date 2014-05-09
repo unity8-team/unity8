@@ -31,7 +31,7 @@ Notes::Notes(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleCreated);
-//    sort(0, Qt::DescendingOrder);
+    sort(0, Qt::DescendingOrder);
 }
 
 QString Notes::filterNotebookGuid() const
@@ -59,11 +59,12 @@ void Notes::setOnlyReminders(bool onlyReminders)
         m_onlyReminders = onlyReminders;
         emit onlyRemindersChanged();
         if (onlyReminders) {
-            setSortRole(NotesStore::RoleReminderTime);
+            setSortRole(NotesStore::RoleReminderSorting);
+            sort(0, Qt::AscendingOrder);
         } else {
             setSortRole(NotesStore::RoleCreated);
+            sort(0, Qt::DescendingOrder);
         }
-//        sort(0, Qt::AscendingOrder);
 
         invalidateFilter();
     }

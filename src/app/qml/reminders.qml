@@ -249,6 +249,14 @@ MainView {
                 title: i18n.tr("Reminders")
                 page: RemindersPage {
                     id: remindersPage
+
+                    onSelectedNoteChanged: {
+                        if (selectedNote !== null) {
+                            root.displayNote(selectedNote);
+                        } else {
+                            sideViewLoader.clear();
+                        }
+                    }
                 }
             }
         }

@@ -121,6 +121,10 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->plaintextContent();
     case RoleResourceUrls:
         return m_notes.at(index.row())->resourceUrls();
+    case RoleReminderSorting:
+        // done reminders get +1000000000000 (this will break sorting in year 2286 :P)
+        return QVariant::fromValue(m_notes.at(index.row())->reminderTime().toMSecsSinceEpoch() +
+                (m_notes.at(index.row())->reminderDone() ? 10000000000000 : 0));
     }
     return QVariant();
 }
@@ -227,6 +231,8 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             QString guid = QString::fromStdString(result.guid);
             QDateTime created = QDateTime::fromMSecsSinceEpoch(result.created);
             note = new Note(guid, created, this);
+            connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
+            connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
         }
 
         note->setTitle(QString::fromStdString(result.title));
@@ -413,6 +419,8 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     QString guid = QString::fromStdString(result.guid);
     QDateTime created = QDateTime::fromMSecsSinceEpoch(result.created);
     Note *note = new Note(guid, created, this);
+    connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
+    connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
     note->setEnmlContent(QString::fromStdString(result.content));
@@ -429,6 +437,10 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 void NotesStore::saveNote(const QString &guid)
 {
     Note *note = m_notesHash.value(guid);
+    if (!note) {
+        qWarning() << "Can't save note. Guid not found:" << guid;
+        return;
+    }
     SaveNoteJob *job = new SaveNoteJob(note, this);
     connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
@@ -512,4 +524,14 @@ void NotesStore::expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode,
     Notebook *notebook = m_notebooksHash.take(guid);
     m_notebooks.removeAll(notebook);
     notebook->deleteLater();
+}
+
+void NotesStore::emitDataChanged()
+{
+    Note *note = qobject_cast<Note*>(sender());
+    if (!note) {
+        return;
+    }
+    int idx = m_notes.indexOf(note);
+    emit dataChanged(index(idx), index(idx));
 }

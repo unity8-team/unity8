@@ -17,13 +17,16 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
 import "../components"
 
 Page {
-    id: remindersPage
+    id: root
+
+    property var selectedNote: null
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -63,16 +66,36 @@ Page {
         anchors.fill: parent
 
         delegate: RemindersDelegate {
+            width: remindersListView.width
             note: notes.note(guid)
+
+            Component.onCompleted: {
+                if (!model.plaintextContent) {
+                    NotesStore.refreshNoteContent(model.guid)
+                }
+            }
+
+            onClicked: {
+                root.selectedNote = NotesStore.note(guid);
+            }
         }
 
         model: notes
 
         section.criteria: ViewSection.FullString
         section.property: "reminderTimeString"
-        section.delegate: Standard {
-            height: units.gu(3)
-            text: section
+        section.delegate: Empty {
+            height: units.gu(5)
+            RowLayout {
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
+                Label {
+                    text: section
+                    Layout.fillWidth: true
+                }
+                Label {
+                    text: "(" + notes.sectionCount("reminderTimeString", section) + ")"
+                }
+            }
         }
 
         ActivityIndicator {
