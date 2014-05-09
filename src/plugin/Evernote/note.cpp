@@ -305,6 +305,7 @@ Resource* Note::addResource(const QByteArray &data, const QString &hash, const Q
 {
     Resource *resource = new Resource(data, hash, fileName, type, this);
     m_resources.insert(hash, resource);
+    emit resourcesChanged();
     return resource;
 }
 
@@ -312,6 +313,7 @@ Resource *Note::addResource(const QString &fileName)
 {
     Resource *resource = new Resource(fileName);
     m_resources.insert(resource->hash(), resource);
+    emit resourcesChanged();
     return resource;
 }
 
@@ -330,6 +332,7 @@ void Note::attachFile(int position, const QUrl &fileName)
 
     Resource *resource = addResource(fileName.path());
     m_content.attachFile(position, resource->hash(), resource->type());
+    emit resourcesChanged();
     emit contentChanged();
 
     // Cleanup imported file.

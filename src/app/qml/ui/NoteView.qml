@@ -55,6 +55,13 @@ Item {
                 loadHtml(html, "file:///")
             }
 
+            Connections {
+                target: note
+                onResourcesChanged: {
+                    noteTextArea.loadHtml(noteTextArea.html, "file:///")
+                }
+            }
+
             experimental.preferences.navigatorQtObjectEnabled: true
             experimental.preferredMinimumContentsWidth: root.width
             experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]

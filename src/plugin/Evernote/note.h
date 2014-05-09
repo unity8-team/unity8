@@ -44,7 +44,7 @@ class Note : public QObject
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
     Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
-    Q_PROPERTY(QStringList resourceUrls READ resourceUrls NOTIFY contentChanged)
+    Q_PROPERTY(QStringList resourceUrls READ resourceUrls NOTIFY resourcesChanged)
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
     Q_PROPERTY(bool hasReminderTime READ hasReminderTime WRITE setHasReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
@@ -134,6 +134,7 @@ signals:
     void titleChanged();
     void notebookGuidChanged();
     void contentChanged();
+    void resourcesChanged();
     void reminderChanged();
     void reminderTimeChanged();
     void reminderDoneChanged();
