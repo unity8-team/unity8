@@ -108,17 +108,28 @@ Empty {
                     Layout.maximumWidth: parent.width / 2
 
                     Rectangle {
-                        height: parent.width 
+                        height: parent.width / 4 
                         width: parent.height
 
-                        anchors.centerIn: parent
+                        anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: parent.width/2 - height/2 }
                         rotation: 90
                         
                         gradient: Gradient {
                             GradientStop{ position: 0; color: "#383838" }
-                            GradientStop{ position: 0.1; color: "transparent" }
-                            GradientStop{ position: 0.9; color: "transparent" }
-                            GradientStop{ position: 1; color: "#383838" }
+                            GradientStop{ position: 1; color: "transparent" }
+                        }
+                    }
+                
+                    Rectangle {
+                        height: parent.width / 4 
+                        width: parent.height
+
+                        anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: -parent.width/2 + height/2 }
+                        rotation: 270
+                        
+                        gradient: Gradient {
+                            GradientStop{ position: 0; color: "#383838" }
+                            GradientStop{ position: 1; color: "transparent" }
                         }
                     }
                 }
