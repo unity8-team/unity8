@@ -71,10 +71,11 @@ MainView {
 
     function displayNote(note) {
         if (root.narrowMode) {
+            print("creating noteview");
             var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-            var page = component.createObject();
+            var page = component.createObject(root, {note: note});
             page.editNote.connect(function(note) {root.switchToEditMode(note)})
-            pagestack.push(page, {note: note})
+            pagestack.push(page)
         } else {
             var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
             view.note = note;

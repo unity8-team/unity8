@@ -29,30 +29,14 @@ Item {
 
     signal editNote(var note)
 
-    QtObject {
-        id: priv
-        property bool loading: false
-    }
-
-    Component.onCompleted: {
-        if (note.enmlContent.length === 0) {
-            NotesStore.refreshNoteContent(root.note.guid)
-            priv.loading = true;
-        }
-    }
-
-    Connections {
-        target: NotesStore
-        onNoteChanged: {
-            if (guid === root.note.guid) {
-                priv.loading = false;
-            }
-        }
+    onNoteChanged: {
+        print("refreshing note:", root.note.guid)
+        NotesStore.refreshNoteContent(root.note.guid)
     }
 
     ActivityIndicator {
         anchors.centerIn: parent
-        running: priv.loading
+        running: root.note.loading
         visible: running
     }
 
@@ -62,7 +46,6 @@ Item {
     Flickable {
         anchors { fill: parent }
         contentHeight: height
-        visible: !priv.loading
 
         UbuntuWebView {
             id: noteTextArea
@@ -70,6 +53,13 @@ Item {
             property string html: note.htmlContent
             onHtmlChanged: {
                 loadHtml(html, "file:///")
+            }
+
+            Connections {
+                target: note
+                onResourcesChanged: {
+                    noteTextArea.loadHtml(noteTextArea.html, "file:///")
+                }
             }
 
             experimental.preferences.standardFontFamily: 'Ubuntu'
