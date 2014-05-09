@@ -21,7 +21,7 @@
  */
 
 #include "camerahelper.h"
-#include "accountpreference.h"
+#include "preferences.h"
 
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickView>
@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
     view.engine()->rootContext()->setContextProperty("cameraHelper", &helper);
 
     // Set up account preferences
-    AccountPreference preferences;
-    view.engine()->rootContext()->setContextProperty("accountPreference", &preferences);
+    Preferences preferences;
+    view.engine()->rootContext()->setContextProperty("preferences", &preferences);
 
     QString qmlfile;
     const QString filePath = QLatin1String("qml/reminders.qml");

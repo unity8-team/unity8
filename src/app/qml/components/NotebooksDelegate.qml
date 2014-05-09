@@ -17,44 +17,72 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 
 Empty {
     id: root
-    height: units.gu(6)
+    height: units.gu(10)
 
-    property string name
-    property int noteCount
-    property string shareStatus
+    property string notebookColor: preferences.colorForNotebook(model.guid)
 
-    Column {
-        id: contentColumn
-        anchors {
-            top: parent.top
-            topMargin: units.gu(1)
-            left: parent.left
-            leftMargin: units.gu(2)
-            right: resourceImage.left
-            rightMargin: units.gu(2)
-        }
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            text: root.name
-            font.bold: true
-            elide: Text.ElideRight
-        }
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            text: root.shareStatus
-            wrapMode: Text.WordWrap
-            textFormat: Text.StyledText
-        }
+    Rectangle {
+        anchors.fill: parent
+        color: "#f9f9f9"
+        anchors.bottomMargin: units.dp(1)
     }
 
-    Label {
-        id: resourceImage
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; topMargin: units.gu(1); rightMargin: units.gu(2) }
-        text: i18n.tr("%1 note", "%1 notes", root.noteCount).arg(root.noteCount)
+    Base {
+        anchors.fill: parent
+        progression: true
+
+        onClicked: root.clicked()
+
+        RowLayout {
+            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+
+            Item {
+                anchors { top: parent.top; bottom: parent.bottom }
+                width: units.gu(1)
+                Rectangle {
+                    anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
+                    width: units.gu(.5)
+                    color: root.notebookColor
+                    radius: width / 2
+                }
+            }
+
+            ColumnLayout {
+                height: parent.height
+                Layout.fillWidth: true
+
+                Label {
+                    text: model.name
+                    color: root.notebookColor
+                    fontSize: "large"
+                }
+                Label {
+                    text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
+                    fontSize: "small"
+                    color: "black"
+                }
+                Label {
+                    Layout.fillHeight: true
+                    text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
+                    color: model.published ? "black" : "#b3b3b3"
+                    fontSize: "x-small"
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: model.published
+                }
+            }
+
+            Label {
+                Layout.fillHeight: true
+                verticalAlignment: Text.AlignVCenter
+                text: "(" + model.noteCount + ")"
+                color: "#b3b3b3"
+            }
+        }
     }
 }

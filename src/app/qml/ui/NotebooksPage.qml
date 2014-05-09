@@ -109,12 +109,9 @@ Page {
             model: notebooks
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height - keyboardRect.height
+            clip: true
 
             delegate: NotebooksDelegate {
-                name: model.name
-                noteCount: model.noteCount
-                shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
-
                 onClicked: {
                     print("selected notebook:", model.guid)
                     root.openNotebook(name, model.guid)

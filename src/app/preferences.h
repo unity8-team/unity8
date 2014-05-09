@@ -19,21 +19,35 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
-#include "accountpreference.h"
 
-AccountPreference::AccountPreference(QObject *parent): QObject(parent),
-    m_settings(QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).first() + "/com.ubuntu.reminders/reminders.conf", QSettings::IniFormat)
+#ifndef PREFERENCE_H
+#define PREFERENCE_H
+
+#include <QSettings>
+#include <QStandardPaths>
+#include <QObject>
+#include <QDebug>
+#include <QList>
+#include <QColor>
+
+class Preferences: public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString accountName READ accountName WRITE setAccountName NOTIFY accountNameChanged)
 
-}
+public:
+    Preferences(QObject *parent = 0);
+    QString accountName() const;
+    void setAccountName(const QString &accountName);
 
-QString AccountPreference::accountName() const
-{
-    return m_settings.value("accountName").toString();
-}
+    Q_INVOKABLE QString colorForNotebook(const QString &notebookGuid);
 
-void AccountPreference::setAccountName(const QString &accountName)
-{
-    m_settings.setValue("accountName", accountName);
-    emit accountNameChanged();
-}
+signals:
+    void accountNameChanged();
+
+private:
+    QSettings m_settings;
+    QList<QString> m_notebookColors;
+};
+
+#endif

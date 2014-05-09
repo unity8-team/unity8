@@ -140,7 +140,7 @@ void Note::setRichTextContent(const QString &richTextContent)
 
 QString Note::plaintextContent() const
 {
-    return m_content.toPlaintext();
+    return m_content.toPlaintext().trimmed();
 }
 
 bool Note::reminder() const
@@ -223,8 +223,15 @@ QString Note::reminderTimeString() const
         return QString();
     }
 
+    if (reminderDone()) {
+        return gettext("Done");
+    }
+
     QDate reminderDate = m_reminderTime.date();
     QDate today = QDate::currentDate();
+    if (m_reminderTime.isNull()) {
+        return gettext("No date");
+    }
     if (reminderDate < today) {
         return gettext("Overdue");
     }
@@ -298,6 +305,7 @@ Resource* Note::addResource(const QByteArray &data, const QString &hash, const Q
 {
     Resource *resource = new Resource(data, hash, fileName, type, this);
     m_resources.insert(hash, resource);
+    emit resourcesChanged();
     return resource;
 }
 
@@ -305,6 +313,7 @@ Resource *Note::addResource(const QString &fileName)
 {
     Resource *resource = new Resource(fileName);
     m_resources.insert(resource->hash(), resource);
+    emit resourcesChanged();
     return resource;
 }
 
@@ -323,6 +332,7 @@ void Note::attachFile(int position, const QUrl &fileName)
 
     Resource *resource = addResource(fileName.path());
     m_content.attachFile(position, resource->hash(), resource->type());
+    emit resourcesChanged();
     emit contentChanged();
 
     // Cleanup imported file.

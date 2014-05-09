@@ -22,6 +22,7 @@
 #define NOTEBOOK_H
 
 #include <QObject>
+#include <QDateTime>
 
 class Notebook : public QObject
 {
@@ -31,6 +32,8 @@ class Notebook : public QObject
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int noteCount READ noteCount NOTIFY noteCountChanged)
     Q_PROPERTY(bool published READ published NOTIFY publishedChanged)
+    Q_PROPERTY(QDateTime lastUpdated READ lastUpdated NOTIFY lastUpdatedChanged)
+    Q_PROPERTY(QString lastUpdatedString READ lastUpdatedString NOTIFY lastUpdatedChanged)
 
 public:
     explicit Notebook(QString guid, QObject *parent = 0);
@@ -45,10 +48,16 @@ public:
     bool published() const;
     void setPublished(bool published);
 
+    QDateTime lastUpdated() const;
+    void setLastUpdated(const QDateTime &lastUpdated);
+
+    QString lastUpdatedString() const;
+
 signals:
     void nameChanged();
     void noteCountChanged();
     void publishedChanged();
+    void lastUpdatedChanged();
 
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
@@ -59,6 +68,7 @@ private:
     QString m_name;
     int m_noteCount;
     bool m_published;
+    QDateTime m_lastUpdated;
 };
 
 #endif // NOTEBOOK_H

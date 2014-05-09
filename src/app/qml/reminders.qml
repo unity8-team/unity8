@@ -55,8 +55,7 @@ MainView {
         }
     }
 
-    // Temporary background color. This can be changed to other suitable backgrounds when we get official mockup designs
-    backgroundColor: UbuntuColors.coolGrey
+    backgroundColor: "#dddddd"
 
     property var accountPage;
 
@@ -72,10 +71,11 @@ MainView {
 
     function displayNote(note) {
         if (root.narrowMode) {
+            print("creating noteview");
             var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-            var page = component.createObject();
+            var page = component.createObject(root, {note: note});
             page.editNote.connect(function(note) {root.switchToEditMode(note)})
-            pagestack.push(page, {note: note})
+            pagestack.push(page)
         } else {
             var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
             view.note = note;
@@ -100,7 +100,7 @@ MainView {
 
     function doLogin() {
         print("got accounts:", accounts.count)
-        var accountName = accountPreference.accountName;
+        var accountName = preferences.accountName;
         if (accountName) {
             var i;
             for (i = 0; i < accounts.count; i++) {
@@ -160,7 +160,7 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
-            accountPreference.accountName = UserStore.username;
+            preferences.accountName = UserStore.username;
         }
     }
 
@@ -231,7 +231,7 @@ MainView {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title/*, filter: notebookGuid*/});
+                        pagestack.push(page, {title: title, filter: notebookGuid});
                         page.selectedNoteChanged.connect(function() {
                             print("foo", page.selectedNote);
                             if (page.selectedNote) {
@@ -250,6 +250,14 @@ MainView {
                 title: i18n.tr("Reminders")
                 page: RemindersPage {
                     id: remindersPage
+
+                    onSelectedNoteChanged: {
+                        if (selectedNote !== null) {
+                            root.displayNote(selectedNote);
+                        } else {
+                            sideViewLoader.clear();
+                        }
+                    }
                 }
             }
         }
