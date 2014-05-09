@@ -72,6 +72,7 @@ Item {
                 loadHtml(html, "file:///")
             }
 
+            experimental.preferences.standardFontFamily: 'Ubuntu'
             experimental.preferences.navigatorQtObjectEnabled: true
             experimental.preferredMinimumContentsWidth: root.width
             experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
