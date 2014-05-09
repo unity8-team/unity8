@@ -19,6 +19,7 @@ import AccountsService 0.1
 import GSettings 1.0
 import Unity.Application 0.1
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Popups 0.1
 import Ubuntu.Gestures 0.1
 import Unity.Launcher 0.1
 import LightDM 0.1 as LightDM
@@ -279,12 +280,32 @@ FocusScope {
             }
         }
 
+        Component {
+            id: logoutDialog
+            Dialog {
+                id: dialogue1
+                title: "Logout"
+                text: "Are you sure that you want to logout?"
+                Button {
+                    text: "Cancel"
+                    onClicked: PopupUtils.close(dialogue1)
+                }
+                Button {
+                    text: "Yes"
+                    onClicked: {
+                        DBusUnitySessionService.Logout();
+                        PopupUtils.close(dialogue1);
+                    }
+                }
+            }
+        }
+
         Connections {
             target: DBusUnitySessionService
 
             onLogoutRequested: {
-                // TODO: Display a dialog to ask the user to confirm.
-                DBusUnitySessionService.Logout();
+                // Display a dialog to ask the user to confirm.
+                PopupUtils.open(logoutDialog);
             }
 
             onLogoutReady: {
