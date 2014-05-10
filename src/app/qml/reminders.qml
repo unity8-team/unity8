@@ -236,6 +236,9 @@ MainView {
                             print("foo", page.selectedNote);
                             if (page.selectedNote) {
                                 root.displayNote(page.selectedNote);
+                                if (root.narrowMode) {
+                                    page.selectedNote = null;
+                                }
                             }
                         })
                         page.editNote.connect(function(note) {
