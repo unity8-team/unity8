@@ -4,13 +4,13 @@ Source: https://launchpad.net/reminders-app
 
 Files: *
 Copyright: 2013 Canonical Ltd.
-License: GPL-3
+License: GPL-3 with OpenSSL exception
 
 Files: debian/*
 Copyright: 2013 Canonical Ltd.
 License: LGPL-3
 
-License: GPL-3
+License: GPL-3 with OpenSSL exception
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public
  License as published by the Free Software Foundation; version 3.
