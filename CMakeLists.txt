@@ -39,6 +39,7 @@ if(CLICK_MODE)
     configure_file(manifest.json ${CMAKE_CURRENT_BINARY_DIR}/manifest.json)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json apparmor.json
         DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES COPYING DESTINATION ${CMAKE_INSTALL_PREFIX})
 else(CLICK_MODE)
     # components PATH
     execute_process(
