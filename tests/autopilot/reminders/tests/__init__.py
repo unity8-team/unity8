@@ -50,6 +50,8 @@ class RemindersAppTestCase(AutopilotTestCase):
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
+    home_dir = None
+
     def get_launcher_and_type(self):
         if os.path.exists(self.local_location_binary):
             launcher = self.launch_test_local
@@ -63,8 +65,9 @@ class RemindersAppTestCase(AutopilotTestCase):
         return launcher, test_type
 
     def setUp(self):
-        launcher, self.test_type = self.get_launcher_and_type()
-        self.home_dir = self._patch_home()
+        launcher, test_type = self.get_launcher_and_type()
+        if self.home_dir is None:
+            self.home_dir = self._patch_home(test_type)
         self.pointing_device = Pointer(self.input_device_class.create())
         super(RemindersAppTestCase, self).setUp()
 
@@ -80,7 +83,7 @@ class RemindersAppTestCase(AutopilotTestCase):
                 os.path.expanduser(os.path.join('~', '.Xauthority')),
                 os.path.join(directory, '.Xauthority'))
 
-    def _patch_home(self):
+    def _patch_home(self, test_type):
         """ mock /home for testing purposes to preserve user data
         """
         temp_dir_fixture = fixtures.TempDir()
@@ -95,7 +98,7 @@ class RemindersAppTestCase(AutopilotTestCase):
 
         #click requires using initctl env (upstart), but the desktop can set
         #an environment variable instead
-        if self.test_type == 'click':
+        if test_type == 'click':
             self.useFixture(toolkit_fixtures.InitctlEnvironmentVariable(
                             HOME=temp_dir))
         else:

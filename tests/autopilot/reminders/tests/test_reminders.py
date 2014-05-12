@@ -23,9 +23,10 @@ import logging
 from autopilot import platform
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
+from testtools import ExpectedException
 
 import reminders
-from reminders import fixture_setup, tests
+from reminders import credentials, fixture_setup, tests
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
     def test_go_to_account_settings(self):
         """Test that the Go to account settings button calls url-dispatcher."""
         if platform.model() == 'Desktop':
-             self.skipTest("URL dispatcher doesn't work on the desktop.")
+            self.skipTest("URL dispatcher doesn't work on the desktop.")
         url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(url_dispatcher)
 
@@ -56,3 +57,28 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.assertThat(
             get_last_dispatch_url_call_parameter,
             Eventually(Equals('settings:///system/online-accounts')))
+
+
+class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
+
+    def setUp(self):
+        # We need to change the home dir before adding the account, otherwise
+        # the account will not be found when the app is opened.
+        _, test_type = self.get_launcher_and_type()
+        self.home_dir = self._patch_home(test_type)
+        self.add_evernote_account()
+        super(RemindersTestCaseWithAccount, self).setUp()
+
+    def add_evernote_account(self):
+        account_manager = credentials.AccountManager()
+        oauth_token = (
+            'S=s1:U=8e6bf:E=14d08e375ff:C=145b1324a03:P=1cd:A=en-devtoken:'
+            'V=2:H=79b946c32b4515ee52b387f7b68baa69')
+        account = account_manager.add_evernote_account(
+            'dummy', 'dummy', oauth_token)
+        self.addCleanup(account_manager.delete_account, account)
+
+    def test_open_application_with_account(self):
+        """Test that the No account dialog is not visible."""
+        with ExpectedException(reminders.RemindersAppException):
+            self.app.main_view.no_account_dialog
