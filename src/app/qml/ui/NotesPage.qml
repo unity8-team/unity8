@@ -76,8 +76,13 @@ Page {
             }
         }
         ToolbarButton {
-            text: root.selectedNote.reminder ? "Reminder (set)" : "Reminder"
-            iconName: "alarm-clock"
+            text: root.selectedNote.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
+            // TODO: use this instead when the toolkit switches from using the
+	    // ubuntu-mobile-icons theme to suru:
+            //iconName: root.selectedNote.reminder ? "reminder" : "reminder-new"
+            iconSource: root.selectedNote.reminder ?
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
             visible: root.selectedNote !== null
             onTriggered: {
                 root.selectedNote.reminder = !root.selectedNote.reminder
