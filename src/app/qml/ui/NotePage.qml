@@ -41,7 +41,7 @@ Page {
         ToolbarButton {
             text: note.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
             // TODO: use this instead when the toolkit switches from using the
-	    // ubuntu-mobile-icons theme to suru:
+            // ubuntu-mobile-icons theme to suru:
             //iconName: note.reminder ? "reminder" : "reminder-new"
             iconSource: note.reminder ?
                 Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
