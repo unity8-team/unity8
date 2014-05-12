@@ -58,16 +58,19 @@ Empty {
                 Layout.fillWidth: true
 
                 Label {
+                    objectName: 'notebookTitleLabel'
                     text: model.name
                     color: root.notebookColor
                     fontSize: "large"
                 }
                 Label {
+                    objectName: 'notebookLastUpdatedLabel'
                     text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
                     fontSize: "small"
                     color: "black"
                 }
                 Label {
+                    objectName: 'notebookPublishedLabel'
                     Layout.fillHeight: true
                     text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
                     color: model.published ? "black" : "#b3b3b3"
@@ -78,6 +81,7 @@ Empty {
             }
 
             Label {
+                objectName: 'notebookNoteCountLabel'
                 Layout.fillHeight: true
                 verticalAlignment: Text.AlignVCenter
                 text: "(" + model.noteCount + ")"

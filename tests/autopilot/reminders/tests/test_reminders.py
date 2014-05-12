@@ -19,6 +19,7 @@
 from __future__ import absolute_import
 
 import logging
+import uuid
 
 from autopilot import platform
 from autopilot.matchers import Eventually
@@ -82,3 +83,22 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         """Test that the No account dialog is not visible."""
         with ExpectedException(reminders.RemindersAppException):
             self.app.main_view.no_account_dialog
+
+    def test_add_notebook_must_append_it_to_list(self):
+        test_notebook_title = 'Test notebook {}'.format(uuid.uuid1())
+
+        notebooks_page = self.app.open_notebooks()
+        # FIXME delete the added notebook. Otherwise, the test account will
+        # fill up. See http://pad.lv/1318749 --elopio - 2014-05-12
+        notebooks_page.add_notebook(test_notebook_title)
+
+        last_notebook = notebooks_page.get_notebooks()[-1]
+        # TODO there's a bug with the last updated value: http://pad.lv/1318751
+        # so we can't check the full tuple. Uncomment this as soon as the bug
+        # is fixed. --elopio - 2014-05-12
+        #self.assertEqual(
+        #    last_notebook,
+        #    (test_notebook_title, 'Last edited today', 'Private', 0))
+        self.assertEqual(last_notebook[0], test_notebook_title)
+        self.assertEqual(last_notebook[2], 'Private')
+        self.assertEqual(last_notebook[3], 0)
