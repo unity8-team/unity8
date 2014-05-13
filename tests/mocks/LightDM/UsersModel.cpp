@@ -46,6 +46,7 @@ UsersModel::UsersModel(QObject *parent) :
     roles[SessionRole] = "session";
     roles[HasMessagesRole] = "hasMessages";
     roles[ImagePathRole] = "imagePath";
+    roles[UidRole] = "uid";
     setRoleNames(roles);
 
     // Now modify our mock user backgrounds
@@ -109,6 +110,8 @@ QVariant UsersModel::data(const QModelIndex &index, int role) const
         return d->entries[row].has_messages;
     case UsersModel::ImagePathRole:
         return "";
+    case UsersModel::UidRole:
+        return d->entries[row].uid;
     default:
         return QVariant();
     }

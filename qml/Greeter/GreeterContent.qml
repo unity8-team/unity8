@@ -131,15 +131,14 @@ Item {
         id: infographics
         objectName: "infographics"
 
-        property string userName: greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
+//        property string userName: greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
 
         height: width
 //        /height: narrowMode ? parent.height : 0.75 * parent.height
         model: Infographics.InfographicList
 
         Component.onCompleted: {
-            
-            console.log("ehelloooo", greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole), userName)
+            model.uid = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole)
         }
 
         delegate: Image {

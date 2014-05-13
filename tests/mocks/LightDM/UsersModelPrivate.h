@@ -37,6 +37,7 @@ public:
     bool has_messages;
     QString session;
     QString infographic;
+    quint64 uid;
 };
 
 class UsersModelPrivate
