@@ -32,6 +32,7 @@ add_library(MockLightDM-qml MODULE
 # installed on the system.  So we make sure we link to our full fake version
 # At run time, we can point to whichever version we happen to be using via
 # LD_LIBRARY_PATH.
+add_dependencies(MockLightDM-qml MockLightDM-full)
 target_link_libraries(MockLightDM-qml
     -L${CMAKE_CURRENT_BINARY_DIR}/full
     -llightdm-qt5-2
