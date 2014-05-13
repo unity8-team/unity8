@@ -63,6 +63,7 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def setUp(self):
+        import pdb; pdb.set_trace()
         # We need to change the home dir before adding the account, otherwise
         # the account will not be found when the app is opened.
         _, test_type = self.get_launcher_and_type()

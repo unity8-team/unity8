@@ -90,6 +90,7 @@ class RemindersAppTestCase(AutopilotTestCase):
         temp_dir_fixture = fixtures.TempDir()
         self.useFixture(temp_dir_fixture)
         temp_dir = temp_dir_fixture.path
+        temp_xdg_config_home = os.path.join(temp_dir, '.config')
 
         #If running under xvfb, as jenkins does,
         #xsession will fail to start without xauthority file
@@ -100,13 +101,17 @@ class RemindersAppTestCase(AutopilotTestCase):
         #click requires using initctl env (upstart), but the desktop can set
         #an environment variable instead
         if test_type == 'click':
-            self.useFixture(toolkit_fixtures.InitctlEnvironmentVariable(
-                            HOME=temp_dir))
+            self.useFixture(
+                toolkit_fixtures.InitctlEnvironmentVariable(
+                    HOME=temp_dir, XDG_CONFIG_HOME=temp_xdg_config_home))
         else:
-            self.useFixture(fixtures.EnvironmentVariable('HOME',
-                                                         newvalue=temp_dir))
+            self.useFixture(
+                fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
+            self.useFixture(
+                fixtures.EnvironmentVariable(
+                    'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
 
-        logger.debug("Patched home to fake home directory " + temp_dir)
+        logger.debug('Patched home to fake home directory ' + temp_dir)
 
         return temp_dir
 
