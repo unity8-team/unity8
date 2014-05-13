@@ -18,6 +18,7 @@ import QtQuick 2.0
 import AccountsService 0.1
 import Ubuntu.Components 0.1
 import LightDM 0.1 as LightDM
+import Infographics 0.1 as Infographics
 import "../Components"
 
 Item {
@@ -115,34 +116,6 @@ Item {
         }
     }
 
-    Infographics {
-        id: infographics
-        objectName: "infographics"
-        height: narrowMode ? parent.height : 0.75 * parent.height
-        model: greeterContentLoader.infographicModel
-
-        property string selectedUser
-        property string infographicUser: AccountsService.statsWelcomeScreen ? selectedUser : ""
-        onInfographicUserChanged: greeterContentLoader.infographicModel.username = infographicUser
-
-        Component.onCompleted: {
-            selectedUser = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
-            greeterContentLoader.infographicModel.username = infographicUser
-            greeterContentLoader.infographicModel.readyForDataChange()
-        }
-
-        Connections {
-            target: root
-            onSelected: infographics.selectedUser = greeterContentLoader.model.data(uid, LightDM.UserRoles.NameRole)
-        }
-
-        anchors {
-            verticalCenter: parent.verticalCenter
-            left: narrowMode ? root.left : loginLoader.right
-            right: root.right
-        }
-    }
-
     Clock {
         id: clock
         visible: narrowMode
@@ -151,6 +124,48 @@ Item {
             top: parent.top
             topMargin: units.gu(2)
             horizontalCenter: parent.horizontalCenter
+        }
+    }
+
+    ListView {
+        id: infographics
+        objectName: "infographics"
+
+        property string userName: greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
+
+        height: width
+//        /height: narrowMode ? parent.height : 0.75 * parent.height
+        model: Infographics.InfographicList
+
+        Component.onCompleted: {
+            
+            console.log("ehelloooo", greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole), userName)
+        }
+
+        delegate: Image {
+            source: display
+            width: parent.width
+            height: width
+        }
+//        property string selectedUser
+//        property string infographicUser: AccountsService.statsWelcomeScreen ? selectedUser : ""
+//        onInfographicUserChanged: greeterContentLoader.infographicModel.username = infographicUser
+
+//        Component.onCompleted: {
+//            selectedUser = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
+//            greeterContentLoader.infographicModel.username = infographicUser
+//            greeterContentLoader.infographicModel.readyForDataChange()
+//        }
+
+//        Connections {
+//            target: root
+//            onSelected: infographics.selectedUser = greeterContentLoader.model.data(uid, LightDM.UserRoles.NameRole)
+//        }
+
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: narrowMode ? root.left : loginLoader.right
+            right: root.right
         }
     }
 }

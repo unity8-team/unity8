@@ -19,6 +19,7 @@
 #include "UsersModel.h"
 #include <QLightDM/UsersModel>
 #include <QtCore/QSortFilterProxyModel>
+#include <QDebug>
 
 // First, we define an internal class that wraps LightDM's UsersModel.  This
 // class will modify some of the data coming from LightDM.  For example, we
@@ -44,6 +45,8 @@ MangleModel::MangleModel(QObject* parent)
 QVariant MangleModel::data(const QModelIndex &index, int role) const
 {
     QVariant data = QSortFilterProxyModel::data(index, role);
+    QVariant data2 = QSortFilterProxyModel::data(index, QLightDM::UsersModel::UidRole);
+    qDebug() << "role" << role << data.toString() << QLightDM::UsersModel::UidRole << data2.toString();
 
     // If user's real name is empty, switch to unix name
     if (role == QLightDM::UsersModel::RealNameRole && data.toString().isEmpty()) {
