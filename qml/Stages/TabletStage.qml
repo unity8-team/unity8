@@ -100,8 +100,14 @@ Item {
         property int phase0Width: sideStageWidth
         property int phase1Width: sideStageWidth
 
+        property real positionMarker1: 0.2
+        property real positionMarker2: sideStageWidth / spreadView.width
+        property real positionMarker3: 0.6
+        property real positionMarker4: 0.8
+
         property int startSnapPosition: phase0Width * 0.5
         property int endSnapPosition: phase0Width * 0.75
+        property real snapPosition: 0.75
 
         property int selectedIndex: -1
 
@@ -161,11 +167,11 @@ Item {
         }
 
         onContentXChanged: {
-            if (spreadView.phase == 0 && spreadView.contentX > spreadView.phase0Width) {
+            if (spreadView.phase == 0 && spreadView.contentX > spreadView.width * spreadView.positionMarker2) {
                 spreadView.phase = 1;
-            } else if (spreadView.phase == 1 && spreadView.contentX - spreadView.phase0Width > spreadView.phase1Width) {
+            } else if (spreadView.phase == 1 && spreadView.contentX > spreadView.width * spreadView.positionMarker4) {
                 spreadView.phase = 2;
-            } else if (spreadView.phase == 1 && spreadView.contentX < spreadView.phase0Width) {
+            } else if (spreadView.phase == 1 && spreadView.contentX < spreadView.width * spreadView.positionMarker2) {
                 spreadView.phase = 0;
             }
         }
@@ -180,7 +186,7 @@ Item {
                 snapTo(1)
             } else {
                 // Add 1 pixel to make sure we definitely hit positionMarker4 even with rounding errors of the animation.
-                snapAnimation.targetContentX = phase0Width + phase1Width + 1;
+                snapAnimation.targetContentX = spreadView.width * spreadView.positionMarker4 + 1;
                 snapAnimation.start();
             }
         }
@@ -262,47 +268,29 @@ Item {
                         otherSelected: spreadView.selectedIndex >= 0 && !selected
 
                         progress: {
-                            var prog = 0;
-                            switch (spreadView.phase) {
-                            case 0:
-                                // Calculate a progress of 0..1 while moving within phase0Width.
-                                prog = spreadView.contentX / spreadView.phase0Width;
-                                break;
-                            case 1:
-                                prog = (spreadView.contentX - spreadView.phase0Width) / spreadView.phase1Width;
-                                break;
-                            case 2:
-                                prog = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
+                            var tileProgress = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
+                            // The Tile which is next in the stack needs to move directly from the beginning...
+//                            print("tile0Progress is", tileProgress, "next", spreadView.nextInStack, zIndex, "PHASE:", spreadView.phase)
+                            if (index == spreadView.nextInStack && spreadView.phase < 2) {
+//                                print("üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü")
+                                tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
                             }
-//                            print("*** INDEX:", zIndex, " PHASE:", spreadView.phase, " PROGRESS:", prog, "contentX", spreadView.contentX);
-                            return prog;
+                            return tileProgress;
                         }
 
                         animatedProgress: {
-                            if (spreadView.nextInStack == index) {
-                                if (spreadView.contentX < spreadView.startSnapPosition) {
+                            print("PHASE:", spreadView.phase)
+                            if (spreadView.phase == 0 && (active || spreadView.nextInStack == index)) {
+                                if (progress < spreadView.positionMarker1) {
                                     return progress;
-                                }
-                                if (spreadView.contentX < spreadView.startSnapPosition + units.gu(3)) {
-                                    var startProgress = spreadView.startSnapPosition / spreadView.phase0Width;
-                                    var endProgress = (spreadView.startSnapPosition + units.gu(3)) / spreadView.phase0Width;
-                                    var startValue = startProgress;
-                                    var endValue = spreadView.endSnapPosition / spreadView.phase0Width;
-                                    return (progress - startProgress) * (endValue - startValue) / (endProgress - startProgress) + startValue;
-                                }
-                                if (spreadView.contentX < spreadView.phase0Width) {
-                                    return spreadView.endSnapPosition / spreadView.phase0Width;
-                                }
-                                if (spreadView.contentX < spreadView.phase1Width + spreadView.phase0Width) {
-                                    var startProgress = 0;
-                                    print("startValue is" << startProgress)
-                                    var endProgress = 1;
-                                    var startValue = (spreadView.startSnapPosition + units.gu(3)) / spreadView.phase0Width - 1;;
-                                    var endValue = endProgress;
-                                    return (progress - startProgress) * (endValue - startValue) / (endProgress - startProgress) + startValue;
+                                } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
+                                    print("progress:", progress, "animatedProgress", spreadView.positionMarker1 + snappingCurve.value * 3, snappingCurve.value)
+                                    return spreadView.positionMarker1 + snappingCurve.value * 3;
+                                } else {
+                                    return spreadView.positionMarker2;
                                 }
                             }
-
+                            print("progress is", progress)
                             return progress;
                         }
 
@@ -319,8 +307,8 @@ Item {
                         EasingCurve {
                             id: snappingCurve
                             type: EasingCurve.Linear
-                            period: 0.05
-                            progress: spreadTile.progress
+                            period: (spreadView.positionMarker2 - spreadView.positionMarker1) / 3
+                            progress: spreadTile.progress - spreadView.positionMarker1
                         }
 
 //                        Rectangle {
@@ -349,7 +337,6 @@ Item {
         property bool attachedToView: false
 
         onTouchXChanged: {
-            print("touchX changed. dragging", dragging)
             if (!dragging) {
                 spreadView.phase = 0;
                 spreadView.contentX = 0;
