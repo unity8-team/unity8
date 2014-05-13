@@ -251,7 +251,9 @@ Item {
                                 return 1;
                             }
                         }
-                        if (index <= 2 && model.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) return 1;
+                        if (index <= 2 && model.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
+                            return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
+                        }
                         if (index == spreadView.nextInStack && model.stage == ApplicationInfoInterface.SideStage) return 2;
                         return index;
                     }
