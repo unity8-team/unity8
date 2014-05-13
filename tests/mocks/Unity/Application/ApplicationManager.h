@@ -31,6 +31,7 @@ using namespace unity::shell::application;
 class ApplicationManager : public ApplicationManagerInterface {
     Q_OBJECT
     Q_ENUMS(Role)
+    Q_ENUMS(Roles)
     Q_ENUMS(StageHint)
     Q_ENUMS(FormFactorHint)
     Q_ENUMS(FavoriteApplication)
@@ -68,6 +69,18 @@ class ApplicationManager : public ApplicationManagerInterface {
         CameraApplication, GalleryApplication, BrowserApplication, ShareApplication,
         PhoneApplication, DialerApplication, MessagingApplication, AddressbookApplication
     };
+
+    enum Roles {
+        RoleAppId = unity::shell::application::ApplicationManagerInterface::RoleAppId,
+        RoleName = unity::shell::application::ApplicationManagerInterface::RoleName,
+        RoleComment = unity::shell::application::ApplicationManagerInterface::RoleComment,
+        RoleIcon = unity::shell::application::ApplicationManagerInterface::RoleIcon,
+        RoleStage = unity::shell::application::ApplicationManagerInterface::RoleStage,
+        RoleSupportedStages = unity::shell::application::ApplicationManagerInterface::RoleSupportedStages,
+        RoleState = unity::shell::application::ApplicationManagerInterface::RoleState,
+        RoleFocused = unity::shell::application::ApplicationManagerInterface::RoleFocused,
+        RoleScreenshot,
+    };
     enum Flag {
         NoFlag = 0x0,
         ForceMainStage = 0x1,
@@ -91,13 +104,17 @@ class ApplicationManager : public ApplicationManagerInterface {
     Q_INVOKABLE void move(int from, int to);
 
     // Application control methods
-    Q_INVOKABLE bool requestFocusApplication(const QString &appId) override;
-    Q_INVOKABLE bool focusApplication(const QString &appId) override;
-    Q_INVOKABLE void unfocusCurrentApplication() override;
     Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, const QStringList &arguments = QStringList()) override;
-    Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, ExecFlags flags, const QStringList &arguments = QStringList());
     Q_INVOKABLE bool stopApplication(const QString &appId) override;
-    Q_INVOKABLE bool updateScreenshot(const QString &appId) override;
+    Q_INVOKABLE bool suspendApplication(const QString &appId) override;
+    Q_INVOKABLE bool resumeApplication(const QString &appId) override;
+
+    Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, ExecFlags flags, const QStringList &arguments = QStringList());
+
+    Q_INVOKABLE bool requestFocusApplication(const QString &appId);
+    Q_INVOKABLE bool focusApplication(const QString &appId);
+    Q_INVOKABLE void unfocusCurrentApplication();
+    Q_INVOKABLE bool updateScreenshot(const QString &appId);
 
     QString focusedApplicationId() const override;
     bool suspended() const;

@@ -25,10 +25,10 @@
 ApplicationInfo::ApplicationInfo(const QString &appId, QObject *parent)
     : ApplicationInfoInterface(appId, parent)
     ,m_appId(appId)
-    ,m_stage(MainStage)
     ,m_state(Starting)
     ,m_focused(false)
     ,m_fullscreen(false)
+    ,m_stage(MainStage)
     ,m_windowItem(0)
     ,m_windowComponent(0)
     ,m_parentItem(0)
@@ -38,10 +38,10 @@ ApplicationInfo::ApplicationInfo(const QString &appId, QObject *parent)
 
 ApplicationInfo::ApplicationInfo(QObject *parent)
     : ApplicationInfoInterface(QString(), parent)
-     ,m_stage(MainStage)
      ,m_state(Starting)
      ,m_focused(false)
      ,m_fullscreen(false)
+     ,m_stage(MainStage)
      ,m_windowItem(0)
      ,m_windowComponent(0)
      ,m_parentItem(0)
@@ -53,6 +53,15 @@ void ApplicationInfo::onWindowComponentStatusChanged(QQmlComponent::Status statu
 {
     if (status == QQmlComponent::Ready && !m_windowItem)
         doCreateWindowItem();
+}
+
+bool ApplicationInfo::setStage(const Stage stage)
+{
+    if (m_stage != stage) {
+        m_stage = stage;
+        Q_EMIT stageChanged();
+    }
+    return true;
 }
 
 void ApplicationInfo::setRunning()

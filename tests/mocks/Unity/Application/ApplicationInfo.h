@@ -68,7 +68,6 @@ class ApplicationInfo : public ApplicationInfoInterface {
     IMPLEMENT_PROPERTY(name, Name, QString)
     IMPLEMENT_PROPERTY(comment, Comment, QString)
     IMPLEMENT_PROPERTY(icon, Icon, QUrl)
-    IMPLEMENT_PROPERTY(stage, Stage, Stage)
     IMPLEMENT_PROPERTY(state, State, State)
     IMPLEMENT_PROPERTY(focused, Focused, bool)
     IMPLEMENT_PROPERTY(fullscreen, Fullscreen, bool)
@@ -81,6 +80,13 @@ class ApplicationInfo : public ApplicationInfoInterface {
  public:
     void showWindow(QQuickItem *parent);
     void hideWindow();
+    Stage stage() const override { return m_stage; }
+    bool setStage(const Stage stage) override;
+    Stages supportedStages() const override { return ApplicationInfo::MainStage; }
+
+Q_SIGNALS:
+    void stageChanged();
+    void supportedStagesChanged();
 
  private Q_SLOTS:
     void onWindowComponentStatusChanged(QQmlComponent::Status status);
@@ -90,6 +96,7 @@ class ApplicationInfo : public ApplicationInfoInterface {
     void createWindowItem();
     void doCreateWindowItem();
     void createWindowComponent();
+    Stage m_stage;
     QQuickItem *m_windowItem;
     QQmlComponent *m_windowComponent;
     QQuickItem *m_parentItem;

@@ -32,14 +32,17 @@ class MockApp: public unity::shell::application::ApplicationInfoInterface
     Q_OBJECT
 public:
     MockApp(const QString &appId, QObject *parent = 0): ApplicationInfoInterface(appId, parent), m_appId(appId), m_focused(false) { }
-    QString appId() const { return m_appId; }
-    QString name() const { return "mock"; }
-    QString comment() const { return "this is a mock"; }
-    QUrl icon() const { return QUrl(); }
-    ApplicationInfoInterface::Stage stage() const { return ApplicationInfoInterface::MainStage; }
-    ApplicationInfoInterface::State state() const { return ApplicationInfoInterface::Running; }
+    QString appId() const override { return m_appId; }
+    QString name() const override { return "mock"; }
+    QString comment() const override { return "this is a mock"; }
+    QUrl icon() const override { return QUrl(); }
+    ApplicationInfoInterface::Stage stage() const override { return ApplicationInfoInterface::MainStage; }
+    ApplicationInfoInterface::Stages supportedStages() const override { return ApplicationInfoInterface::MainStage; }
+    ApplicationInfoInterface::State state() const override { return ApplicationInfoInterface::Running; }
     bool focused() const { return m_focused; }
     QUrl screenshot() const { return QUrl(); }
+
+    bool setStage(const Stage) override { return true; }
 
     // Methods used for mocking (not in the interface)
     void setFocused(bool focused) { m_focused = focused; Q_EMIT focusedChanged(focused); }
@@ -54,16 +57,16 @@ class MockAppManager: public unity::shell::application::ApplicationManagerInterf
     Q_OBJECT
 public:
     MockAppManager(QObject *parent = 0): ApplicationManagerInterface(parent) {}
-    int rowCount(const QModelIndex &) const { return m_list.count(); }
-    QVariant data(const QModelIndex &, int ) const { return QVariant(); }
+    int rowCount(const QModelIndex &) const override { return m_list.count(); }
+    QVariant data(const QModelIndex &, int ) const override { return QVariant(); }
     QString focusedApplicationId() const {
         Q_FOREACH(MockApp *app, m_list) {
             if (app->focused()) return app->appId();
         }
         return QString();
     }
-    unity::shell::application::ApplicationInfoInterface *get(int index) const { return m_list.at(index); }
-    unity::shell::application::ApplicationInfoInterface *findApplication(const QString &appId) const {
+    unity::shell::application::ApplicationInfoInterface *get(int index) const override { return m_list.at(index); }
+    unity::shell::application::ApplicationInfoInterface *findApplication(const QString &appId) const override {
         Q_FOREACH(MockApp* app, m_list) {
             if (app->appId() == appId) {
                 return app;
@@ -71,8 +74,10 @@ public:
         }
         return nullptr;
     }
-    unity::shell::application::ApplicationInfoInterface *startApplication(const QString &, const QStringList &) { return nullptr; }
-    bool stopApplication(const QString &) { return false; }
+    unity::shell::application::ApplicationInfoInterface *startApplication(const QString &, const QStringList &) override { return nullptr; }
+    bool stopApplication(const QString &) override { return false; }
+    bool suspendApplication(const QString &) override { return true; }
+    bool resumeApplication(const QString &) override { return true; }
     bool focusApplication(const QString &appId) {
         Q_FOREACH(MockApp* app, m_list) {
             app->setFocused(app->appId() == appId);
@@ -95,8 +100,8 @@ public:
     }
     bool updateScreenshot(const QString &appId) { Q_UNUSED(appId); return true; }
     bool requestFocusApplication(const QString &appId) { Q_UNUSED(appId); return true; }
-    bool suspended() const { return false; }
-    void setSuspended(bool) {}
+    bool suspended() const override { return false; }
+    void setSuspended(bool) override {}
 
 private:
     QList<MockApp*> m_list;

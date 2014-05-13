@@ -199,6 +199,16 @@ bool ApplicationManager::stopApplication(const QString &appId)
     return true;
 }
 
+bool ApplicationManager::suspendApplication(const QString &)
+{
+    return true;
+}
+
+bool ApplicationManager::resumeApplication(const QString &)
+{
+    return true;
+}
+
 bool ApplicationManager::updateScreenshot(const QString &appId)
 {
     int idx = -1;
