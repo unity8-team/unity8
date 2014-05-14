@@ -51,8 +51,6 @@ class RemindersAppTestCase(AutopilotTestCase):
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
-    home_dir = None
-
     def get_launcher_and_type(self):
         if os.path.exists(self.local_location_binary):
             launcher = self.launch_test_local
@@ -67,8 +65,7 @@ class RemindersAppTestCase(AutopilotTestCase):
 
     def setUp(self):
         launcher, test_type = self.get_launcher_and_type()
-        if self.home_dir is None:
-            self.home_dir = self._patch_home(test_type)
+        self.home_dir = self._patch_home(test_type)
         self.pointing_device = Pointer(self.input_device_class.create())
         super(RemindersAppTestCase, self).setUp()
 

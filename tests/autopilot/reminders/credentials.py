@@ -28,7 +28,7 @@ class AccountManager(object):
     """Manager for online accounts."""
 
     def __init__(self):
-        self._manager = Accounts.Manager()
+        self._manager = Accounts.Manager.new()
 
     def _start_main_loop(self):
         self.error = None

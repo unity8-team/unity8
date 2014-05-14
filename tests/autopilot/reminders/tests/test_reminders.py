@@ -24,7 +24,6 @@ import uuid
 from autopilot import platform
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
-from testtools import ExpectedException
 
 import reminders
 from reminders import credentials, fixture_setup, tests
@@ -63,12 +62,10 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def setUp(self):
-        # We need to change the home dir before adding the account, otherwise
-        # the account will not be found when the app is opened.
-        _, test_type = self.get_launcher_and_type()
-        self.home_dir = self._patch_home(test_type)
-        self.add_evernote_account()
         super(RemindersTestCaseWithAccount, self).setUp()
+        no_account_dialog = self.app.main_view.no_account_dialog
+        self.add_evernote_account()
+        no_account_dialog.wait_until_destroyed()
 
     def add_evernote_account(self):
         account_manager = credentials.AccountManager()
@@ -78,11 +75,8 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         account = account_manager.add_evernote_account(
             'dummy', 'dummy', oauth_token)
         self.addCleanup(account_manager.delete_account, account)
-
-    def test_open_application_with_account(self):
-        """Test that the No account dialog is not visible."""
-        with ExpectedException(reminders.RemindersAppException):
-            self.app.main_view.no_account_dialog
+        del account_manager._manager
+        del account_manager
 
     def test_add_notebook_must_append_it_to_list(self):
         test_notebook_title = 'Test notebook {}'.format(uuid.uuid1())
