@@ -49,6 +49,14 @@ Page {
         }
 
         ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotes();
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Accounts")
             iconName: "contacts-app-symbolic"
             visible: accounts.count > 1
@@ -104,13 +112,17 @@ Page {
         id: notes
     }
 
-    ListView {
+    PulldownListView {
         id: notesListView
         objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
         clip: true
+
+        onRefreshed: {
+            NotesStore.refreshNotes();
+        }
 
         delegate: NotesDelegate {
             title: model.title
@@ -159,36 +171,6 @@ Page {
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
             text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
-        }
-
-        header: Text {
-            visible: notesListView.__wasAtYBeginning && notesListView.__initialContentY - notesListView.contentY > units.gu(2)
-            text: notesListView.__toBeReloaded ? i18n.tr("Release to reload notes") : ("Pull to reload notes")
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: "#b3b3b3" 
-        }
-
-        // Private
-        property bool __wasAtYBeginning: false
-        property bool __toBeReloaded: false
-        property int __initialContentY: 0
-
-        onMovementStarted: {
-            __wasAtYBeginning = atYBeginning
-            __initialContentY = contentY
-        }
-
-        onContentYChanged: {
-            if (__wasAtYBeginning && __initialContentY - contentY > units.gu(5)) {
-                __toBeReloaded = true;
-            }
-        }
-
-        onMovementEnded: {
-            if (__toBeReloaded) {
-                NotesStore.refreshNotes();
-                __toBeReloaded = false;
-            }    
         }
     }
 }

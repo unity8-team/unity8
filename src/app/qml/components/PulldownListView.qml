@@ -1,0 +1,64 @@
+/*
+ * Copyright: 2014 Canonical, Ltd
+ *
+ * This file is part of reminders
+ *
+ * reminders is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3.
+ *
+ * reminders is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import QtQuick 2.0
+import QtQuick.Layouts 1.0
+import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1
+import Evernote 0.1
+
+ListView {
+    id: root
+
+    signal refreshed()
+
+    QtObject {
+        id: priv
+        property bool wasAtYBeginning: false
+        property bool toBeReloaded: false
+        property int initialContentY: 0
+    }
+
+    header: Label {
+        width: root.width
+        height: units.gu(4)
+        fontSize: 'medium'
+        horizontalAlignment: Text.AlignHCenter
+        visible: priv.wasAtYBeginning && priv.initialContentY - root.contentY > units.gu(2)
+        text: priv.toBeReloaded ? i18n.tr("Release to refresh") : ("Pull down to refresh")
+        color: "#b3b3b3" 
+    }
+
+    onMovementStarted: {
+        priv.wasAtYBeginning = atYBeginning
+        priv.initialContentY = contentY
+    }
+
+    onContentYChanged: {
+        if (priv.wasAtYBeginning && priv.initialContentY - contentY > units.gu(5)) {
+            priv.toBeReloaded = true
+        }
+    }
+
+    onMovementEnded: {
+        if (priv.toBeReloaded) {
+            root.refreshed()
+            priv.toBeReloaded = false;
+        }
+    }
+}

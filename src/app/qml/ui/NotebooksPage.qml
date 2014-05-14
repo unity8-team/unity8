@@ -42,6 +42,14 @@ Page {
             }
         }
 
+        ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotebooks();
+            }
+        }
+
         ToolbarSpacer { }
 
         ToolbarButton {
@@ -104,12 +112,16 @@ Page {
             }
         }
 
-        ListView {
+        PulldownListView {
             id: notebooksListView
             model: notebooks
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height - keyboardRect.height
             clip: true
+
+            onRefreshed: {
+                NotesStore.refreshNotebooks();
+            }
 
             delegate: NotebooksDelegate {
                 onClicked: {
@@ -133,35 +145,6 @@ Page {
                 text: notebooks.error
             }
             
-            header: Text {
-                visible: notebooksListView.__wasAtYBeginning && notebooksListView.__initialContentY - notebooksListView.contentY > units.gu(2)
-                text: notebooksListView.__toBeReloaded ? i18n.tr("Release to reload notebooks") : ("Pull to reload notebooks")
-                anchors.horizontalCenter: parent.horizontalCenter
-                color: "#b3b3b3" 
-            }
-     
-            // Private
-            property bool __wasAtYBeginning: false
-            property bool __toBeReloaded: false
-            property int __initialContentY: 0
-
-            onMovementStarted: {
-                __wasAtYBeginning = atYBeginning
-                __initialContentY = contentY
-           }
-
-            onContentYChanged: {
-                if (__wasAtYBeginning && __initialContentY - contentY > units.gu(5)) {
-                    __toBeReloaded = true;
-                }
-            }   
-
-            onMovementEnded: {
-                if (__toBeReloaded) {
-                    NotesStore.refreshNotebooks();
-                    __toBeReloaded = false;
-                }    
-            }
         }
 
         Item {
