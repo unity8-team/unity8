@@ -43,6 +43,14 @@ Page {
             }
         }
 
+        ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotebooks();
+            }
+        }
+
         ToolbarSpacer { }
 
         ToolbarButton {
@@ -107,13 +115,17 @@ Page {
             }
         }
 
-        ListView {
+        PulldownListView {
             id: notebooksListView
             objectName: "notebooksListView"
             model: notebooks
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height - keyboardRect.height
             clip: true
+
+            onRefreshed: {
+                NotesStore.refreshNotebooks();
+            }
 
             delegate: NotebooksDelegate {
                 onClicked: {
@@ -136,6 +148,7 @@ Page {
                 visible: !notebooks.loading && notebooks.error
                 text: notebooks.error
             }
+            
         }
 
         Item {

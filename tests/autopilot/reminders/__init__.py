@@ -99,6 +99,10 @@ class _Page(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
         self.main_view = self.get_root_instance().select_single(MainView)
 
 
+class PulldownListView(ubuntuuitoolkit.QQuickListView):
+    """Autopilot custom proxy object for the PulldownListView."""
+
+
 class NotebooksPage(_Page):
     """Autopilot custom proxy object for the Notebooks page."""
 
@@ -119,7 +123,7 @@ class NotebooksPage(_Page):
 
     def _get_notebooks_listview(self):
         return self.select_single(
-            ubuntuuitoolkit.QQuickListView, objectName='notebooksListView')
+            PulldownListView, objectName='notebooksListView')
 
     def _click_save(self):
         save_button = self.select_single('Button', objectName='saveButton')
