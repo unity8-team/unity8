@@ -34,11 +34,12 @@ ListView {
         property int initialContentY: 0
     }
 
-    header: Label {
+    Label {
         width: root.width
-        height: visible ? units.gu(4) : 0
+        height: units.gu(4)
         fontSize: 'medium'
         horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
         visible: priv.wasAtYBeginning && priv.initialContentY - root.contentY > units.gu(2)
         text: priv.toBeReloaded ? i18n.tr("Release to refresh") : ("Pull down to refresh")
         color: "#b3b3b3" 
@@ -60,7 +61,5 @@ ListView {
             root.refreshed()
             priv.toBeReloaded = false;
         }
-        
-        contentY = priv.initialContentY
     }
 }
