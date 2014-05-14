@@ -36,11 +36,10 @@ ListView {
 
     Label {
         width: root.width
-        height: units.gu(4)
+        height: units.gu(3)
+        anchors.bottom: root.contentItem.top;
         fontSize: 'medium'
         horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        visible: priv.wasAtYBeginning && priv.initialContentY - root.contentY > units.gu(2)
         text: priv.toBeReloaded ? i18n.tr("Release to refresh") : ("Pull down to refresh")
         color: "#b3b3b3" 
     }
