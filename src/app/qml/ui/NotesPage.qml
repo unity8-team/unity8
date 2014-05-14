@@ -112,13 +112,17 @@ Page {
         id: notes
     }
 
-    ListView {
+    PulldownListView {
         id: notesListView
         objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
         clip: true
+
+        onRefreshed: {
+            NotesStore.refreshNotes();
+        }
 
         delegate: NotesDelegate {
             title: model.title
