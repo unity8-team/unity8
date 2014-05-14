@@ -36,7 +36,7 @@ ListView {
 
     header: Label {
         width: root.width
-        height: units.gu(4)
+        height: visible ? units.gu(4) : 0
         fontSize: 'medium'
         horizontalAlignment: Text.AlignHCenter
         visible: priv.wasAtYBeginning && priv.initialContentY - root.contentY > units.gu(2)
@@ -60,5 +60,7 @@ ListView {
             root.refreshed()
             priv.toBeReloaded = false;
         }
+        
+        contentY = priv.initialContentY
     }
 }
