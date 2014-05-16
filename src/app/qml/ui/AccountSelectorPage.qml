@@ -60,7 +60,7 @@ Page {
             }
 
             footer: Button {
-                text: "Add account"
+                text: i18n.tr("Add account")
                 onClicked: setup.exec()
             }
         }
