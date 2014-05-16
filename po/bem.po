@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-01-28 09:36+0100\n"
+"POT-Creation-Date: 2014-05-15 11:25+0200\n"
 "PO-Revision-Date: 2014-01-25 18:18+0000\n"
 "Last-Translator: goof <goof@coppernet.zm>\n"
 "Language-Team: Bemba <bem@li.org>\n"
@@ -15,69 +15,228 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n!=1;\n"
-"X-Launchpad-Export-Date: 2014-05-03 06:52+0000\n"
-"X-Generator: Launchpad (build 16985)\n"
+"X-Launchpad-Export-Date: 2014-05-16 06:53+0000\n"
+"X-Generator: Launchpad (build 17007)\n"
 
-#: src/app/qml/components/NotebooksDelegate.qml:58
-#, qt-format
-msgid "%1 note"
-msgid_plural "%1 notes"
-msgstr[0] "%1 Akalembo"
-msgstr[1] "%1 Utulembo"
-
-#: src/app/qml/reminders.qml:83
+#: ../src/app/qml/reminders.qml:196
 msgid "Notes"
 msgstr "Utulembo"
 
-#: src/app/qml/reminders.qml:90
+#: ../src/app/qml/reminders.qml:225
 msgid "Notebooks"
 msgstr "Ututabo"
 
-#: src/app/qml/reminders.qml:97
+#: ../src/app/qml/reminders.qml:253
+#: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "Ifibukisho"
 
-#: src/app/qml/ui/EditNotePage.qml:83 src/app/qml/ui/EditNotePage.qml:95
-msgid "Untitled"
-msgstr "Tapali Ishina"
+#: ../src/app/qml/reminders.qml:310
+msgid "No account available"
+msgstr ""
 
-#: src/app/qml/ui/NotePage.qml:36
-msgid "Delete"
-msgstr "Ukufuta"
+#: ../src/app/qml/reminders.qml:311
+msgid "Please setup an account in the system settings"
+msgstr ""
 
-#: src/app/qml/ui/NotePage.qml:53
-msgid "Edit"
-msgstr "Ukucinja"
+#: ../src/app/qml/reminders.qml:325
+msgid "Open account settings"
+msgstr ""
 
-#: src/app/qml/ui/NotebooksPage.qml:36 src/app/qml/ui/NotesPage.qml:39
-#: src/app/qml/ui/RemindersPage.qml:30 src/app/qml/ui/SearchNotesPage.qml:52
-msgid "Search"
-msgstr "Ukufwaya"
+#: ../src/app/qml/components/NotebooksDelegate.qml:66
+#, qt-format
+msgid "Last edited %1"
+msgstr ""
 
-#: src/app/qml/ui/NotebooksPage.qml:46
-msgid "Add notebook"
-msgstr "Ukubikapo akatabo kapya"
-
-#: src/app/qml/ui/NotebooksPage.qml:104
+#: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
 msgstr "Ukwana"
 
-#: src/app/qml/ui/NotebooksPage.qml:104
+#: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Private"
 msgstr "Ubunfisolo"
 
-#: src/app/qml/ui/NotebooksPage.qml:126
+#: ../src/app/qml/components/PulldownListView.qml:40
+msgid "Release to refresh"
+msgstr ""
+
+#: ../src/app/qml/components/RemindersDelegate.qml:51
+#: ../src/app/qml/ui/SetReminderView.qml:55
+msgid "Clear reminder"
+msgstr ""
+
+#: ../src/app/qml/components/RemindersDelegate.qml:51
+msgid "Mark as done"
+msgstr ""
+
+#: ../src/app/qml/ui/CameraConfirm.qml:40
+msgid "Back"
+msgstr ""
+
+#: ../src/app/qml/ui/CameraConfirm.qml:49
+msgid "Use it!"
+msgstr ""
+
+#: ../src/app/qml/ui/EditNoteView.qml:90
+#: ../src/app/qml/ui/EditNoteView.qml:102
+msgid "Untitled"
+msgstr "Tapali Ishina"
+
+#: ../src/app/qml/ui/NotePage.qml:33 ../src/app/qml/ui/NotesPage.qml:71
+msgid "Delete"
+msgstr "Ukufuta"
+
+#: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
+msgid "Edit reminder"
+msgstr ""
+
+#: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
+#: ../src/app/qml/ui/SetReminderView.qml:66
+msgid "Set reminder"
+msgstr ""
+
+#: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
+msgid "Edit"
+msgstr "Ukucinja"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:38 ../src/app/qml/ui/NotesPage.qml:44
+#: ../src/app/qml/ui/RemindersPage.qml:33
+#: ../src/app/qml/ui/SearchNotesPage.qml:56
+msgid "Search"
+msgstr "Ukufwaya"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
+msgid "Refresh"
+msgstr ""
+
+#: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
+#: ../src/app/qml/ui/RemindersPage.qml:43
+msgid "Accounts"
+msgstr ""
+
+#: ../src/app/qml/ui/NotebooksPage.qml:65
+msgid "Add notebook"
+msgstr "Ukubikapo akatabo kapya"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:164
 msgid "Cancel"
 msgstr "Ukukansa"
 
-#: src/app/qml/ui/NotebooksPage.qml:134
+#: ../src/app/qml/ui/NotebooksPage.qml:172
 msgid "Save"
 msgstr "Ukusunga"
 
-#: src/app/qml/ui/NotesPage.qml:49
+#: ../src/app/qml/ui/NotesPage.qml:103
 msgid "Add note"
 msgstr "Ukubikapo utulembo tupya"
 
-#: src/app/qml/ui/RemindersPage.qml:40
+#: ../src/app/qml/ui/NotesPage.qml:173
+msgid ""
+"No notes available. You can create new notes using the \"Add note\" button."
+msgstr ""
+
+#: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
 msgstr "Ukubikapo icibukisho cipya"
+
+#: ../src/app/qml/ui/RemindersPage.qml:113
+msgid ""
+"No reminders available. You can create new reminders using the \"Add "
+"reminder\" button or by setting a reminder when viewing a note."
+msgstr ""
+
+#: ../src/app/qml/ui/SetReminderView.qml:36
+msgid "Select date and time for the reminder:"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
+msgid "Today"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:85
+msgid "Yesterday"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:88
+msgid "Last week"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:91
+msgid "Two weeks ago"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:94
+#, qt-format
+msgid "%1 %2"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:227
+msgid "Done"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:233
+msgid "No date"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:236
+msgid "Overdue"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:242
+msgid "Tomorrow"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:245
+msgid "Next week"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:248
+msgid "In two weeks"
+msgstr ""
+
+#: ../src/plugin/Evernote/note.cpp:250
+msgid "Later"
+msgstr ""
+
+#. TRANSLATORS: this is part of a longer string - "Last updated: today"
+#: ../src/plugin/Evernote/notebook.cpp:99
+msgid "today"
+msgstr ""
+
+#. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
+#: ../src/plugin/Evernote/notebook.cpp:103
+msgid "yesterday"
+msgstr ""
+
+#. TRANSLATORS: this is part of a longer string - "Last updated: last week"
+#: ../src/plugin/Evernote/notebook.cpp:107
+msgid "last week"
+msgstr ""
+
+#. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
+#: ../src/plugin/Evernote/notebook.cpp:111
+msgid "two weeks ago"
+msgstr ""
+
+#. TRANSLATORS: this is used in the notes list to group notes created on the same month
+#. the first parameter refers to a month name and the second to a year
+#: ../src/plugin/Evernote/notebook.cpp:115
+#, qt-format
+msgid "on %1 %2"
+msgstr ""
+
+#: ../src/plugin/Evernote/notesstore.cpp:217
+#, qt-format
+msgid "Error refreshing notes: %1"
+msgstr ""
+
+#: ../src/plugin/Evernote/notesstore.cpp:368
+#, qt-format
+msgid "Error refreshing notebooks: %1"
+msgstr ""
+
+#, qt-format
+#~ msgid "%1 note"
+#~ msgid_plural "%1 notes"
+#~ msgstr[0] "%1 Akalembo"
+#~ msgstr[1] "%1 Utulembo"
