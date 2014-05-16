@@ -12,7 +12,7 @@ option(CLICK_MODE "Installs to a contained location" off)
 
 set(APP_NAME reminders)
 set(DESKTOP_FILE "${PROJECT_NAME}.desktop")
-set(APPLICATION_FILE "${PROJECT_NAME}.application")
+set(APPLICATION_FILE "${PROJECT_NAME}_${APP_NAME}.application")
 set(ICON ${APP_NAME}.png)
 set(AUTOPILOT_DIR reminders)
 set(APP_HARDCODE reminders)

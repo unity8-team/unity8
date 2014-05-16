@@ -24,6 +24,7 @@ import Ubuntu.Components.ListItems 0.1
 import "ui"
 import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
+import Ubuntu.OnlineAccounts.Client 0.1
 
 /*!
     \brief MainView with a Label and Button elements.
@@ -320,11 +321,17 @@ MainView {
                 }
             }
 
+            Setup {
+                id: setup
+                applicationId: "com.ubuntu.reminders_reminders"
+                providerId: "evernote"
+            }
+
             Button {
                 objectName: "openAccountButton"
-                text: i18n.tr("Open account settings")
+                text: i18n.tr("Add account")
                 color: UbuntuColors.orange
-                onClicked: Qt.openUrlExternally("settings:///system/online-accounts")
+                onClicked: setup.exec()
             }
         }
    }
