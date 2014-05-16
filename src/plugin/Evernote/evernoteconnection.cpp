@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
+ *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
 
 #include "evernoteconnection.h"
@@ -54,87 +55,62 @@ QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
 EvernoteConnection::EvernoteConnection(QObject *parent) :
     QObject(parent),
-    m_currentJob(0),
-    m_useSSL(true)
+    m_useSSL(true),
+    m_currentJob(0)
 {
     qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
     setupUserStore();
     setupNotesStore();
+
+    connectToEvernote();
 }
 
-bool EvernoteConnection::setupUserStore()
+void EvernoteConnection::setupUserStore()
 {
-    bool versionOK = false;
-    try {
-        boost::shared_ptr<TSocket> socket;
+    boost::shared_ptr<TSocket> socket;
 
-        if (m_useSSL) {
-            boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
-            socket = sslSocketFactory->createSocket(EVERNOTE_HOST.toStdString(), 443);
-            qDebug() << "created UserStore SSL socket";
-        } else {
-            // Create a non-secure socket
-            socket = boost::shared_ptr<TSocket> (new TSocket(EVERNOTE_HOST.toStdString(), 80));
-            qDebug() << "created insecure UserStore socket";
-        }
-
-        boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
-        m_userStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
-                                                                            EVERNOTE_HOST.toStdString(),
-                                                                            EDAM_USER_STORE_PATH.toStdString()));
-        m_userStoreHttpClient->open();
-        boost::shared_ptr<TProtocol> iprot(new TBinaryProtocol(m_userStoreHttpClient));
-        m_userstoreClient = new evernote::edam::UserStoreClient(iprot);
-        evernote::edam::UserStoreConstants constants;
-        versionOK = m_userstoreClient->checkVersion(EDAM_CLIENT_NAME.toStdString(),
-                                                                      constants.EDAM_VERSION_MAJOR,
-                                                                      constants.EDAM_VERSION_MINOR);
-        qDebug() << "UserStoreClient created. Version check:" << versionOK;
-
-    } catch (const TTransportException & e) {
-        qWarning() << "Failed to create Transport for UserStore:" <<  e.what();
-    } catch (const TException & e) {
-        qWarning() << "Generic Thrift exception in UserStore setup:" << e.what();
+    if (m_useSSL) {
+        boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
+        socket = sslSocketFactory->createSocket(EVERNOTE_HOST.toStdString(), 443);
+        qDebug() << "created UserStore SSL socket";
+    } else {
+        // Create a non-secure socket
+        socket = boost::shared_ptr<TSocket> (new TSocket(EVERNOTE_HOST.toStdString(), 80));
+        qDebug() << "created insecure UserStore socket";
     }
-    return versionOK;
+
+    // setup UserStore client
+    boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
+    m_userStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
+                                                                        EVERNOTE_HOST.toStdString(),
+                                                                        EDAM_USER_STORE_PATH.toStdString()));
+
+    boost::shared_ptr<TProtocol> userstoreiprot(new TBinaryProtocol(m_userStoreHttpClient));
+    m_userstoreClient = new evernote::edam::UserStoreClient(userstoreiprot);
 }
 
-bool EvernoteConnection::setupNotesStore()
+void EvernoteConnection::setupNotesStore()
 {
-    try {
-        boost::shared_ptr<TSocket> socket;
+    boost::shared_ptr<TSocket> socket;
 
-        if (m_useSSL) {
-            boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
-            socket = sslSocketFactory->createSocket(EVERNOTE_HOST.toStdString(), 443);
-            qDebug() << "created NotesStore SSL socket";
-        } else {
-            // Create a non-secure socket
-            socket = boost::shared_ptr<TSocket> (new TSocket(EVERNOTE_HOST.toStdString(), 80));
-            qDebug() << "created insecure NotesStore socket";
-        }
-
-        // setup UserStore
-        boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
-        m_notesStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
-                                                                            EVERNOTE_HOST.toStdString(),
-                                                                            EDAM_NOTE_STORE_PATH.toStdString()));
-        m_notesStoreHttpClient->open();
-        boost::shared_ptr<TProtocol> iprot(new TBinaryProtocol(m_notesStoreHttpClient));
-
-        // setup notesstore
-        m_notesStoreClient = new evernote::edam::NoteStoreClient(iprot);
-
-        qDebug() << "NoteStore client created.";
-
-    } catch (const TTransportException & e) {
-        qWarning() << "Failed to create Transport for NotesStore:" <<  e.what();
-        return false;
-    } catch (const TException & e) {
-        qWarning() << "Generic Thrift exception in NotesStore setup:" << e.what();
-        return false;
+    if (m_useSSL) {
+        boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
+        socket = sslSocketFactory->createSocket(EVERNOTE_HOST.toStdString(), 443);
+        qDebug() << "created NotesStore SSL socket";
+    } else {
+        // Create a non-secure socket
+        socket = boost::shared_ptr<TSocket> (new TSocket(EVERNOTE_HOST.toStdString(), 80));
+        qDebug() << "created insecure NotesStore socket";
     }
-    return true;
+
+    // setup NotesStore client
+    boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
+    m_notesStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
+                                                                        EVERNOTE_HOST.toStdString(),
+                                                                        EDAM_NOTE_STORE_PATH.toStdString()));
+
+    boost::shared_ptr<TProtocol> notesstoreiprot(new TBinaryProtocol(m_notesStoreHttpClient));
+    m_notesStoreClient = new evernote::edam::NoteStoreClient(notesstoreiprot);
 }
 
 EvernoteConnection *EvernoteConnection::instance()
@@ -160,6 +136,49 @@ void EvernoteConnection::setToken(const QString &token)
     if (token != m_token) {
         m_token = token;
         emit tokenChanged();
+    }
+}
+
+void EvernoteConnection::clearToken()
+{
+    if (!EvernoteConnection::instance()->token().isEmpty()) {
+        setToken(QString());
+    }
+}
+
+void EvernoteConnection::connectToEvernote()
+{
+    if (m_userStoreHttpClient->isOpen() && m_notesStoreHttpClient->isOpen()) {
+        return;
+    }
+
+    try {
+        m_userStoreHttpClient->open();
+        qDebug() << "UserStoreClient socket opened.";
+
+        m_notesStoreHttpClient->open();
+        qDebug() << "NoteStoreClient socket opened.";
+
+    } catch (const TTransportException & e) {
+        qWarning() << "Failed to open connection:" <<  e.what();
+    } catch (const TException & e) {
+        qWarning() << "Generic Thrift exception when opening the connection:" << e.what();
+    }
+
+    try {
+        evernote::edam::UserStoreConstants constants;
+        bool versionOk = m_userstoreClient->checkVersion(EDAM_CLIENT_NAME.toStdString(),
+                                                                      constants.EDAM_VERSION_MAJOR,
+                                                                      constants.EDAM_VERSION_MINOR);
+
+        if (!versionOk) {
+            qWarning() << "Server version mismatch! This application should be updated!";
+        }
+
+    } catch (const TTransportException & e) {
+        qWarning() << "Failed to fetch server version:" <<  e.what();
+    } catch (const TException & e) {
+        qWarning() << "Generic Thrift exception when fetching server version:" << e.what();
     }
 }
 

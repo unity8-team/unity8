@@ -18,18 +18,15 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Components.Extras.Browser 0.1
-import QtWebKit 3.1
-import QtWebKit.experimental 1.0
 import Evernote 0.1
 import "../components"
 
 Page {
     id: root
-    title: note.title
-    property var note
+    title: noteView.title
+    property alias note: noteView.note
 
-    Component.onCompleted: NotesStore.refreshNoteContent(note.guid)
+    signal editNote(var note)
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -42,56 +39,32 @@ Page {
         }
         ToolbarSpacer {}
         ToolbarButton {
-            text: note.reminder ? "Reminder (set)" : "Reminder"
-            iconName: "alarm-clock"
+            text: note.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
+            // TODO: use this instead when the toolkit switches from using the
+            // ubuntu-mobile-icons theme to suru:
+            //iconName: note.reminder ? "reminder" : "reminder-new"
+            iconSource: note.reminder ?
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
             onTriggered: {
-                note.reminder = !note.reminder
-                NotesStore.saveNote(note.guid)
+                pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), {title: root.title, note: root.note});
             }
         }
         ToolbarButton {
             text: i18n.tr("Edit")
             iconName: "edit"
             onTriggered: {
-                pagestack.pop()
-                pagestack.push(Qt.resolvedUrl("EditNotePage.qml"), {note: root.note})
+                root.editNote(root.note)
             }
         }
     }
 
-    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
-    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
-    // another flickable prevents this from happening.
-    Flickable {
-        anchors { fill: parent}
-        contentHeight: height
+    NoteView {
+        id: noteView
+        anchors.fill: parent
 
-        UbuntuWebView {
-            id: noteTextArea
-            anchors { fill: parent}
-            property string html: note.htmlContent
-            onHtmlChanged: {
-                loadHtml(html, "file:///")
-            }
-
-            experimental.preferences.navigatorQtObjectEnabled: true
-            experimental.preferredMinimumContentsWidth: root.width
-            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            experimental.onMessageReceived: {
-                var data = null;
-                try {
-                    data = JSON.parse(message.data);
-                } catch (error) {
-                    print("Failed to parse message:", message.data, error);
-                }
-
-                switch (data.type) {
-                case "checkboxChanged":
-                    note.markTodo(data.todoId, data.checked);
-                    NotesStore.saveNote(note.guid);
-                    break;
-                }
-            }
+        onEditNote: {
+            root.editNote(note) ;
         }
     }
 }

@@ -3,36 +3,58 @@ Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: cmake,
                debhelper (>= 9),
-	       gettext,
+               gettext,
                libboost-dev,
                libssl-dev,
-               python,
+               python3-all,
                qt5-default,
                qtdeclarative5-dev,
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 Section: misc
 Homepage: https://launchpad.net/reminders-app
 Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 
 Package: reminders-app
-Section: misc
 Architecture: any
-Depends: ${misc:Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends},
          account-plugin-evernote,
-         qmlscene,
+         qtdeclarative5-accounts-plugin,
+         qtdeclarative5-evernote0.1,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          qtdeclarative5-localstorage-plugin,
+         qtdeclarative5-quicklayouts-plugin,
          qtdeclarative5-qtquick2-plugin,
-         signon-plugin-oauth2 (>= 0.19-0~57~)
+         signon-plugin-oauth2 (>= 0.19-0~57~),
+         suru-icon-theme | ubuntu-mobile-icons,
 Description: Reminders application
  Note taking application powered by Evernote
+
+Package: qtdeclarative5-evernote0.1
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Expose the Evernote API to QML applications
+ This module provides access to the Evernote API from QML applications.
+
+Package: account-plugin-evernote
+Architecture: all
+Depends: libaccount-plugin-generic-oauth,
+         qtdeclarative5-evernote0.1,
+         qtdeclarative5-online-accounts-client0.1,
+         ${misc:Depends},
+Description: Allow Ubuntu to access the Evernote developer sandbox
+ This plugin enables developers to authenticate to their Evernote developer
+ sandbox account, which allows syncing of Evernote notes across Ubuntu devices.
 
 Package: reminders-app-autopilot
 Architecture: all
 Depends: ${misc:Depends},
-         reminders-app (= ${source:Version}),
+         reminders-app (>= ${source:Version}), reminders-app (<< ${source:Version}.1~),
          libautopilot-qt,
          libqt5test5,
+         python3-dbus,
+         python3-dbusmock,
+         python3-fixtures,
          ubuntu-ui-toolkit-autopilot,
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package

@@ -49,6 +49,7 @@ QStringList EnmlDocument::s_commonTags = QStringList()
 QStringList EnmlDocument::s_argumentBlackListTags = QStringList()
         << "ul" << "li" << "ol";
 
+int EnmlDocument::s_richtextContentWidth = 640;
 EnmlDocument::EnmlDocument(const QString &enml):
     m_enml(enml)
 {
@@ -82,7 +83,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
     writer.writeStartDocument();
     writer.writeStartElement("meta");
     writer.writeAttribute("name", "viewport");
-    writer.writeAttribute("content", "width=640px");
+    writer.writeAttribute("content", QString("width=%1px").arg(QString::number(EnmlDocument::s_richtextContentWidth)));
     writer.writeEndElement();
 
     // input
@@ -104,6 +105,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
             if (!isBody) {
                 if (reader.name() == "en-note") {
                     writer.writeStartElement("body");
+                    writer.writeAttributes(reader.attributes());
                     isBody = true;
                 }
                 continue;
@@ -144,6 +146,20 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     } else if (type  == TypeHtml) {
                         QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + mediaType.split('/').last();
                         writer.writeAttribute("src", imagePath);
+                    }
+
+                    //set the width
+                    if (reader.attributes().hasAttribute("width")) {
+                        writer.writeAttribute("width", reader.attributes().value("width").toString());
+                    } else {
+                        if (type == TypeRichText) {
+                            //get the size of the original image
+                            QImage image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(hash)->data());
+                            if (image.width() > EnmlDocument::s_richtextContentWidth)
+                                writer.writeAttribute("width", QString::number(EnmlDocument::s_richtextContentWidth));
+                        } else if (type == TypeHtml) {
+                            writer.writeAttribute("style", "max-width: 100%");
+                        }
                     }
                 } else if (mediaType.startsWith("audio")) {
                     if (type == TypeRichText) {
@@ -266,6 +282,7 @@ void EnmlDocument::setRichText(const QString &richText)
             if (!isBody) {
                 if (reader.name() == "body") {
                     writer.writeStartElement("en-note");
+                    writer.writeAttributes(reader.attributes());
                     isBody = true;
                 }
                 continue;
@@ -369,7 +386,7 @@ void EnmlDocument::markTodo(const QString &todoId, bool checked)
     m_enml = output;
 }
 
-void EnmlDocument::attachFile(int position, const QString &file, const QString &hash, const QString &type)
+void EnmlDocument::attachFile(int position, const QString &hash, const QString &type)
 {
     QXmlStreamReader reader(m_enml);
 
@@ -379,6 +396,7 @@ void EnmlDocument::attachFile(int position, const QString &file, const QString &
     writer.writeDTD("<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">");
 
     int textPos = 0;
+    bool inserted = false;
 
     while (!reader.atEnd() && !reader.hasError()) {
         QXmlStreamReader::TokenType token = reader.readNext();
@@ -397,6 +415,7 @@ void EnmlDocument::attachFile(int position, const QString &file, const QString &
                 writer.writeAttribute("hash", hash);
                 writer.writeAttribute("type", type);
                 writer.writeEndElement();
+                inserted = true;
 
                 writer.writeCharacters(textString.right(textString.length() - (position - textPos)));
             } else {
@@ -405,6 +424,15 @@ void EnmlDocument::attachFile(int position, const QString &file, const QString &
             textPos += textString.length();
         }
         if (token == QXmlStreamReader::EndElement) {
+
+            // The above logic would fail on an empty note
+            if (reader.name() == "en-note" && !inserted) {
+                writer.writeStartElement("en-media");
+                writer.writeAttribute("hash", hash);
+                writer.writeAttribute("type", type);
+                writer.writeEndElement();
+            }
+
             writer.writeEndElement();
         }
     }

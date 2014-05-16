@@ -22,6 +22,8 @@
 #include "notesstore.h"
 #include "note.h"
 
+#include <libintl.h>
+
 #include <QDebug>
 
 Notebook::Notebook(QString guid, QObject *parent) :
@@ -75,8 +77,47 @@ void Notebook::setPublished(bool published)
     }
 }
 
+QDateTime Notebook::lastUpdated() const
+{
+    return m_lastUpdated;
+}
+
+void Notebook::setLastUpdated(const QDateTime &lastUpdated)
+{
+    if (m_lastUpdated != lastUpdated) {
+        m_lastUpdated = lastUpdated;
+        emit lastUpdatedChanged();
+    }
+}
+
+QString Notebook::lastUpdatedString() const
+{
+    QDate updateDate = m_lastUpdated.date();
+    QDate today = QDate::currentDate();
+    if (updateDate == today) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: today"
+        return gettext("today");
+    }
+    if (updateDate == today.addDays(-1)) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
+        return gettext("yesterday");
+    }
+    if (updateDate <= today.addDays(-7)) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: last week"
+        return gettext("last week");
+    }
+    if (updateDate <= today.addDays(-14)) {
+        // TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
+        return gettext("two weeks ago");
+    }
+    // TRANSLATORS: this is used in the notes list to group notes created on the same month
+    // the first parameter refers to a month name and the second to a year
+    return QString(gettext("on %1 %2")).arg(QLocale::system().standaloneMonthName(updateDate.month())).arg(updateDate.year());
+}
+
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
+    Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
         m_noteCount++;
         emit noteCountChanged();
@@ -85,6 +126,7 @@ void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 
 void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 {
+    Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
         m_noteCount--;
         emit noteCountChanged();

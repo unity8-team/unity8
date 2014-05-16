@@ -38,22 +38,30 @@ class Note : public QObject
     Q_PROPERTY(QString guid READ guid CONSTANT)
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
+    Q_PROPERTY(QString createdString READ createdString CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString htmlContent READ htmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
     Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
-    Q_PROPERTY(QStringList resourceUrls READ resourceUrls NOTIFY contentChanged)
+    Q_PROPERTY(QStringList resourceUrls READ resourceUrls NOTIFY resourcesChanged)
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
+    Q_PROPERTY(bool hasReminderTime READ hasReminderTime WRITE setHasReminderTime NOTIFY reminderTimeChanged)
     Q_PROPERTY(QDateTime reminderTime READ reminderTime WRITE setReminderTime NOTIFY reminderTimeChanged)
+    Q_PROPERTY(QString reminderTimeString READ reminderTimeString NOTIFY reminderTimeChanged)
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     // Don't forget to update clone() if you add properties!
 
+    // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+
 public:
     explicit Note(const QString &guid, const QDateTime &created, QObject *parent = 0);
     ~Note();
+
+    bool loading() const;
 
     QString guid() const;
 
@@ -61,6 +69,7 @@ public:
     void setNotebookGuid(const QString &notebookGuid);
 
     QDateTime created() const;
+    QString createdString() const;
 
     QString title() const;
     void setTitle(const QString &title);
@@ -75,14 +84,18 @@ public:
 
     QString plaintextContent() const;
 
-    // This is the QML representation as we don't want to deal with timestamps there.
-    // setting it to false will reset the reminderOrder to 0, setting it to true will
+    // setting reminder to false will reset the reminderOrder to 0, setting it to true will
     // create a new timestamp for it.
     bool reminder() const;
     void setReminder(bool reminder);
 
     qint64 reminderOrder() const;
     void setReminderOrder(qint64 reminderOrder);
+
+    // setting hasReminderTime to false will reset reminderTime to 0, setting it to true will
+    // create a new timestamp for it.
+    bool hasReminderTime() const;
+    void setHasReminderTime(bool hasReminderTime);
 
     QDateTime reminderTime() const;
     void setReminderTime(const QDateTime &reminderTime);
@@ -92,6 +105,8 @@ public:
     // create a new timestamp for it.
     bool reminderDone() const;
     void setReminderDone(bool reminderDone);
+
+    QString reminderTimeString() const;
 
     QDateTime reminderDoneTime() const;
     void setReminderDoneTime(const QDateTime &reminderDoneTime);
@@ -119,10 +134,16 @@ signals:
     void titleChanged();
     void notebookGuidChanged();
     void contentChanged();
+    void resourcesChanged();
     void reminderChanged();
     void reminderTimeChanged();
     void reminderDoneChanged();
     void isSearchResultChanged();
+
+    void loadingChanged();
+
+private:
+    void setLoading(bool loading);
 
 private:
     QString m_guid;
@@ -135,6 +156,11 @@ private:
     QDateTime m_reminderDoneTime;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
+
+    bool m_loading;
+
+    // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
+    friend class NotesStore;
 };
 
 #endif // NOTE_H

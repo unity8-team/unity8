@@ -7,5 +7,9 @@
 %:
 	dh $@
 
+override_dh_auto_configure:
+	dh_auto_configure -- -DEVERNOTE_CONSUMER_KEY="ubuntu" \
+		-DEVERNOTE_CONSUMER_SECRET="44f8ee81a8359500"
+
 override_dh_install:	
 	dh_install --fail-missing

@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -25,13 +25,13 @@ import Evernote 0.1
 
 Page {
     id: root
+    objectName: "Accountselectorpage"
     title: "Select Evernote account"
 
-    AccountServiceModel {
-        id: accounts
-        // Use the Evernote service
-        service: "evernote"
-    }
+    property alias accounts: listView.model
+    property bool isChangingAccount
+
+    signal accountSelected(var handle)
 
     Setup {
         id: setup
@@ -44,29 +44,18 @@ Page {
         spacing: units.gu(1)
 
         ListView {
+            id: listView
             width: parent.width
             height: units.gu(10)
             model: accounts
-            delegate: Standard {
-                text: displayName
+            currentIndex: -1
 
-                // FIXME: remove this Item wrapper once Ubuntu ListItems are fixed to hold non-visual items
-                Item {
-                    AccountService {
-                        id: accountService
-                        objectHandle: accountServiceHandle
-                        // Print the access token on the console
-                        onAuthenticated: {
-                            console.log("Access token is " + reply.AccessToken)
-                            EvernoteConnection.token = reply.AccessToken;
-                            pagestack.pop();
-                        }
-                        onAuthenticationError: { console.log("Authentication failed, code " + error.code) }
-                    }
-                }
+            delegate: Standard {
+                objectName: "EvernoteAccount"
+                text: displayName
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: accountService.authenticate(null)
+                    onClicked: root.accountSelected(accountServiceHandle)
                 }
             }
 
@@ -75,6 +64,10 @@ Page {
                 onClicked: setup.exec()
             }
         }
+    }
 
+    tools: ToolbarItems {
+        locked: !isChangingAccount
+        opened: isChangingAccount
     }
 }

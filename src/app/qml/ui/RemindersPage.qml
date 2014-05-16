@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -17,13 +17,16 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
 import "../components"
 
 Page {
-    id: remindersPage
+    id: root
+
+    property var selectedNote: null
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -35,6 +38,15 @@ Page {
         }
 
         ToolbarSpacer { }
+
+        ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: "contacts-app-symbolic"
+            visible: accounts.count > 1
+            onTriggered: {
+                openAccountPage(true);
+            }
+        }
 
         ToolbarButton {
             text: i18n.tr("Add reminder")
@@ -50,16 +62,55 @@ Page {
     }
 
     ListView {
-
+        id: remindersListView
         anchors.fill: parent
 
-        delegate: Subtitled {
-            text: '<b>Name:</b> ' + model.title
-            subText: '<b>Date:</b> ' + Qt.formatDateTime(model.created) +
-                     (model.reminderDone ? " - <b>Done:</b> " + Qt.formatDate(model.reminderDoneTime) : "")
+        delegate: RemindersDelegate {
+            width: remindersListView.width
+            note: notes.note(guid)
+
+            Component.onCompleted: {
+                if (!model.plaintextContent) {
+                    NotesStore.refreshNoteContent(model.guid)
+                }
+            }
+
+            onClicked: {
+                root.selectedNote = NotesStore.note(guid);
+            }
         }
 
         model: notes
-    }
 
+        section.criteria: ViewSection.FullString
+        section.property: "reminderTimeString"
+        section.delegate: Empty {
+            height: units.gu(5)
+            RowLayout {
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
+                Label {
+                    text: section
+                    Layout.fillWidth: true
+                }
+                Label {
+                    text: "(" + notes.sectionCount("reminderTimeString", section) + ")"
+                }
+            }
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
+        }
+        Label {
+            anchors.centerIn: parent
+            visible: !notes.loading && (notes.error || remindersListView.count == 0)
+            width: parent.width - units.gu(4)
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: notes.error ? notes.error :
+                                i18n.tr("No reminders available. You can create new reminders using the \"Add reminder\" button or by setting a reminder when viewing a note.")
+        }
+    }
 }

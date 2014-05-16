@@ -1,131 +1,77 @@
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
+#
+# Copyright (C) 2013, 2014 Canonical Ltd.
+#
+# This file is part of reminders
+#
+# reminders is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 3.
+#
+# reminders is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Ubuntu Touch App autopilot tests."""
+"""Reminders app tests and emulators - top level package."""
 
-from os import remove
-import os.path
-from tempfile import mktemp
-import subprocess
+import logging
 
-from autopilot.input import Mouse, Touch, Pointer
-from autopilot.matchers import Eventually
-from autopilot.platform import model
-from testtools.matchers import Is, Not, Equals
-from autopilot.testcase import AutopilotTestCase
-
-def get_module_include_path():
-    return os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '..',
-            '..',
-            '..',
-            '..',
-            'src/plugin/')
-        )
+from autopilot import logging as autopilot_logging
+from autopilot.introspection import dbus
+from ubuntuuitoolkit import emulators as toolkit_emulators
 
 
-class UbuntuTouchAppTestCase(AutopilotTestCase):
-    """A common test case class that provides several useful methods for the tests."""
+logger = logging.getLogger(__name__)
 
-    if model() == 'Desktop':
-        scenarios = [
-        ('with mouse', dict(input_device_class=Mouse))
-        ]
-    else:
-        scenarios = [
-        ('with touch', dict(input_device_class=Touch))
-        ]
+
+class RemindersAppException(Exception):
+    """Exception raised when there's an error in the Reminders App."""
+
+
+class RemindersApp(object):
+    """Autopilot helper object for the Reminders application."""
+
+    def __init__(self, app_proxy):
+        self.app = app_proxy
+        self.main_view = self.app.select_single(MainView)
+
+
+class MainView(toolkit_emulators.MainView):
+    """Autopilot custom proxy object for the MainView."""
+
+    def __init__(self, *args):
+        super(MainView, self).__init__(*args)
+        self.visible.wait_for(True)
+        try:
+            self._no_account_dialog = self.select_single(
+                objectName='noAccountDialog')
+        except dbus.StateNotFoundError:
+            self._no_account_dialog = None
 
     @property
-    def main_window(self):
-        return MainWindow(self.app)
+    def no_account_dialog(self):
+        if self._no_account_dialog is None:
+            raise RemindersAppException(
+                'The No Account dialog is not present')
+        else:
+            return self._no_account_dialog
 
 
-    def setUp(self):
-        self.pointing_device = Pointer(self.input_device_class.create())
-        super(UbuntuTouchAppTestCase, self).setUp()
-        self.launch_test_qml()
+class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
 
+    @classmethod
+    def validate_dbus_object(cls, path, state):
+        name = dbus.get_classname_from_path(path)
+        if name == 'Dialog':
+            if 'noAccountDialog' == state['objectName'][1]:
+                return True
+        return False
 
-    def launch_test_qml(self):
-        # If the test class has defined a 'test_qml' class attribute then we
-        # write it to disk and launch it inside the QML Scene. If not, then we
-        # silently do nothing (presumably the test has something else planned).
-        arch = subprocess.check_output(["dpkg-architecture",
-        "-qDEB_HOST_MULTIARCH"]).strip()
-        if hasattr(self, 'test_qml') and isinstance(self.test_qml, basestring):
-            qml_path = mktemp(suffix='.qml')
-            open(qml_path, 'w').write(self.test_qml)
-            self.addCleanup(remove, qml_path)
-
-            self.app = self.launch_test_application(
-                "/usr/lib/" + arch + "/qt5/bin/qmlscene",
-                "-I", get_module_include_path(),
-                qml_path,
-                app_type='qt')
-
-        if hasattr(self, 'test_qml_file') and isinstance(self.test_qml_file, basestring):
-            qml_path = self.test_qml_file
-            self.app = self.launch_test_application(
-                "/usr/lib/" + arch + "/qt5/bin/qmlscene",
-                "-I", get_module_include_path(),
-                qml_path,
-                app_type='qt')
-
-        self.assertThat(self.get_qml_view().visible, Eventually(Equals(True)))
-
-
-    def get_qml_view(self):
-        """Get the main QML view"""
-
-        return self.app.select_single("QQuickView")
-
-    def get_mainview(self):
-        """Get the QML MainView"""
-
-        mainView = self.app.select_single("MainView")
-        self.assertThat(mainView, Not(Is(None)))
-        return mainView
-
-
-    def get_object(self,objectName):
-        """Get a object based on the objectName"""
-
-        obj = self.app.select_single(objectName=objectName)
-        self.assertThat(obj, Not(Is(None)))
-        return obj
-
-
-    def mouse_click(self,objectName):
-        """Move mouse on top of the object and click on it"""
-
-        obj = self.get_object(objectName)
-        self.pointing_device.move_to_object(obj)
-        self.pointing_device.click()
-
-
-    def mouse_press(self,objectName):
-        """Move mouse on top of the object and press mouse button (without releasing it)"""
-
-        obj = self.get_object(objectName)
-        self.pointing_device.move_to_object(obj)
-        self.pointing_device.press()
-
-
-    def mouse_release(self):
-        """Release mouse button"""
-
-        self.pointing_device.release()     
-
-
-    def type_string(self, string):
-        """Type a string with keyboard"""
-
-        self.keyboard.type(string)
-
-
-    def type_key(self, key):
-        """Type a single key with keyboard"""
-
-        self.keyboard.key(key)
+    @autopilot_logging.log_action(logger.info)
+    def open_account_settings(self):
+        button = self.select_single('Button', objectName='openAccountButton')
+        self.pointing_device.click_object(button)

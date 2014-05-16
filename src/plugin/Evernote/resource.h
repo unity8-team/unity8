@@ -37,10 +37,14 @@ public:
     Resource(const QString &path, QObject *parent = 0);
     Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent = 0);
 
+    static bool isCached(const QString &hash);
+
     QByteArray data() const;
     QString hash() const;
     QString fileName() const;
     QString type() const;
+
+    QByteArray imageData(const QSize &size = QSize());
 
 private:
     QString m_hash;

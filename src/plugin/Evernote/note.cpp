@@ -22,6 +22,8 @@
 
 #include "notesstore.h"
 
+#include <libintl.h>
+
 #include <QDateTime>
 #include <QUrl>
 #include <QUrlQuery>
@@ -34,13 +36,19 @@ Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
     QObject(parent),
     m_guid(guid),
     m_created(created),
-    m_isSearchResult(false)
+    m_isSearchResult(false),
+    m_loading(false)
 {
 }
 
 Note::~Note()
 {
     qDeleteAll(m_resources.values());
+}
+
+bool Note::loading() const
+{
+    return m_loading;
 }
 
 QString Note::guid() const
@@ -64,6 +72,26 @@ void Note::setNotebookGuid(const QString &notebookGuid)
 QDateTime Note::created() const
 {
     return m_created;
+}
+
+QString Note::createdString() const
+{
+    QDate createdDate = m_created.date();
+    QDate today = QDate::currentDate();
+    if (createdDate == today) {
+        return gettext("Today");
+    }
+    if (createdDate == today.addDays(-1)) {
+        return gettext("Yesterday");
+    }
+    if (createdDate >= today.addDays(-7)) {
+        return gettext("Last week");
+    }
+    if (createdDate >= today.addDays(-14)) {
+        return gettext("Two weeks ago");
+    }
+
+    return QString(gettext("%1 %2")).arg(QLocale::system().standaloneMonthName(createdDate.month())).arg(createdDate.year());
 }
 
 QString Note::title() const
@@ -112,7 +140,7 @@ void Note::setRichTextContent(const QString &richTextContent)
 
 QString Note::plaintextContent() const
 {
-    return m_content.toPlaintext();
+    return m_content.toPlaintext().trimmed();
 }
 
 bool Note::reminder() const
@@ -144,6 +172,22 @@ void Note::setReminderOrder(qint64 reminderOrder)
     }
 }
 
+bool Note::hasReminderTime() const
+{
+    return !m_reminderTime.isNull();
+}
+
+void Note::setHasReminderTime(bool hasReminderTime)
+{
+    if (hasReminderTime && m_reminderTime.isNull()) {
+        m_reminderTime = QDateTime::currentDateTime();
+        emit reminderTimeChanged();
+    } else if (!hasReminderTime && !m_reminderTime.isNull()) {
+        m_reminderTime = QDateTime();
+        emit reminderTimeChanged();
+    }
+}
+
 QDateTime Note::reminderTime() const
 {
     return m_reminderTime;
@@ -167,7 +211,43 @@ void Note::setReminderDone(bool reminderDone)
     if (reminderDone && m_reminderDoneTime.isNull()) {
         m_reminderDoneTime = QDateTime::currentDateTime();
         emit reminderDoneChanged();
+    } else if (!reminderDone && !m_reminderDoneTime.isNull()) {
+        m_reminderDoneTime = QDateTime();
+        emit reminderDoneChanged();
     }
+}
+
+QString Note::reminderTimeString() const
+{
+    if (m_reminderOrder == 0) {
+        return QString();
+    }
+
+    if (reminderDone()) {
+        return gettext("Done");
+    }
+
+    QDate reminderDate = m_reminderTime.date();
+    QDate today = QDate::currentDate();
+    if (m_reminderTime.isNull()) {
+        return gettext("No date");
+    }
+    if (reminderDate < today) {
+        return gettext("Overdue");
+    }
+    if (reminderDate == today) {
+        return gettext("Today");
+    }
+    if (reminderDate == today.addDays(1)) {
+        return gettext("Tomorrow");
+    }
+    if (reminderDate <= today.addDays(7)) {
+        return gettext("Next week");
+    }
+    if (reminderDate <= today.addDays(14)) {
+        return gettext("In two weeks");
+    }
+    return gettext("Later");
 }
 
 QDateTime Note::reminderDoneTime() const
@@ -225,6 +305,7 @@ Resource* Note::addResource(const QByteArray &data, const QString &hash, const Q
 {
     Resource *resource = new Resource(data, hash, fileName, type, this);
     m_resources.insert(hash, resource);
+    emit resourcesChanged();
     return resource;
 }
 
@@ -232,6 +313,7 @@ Resource *Note::addResource(const QString &fileName)
 {
     Resource *resource = new Resource(fileName);
     m_resources.insert(resource->hash(), resource);
+    emit resourcesChanged();
     return resource;
 }
 
@@ -242,9 +324,21 @@ void Note::markTodo(const QString &todoId, bool checked)
 
 void Note::attachFile(int position, const QUrl &fileName)
 {
+    QFile importedFile(fileName.path());
+    if (!importedFile.exists()) {
+        qWarning() << "File doesn't exist. Cannot attach.";
+        return;
+    }
+
     Resource *resource = addResource(fileName.path());
-    m_content.attachFile(position, fileName.path(), resource->hash(), resource->type());
+    m_content.attachFile(position, resource->hash(), resource->type());
+    emit resourcesChanged();
     emit contentChanged();
+
+    // Cleanup imported file.
+    // TODO: If the app should be extended to allow attaching other files, and we somehow
+    // can browse to unconfined files, this needs to be made conditional to not delete those files!
+    importedFile.remove();
 }
 
 void Note::format(int startPos, int endPos, TextFormat::Format format)
@@ -277,4 +371,12 @@ void Note::save()
 void Note::remove()
 {
     NotesStore::instance()->deleteNote(m_guid);
+}
+
+void Note::setLoading(bool loading)
+{
+    if (m_loading != loading) {
+        m_loading = loading;
+        emit loadingChanged();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -17,15 +17,21 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
 import "../components"
 
 Page {
-    id: notesPage
+    id: root
+
+    property var selectedNote: null
 
     property alias filter: notes.filterNotebookGuid
+
+    signal openSearch()
+    signal editNote(var note)
 
     onActiveChanged: {
         if (active) {
@@ -33,17 +39,65 @@ Page {
         }
     }
 
-    // Just for testing
     tools: ToolbarItems {
         ToolbarButton {
             text: i18n.tr("Search")
             iconName: "search"
             onTriggered: {
-                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                root.openSearch();
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotes();
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: "contacts-app-symbolic"
+            visible: accounts.count > 1
+            onTriggered: {
+                openAccountPage(true);
             }
         }
 
         ToolbarSpacer { }
+
+        ToolbarButton {
+            text: i18n.tr("Delete")
+            iconName: "delete"
+            visible: root.selectedNote !== null
+            onTriggered: {
+                NotesStore.deleteNote(root.selectedNote.guid);
+            }
+        }
+        ToolbarButton {
+            text: root.selectedNote.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
+            // TODO: use this instead when the toolkit switches from using the
+            // ubuntu-mobile-icons theme to suru:
+            //iconName: root.selectedNote.reminder ? "reminder" : "reminder-new"
+            iconSource: root.selectedNote.reminder ?
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
+            visible: root.selectedNote !== null
+            onTriggered: {
+                root.selectedNote.reminder = !root.selectedNote.reminder
+                NotesStore.saveNote(root.selectedNote.guid)
+            }
+        }
+        ToolbarButton {
+            text: i18n.tr("Edit")
+            iconName: "edit"
+            visible: root.selectedNote !== null
+            onTriggered: {
+                print("should edit note")
+                root.editNote(root.selectedNote)
+            }
+        }
 
         ToolbarButton {
             text: i18n.tr("Add note")
@@ -58,25 +112,65 @@ Page {
         id: notes
     }
 
-    ListView {
+    PulldownListView {
+        id: notesListView
+        objectName: "notespageListview"
         anchors { left: parent.left; right: parent.right }
         height: parent.height - y
         model: notes
         clip: true
+
+        onRefreshed: {
+            NotesStore.refreshNotes();
+        }
 
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
             content: model.plaintextContent
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
+            notebookColor: preferences.colorForNotebook(model.notebookGuid)
+
+            Component.onCompleted: {
+                if (!model.plaintextContent) {
+                    NotesStore.refreshNoteContent(model.guid);
+                }
+            }
 
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("NotePage.qml"), {note: NotesStore.note(guid)})
+                root.selectedNote = NotesStore.note(guid);
             }
+        }
 
-            onPressAndHold: {
-                NotesStore.deleteNote(guid);
+        section.criteria: ViewSection.FullString
+        section.property: "createdString"
+        section.delegate: Empty {
+            height: units.gu(5)
+            showDivider: false
+            RowLayout {
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
+                Label {
+                    text: section
+                    Layout.fillWidth: true
+                }
+                Label {
+                    text: "(" + notes.sectionCount("createdString", section) + ")"
+                }
             }
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: notes.loading
+            visible: running
+        }
+        Label {
+            anchors.centerIn: parent
+            visible: !notes.loading && (notes.error || notesListView.count == 0)
+            width: parent.width - units.gu(4)
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
         }
     }
 }

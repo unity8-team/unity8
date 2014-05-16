@@ -51,20 +51,21 @@ static QObject* connectionProvider(QQmlEngine* /* engine */, QJSEngine* /* scrip
 
 void EvernotePlugin::registerTypes(const char *uri)
 {
-    qmlRegisterSingletonType<UserStore>("Evernote", 0, 1, "UserStore", userStoreProvider);
-    qmlRegisterSingletonType<NotesStore>("Evernote", 0, 1, "NotesStore", notesStoreProvider);
-    qmlRegisterSingletonType<EvernoteConnection>("Evernote", 0, 1, "EvernoteConnection", connectionProvider);
+    qmlRegisterSingletonType<UserStore>(uri, 0, 1, "UserStore", userStoreProvider);
+    qmlRegisterSingletonType<NotesStore>(uri, 0, 1, "NotesStore", notesStoreProvider);
+    qmlRegisterSingletonType<EvernoteConnection>(uri, 0, 1, "EvernoteConnection", connectionProvider);
 
-    qmlRegisterType<Notes>("Evernote", 0, 1, "Notes");
-    qmlRegisterType<Notebooks>("Evernote", 0, 1, "Notebooks");
-    qmlRegisterUncreatableType<Note>("Evernote", 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
-    qmlRegisterUncreatableType<Notebook>("Evernote", 0, 1, "Notebook", "Cannot create Notes in QML. Use NotesStore.createNotebook() instead.");
-    qmlRegisterUncreatableType<Resource>("Evernote", 0, 1, "Resource", "Cannot create Resources. Use Note.attachFile() instead.");
+    qmlRegisterType<Notes>(uri, 0, 1, "Notes");
+    qmlRegisterType<Notebooks>(uri, 0, 1, "Notebooks");
+    qmlRegisterUncreatableType<Note>(uri, 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
+    qmlRegisterUncreatableType<Notebook>(uri, 0, 1, "Notebook", "Cannot create Notes in QML. Use NotesStore.createNotebook() instead.");
+    qmlRegisterUncreatableType<Resource>(uri, 0, 1, "Resource", "Cannot create Resources. Use Note.attachFile() instead.");
 
-    qmlRegisterUncreatableType<TextFormat>("Evernote", 0, 1, "TextFormat", "TextFormat is not creatable. It's just here to export enums to QML");
+    qmlRegisterUncreatableType<TextFormat>(uri, 0, 1, "TextFormat", "TextFormat is not creatable. It's just here to export enums to QML");
 }
 
 void EvernotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
+    Q_UNUSED(uri)
     engine->addImageProvider("resource", new ResourceImageProvider);
 }

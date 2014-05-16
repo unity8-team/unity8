@@ -24,8 +24,11 @@
 #include <QStandardPaths>
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QFileInfo>
+#include <QDir>
 
 Resource::Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent):
+    QObject(parent),
     m_hash(hash),
     m_fileName(fileName),
     m_type(type)
@@ -34,7 +37,7 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last();
 
     QFile file(m_filePath);
-    if (!file.exists()) {
+    if (!data.isEmpty() && !file.exists()) {
 
         if (!file.open(QFile::WriteOnly)) {
             qWarning() << "error writing file" << m_filePath;
@@ -45,18 +48,30 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     }
 }
 
-Resource::Resource(const QString &path, QObject *parent):
-    m_filePath(path)
+bool Resource::isCached(const QString &hash)
 {
+    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first());
+    foreach (const QString fi, cacheDir.entryList()) {
+        if (fi.contains(hash)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Resource::Resource(const QString &path, QObject *parent):
+    QObject(parent)
+{
+
     QFile file(path);
     if (!file.open(QFile::ReadOnly)) {
         qWarning() << "Cannot open file for reading...";
         return;
     }
-
     QByteArray fileContent = file.readAll();
-    m_hash = QCryptographicHash::hash(fileContent, QCryptographicHash::Md5).toHex();
+    file.close();
 
+    m_hash = QCryptographicHash::hash(fileContent, QCryptographicHash::Md5).toHex();    
     m_fileName = path.split('/').last();
     if (m_fileName.endsWith(".png")) {
         m_type = "image/png";
@@ -64,6 +79,19 @@ Resource::Resource(const QString &path, QObject *parent):
         m_type = "image/jpeg";
     } else {
         qWarning() << "cannot determine mime type of file" << m_fileName;
+    }
+
+    m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + m_hash + "." + m_type.split('/').last();
+
+    QFile copy(m_filePath);
+    if (!copy.exists()) {
+
+        if (!copy.open(QFile::WriteOnly)) {
+            qWarning() << "error writing file" << m_filePath;
+            return;
+        }
+        copy.write(fileContent);
+        copy.close();
     }
 }
 
@@ -75,6 +103,36 @@ QString Resource::hash() const
 QString Resource::type() const
 {
     return m_type;
+}
+
+QByteArray Resource::imageData(const QSize &size)
+{
+    if (!m_type.startsWith("image/")) {
+        return QByteArray();
+    }
+
+    QString finalFilePath = m_filePath;
+    if (size.isValid() && !size.isNull()) {
+        finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + "_" + m_fileName;
+        QFileInfo fi(finalFilePath);
+        if (!fi.exists()) {
+            QImage image(m_filePath);
+            if (size.height() > 0 && size.width() > 0) {
+                image = image.scaled(size);
+            } else if (size.height() > 0) {
+                image = image.scaledToHeight(size.height());
+            } else {
+                image = image.scaledToWidth(size.width());
+            }
+            image.save(finalFilePath);
+        }
+    }
+
+    QFile file(finalFilePath);
+    if (file.open(QFile::ReadOnly)) {
+        return file.readAll();
+    }
+    return QByteArray();
 }
 
 QString Resource::fileName() const

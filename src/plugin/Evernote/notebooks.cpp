@@ -31,7 +31,20 @@ Notebooks::Notebooks(QObject *parent) :
         connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
     }
 
+    connect(NotesStore::instance(), &NotesStore::notebooksLoadingChanged, this, &Notebooks::loadingChanged);
+    connect(NotesStore::instance(), &NotesStore::notebooksErrorChanged, this, &Notebooks::errorChanged);
     connect(NotesStore::instance(), SIGNAL(notebookAdded(const QString &)), SLOT(notebookAdded(const QString &)));
+    connect(NotesStore::instance(), SIGNAL(notebookRemoved(const QString &)), SLOT(notebookRemoved(const QString &)));
+}
+
+bool Notebooks::loading() const
+{
+    return NotesStore::instance()->notebooksLoading();
+}
+
+QString Notebooks::error() const
+{
+    return NotesStore::instance()->notebooksError();
 }
 
 QVariant Notebooks::data(const QModelIndex &index, int role) const
@@ -46,12 +59,17 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->noteCount();
     case RolePublished:
         return notebook->published();
+    case RoleLastUpdated:
+        return notebook->lastUpdated();
+    case RoleLastUpdatedString:
+        return notebook->lastUpdatedString();
     }
     return QVariant();
 }
 
 int Notebooks::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_list.count();
 }
 
@@ -61,7 +79,9 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleName, "name");
     roles.insert(RoleNoteCount, "noteCount");
-    roles.insert(RolePublished, "publised");
+    roles.insert(RolePublished, "published");
+    roles.insert(RoleLastUpdated, "lastUpdated");
+    roles.insert(RoleLastUpdatedString, "lastUpdatedString");
     return roles;
 }
 
@@ -83,6 +103,13 @@ void Notebooks::notebookAdded(const QString &guid)
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
     endInsertRows();
+}
+
+void Notebooks::notebookRemoved(const QString &guid)
+{
+    beginRemoveRows(QModelIndex(), m_list.indexOf(guid), m_list.indexOf(guid));
+    m_list.removeAll(guid);
+    endRemoveRows();
 }
 
 void Notebooks::noteCountChanged()

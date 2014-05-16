@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2013 - 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -23,7 +23,9 @@ import Evernote 0.1
 import "../components"
 
 Page {
-    id: notebooksPage
+    id: root
+
+    signal openNotebook(string title, string notebookGuid)
 
     onActiveChanged: {
         if (active) {
@@ -40,7 +42,24 @@ Page {
             }
         }
 
+        ToolbarButton {
+            text: i18n.tr("Refresh")
+            iconName: "reload"
+            onTriggered: {
+                NotesStore.refreshNotebooks();
+            }
+        }
+
         ToolbarSpacer { }
+
+        ToolbarButton {
+            text: i18n.tr("Accounts")
+            iconName: "contacts-app-symbolic"
+            visible: accounts.count > 1
+            onTriggered: {
+                openAccountPage(true);
+            }
+        }
 
         ToolbarButton {
             text: i18n.tr("Add notebook")
@@ -93,20 +112,39 @@ Page {
             }
         }
 
-        ListView {
+        PulldownListView {
+            id: notebooksListView
             model: notebooks
             anchors { left: parent.left; right: parent.right }
-            height: parent.height - y - buttonRow.height
+            height: parent.height - y - buttonRow.height - keyboardRect.height
+            clip: true
+
+            onRefreshed: {
+                NotesStore.refreshNotebooks();
+            }
 
             delegate: NotebooksDelegate {
-                name: model.name
-                noteCount: model.noteCount
-                shareStatus: model.publised ? i18n.tr("Shared") : i18n.tr("Private")
-
                 onClicked: {
-                    pagestack.push(Qt.resolvedUrl("NotesPage.qml"), {title: name, filter: guid});
+                    print("selected notebook:", model.guid)
+                    root.openNotebook(name, model.guid)
                 }
             }
+
+            ActivityIndicator {
+                anchors.centerIn: parent
+                running: notebooks.loading
+                visible: running
+            }
+
+            Label {
+                anchors.centerIn: parent
+                width: parent.width - units.gu(4)
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                visible: !notebooks.loading && notebooks.error
+                text: notebooks.error
+            }
+            
         }
 
         Item {
@@ -139,6 +177,11 @@ Page {
                     contentColumn.newNotebook = false
                 }
             }
+        }
+        Item {
+            id: keyboardRect
+            anchors { left: parent.left; right: parent.right }
+            height: Qt.inputMethod.keyboardRectangle.height
         }
     }
 }

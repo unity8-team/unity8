@@ -20,18 +20,19 @@
 
 #include "fetchnotejob.h"
 
-FetchNoteJob::FetchNoteJob(const QString &guid, QObject *parent) :
+FetchNoteJob::FetchNoteJob(const QString &guid, bool withResources, QObject *parent) :
     NotesStoreJob(parent),
-    m_guid(guid)
+    m_guid(guid),
+    m_withResources(withResources)
 {
 }
 
 void FetchNoteJob::startJob()
 {
-    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, true, false, false);
+    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, m_withResources, false, false);
 }
 
 void FetchNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit resultReady(errorCode, errorMessage, m_result);
+    emit resultReady(errorCode, errorMessage, m_result, m_withResources);
 }
