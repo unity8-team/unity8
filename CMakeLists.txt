@@ -12,6 +12,7 @@ option(CLICK_MODE "Installs to a contained location" off)
 
 set(APP_NAME reminders)
 set(DESKTOP_FILE "${PROJECT_NAME}.desktop")
+set(APPLICATION_FILE "${PROJECT_NAME}_${APP_NAME}.application")
 set(ICON ${APP_NAME}.png)
 set(AUTOPILOT_DIR reminders)
 set(APP_HARDCODE reminders)
@@ -33,6 +34,7 @@ if(CLICK_MODE)
     set(BIN_DIR /lib/${ARCH_TRIPLET}/bin)
     set(DATA_DIR /)
     set(DESKTOP_DIR ${DATA_DIR})
+    set(APPLICATION_DIR ${DATA_DIR})
     if(NOT BZR_REVNO)
         set(BZR_REVNO "latest")
     endif(NOT BZR_REVNO)
@@ -50,6 +52,7 @@ else(CLICK_MODE)
     set(DATA_DIR ${CMAKE_INSTALL_DATADIR}/${APP_HARDCODE})
     set(ICON "${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/${ICON}")
     set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
+    set(APPLICATION_DIR ${CMAKE_INSTALL_DATADIR}/accounts/applications)
 endif(CLICK_MODE)
 
 file(GLOB_RECURSE I18N_SRC_FILES
@@ -64,6 +67,7 @@ install(FILES ${SRC_FILES}  DESTINATION ${DATA_DIR})
 
 configure_file(${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} DESTINATION ${DESKTOP_DIR})
+install(FILES ${APPLICATION_FILE} DESTINATION ${APPLICATION_DIR})
  
 # Tests
 enable_testing()

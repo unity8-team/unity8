@@ -4,6 +4,7 @@
     "architecture": "armhf",
     "hooks": {
         "reminders": {
+            "account-application": "com.ubuntu.reminders_reminders.application",
             "apparmor": "apparmor.json",
             "desktop": "com.ubuntu.reminders.desktop"
         }
