@@ -14,8 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2014-05-16 06:53+0000\n"
+"X-Launchpad-Export-Date: 2014-05-17 07:15+0000\n"
 "X-Generator: Launchpad (build 17007)\n"
 
 #: ../src/app/qml/reminders.qml:196
@@ -234,10 +233,3 @@ msgstr ""
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr ""
-
-#, qt-format
-#~ msgid "%1 note"
-#~ msgid_plural "%1 notes"
-#~ msgstr[0] "%1 piezīme"
-#~ msgstr[1] "%1 piezīme"
-#~ msgstr[2] "%1 piezīmes"

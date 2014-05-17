@@ -8,14 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-02-02 19:55+0000\n"
-"Last-Translator: Phillip Sz <Unknown>\n"
+"PO-Revision-Date: 2014-05-16 11:58+0000\n"
+"Last-Translator: Daniel Holbach <daniel.holbach@ubuntu.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-05-16 06:53+0000\n"
+"X-Launchpad-Export-Date: 2014-05-17 07:15+0000\n"
 "X-Generator: Launchpad (build 17007)\n"
 
 #: ../src/app/qml/reminders.qml:196
@@ -33,7 +32,7 @@ msgstr "Erinnerungen"
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr ""
+msgstr "Kein Konto vorhanden"
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
@@ -67,11 +66,11 @@ msgstr ""
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr ""
+msgstr "Als erledigt markieren"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr ""
+msgstr "Zurück"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
@@ -107,12 +106,12 @@ msgstr "Suchen"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr ""
+msgstr "Konten"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
@@ -151,19 +150,19 @@ msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr ""
+msgstr "Heute"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "Gestern"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "Letzte Woche"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "Vor zwei Wochen"
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
@@ -172,46 +171,46 @@ msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "Erledigt"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr ""
+msgstr "Kein Datum"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr ""
+msgstr "Überfällig"
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr ""
+msgstr "Morgen"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr ""
+msgstr "Nächste Woche"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr ""
+msgstr "In zwei Wochen"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr ""
+msgstr "Später"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr ""
+msgstr "heute"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr ""
+msgstr "gestern"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr ""
+msgstr "letzte Woche"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
@@ -234,9 +233,3 @@ msgstr ""
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr ""
-
-#, qt-format
-#~ msgid "%1 note"
-#~ msgid_plural "%1 notes"
-#~ msgstr[0] "%1 Notiz"
-#~ msgstr[1] "%1 Notizen"
