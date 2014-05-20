@@ -27,6 +27,18 @@ Page {
 
     signal noteSelected(var note)
 
+    tools: ToolbarItems {
+        back: ToolbarButton {
+            iconName: 'back' 
+            text: i18n.tr("Back")
+
+            onTriggered: {
+                pagestack.pop()
+                NotesStore.clearFoundNotes();
+            }
+        }
+    }
+
     Column {
         anchors { fill: parent; topMargin: units.gu(2); bottomMargin: units.gu(2) }
         spacing: units.gu(2)
