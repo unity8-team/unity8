@@ -16,11 +16,30 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import LightDM 0.1 as LightDM
+import "../Components"
 
 Item {
-    width: 100
-    height: 62
+    id: root
 
     property var model
+    property int index: 0
+
+    implicitHeight: width
+
+    signal triggered()
+
+    CrossFadeInfographics {
+        objectName: "image"
+        anchors.centerIn: parent
+        height: width
+        width: parent.width
+        source: model.get(index).display
+        fadeDuration: UbuntuAnimation.SleepyDuration
+
+        MouseArea {
+            anchors.fill: parent
+            onDoubleClicked: root.triggered()
+        }
+    }
 }
+

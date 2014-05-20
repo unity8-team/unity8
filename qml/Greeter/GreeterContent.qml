@@ -18,7 +18,7 @@ import QtQuick 2.0
 import AccountsService 0.1
 import Ubuntu.Components 0.1
 import LightDM 0.1 as LightDM
-import Infographics 0.1 as Infographics
+import Infographics 0.1 as InfographicsModule
 import "../Components"
 
 Item {
@@ -127,7 +127,7 @@ Item {
         }
     }
 
-    ListView {
+    Infographics {
         id: infographics
         objectName: "infographics"
 
@@ -135,17 +135,12 @@ Item {
 
         height: width
 //        /height: narrowMode ? parent.height : 0.75 * parent.height
-        model: Infographics.InfographicList
+        model: InfographicsModule.InfographicList
 
         Component.onCompleted: {
             model.uid = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole)
         }
 
-        delegate: Image {
-            source: display
-            width: parent.width
-            height: width
-        }
 //        property string selectedUser
 //        property string infographicUser: AccountsService.statsWelcomeScreen ? selectedUser : ""
 //        onInfographicUserChanged: greeterContentLoader.infographicModel.username = infographicUser
