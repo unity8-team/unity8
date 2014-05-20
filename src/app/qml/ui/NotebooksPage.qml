@@ -35,37 +35,43 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: i18n.tr("Search")
-            iconName: "search"
-            onTriggered: {
-                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+            action: Action {
+                text: i18n.tr("Search")
+                iconName: "search"
+                onTriggered: {
+                    pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                }
             }
         }
 
         ToolbarButton {
-            text: i18n.tr("Refresh")
-            iconName: "reload"
-            onTriggered: {
-                NotesStore.refreshNotebooks();
-            }
-        }
-
-        ToolbarSpacer { }
-
-        ToolbarButton {
-            text: i18n.tr("Accounts")
-            iconName: "contacts-app-symbolic"
-            visible: accounts.count > 1
-            onTriggered: {
-                openAccountPage(true);
+            action: Action {
+                text: i18n.tr("Refresh")
+                iconName: "reload"
+                onTriggered: {
+                    NotesStore.refreshNotebooks();
+                }
             }
         }
 
         ToolbarButton {
-            text: i18n.tr("Add notebook")
-            iconName: "add"
-            onTriggered: {
-                contentColumn.newNotebook = true;
+            action: Action {
+                text: i18n.tr("Accounts")
+                iconName: "contacts-app-symbolic"
+                visible: accounts.count > 1
+                onTriggered: {
+                    openAccountPage(true);
+                }
+            }
+        }
+
+        ToolbarButton {
+            action: Action {
+                text: i18n.tr("Add notebook")
+                iconName: "add"
+                onTriggered: {
+                    contentColumn.newNotebook = true;
+                }
             }
         }
     }

@@ -27,6 +27,8 @@ Page {
 
     signal noteSelected(var note)
 
+    title: i18n.tr('Search page')
+
     Column {
         anchors { fill: parent; topMargin: units.gu(2); bottomMargin: units.gu(2) }
         spacing: units.gu(2)

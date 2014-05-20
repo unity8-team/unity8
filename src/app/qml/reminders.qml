@@ -39,6 +39,8 @@ MainView {
     // Note! applicationName needs to match the "name" field of the click manifest
     applicationName: "com.ubuntu.reminders"
 
+    useDeprecatedToolbar: false
+
     /*
      This property enables the application to change orientation
      when the device is rotated. The default is false.
