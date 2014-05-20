@@ -484,7 +484,7 @@ void NotesStore::findNotes(const QString &searchWords)
     EvernoteConnection::instance()->enqueue(job);
 }
 
-void NotesStore::clearFoundNotes()
+void NotesStore::clearSearchResults()
 {
     foreach (Note *note, m_notes) {
         note->setIsSearchResult(false);

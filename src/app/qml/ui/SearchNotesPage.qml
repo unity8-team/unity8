@@ -34,7 +34,7 @@ Page {
 
             onTriggered: {
                 pagestack.pop()
-                NotesStore.clearFoundNotes();
+                NotesStore.clearSearchResults();
             }
         }
     }
