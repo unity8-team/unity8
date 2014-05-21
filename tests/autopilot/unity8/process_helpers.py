@@ -136,7 +136,7 @@ def restart_unity_if_not_testable():
     return shell
 
 
-def send_app_to_background(shell, app_name, signal):
+def send_app_to_background(shell, app_name):
     """Put app in background app
     :param shell: The unity8 shell
     :param app_name: The name of the app to put in the background
