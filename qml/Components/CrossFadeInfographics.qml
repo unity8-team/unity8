@@ -93,6 +93,11 @@ Item {
     // FIXME: Support resetting sourceSize
     property size sourceSize: internals.loadingImage ? Qt.size(internals.loadingImage.sourceSize.width, internals.loadingImage.sourceSize.height) : Qt.size(0, 0)
 
+    /*!
+      Whether to fade out the current image
+    */
+    property bool fadeOutCurrentImage: false
+
     Binding {
         target: crossFadeImage
         property: "sourceSize"
@@ -183,6 +188,10 @@ Item {
         }
     }
 
+    Item {
+        id: fadeOutDummy
+    }
+
     /*!
       \internal
       Do the fading when the source is updated
@@ -227,8 +236,7 @@ Item {
 
         Ubuntu.UbuntuNumberAnimation {
             id: currentImageFadeOut
-            parent: true ? nextImageFadeIn : crossFadeImage
-            target: internals.currentImage
+            target: fadeOutCurrentImage ? internals.currentImage : fadeOutDummy
             property: "opacity"
             to: 0.0
             duration: crossFadeImage.fadeDuration

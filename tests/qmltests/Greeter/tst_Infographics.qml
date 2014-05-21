@@ -43,7 +43,6 @@ Rectangle {
         }
 
         onTriggered: {
-            console.log(index)
             if (index == 0)
                 index = 1;
             else

@@ -35,6 +35,7 @@ Item {
         width: parent.width
         source: model.get(index).display
         fadeDuration: UbuntuAnimation.SleepyDuration
+        fadeOutCurrentImage: true
 
         MouseArea {
             anchors.fill: parent
