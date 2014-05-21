@@ -131,7 +131,8 @@ def restart_unity_if_not_testable():
         unity8 = get_proxy_object_for_existing_process(pid)
         shell = unity8.select_single("Shell")
     except:
-        restart_unity_with_testability()
+        pid = restart_unity_with_testability()
+        unity8 = get_proxy_object_for_existing_process(pid)
         shell = unity8.select_single("Shell")
     return shell
 
