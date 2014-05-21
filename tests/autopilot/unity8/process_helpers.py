@@ -29,6 +29,7 @@ if sys.version >= '3':
 else:
     from autopilot.introspection import ProcessSearchError
 from autopilot.introspection import get_proxy_object_for_existing_process
+from testtools.matchers import NotEquals
 
 from unity8.shell import emulators
 from unity8.shell.emulators import main_window as main_window_emulator
@@ -75,7 +76,7 @@ def unlock_unity(unity_proxy_obj=None):
             main_window_emulator.QQuickView)
 
     greeter = main_window.get_greeter()
-    if greeter.created == False:
+    if greeter.created is False:
         raise RuntimeWarning("Greeter appears to be already unlocked.")
 
     # Because of potential input jerkiness under heavy load,
@@ -98,7 +99,8 @@ def unlock_unity(unity_proxy_obj=None):
 
 def lock_unity(unity_proxy_obj=None):
     """Helper function that attempts to lock the unity greeter."""
-    import evdev, time
+    import evdev
+    import time
     uinput = evdev.UInput(name='unity8-autopilot-power-button',
                           devnode='/dev/autopilot-uinput')
     # One press and release to turn screen off (locking unity)
@@ -113,13 +115,42 @@ def lock_unity(unity_proxy_obj=None):
 
 
 def restart_unity_with_testability(*args):
-    """Restarts (or starts) unity with testability enabled.
+    """Restart (or starts) unity with testability enabled.
 
     Passes *args arguments to the launched process.
 
     """
     args += ("QT_LOAD_TESTABILITY=1",)
     return restart_unity(*args)
+
+
+def restart_unity_if_not_testable():
+    """Return unity shell, restart unity if needed."""
+    try:
+        pid = _get_unity_pid()
+        unity8 = get_proxy_object_for_existing_process(pid)
+        shell = unity8.select_single("Shell")
+    except:
+        restart_unity_with_testability()
+        shell = unity8.select_single("Shell")
+    return shell
+
+
+def send_app_to_background(shell, app_name, signal):
+    """Put app in background app
+    :param shell: The unity8 shell
+    :param app_name: The name of the app to put in the background
+    """
+    shell.slots.showHome()
+    shell.currentFocusedAppId.wait_for(NotEquals(app_name))
+
+
+def signal_app(app_proxy_object, signal):
+    """Send signal to app
+    :param app_proxy_object: Proxy object of app you want to send a signal to
+    :param signal: The signal to send the app
+    """
+    app_proxy_object.process.send_signal(signal)
 
 
 def restart_unity(*args):
