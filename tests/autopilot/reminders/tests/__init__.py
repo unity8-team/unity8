@@ -45,7 +45,8 @@ class RemindersAppTestCase(AutopilotTestCase):
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
     local_location = os.path.dirname(os.path.dirname(os.getcwd()))
-    local_location_qml = os.path.join(local_location, 'src/app/qml/reminders.qml')
+    local_location_qml = os.path.join(local_location,
+                                      'src/app/qml/reminders.qml')
     local_location_binary = os.path.join(local_location, 'src/app/reminders')
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
@@ -111,8 +112,9 @@ class RemindersAppTestCase(AutopilotTestCase):
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
-        self.useFixture(fixtures.EnvironmentVariable(
-            'QML2_IMPORT_PATH', newvalue=os.path.join(self.local_location, 'src/plugin')))
+        self.useFixture(fixtures.EnvironmentVariable('QML2_IMPORT_PATH',
+                        newvalue=os.path.join(self.local_location,
+                                              'src/plugin')))
         return self.launch_test_application(
             self.local_location_binary,
             '-q', self.local_location_qml,
