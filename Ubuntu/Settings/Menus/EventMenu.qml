@@ -33,8 +33,9 @@ ListItems.Empty {
         id: iconVisual
         source: "image://theme/calendar"
         visible: status == Image.Ready
+        color: Theme.palette.selected.backgroundText
 
-        height: Math.min(units.gu(5), parent.height - units.gu(1))
+        height: Math.min(units.gu(3), parent.height - units.gu(1))
         width: height
 
         anchors {

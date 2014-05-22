@@ -1,3 +1,9 @@
+ubuntu-settings-components (0.2-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Adapt to suru icon theme
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Fri, 23 May 2014 01:57:19 +0200
+
 ubuntu-settings-components (0.1+14.10.20140502-0ubuntu1) utopic; urgency=low
 
   [ daker ]
