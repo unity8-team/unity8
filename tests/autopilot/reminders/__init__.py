@@ -19,9 +19,11 @@
 """Reminders app tests and emulators - top level package."""
 
 import logging
+from distutils import version
 
 import ubuntuuitoolkit
 
+import autopilot
 from autopilot import logging as autopilot_logging
 from autopilot.introspection import dbus
 from ubuntuuitoolkit import emulators as toolkit_emulators
@@ -78,7 +80,15 @@ class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
 
     @classmethod
     def validate_dbus_object(cls, path, state):
-        name = dbus.get_classname_from_path(path)
+        if (version.LooseVersion(autopilot.version) >=
+                version.LooseVersion('1.5')):
+            # TODO there's an autopilot branch that will put the function in a
+            # public module. Update this once the branch is released.
+            # --elopio - 2014-05-16
+            from autopilot.introspection import _xpathselect
+            name = _xpathselect.get_classname_from_path(path)
+        else:
+            name = dbus.get_classname_from_path(path)
         if name == 'Dialog':
             if 'noAccountDialog' == state['objectName'][1]:
                 return True

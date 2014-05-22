@@ -20,6 +20,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.OnlineAccounts 0.1
+import Ubuntu.OnlineAccounts.Client 0.1
 import Evernote 0.1
 
 Page {
@@ -31,6 +32,12 @@ Page {
     property bool isChangingAccount
 
     signal accountSelected(var handle)
+
+    Setup {
+        id: setup
+        applicationId: "com.ubuntu.reminders_reminders"
+        providerId: "evernote"
+    }
 
     Column {
         anchors { fill: parent; margins: units.gu(2) }
@@ -50,6 +57,11 @@ Page {
                     anchors.fill: parent
                     onClicked: root.accountSelected(accountServiceHandle)
                 }
+            }
+
+            footer: Button {
+                text: i18n.tr("Add account")
+                onClicked: setup.exec()
             }
         }
     }
