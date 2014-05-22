@@ -149,7 +149,13 @@ SpreadDelegate {
                         newTranslate += -spreadView.sideStageWidth;
                     }
                 }
-                newTranslate += linearAnimation(0, spreadView.positionMarker2, 0, -spreadView.sideStageWidth * spreadView.snapPosition, root.animatedProgress)
+
+                if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+                    // This is when we only drag the side stage in, without rotation or snapping
+                    newTranslate = linearAnimation(0, spreadView.positionMarker2, 0, -spreadView.sideStageWidth, root.progress)
+                } else {
+                    newTranslate += linearAnimation(0, spreadView.positionMarker2, 0, -spreadView.sideStageWidth * spreadView.snapPosition, root.animatedProgress)
+                }
             }
 
             if (spreadView.phase == 1) {
@@ -160,7 +166,11 @@ SpreadDelegate {
                         newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, startValue, priv.phase2StartTranslate, root.animatedProgress);
                     } else {
                         var endValue = -spreadView.width + spreadView.width * root.zIndex / 6;
-                        newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth * spreadView.snapPosition, priv.phase2StartTranslate, root.animatedProgress);
+                        if (!spreadView.sideStageVisible) {
+                            newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth, priv.phase2StartTranslate, root.progress);
+                        } else {
+                            newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth * spreadView.snapPosition, priv.phase2StartTranslate, root.animatedProgress);
+                        }
                     }
                 } else if (root.active) {
                     var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2)
@@ -193,8 +203,12 @@ SpreadDelegate {
 
             if (spreadView.phase == 0) {
                 if (nextInStack) {
-                    var targetScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
-                    return linearAnimation(0, spreadView.positionMarker2, root.dragStartScale, targetScale, root.animatedProgress);
+                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+                        return 1;
+                    } else {
+                        var targetScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
+                        return linearAnimation(0, spreadView.positionMarker2, root.dragStartScale, targetScale, root.animatedProgress);
+                    }
                 } else if (active) {
                     return 1;
                 } else {
@@ -204,7 +218,10 @@ SpreadDelegate {
 
             if (spreadView.phase == 1) {
                 if (nextInStack) {
-                    var startScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
+                    var startScale = 1;
+                    if (model.stage !== ApplicationInfoInterface.SideStage || spreadView.sideStageVisible) {
+                        startScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
+                    }
                     return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, startScale, priv.phase2StartScale, root.animatedProgress)
                 }
                 var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2)
@@ -229,12 +246,20 @@ SpreadDelegate {
 
             if (spreadView.phase == 0) {
                 if (nextInStack) {
-                    return linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
+                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+                        return 0;
+                    } else {
+                        return linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
+                    }
                 }
             }
             if (spreadView.phase == 1) {
                 if (nextInStack) {
-                    return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, root.startAngle * (1-spreadView.snapPosition), priv.phase2StartAngle, root.animatedProgress)
+                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+                        return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, 0, priv.phase2StartAngle, root.animatedProgress)
+                    } else {
+                        return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, root.startAngle * (1-spreadView.snapPosition), priv.phase2StartAngle, root.animatedProgress)
+                    }
                 }
                 var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2)
                 var endProgress = spreadView.positionMarker4 - (zIndex * spreadView.tileDistance / spreadView.width)
