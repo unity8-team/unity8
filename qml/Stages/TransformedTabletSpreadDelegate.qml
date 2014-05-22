@@ -41,6 +41,8 @@ SpreadDelegate {
     property real startAngle: 15
     property real endAngle: 5
 
+    property bool isInSideStage: false
+
     onSelectedChanged: {
         if (selected) {
             priv.snapshot();
@@ -142,7 +144,7 @@ SpreadDelegate {
             }
             if (nextInStack && spreadView.phase == 0) {
                 if (model.stage == ApplicationInfoInterface.MainStage) {
-                    if (spreadView.sideStageVisible) {
+                    if (spreadView.sideStageVisible && root.progress > 0) {
                         // Move it so it appears from behind the side stage immediately
                         newTranslate += -spreadView.sideStageWidth;
                     }
@@ -245,7 +247,7 @@ SpreadDelegate {
             return 0;
         }
 
-        property real opacity: {
+        property real opacityTransform: {
             if (otherSelected) {
 //                if (active && root.progress == 0) {
 //                    fadeBackInAnimation.start()
@@ -255,7 +257,17 @@ SpreadDelegate {
 
             return 1;
         }
+
+        onXTranslateChanged: print("xtrnslate changed", xTranslate)
     }
+
+    states: [
+        State {
+            name: "sideStageDragging"; when: spreadView.sideStageDragging && root.isInSideStage
+            PropertyChanges { target: priv; xTranslate: -spreadView.sideStageWidth + spreadView.sideStageWidth * spreadView.sideStageDragProgress }
+        }
+    ]
+    onStateChanged: print("jfdksjflkdsajfklsdjlfsdaklfjdsalkfjsad", state)
 
     transform: [
         Rotation {
@@ -272,7 +284,7 @@ SpreadDelegate {
             x: priv.xTranslate
         }
     ]
-    opacity: priv.opacity
+    opacity: priv.opacityTransform
 
     UbuntuNumberAnimation {
         id: fadeBackInAnimation

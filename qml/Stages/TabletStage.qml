@@ -111,6 +111,16 @@ Item {
 
         property int selectedIndex: -1
 
+        property bool sideStageDragging: sideStageDragHandle.dragging
+        property real sideStageDragProgress: sideStageDragHandle.progress
+
+        onSideStageDragProgressChanged: {
+            if (sideStageDragProgress == 1) {
+                ApplicationManager.focusApplication(priv.mainStageAppId)
+                priv.sideStageAppId = ""
+            }
+        }
+
         property int nextInStack: {
             switch (state) {
             case "main":
@@ -231,6 +241,7 @@ Item {
             color: "black"
 
             Repeater {
+                id: spreadRepeater
                 model: ApplicationManager
 
                 delegate: Rectangle {
@@ -245,7 +256,7 @@ Item {
                     z: {
                         if (spreadTile.active && model.stage == ApplicationInfoInterface.MainStage) return 0;
                         if (spreadTile.active && model.stage == ApplicationInfoInterface.SideStage) {
-                            if (ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
+                            if (spreadView.nextInStack >= 0 && ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
                                 return Math.max(index, 2);
                             } else {
                                 return 1;
@@ -254,7 +265,12 @@ Item {
                         if (index <= 2 && model.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
                             return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
                         }
-                        if (index == spreadView.nextInStack && model.stage == ApplicationInfoInterface.SideStage) return 2;
+                        if (index == spreadView.nextInStack && model.stage == ApplicationInfoInterface.SideStage) {
+                            if (priv.sideStageAppId) {
+                                return 2;
+                            }
+                            return 1;
+                        }
                         return index;
                     }
 
@@ -268,6 +284,7 @@ Item {
                         zIndex: parent.z
                         selected: spreadView.selectedIndex == index
                         otherSelected: spreadView.selectedIndex >= 0 && !selected
+                        isInSideStage: priv.sideStageAppId == model.appId
 
                         progress: {
                             var tileProgress = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
@@ -284,15 +301,17 @@ Item {
                             print("PHASE:", spreadView.phase)
                             if (spreadView.phase == 0 && (active || spreadView.nextInStack == index)) {
                                 if (progress < spreadView.positionMarker1) {
+                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return progress;
                                 } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
-                                    print("progress:", progress, "animatedProgress", spreadView.positionMarker1 + snappingCurve.value * 3, snappingCurve.value)
+                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return spreadView.positionMarker1 + snappingCurve.value * 3;
                                 } else {
+                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return spreadView.positionMarker2;
                                 }
                             }
-                            print("progress is", progress)
+                            print("progress is", progress, "index", zIndex, "appid", model.appId)
                             return progress;
                         }
 
@@ -324,6 +343,49 @@ Item {
 //                            }
 //                        }
                     }
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        id: sideStageDragHandle
+        color: "red"
+        anchors { top: parent.top; bottom: parent.bottom; right: parent.right; rightMargin: spreadView.sideStageWidth }
+        width: units.gu(2)
+        visible: spreadView.phase <= 0 && spreadView.sideStageVisible
+        property real progress: 0
+        property bool dragging: false
+
+        onProgressChanged: print("prigress is", progress)
+
+        MouseArea {
+            id: sideStageDragHandleMouseArea
+            anchors.fill: parent
+            property int startX
+            onPressed: {
+                startX = mouseX;
+                sideStageDragHandle.progress = 0;
+                sideStageDragHandle.dragging = true;
+                print("sideStageDragHandle pressed")
+            }
+            onMouseXChanged: {
+                sideStageDragHandle.progress = (-startX + mouseX) / spreadView.sideStageWidth
+                print("foooo", -spreadView.sideStageWidth + spreadView.sideStageWidth * spreadView.sideStageDragProgress)
+            }
+            onReleased: {
+                sideStageDragSnapAnimation.to = sideStageDragHandle.progress < 0.5 ? 0 : 1
+                sideStageDragSnapAnimation.start();
+            }
+        }
+        UbuntuNumberAnimation {
+            id: sideStageDragSnapAnimation
+            target: sideStageDragHandle
+            property: "progress"
+
+            onRunningChanged: {
+                if (!running) {
+                    sideStageDragHandle.dragging = false;
                 }
             }
         }
