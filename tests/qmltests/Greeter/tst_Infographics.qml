@@ -24,12 +24,28 @@ import Unity.Test 0.1 as UT
 Rectangle {
     width: units.gu(60)
     height: units.gu(80)
-    color: "black"
+    color: "#888a85"
 
-    ListModel {
+    Item {
         id: fakeModel
-        ListElement { display: "../../tests/qmltests/Greeter/tst_Infographics/infographics-test-01.svg" }
-        ListElement { display: "../../tests/qmltests/Greeter/tst_Infographics/infographics-test-02.svg" }
+
+        property url path: internal.paths[internal.index]
+
+        function next() {
+            if (internal.index < internal.paths.length - 1)
+                internal.index++;
+            else
+                internal.index = 0;
+        }
+
+        QtObject {
+            id: internal
+            property int index: 0
+            property var paths: ["../../qmltests/Greeter/tst_Infographics/infographics-test-01.svg",
+                                 "../../qmltests/Greeter/tst_Infographics/infographics-test-02.svg",
+                                 "../../qmltests/Greeter/tst_Infographics/infographics-test-03.svg",
+                                 "../../qmltests/Greeter/tst_Infographics/infographics-test-04.svg"]
+        }
     }
 
     Infographics {
@@ -41,17 +57,26 @@ Rectangle {
             left: parent.left
             right: parent.right
         }
+    }
 
-        onTriggered: {
-            if (index == 0)
-                index = 1;
-            else
-                index = 0;
-        }
+    SignalSpy {
+        id: triggeredSpy
+        target: infographics
+        signalName: "triggered"
     }
 
     UT.UnityTestCase {
         name: "Infographics"
         when: windowShown
+
+        property var image: findChild(infographics, "image")
+
+        function test_triggered() {
+            triggeredSpy.clear();
+            var oldImage = image.source;
+            mouseDoubleClick(infographics, infographics.width / 2, infographics.height / 2);
+            compare(triggeredSpy.count, 1);
+            verify(image.source != oldImage);
+        }
     }
 }

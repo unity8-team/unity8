@@ -94,9 +94,9 @@ Item {
     property size sourceSize: internals.loadingImage ? Qt.size(internals.loadingImage.sourceSize.width, internals.loadingImage.sourceSize.height) : Qt.size(0, 0)
 
     /*!
-      Whether to fade out the current image
+      Style of the fade effect
     */
-    property bool fadeOutCurrentImage: false
+    property string fadeStyle: "overlay"
 
     Binding {
         target: crossFadeImage
@@ -188,8 +188,9 @@ Item {
         }
     }
 
-    Item {
+    QtObject {
         id: fadeOutDummy
+        property real opacity
     }
 
     /*!
@@ -236,7 +237,7 @@ Item {
 
         Ubuntu.UbuntuNumberAnimation {
             id: currentImageFadeOut
-            target: fadeOutCurrentImage ? internals.currentImage : fadeOutDummy
+            target: fadeStyle == "parallel" ? internals.currentImage : fadeOutDummy
             property: "opacity"
             to: 0.0
             duration: crossFadeImage.fadeDuration

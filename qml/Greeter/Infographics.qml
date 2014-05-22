@@ -22,20 +22,21 @@ Item {
     id: root
 
     property var model
-    property int index: 0
 
     implicitHeight: width
 
     signal triggered()
+
+    onTriggered: model.next()
 
     CrossFadeInfographics {
         objectName: "image"
         anchors.centerIn: parent
         height: width
         width: parent.width
-        source: model.get(index).display
+        source: model.path
         fadeDuration: UbuntuAnimation.SleepyDuration
-        fadeOutCurrentImage: true
+        fadeStyle: "parallel"
 
         MouseArea {
             anchors.fill: parent

@@ -130,36 +130,23 @@ Item {
     Infographics {
         id: infographics
         objectName: "infographics"
-
-//        property string userName: greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
-
-        height: width
-//        /height: narrowMode ? parent.height : 0.75 * parent.height
-        model: InfographicsModule.InfographicList
-
-        Component.onCompleted: {
-            model.uid = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole)
-        }
-
-//        property string selectedUser
-//        property string infographicUser: AccountsService.statsWelcomeScreen ? selectedUser : ""
-//        onInfographicUserChanged: greeterContentLoader.infographicModel.username = infographicUser
-
-//        Component.onCompleted: {
-//            selectedUser = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.NameRole)
-//            greeterContentLoader.infographicModel.username = infographicUser
-//            greeterContentLoader.infographicModel.readyForDataChange()
-//        }
-
-//        Connections {
-//            target: root
-//            onSelected: infographics.selectedUser = greeterContentLoader.model.data(uid, LightDM.UserRoles.NameRole)
-//        }
-
         anchors {
             verticalCenter: parent.verticalCenter
             left: narrowMode ? root.left : loginLoader.right
             right: root.right
+        }
+        height: width
+        model: InfographicsModule.InfographicList
+
+        function updateUid() {
+            model.uid = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole)
+        }
+
+        Component.onCompleted: updateUid()
+
+        Connections {
+            target: greeterContentLoader
+            onCurrentIndexChanged: infographics.updateUid()
         }
     }
 }
