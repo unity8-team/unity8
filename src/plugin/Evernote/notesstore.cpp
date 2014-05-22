@@ -484,6 +484,14 @@ void NotesStore::findNotes(const QString &searchWords)
     EvernoteConnection::instance()->enqueue(job);
 }
 
+void NotesStore::clearSearchResults()
+{
+    foreach (Note *note, m_notes) {
+        note->setIsSearchResult(false);
+    }
+    emit dataChanged(index(0), index(m_notes.count()-1), QVector<int>() << RoleIsSearchResult);
+}
+
 void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
