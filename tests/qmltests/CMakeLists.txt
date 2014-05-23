@@ -60,7 +60,7 @@ add_qml_test(Greeter Tablet IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_D
                             ENVIRONMENT "${CMAKE_BINARY_DIR}/tests/mocks/LightDM/full")
 add_qml_test(Greeter Phone IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS}
                            ENVIRONMENT "${CMAKE_BINARY_DIR}/tests/mocks/LightDM/single")
-add_qml_test(Greeter Infographics IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS})
+add_qml_test(Greeter Infographics IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS} ${CMAKE_BINARY_DIR}/tests/mocks)
 add_qml_test(Greeter Clock IMPORT_PATHS ${CMAKE_BINARY_DIR}/plugins ${qmltest_DEFAULT_IMPORT_PATHS}
                            ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/tests/mocks/QMenuModel")
 add_qml_test(Hud Hud)

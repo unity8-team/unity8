@@ -139,7 +139,7 @@ Item {
         model: InfographicsModule.InfographicList
 
         function updateUid() {
-            model.uid = greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole)
+            model.uid = 1000//greeterContentLoader.model.data(greeterContentLoader.currentIndex, LightDM.UserRoles.UidRole)
         }
 
         Component.onCompleted: updateUid()
