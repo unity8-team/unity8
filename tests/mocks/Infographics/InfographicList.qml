@@ -18,6 +18,7 @@ pragma Singleton
 import QtQuick 2.2
 
 Item {
+    property int uid: 1000
     property url path: internal.paths[internal.index]
 
     function next() {
