@@ -44,7 +44,9 @@ SpreadDelegate {
     property bool isInSideStage: false
 
     onSelectedChanged: {
+        print("selected changed:", selected)
         if (selected) {
+            print("snappsshotting", index)
             priv.snapshot();
         }
         priv.isSelected = selected;
@@ -97,8 +99,10 @@ SpreadDelegate {
             selectedProgress = root.progress;
             selectedXTranslate = xTranslate;
             selectedAngle = angle;
-            selectedScale = scale;
-            selectedOpacity = opacity;
+            selectedScale = priv.scale;
+            selectedOpacity = priv.opacityTransform;
+            print("snapshotting at phase", spreadView.phase, negativeProgress);
+            print("snapshotted", root.zIndex, "prog:", selectedProgress, "translate:", selectedXTranslate, "angle", selectedAngle, "scale", selectedScale)
 //            selectedTopMarginProgress = topMarginProgress;
         }
 
@@ -106,9 +110,9 @@ SpreadDelegate {
         // the progress for each tile starts at 0 when it crosses the right edge, so the later a tile comes in,
         // the bigger its negativeProgress can be.
         property real negativeProgress: {
-//            if (index == 1 && spreadView.phase < 2) {
-//                return 0;
-//            }
+            if (index == spreadView.nextInStack && spreadView.phase < 2) {
+                return 0;
+            }
             return -root.zIndex * spreadView.tileDistance / spreadView.width;
         }
 
@@ -131,7 +135,7 @@ SpreadDelegate {
             }
 
             if (isSelected) {
-                print("progress:", root.progress)
+                print("progress:", root.progress, negativeProgress)
                 if (model.stage == ApplicationInfoInterface.MainStage) {
                     return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.width, root.progress)
                 } else {
@@ -197,7 +201,7 @@ SpreadDelegate {
                 return selectedScale;
             }
 
-            if (selected) {
+            if (isSelected) {
                 return linearAnimation(selectedProgress, negativeProgress, selectedScale, 1, root.progress)
             }
 
@@ -240,7 +244,7 @@ SpreadDelegate {
             if (otherSelected) {
                 return selectedAngle;
             }
-            if (selected) {
+            if (isSelected) {
                 return linearAnimation(selectedProgress, negativeProgress, selectedAngle, 0, root.progress)
             }
 
@@ -249,6 +253,7 @@ SpreadDelegate {
                     if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
                         return 0;
                     } else {
+//                        print("return angle for index", root.zIndex, linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress))
                         return linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
                     }
                 }
@@ -283,7 +288,7 @@ SpreadDelegate {
             return 1;
         }
 
-        onXTranslateChanged: print("xtrnslate changed", xTranslate)
+//        onXTranslateChanged: print("xtrnslate changed", xTranslate)
     }
 
     states: [

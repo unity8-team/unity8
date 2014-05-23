@@ -110,6 +110,7 @@ Item {
         property real snapPosition: 0.75
 
         property int selectedIndex: -1
+        onSelectedIndexChanged: print("selected index changed", selectedIndex)
 
         property bool sideStageDragging: sideStageDragHandle.dragging
         property real sideStageDragProgress: sideStageDragHandle.progress
@@ -201,6 +202,7 @@ Item {
             }
         }
         function snapTo(index) {
+            print("snapping to index", index)
             spreadView.selectedIndex = index;
 //            root.fullscreen = ApplicationManager.get(index).fullscreen;
             snapAnimation.targetContentX = 0;
@@ -222,8 +224,9 @@ Item {
             ScriptAction {
                 script: {
                     if (spreadView.selectedIndex >= 0) {
-                        ApplicationManager.focusApplication(ApplicationManager.get(spreadView.selectedIndex).appId);
+                        var newIndex = spreadView.selectedIndex;
                         spreadView.selectedIndex = -1
+                        ApplicationManager.focusApplication(ApplicationManager.get(newIndex).appId);
                         spreadView.phase = 0;
                         spreadView.contentX = 0;
                     }
@@ -298,20 +301,20 @@ Item {
                         }
 
                         animatedProgress: {
-                            print("PHASE:", spreadView.phase)
+//                            print("PHASE:", spreadView.phase)
                             if (spreadView.phase == 0 && (active || spreadView.nextInStack == index)) {
                                 if (progress < spreadView.positionMarker1) {
-                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
+//                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return progress;
                                 } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
-                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
+//                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return spreadView.positionMarker1 + snappingCurve.value * 3;
                                 } else {
-                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
+//                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return spreadView.positionMarker2;
                                 }
                             }
-                            print("progress is", progress, "index", zIndex, "appid", model.appId)
+//                            print("progress is", progress, "index", zIndex, "appid", model.appId)
                             return progress;
                         }
 
@@ -418,6 +421,14 @@ Item {
         onDraggingChanged: {
             if (dragging) {
                 attachedToView = true;
+            } else {
+                print("released on contentX", spreadView.contentX)
+                if (spreadView.contentX /spreadView.width < spreadView.positionMarker1) {
+                    print("rleased in phase 1")
+                    spreadView.snap();
+                } else if (spreadView.contentX / spreadView.width < spreadView.positionMarker3) {
+                    spreadView.snapTo(spreadView.nextInStack)
+                }
             }
         }
     }
