@@ -45,13 +45,12 @@ class RemindersAppTestCase(AutopilotTestCase):
         scenarios = [('with touch', dict(input_device_class=Touch))]
 
     local_location = os.path.dirname(os.path.dirname(os.getcwd()))
-    local_location_qml = os.path.join(local_location,
-                                      'src/app/qml/reminders.qml')
+
+    local_location_qml = os.path.join(
+        local_location, 'src/app/qml/reminders.qml')
     local_location_binary = os.path.join(local_location, 'src/app/reminders')
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
-
-    home_dir = None
 
     def get_launcher_and_type(self):
         if os.path.exists(self.local_location_binary):
@@ -67,8 +66,7 @@ class RemindersAppTestCase(AutopilotTestCase):
 
     def setUp(self):
         launcher, test_type = self.get_launcher_and_type()
-        if self.home_dir is None:
-            self.home_dir = self._patch_home(test_type)
+        self.home_dir = self._patch_home(test_type)
         self.pointing_device = Pointer(self.input_device_class.create())
         super(RemindersAppTestCase, self).setUp()
 
@@ -90,6 +88,7 @@ class RemindersAppTestCase(AutopilotTestCase):
         temp_dir_fixture = fixtures.TempDir()
         self.useFixture(temp_dir_fixture)
         temp_dir = temp_dir_fixture.path
+        temp_xdg_config_home = os.path.join(temp_dir, '.config')
 
         #If running under xvfb, as jenkins does,
         #xsession will fail to start without xauthority file
@@ -100,21 +99,25 @@ class RemindersAppTestCase(AutopilotTestCase):
         #click requires using initctl env (upstart), but the desktop can set
         #an environment variable instead
         if test_type == 'click':
-            self.useFixture(toolkit_fixtures.InitctlEnvironmentVariable(
-                            HOME=temp_dir))
+            self.useFixture(
+                toolkit_fixtures.InitctlEnvironmentVariable(
+                    HOME=temp_dir, XDG_CONFIG_HOME=temp_xdg_config_home))
         else:
-            self.useFixture(fixtures.EnvironmentVariable('HOME',
-                                                         newvalue=temp_dir))
+            self.useFixture(
+                fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
+            self.useFixture(
+                fixtures.EnvironmentVariable(
+                    'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
 
-        logger.debug("Patched home to fake home directory " + temp_dir)
+        logger.debug('Patched home to fake home directory ' + temp_dir)
 
         return temp_dir
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
-        self.useFixture(fixtures.EnvironmentVariable('QML2_IMPORT_PATH',
-                        newvalue=os.path.join(self.local_location,
-                                              'src/plugin')))
+        self.useFixture(fixtures.EnvironmentVariable(
+            'QML2_IMPORT_PATH',
+            newvalue=os.path.join(self.local_location, 'src/plugin')))
         return self.launch_test_application(
             self.local_location_binary,
             '-q', self.local_location_qml,

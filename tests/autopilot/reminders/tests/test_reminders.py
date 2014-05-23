@@ -19,11 +19,11 @@
 from __future__ import absolute_import
 
 import logging
+import uuid
 
 from autopilot import platform
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
-from testtools import ExpectedException
 
 import reminders
 from reminders import credentials, fixture_setup, tests
@@ -62,12 +62,10 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def setUp(self):
-        # We need to change the home dir before adding the account, otherwise
-        # the account will not be found when the app is opened.
-        _, test_type = self.get_launcher_and_type()
-        self.home_dir = self._patch_home(test_type)
-        self.add_evernote_account()
         super(RemindersTestCaseWithAccount, self).setUp()
+        no_account_dialog = self.app.main_view.no_account_dialog
+        self.add_evernote_account()
+        no_account_dialog.wait_until_destroyed()
 
     def add_evernote_account(self):
         account_manager = credentials.AccountManager()
@@ -77,8 +75,24 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         account = account_manager.add_evernote_account(
             'dummy', 'dummy', oauth_token)
         self.addCleanup(account_manager.delete_account, account)
+        del account_manager._manager
+        del account_manager
 
-    def test_open_application_with_account(self):
-        """Test that the No account dialog is not visible."""
-        with ExpectedException(reminders.RemindersAppException):
-            self.app.main_view.no_account_dialog
+    def test_add_notebook_must_append_it_to_list(self):
+        test_notebook_title = 'Test notebook {}'.format(uuid.uuid1())
+
+        notebooks_page = self.app.open_notebooks()
+        # FIXME delete the added notebook. Otherwise, the test account will
+        # fill up. See http://pad.lv/1318749 --elopio - 2014-05-12
+        notebooks_page.add_notebook(test_notebook_title)
+
+        last_notebook = notebooks_page.get_notebooks()[-1]
+        # TODO there's a bug with the last updated value: http://pad.lv/1318751
+        # so we can't check the full tuple. Uncomment this as soon as the bug
+        # is fixed. --elopio - 2014-05-12
+        #self.assertEqual(
+        #    last_notebook,
+        #    (test_notebook_title, 'Last edited today', 'Private', 0))
+        self.assertEqual(last_notebook[0], test_notebook_title)
+        self.assertEqual(last_notebook[2], 'Private')
+        self.assertEqual(last_notebook[3], 0)
