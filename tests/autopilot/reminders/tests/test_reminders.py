@@ -23,10 +23,11 @@ import uuid
 
 from autopilot import platform
 from autopilot.matchers import Eventually
+from evernote.edam.error import ttypes as evernote_errors
 from testtools.matchers import Equals
 
 import reminders
-from reminders import credentials, fixture_setup, tests
+from reminders import credentials, evernote, fixture_setup, tests
 
 
 logger = logging.getLogger(__name__)
@@ -66,24 +67,29 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         no_account_dialog = self.app.main_view.no_account_dialog
         self.add_evernote_account()
         no_account_dialog.wait_until_destroyed()
+        self.evernote_client = evernote.SandboxEvernoteClient()
 
     def add_evernote_account(self):
         account_manager = credentials.AccountManager()
-        oauth_token = (
-            'S=s1:U=8e6bf:E=14d08e375ff:C=145b1324a03:P=1cd:A=en-devtoken:'
-            'V=2:H=79b946c32b4515ee52b387f7b68baa69')
         account = account_manager.add_evernote_account(
-            'dummy', 'dummy', oauth_token)
+            'dummy', 'dummy', evernote.TEST_OAUTH_TOKEN)
         self.addCleanup(account_manager.delete_account, account)
         del account_manager._manager
         del account_manager
 
+    def expunge_test_notebook(self, notebook_name):
+        try:
+            self.evernote_client.expunge_notebook_by_name(notebook_name)
+        except evernote_errors.EDAMNotFoundException:
+            # The notebook was already deleted or not successfully created.
+            pass
+
     def test_add_notebook_must_append_it_to_list(self):
+        """Test that an added notebook will be available for selection."""
         test_notebook_title = 'Test notebook {}'.format(uuid.uuid1())
+        self.addCleanup(self.expunge_test_notebook, test_notebook_title)
 
         notebooks_page = self.app.open_notebooks()
-        # FIXME delete the added notebook. Otherwise, the test account will
-        # fill up. See http://pad.lv/1318749 --elopio - 2014-05-12
         notebooks_page.add_notebook(test_notebook_title)
 
         last_notebook = notebooks_page.get_notebooks()[-1]
@@ -96,3 +102,14 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         self.assertEqual(last_notebook[0], test_notebook_title)
         self.assertEqual(last_notebook[2], 'Private')
         self.assertEqual(last_notebook[3], 0)
+
+    def test_add_notebook_must_create_it_in_server(self):
+        """Test that an added notebook will be created on the server."""
+        test_notebook_title = 'Test notebook {}'.format(uuid.uuid1())
+        self.addCleanup(self.expunge_test_notebook, test_notebook_title)
+
+        notebooks_page = self.app.open_notebooks()
+        notebooks_page.add_notebook(test_notebook_title)
+
+        # An exception will be raised if the notebook is note found.
+        self.evernote_client.get_notebook_by_name(test_notebook_title)
