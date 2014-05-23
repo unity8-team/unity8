@@ -95,6 +95,7 @@ public:
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);
     Q_INVOKABLE void findNotes(const QString &searchWords);
+    Q_INVOKABLE void clearSearchResults();
 
     QList<Notebook*> notebooks() const;
     Q_INVOKABLE Notebook* notebook(const QString &guid);
