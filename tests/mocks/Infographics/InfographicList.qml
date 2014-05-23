@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+pragma Singleton
+import QtQuick 2.2
 
 Item {
     property url path: internal.paths[internal.index]
@@ -29,9 +30,9 @@ Item {
     QtObject {
         id: internal
         property int index: 0
-        property var paths: ["../../qmltests/Greeter/tst_Infographics/infographics-test-01.svg",
-                             "../../qmltests/Greeter/tst_Infographics/infographics-test-02.svg",
-                             "../../qmltests/Greeter/tst_Infographics/infographics-test-03.svg",
-                             "../../qmltests/Greeter/tst_Infographics/infographics-test-04.svg"]
+        property var paths: ["../../../../tests/data/infographics/infographics-test-01.svg",
+                             "../../../../tests/data/infographics/infographics-test-02.svg",
+                             "../../../../tests/data/infographics/infographics-test-03.svg",
+                             "../../../../tests/data/infographics/infographics-test-04.svg"]
     }
 }

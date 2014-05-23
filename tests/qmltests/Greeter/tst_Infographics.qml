@@ -27,28 +27,6 @@ Rectangle {
     height: units.gu(80)
     color: "#888a85"
 
-    Item {
-        id: fakeModel
-
-        property url path: internal.paths[internal.index]
-
-        function next() {
-            if (internal.index < internal.paths.length - 1)
-                internal.index++;
-            else
-                internal.index = 0;
-        }
-
-        QtObject {
-            id: internal
-            property int index: 0
-            property var paths: ["../../qmltests/Greeter/tst_Infographics/infographics-test-01.svg",
-                                 "../../qmltests/Greeter/tst_Infographics/infographics-test-02.svg",
-                                 "../../qmltests/Greeter/tst_Infographics/infographics-test-03.svg",
-                                 "../../qmltests/Greeter/tst_Infographics/infographics-test-04.svg"]
-        }
-    }
-
     Infographics {
         id: infographics
         model: InfographicsModule.InfographicList
