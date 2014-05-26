@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1074"
+   height="1074"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="infographics-test-01.svg">
+  <metadata
+     id="metadata47">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs45" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1301"
+     inkscape:window-height="744"
+     id="namedview43"
+     showgrid="false"
+     inkscape:zoom="1"
+     inkscape:cx="537"
+     inkscape:cy="537"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <circle
+     id="day-present-3"
+     class="day-present"
+     stroke="none"
+     opacity="0.3"
+     fill="#ff9900"
+     cx="733.754"
+     cy="253.503"
+     r="191.667"
+     style="fill:#eeff00;fill-opacity:1" />
+  <circle
+     id="day-present-4"
+     class="day-present"
+     stroke="none"
+     opacity="0.3"
+     fill="#ff9900"
+     cx="786.72"
+     cy="298.973"
+     r="127.778"
+     style="fill:#eeff00;fill-opacity:1" />
+  <circle
+     id="day-present-5"
+     class="day-present"
+     stroke="none"
+     opacity="0.3"
+     fill="#ff9900"
+     cx="829.449"
+     cy="354.174"
+     r="0" />
+  <circle
+     id="day-present-6"
+     class="day-present"
+     stroke="none"
+     opacity="0.3"
+     fill="#ff9900"
+     cx="860.191"
+     cy="416.846"
+     r="71.4052"
+     style="fill:#eeff00;fill-opacity:1" />
+  <circle
+     id="day-present-7"
+     class="day-present"
+     stroke="none"
+     opacity="0.3"
+     fill="#ff9900"
+     cx="877.688"
+     cy="484.424"
+     r="33.8235"
+     style="fill:#eeff00;fill-opacity:1" />
+  <image
+     x="193"
+     y="192"
+     width="689px"
+     height="691px"
+     xlink:href="/usr/share/unity8/Greeter/graphics/infographic_circle_back.png"
+     id="image9" />
+  <text
+     id="label-line-0"
+     class="label"
+     x="536.66699"
+     y="521"
+     font-size="40"
+     style="font-size:40px;text-anchor:middle;opacity:0.6;fill:#ffffff;font-family:Ubuntu">7 foos</text>
+  <circle
+     id="day-alt-1"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="536.667"
+     cy="260.667"
+     r="8" />
+  <circle
+     id="day-alt-2"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="592.225"
+     cy="266.316"
+     r="8" />
+  <circle
+     id="day-alt-3"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="645.509"
+     cy="283.034"
+     r="8" />
+  <circle
+     id="day-alt-4"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="694.337"
+     cy="310.136"
+     r="8" />
+  <circle
+     id="day-alt-5"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="736.709"
+     cy="346.512"
+     r="8" />
+  <circle
+     id="day-alt-6"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="770.892"
+     cy="390.673"
+     r="8" />
+  <circle
+     id="day-alt-7"
+     class="day-alt-past"
+     stroke="none"
+     opacity="0.4"
+     fill="#ffffff"
+     cx="795.486"
+     cy="440.81"
+     r="8" />
+  <image
+     id="day-alt-dot-8"
+     class="day-alt-current"
+     opacity="0.4"
+     x="789.484"
+     y="474.873"
+     width="40px"
+     height="40px"
+     transform="rotate(81.2903 809.484 494.873)"
+     xlink:href="/usr/share/unity8/Greeter/graphics/dot_pointer.png" />
+  <circle
+     id="day-alt-9"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="812.312"
+     cy="550.646"
+     r="7" />
+  <circle
+     id="day-alt-10"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="803.856"
+     cy="605.847"
+     r="7" />
+  <circle
+     id="day-alt-11"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="784.461"
+     cy="658.215"
+     r="7" />
+  <circle
+     id="day-alt-12"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="754.921"
+     cy="705.608"
+     r="7" />
+  <circle
+     id="day-alt-13"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="716.445"
+     cy="746.084"
+     r="7" />
+  <circle
+     id="day-alt-14"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="670.61"
+     cy="777.986"
+     r="7" />
+  <circle
+     id="day-alt-15"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="619.291"
+     cy="800.009"
+     r="7" />
+  <circle
+     id="day-alt-16"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="564.589"
+     cy="811.251"
+     r="7" />
+  <circle
+     id="day-alt-17"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="508.744"
+     cy="811.251"
+     r="7" />
+  <circle
+     id="day-alt-18"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="454.042"
+     cy="800.009"
+     r="7" />
+  <circle
+     id="day-alt-19"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="402.723"
+     cy="777.986"
+     r="7" />
+  <circle
+     id="day-alt-20"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="356.888"
+     cy="746.084"
+     r="7" />
+  <circle
+     id="day-alt-21"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="318.413"
+     cy="705.608"
+     r="7" />
+  <circle
+     id="day-alt-22"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="288.873"
+     cy="658.215"
+     r="7" />
+  <circle
+     id="day-alt-23"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="269.477"
+     cy="605.847"
+     r="7" />
+  <circle
+     id="day-alt-24"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="261.021"
+     cy="550.646"
+     r="7" />
+  <circle
+     id="day-alt-25"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="263.849"
+     cy="494.873"
+     r="7" />
+  <circle
+     id="day-alt-26"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="277.847"
+     cy="440.81"
+     r="7" />
+  <circle
+     id="day-alt-27"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="302.441"
+     cy="390.673"
+     r="7" />
+  <circle
+     id="day-alt-28"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="336.624"
+     cy="346.512"
+     r="7" />
+  <circle
+     id="day-alt-29"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="378.997"
+     cy="310.136"
+     r="7" />
+  <circle
+     id="day-alt-30"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="427.824"
+     cy="283.034"
+     r="7" />
+  <circle
+     id="day-alt-31"
+     class="day-alt-future"
+     stroke="#ffffff"
+     stroke-width="1"
+     opacity="0.4"
+     fill="none"
+     cx="481.108"
+     cy="266.316"
+     r="7" />
+</svg>

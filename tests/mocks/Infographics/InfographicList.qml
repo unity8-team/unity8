@@ -19,7 +19,7 @@ import QtQuick 2.2
 
 Item {
     property int uid: 1000
-    property url path: internal.paths[internal.index]
+    property url path: internal.paths[uid % 4][internal.index]
 
     function next() {
         if (internal.index < internal.paths.length - 1)
@@ -31,9 +31,14 @@ Item {
     QtObject {
         id: internal
         property int index: 0
-        property var paths: ["../../../../tests/data/infographics/infographics-test-01.svg",
-                             "../../../../tests/data/infographics/infographics-test-02.svg",
-                             "../../../../tests/data/infographics/infographics-test-03.svg",
-                             "../../../../tests/data/infographics/infographics-test-04.svg"]
+        property var paths: [
+            ["../../../../tests/data/infographics/infographics-test-01.svg",
+             "../../../../tests/data/infographics/infographics-test-02.svg"],
+            ["../../../../tests/data/infographics/infographics-test-03.svg",
+             "../../../../tests/data/infographics/infographics-test-04.svg"],
+            ["../../../../tests/data/infographics/infographics-test-05.svg",
+             "../../../../tests/data/infographics/infographics-test-06.svg"],
+            ["../../../../tests/data/infographics/infographics-test-07.svg"]
+        ]
     }
 }
