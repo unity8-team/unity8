@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Settings.Components 0.1 as USC
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
 ListItem.Empty {
@@ -28,8 +29,8 @@ ListItem.Empty {
     property alias live: slider.live
     property double value: 0.0
 
-    property alias minIcon: leftButton.iconSource
-    property alias maxIcon: rightButton.iconSource
+    property alias minIcon: leftButton.source
+    property alias maxIcon: rightButton.source
 
     signal updated(real value)
 
@@ -125,17 +126,21 @@ ListItem.Empty {
             }
             height: slider.height
 
-            Button {
+            USC.IconVisual {
                 id: leftButton
                 objectName: "leftButton"
-                visible: iconSource !== ""
+                visible: status === Image.Ready
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: "transparent"
+                color: Theme.palette.selected.backgroundText
 
-                onClicked: slider.value = slider.minimumValue
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: slider.value = slider.minimumValue
+                }
+
             }
 
             Slider {
@@ -177,17 +182,20 @@ ListItem.Empty {
                 }
             }
 
-            Button {
+            USC.IconVisual {
                 id: rightButton
                 objectName: "rightButton"
-                visible: iconSource !== ""
+                visible: status === Image.Ready
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: "transparent"
+                color: Theme.palette.selected.backgroundText
 
-                onClicked: slider.value =  slider.maximumValue
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: slider.value =  slider.maximumValue
+                }
             }
         }
     }
