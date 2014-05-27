@@ -94,16 +94,6 @@ Item {
             tryCompare(teaseSpy, "count", 1)
         }
 
-        function test_statsWelcomeScreen() {
-            // Test logic in greeter that turns statsWelcomeScreen setting into infographic changes
-            compare(AccountsService.statsWelcomeScreen, true)
-            tryCompare(LightDM.Infographic, "username", "single")
-            AccountsService.statsWelcomeScreen = false
-            tryCompare(LightDM.Infographic, "username", "")
-            AccountsService.statsWelcomeScreen = true
-            tryCompare(LightDM.Infographic, "username", "single")
-        }
-
         function test_background_data() {
             return [
                 {tag: "set", accounts: Qt.resolvedUrl("../../data/unity/backgrounds/blue.png"), expected: "blue.png"},
