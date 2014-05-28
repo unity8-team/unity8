@@ -77,12 +77,19 @@ Item {
     Connections {
         target: ApplicationManager
         onFocusRequested: {
-            if (spreadView.visible) {
+            printStack()
+            if (spreadView.interactive) {
                 spreadView.snapTo(priv.indexOf(appId));
             } else {
-                priv.switchToApp(appId);
+//                priv.switchToApp(appId);
                 ApplicationManager.focusApplication(appId)
             }
+        }
+    }
+
+    function printStack() {
+        for (var i = 0; i < ApplicationManager.count; i++) {
+            print("AppMan item", i, ":", ApplicationManager.get(i).appId)
         }
     }
 
@@ -90,6 +97,7 @@ Item {
         id: spreadView
         anchors.fill: parent
         contentWidth: spreadRow.width
+        interactive: phase == 2
 
         property int tileDistance: units.gu(20)
         property int sideStageWidth: units.gu(40)
