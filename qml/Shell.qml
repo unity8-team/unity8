@@ -281,18 +281,18 @@ FocusScope {
         Component {
             id: logoutDialog
             Dialog {
-                id: dialogue1
+                id: dialogueLogout
                 title: "Logout"
                 text: "Are you sure that you want to logout?"
                 Button {
                     text: "Cancel"
-                    onClicked: PopupUtils.close(dialogue1)
+                    onClicked: PopupUtils.close(dialogueLogout)
                 }
                 Button {
                     text: "Yes"
                     onClicked: {
                         DBusUnitySessionService.Logout();
-                        PopupUtils.close(dialogue1);
+                        PopupUtils.close(dialogueLogout);
                     }
                 }
             }
