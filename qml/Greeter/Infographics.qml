@@ -23,8 +23,6 @@ Item {
 
     property var model
 
-    implicitHeight: width
-
     signal triggered()
 
     onTriggered: model.next()
@@ -32,8 +30,8 @@ Item {
     CrossFadeInfographics {
         objectName: "image"
         anchors.centerIn: parent
-        height: width
-        width: parent.width
+        height: parent.height
+        width: height
         source: model.path
         fadeDuration: UbuntuAnimation.SleepyDuration
         fadeStyle: "parallel"

@@ -135,7 +135,7 @@ Item {
             left: narrowMode ? root.left : loginLoader.right
             right: root.right
         }
-        height: width
+        height: narrowMode ? width : Math.min(0.75 * width, loginLoader.height * 0.7)
         model: InfographicsModule.InfographicList
 
         function updateUid() {
