@@ -273,17 +273,12 @@ SpreadDelegate {
         }
 
         property real opacityTransform: {
-            if (otherSelected) {
-//                if (active && root.progress == 0) {
-//                    fadeBackInAnimation.start()
-//                }
+            if (otherSelected && spreadView.phase == 2) {
                 return linearAnimation(selectedProgress, negativeProgress, selectedOpacity, 0, root.progress)
             }
 
             return 1;
         }
-
-//        onXTranslateChanged: print("xtrnslate changed", xTranslate)
     }
 
     states: [
