@@ -361,14 +361,22 @@ Item {
 
     Rectangle {
         id: sideStageDragHandle
-        color: "red"
+        color: "transparent"
         anchors { top: parent.top; bottom: parent.bottom; right: parent.right; rightMargin: spreadView.sideStageWidth }
         width: units.gu(2)
-        visible: spreadView.phase <= 0 && spreadView.sideStageVisible
+        opacity: spreadView.phase <= 0 && spreadView.sideStageVisible ? 1 : 0
         property real progress: 0
         property bool dragging: false
 
-        onProgressChanged: print("prigress is", progress)
+        Behavior on opacity { UbuntuNumberAnimation {} }
+
+        Image {
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: parent.progress * spreadView.sideStageWidth
+            width: parent.width
+            height: parent.height
+            source: "graphics/sidestage_handle@20.png"
+        }
 
         MouseArea {
             id: sideStageDragHandleMouseArea
@@ -378,7 +386,6 @@ Item {
                 startX = mouseX;
                 sideStageDragHandle.progress = 0;
                 sideStageDragHandle.dragging = true;
-                print("sideStageDragHandle pressed")
             }
             onMouseXChanged: {
                 sideStageDragHandle.progress = (-startX + mouseX) / spreadView.sideStageWidth
@@ -407,9 +414,10 @@ Item {
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
         width: root.dragAreaWidth
 
-        Rectangle { anchors.fill: parent; color: "#4400FF00"}
+//        Rectangle { anchors.fill: parent; color: "#4400FF00"}
 
         property bool attachedToView: false
+        property var gesturePoints: new Array()
 
         onTouchXChanged: {
             if (!dragging) {
@@ -424,18 +432,46 @@ Item {
                     spreadView.snap();
                 }
             }
+            gesturePoints.push(touchX);
+        }
+
+        onStatusChanged: {
+            if (status == DirectionalDragArea.Recognized) {
+                attachedToView = true;
+            }
         }
 
         onDraggingChanged: {
             if (dragging) {
-                attachedToView = true;
-            } else {
-                print("released on contentX", spreadView.contentX)
-                if (spreadView.contentX /spreadView.width < spreadView.positionMarker1) {
-                    print("rleased in phase 1")
+                // Gesture recognized. Start recording this gesture
+                gesturePoints = [];
+                return;
+            }
+
+            // Ok. The user released. Find out if it was a one-way movement.
+            var oneWayFlick = true;
+            var smallestX = spreadDragArea.width;
+            for (var i = 0; i < gesturePoints.length; i++) {
+                if (gesturePoints[i] >= smallestX) {
+                    oneWayFlick = false;
+                    break;
+                }
+                smallestX = gesturePoints[i];
+            }
+            gesturePoints = [];
+
+            if (oneWayFlick && spreadView.contentX > units.gu(2) &&
+                    spreadView.contentX < spreadView.positionMarker1 * spreadView.width) {
+                // If it was a short one-way movement, do the Alt+Tab switch
+                // no matter if we didn't cross positionMarker1 yet.
+                spreadView.snapTo(spreadView.nextInStack);
+            } else if (!dragging && attachedToView) {
+                if (spreadView.contentX / spreadView.width < spreadView.positionMarker1) {
                     spreadView.snap();
-                } else if (spreadView.contentX / spreadView.width < spreadView.positionMarker3) {
-                    spreadView.snapTo(spreadView.nextInStack)
+                } else {
+                    // otherwise snap to the closest snap position we can find
+                    // (might be back to start, to app 1 or to spread)
+                    spreadView.snapTo(spreadView.nextInStack);
                 }
             }
         }
