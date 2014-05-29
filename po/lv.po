@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-05-19 20:13+0000\n"
+"PO-Revision-Date: 2014-05-28 14:36+0000\n"
 "Last-Translator: Jānis-Marks Gailis <jeanmarc.gailis@gmail.com>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-22 06:49+0000\n"
+"X-Launchpad-Export-Date: 2014-05-29 05:49+0000\n"
 "X-Generator: Launchpad (build 17017)\n"
 
 #: ../src/app/qml/reminders.qml:196
@@ -45,7 +45,7 @@ msgstr "Atvert kontu iestatījumi"
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
 msgid "Last edited %1"
-msgstr ""
+msgstr "Pēdējo reizi rediģēts %1"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
@@ -222,7 +222,7 @@ msgstr "pirms divām nēdēļam"
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "no %1 %2"
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
