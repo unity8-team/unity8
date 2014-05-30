@@ -72,6 +72,35 @@ Item {
             }
             return -1;
         }
+
+        function evaluateOneWayFlick(gesturePoints) {
+            // Need to have at least 3 points to recognize it as a flick
+            if (gesturePoints.length < 3) {
+                print("not enough points...")
+                return false;
+            }
+            // Need to have a movement of at least 2 grid units to recognize it as a flick
+            if (Math.abs(gesturePoints[gesturePoints.length - 1] - gesturePoints[0]) < units.gu(2)) {
+                print("not moved far enough")
+                return false;
+            }
+
+            var oneWayFlick = true;
+            var smallestX = gesturePoints[0];
+            var leftWards = gesturePoints[1] < gesturePoints[0];
+            print("is leftwards", leftWards)
+            for (var i = 1; i < gesturePoints.length; i++) {
+                print("point is", gesturePoints[i])
+                if ((leftWards && gesturePoints[i] >= smallestX)
+                        || (!leftWards && gesturePoints[i] <= smallestX)) {
+                    print("found jitter", leftWards, gesturePoints[i], smallestX)
+                    oneWayFlick = false;
+                    break;
+                }
+                smallestX = gesturePoints[i];
+            }
+            return oneWayFlick;
+        }
     }
 
     Connections {
@@ -386,25 +415,27 @@ Item {
             height: parent.height
             source: "graphics/sidestage_handle@20.png"
             Behavior on width { UbuntuNumberAnimation {} }
-
-            onWidthChanged: print("width is:", width, parent.width, width )
         }
 
         MouseArea {
             id: sideStageDragHandleMouseArea
             anchors.fill: parent
             property int startX
+            property var gesturePoints: new Array()
             onPressed: {
+                gesturePoints = [];
                 startX = mouseX;
                 sideStageDragHandle.progress = 0;
                 sideStageDragHandle.dragging = true;
             }
             onMouseXChanged: {
                 sideStageDragHandle.progress = Math.max(0, (-startX + mouseX) / spreadView.sideStageWidth)
-                print("foooo", -spreadView.sideStageWidth + spreadView.sideStageWidth * spreadView.sideStageDragProgress)
+                gesturePoints.push(mouseX);
             }
             onReleased: {
-                sideStageDragSnapAnimation.to = sideStageDragHandle.progress < 0.5 ? 0 : 1
+                var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
+                gesturePoints = [];
+                sideStageDragSnapAnimation.to = sideStageDragHandle.progress > 0.5 || oneWayFlick ? 1 : 0
                 sideStageDragSnapAnimation.start();
             }
         }
@@ -461,19 +492,10 @@ Item {
             }
 
             // Ok. The user released. Find out if it was a one-way movement.
-            var oneWayFlick = true;
-            var smallestX = spreadDragArea.width;
-            for (var i = 0; i < gesturePoints.length; i++) {
-                if (gesturePoints[i] >= smallestX) {
-                    oneWayFlick = false;
-                    break;
-                }
-                smallestX = gesturePoints[i];
-            }
+            var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
             gesturePoints = [];
 
-            if (oneWayFlick && spreadView.contentX > units.gu(2) &&
-                    spreadView.contentX < spreadView.positionMarker1 * spreadView.width) {
+            if (oneWayFlick && spreadView.contentX < spreadView.positionMarker1 * spreadView.width) {
                 // If it was a short one-way movement, do the Alt+Tab switch
                 // no matter if we didn't cross positionMarker1 yet.
                 spreadView.snapTo(spreadView.nextInStack);
