@@ -370,6 +370,15 @@ Item {
 
         Behavior on opacity { UbuntuNumberAnimation {} }
 
+        Connections {
+            target: spreadView
+            onSideStageVisibleChanged: {
+                if (spreadView.sideStageVisible) {
+                    sideStageDragHandle.progress = 0;
+                }
+            }
+        }
+
         Image {
             anchors.centerIn: parent
             anchors.horizontalCenterOffset: parent.progress * spreadView.sideStageWidth
