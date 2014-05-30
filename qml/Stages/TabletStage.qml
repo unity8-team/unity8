@@ -381,10 +381,13 @@ Item {
 
         Image {
             anchors.centerIn: parent
-            anchors.horizontalCenterOffset: parent.progress * spreadView.sideStageWidth
-            width: parent.width
+            anchors.horizontalCenterOffset: parent.progress * spreadView.sideStageWidth - (width - parent.width) / 2
+            width: sideStageDragHandleMouseArea.pressed ? parent.width * 2 : parent.width
             height: parent.height
             source: "graphics/sidestage_handle@20.png"
+            Behavior on width { UbuntuNumberAnimation {} }
+
+            onWidthChanged: print("width is:", width, parent.width, width )
         }
 
         MouseArea {
@@ -397,7 +400,7 @@ Item {
                 sideStageDragHandle.dragging = true;
             }
             onMouseXChanged: {
-                sideStageDragHandle.progress = (-startX + mouseX) / spreadView.sideStageWidth
+                sideStageDragHandle.progress = Math.max(0, (-startX + mouseX) / spreadView.sideStageWidth)
                 print("foooo", -spreadView.sideStageWidth + spreadView.sideStageWidth * spreadView.sideStageDragProgress)
             }
             onReleased: {
