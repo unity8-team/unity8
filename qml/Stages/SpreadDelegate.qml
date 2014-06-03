@@ -25,6 +25,7 @@ Item {
     signal clicked()
 
     property real topMarginProgress
+    property bool interactive: false
 
     QtObject {
         id: priv
@@ -51,6 +52,7 @@ Item {
     }
     MouseArea {
         anchors.fill: appImage
+        enabled: !root.interactive
         onClicked: root.clicked()
     }
 }
