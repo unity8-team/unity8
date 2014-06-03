@@ -144,7 +144,9 @@ SpreadDelegate {
 
             if (active) {
                 newTranslate -= root.width
-                if (spreadView.phase == 0 && priv.movedActive && model.stage == ApplicationInfoInterface.MainStage) {
+                // Only do the hide animation for active apps in the mainstage, and not if we only drag the ss in
+                if (spreadView.phase == 0 && priv.movedActive && model.stage === ApplicationInfoInterface.MainStage &&
+                        ApplicationManager.get(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage) {
                     newTranslate += linearAnimation(0, spreadView.positionMarker2, 0, -units.gu(4), root.animatedProgress)
                 }
             }
@@ -254,11 +256,11 @@ SpreadDelegate {
                     if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
                         return 0;
                     } else {
-//                        print("return angle for index", root.zIndex, linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress))
                         return linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
                     }
                 }
-                if (movedActive) {
+                if (movedActive &&
+                        (ApplicationManager.get(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage || model.stage == ApplicationInfoInterface.SideStage)) {
                     return linearAnimation(0, spreadView.positionMarker2, 0, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
                 }
             }
