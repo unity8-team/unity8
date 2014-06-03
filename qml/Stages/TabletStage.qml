@@ -307,66 +307,59 @@ Item {
                 id: spreadRepeater
                 model: ApplicationManager
 
-                delegate: Rectangle {
+                delegate: TransformedTabletSpreadDelegate {
+                    id: spreadTile
                     height: spreadView.height
-                    width: spreadView.tileDistance
-                    color: "#44FF0000"
+                    width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
                     x: spreadView.width
                     z: spreadView.indexToZIndex(index)
 
-                    TransformedTabletSpreadDelegate {
-                        id: spreadTile
-                        height: spreadView.height
-                        width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
-//                        opacity: .3
+                    onWidthChanged: print("width changed!", width)
 
-                        onWidthChanged: print("width changed!", width)
+                    active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
+                    zIndex: z
+                    selected: spreadView.selectedIndex == index
+                    otherSelected: spreadView.selectedIndex >= 0 && !selected
+                    isInSideStage: priv.sideStageAppId == model.appId
+                    interactive: !spreadView.interactive
 
-                        active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
-                        zIndex: parent.z
-                        selected: spreadView.selectedIndex == index
-                        otherSelected: spreadView.selectedIndex >= 0 && !selected
-                        isInSideStage: priv.sideStageAppId == model.appId
-                        interactive: !spreadView.interactive
-
-                        progress: {
-                            var tileProgress = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
-                            // Some tiles (nextInStack, active) need to move directly from the beginning, normalize progress to immediately start at 0
-                            if ((index == spreadView.nextInStack && spreadView.phase < 2) || (active && spreadView.phase < 1)) {
-                                tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
-                            }
-                            return tileProgress;
+                    progress: {
+                        var tileProgress = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
+                        // Some tiles (nextInStack, active) need to move directly from the beginning, normalize progress to immediately start at 0
+                        if ((index == spreadView.nextInStack && spreadView.phase < 2) || (active && spreadView.phase < 1)) {
+                            tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
                         }
+                        return tileProgress;
+                    }
 
-                        animatedProgress: {
-                            if (spreadView.phase == 0 && (spreadTile.active || spreadView.nextInStack == index)) {
-                                if (progress < spreadView.positionMarker1) {
-                                    return progress;
-                                } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
-                                    return spreadView.positionMarker1 + snappingCurve.value * 3;
-                                } else {
-                                    return spreadView.positionMarker2;
-                                }
-                            }
-                            return progress;
-                        }
-
-                        onClicked: {
-                            if (spreadView.phase == 2) {
-                                if (ApplicationManager.focusedApplicationId == ApplicationManager.get(index).appId) {
-                                    spreadView.snapTo(index);
-                                } else {
-                                    ApplicationManager.requestFocusApplication(ApplicationManager.get(index).appId);
-                                }
+                    animatedProgress: {
+                        if (spreadView.phase == 0 && (spreadTile.active || spreadView.nextInStack == index)) {
+                            if (progress < spreadView.positionMarker1) {
+                                return progress;
+                            } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
+                                return spreadView.positionMarker1 + snappingCurve.value * 3;
+                            } else {
+                                return spreadView.positionMarker2;
                             }
                         }
+                        return progress;
+                    }
 
-                        EasingCurve {
-                            id: snappingCurve
-                            type: EasingCurve.Linear
-                            period: (spreadView.positionMarker2 - spreadView.positionMarker1) / 3
-                            progress: spreadTile.progress - spreadView.positionMarker1
+                    onClicked: {
+                        if (spreadView.phase == 2) {
+                            if (ApplicationManager.focusedApplicationId == ApplicationManager.get(index).appId) {
+                                spreadView.snapTo(index);
+                            } else {
+                                ApplicationManager.requestFocusApplication(ApplicationManager.get(index).appId);
+                            }
                         }
+                    }
+
+                    EasingCurve {
+                        id: snappingCurve
+                        type: EasingCurve.Linear
+                        period: (spreadView.positionMarker2 - spreadView.positionMarker1) / 3
+                        progress: spreadTile.progress - spreadView.positionMarker1
                     }
                 }
             }
