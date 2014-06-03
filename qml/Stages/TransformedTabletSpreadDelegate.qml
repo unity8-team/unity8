@@ -144,8 +144,7 @@ SpreadDelegate {
 
             if (active) {
                 newTranslate -= root.width
-//                print("nextZ", spreadView.nextZInStack, "this z", root.zIndex, index, root.animatedProgress)
-                if (spreadView.phase == 0 && priv.movedActive) {
+                if (spreadView.phase == 0 && priv.movedActive && model.stage == ApplicationInfoInterface.MainStage) {
                     newTranslate += linearAnimation(0, spreadView.positionMarker2, 0, -units.gu(4), root.animatedProgress)
                 }
             }
@@ -182,7 +181,7 @@ SpreadDelegate {
                 } else if (root.active) {
                     var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2)
                     var endProgress = spreadView.positionMarker4 - (zIndex * spreadView.tileDistance / spreadView.width)
-                    var startTranslate = -root.width + (priv.movedActive ? -units.gu(4) : 0)
+                    var startTranslate = -root.width + (priv.movedActive && model.stage == ApplicationInfoInterface.MainStage ? -units.gu(4) : 0)
                     newTranslate = linearAnimation(startProgress, endProgress, startTranslate, priv.phase2StartTranslate, root.progress);
                 } else {
                     var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2)
@@ -259,6 +258,9 @@ SpreadDelegate {
                         return linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
                     }
                 }
+                if (movedActive) {
+                    return linearAnimation(0, spreadView.positionMarker2, 0, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress)
+                }
             }
             if (spreadView.phase == 1) {
                 if (nextInStack) {
@@ -270,7 +272,8 @@ SpreadDelegate {
                 }
                 var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2)
                 var endProgress = spreadView.positionMarker4 - (zIndex * spreadView.tileDistance / spreadView.width)
-                return linearAnimation(startProgress, endProgress, 0, priv.phase2StartAngle, root.progress)
+                var startAngle = movedActive ? root.startAngle * (1-spreadView.snapPosition) : 0
+                return linearAnimation(startProgress, endProgress, startAngle, priv.phase2StartAngle, root.progress)
             }
             if (spreadView.phase == 2) {
                 return root.startAngle - easingCurve.value * (root.startAngle - root.endAngle);
