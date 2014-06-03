@@ -177,6 +177,7 @@ Item {
             print("unhandled nextInStack case!!!!!");
             return -1;
         }
+        property int nextZInStack: indexToZIndex(nextInStack)
         onNextInStackChanged: print("next in stack is", nextInStack)
 
         states: [
@@ -241,6 +242,33 @@ Item {
             snapAnimation.start();
         }
 
+        // We need to shuffle z ordering a bit in order to keep side stage apps above main stage apps.
+        // We don't want to really reorder them in the model because that allows us to keep track
+        // of the last focused order.
+        function indexToZIndex(index) {
+            print("zindex asked", index)
+            var app = ApplicationManager.get(index);
+            var isActive = app.appId == priv.mainStageAppId || app.appId == priv.sideStageAppId;
+            if (isActive && app.stage == ApplicationInfoInterface.MainStage) return 0;
+            if (isActive && app.stage == ApplicationInfoInterface.SideStage) {
+                if (spreadView.nextInStack >= 0 && ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
+                    return Math.max(index, 2);
+                } else {
+                    return 1;
+                }
+            }
+            if (index <= 2 && app.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
+                return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
+            }
+            if (index == spreadView.nextInStack && app.stage == ApplicationInfoInterface.SideStage) {
+                if (priv.sideStageAppId) {
+                    return 2;
+                }
+                return 1;
+            }
+            return index;
+        }
+
         SequentialAnimation {
             id: snapAnimation
             property int targetContentX: 0
@@ -283,31 +311,8 @@ Item {
                     height: spreadView.height
                     width: spreadView.tileDistance
                     color: "#44FF0000"
-                    x: spreadView.width             //  - units.gu(10) // just to see 'em
-
-                    // We need to shuffle z ordering a bit in order to keep side stage apps above main stage apps.
-                    // We don't want to really reorder them in the model because that allows us to keep track
-                    // of the last focused order.
-                    z: {
-                        if (spreadTile.active && model.stage == ApplicationInfoInterface.MainStage) return 0;
-                        if (spreadTile.active && model.stage == ApplicationInfoInterface.SideStage) {
-                            if (spreadView.nextInStack >= 0 && ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
-                                return Math.max(index, 2);
-                            } else {
-                                return 1;
-                            }
-                        }
-                        if (index <= 2 && model.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
-                            return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
-                        }
-                        if (index == spreadView.nextInStack && model.stage == ApplicationInfoInterface.SideStage) {
-                            if (priv.sideStageAppId) {
-                                return 2;
-                            }
-                            return 1;
-                        }
-                        return index;
-                    }
+                    x: spreadView.width
+                    z: spreadView.indexToZIndex(index)
 
                     TransformedTabletSpreadDelegate {
                         id: spreadTile
@@ -332,24 +337,24 @@ Item {
 //                                print("üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü")
                                 tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
                             }
+                            if (active && spreadView.phase < 1) {
+                                tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
+                            }
+
                             return tileProgress;
                         }
 
                         animatedProgress: {
-//                            print("PHASE:", spreadView.phase)
-                            if (spreadView.phase == 0 && (active || spreadView.nextInStack == index)) {
+                            if (spreadView.phase == 0 && (spreadTile.active || spreadView.nextInStack == index)) {
+                                if (model.appId == "facebook-webapp") print("fsdfdsfsdfdsafdsafdsa", spreadTile.active, progress, spreadView.positionMarker1)
                                 if (progress < spreadView.positionMarker1) {
-//                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return progress;
                                 } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
-//                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return spreadView.positionMarker1 + snappingCurve.value * 3;
                                 } else {
-//                                    print("progress is", progress, "index", zIndex, "appid", model.appId)
                                     return spreadView.positionMarker2;
                                 }
                             }
-//                            print("progress is", progress, "index", zIndex, "appid", model.appId)
                             return progress;
                         }
 
