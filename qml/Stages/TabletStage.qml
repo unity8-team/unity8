@@ -331,22 +331,15 @@ Item {
 
                         progress: {
                             var tileProgress = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
-                            // The Tile which is next in the stack needs to move directly from the beginning...
-//                            print("tile0Progress is", tileProgress, "next", spreadView.nextInStack, zIndex, "PHASE:", spreadView.phase)
-                            if (index == spreadView.nextInStack && spreadView.phase < 2) {
-//                                print("üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü")
+                            // Some tiles (nextInStack, active) need to move directly from the beginning, normalize progress to immediately start at 0
+                            if ((index == spreadView.nextInStack && spreadView.phase < 2) || (active && spreadView.phase < 1)) {
                                 tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
                             }
-                            if (active && spreadView.phase < 1) {
-                                tileProgress += zIndex * spreadView.tileDistance / spreadView.width;
-                            }
-
                             return tileProgress;
                         }
 
                         animatedProgress: {
                             if (spreadView.phase == 0 && (spreadTile.active || spreadView.nextInStack == index)) {
-                                if (model.appId == "facebook-webapp") print("fsdfdsfsdfdsafdsafdsa", spreadTile.active, progress, spreadView.positionMarker1)
                                 if (progress < spreadView.positionMarker1) {
                                     return progress;
                                 } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
@@ -374,17 +367,6 @@ Item {
                             period: (spreadView.positionMarker2 - spreadView.positionMarker1) / 3
                             progress: spreadTile.progress - spreadView.positionMarker1
                         }
-
-//                        Rectangle {
-//                            anchors.fill: parent; color: "#FF00FF"
-//                            border.width: units.gu(1)
-//                            border.color: "black"
-//                            Label {
-//                                anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: units.gu(2) }
-//                                fontSize: "x-large"
-//                                text: spreadTile.zIndex + "/" + model.index
-//                            }
-//                        }
                     }
                 }
             }
