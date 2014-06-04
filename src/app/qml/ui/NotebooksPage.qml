@@ -24,6 +24,7 @@ import "../components"
 
 Page {
     id: root
+    objectName: 'notebooksPage'
 
     signal openNotebook(string title, string notebookGuid)
 
@@ -74,8 +75,7 @@ Page {
                 }
             }
         }
-   }
-
+    }
 
     Notebooks {
         id: notebooks
@@ -114,12 +114,14 @@ Page {
 
             TextField {
                 id: newNoteTitleTextField
+                objectName: "newNoteTitleTextField"
                 anchors { left: parent.left; right: parent.right; margins: units.gu(2); verticalCenter: parent.verticalCenter }
             }
         }
 
         PulldownListView {
             id: notebooksListView
+            objectName: "notebooksListView"
             model: notebooks
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height - keyboardRect.height
@@ -174,6 +176,7 @@ Page {
                 }
             }
             Button {
+                objectName: "saveButton"
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
                 text: i18n.tr("Save")
                 enabled: newNoteTitleTextField.text.length > 0

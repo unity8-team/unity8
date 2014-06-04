@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-05-16 11:58+0000\n"
-"Last-Translator: Daniel Holbach <daniel.holbach@ubuntu.com>\n"
+"PO-Revision-Date: 2014-05-27 14:00+0000\n"
+"Last-Translator: Phillip Sz <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-17 07:15+0000\n"
-"X-Generator: Launchpad (build 17007)\n"
+"X-Launchpad-Export-Date: 2014-05-28 05:54+0000\n"
+"X-Generator: Launchpad (build 17017)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -87,12 +87,12 @@ msgstr "Löschen"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 msgid "Edit reminder"
-msgstr ""
+msgstr "Erinnerung bearbeiten"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "Erinnerung setzen"
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
@@ -167,7 +167,7 @@ msgstr "Vor zwei Wochen"
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
@@ -215,7 +215,7 @@ msgstr "letzte Woche"
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr ""
+msgstr "Vor zwei Wochen"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year

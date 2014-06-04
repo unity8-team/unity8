@@ -21,6 +21,8 @@
 import logging
 from distutils import version
 
+import ubuntuuitoolkit
+
 import autopilot
 from autopilot import logging as autopilot_logging
 from autopilot.introspection import dbus
@@ -40,6 +42,16 @@ class RemindersApp(object):
     def __init__(self, app_proxy):
         self.app = app_proxy
         self.main_view = self.app.select_single(MainView)
+
+    def open_notebooks(self):
+        """Open the Notebooks page.
+
+        :return: The autopilot custom proxy object for the NotebooksPage.
+
+        """
+        self.main_view.switch_to_tab('NotebookTab')
+        return self.main_view.select_single(
+            NotebooksPage, objectName='notebooksPage')
 
 
 class MainView(toolkit_emulators.MainView):
@@ -64,6 +76,7 @@ class MainView(toolkit_emulators.MainView):
 
 
 class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    """Autopilot custom proxy object for the no account dialog."""
 
     @classmethod
     def validate_dbus_object(cls, path, state):
@@ -85,3 +98,90 @@ class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     def open_account_settings(self):
         button = self.select_single('Button', objectName='openAccountButton')
         self.pointing_device.click_object(button)
+
+
+class _Page(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+
+    def __init__(self, *args):
+        super(_Page, self).__init__(*args)
+        # XXX we need a better way to keep reference to the main view.
+        # --elopio - 2014-02-26
+        self.main_view = self.get_root_instance().select_single(MainView)
+
+
+class PulldownListView(ubuntuuitoolkit.QQuickListView):
+    """Autopilot custom proxy object for the PulldownListView."""
+
+
+class NotebooksPage(_Page):
+    """Autopilot custom proxy object for the Notebooks page."""
+
+    def add_notebook(self, title):
+        """Add a notebook.
+
+        :param title: The title of the Notebook that will be added.
+
+        """
+        original_number_of_books = self._get_notebooks_listview().count
+        self.main_view.open_toolbar().click_button('addNotebookButton')
+        title_textfield = self.select_single(
+            ubuntuuitoolkit.TextField, objectName='newNoteTitleTextField')
+        title_textfield.write(title)
+        self._click_save()
+        self._get_notebooks_listview().count.wait_for(
+            original_number_of_books + 1)
+
+    def _get_notebooks_listview(self):
+        return self.select_single(
+            PulldownListView, objectName='notebooksListView')
+
+    def _click_save(self):
+        save_button = self.select_single('Button', objectName='saveButton')
+        self.pointing_device.click_object(save_button)
+
+    def get_notebooks(self):
+        """Return the list of Notebooks.
+
+        :return: A list with the the Notebooks. Every item of the list is a
+            tuple with title, last updated value, published status and number
+            of notes. The list is sorted in the same order as it is displayed
+            on the application.
+
+        """
+        listview = self._get_notebooks_listview()
+        notebook_delegates = listview.select_many(NotebooksDelegate)
+        # Sort by the position on the list.
+        sorted_notebook_delegates = sorted(
+            notebook_delegates,
+            key=lambda delegate: delegate.globalRect.y)
+        notebooks = [
+            (notebook.get_title(), notebook.get_last_updated(),
+             notebook.get_published_status(), notebook.get_notes_count())
+            for notebook in sorted_notebook_delegates
+        ]
+        return notebooks
+
+
+class NotebooksDelegate(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    """Autopilot custom proxy object for the NotebooksDelegate."""
+
+    def get_title(self):
+        """Return the title of the Notebook."""
+        return self._get_label_text('notebookTitleLabel')
+
+    def _get_label_text(self, object_name):
+        label = self.select_single('Label', objectName=object_name)
+        return label.text
+
+    def get_last_updated(self):
+        """Return the last updated value of the Notebook."""
+        return self._get_label_text('notebookLastUpdatedLabel')
+
+    def get_published_status(self):
+        """Return the published status of the Notebook."""
+        return self._get_label_text('notebookPublishedLabel')
+
+    def get_notes_count(self):
+        """Return the number of notes in the Notebook."""
+        # The count is returned in paretheses, so we strip them.
+        return int(self._get_label_text('notebookNoteCountLabel').strip('()'))
