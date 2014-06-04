@@ -42,6 +42,16 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
+                text: i18n.tr("Add note")
+                iconName: "add"
+                onTriggered: {
+                    NotesStore.createNote("Untitled");
+                }   
+            }
+        }
+
+        ToolbarButton {
+            action: Action {
                 text: i18n.tr("Search")
                 iconName: "search"
                 onTriggered: {
@@ -108,17 +118,7 @@ Page {
                 }
             }
         }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Add note")
-                iconName: "add"
-                onTriggered: {
-                    NotesStore.createNote("Untitled");
-                }   
-            }
-        }
-    }
+   }
 
     Notes {
         id: notes

@@ -36,6 +36,16 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
+                text: i18n.tr("Add notebook")
+                iconName: "add"
+                onTriggered: {
+                    contentColumn.newNotebook = true;
+                }
+            }
+        }
+ 
+        ToolbarButton {
+            action: Action {
                 text: i18n.tr("Search")
                 iconName: "search"
                 onTriggered: {
@@ -64,17 +74,7 @@ Page {
                 }
             }
         }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Add notebook")
-                iconName: "add"
-                onTriggered: {
-                    contentColumn.newNotebook = true;
-                }
-            }
-        }
-    }
+   }
 
 
     Notebooks {
