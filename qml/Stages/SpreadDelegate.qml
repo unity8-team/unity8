@@ -26,7 +26,7 @@ Item {
 
     property real topMarginProgress
     property bool interactive: false
-    Component.onCompleted: print("******* SpreadDelegate created:", root)
+    property real maximizedAppTopMargin
 
     QtObject {
         id: priv
