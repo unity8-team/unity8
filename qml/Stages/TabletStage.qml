@@ -109,6 +109,19 @@ Item {
                 ApplicationManager.focusApplication(appId)
             }
         }
+
+        onApplicationRemoved: {
+            printStack()
+            if (priv.mainStageAppId == appId) {
+                priv.mainStageAppId = "";
+            }
+            if (priv.sideStageAppId == appId) {
+                priv.sideStageAppId = "";
+            }
+        }
+        onApplicationAdded: {
+            printStack()
+        }
     }
 
     function printStack() {
@@ -250,14 +263,12 @@ Item {
         // We don't want to really reorder them in the model because that allows us to keep track
         // of the last focused order.
         function indexToZIndex(index) {
-            print("zIndex calc for index", index);
             var app = ApplicationManager.get(index);
             if (!app) {
                 return index;
             }
 
             var isActive = app.appId == priv.mainStageAppId || app.appId == priv.sideStageAppId;
-            print("got app", app.appId, isActive)
             if (isActive && app.stage == ApplicationInfoInterface.MainStage) return 0;
             if (isActive && app.stage == ApplicationInfoInterface.SideStage) {
                 if (!priv.mainStageAppId) {
@@ -280,6 +291,9 @@ Item {
                 }
                 return 1;
             }
+            if (index == 2 && spreadView.nextInStack == 1) {
+                return 3;
+            }
             return index;
         }
 
@@ -291,8 +305,8 @@ Item {
                 target: spreadView
                 property: "contentX"
                 to: snapAnimation.targetContentX
-                duration: UbuntuAnimation.SlowDuration
-//                duration: UbuntuAnimation.FastDuration
+//                duration: UbuntuAnimation.SlowDuration
+                duration: UbuntuAnimation.FastDuration
             }
 
             ScriptAction {
@@ -310,12 +324,10 @@ Item {
 
         Rectangle {
             id: spreadRow
+            color: "black"
             x: spreadView.contentX
             height: root.height
-//            width: root.width
             width: spreadView.width + Math.max(spreadView.width, ApplicationManager.count * spreadView.tileDistance)
-
-            color: "black"
 
             Repeater {
                 id: spreadRepeater
@@ -327,9 +339,6 @@ Item {
                     width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
                     x: spreadView.width
                     z: spreadView.indexToZIndex(index)
-
-                    onWidthChanged: print("width changed!", width)
-
                     active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
                     zIndex: z
                     selected: spreadView.selectedIndex == index
@@ -427,10 +436,13 @@ Item {
                 gesturePoints.push(mouseX);
             }
             onReleased: {
-                var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
-                gesturePoints = [];
-                sideStageDragSnapAnimation.to = sideStageDragHandle.progress > 0.5 || oneWayFlick ? 1 : 0
-                sideStageDragSnapAnimation.start();
+                if (priv.mainStageAppId) {
+                    var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
+                    sideStageDragSnapAnimation.to = sideStageDragHandle.progress > 0.5 || oneWayFlick ? 1 : 0
+                    sideStageDragSnapAnimation.start();
+                } else {
+                    sideStageDragHandle.dragging = false;
+                }
             }
         }
         UbuntuNumberAnimation {
