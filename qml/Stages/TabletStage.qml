@@ -291,7 +291,7 @@ Item {
                 }
                 return 1;
             }
-            if (index == 2 && spreadView.nextInStack == 1) {
+            if (index == 2 && spreadView.nextInStack == 1 && priv.sideStageAppId) {
                 return 3;
             }
             return index;
