@@ -447,6 +447,7 @@ Item {
                     height: spreadView.height
                     selected: spreadView.selectedIndex == index
                     otherSelected: spreadView.selectedIndex >= 0 && !selected
+                    dropShadow: spreadView.shiftedContentX > 0 || spreadDragArea.status == DirectionalDragArea.Undecided
 
                     z: index
                     x: index == 0 ? 0 : spreadView.width + (index - 1) * spreadView.tileDistance

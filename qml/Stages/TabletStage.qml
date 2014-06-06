@@ -347,6 +347,7 @@ Item {
                     isInSideStage: priv.sideStageAppId == model.appId
                     interactive: !spreadView.interactive
                     maximizedAppTopMargin: root.maximizedAppTopMargin
+                    dropShadow: spreadView.contentX > 0 || spreadDragArea.status == DirectionalDragArea.Undecided
 
                     progress: {
                         var tileProgress = (spreadView.contentX - zIndex * spreadView.tileDistance) / spreadView.width;
@@ -423,9 +424,10 @@ Item {
         MouseArea {
             id: sideStageDragHandleMouseArea
             anchors.fill: parent
+            enabled: spreadView.contentX == 0
             property int startX
             property var gesturePoints: new Array()
-            enabled: spreadView.contentX == 0
+
             onPressed: {
                 gesturePoints = [];
                 startX = mouseX;
@@ -465,6 +467,7 @@ Item {
         id: spreadDragArea
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
         width: root.dragAreaWidth
+        direction: Direction.Leftwards
 
 //        Rectangle { anchors.fill: parent; color: "#4400FF00"}
 

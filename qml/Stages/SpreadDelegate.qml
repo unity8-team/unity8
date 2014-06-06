@@ -17,6 +17,7 @@
 */
 
 import QtQuick 2.0
+import Ubuntu.Components 1.0
 
 Item {
     id: root
@@ -27,25 +28,26 @@ Item {
     property real topMarginProgress
     property bool interactive: false
     property real maximizedAppTopMargin
+    property bool dropShadow: true
 
     QtObject {
         id: priv
         property real heightDifference: root.height - appImage.implicitHeight
     }
 
-    Image {
-        id: dropShadow
+    BorderImage {
+        id: dropShadowImage
         anchors.fill: appImage
         anchors.margins: -units.gu(2)
         source: "graphics/dropshadow.png"
-        opacity: .4
+        opacity: root.dropShadow ? .4 : 0
+        Behavior on opacity { UbuntuNumberAnimation {} }
+        border { left: 50; right: 50; top: 50; bottom: 50 }
     }
     Image {
         id: appImage
         anchors {
-            left: parent.left;
-            bottom: parent.bottom;
-            top: parent.top;
+            fill: parent
             topMargin: priv.heightDifference * Math.max(0, 1 - root.topMarginProgress)
         }
         source: model.screenshot
