@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-05-22 13:23+0000\n"
+"PO-Revision-Date: 2014-06-09 03:32+0000\n"
 "Last-Translator: Adolfo Jayme <fitoschido@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-23 09:13+0000\n"
-"X-Generator: Launchpad (build 17017)\n"
+"X-Launchpad-Export-Date: 2014-06-09 06:33+0000\n"
+"X-Generator: Launchpad (build 17031)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -36,7 +36,7 @@ msgstr "No hay cuentas disponibles"
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
-msgstr ""
+msgstr "Defina una cuenta en Configuración del sistema"
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "Elija la fecha y la hora del recordatorio:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
