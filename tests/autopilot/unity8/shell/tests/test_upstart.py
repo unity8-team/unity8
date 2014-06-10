@@ -54,6 +54,7 @@ class UpstartIntegrationTests(UnityTestCase):
 
     def _launch_unity(self):
         self.patch_environment("QT_LOAD_TESTABILITY", "1")
+        self.patch_environment("UBUNTU_PLATFORM_API_BACKEND", "touch_mirserver")
         self.process = subprocess.Popen([get_binary_path()] + self.unity_geometry_args)
         def ensure_stopped():
             self.process.terminate()
