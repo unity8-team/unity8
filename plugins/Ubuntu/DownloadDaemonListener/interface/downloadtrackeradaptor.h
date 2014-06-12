@@ -111,6 +111,7 @@ Q_SIGNALS: // SIGNALS
     void finished(const QString &path);
     void paused(bool success);
     void progress(qulonglong received, qulonglong total);
+    void processing(const QString &path);
     void resumed(bool success);
     void started(bool success);
 };

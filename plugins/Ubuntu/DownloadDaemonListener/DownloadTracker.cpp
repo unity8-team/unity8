@@ -76,6 +76,7 @@ void DownloadTracker::startService()
         connect(m_adaptor, SIGNAL(finished(const QString &)), this, SIGNAL(finished(const QString &)));
         connect(m_adaptor, SIGNAL(paused(bool)), this, SIGNAL(paused(bool)));
         connect(m_adaptor, SIGNAL(progress(qulonglong, qulonglong)), this, SIGNAL(progress(qulonglong, qulonglong)));
+        connect(m_adaptor, SIGNAL(processing(const QString &)), this, SIGNAL(processing()));
         connect(m_adaptor, SIGNAL(resumed(bool)), this, SIGNAL(resumed(bool)));
         connect(m_adaptor, SIGNAL(started(bool)), this, SIGNAL(started(bool)));
     }

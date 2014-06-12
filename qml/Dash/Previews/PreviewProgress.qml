@@ -59,6 +59,10 @@ PreviewWidget {
                 }
             }
 
+            onProcessing: {
+                progressBar.indeterminate = true;
+            }
+
             onFinished: {
                 root.triggered(widgetId, "finished", widgetData)
             }
