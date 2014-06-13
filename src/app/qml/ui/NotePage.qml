@@ -29,6 +29,15 @@ Page {
     signal editNote(var note)
 
     tools: ToolbarItems {
+       ToolbarButton {
+            action: Action {
+                text: i18n.tr("Edit")
+                iconName: "edit"
+                onTriggered: {
+                    root.editNote(root.note)
+                }
+            }
+        }
         ToolbarButton {
             action: Action {
                 text: note.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
@@ -53,16 +62,7 @@ Page {
                 }
             }
         }
-       ToolbarButton {
-            action: Action {
-                text: i18n.tr("Edit")
-                iconName: "edit"
-                onTriggered: {
-                    root.editNote(root.note)
-                }
-            }
-        }
-    }
+   }
 
     NoteView {
         id: noteView
