@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-01-25 18:51+0000\n"
-"Last-Translator: Volkan Gezer <Unknown>\n"
+"PO-Revision-Date: 2014-06-12 13:30+0000\n"
+"Last-Translator: İbrahim Çelik <ibrahimcelik89@gmail.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-17 07:15+0000\n"
-"X-Generator: Launchpad (build 17007)\n"
+"X-Launchpad-Export-Date: 2014-06-13 07:01+0000\n"
+"X-Generator: Launchpad (build 17045)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -32,20 +32,20 @@ msgstr "Hatırlatıcılar"
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr ""
+msgstr "Hiçbir hesap mevcut değil"
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
-msgstr ""
+msgstr "Lütfen sistem ayarlarından bir hesap oluşturun"
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr ""
+msgstr "Hesap ayarlarını aç"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
 msgid "Last edited %1"
-msgstr ""
+msgstr "Son düzenleme %1"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
@@ -57,24 +57,24 @@ msgstr "Özel"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr ""
+msgstr "tazelemek için bırakın"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "Hatırlatıcıyı Sil"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr ""
+msgstr "Yapılmış olarak işaretle"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr ""
+msgstr "Geri"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr ""
+msgstr "Kullan!"
 
 #: ../src/app/qml/ui/EditNoteView.qml:90
 #: ../src/app/qml/ui/EditNoteView.qml:102
@@ -87,12 +87,12 @@ msgstr "Sil"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 msgid "Edit reminder"
-msgstr ""
+msgstr "Hatırlatıcıyı düzenle"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "Hatırlatıcı ayarla"
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
@@ -106,12 +106,12 @@ msgstr "Ara"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr ""
+msgstr "Yenile"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr ""
+msgstr "Hesaplar"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
@@ -133,6 +133,8 @@ msgstr "Not ekle"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"Mevcut not yok. \"Not ekle\" düğmesini kullanarak yeni notlar "
+"oluşturabilirsiniz."
 
 #: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
@@ -143,93 +145,96 @@ msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
+"Mevcut hatırlatıcı yok. \"Hatırlatıcı ekle\" düğmesini kullanarak veya bir "
+"notu görüntülerken bir hatırlatıcı ayarlayarak yeni hatırlatıcı "
+"oluşturabilirsiniz."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "Hatırlatıcı için tarih ve saat seçin:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr ""
+msgstr "Bugün"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "Dün"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "Geçen hafta"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "İki hafta önce"
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "Tamamlandı"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr ""
+msgstr "Tarih yok"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr ""
+msgstr "Süresi geçmiş"
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr ""
+msgstr "Yarın"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr ""
+msgstr "Gelecek hafta"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr ""
+msgstr "İki hafta içinde"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr ""
+msgstr "Daha Sonra"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr ""
+msgstr "bugün"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr ""
+msgstr "dün"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr ""
+msgstr "geçen hafta"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr ""
+msgstr "İki hafta önce"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "%1 %2 tarihinde"
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "Notlar yenilenirken hata oluştu: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "Not defterleri yenilenirken hata oluştu: %1"

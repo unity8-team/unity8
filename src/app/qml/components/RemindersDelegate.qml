@@ -33,7 +33,6 @@ Base {
 
     backgroundIndicator: Row {
         x: root.__contents.x > 0 ? root.__contents.x - width : 0
-        height: childrenRect.height
         width: childrenRect.width
         anchors.verticalCenter: parent.verticalCenter
         spacing: units.gu(1)

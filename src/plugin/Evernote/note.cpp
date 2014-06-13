@@ -91,6 +91,7 @@ QString Note::createdString() const
         return gettext("Two weeks ago");
     }
 
+    // TRANSLATORS: the first argument refers to a month name and the second to a year
     return QString(gettext("%1 %2")).arg(QLocale::system().standaloneMonthName(createdDate.month())).arg(createdDate.year());
 }
 
