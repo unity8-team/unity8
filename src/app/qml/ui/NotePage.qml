@@ -31,16 +31,6 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
-                text: i18n.tr("Delete")
-                iconName: "delete"
-                onTriggered: {
-                    NotesStore.deleteNote(note.guid);
-                    pagestack.pop();
-                }
-            }
-        }
-        ToolbarButton {
-            action: Action {
                 text: note.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
                 // TODO: use this instead when the toolkit switches from using the
                 // ubuntu-mobile-icons theme to suru:
@@ -54,6 +44,16 @@ Page {
             }
         }
         ToolbarButton {
+            action: Action {
+                text: i18n.tr("Delete")
+                iconName: "delete"
+                onTriggered: {
+                    NotesStore.deleteNote(note.guid);
+                    pagestack.pop();
+                }
+            }
+        }
+       ToolbarButton {
             action: Action {
                 text: i18n.tr("Edit")
                 iconName: "edit"
