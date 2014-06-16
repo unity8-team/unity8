@@ -30,12 +30,12 @@ Rectangle {
     Infographics {
         id: infographics
         model: InfographicsModule.InfographicList
-
         anchors {
             verticalCenter: parent.verticalCenter
             left: parent.left
             right: parent.right
         }
+        height: width
     }
 
     SignalSpy {

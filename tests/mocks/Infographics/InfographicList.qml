@@ -21,8 +21,10 @@ Item {
     property int uid: 1000
     property url path: internal.paths[uid % 4][internal.index]
 
+    onUidChanged: internal.index = 0
+
     function next() {
-        if (internal.index < internal.paths.length - 1)
+        if (internal.index < internal.paths[uid % 4].length - 1)
             internal.index++;
         else
             internal.index = 0;
