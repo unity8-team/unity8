@@ -34,13 +34,13 @@ Item {
         id: internal
         property int index: 0
         property var paths: [
-            ["../../../../tests/data/infographics/infographics-test-01.svg",
-             "../../../../tests/data/infographics/infographics-test-02.svg"],
-            ["../../../../tests/data/infographics/infographics-test-03.svg",
-             "../../../../tests/data/infographics/infographics-test-04.svg"],
-            ["../../../../tests/data/infographics/infographics-test-05.svg",
-             "../../../../tests/data/infographics/infographics-test-06.svg"],
-            ["../../../../tests/data/infographics/infographics-test-07.svg"]
+            ["../../../../tests/data/infographics/infographics-test-01.png",
+             "../../../../tests/data/infographics/infographics-test-02.png"],
+            ["../../../../tests/data/infographics/infographics-test-03.png",
+             "../../../../tests/data/infographics/infographics-test-04.png"],
+            ["../../../../tests/data/infographics/infographics-test-05.png",
+             "../../../../tests/data/infographics/infographics-test-06.png"],
+            ["../../../../tests/data/infographics/infographics-test-07.png"]
         ]
     }
 }
