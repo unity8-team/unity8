@@ -65,9 +65,16 @@ Item {
         signalName: "tease"
     }
 
+    SignalSpy {
+        id: triggeredSpy
+        signalName: "triggered"
+    }
+
     UT.UnityTestCase {
         name: "SingleGreeter"
         when: windowShown
+
+        property var infographics: findChild(greeter, "infographics")
 
         function cleanup() {
             AccountsService.statsWelcomeScreen = true
@@ -90,6 +97,23 @@ Item {
             mouseClick(greeter, data.posX, greeter.height - units.gu(1))
             teaseSpy.wait()
             tryCompare(teaseSpy, "count", 1)
+        }
+
+        function test_infographics_integration() {
+            triggeredSpy.target = infographics;
+            triggeredSpy.clear();
+
+            teaseSpy.clear();
+            mouseClick(infographics, infographics.width/2, infographics.height/2);
+            compare(triggeredSpy.count, 0);
+            teaseSpy.wait();
+            tryCompare(teaseSpy, "count", 1);
+
+            mouseDoubleClick(infographics, infographics.width/2, infographics.height/2);
+            compare(triggeredSpy.count, 1);
+
+            // FIXME Cimi: the doubleclick seems to screw the dragHandle... the next click is ignored
+            mouseClick(infographics, infographics.width/2, infographics.height/2);
         }
 
         function test_initial_selected_signal() {
