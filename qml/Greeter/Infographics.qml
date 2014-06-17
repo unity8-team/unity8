@@ -43,5 +43,4 @@ Item {
             onPressed: mouse.accepted = false
         }
     }
-
 }
