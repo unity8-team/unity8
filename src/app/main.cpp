@@ -37,14 +37,6 @@ int main(int argc, char *argv[])
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
 
-
-    QStringList env(QProcess::systemEnvironment());
-
-    qDebug() << "Environment Variables";
-
-    for (int i = 0; i < env.size(); ++i)
-          qDebug() << env.at(i).toLocal8Bit().constData();
-
     // Set up import paths
     QStringList importPathList = view.engine()->importPathList();
     // Prepend the location of the plugin in the build dir,
