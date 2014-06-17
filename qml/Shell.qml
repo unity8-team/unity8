@@ -342,6 +342,7 @@ FocusScope {
             }
             if (LightDM.Greeter.authenticated) {
                 lockscreen.hide();
+                greeter.login();
             } else {
                 lockscreen.clear(true);
             }
@@ -368,10 +369,13 @@ FocusScope {
         }
 
         readonly property real showProgress: MathUtils.clamp((1 - x/width) + greeter.showProgress - 1, 0, 1)
+        onShowProgressChanged: if (LightDM.Greeter.promptless && showProgress === 0) greeter.login()
 
         Greeter {
             id: greeter
             objectName: "greeter"
+
+            signal sessionStarted() // helpful for tests
 
             available: true
             hides: [launcher, panel.indicators]
@@ -383,6 +387,13 @@ FocusScope {
             height: parent.height
 
             dragHandleWidth: shell.edgeSize
+
+            function login() {
+                enabled = false;
+                LightDM.Greeter.startSessionSync();
+                sessionStarted();
+                enabled = true;
+            }
 
             onShownChanged: {
                 if (shown) {
