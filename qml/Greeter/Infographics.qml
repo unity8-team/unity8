@@ -39,6 +39,9 @@ Item {
         MouseArea {
             anchors.fill: parent
             onDoubleClicked: root.triggered()
+
+            onClicked: mouse.accepted = false
+            onPressed: mouse.accepted = false
         }
     }
 }
