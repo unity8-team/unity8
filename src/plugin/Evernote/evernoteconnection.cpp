@@ -49,7 +49,7 @@ EvernoteConnection* EvernoteConnection::s_instance = 0;
 // application/version; platform/version; [ device/version ]
 // E.g. "Evernote Windows/3.0.1; Windows/XP SP3"
 QString EDAM_CLIENT_NAME = QStringLiteral("Reminders/0.1; Ubuntu/13.10");
-QString EVERNOTE_HOST = QStringLiteral("sandbox.evernote.com");
+QString EVERNOTE_HOST = QStringLiteral("www.evernote.com");
 QString EDAM_USER_STORE_PATH = QStringLiteral("/edam/user");
 QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
