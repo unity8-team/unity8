@@ -35,7 +35,58 @@ import reminders
 logger = logging.getLogger(__name__)
 
 
-class RemindersAppTestCase(AutopilotTestCase):
+class BaseRemindersTestCase(AutopilotTestCase):
+    """Base test case that patches the home directory
+
+    That way we start the tests with a clean environment.
+
+    """
+
+    def setUp(self):
+        super(BaseRemindersTestCase, self).setUp()
+        self.home_dir = self._patch_home()
+
+    def _patch_home(self):
+        """ mock /home for testing purposes to preserve user data
+        """
+        temp_dir_fixture = fixtures.TempDir()
+        self.useFixture(temp_dir_fixture)
+        temp_dir = temp_dir_fixture.path
+        temp_xdg_config_home = os.path.join(temp_dir, '.config')
+
+        #If running under xvfb, as jenkins does,
+        #xsession will fail to start without xauthority file
+        #Thus if the Xauthority file is in the home directory
+        #make sure we copy it to our temp home directory
+        self._copy_xauthority_file(temp_dir)
+
+        #click requires using initctl env (upstart), but the desktop can set
+        #an environment variable instead
+        self.useFixture(
+            toolkit_fixtures.InitctlEnvironmentVariable(
+                HOME=temp_dir, XDG_CONFIG_HOME=temp_xdg_config_home))
+        self.useFixture(
+            fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
+        self.useFixture(
+            fixtures.EnvironmentVariable(
+                'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
+
+        logger.debug('Patched home to fake home directory ' + temp_dir)
+
+        return temp_dir
+
+    def _copy_xauthority_file(self, directory):
+        """ Copy .Xauthority file to directory, if it exists in /home
+        """
+        xauth = os.path.expanduser(os.path.join('~', '.Xauthority'))
+        if os.path.isfile(xauth):
+            logger.debug("Copying .Xauthority to " + directory)
+            shutil.copyfile(
+                os.path.expanduser(os.path.join('~', '.Xauthority')),
+                os.path.join(directory, '.Xauthority'))
+
+
+class RemindersAppTestCase(BaseRemindersTestCase):
     """A common test case class that provides several useful methods for
        reminders-app tests."""
 
@@ -65,53 +116,10 @@ class RemindersAppTestCase(AutopilotTestCase):
         return launcher, test_type
 
     def setUp(self):
-        launcher, test_type = self.get_launcher_and_type()
-        self.home_dir = self._patch_home(test_type)
         self.pointing_device = Pointer(self.input_device_class.create())
         super(RemindersAppTestCase, self).setUp()
-
+        launcher, test_type = self.get_launcher_and_type()
         self.app = reminders.RemindersApp(launcher())
-
-    def _copy_xauthority_file(self, directory):
-        """ Copy .Xauthority file to directory, if it exists in /home
-        """
-        xauth = os.path.expanduser(os.path.join('~', '.Xauthority'))
-        if os.path.isfile(xauth):
-            logger.debug("Copying .Xauthority to " + directory)
-            shutil.copyfile(
-                os.path.expanduser(os.path.join('~', '.Xauthority')),
-                os.path.join(directory, '.Xauthority'))
-
-    def _patch_home(self, test_type):
-        """ mock /home for testing purposes to preserve user data
-        """
-        temp_dir_fixture = fixtures.TempDir()
-        self.useFixture(temp_dir_fixture)
-        temp_dir = temp_dir_fixture.path
-        temp_xdg_config_home = os.path.join(temp_dir, '.config')
-
-        #If running under xvfb, as jenkins does,
-        #xsession will fail to start without xauthority file
-        #Thus if the Xauthority file is in the home directory
-        #make sure we copy it to our temp home directory
-        self._copy_xauthority_file(temp_dir)
-
-        #click requires using initctl env (upstart), but the desktop can set
-        #an environment variable instead
-        if test_type == 'click':
-            self.useFixture(
-                toolkit_fixtures.InitctlEnvironmentVariable(
-                    HOME=temp_dir, XDG_CONFIG_HOME=temp_xdg_config_home))
-        else:
-            self.useFixture(
-                fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
-            self.useFixture(
-                fixtures.EnvironmentVariable(
-                    'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
-
-        logger.debug('Patched home to fake home directory ' + temp_dir)
-
-        return temp_dir
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
