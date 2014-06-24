@@ -31,6 +31,7 @@
 #include "timeformatter.h"
 #include "unitymenumodelpaths.h"
 #include "easingcurve.h"
+#include "cachingimageprovider.h"
 
 void UtilsPlugin::registerTypes(const char *uri)
 {
@@ -47,4 +48,6 @@ void UtilsPlugin::registerTypes(const char *uri)
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
+
+    engine->addImageProvider(QLatin1String("cached"), new CachingImageProvider);
 }

@@ -16,6 +16,7 @@ set(QMLPLUGIN_SRC
     timeformatter.cpp
     unitymenumodelpaths.cpp
     easingcurve.cpp
+    cachingimageprovider.cpp
     plugin.cpp
     )
 
