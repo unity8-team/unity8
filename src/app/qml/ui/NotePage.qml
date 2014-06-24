@@ -29,35 +29,40 @@ Page {
     signal editNote(var note)
 
     tools: ToolbarItems {
-        ToolbarButton {
-            text: i18n.tr("Delete")
-            iconName: "delete"
-            onTriggered: {
-                NotesStore.deleteNote(note.guid);
-                pagestack.pop();
-            }
-        }
-        ToolbarSpacer {}
-        ToolbarButton {
-            text: note.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
-            // TODO: use this instead when the toolkit switches from using the
-            // ubuntu-mobile-icons theme to suru:
-            //iconName: note.reminder ? "reminder" : "reminder-new"
-            iconSource: note.reminder ?
-                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
-                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
-            onTriggered: {
-                pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), {title: root.title, note: root.note});
+       ToolbarButton {
+            action: Action {
+                text: i18n.tr("Edit")
+                iconName: "edit"
+                onTriggered: {
+                    root.editNote(root.note)
+                }
             }
         }
         ToolbarButton {
-            text: i18n.tr("Edit")
-            iconName: "edit"
-            onTriggered: {
-                root.editNote(root.note)
+            action: Action {
+                text: note.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
+                // TODO: use this instead when the toolkit switches from using the
+                // ubuntu-mobile-icons theme to suru:
+                //iconName: note.reminder ? "reminder" : "reminder-new"
+                iconSource: note.reminder ?
+                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
+                onTriggered: {
+                    pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), {title: root.title, note: root.note});
+                }
             }
         }
-    }
+        ToolbarButton {
+            action: Action {
+                text: i18n.tr("Delete")
+                iconName: "delete"
+                onTriggered: {
+                    NotesStore.deleteNote(note.guid);
+                    pagestack.pop();
+                }
+            }
+        }
+   }
 
     NoteView {
         id: noteView

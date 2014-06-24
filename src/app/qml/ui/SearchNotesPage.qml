@@ -27,17 +27,7 @@ Page {
 
     signal noteSelected(var note)
 
-    tools: ToolbarItems {
-        back: ToolbarButton {
-            iconName: 'back' 
-            text: i18n.tr("Back")
-
-            onTriggered: {
-                pagestack.pop()
-                NotesStore.clearSearchResults();
-            }
-        }
-    }
+    title: i18n.tr('Search notes')
 
     Column {
         anchors { fill: parent; topMargin: units.gu(2); bottomMargin: units.gu(2) }
