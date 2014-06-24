@@ -13,6 +13,9 @@ if(NOT TARGET qmlplugindump)
       msg(FATAL_ERROR "Could not locate dbus-launch.")
     endif()
 
+    # We need to run dbus-launch --exit-with-session underneath xvfb as it
+    # looks for an X connection, and exits the daemon when X exits. Without
+    # xvfb-run, this will result in many dbus-daemon processes being left.
     set(DBUS_LAUNCH_WRAPPER_CMD xvfb-run --server-args "-screen 0 1024x768x24" --auto-servernum ${dbus_launch_exe} --exit-with-session)
 
     add_executable(qmlplugindump IMPORTED)
