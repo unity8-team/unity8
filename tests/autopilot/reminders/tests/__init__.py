@@ -96,7 +96,7 @@ class RemindersAppTestCase(BaseTestCaseWithTempHome):
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
-    def get_launcher(self):
+    def get_launcher_method(self):
         if os.path.exists(self.local_location_binary):
             launcher = self.launch_test_local
         elif os.path.exists(self.installed_location_binary):
@@ -107,7 +107,8 @@ class RemindersAppTestCase(BaseTestCaseWithTempHome):
 
     def setUp(self):
         super(RemindersAppTestCase, self).setUp()
-        self.app = reminders.RemindersApp(self.get_launcher())
+        launcher_method = self.get_launcher_method()
+        self.app = reminders.RemindersApp(launcher_method())
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):
