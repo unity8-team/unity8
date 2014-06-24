@@ -41,72 +41,84 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: i18n.tr("Search")
-            iconName: "search"
-            onTriggered: {
-                root.openSearch();
+            action: Action {
+                text: i18n.tr("Add note")
+                iconName: "add"
+                onTriggered: {
+                    NotesStore.createNote("Untitled");
+                }   
             }
         }
 
         ToolbarButton {
-            text: i18n.tr("Refresh")
-            iconName: "reload"
-            onTriggered: {
-                NotesStore.refreshNotes();
+            action: Action {
+                text: i18n.tr("Search")
+                iconName: "search"
+                onTriggered: {
+                    root.openSearch();
+                }
             }
         }
 
         ToolbarButton {
-            text: i18n.tr("Accounts")
-            iconName: "contacts-app-symbolic"
-            visible: accounts.count > 1
-            onTriggered: {
-                openAccountPage(true);
-            }
-        }
-
-        ToolbarSpacer { }
-
-        ToolbarButton {
-            text: i18n.tr("Delete")
-            iconName: "delete"
-            visible: root.selectedNote !== null
-            onTriggered: {
-                NotesStore.deleteNote(root.selectedNote.guid);
-            }
-        }
-        ToolbarButton {
-            text: root.selectedNote.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
-            // TODO: use this instead when the toolkit switches from using the
-            // ubuntu-mobile-icons theme to suru:
-            //iconName: root.selectedNote.reminder ? "reminder" : "reminder-new"
-            iconSource: root.selectedNote.reminder ?
-                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
-                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
-            visible: root.selectedNote !== null
-            onTriggered: {
-                root.selectedNote.reminder = !root.selectedNote.reminder
-                NotesStore.saveNote(root.selectedNote.guid)
-            }
-        }
-        ToolbarButton {
-            text: i18n.tr("Edit")
-            iconName: "edit"
-            visible: root.selectedNote !== null
-            onTriggered: {
-                print("should edit note")
-                root.editNote(root.selectedNote)
+            action: Action {
+                text: i18n.tr("Refresh")
+                iconName: "reload"
+                onTriggered: {
+                    NotesStore.refreshNotes();
+                }
             }
         }
 
         ToolbarButton {
-            text: i18n.tr("Add note")
-            iconName: "add"
-            onTriggered: {
-                NotesStore.createNote("Untitled");
+            action: Action {
+                text: i18n.tr("Accounts")
+                iconName: "contacts-app-symbolic"
+                visible: accounts.count > 1
+                onTriggered: {
+                    openAccountPage(true);
+                }
             }
         }
-    }
+
+        ToolbarButton {
+            action: Action {
+                text: i18n.tr("Delete")
+                iconName: "delete"
+                visible: root.selectedNote !== null
+                onTriggered: {
+                    NotesStore.deleteNote(root.selectedNote.guid);
+                }
+            }
+        }
+        ToolbarButton {
+            action: Action {
+                text: root.selectedNote.reminder ? i18n.tr("Edit reminder") : i18n.tr("Set reminder")
+                // TODO: use this instead when the toolkit switches from using the
+                // ubuntu-mobile-icons theme to suru:
+                //iconName: root.selectedNote.reminder ? "reminder" : "reminder-new"
+                iconSource: root.selectedNote.reminder ?
+                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
+                visible: root.selectedNote !== null
+                onTriggered: {
+                    root.selectedNote.reminder = !root.selectedNote.reminder
+                    NotesStore.saveNote(root.selectedNote.guid)
+                }
+            }
+        }
+        ToolbarButton {
+            action: Action {
+                text: i18n.tr("Edit")
+                iconName: "edit"
+                visible: root.selectedNote !== null
+                onTriggered: {
+                    print("should edit note")
+                    root.editNote(root.selectedNote)
+                }
+            }
+        }
+   }
 
     Notes {
         id: notes
