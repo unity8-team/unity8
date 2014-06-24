@@ -17,12 +17,25 @@
 from reminders import credentials, evernote, tests
 
 
-class EvernoteCredentialsTestCase(tests.BaseRemindersTestCase):
+class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
-    def test_added_evernote_account_must_appear_on_online_accounts(self):
+    def setUp(self):
+        super(RemindersTestCaseWithAccount, self).setUp()
+        no_account_dialog = self.app.main_view.no_account_dialog
+        self.add_evernote_account()
+        no_account_dialog.wait_until_destroyed()
+        self.evernote_client = evernote.SandboxEvernoteClient()
+
+    def add_evernote_account(self):
         account_manager = credentials.AccountManager()
         account = account_manager.add_evernote_account(
             'dummy', 'dummy', evernote.TEST_OAUTH_TOKEN)
         self.addCleanup(account_manager.delete_account, account)
         del account_manager._manager
         del account_manager
+
+    def test1(self):
+        pass
+
+    def test2(self):
+        pass
