@@ -13,7 +13,7 @@ if(NOT TARGET qmlplugindump)
       msg(FATAL_ERROR "Could not locate dbus-launch.")
     endif()
 
-    set(DBUS_LAUNCH_WRAPPER_CMD ${dbus_launch_exe} --exit-with-session)
+    set(DBUS_LAUNCH_WRAPPER_CMD xvfb-run --server-args "-screen 0 1024x768x24" --auto-servernum ${dbus_launch_exe} --exit-with-session)
 
     add_executable(qmlplugindump IMPORTED)
     set_target_properties(qmlplugindump PROPERTIES IMPORTED_LOCATION ${qmlplugindump_exe})

@@ -41,6 +41,7 @@ Build-Depends: cmake,
                qtdeclarative5-ubuntu-settings-components,
                qtdeclarative5-ubuntu-ui-toolkit-plugin,
                ttf-ubuntu-font-family,
+               xvfb,
 Standards-Version: 3.9.4
 Homepage: http://launchpad.net/unity
 # If you aren't a member of ~unity-team but need to upload
