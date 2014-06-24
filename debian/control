@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Build-Depends: cmake,
                dbus-test-runner,
+               dbus-x11,
                debhelper (>= 9),
                doxyqml,
                graphviz,

@@ -3,10 +3,17 @@
 
 if(NOT TARGET qmlplugindump)
     find_program(qmlplugindump_exe qmlplugindump)
+    find_program(dbus_launch_exe dbus-launch)
 
     if(NOT qmlplugindump_exe)
       msg(FATAL_ERROR "Could not locate qmlplugindump.")
     endif()
+
+    if(NOT dbus_launch_exe)
+      msg(FATAL_ERROR "Could not locate dbus-launch.")
+    endif()
+
+    set(DBUS_LAUNCH_WRAPPER_CMD ${dbus_launch_exe} --exit-with-session)
 
     add_executable(qmlplugindump IMPORTED)
     set_target_properties(qmlplugindump PROPERTIES IMPORTED_LOCATION ${qmlplugindump_exe})
@@ -115,7 +122,7 @@ macro(export_qmlplugin PLUGIN VERSION PATH)
     # Only generate typeinfo if not cross compiling
     if(NOT CMAKE_CROSSCOMPILING)
         add_custom_target(${target_prefix}-qmltypes ALL
-            COMMAND env ${QMLPLUGIN_ENVIRONMENT} ${qmlplugindump_executable} -notrelocatable
+            COMMAND env ${QMLPLUGIN_ENVIRONMENT} ${DBUS_LAUNCH_WRAPPER_CMD} ${qmlplugindump_executable} -notrelocatable
                     ${PLUGIN} ${VERSION} ${QMLPLUGIN_BINARY_DIR} > ${qmltypes_path}
         )
         add_dependencies(${target_prefix}-qmltypes ${target_prefix}-qmlfiles ${QMLPLUGIN_TARGETS})
