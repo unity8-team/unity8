@@ -66,6 +66,7 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         super(RemindersTestCaseWithAccount, self).setUp()
         no_account_dialog = self.app.main_view.no_account_dialog
         self.add_evernote_account()
+        logger.info('Waiting for the Evernote account to be created.')
         no_account_dialog.wait_until_destroyed()
         self.evernote_client = evernote.SandboxEvernoteClient()
 

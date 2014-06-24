@@ -22,8 +22,6 @@ import logging
 
 import fixtures
 from autopilot import logging as autopilot_logging
-from autopilot.input import Mouse, Touch, Pointer
-from autopilot.platform import model
 from autopilot.testcase import AutopilotTestCase
 from ubuntuuitoolkit import (
     emulators as toolkit_emulators,
@@ -35,7 +33,7 @@ import reminders
 logger = logging.getLogger(__name__)
 
 
-class BaseRemindersTestCase(AutopilotTestCase):
+class BaseTestCaseWithTempHome(AutopilotTestCase):
     """Base test case that patches the home directory
 
     That way we start the tests with a clean environment.
@@ -43,7 +41,7 @@ class BaseRemindersTestCase(AutopilotTestCase):
     """
 
     def setUp(self):
-        super(BaseRemindersTestCase, self).setUp()
+        super(BaseTestCaseWithTempHome, self).setUp()
         self.home_dir = self._patch_home()
 
     def _patch_home(self):
@@ -86,14 +84,9 @@ class BaseRemindersTestCase(AutopilotTestCase):
                 os.path.join(directory, '.Xauthority'))
 
 
-class RemindersAppTestCase(BaseRemindersTestCase):
+class RemindersAppTestCase(BaseTestCaseWithTempHome):
     """A common test case class that provides several useful methods for
        reminders-app tests."""
-
-    if model() == 'Desktop':
-        scenarios = [('with mouse', dict(input_device_class=Mouse))]
-    else:
-        scenarios = [('with touch', dict(input_device_class=Touch))]
 
     local_location = os.path.dirname(os.path.dirname(os.getcwd()))
 
@@ -103,23 +96,18 @@ class RemindersAppTestCase(BaseRemindersTestCase):
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
-    def get_launcher_and_type(self):
+    def get_launcher(self):
         if os.path.exists(self.local_location_binary):
             launcher = self.launch_test_local
-            test_type = 'local'
         elif os.path.exists(self.installed_location_binary):
             launcher = self.launch_test_installed
-            test_type = 'deb'
         else:
             launcher = self.launch_test_click
-            test_type = 'click'
-        return launcher, test_type
+        return launcher
 
     def setUp(self):
-        self.pointing_device = Pointer(self.input_device_class.create())
         super(RemindersAppTestCase, self).setUp()
-        launcher, test_type = self.get_launcher_and_type()
-        self.app = reminders.RemindersApp(launcher())
+        self.app = reminders.RemindersApp(self.get_launcher())
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_local(self):

@@ -14,28 +14,57 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
+from gi.repository import Accounts
+from testtools.matchers import HasLength
+
 from reminders import credentials, evernote, tests
 
 
-class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
+logger = logging.getLogger(__name__)
+
+
+class EvernoteCredentialsTestCase(tests.BaseTestCaseWithTempHome):
 
     def setUp(self):
-        super(RemindersTestCaseWithAccount, self).setUp()
-        no_account_dialog = self.app.main_view.no_account_dialog
-        self.add_evernote_account()
-        no_account_dialog.wait_until_destroyed()
-        self.evernote_client = evernote.SandboxEvernoteClient()
+        super(EvernoteCredentialsTestCase, self).setUp()
+        self.account_manager = credentials.AccountManager()
 
     def add_evernote_account(self):
-        account_manager = credentials.AccountManager()
-        account = account_manager.add_evernote_account(
+        account = self.account_manager.add_evernote_account(
             'dummy', 'dummy', evernote.TEST_OAUTH_TOKEN)
-        self.addCleanup(account_manager.delete_account, account)
-        del account_manager._manager
-        del account_manager
+        self.addCleanup(self.delete_account_and_manager, account)
+        return account
 
-    def test1(self):
-        pass
+    def delete_account_and_manager(self, account):
+        if account.id in self.account_manager._manager.list():
+            self.account_manager.delete_account(account)
+        del self.account_manager._manager
+        del self.account_manager
 
-    def test2(self):
-        pass
+    def test_add_evernote_account_must_enable_it(self):
+        account = self.add_evernote_account()
+
+        self.assertTrue(account.get_enabled())
+
+    def test_add_evernote_account_must_set_provider(self):
+        account = self.add_evernote_account()
+
+        self.assertEqual(account.get_provider_name(), 'evernote')
+
+    def test_add_evernote_account_must_enable_evernote_service(self):
+        account = self.add_evernote_account()
+        services = account.list_services()
+
+        self.assertThat(services, HasLength(1))
+        self.assertEqual(services[0].get_name(), 'evernote')
+        service = Accounts.AccountService.new(account, services[0])
+        self.assertTrue(service.get_enabled())
+
+    def test_delete_evernote_account_must_remove_it(self):
+        account = self.add_evernote_account()
+        self.assertThat(self.account_manager._manager.list(), HasLength(1))
+
+        self.account_manager.delete_account(account)
+        self.assertThat(self.account_manager._manager.list(), HasLength(0))
