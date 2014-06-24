@@ -37,6 +37,7 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
+                objectName: "addNotebookButton"
                 text: i18n.tr("Add notebook")
                 iconName: "add"
                 onTriggered: {
@@ -44,7 +45,7 @@ Page {
                 }
             }
         }
- 
+
         ToolbarButton {
             action: Action {
                 text: i18n.tr("Search")
@@ -152,7 +153,7 @@ Page {
                 visible: !notebooks.loading && notebooks.error
                 text: notebooks.error
             }
-            
+
         }
 
         Item {
