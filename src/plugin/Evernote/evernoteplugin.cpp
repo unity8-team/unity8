@@ -51,6 +51,10 @@ static QObject* connectionProvider(QQmlEngine* /* engine */, QJSEngine* /* scrip
 
 void EvernotePlugin::registerTypes(const char *uri)
 {
+    if (QCoreApplication::arguments().contains("--sandbox") || QCoreApplication::arguments().contains("-s")) {
+        EvernoteConnection::instance()->setUseSandbox(true);
+    }
+
     qmlRegisterSingletonType<UserStore>(uri, 0, 1, "UserStore", userStoreProvider);
     qmlRegisterSingletonType<NotesStore>(uri, 0, 1, "NotesStore", notesStoreProvider);
     qmlRegisterSingletonType<EvernoteConnection>(uri, 0, 1, "EvernoteConnection", connectionProvider);

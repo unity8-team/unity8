@@ -43,6 +43,7 @@ class EvernoteJob;
 class EvernoteConnection : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool useSandbox READ useSandbox WRITE setUseSandbox NOTIFY useSandboxChanged)
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
 
     friend class NotesStoreJob;
@@ -60,6 +61,9 @@ public:
     static EvernoteConnection* instance();
     ~EvernoteConnection();
 
+    bool useSandbox() const;
+    void setUseSandbox(bool useSandbox);
+
     QString token() const;
     void setToken(const QString &token);
 
@@ -69,6 +73,7 @@ public slots:
     void clearToken();
 
 signals:
+    void useSandboxChanged();
     void tokenChanged();
 
 private slots:
@@ -81,9 +86,11 @@ private:
     explicit EvernoteConnection(QObject *parent = 0);
     static EvernoteConnection *s_instance;
 
-    void setupUserStore();
-    void setupNotesStore();
+    void setupEvernoteConnection();
+    void setupUserStore(const QString &hostname);
+    void setupNotesStore(const QString &hostname);
 
+    bool m_useSandbox;
     bool m_useSSL;
     QString m_token;
 
