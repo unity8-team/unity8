@@ -129,7 +129,8 @@ class NotebooksPage(_Page):
 
         """
         original_number_of_books = self._get_notebooks_listview().count
-        self.main_view.open_toolbar().click_button('addNotebookButton')
+        header = self.main_view.get_header()
+        header.click_action_button('addNotebookButton')
         title_textfield = self.select_single(
             ubuntuuitoolkit.TextField, objectName='newNoteTitleTextField')
         title_textfield.write(title)

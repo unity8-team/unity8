@@ -94,7 +94,8 @@ QString Notebook::lastUpdatedString() const
 {
     QDate updateDate = m_lastUpdated.date();
     QDate today = QDate::currentDate();
-    if (updateDate == today) {
+
+    if (updateDate == today || updateDate.isNull()) {
         // TRANSLATORS: this is part of a longer string - "Last updated: today"
         return gettext("today");
     }

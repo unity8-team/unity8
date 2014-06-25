@@ -30,28 +30,23 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            text: i18n.tr("Search")
-            iconName: "search"
-            onTriggered: {
-                pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
-            }
-        }
-
-        ToolbarSpacer { }
-
-        ToolbarButton {
-            text: i18n.tr("Accounts")
-            iconName: "contacts-app-symbolic"
-            visible: accounts.count > 1
-            onTriggered: {
-                openAccountPage(true);
+            action: Action {
+                text: i18n.tr("Search")
+                iconName: "search"
+                onTriggered: {
+                    pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                }
             }
         }
 
         ToolbarButton {
-            text: i18n.tr("Add reminder")
-            iconName: "add"
-            onTriggered: {
+            action: Action {
+                text: i18n.tr("Accounts")
+                iconName: "contacts-app-symbolic"
+                visible: accounts.count > 1
+                onTriggered: {
+                    openAccountPage(true);
+                }
             }
         }
     }
