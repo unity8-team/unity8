@@ -15,6 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import time
 import threading
 
 from gi.repository import Accounts, GLib, Signon
@@ -67,6 +68,9 @@ class AccountManager(object):
 
         self._join_main_loop()
 
+        # XXX Sometimes, the account fails to be enabled. This sleep seems to
+        # fix it but we haven't yet found the reason. --elopio - 2014-06-25
+        time.sleep(10)
         self._enable_evernote_service(account)
 
         logger.info('Created the account with id: {}.'.format(account.id))
