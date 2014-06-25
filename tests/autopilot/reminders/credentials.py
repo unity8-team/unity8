@@ -21,10 +21,12 @@ from gi.repository import Accounts, GLib, Signon
 
 
 class CredentialsException(Exception):
+
     """Exception for credentials problems."""
 
 
 class AccountManager(object):
+
     """Manager for online accounts."""
 
     def __init__(self):

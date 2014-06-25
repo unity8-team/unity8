@@ -25,6 +25,7 @@ import reminders
 
 
 class FakeURLDispatcherService(object):
+
     """Fake URL Dispatcher service using a dbusmock interface."""
 
     def __init__(self):
