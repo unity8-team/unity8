@@ -72,7 +72,7 @@ MainView {
                     iconSource: "image://theme/calendar"
                     iconColor: "red"
                     text: i18n.tr("Standard Menu")
-                    control: Component {
+                    component: Component {
                         Button {
                             text: "Press Me"
                         }
