@@ -64,6 +64,12 @@ MainView {
                 width: flickable.width
                 height: childrenRect.height
 
+                StandardMenu {
+                    iconSource: "image://theme/calendar"
+                    iconColor: "red"
+                    text: i18n.tr("Standard Menu")
+                }
+
                 SliderMenu {
                     id: slider
                     text: i18n.tr("Slider")
