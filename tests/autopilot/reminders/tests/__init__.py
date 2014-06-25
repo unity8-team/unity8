@@ -17,7 +17,6 @@
 """Reminders app autopilot tests."""
 
 import os
-import shutil
 import logging
 
 import fixtures
@@ -61,7 +60,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         # an environment variable instead
         self.useFixture(
             toolkit_fixtures.InitctlEnvironmentVariable(
-            XDG_CONFIG_HOME=temp_xdg_config_home))
+                XDG_CONFIG_HOME=temp_xdg_config_home))
         self.useFixture(
             fixtures.EnvironmentVariable(
                 'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
