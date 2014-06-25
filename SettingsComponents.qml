@@ -65,10 +65,20 @@ MainView {
                 height: childrenRect.height
 
                 StandardMenu {
+                    text: i18n.tr("Standard Menu")
+                }
+
+                StandardMenu {
                     iconSource: "image://theme/calendar"
                     iconColor: "red"
                     text: i18n.tr("Standard Menu")
+                    component: Component {
+                        Button {
+                            text: "Press Me"
+                        }
+                    }
                 }
+
 
                 SliderMenu {
                     id: slider

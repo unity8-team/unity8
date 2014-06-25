@@ -20,6 +20,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1 as Components
 import Ubuntu.Settings.Components 0.1 as USC
 import Ubuntu.Components.ListItems 0.1 as ListItems
+import QtQuick.Layouts 1.1
 
 ListItems.Empty {
     id: menu
@@ -27,32 +28,40 @@ ListItems.Empty {
     property alias iconSource: iconVisual.source
     property alias text: label.text
     property alias iconColor: iconVisual.color
+    property alias component: componentLoader.sourceComponent
 
-    USC.IconVisual {
-        id: iconVisual
-        visible: status == Image.Ready
-        color: Theme.palette.selected.backgroundText
-
-        height: Math.min(units.gu(3), parent.height - units.gu(1))
-        width: height
+    RowLayout {
 
         anchors {
-            left: parent.left
+            fill: parent
             leftMargin: menu.__contentsMargins
-            verticalCenter: parent.verticalCenter
-        }
-    }
-
-    Components.Label {
-        id: label
-        anchors {
-            verticalCenter: parent.verticalCenter
-            left: iconVisual.visible ? iconVisual.right : parent.left
-            leftMargin: menu.__contentsMargins
-            right: parent.right
             rightMargin: menu.__contentsMargins
         }
-        elide: Text.ElideRight
-        opacity: label.enabled ? 1.0 : 0.5
+        spacing: menu.__contentsMargins
+
+        USC.IconVisual {
+            id: iconVisual
+            visible: status == Image.Ready
+            color: Theme.palette.selected.backgroundText
+
+            readonly property real size: Math.min(units.gu(3), parent.height - menu.__contentsMargins)
+
+            height: size
+            width: size
+            Layout.alignment: Qt.AlignVCenter
+        }
+
+        Components.Label {
+            id: label
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
+
+            elide: Text.ElideRight
+            opacity: label.enabled ? 1.0 : 0.5
+        }
+
+        Loader {
+            id: componentLoader
+        }
     }
 }
