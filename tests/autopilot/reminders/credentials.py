@@ -69,6 +69,7 @@ class AccountManager(object):
 
         self._enable_evernote_service(account)
 
+        logger.info('Created the account with id: {}.'.format(account.id))
         self._log_accounts_info()
         return account
 
@@ -147,6 +148,7 @@ class AccountManager(object):
 
     def _log_accounts_info(self):
         account_ids = self._manager.list()
+        logger.debug('Existing accounts: {}.'.format(account_ids))
         for id_ in account_ids:
             account = self._manager.get_account(id_)
             self._log_account_info(account)
