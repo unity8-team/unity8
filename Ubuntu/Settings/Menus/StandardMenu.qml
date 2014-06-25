@@ -28,7 +28,7 @@ ListItems.Empty {
     property alias iconSource: iconVisual.source
     property alias text: label.text
     property alias iconColor: iconVisual.color
-    property alias component: componentLoader.sourceComponent
+    property alias control: componentLoader.sourceComponent
 
     RowLayout {
 
