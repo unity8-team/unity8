@@ -147,6 +147,7 @@ class AccountManager(object):
 
     def _log_account_info(self, account):
         logger.debug('Account info:')
+        logger.debug('id: {}'.format(account.id))
         logger.debug('provider: {}'.format(account.get_provider_name()))
         logger.debug('enabled: {}'.format(account.get_enabled()))
         logger.debug('Account services:')
