@@ -69,7 +69,7 @@ class AccountManager(object):
 
         self._enable_evernote_service(account)
 
-        self._log_account_info(account)
+        self._log_accounts_info()
         return account
 
     def _create_account(self):
@@ -144,6 +144,12 @@ class AccountManager(object):
     def _on_service_enabled(self, account, error, _):
         if error:
             self._quit_main_loop_on_error(error, 'enabling service')
+
+    def _log_accounts_info(self):
+        account_ids = self._manager.list()
+        for id_ in account_ids:
+            account = self.manager.get_account(id_)
+            self._log_account_info(account)
 
     def _log_account_info(self, account):
         logger.debug('Account info:')
