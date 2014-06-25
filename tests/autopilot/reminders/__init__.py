@@ -33,10 +33,12 @@ logger = logging.getLogger(__name__)
 
 
 class RemindersAppException(Exception):
+
     """Exception raised when there's an error in the Reminders App."""
 
 
 class RemindersApp(object):
+
     """Autopilot helper object for the Reminders application."""
 
     def __init__(self, app_proxy):
@@ -55,6 +57,7 @@ class RemindersApp(object):
 
 
 class MainView(toolkit_emulators.MainView):
+
     """Autopilot custom proxy object for the MainView."""
 
     def __init__(self, *args):
@@ -76,6 +79,7 @@ class MainView(toolkit_emulators.MainView):
 
 
 class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+
     """Autopilot custom proxy object for the no account dialog."""
 
     @classmethod
@@ -110,10 +114,12 @@ class _Page(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
 
 
 class PulldownListView(ubuntuuitoolkit.QQuickListView):
+
     """Autopilot custom proxy object for the PulldownListView."""
 
 
 class NotebooksPage(_Page):
+
     """Autopilot custom proxy object for the Notebooks page."""
 
     def add_notebook(self, title):
@@ -163,6 +169,7 @@ class NotebooksPage(_Page):
 
 
 class NotebooksDelegate(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+
     """Autopilot custom proxy object for the NotebooksDelegate."""
 
     def get_title(self):

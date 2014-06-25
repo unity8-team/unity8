@@ -96,7 +96,7 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         # TODO there's a bug with the last updated value: http://pad.lv/1318751
         # so we can't check the full tuple. Uncomment this as soon as the bug
         # is fixed. --elopio - 2014-05-12
-        #self.assertEqual(
+        # self.assertEqual(
         #    last_notebook,
         #    (test_notebook_title, 'Last edited today', 'Private', 0))
         self.assertEqual(last_notebook[0], test_notebook_title)
