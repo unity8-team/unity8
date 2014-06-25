@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <service id="evernote">
   <type>sharing</type>
-  <name>Evernote</name>
-  <icon>evernote</icon>
-  <provider>evernote</provider>
+  <name>Evernote Developer Sandbox</name>
+  <icon>evernote-sandbox</icon>
+  <provider>evernote-sandbox</provider>
   <translations>account-plugins</translations>
 </service>
