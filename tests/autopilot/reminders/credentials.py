@@ -172,7 +172,7 @@ class AccountManager(object):
         :param account: The account to delete.
 
         """
-        logger.info('Deleting the account with id {}..'.format(account.id))
+        logger.info('Deleting the account with id {}.'.format(account.id))
         self._start_main_loop()
         account.delete()
         account.store(self._on_account_deleted, None)
