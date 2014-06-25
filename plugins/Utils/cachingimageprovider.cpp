@@ -35,7 +35,6 @@ using namespace std;
 CachingImageProvider::CachingImageProvider()
     : QQuickImageProvider(QQmlImageProviderBase::Image, QQmlImageProviderBase::ForceAsynchronousImageLoading)
 {
-    qRegisterMetaType<CachingTask*>("CachingTask*");
     m_workerThread.start();
 }
 

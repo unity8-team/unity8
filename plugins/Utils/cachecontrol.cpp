@@ -34,6 +34,7 @@ using namespace std;
 
 CacheControl::CacheControl(QObject* parent): QObject(parent)
 {
+    qRegisterMetaType<CachingTask*>("CachingTask*");
 }
 
 void CacheControl::submitTask(CachingTask* task)
@@ -68,7 +69,7 @@ void CacheControl::networkRequestFinished(QNetworkReply* reply)
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Error downloading from the network:" << reply->errorString();
         task->setResult(QByteArray());
-        task->deleteLater();
+        delete task;
         return;
     }
 
@@ -83,7 +84,7 @@ void CacheControl::networkRequestFinished(QNetworkReply* reply)
     }
 
     task->setResult(reply->readAll());
-    task->deleteLater();
+    delete task;
 }
 
 CachingTask::CachingTask(QObject* parent): QObject(parent)
