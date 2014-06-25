@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013-2014 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import "../Components/ListItems" as ListItems
 FocusScope {
     id: scopeView
 
-    property Scope scope: null
+    property var scope: null
     property SortFilterProxyModel categories: categoryFilter
     property bool isCurrent: false
     property alias moving: categoryView.moving
@@ -128,7 +128,7 @@ FocusScope {
 
             CardTool {
                 id: cardTool
-
+                objectName: "cardTool"
                 count: results.count
                 template: model.renderer
                 components: model.components
@@ -141,11 +141,13 @@ FocusScope {
                     top: parent.top
                     left: parent.left
                     right: parent.right
+                    topMargin: hasSectionHeader ? 0 : units.gu(2)
                 }
 
                 source: {
                     switch (cardTool.categoryLayout) {
                         case "carousel": return "CardCarousel.qml";
+                        case "vertical-journal": return "CardVerticalJournal.qml";
                         case "running-apps": return "Apps/RunningApplicationsGrid.qml";
                         case "grid":
                         default: return "CardFilterGrid.qml";
@@ -183,12 +185,11 @@ FocusScope {
                 Connections {
                     target: rendererLoader.item
                     onClicked: {
-                        if (scopeView.scope.id === "scopes" || (scopeView.scope.id == "clickscope" && categoryId == "local")) {
+                        if (scopeView.scope.id === "scopes" || (scopeView.scope.id == "clickscope" && (categoryId == "local" || categoryId == "store"))) {
                             // TODO Technically it is possible that calling activate() will make the scope emit
                             // previewRequested so that we show a preview but there's no scope that does that yet
                             // so it's not implemented
-                            var item = target.model.get(index);
-                            scopeView.scope.activate(item.result)
+                            scopeView.scope.activate(result)
                         } else {
                             previewListView.model = target.model;
                             previewListView.currentIndex = -1
@@ -201,6 +202,14 @@ FocusScope {
                         previewListView.currentIndex = -1
                         previewListView.currentIndex = index;
                         previewListView.open = true
+                    }
+                    onExpandableChanged: {
+                        // This can happen with the VJ that doesn't know how height it will be on creation
+                        // so doesn't set expandable until a bit too late for onLoaded
+                        if (rendererLoader.item.expandable) {
+                            var shouldFilter = baseItem.category != categoryView.expandedCategoryId;
+                            rendererLoader.item.setFilter(shouldFilter, false /*animate*/);
+                        }
                     }
                 }
                 Connections {
@@ -244,18 +253,20 @@ FocusScope {
                         }
                     }
 
-                    if (item && item.hasOwnProperty("delegateCreationBegin")) {
+                    if (item && item.hasOwnProperty("displayMarginBeginning")) {
+                        // TODO do we need item.originY here, test 1300302 once we have a silo
+                        // and we can run it on the phone
                         if (baseItem.y + baseItem.height <= 0) {
                             // Not visible (item at top of the list viewport)
-                            item.delegateCreationBegin = item.originY + baseItem.height
-                            item.delegateCreationEnd = item.originY + baseItem.height
+                            item.displayMarginBeginning = -baseItem.height;
+                            item.displayMarginEnd = 0;
                         } else if (baseItem.y >= categoryView.height) {
                             // Not visible (item at bottom of the list viewport)
-                            item.delegateCreationBegin = item.originY
-                            item.delegateCreationEnd = item.originY
+                            item.displayMarginBeginning = 0;
+                            item.displayMarginEnd = -baseItem.height;
                         } else {
-                            item.delegateCreationBegin = item.originY + Math.max(-baseItem.y, 0)
-                            item.delegateCreationEnd = item.originY + Math.min(categoryView.height + item.delegateCreationBegin, baseItem.height)
+                            item.displayMarginBeginning = -Math.max(-baseItem.y, 0);
+                            item.displayMarginEnd = -Math.max(baseItem.height - categoryView.height + baseItem.y, 0)
                         }
                     }
                 }
