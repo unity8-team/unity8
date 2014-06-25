@@ -15,7 +15,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import os
 import threading
 
 from gi.repository import Accounts, GLib, Signon
@@ -32,7 +31,6 @@ class AccountManager(object):
     """Manager for online accounts."""
 
     def __init__(self):
-        os.system('pkill signond')
         self._manager = Accounts.Manager.new()
 
     def _start_main_loop(self):

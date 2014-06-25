@@ -41,8 +41,16 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
     """
 
     def setUp(self):
+        self.kill_signond()
+        self.addCleanup(self.kill_signond)
         super(BaseTestCaseWithTempHome, self).setUp()
         self.home_dir = self._patch_home()
+
+    def kill_signond(self):
+        # We kill signond so it's restarted using the temporary HOME. Otherwise
+        # it will remain running until it has 5 seconds of inactivity, keeping
+        # reference to other directories.
+        os.system('pkill signond')
 
     def _patch_home(self):
         """ mock /home for testing purposes to preserve user data
