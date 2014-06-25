@@ -21,6 +21,7 @@
 
 #include <QQuickImageProvider>
 #include <QNetworkAccessManager>
+#include <QScopedPointer>
 #include <QThread>
 
 #include <future>
@@ -43,24 +44,34 @@ private:
     QString m_url;
 };
 
+class CacheControl: public QObject
+{
+    Q_OBJECT
+
+public:
+    CacheControl(QObject* parent = 0);
+
+public Q_SLOTS:
+    void submitTask(CachingTask*);
+
+private Q_SLOTS:
+    void networkRequestFinished(QNetworkReply*);
+
+private:
+    QScopedPointer<QNetworkAccessManager> m_networkAccessManager;
+    QMap<QNetworkReply*, CachingTask*> m_taskMap;
+};
+
 class CachingWorkerThread: public QThread
 {
     Q_OBJECT
 
 public:
     CachingWorkerThread(QObject* parent = 0);
-
-    void run() override;
-
-public Q_SLOTS:
-    void processTask(CachingTask*);
-
-private Q_SLOTS:
-    void networkRequestFinished(QNetworkReply*);
+    std::future<QByteArray> submitTask(QString const&);
 
 private:
-    QNetworkAccessManager* m_networkAccessManager;
-    QMap<QNetworkReply*, CachingTask*> m_taskMap;
+    QScopedPointer<CacheControl> m_controller;
 };
 
 class CachingImageProvider : public QQuickImageProvider

@@ -32,6 +32,57 @@
 
 using namespace std;
 
+CacheControl::CacheControl(QObject* parent): QObject(parent)
+{
+}
+
+void CacheControl::submitTask(CachingTask* task)
+{
+    // lazy init of the network access manager
+    if (!m_networkAccessManager) {
+        m_networkAccessManager.reset(new QNetworkAccessManager(this));
+        QNetworkDiskCache* cache = new QNetworkDiskCache(this);
+        cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+        m_networkAccessManager->setCache(cache);
+
+        QObject::connect(m_networkAccessManager.data(), &QNetworkAccessManager::finished, this, &CacheControl::networkRequestFinished, Qt::DirectConnection);
+    }
+
+    QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(QUrl(task->url())));
+    m_taskMap.insert(reply, task);
+}
+
+void CacheControl::networkRequestFinished(QNetworkReply* reply)
+{
+    reply->deleteLater();
+
+    if (!m_taskMap.contains(reply)) {
+        return;
+    }
+
+    CachingTask *task = m_taskMap.take(reply);
+
+    if (reply->error() != QNetworkReply::NoError) {
+        qWarning() << "Error downloading from the network:" << reply->errorString();
+        task->setResult(QByteArray());
+        task->deleteLater();
+        return;
+    }
+
+    QVariant redirectUrl(reply->attribute(QNetworkRequest::RedirectionTargetAttribute));
+    if (redirectUrl.isValid()) {
+        // follow the url
+        QUrl url(reply->url().resolved(redirectUrl.toUrl()));
+        // update the task
+        task->setUrl(url.toString());
+        m_taskMap.insert(m_networkAccessManager->get(QNetworkRequest(url)), task);
+        return;
+    }
+
+    task->setResult(reply->readAll());
+    task->deleteLater();
+}
+
 CachingTask::CachingTask(QObject* parent): QObject(parent)
 {
 }
@@ -56,56 +107,31 @@ void CachingTask::setResult(QByteArray const& result)
     m_promise.set_value(result);
 }
 
-CachingWorkerThread::CachingWorkerThread(QObject* parent): QThread(parent),
-    m_networkAccessManager(nullptr)
+CachingWorkerThread::CachingWorkerThread(QObject* parent): QThread(parent)
 {
 }
 
-void CachingWorkerThread::run()
+std::future<QByteArray> CachingWorkerThread::submitTask(QString const& uri)
 {
-    QScopedPointer<QNetworkAccessManager> manager(new QNetworkAccessManager);
-    QScopedPointer<QNetworkDiskCache> cache(new QNetworkDiskCache);
-    cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
-    manager->setCache(cache.data());
-
-    m_networkAccessManager = manager.data();
-    QObject::connect(m_networkAccessManager, &QNetworkAccessManager::finished, this, &CachingWorkerThread::networkRequestFinished);
-
-    // run the main loop
-    exec();
-
-    m_networkAccessManager = nullptr;
-}
-
-void CachingWorkerThread::processTask(CachingTask* task)
-{
-    QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(QUrl(task->url())));
-    m_taskMap.insert(reply, task);
-}
-
-void CachingWorkerThread::networkRequestFinished(QNetworkReply* reply)
-{
-    reply->deleteLater();
-
-    if (!m_taskMap.contains(reply)) {
-        return;
+    if (!m_controller) {
+        m_controller.reset(new CacheControl);
+        m_controller->moveToThread(this);
     }
 
-    CachingTask *task = m_taskMap.take(reply);
-    task->deleteLater();
+    CachingTask *task = new CachingTask;
+    task->setUrl(uri);
+    task->moveToThread(this);
+    task->setParent(this);
 
-    if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "Error downloading from the network:" << reply->errorString();
-        task->setResult(QByteArray());
-        return;
-    }
+    QMetaObject::invokeMethod(m_controller.data(), "submitTask", Q_ARG(CachingTask*, task));
 
-    task->setResult(reply->readAll());
+    return task->getFuture();
 }
 
 CachingImageProvider::CachingImageProvider()
     : QQuickImageProvider(QQmlImageProviderBase::Image, QQmlImageProviderBase::ForceAsynchronousImageLoading)
 {
+    qRegisterMetaType<CachingTask*>("CachingTask*");
     m_workerThread.start();
 }
 
@@ -125,17 +151,18 @@ QImage CachingImageProvider::requestImage(const QString &id, QSize *realSize, co
     }
 
     QString uri = query.queryItemValue(QLatin1String("u"), QUrl::FullyEncoded);
-    CachingTask *task = new CachingTask;
-    task->moveToThread(&m_workerThread);
-    task->setUrl(uri);
 
-    QMetaObject::invokeMethod(&m_workerThread, "processTask", Qt::QueuedConnection, Q_ARG(CachingTask*, task));
-
-    // FIXME: catch exceptions?
-    QByteArray data = task->getFuture().get();
+    auto future = m_workerThread.submitTask(uri);
 
     QImage result;
-    result.loadFromData(data);
+    try {
+        QByteArray data = future.get();
+        result.loadFromData(data);
+    } catch (...) {
+        // just return the invalid image
+    }
+
+    *realSize = result.size();
 
     return result;
 }
