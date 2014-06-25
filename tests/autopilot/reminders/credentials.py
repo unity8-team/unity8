@@ -148,7 +148,7 @@ class AccountManager(object):
     def _log_accounts_info(self):
         account_ids = self._manager.list()
         for id_ in account_ids:
-            account = self.manager.get_account(id_)
+            account = self._manager.get_account(id_)
             self._log_account_info(account)
 
     def _log_account_info(self, account):
