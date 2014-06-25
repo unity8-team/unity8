@@ -16,8 +16,9 @@
 
 """Reminders app autopilot tests."""
 
-import os
 import logging
+import os
+import subprocess
 
 import fixtures
 from autopilot import logging as autopilot_logging
@@ -49,7 +50,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         # We kill signond so it's restarted using the temporary HOME. Otherwise
         # it will remain running until it has 5 seconds of inactivity, keeping
         # reference to other directories.
-        os.system('pkill -9 signond')
+        subprocess.call(['pkill', '-9', 'signond'])
 
     def _patch_home(self):
         fake_home_fixture = toolkit_fixtures.FakeHome()
