@@ -20,59 +20,8 @@
 #define CACHING_IMAGE_PROVIDER_H_
 
 #include <QQuickImageProvider>
-#include <QNetworkAccessManager>
-#include <QScopedPointer>
-#include <QThread>
 
-#include <future>
-
-class CachingTask: public QObject
-{
-    Q_OBJECT
-
-public:
-    CachingTask(QObject* parent = 0);
-
-    void setUrl(QString const& url);
-    QString url() const;
-
-    std::future<QByteArray> getFuture();
-    void setResult(QByteArray const& result);
-
-private:
-    std::promise<QByteArray> m_promise;
-    QString m_url;
-};
-
-class CacheControl: public QObject
-{
-    Q_OBJECT
-
-public:
-    CacheControl(QObject* parent = 0);
-
-public Q_SLOTS:
-    void submitTask(CachingTask*);
-
-private Q_SLOTS:
-    void networkRequestFinished(QNetworkReply*);
-
-private:
-    QScopedPointer<QNetworkAccessManager> m_networkAccessManager;
-    QMap<QNetworkReply*, CachingTask*> m_taskMap;
-};
-
-class CachingWorkerThread: public QThread
-{
-    Q_OBJECT
-
-public:
-    CachingWorkerThread(QObject* parent = 0);
-    std::future<QByteArray> submitTask(QString const&);
-
-private:
-    QScopedPointer<CacheControl> m_controller;
-};
+#include "cachecontrol.h"
 
 class CachingImageProvider : public QQuickImageProvider
 {
