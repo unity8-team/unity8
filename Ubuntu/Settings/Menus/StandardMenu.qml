@@ -49,7 +49,7 @@ ListItems.Empty {
             verticalCenter: parent.verticalCenter
             left: iconVisual.visible ? iconVisual.right : parent.left
             leftMargin: menu.__contentsMargins
-            right: rightLabel.left
+            right: parent.left
             rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
