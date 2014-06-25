@@ -35,12 +35,16 @@ public:
     void setUrl(QString const& url);
     QString url() const;
 
+    int hops() const;
+    void hop();
+
     std::future<QByteArray> getFuture();
     void setResult(QByteArray const& result);
 
 private:
     std::promise<QByteArray> m_promise;
     QString m_url;
+    int m_hops;
 };
 
 class CacheControl: public QObject

@@ -32,6 +32,8 @@
 
 using namespace std;
 
+#define MAX_HOPS 20
+
 CacheControl::CacheControl(QObject* parent): QObject(parent)
 {
     qRegisterMetaType<CachingTask*>("CachingTask*");
@@ -74,11 +76,12 @@ void CacheControl::networkRequestFinished(QNetworkReply* reply)
     }
 
     QVariant redirectUrl(reply->attribute(QNetworkRequest::RedirectionTargetAttribute));
-    if (redirectUrl.isValid()) {
+    if (redirectUrl.isValid() && task->hops() < MAX_HOPS) {
         // follow the url
         QUrl url(reply->url().resolved(redirectUrl.toUrl()));
         // update the task
         task->setUrl(url.toString());
+        task->hop();
         m_taskMap.insert(m_networkAccessManager->get(QNetworkRequest(url)), task);
         return;
     }
@@ -87,7 +90,7 @@ void CacheControl::networkRequestFinished(QNetworkReply* reply)
     delete task;
 }
 
-CachingTask::CachingTask(QObject* parent): QObject(parent)
+CachingTask::CachingTask(QObject* parent): QObject(parent), m_hops(0)
 {
 }
 
@@ -99,6 +102,16 @@ void CachingTask::setUrl(QString const& url)
 QString CachingTask::url() const
 {
     return m_url;
+}
+
+int CachingTask::hops() const
+{
+    return m_hops;
+}
+
+void CachingTask::hop()
+{
+    m_hops++;
 }
 
 std::future<QByteArray> CachingTask::getFuture()
