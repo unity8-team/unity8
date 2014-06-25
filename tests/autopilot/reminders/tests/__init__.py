@@ -52,14 +52,14 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         temp_dir = temp_dir_fixture.path
         temp_xdg_config_home = os.path.join(temp_dir, '.config')
 
-        #If running under xvfb, as jenkins does,
-        #xsession will fail to start without xauthority file
-        #Thus if the Xauthority file is in the home directory
-        #make sure we copy it to our temp home directory
+        # If running under xvfb, as jenkins does,
+        # xsession will fail to start without xauthority file
+        # Thus if the Xauthority file is in the home directory
+        # make sure we copy it to our temp home directory
         self._copy_xauthority_file(temp_dir)
 
-        #click requires using initctl env (upstart), but the desktop can set
-        #an environment variable instead
+        # click requires using initctl env (upstart), but the desktop can set
+        # an environment variable instead
         self.useFixture(
             toolkit_fixtures.InitctlEnvironmentVariable(
                 HOME=temp_dir, XDG_CONFIG_HOME=temp_xdg_config_home))
