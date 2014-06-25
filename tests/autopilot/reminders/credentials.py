@@ -25,10 +25,12 @@ logger = logging.getLogger(__name__)
 
 
 class CredentialsException(Exception):
+
     """Exception for credentials problems."""
 
 
 class AccountManager(object):
+
     """Manager for online accounts."""
 
     def __init__(self):

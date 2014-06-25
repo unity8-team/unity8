@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseTestCaseWithTempHome(AutopilotTestCase):
+
     """Base test case that patches the home directory
 
     That way we start the tests with a clean environment.
@@ -142,8 +143,8 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
 
 
 class RemindersAppTestCase(BaseTestCaseWithTempHome):
-    """A common test case class that provides several useful methods for
-       reminders-app tests."""
+
+    """Base test case that launches the reminders-app."""
 
     def setUp(self):
         super(RemindersAppTestCase, self).setUp()
