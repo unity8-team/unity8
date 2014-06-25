@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 class BaseTestCaseWithTempHome(AutopilotTestCase):
 
-    """Base test case that patches the home directory
+    """Base test case that patches the home directory.
 
     That way we start the tests with a clean environment.
 
@@ -132,8 +132,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         return temp_dir
 
     def _copy_xauthority_file(self, directory):
-        """ Copy .Xauthority file to directory, if it exists in /home
-        """
+        """Copy .Xauthority file to directory, if it exists in /home."""
         xauth = os.path.expanduser(os.path.join('~', '.Xauthority'))
         if os.path.isfile(xauth):
             logger.debug("Copying .Xauthority to " + directory)
