@@ -7,7 +7,7 @@ install(DIRECTORY ${AUTOPILOT_DIR}
     )
 
 #add depends
-install(DIRECTORY evernot
+install(DIRECTORY evernote
     DESTINATION ${PYTHON_PACKAGE_DIR}
     )
 install(DIRECTORY thrift
