@@ -1,5 +1,4 @@
-# export_qmlplugin macro
-include(Plugins)
-
 # export the artwork files.
-export_artwork(Ubuntu.Settings.Components Ubuntu/Settings/Components/artwork)
+export_qmlfiles(Ubuntu.Settings.Components.Art Ubuntu/Settings/Components/artwork
+  DESTINATION ${QT_IMPORTS_DIR}
+)
