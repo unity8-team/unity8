@@ -1,1 +1,4 @@
-usr/lib/
+/usr/lib/*/qt5/qml/Ubuntu/Settings/Menus/*
+/usr/lib/*/qt5/qml/Ubuntu/Settings/Menus/artwork/*
+/usr/lib/*/qt5/qml/Ubuntu/Settings/Components/*
+/usr/lib/*/qt5/qml/Ubuntu/Settings/Components/artwork/*
