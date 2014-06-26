@@ -8,10 +8,15 @@
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DEVERNOTE_SANDBOX_CONSUMER_KEY="ubuntu" \
+	mkdir -p build/production build/sandbox
+	dh_auto_configure -Bbuild/production -- -DEVERNOTE_SANDBOX_CONSUMER_KEY="ubuntu" \
 		-DEVERNOTE_SANDBOX_CONSUMER_SECRET="44f8ee81a8359500" \
-		-DEVERNOTE_CONSUMER_KEY="canonicalis" \
+		-DEVERNOTE_ACCOUNT_DISPLAY_NAME="Evernote Developer Sandbox" \
+		-DEVERNOTE_ACCOUNT_NAME="evernote-sandbox"
+	dh_auto_configure -Bbuild/production -- -DEVERNOTE_CONSUMER_KEY="canonicalis" \
 		-DEVERNOTE_CONSUMER_SECRET="174a72ce5bffbcad"
+		-DEVERNOTE_ACCOUNT_DISPLAY_NAME="Evernote" \
+		-DEVERNOTE_ACCOUNT_NAME="evernote"
 
 override_dh_install:	
 	dh_install --fail-missing
