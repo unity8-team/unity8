@@ -14,14 +14,11 @@ find_package(Qt5Quick REQUIRED)
 set(OUR_QT_QUICK_LIB ${Qt5Quick_LIBRARIES})
 
 get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
-exec_program(${QMAKE_EXECUTABLE} ARGS "-query QT_INSTALL_QML" OUTPUT_VARIABLE QT_IMPORTS_DIR)
+exec_program(${QMAKE_EXECUTABLE} ARGS "-query QT_INSTALL_QML" OUTPUT_VARIABLE QT_IMPORTS_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 file(TO_CMAKE_PATH "${QT_IMPORTS_DIR}" QT_IMPORTS_DIR)
 
 set(OUR_QT_QUICK_INCLUDE ${Qt5Quick_INCLUDE_DIRS})
 LIST(APPEND QT_PKGCONFIG_DEPENDENCIES "Qt5Quick")
-
-set(UBUNTU_QML_DIR ${QT_IMPORTS_DIR}/Ubuntu)
-set(SETTINGS_COMPONENTS_DIR ${CMAKE_INSTALL_DATADIR}/ubuntu-settings-components)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Quick REQUIRED)
@@ -72,23 +69,8 @@ if(GENERATE_DOC)
     endif()
 endif()
 
-# Install subdirectories
-set(QML_DIRS
-    Ubuntu/Settings
-    )
-
-# Install arch-independent assets under /usr/share
-install(DIRECTORY ${QML_DIRS}
-    DESTINATION ${SETTINGS_COMPONENTS_DIR}
-    )
-
-install(CODE "EXECUTE_PROCESS(COMMAND
-             mkdir -p \$ENV{DESTDIR}${UBUNTU_QML_DIR})")
-install(CODE "EXECUTE_PROCESS(COMMAND
-             ln -sf ${CMAKE_INSTALL_PREFIX}/${SETTINGS_COMPONENTS_DIR}/Settings
-                    \$ENV{DESTDIR}${UBUNTU_QML_DIR}/Settings)")
-
 # Tests
 enable_testing()
 
+add_subdirectory(Ubuntu)
 add_subdirectory(tests)
