@@ -16,6 +16,7 @@
 
 import QtQuick 2.0
 import "../../Components"
+import Utils 0.1
 
 /*! This preview widget shows a horizontal list of images.
  *  The URIs for the images should be an array in widgetData["sources"].
@@ -69,7 +70,7 @@ PreviewWidget {
                 top: parent.top
                 bottom: parent.bottom
             }
-            source: modelData ? modelData : ""
+            source: modelData ? UriMangler.mangle(modelData) : ""
             scaleTo: "height"
             initialWidth: units.gu(13)
         }

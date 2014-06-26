@@ -18,6 +18,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Thumbnailer 0.1
 import "../../Components"
+import Utils 0.1
 
 /*! \brief Preview widget for video.
 
@@ -39,7 +40,7 @@ PreviewWidget {
         scaleTo: "width"
         source: {
             var screenshot = widgetData["screenshot"];
-            if (screenshot) return screenshot;
+            if (screenshot) return UriMangler.mangle(screenshot);
 
             var source = widgetData["source"];
             if (source) {
