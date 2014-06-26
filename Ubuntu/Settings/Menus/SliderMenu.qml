@@ -28,8 +28,8 @@ ListItem.Empty {
     property alias live: slider.live
     property double value: 0.0
 
-    property alias minIcon: leftImage.source
-    property alias maxIcon: rightImage.source
+    property alias minIcon: leftButton.iconSource
+    property alias maxIcon: rightButton.iconSource
 
     signal updated(real value)
 
@@ -125,23 +125,27 @@ ListItem.Empty {
             }
             height: slider.height
 
-            Image {
-                id: leftImage
-                visible: status === Image.Ready
+            Button {
+                id: leftButton
+                objectName: "leftButton"
+                visible: iconSource !== ""
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
+                color: "transparent"
+
+                onClicked: slider.value = slider.minimumValue
             }
 
             Slider {
                 id: slider
                 objectName: "slider"
                 anchors {
-                    left: leftImage.visible ? leftImage.right : row.left
-                    right: rightImage.visible ? rightImage.left : row.right
-                    leftMargin: leftImage.visible ? units.gu(0.5) : 0
-                    rightMargin: rightImage.visible ? units.gu(0.5) : 0
+                    left: leftButton.visible ? leftButton.right : row.left
+                    right: rightButton.visible ? rightButton.left : row.right
+                    leftMargin: leftButton.visible ? units.gu(0.5) : 0
+                    rightMargin: rightButton.visible ? units.gu(0.5) : 0
                 }
                 live: true
 
@@ -173,13 +177,17 @@ ListItem.Empty {
                 }
             }
 
-            Image {
-                id: rightImage
-                visible: status === Image.Ready
+            Button {
+                id: rightButton
+                objectName: "rightButton"
+                visible: iconSource !== ""
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
+                color: "transparent"
+
+                onClicked: slider.value =  slider.maximumValue
             }
         }
     }

@@ -47,6 +47,14 @@ ListItem.Empty {
             verticalCenter: parent.verticalCenter
         }
 
+        // need onCompleted to set the initial value
+        // can't use binding otherwise we will get feedback from connections.
+        Component.onCompleted: {
+            enableCheckConnection = false;
+            checked = menu.checked;
+            enableCheckConnection = true;
+        }
+
         // FIXME : should use Checkbox.toggled signal
         // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
         onCheckedChanged: {
