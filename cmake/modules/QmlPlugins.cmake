@@ -111,6 +111,7 @@ macro(export_qmlplugin PLUGIN VERSION PATH)
     string(REGEX MATCH "[^.]+$" plugin_suffix ${PLUGIN})
     set(target_prefix ${QMLPLUGIN_TARGET_PREFIX}${PLUGIN})
     set(qmltypes_path ${qmlplugin_dir}/${plugin_suffix}.qmltypes)
+    string(REGEX REPLACE "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" qmltypes_source_path "${qmltypes_path}")
 
     # Only generate typeinfo if not cross compiling
     if(NOT CMAKE_CROSSCOMPILING)
@@ -125,7 +126,7 @@ macro(export_qmlplugin PLUGIN VERSION PATH)
 
         if (QMLPLUGIN_DESTINATION)
             # Install the typeinfo file
-            install(FILES ${qmltypes_path}
+            install(FILES ${qmltypes_source_path}
                     DESTINATION ${QMLPLUGIN_DESTINATION}/${PATH}
             )
         endif()
