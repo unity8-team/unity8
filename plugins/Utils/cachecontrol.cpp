@@ -66,12 +66,11 @@ void CacheControl::networkRequestFinished(QNetworkReply* reply)
         return;
     }
 
-    CachingTask *task = m_taskMap.take(reply);
+    QScopedPointer<CachingTask> task(m_taskMap.take(reply));
 
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Error downloading from the network:" << reply->errorString();
         task->setResult(QByteArray());
-        delete task;
         return;
     }
 
@@ -82,12 +81,11 @@ void CacheControl::networkRequestFinished(QNetworkReply* reply)
         // update the task
         task->setUrl(url.toString());
         task->hop();
-        m_taskMap.insert(m_networkAccessManager->get(QNetworkRequest(url)), task);
+        m_taskMap.insert(m_networkAccessManager->get(QNetworkRequest(url)), task.take());
         return;
     }
 
     task->setResult(reply->readAll());
-    delete task;
 }
 
 CachingTask::CachingTask(QObject* parent): QObject(parent), m_hops(0)
