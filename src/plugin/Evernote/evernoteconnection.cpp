@@ -49,14 +49,11 @@ EvernoteConnection* EvernoteConnection::s_instance = 0;
 // application/version; platform/version; [ device/version ]
 // E.g. "Evernote Windows/3.0.1; Windows/XP SP3"
 QString EDAM_CLIENT_NAME = QStringLiteral("Reminders/0.1; Ubuntu/13.10");
-QString EVERNOTE_HOST = QStringLiteral("evernote.com");
-QString EVERNOTE_SANDBOX_HOST = QStringLiteral("sandbox.evernote.com");
 QString EDAM_USER_STORE_PATH = QStringLiteral("/edam/user");
 QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
 EvernoteConnection::EvernoteConnection(QObject *parent) :
     QObject(parent),
-    m_useSandbox(false),
     m_useSSL(true),
     m_currentJob(0),
     m_notesStoreClient(0),
@@ -71,14 +68,13 @@ EvernoteConnection::EvernoteConnection(QObject *parent) :
 
 void EvernoteConnection::setupEvernoteConnection()
 {
-    QString hostname = m_useSandbox ? EVERNOTE_SANDBOX_HOST : EVERNOTE_HOST;
-    setupUserStore(hostname);
-    setupNotesStore(hostname);
+    setupUserStore();
+    setupNotesStore();
 
     connectToEvernote();
 }
 
-void EvernoteConnection::setupUserStore(const QString &hostname)
+void EvernoteConnection::setupUserStore()
 {
     if (m_userstoreClient != 0) {
         delete m_userstoreClient;
@@ -89,25 +85,25 @@ void EvernoteConnection::setupUserStore(const QString &hostname)
 
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
-        socket = sslSocketFactory->createSocket(hostname.toStdString(), 443);
+        socket = sslSocketFactory->createSocket(m_hostname.toStdString(), 443);
         qDebug() << "created UserStore SSL socket";
     } else {
         // Create a non-secure socket
-        socket = boost::shared_ptr<TSocket> (new TSocket(hostname.toStdString(), 80));
+        socket = boost::shared_ptr<TSocket> (new TSocket(m_hostname.toStdString(), 80));
         qDebug() << "created insecure UserStore socket";
     }
 
     // setup UserStore client
     boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
     m_userStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
-                                                                        hostname.toStdString(),
+                                                                        m_hostname.toStdString(),
                                                                         EDAM_USER_STORE_PATH.toStdString()));
 
     boost::shared_ptr<TProtocol> userstoreiprot(new TBinaryProtocol(m_userStoreHttpClient));
     m_userstoreClient = new evernote::edam::UserStoreClient(userstoreiprot);
 }
 
-void EvernoteConnection::setupNotesStore(const QString &hostname)
+void EvernoteConnection::setupNotesStore()
 {
     if (m_notesStoreClient != 0) {
         delete m_notesStoreClient;
@@ -118,18 +114,18 @@ void EvernoteConnection::setupNotesStore(const QString &hostname)
 
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
-        socket = sslSocketFactory->createSocket(hostname.toStdString(), 443);
+        socket = sslSocketFactory->createSocket(m_hostname.toStdString(), 443);
         qDebug() << "created NotesStore SSL socket";
     } else {
         // Create a non-secure socket
-        socket = boost::shared_ptr<TSocket> (new TSocket(hostname.toStdString(), 80));
+        socket = boost::shared_ptr<TSocket> (new TSocket(m_hostname.toStdString(), 80));
         qDebug() << "created insecure NotesStore socket";
     }
 
     // setup NotesStore client
     boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
     m_notesStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
-                                                                        hostname.toStdString(),
+                                                                        m_hostname.toStdString(),
                                                                         EDAM_NOTE_STORE_PATH.toStdString()));
 
     boost::shared_ptr<TProtocol> notesstoreiprot(new TBinaryProtocol(m_notesStoreHttpClient));
@@ -146,22 +142,24 @@ EvernoteConnection *EvernoteConnection::instance()
 
 EvernoteConnection::~EvernoteConnection()
 {
+    delete m_userstoreClient;
+    m_userStoreHttpClient.reset();
     delete m_notesStoreClient;
+    m_notesStoreHttpClient.reset();
 }
 
-bool EvernoteConnection::useSandbox() const
+QString EvernoteConnection::hostname() const
 {
-    return m_useSandbox;
+    return m_hostname;
 }
 
-void EvernoteConnection::setUseSandbox(bool useSandbox)
+void EvernoteConnection::setHostname(const QString &hostname)
 {
-    if (m_useSandbox != useSandbox) {
-        m_useSandbox = useSandbox;
-        emit useSandboxChanged();
+    if (m_hostname != hostname) {
+        m_hostname = hostname;
+        setupEvernoteConnection();
+        emit hostnameChanged();
     }
-
-    setupEvernoteConnection();
 }
 
 QString EvernoteConnection::token() const
@@ -226,6 +224,11 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
 
     m_jobQueue.append(job);
     startJobQueue();
+}
+
+bool EvernoteConnection::isConfigured() const
+{
+    return m_userstoreClient != nullptr && m_notesStoreClient != nullptr && !m_token.isEmpty();
 }
 
 void EvernoteConnection::startJobQueue()

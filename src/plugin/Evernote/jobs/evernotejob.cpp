@@ -47,9 +47,9 @@ EvernoteJob::~EvernoteJob()
 
 void EvernoteJob::run()
 {
-    if (m_token.isEmpty()) {
-        qWarning() << "No token set. Cannot execute job. (" << this->metaObject()->className() << ")";
-        emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("No token set."));
+    if (EvernoteConnection::instance()->isConfigured()) {
+        qWarning() << "EvernoteConnection not set up completely. You need to set a hostname and a token. Cannot execute job. (" << this->metaObject()->className() << ")";
+        emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("Token or hostname not set."));
         return;
     }
 

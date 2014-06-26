@@ -43,7 +43,7 @@ class EvernoteJob;
 class EvernoteConnection : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool useSandbox READ useSandbox WRITE setUseSandbox NOTIFY useSandboxChanged)
+    Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged)
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
 
     friend class NotesStoreJob;
@@ -61,19 +61,21 @@ public:
     static EvernoteConnection* instance();
     ~EvernoteConnection();
 
-    bool useSandbox() const;
-    void setUseSandbox(bool useSandbox);
+    QString hostname() const;
+    void setHostname(const QString &hostname);
 
     QString token() const;
     void setToken(const QString &token);
 
     void enqueue(EvernoteJob *job);
 
+    bool isConfigured() const;
+
 public slots:
     void clearToken();
 
 signals:
-    void useSandboxChanged();
+    void hostnameChanged();
     void tokenChanged();
 
 private slots:
@@ -87,11 +89,11 @@ private:
     static EvernoteConnection *s_instance;
 
     void setupEvernoteConnection();
-    void setupUserStore(const QString &hostname);
-    void setupNotesStore(const QString &hostname);
+    void setupUserStore();
+    void setupNotesStore();
 
-    bool m_useSandbox;
     bool m_useSSL;
+    QString m_hostname;
     QString m_token;
 
     // There must be only one job running at a time
