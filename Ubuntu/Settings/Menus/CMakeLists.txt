@@ -15,6 +15,7 @@ include_directories(
 
 set(SettingsComponentsQml_SOURCES
     plugin.cpp
+    types.h
 )
 add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
 

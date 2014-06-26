@@ -23,6 +23,10 @@
 // self
 #include "plugin.h"
 
+// local
+#include "types.h"
+
 void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
 {
+    qmlRegisterUncreatableType<TransferState>(uri, 0, 1, "TransferState", "Can't create TransferState class");
 }
