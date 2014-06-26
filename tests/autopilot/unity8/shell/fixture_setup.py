@@ -20,6 +20,7 @@
 """Set up and clean up fixtures for the Unity acceptance tests."""
 
 import os
+import subprocess
 import sysconfig
 
 import fixtures
@@ -51,3 +52,42 @@ class FakeScopes(fixtures.Fixture):
                 'Expected library path does not exists: %s.' % (
                     ld_library_path))
         return ld_library_path
+
+
+class LauncherIcon(fixtures.Fixture):
+
+    def setUp(self):
+        super(LauncherIcon, self).setUp()
+        self._add_messaging_app_icon_to_launcher()
+        self.addCleanup(self._set_launcher_icons, self.backup)
+
+    def _backup_launcher_icons(self):
+        raw_output = subprocess.check_output(
+            'gdbus call --system --dest org.freedesktop.Accounts '
+            '--object-path /org/freedesktop/Accounts/User32011 --method '
+            'org.freedesktop.DBus.Properties.Get '
+            'com.canonical.unity.AccountsService launcher-items', shell=True
+        )
+
+        self.backup = raw_output.decode().lstrip("(").rstrip(",)\n")
+
+    def _set_launcher_icons(self, icons_config):
+        subprocess.call(
+            'gdbus call --system --dest org.freedesktop.Accounts '
+            '--object-path /org/freedesktop/Accounts/User32011 --method '
+            'org.freedesktop.DBus.Properties.Set '
+            'com.canonical.unity.AccountsService launcher-items '
+            '"{}"'.format(icons_config), shell=True
+        )
+
+    def _add_messaging_app_icon_to_launcher(self):
+        self._backup_launcher_icons()
+
+        messaging_icon = "<[{ \
+        'count': <0>, \
+        'countVisible': <false>, \
+        'icon': <'image://theme/messages-app'>, \
+        'id': <'messaging-app'>, \
+        'name': <'Messaging'> \
+        }]>"
+        self._set_launcher_icons(messaging_icon)
