@@ -128,6 +128,7 @@ class RemindersAppTestCase(AutopilotTestCase):
     def launch_test_installed(self):
         return self.launch_test_application(
             self.installed_location_binary,
+            '--sandbox',
             '-q ' + self.installed_location_qml,
             '--desktop_file_hint=/usr/share/applications/'
             'reminders.desktop',
