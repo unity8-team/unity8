@@ -1,6 +1,3 @@
-# export_qmlplugin macro
-include(Plugins)
-
 project(UbuntuSettingsMenusQml)
 
 add_subdirectory(artwork)
@@ -31,8 +28,4 @@ target_link_libraries(UbuntuSettingsMenusQml
 
 qt5_use_modules(UbuntuSettingsMenusQml Core Qml Quick)
 
-# export the qmldir, *.qml files.
-export_qmlfiles(Ubuntu.Settings.Menus Ubuntu/Settings/Menus)
-
-# export the qmltypes and plugin files
-export_qmlplugin(Ubuntu.Settings.Menus 0.1 Ubuntu/Settings/Menus TARGETS UbuntuSettingsMenusQml)
+add_usc_plugin(Ubuntu.Settings.Menus 0.1 Ubuntu/Settings/Menus TARGETS UbuntuSettingsMenusQml)
