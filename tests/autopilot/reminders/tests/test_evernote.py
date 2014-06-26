@@ -24,6 +24,7 @@ from reminders import evernote
 
 
 class EvernoteTestCase(testtools.TestCase):
+
     """Test the evernote access with the SDK."""
 
     def setUp(self):

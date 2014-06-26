@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class RemindersAppTestCase(AutopilotTestCase):
+
     """A common test case class that provides several useful methods for
        reminders-app tests."""
 
@@ -90,14 +91,14 @@ class RemindersAppTestCase(AutopilotTestCase):
         temp_dir = temp_dir_fixture.path
         temp_xdg_config_home = os.path.join(temp_dir, '.config')
 
-        #If running under xvfb, as jenkins does,
-        #xsession will fail to start without xauthority file
-        #Thus if the Xauthority file is in the home directory
-        #make sure we copy it to our temp home directory
+        # If running under xvfb, as jenkins does,
+        # xsession will fail to start without xauthority file
+        # Thus if the Xauthority file is in the home directory
+        # make sure we copy it to our temp home directory
         self._copy_xauthority_file(temp_dir)
 
-        #click requires using initctl env (upstart), but the desktop can set
-        #an environment variable instead
+        # click requires using initctl env (upstart), but the desktop can set
+        # an environment variable instead
         if test_type == 'click':
             self.useFixture(
                 toolkit_fixtures.InitctlEnvironmentVariable(
