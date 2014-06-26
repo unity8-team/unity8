@@ -129,7 +129,7 @@ MainView {
 
     AccountServiceModel {
         id: accounts
-        service: "evernote"
+        service: useSandbox ? "evernote-sandbox" : "evernote"
     }
 
     AccountService {
@@ -139,6 +139,9 @@ MainView {
             if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
                 EvernoteConnection.clearToken();
             }
+            print("fooooooooooo", JSON.stringify(accountService.settings))
+            // TODO: add key "hostname" to settings which refers to "evernote.com" or "sandbox.evernote.com"
+//            EvernoteConnection.hostname = accountService.settings['hostname'];
             EvernoteConnection.token = reply.AccessToken;
         }
         onAuthenticationError: {

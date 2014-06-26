@@ -51,10 +51,7 @@ int main(int argc, char *argv[])
         qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
         qDebug() << "    -h|--help     Print this help.";
         qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
-
-        // This is handled in the plugin. Just adding here for the --help
         qDebug() << "    -s|--sandbox  Connect to sandbox.evernote.com instead of evernote.com.";
-
         return 0;
     }
 
@@ -83,6 +80,12 @@ int main(int argc, char *argv[])
         } else {
             qCritical("Library qttestability load failed!");
         }
+    }
+
+    if (args.contains(QLatin1String("-s")) || args.contains("--sandbox")) {
+        view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(true));
+    } else {
+        view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(false));
     }
 
     view.engine()->rootContext()->setContextProperty("tablet", QVariant(false));
