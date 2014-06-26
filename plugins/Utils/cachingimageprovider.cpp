@@ -53,7 +53,7 @@ QImage CachingImageProvider::requestImage(const QString &id, QSize *realSize, co
         return QImage();
     }
 
-    QString uri = query.queryItemValue(QLatin1String("u"), QUrl::FullyEncoded);
+    QString uri = query.queryItemValue(QLatin1String("u"), QUrl::FullyDecoded);
 
     auto future = m_workerThread.submitTask(uri);
 
