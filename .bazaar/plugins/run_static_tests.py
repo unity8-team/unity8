@@ -17,29 +17,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import logging
 import os
 import subprocess
 
-from bzrlib import branch, urlutils
-
-
-logger = logging.getLogger(__name__)
+from bzrlib import branch, errors
 
 
 def run_static_tests(
         local_branch, master_branch, old_revision_number, old_revision_id,
         future_revision_number, future_revision_id, tree_delta, future_tree):
     """Run static tests on the source code."""
-    _run_python_static_tests(master_branch)
+    _run_python_static_tests()
 
 
-def _run_python_static_tests(master_branch):
+def _run_python_static_tests():
     """Run static tests on python code."""
-    if master_branch.basis_tree().has_filename('run_python_static_tests.sh'):
-        os.chdir(urlutils.local_path_from_url(master_branch.base))
+    if os.path.exists('run_python_static_tests.sh'):
         print('Running the python static tests.')
-        subprocess.call('./run_python_static_tests.sh')
+        try:
+            subprocess.check_call('./run_python_static_tests.sh')
+        except subprocess.CalledProcessError:
+            raise errors.BzrError('Python static tests failed.')
     else:
         print('The python static tests will not be run.')
 
