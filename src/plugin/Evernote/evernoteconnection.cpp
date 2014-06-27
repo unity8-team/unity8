@@ -48,7 +48,7 @@ EvernoteConnection* EvernoteConnection::s_instance = 0;
 // The structure should be:
 // application/version; platform/version; [ device/version ]
 // E.g. "Evernote Windows/3.0.1; Windows/XP SP3"
-QString EDAM_CLIENT_NAME = QStringLiteral("Reminders/0.1; Ubuntu/13.10");
+QString EDAM_CLIENT_NAME = QStringLiteral("Reminders/0.4; Ubuntu/14.10");
 QString EDAM_USER_STORE_PATH = QStringLiteral("/edam/user");
 QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
@@ -86,11 +86,11 @@ void EvernoteConnection::setupUserStore()
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
         socket = sslSocketFactory->createSocket(m_hostname.toStdString(), 443);
-        qDebug() << "created UserStore SSL socket";
+        qDebug() << "created UserStore SSL socket to host " << m_hostname;
     } else {
         // Create a non-secure socket
         socket = boost::shared_ptr<TSocket> (new TSocket(m_hostname.toStdString(), 80));
-        qDebug() << "created insecure UserStore socket";
+        qDebug() << "created insecure UserStore socket to host " << m_hostname;
     }
 
     // setup UserStore client
@@ -115,11 +115,11 @@ void EvernoteConnection::setupNotesStore()
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
         socket = sslSocketFactory->createSocket(m_hostname.toStdString(), 443);
-        qDebug() << "created NotesStore SSL socket";
+        qDebug() << "created NotesStore SSL socket to host " << m_hostname;
     } else {
         // Create a non-secure socket
         socket = boost::shared_ptr<TSocket> (new TSocket(m_hostname.toStdString(), 80));
-        qDebug() << "created insecure NotesStore socket";
+        qDebug() << "created insecure NotesStore socket to host " << m_hostname;
     }
 
     // setup NotesStore client

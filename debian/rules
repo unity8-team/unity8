@@ -14,5 +14,5 @@ override_dh_auto_configure:
 		-DEVERNOTE_CONSUMER_KEY="canonicalis" \
 		-DEVERNOTE_CONSUMER_SECRET="174a72ce5bffbcad"
 
-override_dh_install:	
+override_dh_install:
 	dh_install --fail-missing

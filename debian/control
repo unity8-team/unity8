@@ -3,6 +3,7 @@ Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: cmake,
                debhelper (>= 9),
+               dh-exec,
                gettext,
                libboost-dev,
                libssl-dev,
@@ -38,21 +39,21 @@ Description: Expose the Evernote API to QML applications
  This module provides access to the Evernote API from QML applications.
 
 Package: account-plugin-evernote
-Architecture: all
+Architecture: any
 Depends: libaccount-plugin-generic-oauth,
-         qtdeclarative5-evernote0.1,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
+         ${shlibs:Depends},
 Description: Allow Ubuntu to access the Evernote developer sandbox
  This plugin enables users to authenticate to their Evernote accounts,
  providing syncing of Evernote notes across Ubuntu devices.
 
 Package: account-plugin-evernote-sandbox
-Architecture: all
+Architecture: any
 Depends: libaccount-plugin-generic-oauth,
-         qtdeclarative5-evernote0.1,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
+         ${shlibs:Depends},
 Description: Allow Ubuntu to access the Evernote developer sandbox
  This plugin enables developers to authenticate to their Evernote developer
  sandbox account, which allows syncing of Evernote notes across Ubuntu devices.

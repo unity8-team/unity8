@@ -1,3 +1,9 @@
+reminders-app (0.4+bzr179ppa3~utopic) utopic; urgency=medium
+
+  * Installed the Evernote API library alongside the auth plugin
+
+ -- David Planella <david.planella@ubuntu.com>  Fri, 27 Jun 2014 17:54:24 +0200
+
 reminders-app (0.4+bzr178ppa2~utopic) utopic; urgency=medium
 
   * Added the sandbox service to the application file

@@ -1,4 +1,7 @@
+#!/usr/bin/dh-exec
+
 usr/share/accounts/providers/evernote-sandbox.provider
 usr/share/accounts/qml-plugins/evernote-sandbox/Main.qml
 usr/share/accounts/services/evernote-sandbox.service
 usr/share/icons/hicolor/32x32/apps/evernote-sandbox.png
+usr/lib/*/qt5/qml/Evernote usr/lib/${DEB_HOST_MULTIARCH}/ubuntu-system-settings/private
