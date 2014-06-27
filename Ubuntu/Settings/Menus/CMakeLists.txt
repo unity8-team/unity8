@@ -2,21 +2,18 @@ project(UbuntuSettingsMenusQml)
 
 add_subdirectory(artwork)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Quick REQUIRED)
-
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(SettingsComponentsQml_SOURCES
+set(UbuntuSettingsMenusQml_SOURCES
     plugin.cpp
 )
 add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
 
-add_library(UbuntuSettingsMenusQml SHARED
-    ${SettingsComponentsQml_SOURCES}
+add_library(UbuntuSettingsMenusQml MODULE
+    ${UbuntuSettingsMenusQml_SOURCES}
 )
 
 target_link_libraries(UbuntuSettingsMenusQml
