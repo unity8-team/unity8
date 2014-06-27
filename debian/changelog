@@ -1,3 +1,9 @@
+reminders-app (0.4+bzr180ppa4~utopic) utopic; urgency=medium
+
+  * Only the production auth plugin installs the API plugin
+
+ -- David Planella <david.planella@ubuntu.com>  Fri, 27 Jun 2014 19:25:08 +0200
+
 reminders-app (0.4+bzr179ppa3~utopic) utopic; urgency=medium
 
   * Installed the Evernote API library alongside the auth plugin

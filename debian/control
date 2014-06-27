@@ -50,7 +50,8 @@ Description: Allow Ubuntu to access the Evernote developer sandbox
 
 Package: account-plugin-evernote-sandbox
 Architecture: any
-Depends: libaccount-plugin-generic-oauth,
+Depends: account-plugin-evernote,
+         libaccount-plugin-generic-oauth,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
          ${shlibs:Depends},
