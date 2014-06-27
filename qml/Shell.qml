@@ -32,6 +32,7 @@ import "Components"
 import "Notifications"
 import Unity.Notifications 1.0 as NotificationBackend
 import Unity.Session 0.1
+import Ubuntu.PerformanceMetrics 0.1
 
 FocusScope {
     id: shell
@@ -679,5 +680,9 @@ FocusScope {
     Connections {
         target: SessionBroadcast
         onShowHome: showHome()
+    }
+
+    PerformanceOverlay {
+        active: enablePerformanceOverlay
     }
 }

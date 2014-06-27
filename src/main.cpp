@@ -70,6 +70,9 @@ int startShell(int argc, const char** argv, void* server)
 Load the testability driver");
     parser.addOption(testabilityOption);
 
+    QCommandLineOption performanceOverlayOption("performanceoverlay", "Display the performance overlay");
+    parser.addOption(performanceOverlayOption);
+
     if (isUbuntuMirServer) {
         QLibrary unityMir("unity-mir", 1);
         unityMir.load();
@@ -131,6 +134,7 @@ Load the testability driver");
     view->engine()->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
     view->rootContext()->setContextProperty("applicationArguments", &qmlArgs);
     view->rootContext()->setContextProperty("indicatorProfile", indicatorProfile);
+    view->rootContext()->setContextProperty("enablePerformanceOverlay", parser.isSet(performanceOverlayOption));
     if (parser.isSet(framelessOption)) {
         view->setFlags(Qt::FramelessWindowHint);
     }
