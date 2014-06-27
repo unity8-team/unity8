@@ -88,7 +88,7 @@ CachingTask::CachingTask(QObject* parent): QObject(parent), m_hops(0)
 {
 }
 
-void CachingTask::setUrl(QString const& url)
+void CachingTask::setUrl(const QString& url)
 {
     m_url = url;
 }
@@ -113,7 +113,7 @@ std::future<QByteArray> CachingTask::getFuture()
     return m_promise.get_future();
 }
 
-void CachingTask::setResult(QByteArray const& result)
+void CachingTask::setResult(const QByteArray& result)
 {
     m_promise.set_value(result);
 }
@@ -122,7 +122,7 @@ CachingWorkerThread::CachingWorkerThread(QObject* parent): QThread(parent)
 {
 }
 
-std::future<QByteArray> CachingWorkerThread::submitTask(QString const& uri)
+std::future<QByteArray> CachingWorkerThread::submitTask(const QString& uri)
 {
     if (!m_controller) {
         m_controller.reset(new CacheControl);

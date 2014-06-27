@@ -32,14 +32,14 @@ class CachingTask: public QObject
 public:
     CachingTask(QObject* parent = 0);
 
-    void setUrl(QString const& url);
+    void setUrl(const QString& url);
     QString url() const;
 
     int hops() const;
     void hop();
 
     std::future<QByteArray> getFuture();
-    void setResult(QByteArray const& result);
+    void setResult(const QByteArray& result);
 
 private:
     std::promise<QByteArray> m_promise;
@@ -72,7 +72,7 @@ class CachingWorkerThread: public QThread
 public:
     CachingWorkerThread(QObject* parent = 0);
 
-    std::future<QByteArray> submitTask(QString const&);
+    std::future<QByteArray> submitTask(const QString&);
 
 private:
     QScopedPointer<CacheControl> m_controller;
