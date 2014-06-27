@@ -24,13 +24,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QStandardPaths>
-#include <QStringList>
 #include <QByteArray>
-#include <QImage>
 #include <QUrl>
-#include <QUrlQuery>
-
-using namespace std;
 
 #define MAX_HOPS 20
 
@@ -48,7 +43,8 @@ void CacheControl::submitTask(CachingTask* task)
         cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
         m_networkAccessManager->setCache(cache);
 
-        QObject::connect(m_networkAccessManager.data(), &QNetworkAccessManager::finished, this, &CacheControl::networkRequestFinished, Qt::DirectConnection);
+        QObject::connect(m_networkAccessManager.data(), &QNetworkAccessManager::finished,
+                         this, &CacheControl::networkRequestFinished);
     }
 
     // the controller should own the task

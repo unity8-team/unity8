@@ -19,18 +19,11 @@
 #include "cachingimageprovider.h"
 
 #include <QString>
-#include <QNetworkAccessManager>
-#include <QNetworkDiskCache>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QStandardPaths>
 #include <QStringList>
 #include <QByteArray>
 #include <QImage>
 #include <QUrl>
 #include <QUrlQuery>
-
-using namespace std;
 
 CachingImageProvider::CachingImageProvider()
     : QQuickImageProvider(QQmlImageProviderBase::Image, QQmlImageProviderBase::ForceAsynchronousImageLoading)
@@ -60,7 +53,9 @@ QImage CachingImageProvider::requestImage(const QString &id, QSize *realSize, co
     QImage result;
     try {
         QByteArray data = future.get();
-        result.loadFromData(data);
+        if (!data.isEmpty()) {
+            result.loadFromData(data);
+        }
     } catch (...) {
         // just return the invalid image
     }

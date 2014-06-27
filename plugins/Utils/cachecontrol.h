@@ -71,6 +71,7 @@ class CachingWorkerThread: public QThread
 
 public:
     CachingWorkerThread(QObject* parent = 0);
+
     std::future<QByteArray> submitTask(QString const&);
 
 private:

@@ -28,6 +28,7 @@ class CachingImageProvider : public QQuickImageProvider
 public:
     CachingImageProvider();
     ~CachingImageProvider();
+
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
 
 private:
