@@ -1,3 +1,15 @@
+reminders-app (0.4+bzr178ppa2~utopic) utopic; urgency=medium
+
+  * Added the sandbox service to the application file
+
+ -- David Planella <david.planella@ubuntu.com>  Fri, 27 Jun 2014 16:31:00 +0200
+
+reminders-app (0.4+bzr177ppa2~utopic) utopic; urgency=medium
+
+  * Created the sandbox and production auth plugins
+
+ -- David Planella <david.planella@ubuntu.com>  Thu, 26 Jun 2014 18:51:21 +0200
+
 reminders-app (0.4) trusty; urgency=medium
 
   [ Sergio Schvezov ]
