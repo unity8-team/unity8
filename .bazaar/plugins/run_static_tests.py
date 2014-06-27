@@ -35,7 +35,8 @@ def _run_python_static_tests():
     if os.path.exists('run_python_static_tests.sh'):
         print('Running the python static tests.')
         try:
-            subprocess.check_call('./run_python_static_tests.sh')
+            subprocess.check_call(
+                os.path.abspath('run_python_static_tests.sh'))
         except subprocess.CalledProcessError:
             raise errors.BzrError('Python static tests failed.')
     else:
