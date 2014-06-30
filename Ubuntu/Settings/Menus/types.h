@@ -12,12 +12,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Author: Nick Dedekind <nick.dedekind@canonical.com>
  */
 
-#ifndef TRANSFERSTATES_H
-#define TRANSFERSTATES_H
+#ifndef UBUNTUSETTINGSMENUSTYPES_H
+#define UBUNTUSETTINGSMENUSTYPES_H
 
 #include "pluginglobal.h"
 
@@ -42,4 +40,4 @@ public:
     TransferState(QObject*parent=0):QObject(parent) {}
 };
 
-#endif // TRANSFERSTATES_H
+#endif // UBUNTUSETTINGSMENUSTYPES_H
