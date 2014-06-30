@@ -5,3 +5,4 @@ Calendar 0.1 Calendar.qml
 HeroMessageHeader 0.1 HeroMessageHeader.qml
 IconVisual 0.1 IconVisual.qml
 QuickReply 0.1 QuickReply.qml
+StatusIcon 0.1 StatusIcon.qml

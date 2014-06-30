@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Settings.Components 0.1
 import Ubuntu.Settings.Menus 0.1
 
 MainView {
@@ -234,6 +235,35 @@ MainView {
                             eventColor: model.eventColor
                             time: model.time
                         }
+                    }
+                }
+
+                Row {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    spacing: units.gu(1)
+
+                    Label {
+                        text: "StatusIcon"
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    StatusIcon {
+                        height: units.gu(5)
+                        source: "image://theme/gps"
+                    }
+
+                    StatusIcon {
+                        height: units.gu(5)
+                        source: "image://theme/battery-caution"
+                    }
+
+                    StatusIcon {
+                        height: units.gu(5)
+                        source: "image://theme/missing,gpm-battery-000-charging"
                     }
                 }
             }
