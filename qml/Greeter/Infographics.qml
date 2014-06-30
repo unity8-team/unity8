@@ -32,6 +32,8 @@ Item {
         anchors.centerIn: parent
         height: parent.height
         width: height
+        sourceSize.width: width
+        sourceSize.height: height
         source: model.path
         fadeDuration: UbuntuAnimation.SleepyDuration
         fadeStyle: "parallel"
