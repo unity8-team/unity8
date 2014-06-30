@@ -237,7 +237,7 @@ Item {
 
         Ubuntu.UbuntuNumberAnimation {
             id: currentImageFadeOut
-            target: fadeStyle == "parallel" ? internals.currentImage : fadeOutDummy
+            target: fadeStyle == "cross" ? internals.currentImage : fadeOutDummy
             property: "opacity"
             to: 0.0
             duration: crossFadeImage.fadeDuration

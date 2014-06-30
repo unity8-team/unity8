@@ -48,14 +48,12 @@ Rectangle {
         name: "Infographics"
         when: windowShown
 
-        property var image: findChild(infographics, "image")
-
         function test_triggered() {
             triggeredSpy.clear();
-            var oldImage = image.source;
+            var oldImage = infographics.source;
             mouseDoubleClick(infographics, infographics.width / 2, infographics.height / 2);
             triggeredSpy.wait()
-            verify(image.source != oldImage);
+            verify(infographics.source != oldImage);
         }
     }
 }

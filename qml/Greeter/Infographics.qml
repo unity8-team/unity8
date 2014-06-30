@@ -18,31 +18,28 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import "../Components"
 
-Item {
+CrossFadeInfographics {
     id: root
 
     property var model
+
+    sourceSize.width: width
+    sourceSize.height: height
+    source: model.path
+    fadeDuration: UbuntuAnimation.SleepyDuration
+    fadeStyle: "cross"
 
     signal triggered()
 
     onTriggered: model.next()
 
-    CrossFadeInfographics {
-        objectName: "image"
+    MouseArea {
         anchors.centerIn: parent
-        height: parent.height
         width: height
-        sourceSize.width: width
-        sourceSize.height: height
-        source: model.path
-        fadeDuration: UbuntuAnimation.SleepyDuration
-        fadeStyle: "parallel"
-
-        MouseArea {
-            anchors.fill: parent
-            onDoubleClicked: root.triggered();
-            onClicked: mouse.accepted = false
-            onPressed: mouse.accepted = false
-        }
+        height: parent.height
+        onDoubleClicked: root.triggered();
+        onClicked: mouse.accepted = false
+        onPressed: mouse.accepted = false
     }
 }
+
