@@ -20,6 +20,7 @@ import ".."
 import "../../../qml/Greeter"
 import Ubuntu.Components 0.1
 import Unity.Test 0.1 as UT
+import Infographics 0.1 as InfographicsModule
 
 Rectangle {
     width: units.gu(60)
