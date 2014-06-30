@@ -22,6 +22,7 @@
 #include <QNetworkAccessManager>
 #include <QScopedPointer>
 #include <QThread>
+#include <QMutex>
 
 #include <future>
 
@@ -54,6 +55,8 @@ class CacheControl: public QObject
 public:
     CacheControl(QObject* parent = 0);
 
+    QMutex* mutex();
+
 public Q_SLOTS:
     void submitTask(CachingTask*);
 
@@ -63,6 +66,7 @@ private Q_SLOTS:
 private:
     QScopedPointer<QNetworkAccessManager> m_networkAccessManager;
     QMap<QNetworkReply*, CachingTask*> m_taskMap;
+    QMutex m_mutex;
 };
 
 class CachingWorkerThread: public QThread
