@@ -45,6 +45,7 @@ install_dependencies() {
                          qmenumodel-qml \
                          qml-module-qtquick-xmllistmodel \
                          qtdeclarative5-gsettings1.0 \
+                         qtdeclarative5-infographics0.1 \
                          qtdeclarative5-ubuntu-ui-toolkit-plugin \
                          qtdeclarative5-ubuntu-settings-components \
                          qtdeclarative5-ubuntu-thumbnailer0.1 \

@@ -77,7 +77,7 @@ control_c()
 trap control_c INT
 
 if $GDB; then
-  UNITY_SCOPES_LIST="scopes;clickscope;musicaggregator;videoaggregator" gdb -ex run --args $QML_PHONE_SHELL_PATH $QML_PHONE_SHELL_ARGS $@
+  gdb -ex run --args $QML_PHONE_SHELL_PATH $QML_PHONE_SHELL_ARGS $@
 else
   status=`/sbin/initctl status unity8`
   if [ "$status" != "unity8 stop/waiting" ]; then

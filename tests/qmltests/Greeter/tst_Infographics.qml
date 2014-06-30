@@ -20,7 +20,6 @@ import ".."
 import "../../../qml/Greeter"
 import Ubuntu.Components 0.1
 import Unity.Test 0.1 as UT
-import Infographics 0.1 as InfographicsModule
 
 Rectangle {
     width: units.gu(60)
@@ -54,7 +53,7 @@ Rectangle {
             triggeredSpy.clear();
             var oldImage = image.source;
             mouseDoubleClick(infographics, infographics.width / 2, infographics.height / 2);
-            compare(triggeredSpy.count, 1);
+            triggeredSpy.wait()
             verify(image.source != oldImage);
         }
     }

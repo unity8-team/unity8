@@ -107,10 +107,9 @@ Item {
             mouseClick(infographics, infographics.width/2, infographics.height/2);
             compare(triggeredSpy.count, 0);
             teaseSpy.wait();
-            tryCompare(teaseSpy, "count", 1);
 
             mouseDoubleClick(infographics, infographics.width/2, infographics.height/2);
-            compare(triggeredSpy.count, 1);
+            triggeredSpy.wait();
 
             // FIXME Cimi: the doubleclick seems to screw the dragHandle... the next click is ignored
             mouseClick(infographics, infographics.width/2, infographics.height/2);
