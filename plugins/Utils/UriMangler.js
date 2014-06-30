@@ -17,7 +17,7 @@
 .pragma library
 
 function mangle(uri) {
-    if (uri.search(/^http(s)?:/) == 0) {
+    if (typeof uri === "string" && uri.search(/^http(s)?:/) == 0) {
         return "image://cached/&u=%1".arg(encodeURIComponent(uri));
     }
 
