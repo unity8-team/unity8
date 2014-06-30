@@ -26,6 +26,7 @@ Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~)
 Depends: qtdeclarative5-ubuntu-settings-components-assets (= ${source:Version}),
          qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.47),
+         suru-icon-theme,
          ${misc:Depends},
          ${shlibs:Depends},
 Description: Ubuntu Settings Components
