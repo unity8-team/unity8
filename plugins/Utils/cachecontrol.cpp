@@ -30,17 +30,17 @@
 
 #define MAX_HOPS 20
 
-CacheControl::CacheControl(QObject* parent): QObject(parent)
+CachingThreadController::CachingThreadController(QObject* parent): QObject(parent)
 {
     qRegisterMetaType<CachingTask*>("CachingTask*");
 }
 
-QMutex* CacheControl::mutex()
+QMutex* CachingThreadController::mutex()
 {
     return &m_mutex;
 }
 
-void CacheControl::submitTask(CachingTask* task)
+void CachingThreadController::processTask(CachingTask* task)
 {
     // lazy init of the network access manager
     if (!m_networkAccessManager) {
@@ -50,7 +50,7 @@ void CacheControl::submitTask(CachingTask* task)
         m_networkAccessManager->setCache(cache);
 
         QObject::connect(m_networkAccessManager.data(), &QNetworkAccessManager::finished,
-                         this, &CacheControl::networkRequestFinished);
+                         this, &CachingThreadController::networkRequestFinished);
     }
 
     QMutexLocker locker(&m_mutex);
@@ -61,7 +61,7 @@ void CacheControl::submitTask(CachingTask* task)
     m_taskMap.insert(reply, task);
 }
 
-void CacheControl::networkRequestFinished(QNetworkReply* reply)
+void CachingThreadController::networkRequestFinished(QNetworkReply* reply)
 {
     reply->deleteLater();
 
@@ -133,7 +133,7 @@ CachingWorkerThread::CachingWorkerThread(QObject* parent): QThread(parent)
 std::future<QByteArray> CachingWorkerThread::submitTask(const QString& uri)
 {
     if (!m_controller) {
-        m_controller.reset(new CacheControl);
+        m_controller.reset(new CachingThreadController);
         m_controller->moveToThread(this);
     }
 
@@ -142,7 +142,7 @@ std::future<QByteArray> CachingWorkerThread::submitTask(const QString& uri)
     task->setUrl(uri);
     task->moveToThread(this);
 
-    QMetaObject::invokeMethod(m_controller.data(), "submitTask", Q_ARG(CachingTask*, task));
+    QMetaObject::invokeMethod(m_controller.data(), "processTask", Q_ARG(CachingTask*, task));
 
     return task->getFuture();
 }

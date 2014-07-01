@@ -48,17 +48,17 @@ private:
     int m_hops;
 };
 
-class CacheControl: public QObject
+class CachingThreadController: public QObject
 {
     Q_OBJECT
 
 public:
-    CacheControl(QObject* parent = 0);
+    CachingThreadController(QObject* parent = 0);
 
     QMutex* mutex();
 
 public Q_SLOTS:
-    void submitTask(CachingTask*);
+    void processTask(CachingTask*);
 
 private Q_SLOTS:
     void networkRequestFinished(QNetworkReply*);
@@ -79,7 +79,7 @@ public:
     std::future<QByteArray> submitTask(const QString&);
 
 private:
-    QScopedPointer<CacheControl> m_controller;
+    QScopedPointer<CachingThreadController> m_controller;
 };
 
 #endif
