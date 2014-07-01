@@ -84,6 +84,7 @@ Item {
                 fallback = 0;
             } else {
                 console.warn("Could not load StatusIcon with source \"%1\" and sets %2.".arg(root.source).arg(root.sets));
+                return;
             }
 
             updateSource();
