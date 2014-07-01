@@ -17,8 +17,6 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
-import Ubuntu.Settings.Components 0.1 as USC
-import Ubuntu.Settings.Menus 0.1 as USM
 import QtQuick.Layouts 1.1
 
 ListItem.Empty {
