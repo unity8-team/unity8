@@ -13,6 +13,7 @@ Build-Depends: cmake,
                qtdeclarative5-qtquick2-plugin,
                qtdeclarative5-test-plugin,
                qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48),
+               suru-icon-theme,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
 # If you don't have have commit access to this branch but would like to upload
@@ -27,6 +28,7 @@ Pre-Depends: dpkg (>= 1.15.6~)
 Depends: qml-module-qtquick-layouts,
          qtdeclarative5-ubuntu-settings-components-assets (= ${source:Version}),
          qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48),
+         suru-icon-theme,
          ${misc:Depends},
          ${shlibs:Depends},
 Description: Ubuntu Settings Components
