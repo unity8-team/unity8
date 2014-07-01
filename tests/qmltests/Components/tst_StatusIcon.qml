@@ -39,17 +39,34 @@ Item {
         }
 
         function test_icon() {
-            icon.source = "image://theme/gps,bar,baz";
+            icon.source = "image://theme/bar,gps,baz";
 
             var image = UtilsJS.findChild(icon, "image");
-            tryCompare(image, "source", "file://" + image.iconPath.arg("gps"));
+            tryCompare(image, "source", "file://" + image.iconPath.arg("status").arg("gps"));
         }
 
         function test_iconFallback() {
             icon.source = "image://theme/foo,bar,baz";
 
             var image = UtilsJS.findChild(icon, "image");
-            tryCompare(image, "source", "file://" + image.iconPath.arg("baz"));
+            tryCompare(image, "source", "file://" + image.iconPath.arg("status").arg("baz"));
         }
+
+        function test_iconSets() {
+            icon.source = "image://theme/bar,add,baz";
+            icon.sets = [ "foo", "actions", "bar" ]
+
+            var image = UtilsJS.findChild(icon, "image");
+            tryCompare(image, "source", "file://" + image.iconPath.arg("actions").arg("add"));
+        }
+
+        function test_iconSetsFallback() {
+            icon.source = "image://theme/add,bar,baz";
+            icon.sets = [ "foo", "bar", "baz" ]
+
+            var image = UtilsJS.findChild(icon, "image");
+            tryCompare(image, "source", "file://" + image.iconPath.arg("baz").arg("baz"));
+        }
+
     }
 }

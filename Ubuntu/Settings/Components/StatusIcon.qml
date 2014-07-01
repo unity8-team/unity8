@@ -22,6 +22,7 @@ ShaderEffect {
     implicitWidth: image.width
 
     property string source
+    property var sets: [ "status" ]
 
     property Image sourceImage: image.status == Image.Ready ? image : null
     property color keyColorOut: "#CCCCCC"
@@ -48,19 +49,42 @@ ShaderEffect {
 
         visible: false
 
-        property string iconPath: "/usr/share/icons/suru/status/scalable/%1.svg"
+        property string iconPath: "/usr/share/icons/suru/%1/scalable/%2.svg"
         property var icons: String(root.source).replace("image://theme/", "").split(",")
         property int fallback: 0
+        property int setFallback: 0
 
-        onStatusChanged: if (status == Image.Error && fallback < icons.length - 1) fallback += 1;
+        onStatusChanged: if (status == Image.Error) bump();
 
         // Needed to not introduce a binding loop on source
-        onFallbackChanged: updateSource()
         Component.onCompleted: updateSource()
-        onIconsChanged: updateSource()
+        onIconsChanged: reset()
+
+        Connections {
+            target: root
+
+            onSetsChanged: image.reset()
+        }
+
+        function reset() {
+            fallback = 0;
+            setFallback = 0;
+
+            updateSource();
+        }
+
+        function bump() {
+            if (fallback < icons.length - 1) fallback += 1;
+            else if (setFallback < root.sets.length - 1) {
+                setFallback += 1;
+                fallback = 0;
+            }
+
+            updateSource();
+        }
 
         function updateSource() {
-            source = icons.length > 0 ? iconPath.arg(icons[fallback]) : "";
+            source = (sets.length > setFallback && icons.length > fallback) ? iconPath.arg(sets[setFallback]).arg(icons[fallback]) : "";
         }
     }
 }
