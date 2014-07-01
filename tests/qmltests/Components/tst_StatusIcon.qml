@@ -70,5 +70,11 @@ Item {
             tryCompare(image, "source", "file://" + image.iconPath.arg("baz").arg("baz"));
         }
 
+        function test_iconSource() {
+            var image = UtilsJS.findChild(icon, "image");
+            icon.source = image.iconPath.arg("status").arg("gps");
+
+            tryCompare(image, "source", "file://" + image.iconPath.arg("status").arg("gps"));
+        }
     }
 }

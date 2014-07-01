@@ -52,7 +52,11 @@ Item {
         visible: !colorizedImage.active
 
         property string iconPath: "/usr/share/icons/suru/%1/scalable/%2.svg"
-        property var icons: String(root.source).replace("image://theme/", "").split(",")
+        property var icons: {
+            if (String(root.source).match(/^image:\/\/theme/)) {
+                return String(root.source).replace("image://theme/", "").split(",");
+            } else return null;
+        }
         property int fallback: 0
         property int setFallback: 0
 
@@ -73,6 +77,7 @@ Item {
         }
 
         function bump() {
+            if (icons === null) return;
             if (fallback < icons.length - 1) fallback += 1;
             else if (setFallback < root.sets.length - 1) {
                 setFallback += 1;
@@ -85,8 +90,12 @@ Item {
         }
 
         function updateSource() {
-            source = (root.sets && root.sets.length > setFallback) && (icons && icons.length > fallback) ?
-                        iconPath.arg(root.sets[setFallback]).arg(icons[fallback]) : "";
+            if (icons === null) {
+                source = root.source;
+            } else {
+                source = (root.sets && root.sets.length > setFallback) && (icons && icons.length > fallback) ?
+                            iconPath.arg(root.sets[setFallback]).arg(icons[fallback]) : "";
+            }
         }
     }
 
