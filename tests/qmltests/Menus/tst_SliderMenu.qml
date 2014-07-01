@@ -148,20 +148,20 @@ Item {
 
         // simulates clicking the min/max buttons
         function test_minmaxButtons() {
-            var slider = UtilsJS.findChild(sliderMenu, "slider");
+            var slider = UtilsJS.findChild(sliderMenu2, "slider");
             verify(slider !== undefined);
 
-            var leftButton = UtilsJS.findChild(sliderMenu, "leftButton");
+            var leftButton = UtilsJS.findChild(sliderMenu2, "leftButton");
             verify(leftButton !== undefined);
 
-            var rightButton = UtilsJS.findChild(sliderMenu, "rightButton");
+            var rightButton = UtilsJS.findChild(sliderMenu2, "rightButton");
             verify(rightButton !== undefined);
 
             mouseClick(leftButton, leftButton.width / 2, leftButton.height / 2);
-            compare(slider.value, sliderMenu.minimumValue, "Min button not updating menu value");
+            compare(slider.value, sliderMenu2.minimumValue, "Min button not updating menu value");
 
             mouseClick(rightButton, rightButton.width / 2, rightButton.height / 2);
-            compare(slider.value, sliderMenu.maximumValue, "Max button not updating menu value");
+            compare(slider.value, sliderMenu2.maximumValue, "Max button not updating menu value");
         }
     }
 }
