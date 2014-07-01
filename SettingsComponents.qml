@@ -65,7 +65,7 @@ MainView {
                 height: childrenRect.height
 
                 StandardMenu {
-                    text: i18n.tr("Standard Menu")
+                    text: i18n.tr("Standard Menu\nLook at me, I'm a new line.")
                 }
 
                 StandardMenu {
