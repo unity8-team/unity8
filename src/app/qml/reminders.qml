@@ -139,7 +139,9 @@ MainView {
             if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
                 EvernoteConnection.clearToken();
             }
-            EvernoteConnection.hostname = accountService.settings['HostName'];
+            // FIXME: accountService.settings['HostName'] returns null,
+            // hardcoding for testing purposes for now
+            EvernoteConnection.hostname = "www.evernote.com" // accountService.settings['HostName'];
             EvernoteConnection.token = reply.AccessToken;
         }
         onAuthenticationError: {
