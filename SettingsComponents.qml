@@ -64,6 +64,22 @@ MainView {
                 width: flickable.width
                 height: childrenRect.height
 
+                StandardMenu {
+                    text: i18n.tr("Standard Menu\nLook at me, I'm a new line.")
+                }
+
+                StandardMenu {
+                    iconSource: "image://theme/calendar"
+                    iconColor: "red"
+                    text: i18n.tr("Standard Menu")
+                    component: Component {
+                        Button {
+                            text: "Press Me"
+                        }
+                    }
+                }
+
+
                 SliderMenu {
                     id: slider
                     text: i18n.tr("Slider")
