@@ -21,7 +21,7 @@
 
 #include <QQuickImageProvider>
 
-#include "cachecontrol.h"
+#include "cachingcontroller.h"
 
 class CachingImageProvider : public QQuickImageProvider
 {

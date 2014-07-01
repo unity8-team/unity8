@@ -16,7 +16,7 @@
  * Authors: Michal Hruby <michal.hruby@canonical.com>
 */
 
-#include "cachecontrol.h"
+#include "cachingcontroller.h"
 
 #include <QString>
 #include <QNetworkAccessManager>
@@ -26,18 +26,12 @@
 #include <QStandardPaths>
 #include <QByteArray>
 #include <QUrl>
-#include <QMutexLocker>
 
 #define MAX_HOPS 20
 
 CachingThreadController::CachingThreadController(QObject* parent): QObject(parent)
 {
     qRegisterMetaType<CachingTask*>("CachingTask*");
-}
-
-QMutex* CachingThreadController::mutex()
-{
-    return &m_mutex;
 }
 
 void CachingThreadController::processTask(CachingTask* task)
@@ -53,7 +47,6 @@ void CachingThreadController::processTask(CachingTask* task)
                          this, &CachingThreadController::networkRequestFinished);
     }
 
-    QMutexLocker locker(&m_mutex);
     // the controller should own the task
     task->setParent(this);
 
@@ -69,7 +62,6 @@ void CachingThreadController::networkRequestFinished(QNetworkReply* reply)
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
     QScopedPointer<CachingTask> task(m_taskMap.take(reply));
 
     if (reply->error() != QNetworkReply::NoError) {
@@ -137,12 +129,13 @@ std::future<QByteArray> CachingWorkerThread::submitTask(const QString& uri)
         m_controller->moveToThread(this);
     }
 
-    QMutexLocker locker(m_controller->mutex());
-    CachingTask *task = new CachingTask;
+    QScopedPointer<CachingTask> task(new CachingTask);
     task->setUrl(uri);
     task->moveToThread(this);
 
-    QMetaObject::invokeMethod(m_controller.data(), "processTask", Q_ARG(CachingTask*, task));
+    auto future = task->getFuture();
 
-    return task->getFuture();
+    QMetaObject::invokeMethod(m_controller.data(), "processTask", Q_ARG(CachingTask*, task.take()));
+
+    return future;
 }
