@@ -28,6 +28,7 @@ OAuthMain {
         }
 
         function completeCreation(reply) {
+            EvernoteConnection.hostname = "@EVERNOTE_HOSTNAME@"
             EvernoteConnection.token = reply.AccessToken
             /* At this point the username is getting retrieved. Once that's
              * done, UserStore will notify that its "username" property has

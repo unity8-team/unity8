@@ -12,9 +12,9 @@
       <setting name="mechanism">HMAC-SHA1</setting>
       <group name="oauth2">
         <group name="HMAC-SHA1">
-          <setting name="RequestEndpoint">@EVERNOTE_HOSTNAME@/oauth</setting>
-          <setting name="TokenEndpoint">@EVERNOTE_HOSTNAME@/oauth</setting>
-          <setting name="AuthorizationEndpoint">@EVERNOTE_HOSTNAME@/OAuth.action</setting>
+          <setting name="RequestEndpoint">https://@EVERNOTE_HOSTNAME@/oauth</setting>
+          <setting name="TokenEndpoint">https://@EVERNOTE_HOSTNAME@/oauth</setting>
+          <setting name="AuthorizationEndpoint">https://@EVERNOTE_HOSTNAME@/OAuth.action</setting>
           <setting name="Callback">https://wiki.ubuntu.com/</setting>
           <setting name="ConsumerKey">@EVERNOTE_CONSUMER_KEY@</setting>
           <setting name="ConsumerSecret">@EVERNOTE_CONSUMER_SECRET@</setting>

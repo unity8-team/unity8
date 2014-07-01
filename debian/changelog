@@ -1,3 +1,10 @@
+reminders-app (0.4+bzr182ppa4~utopic) utopic; urgency=medium
+
+  * Fixed the account provider file and the condition to check
+    if the hostname is set
+
+ -- David Planella <david.planella@ubuntu.com>  Tue, 01 Jul 2014 11:13:23 +0200
+
 reminders-app (0.4+bzr180ppa4~utopic) utopic; urgency=medium
 
   * Only the production auth plugin installs the API plugin
