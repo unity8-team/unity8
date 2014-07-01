@@ -13,6 +13,7 @@ Build-Depends: cmake,
                qtdeclarative5-qtquick2-plugin,
                qtdeclarative5-test-plugin,
                qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.47),
+               suru-icon-theme,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
 # If you don't have have commit access to this branch but would like to upload
