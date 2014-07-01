@@ -35,6 +35,8 @@ Item {
         when: windowShown
 
         function init() {
+            icon.source = "";
+            icon.sets = [ "status" ]
             waitForRendering(icon)
         }
 
