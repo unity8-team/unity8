@@ -44,9 +44,11 @@ ListItem.Empty {
 
         UbuntuShape {
             id: imageShape
-            width: units.gu(7)
-            height: width
-            Layout.alignment: Qt.AlignVCenter
+            Layout.maximumWidth: units.gu(5)
+            Layout.maximumHeight: units.gu(5)
+            Layout.fillHeight: true
+
+            Layout.alignment: Qt.AlignTop
 
             image: Image {
                 objectName: "icon"
