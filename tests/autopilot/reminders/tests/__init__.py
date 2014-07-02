@@ -16,14 +16,13 @@
 
 """Reminders app autopilot tests."""
 
+import logging
 import os
 import shutil
-import logging
+import subprocess
 
 import fixtures
 from autopilot import logging as autopilot_logging
-from autopilot.input import Mouse, Touch, Pointer
-from autopilot.platform import model
 from autopilot.testcase import AutopilotTestCase
 from ubuntuuitoolkit import (
     emulators as toolkit_emulators,
@@ -35,15 +34,13 @@ import reminders
 logger = logging.getLogger(__name__)
 
 
-class RemindersAppTestCase(AutopilotTestCase):
+class BaseTestCaseWithTempHome(AutopilotTestCase):
 
-    """A common test case class that provides several useful methods for
-       reminders-app tests."""
+    """Base test case that patches the home directory.
 
-    if model() == 'Desktop':
-        scenarios = [('with mouse', dict(input_device_class=Mouse))]
-    else:
-        scenarios = [('with touch', dict(input_device_class=Touch))]
+    That way we start the tests with a clean environment.
+
+    """
 
     local_location = os.path.dirname(os.path.dirname(os.getcwd()))
 
@@ -53,7 +50,20 @@ class RemindersAppTestCase(AutopilotTestCase):
     installed_location_binary = '/usr/bin/reminders'
     installed_location_qml = '/usr/share/reminders/qml/reminders.qml'
 
-    def get_launcher_and_type(self):
+    def setUp(self):
+        self.kill_signond()
+        self.addCleanup(self.kill_signond)
+        super(BaseTestCaseWithTempHome, self).setUp()
+        _, test_type = self.get_launcher_method_and_type()
+        self.home_dir = self._patch_home(test_type)
+
+    def kill_signond(self):
+        # We kill signond so it's restarted using the temporary HOME. Otherwise
+        # it will remain running until it has 5 seconds of inactivity, keeping
+        # reference to other directories.
+        subprocess.call(['pkill', '-9', 'signond'])
+
+    def get_launcher_method_and_type(self):
         if os.path.exists(self.local_location_binary):
             launcher = self.launch_test_local
             test_type = 'local'
@@ -65,27 +75,34 @@ class RemindersAppTestCase(AutopilotTestCase):
             test_type = 'click'
         return launcher, test_type
 
-    def setUp(self):
-        launcher, test_type = self.get_launcher_and_type()
-        self.home_dir = self._patch_home(test_type)
-        self.pointing_device = Pointer(self.input_device_class.create())
-        super(RemindersAppTestCase, self).setUp()
+    @autopilot_logging.log_action(logger.info)
+    def launch_test_local(self):
+        self.useFixture(fixtures.EnvironmentVariable(
+            'QML2_IMPORT_PATH',
+            newvalue=os.path.join(self.local_location, 'src/plugin')))
+        return self.launch_test_application(
+            self.local_location_binary,
+            '-q', self.local_location_qml,
+            app_type='qt',
+            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
-        self.app = reminders.RemindersApp(launcher())
+    @autopilot_logging.log_action(logger.info)
+    def launch_test_installed(self):
+        return self.launch_test_application(
+            self.installed_location_binary,
+            '-q ' + self.installed_location_qml,
+            '--desktop_file_hint=/usr/share/applications/'
+            'reminders.desktop',
+            app_type='qt',
+            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
-    def _copy_xauthority_file(self, directory):
-        """ Copy .Xauthority file to directory, if it exists in /home
-        """
-        xauth = os.path.expanduser(os.path.join('~', '.Xauthority'))
-        if os.path.isfile(xauth):
-            logger.debug("Copying .Xauthority to " + directory)
-            shutil.copyfile(
-                os.path.expanduser(os.path.join('~', '.Xauthority')),
-                os.path.join(directory, '.Xauthority'))
+    @autopilot_logging.log_action(logger.info)
+    def launch_test_click(self):
+        return self.launch_click_package(
+            'com.ubuntu.reminders',
+            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
     def _patch_home(self, test_type):
-        """ mock /home for testing purposes to preserve user data
-        """
         temp_dir_fixture = fixtures.TempDir()
         self.useFixture(temp_dir_fixture)
         temp_dir = temp_dir_fixture.path
@@ -114,29 +131,21 @@ class RemindersAppTestCase(AutopilotTestCase):
 
         return temp_dir
 
-    @autopilot_logging.log_action(logger.info)
-    def launch_test_local(self):
-        self.useFixture(fixtures.EnvironmentVariable(
-            'QML2_IMPORT_PATH',
-            newvalue=os.path.join(self.local_location, 'src/plugin')))
-        return self.launch_test_application(
-            self.local_location_binary,
-            '-q', self.local_location_qml,
-            app_type='qt',
-            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
+    def _copy_xauthority_file(self, directory):
+        """Copy .Xauthority file to directory, if it exists in /home."""
+        xauth = os.path.expanduser(os.path.join('~', '.Xauthority'))
+        if os.path.isfile(xauth):
+            logger.debug("Copying .Xauthority to " + directory)
+            shutil.copyfile(
+                os.path.expanduser(os.path.join('~', '.Xauthority')),
+                os.path.join(directory, '.Xauthority'))
 
-    @autopilot_logging.log_action(logger.info)
-    def launch_test_installed(self):
-        return self.launch_test_application(
-            self.installed_location_binary,
-            '-q ' + self.installed_location_qml,
-            '--desktop_file_hint=/usr/share/applications/'
-            'reminders.desktop',
-            app_type='qt',
-            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
-    @autopilot_logging.log_action(logger.info)
-    def launch_test_click(self):
-        return self.launch_click_package(
-            'com.ubuntu.reminders',
-            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
+class RemindersAppTestCase(BaseTestCaseWithTempHome):
+
+    """Base test case that launches the reminders-app."""
+
+    def setUp(self):
+        super(RemindersAppTestCase, self).setUp()
+        launcher_method, _ = self.get_launcher_method_and_type()
+        self.app = reminders.RemindersApp(launcher_method())
