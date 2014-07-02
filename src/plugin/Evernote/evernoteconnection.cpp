@@ -37,6 +37,7 @@
 #include <Errors_types.h>
 
 #include <QDebug>
+#include <QUrl>
 
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
@@ -50,11 +51,11 @@ EvernoteConnection* EvernoteConnection::s_instance = 0;
 // E.g. "Evernote Windows/3.0.1; Windows/XP SP3"
 QString EDAM_CLIENT_NAME = QStringLiteral("Reminders/0.4; Ubuntu/14.10");
 QString EDAM_USER_STORE_PATH = QStringLiteral("/edam/user");
-QString EDAM_NOTE_STORE_PATH = QStringLiteral("/edam/note");
 
 EvernoteConnection::EvernoteConnection(QObject *parent) :
     QObject(parent),
     m_useSSL(true),
+    m_isConnected(false),
     m_currentJob(0),
     m_notesStoreClient(0),
     m_notesStoreHttpClient(0),
@@ -62,16 +63,6 @@ EvernoteConnection::EvernoteConnection(QObject *parent) :
     m_userStoreHttpClient(0)
 {
     qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
-
-    setupEvernoteConnection();
-}
-
-void EvernoteConnection::setupEvernoteConnection()
-{
-    setupUserStore();
-    setupNotesStore();
-
-    connectToEvernote();
 }
 
 void EvernoteConnection::setupUserStore()
@@ -126,7 +117,7 @@ void EvernoteConnection::setupNotesStore()
     boost::shared_ptr<TBufferedTransport> bufferedTransport(new TBufferedTransport(socket));
     m_notesStoreHttpClient = boost::shared_ptr<THttpClient>(new THttpClient(bufferedTransport,
                                                                         m_hostname.toStdString(),
-                                                                        EDAM_NOTE_STORE_PATH.toStdString()));
+                                                                        m_notesStorePath.toStdString()));
 
     boost::shared_ptr<TProtocol> notesstoreiprot(new TBinaryProtocol(m_notesStoreHttpClient));
     m_notesStoreClient = new evernote::edam::NoteStoreClient(notesstoreiprot);
@@ -142,10 +133,14 @@ EvernoteConnection *EvernoteConnection::instance()
 
 EvernoteConnection::~EvernoteConnection()
 {
-    delete m_userstoreClient;
-    m_userStoreHttpClient.reset();
-    delete m_notesStoreClient;
-    m_notesStoreHttpClient.reset();
+    if (m_userstoreClient) {
+        delete m_userstoreClient;
+        m_userStoreHttpClient.reset();
+    }
+    if (m_notesStoreClient) {
+        delete m_notesStoreClient;
+        m_notesStoreHttpClient.reset();
+    }
 }
 
 QString EvernoteConnection::hostname() const
@@ -157,8 +152,9 @@ void EvernoteConnection::setHostname(const QString &hostname)
 {
     if (m_hostname != hostname) {
         m_hostname = hostname;
-        setupEvernoteConnection();
         emit hostnameChanged();
+
+        connectToEvernote();
     }
 }
 
@@ -172,6 +168,8 @@ void EvernoteConnection::setToken(const QString &token)
     if (token != m_token) {
         m_token = token;
         emit tokenChanged();
+
+        connectToEvernote();
     }
 }
 
@@ -184,21 +182,51 @@ void EvernoteConnection::clearToken()
 
 void EvernoteConnection::connectToEvernote()
 {
-    if (m_userStoreHttpClient->isOpen() && m_notesStoreHttpClient->isOpen()) {
+    if (m_token.isEmpty()) {
+        qWarning() << "Can't connect to Evernote. No token set.";
         return;
+    }
+    if (m_hostname.isEmpty()) {
+        qWarning() << "Can't connect to Evernote. No hostname set.";
+    }
+    qDebug() << "******* Connecting *******";
+    qDebug() << "hostname:" << m_hostname;
+    qDebug() << "token:" << m_token;
+
+    setupUserStore();
+    bool ok = connectUserStore();
+    if (!ok) {
+        qWarning() << "Error connecting User Store. Cannot continue.";
+        return;
+    }
+    setupNotesStore();
+    ok = connectNotesStore();
+
+    if (!ok) {
+        qWarning() << "Error connecting Notes Store. Cannot continue.";
+        return;
+    }
+
+    qDebug() << "Connected!";
+    emit isConnectedChanged();
+
+}
+
+bool EvernoteConnection::connectUserStore()
+{
+    if (m_userStoreHttpClient->isOpen()) {
+        m_userStoreHttpClient->close();
     }
 
     try {
         m_userStoreHttpClient->open();
         qDebug() << "UserStoreClient socket opened.";
-
-        m_notesStoreHttpClient->open();
-        qDebug() << "NoteStoreClient socket opened.";
-
     } catch (const TTransportException & e) {
         qWarning() << "Failed to open connection:" <<  e.what();
+        return false;
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when opening the connection:" << e.what();
+        return false;
     }
 
     try {
@@ -209,13 +237,59 @@ void EvernoteConnection::connectToEvernote()
 
         if (!versionOk) {
             qWarning() << "Server version mismatch! This application should be updated!";
+            return false;
         }
-
+    } catch (const evernote::edam::EDAMUserException e) {
+        qWarning() << "Error fetching notestore url (EDAMUserException):" << e.what() << e.errorCode;
+    } catch (const evernote::edam::EDAMSystemException e) {
+        qWarning() << "Error fetching notestore url (EDAMSystemException):" << e.what() << e.errorCode;
     } catch (const TTransportException & e) {
         qWarning() << "Failed to fetch server version:" <<  e.what();
+        return false;
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when fetching server version:" << e.what();
+        return false;
     }
+
+    try {
+        std::string notesStoreUrl;
+        qDebug() << "getting ntoe store url with token" << m_token;
+        m_userstoreClient->getNoteStoreUrl(notesStoreUrl, m_token.toStdString());
+
+        m_notesStorePath = QUrl(QString::fromStdString(notesStoreUrl)).path();
+
+        if (m_notesStorePath.isEmpty()) {
+            qWarning() << "Failed to fetch notesstore path from server. Fetching notes will not work.";
+            return false;
+        }
+    } catch (const TTransportException & e) {
+        qWarning() << "Failed to fetch notestore path:" <<  e.what();
+        return false;
+    } catch (const TException & e) {
+        qWarning() << "Generic Thrift exception when fetching notestore path:" << e.what();
+        return false;
+    }
+
+    return true;
+}
+
+bool EvernoteConnection::connectNotesStore()
+{
+    if (m_notesStoreHttpClient->isOpen()) {
+        m_notesStoreHttpClient->close();
+    }
+
+    try {
+        m_notesStoreHttpClient->open();
+        qDebug() << "NotesStoreClient socket opened." << m_notesStoreHttpClient->isOpen();
+        return true;
+
+    } catch (const TTransportException & e) {
+        qWarning() << "Failed to open connection:" <<  e.what();
+    } catch (const TException & e) {
+        qWarning() << "Generic Thrift exception when opening the NotesStore connection:" << e.what();
+    }
+    return false;
 }
 
 void EvernoteConnection::enqueue(EvernoteJob *job)
@@ -226,9 +300,14 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
     startJobQueue();
 }
 
-bool EvernoteConnection::isConfigured() const
+bool EvernoteConnection::isConnected() const
 {
-    return m_userstoreClient != nullptr && m_notesStoreClient != nullptr && !m_token.isEmpty();
+    return m_userstoreClient != nullptr &&
+            m_userStoreHttpClient->isOpen() &&
+            m_notesStoreClient != nullptr &&
+// The notesstoreHttpClient wont stay open for some reason, but still seems to work... ignore it...
+//            m_notesStoreHttpClient->isOpen() &&
+            !m_token.isEmpty();
 }
 
 void EvernoteConnection::startJobQueue()

@@ -47,9 +47,9 @@ EvernoteJob::~EvernoteJob()
 
 void EvernoteJob::run()
 {
-    if (!EvernoteConnection::instance()->isConfigured()) {
-        qWarning() << "EvernoteConnection not set up completely. You need to set a hostname and a token. Cannot execute job. (" << this->metaObject()->className() << ")";
-        emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("Token or hostname not set."));
+    if (!EvernoteConnection::instance()->isConnected()) {
+        qWarning() << "EvernoteConnection is not connected. (" << this->metaObject()->className() << ")";
+        emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("Not connected."));
         return;
     }
 
@@ -76,7 +76,7 @@ void EvernoteJob::run()
             qWarning() << "EDAMUserException" << e.what();
             emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
         } catch (const evernote::edam::EDAMSystemException &e) {
-            qWarning() << "EDAMSystemException" << e.what();
+            qWarning() << "EDAMSystemException" << e.what() << e.errorCode << QString::fromStdString(e.message);
             emitJobDone(EvernoteConnection::ErrorCodeSystemException, e.what());
         } catch (const evernote::edam::EDAMNotFoundException &e) {
             qWarning() << "EDAMNotFoundException" << e.what();
@@ -88,7 +88,7 @@ void EvernoteJob::run()
         qWarning() << "EDAMUserException" << e.what() << e.errorCode;
         emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
     } catch (const evernote::edam::EDAMSystemException &e) {
-        qWarning() << "EDAMSystemException" << e.what();
+        qWarning() << "EDAMSystemException" << e.what() << e.errorCode << QString::fromStdString(e.message) << e.rateLimitDuration;
         emitJobDone(EvernoteConnection::ErrorCodeSystemException, e.what());
     } catch (const evernote::edam::EDAMNotFoundException &e) {
         qWarning() << "EDAMNotFoundException" << e.what();

@@ -45,6 +45,7 @@ class EvernoteConnection : public QObject
     Q_OBJECT
     Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged)
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
+    Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
 
     friend class NotesStoreJob;
     friend class UserStoreJob;
@@ -69,7 +70,7 @@ public:
 
     void enqueue(EvernoteJob *job);
 
-    bool isConfigured() const;
+    bool isConnected() const;
 
 public slots:
     void clearToken();
@@ -77,6 +78,7 @@ public slots:
 signals:
     void hostnameChanged();
     void tokenChanged();
+    void isConnectedChanged();
 
 private slots:
     void connectToEvernote();
@@ -91,8 +93,12 @@ private:
     void setupEvernoteConnection();
     void setupUserStore();
     void setupNotesStore();
+    bool connectUserStore();
+    bool connectNotesStore();
 
     bool m_useSSL;
+    bool m_isConnected;
+    QString m_notesStorePath;
     QString m_hostname;
     QString m_token;
 
