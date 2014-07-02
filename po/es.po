@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-06-09 03:32+0000\n"
-"Last-Translator: Adolfo Jayme <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2014-06-28 07:14+0000\n"
+"Last-Translator: Paco Molinero <paco@byasl.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-10 06:51+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-06-29 06:02+0000\n"
+"X-Generator: Launchpad (build 17077)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -40,7 +40,7 @@ msgstr "Defina una cuenta en Configuración del sistema"
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr ""
+msgstr "Opciones de la cuenta"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
@@ -62,11 +62,11 @@ msgstr "Soltar para actualizar"
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "Borrar recordatorio"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr ""
+msgstr "Marcar como hecho"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
@@ -74,7 +74,7 @@ msgstr "Atrás"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr ""
+msgstr "¡Úsalo!"
 
 #: ../src/app/qml/ui/EditNoteView.qml:90
 #: ../src/app/qml/ui/EditNoteView.qml:102
@@ -92,7 +92,7 @@ msgstr "Editar recordatorio"
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "Definir recordatorio"
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
@@ -133,6 +133,7 @@ msgstr "Añadir nota"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"NO hay notas. Puede crear notas nuevas usando el botón «Añadir nota»."
 
 #: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
@@ -143,6 +144,8 @@ msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
+"No hay recordatorios. Puede crear recordatorios usando el botón «Añadir "
+"recordatorio» o al configurar un recordatorio cuando se ve una nota."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
@@ -167,11 +170,11 @@ msgstr "Hace dos semanas"
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "Hecho"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
@@ -179,7 +182,7 @@ msgstr "Sin fecha"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr ""
+msgstr "Vencido"
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
@@ -232,4 +235,4 @@ msgstr "Error al actualizar las notas: %1"
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "Error al actualizar las notas: %1"
