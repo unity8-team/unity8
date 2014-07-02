@@ -44,7 +44,7 @@ Depends: libaccount-plugin-generic-oauth,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
          ${shlibs:Depends},
-Description: Allow Ubuntu to access the Evernote developer sandbox
+Description: Allow Ubuntu applications to access Evernote accounts
  This plugin enables users to authenticate to their Evernote accounts,
  providing syncing of Evernote notes across Ubuntu devices.
 
@@ -55,7 +55,7 @@ Depends: account-plugin-evernote,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
          ${shlibs:Depends},
-Description: Allow Ubuntu to access the Evernote developer sandbox
+Description: Allow Ubuntu applications to access Evernote sandbox accounts
  This plugin enables developers to authenticate to their Evernote developer
  sandbox account, which allows syncing of Evernote notes across Ubuntu devices.
 
