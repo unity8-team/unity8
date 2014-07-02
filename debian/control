@@ -50,14 +50,14 @@ Description: Allow Ubuntu to access the Evernote developer sandbox
 Package: reminders-app-autopilot
 Architecture: all
 Depends: ${misc:Depends},
-         evernote-sdk-python3,
          reminders-app (>= ${source:Version}), reminders-app (<< ${source:Version}.1~),
          libautopilot-qt,
          libqt5test5,
          python3-dbus,
          python3-dbusmock,
          python3-fixtures,
-         python3-thrift,
+         python3-oauthlib,
+         python3-requests-oauthlib,
          ubuntu-ui-toolkit-autopilot,
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package
