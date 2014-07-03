@@ -88,8 +88,16 @@ void EvernoteJob::run()
                 errorCode = EvernoteConnection::ErrorCodeAuthExpired;
                 break;
             case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
+                message = gettext("Limit exceeded.");
+                errorCode = EvernoteConnection::ErrorCodeLimitExceeded;
+                break;
+            case evernote::edam::EDAMErrorCode::RATE_LIMIT_REACHED:
                 message = gettext("Rate limit exceeded.");
                 errorCode = EvernoteConnection::ErrorCodeRateLimitExceeded;
+                break;
+            case evernote::edam::EDAMErrorCode::QUOTA_REACHED:
+                message = gettext("Quota exceeded.");
+                errorCode = EvernoteConnection::ErrorCodeQutaExceeded;
                 break;
             default:
                 message = e.what();
