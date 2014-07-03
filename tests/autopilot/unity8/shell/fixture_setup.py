@@ -55,6 +55,7 @@ class FakeScopes(fixtures.Fixture):
 
 
 class LauncherIcon(fixtures.Fixture):
+    """Fixture to setup launcher icons."""
 
     def setUp(self):
         super(LauncherIcon, self).setUp()
