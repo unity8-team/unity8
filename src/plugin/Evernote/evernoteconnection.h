@@ -56,7 +56,11 @@ public:
         ErrorCodeUserException,
         ErrorCodeSystemException,
         ErrorCodeNotFoundExcpetion,
-        ErrorCodeConnectionLost
+        ErrorCodeConnectionLost,
+        ErrorCodeAuthExpired,
+        ErrorCodeRateLimitExceeded,
+        ErrorCodeLimitExceeded,
+        ErrorCodeQutaExceeded
     };
 
     static EvernoteConnection* instance();
