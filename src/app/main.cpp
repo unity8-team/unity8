@@ -84,8 +84,10 @@ int main(int argc, char *argv[])
 
     if (args.contains(QLatin1String("-s")) || args.contains("--sandbox")) {
         view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(true));
+        qDebug() << "Running against the sandbox server";
     } else {
         view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(false));
+        qDebug() << "Running against the production server";
     }
 
     view.engine()->rootContext()->setContextProperty("tablet", QVariant(false));

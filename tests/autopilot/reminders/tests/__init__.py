@@ -83,6 +83,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         return self.launch_test_application(
             self.local_location_binary,
             '-q', self.local_location_qml,
+            '-s',
             app_type='qt',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
@@ -91,6 +92,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         return self.launch_test_application(
             self.installed_location_binary,
             '-q ' + self.installed_location_qml,
+            '-s',
             '--desktop_file_hint=/usr/share/applications/'
             'reminders.desktop',
             app_type='qt',
@@ -100,6 +102,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
     def launch_test_click(self):
         return self.launch_click_package(
             'com.ubuntu.reminders',
+            '-s',
             emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
 
     def _patch_home(self, test_type):
