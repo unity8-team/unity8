@@ -81,7 +81,7 @@ class AccountManager(object):
 
     def _create_account(self):
         logger.debug('Creating the Evernote account.')
-        account = self._manager.create_account('evernote')
+        account = self._manager.create_account('evernote-sandbox')
         account.set_enabled(True)
         account.store(self._on_account_created, None)
         return account
@@ -143,7 +143,7 @@ class AccountManager(object):
 
     def _enable_evernote_service(self, account):
         logger.debug('Enabling evernote service.')
-        service = self._manager.get_service('evernote')
+        service = self._manager.get_service('evernote-sandbox')
         account.select_service(service)
         account.set_enabled(True)
         account.store(self._on_service_enabled, None)

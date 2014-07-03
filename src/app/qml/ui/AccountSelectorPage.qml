@@ -36,7 +36,7 @@ Page {
     Setup {
         id: setup
         applicationId: "com.ubuntu.reminders_reminders"
-        providerId: "evernote"
+        providerId: useSandbox ? "evernote-sandbox" : "evernote"
     }
 
     Column {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="@PROJECT_NAME@_@APP_NAME@">
+
+  <description>Reminders</description>
+
+  <services>
+    <service id="evernote">
+      <description>Synchronize your notes with Evernote</description>
+    </service>
+    <service id="evernote-sandbox">
+      <description>Synchronize your notes with the Evernote Sandbox</description>
+    </service>
+  </services>
+
+</application>

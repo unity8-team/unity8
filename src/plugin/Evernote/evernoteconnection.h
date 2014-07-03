@@ -43,7 +43,9 @@ class EvernoteJob;
 class EvernoteConnection : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged)
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
+    Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
 
     friend class NotesStoreJob;
     friend class UserStoreJob;
@@ -54,22 +56,33 @@ public:
         ErrorCodeUserException,
         ErrorCodeSystemException,
         ErrorCodeNotFoundExcpetion,
-        ErrorCodeConnectionLost
+        ErrorCodeConnectionLost,
+        ErrorCodeAuthExpired,
+        ErrorCodeRateLimitExceeded,
+        ErrorCodeLimitExceeded,
+        ErrorCodeQutaExceeded
     };
 
     static EvernoteConnection* instance();
     ~EvernoteConnection();
+
+    QString hostname() const;
+    void setHostname(const QString &hostname);
 
     QString token() const;
     void setToken(const QString &token);
 
     void enqueue(EvernoteJob *job);
 
+    bool isConnected() const;
+
 public slots:
     void clearToken();
 
 signals:
+    void hostnameChanged();
     void tokenChanged();
+    void isConnectedChanged();
 
 private slots:
     void connectToEvernote();
@@ -81,10 +94,16 @@ private:
     explicit EvernoteConnection(QObject *parent = 0);
     static EvernoteConnection *s_instance;
 
+    void setupEvernoteConnection();
     void setupUserStore();
     void setupNotesStore();
+    bool connectUserStore();
+    bool connectNotesStore();
 
     bool m_useSSL;
+    bool m_isConnected;
+    QString m_notesStorePath;
+    QString m_hostname;
     QString m_token;
 
     // There must be only one job running at a time
