@@ -15,10 +15,9 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import "../Components"
+import Ubuntu.Components 1.1
 
-CrossFadeInfographics {
+CrossFadeImage {
     id: root
 
     property var model
