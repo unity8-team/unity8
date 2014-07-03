@@ -30,6 +30,7 @@ EVERNOTE_NOTE_XML_ELEMENT_FORMAT = '<en-note>{}</en-note>'
 
 
 class SandboxEvernoteClient(client.EvernoteClient):
+
     """Client to access the Evernote API on the sandbox server."""
 
     def __init__(self):

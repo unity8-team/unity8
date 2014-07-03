@@ -28,6 +28,8 @@
 #include <transport/TSSLSocket.h>
 #include <Thrift.h>
 
+#include <libintl.h>
+
 #include <QDebug>
 
 using namespace apache::thrift;
@@ -53,21 +55,22 @@ void EvernoteJob::run()
         return;
     }
 
-    try {
-        startJob();
-        emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
-    } catch (const TTransportException & e) {
-
-        // The connection broke down. libthrift + evernote servers seem to be quite flaky
-        // so lets try to start the job once more.
-        qWarning() << "Got a transport exception:" << e.what() << ". Trying to reestablish connection...";
+    bool done = false;
+    int retry = 0;
+    while (!done && retry < 2) {
         try {
-            resetConnection();
+            if (retry > 0) {
+                // If this is not the first try, reset the connection first.
+                qWarning() << "Resetting connection...";
+                resetConnection();
+            }
+            retry++;
+
             startJob();
             emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
-        } catch (const TTransportException &e) {
-            // Giving up... the connection seems to be down for real.
-            qWarning() << "Cannot reestablish connection:" << e.what();
+            done = true;
+        } catch (const TTransportException & e) {
+            qWarning() << "Got a transport exception:" << e.what();
             emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
         } catch (const TApplicationException &e) {
             qWarning() << "Cannot reestablish connection:" << e.what();
@@ -77,22 +80,26 @@ void EvernoteJob::run()
             emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
         } catch (const evernote::edam::EDAMSystemException &e) {
             qWarning() << "EDAMSystemException" << e.what() << e.errorCode << QString::fromStdString(e.message);
-            emitJobDone(EvernoteConnection::ErrorCodeSystemException, e.what());
+            QString message;
+            EvernoteConnection::ErrorCode errorCode;
+            switch (e.errorCode) {
+            case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
+                message = gettext("Authentication expired.");
+                errorCode = EvernoteConnection::ErrorCodeAuthExpired;
+                break;
+            case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
+                message = gettext("Rate limit exceeded.");
+                errorCode = EvernoteConnection::ErrorCodeRateLimitExceeded;
+                break;
+            default:
+                message = e.what();
+                errorCode = EvernoteConnection::ErrorCodeSystemException;
+            }
+            emitJobDone(errorCode, message);
         } catch (const evernote::edam::EDAMNotFoundException &e) {
             qWarning() << "EDAMNotFoundException" << e.what();
             emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
         }
-
-
-    } catch (const evernote::edam::EDAMUserException &e) {
-        qWarning() << "EDAMUserException" << e.what() << e.errorCode;
-        emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
-    } catch (const evernote::edam::EDAMSystemException &e) {
-        qWarning() << "EDAMSystemException" << e.what() << e.errorCode << QString::fromStdString(e.message) << e.rateLimitDuration;
-        emitJobDone(EvernoteConnection::ErrorCodeSystemException, e.what());
-    } catch (const evernote::edam::EDAMNotFoundException &e) {
-        qWarning() << "EDAMNotFoundException" << e.what();
-        emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
     }
 }
 
