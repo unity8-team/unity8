@@ -12,7 +12,7 @@ Build-Depends: cmake,
                qtdeclarative5-dev-tools,
                qtdeclarative5-qtquick2-plugin,
                qtdeclarative5-test-plugin,
-               qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48),
+               qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.48),
                suru-icon-theme,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
@@ -27,7 +27,7 @@ Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~)
 Depends: qml-module-qtquick-layouts,
          qtdeclarative5-ubuntu-settings-components-assets (= ${source:Version}),
-         qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48),
+         qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.48),
          suru-icon-theme,
          ${misc:Depends},
          ${shlibs:Depends},
