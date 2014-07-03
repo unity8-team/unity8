@@ -1,3 +1,100 @@
+unity8 (7.90+14.10.20140701.2-0ubuntu2) utopic; urgency=medium
+
+  * debian/control: 
+    list qtdeclarative5-ubuntu-ui-toolkit-plugin-gles as an alternative 
+    choice, since provides are not versionned, should restore installability
+    on amd64 and i386
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Thu, 03 Jul 2014 13:26:38 +0200
+
+unity8 (7.90+14.10.20140701.2-0ubuntu1) utopic; urgency=medium
+
+  [ Michał Sawicz ]
+  * Adapt to suru theme.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 01 Jul 2014 15:10:35 +0000
+
+unity8 (7.89+14.10.20140627-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Fix path in launcher mock after moving our mock icons, to avoid a
+    lot of "icon not found" warnings during qmluitests.
+  * Fix the testMultiGreeter qmluitest. Incoming method variables are
+    apparently read-only in Qt5.3. (LP: #1332488)
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Michał Sawicz ]
+  * Adapt scope mock to new api and quiet unused variable warnings.
+  * Fix dynamic overlay height. (LP: #1334879)
+  * Don't center items in CardVerticalJournal, kind of beats the
+    purpose... Also don't bind unnecessarily.
+
+  [ Ying-Chun Liu ]
+  * Fix LP:1330957 Fix some failed test cases. (LP: #1330957)
+
+  [ Albert Astals ]
+  * Don't seem to need this waitForRendering And makes test fail in 5.3
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 27 Jun 2014 08:47:58 +0000
+
+unity8 (7.89+14.10.20140624.1-0ubuntu1) utopic; urgency=low
+
+  [ Alberto Aguirre ]
+  * Update Powerd plugin and Shell.qml to accommodate changes in the
+    display power state notification.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 24 Jun 2014 17:11:08 +0000
+
+unity8 (7.89+14.10.20140624-0ubuntu1) utopic; urgency=low
+
+  [ Ying-Chun Liu ]
+  * Add logout support. Reviewed by: Daniel d'Andrada (LP: #1302213)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 24 Jun 2014 08:17:09 +0000
+
+unity8 (7.89+14.10.20140623.1-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Make so that fixedArtShapeSize actually fixes artShapeSize.
+
+  [ Albert Astals ]
+  * Add VerticalJournal integration to Dash/scopes/QML (LP: #1326467)
+  * Make so that fixedArtShapeSize actually fixes artShapeSize.
+
+  [ Mirco Müller ]
+  * Added the frontend-part of sound-hint support for notifications with
+    updated QML-tests.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 23 Jun 2014 11:17:12 +0000
+
+unity8 (7.89+14.10.20140619.3-0ubuntu1) utopic; urgency=low
+
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 19 Jun 2014 16:02:41 +0000
+
+unity8 (7.89+14.10.20140619.2-0ubuntu1) utopic; urgency=low
+
+  [ Albert Astals ]
+  * Departments support (LP: #1320847)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 19 Jun 2014 11:17:40 +0000
+
+unity8 (7.89+14.10.20140616.1-0ubuntu1) utopic; urgency=low
+
+  [ Pawel Stolowski ]
+  * Extend the hack for click scope categories with the upcoming 'store'
+    category: single-tap on results from the 'store' category should
+    activate them, instead of requesting a preview. (LP: #1326292)
+
+  [ Albert Astals ]
+  * Drop the " Preview" suffix from Preview title As requested in
+    https://bugs.launchpad.net/unity8/+bug/1316671 (LP: #1316671)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 16 Jun 2014 14:43:01 +0000
+
 unity8 (7.89+14.10.20140613-0ubuntu1) utopic; urgency=medium
 
   [ Michael Terry ]
