@@ -139,7 +139,7 @@ MainView {
             if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
                 EvernoteConnection.clearToken();
             }
-            EvernoteConnection.hostname = accountService.authData["parameters"]["HostName"]
+            EvernoteConnection.hostname = accountService.authData.parameters["HostName"];
             EvernoteConnection.token = reply.AccessToken;
         }
         onAuthenticationError: {

@@ -1,4 +1,7 @@
-usr/share/accounts/providers/*
-usr/share/accounts/qml-plugins/*
-usr/share/accounts/services/*
+#!/usr/bin/dh-exec
+
+usr/share/accounts/providers/evernote.provider
+usr/share/accounts/qml-plugins/evernote/Main.qml
+usr/share/accounts/services/evernote.service
 usr/share/icons/hicolor/32x32/apps/evernote.png
+usr/lib/*/qt5/qml/Evernote usr/lib/${DEB_HOST_MULTIARCH}/ubuntu-system-settings/private
