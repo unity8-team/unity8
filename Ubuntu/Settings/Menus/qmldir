@@ -17,6 +17,7 @@ SeparatorMenu 0.1 SeparatorMenu.qml
 SimpleTextMessageMenu 0.1 SimpleTextMessageMenu.qml
 SliderMenu 0.1 SliderMenu.qml
 SnapDecisionMenu 0.1 SnapDecisionMenu.qml
+StandardMenu 0.1 StandardMenu.qml
 SwitchMenu 0.1 SwitchMenu.qml
 TextMessageMenu 0.1 TextMessageMenu.qml
 TimeZoneMenu 0.1 TimeZoneMenu.qml
