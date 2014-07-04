@@ -1,8 +1,145 @@
-reminders-app (0.4-0ubuntu1) UNRELEASED; urgency=medium
+reminders-app (0.4+14.10.20140704-0ubuntu1) utopic; urgency=medium
 
+  [ David Planella ]
   * Trunk release. 
+  * Fix Qt Creator running and packaging issues. (LP: #1304879)
+  * Adds the launch path to those searched for when looking for the main
+    QML file, so that the app can start. . (LP: #1303763)
+  * Updated build and manifest so that a click package can now be
+    created either by Qt Creator or click-buddy. Updated the README file
+    with instructions.
+  * Make the plugin in the build dir properly override a plugin
+    installed in the system.
+  * Drop unused imports to QtWebkit.
+  * Add dependency to the Suru icons package to get the mobile icons
+    installed on the desktop. (LP: #1289347)
+  * Specified reminder actions explicitly, and update icons accordingly.
+  * Add OpenSSL linking exception. (LP: #1317977)
+  * Update translations template. (LP: #1317683)
+  * Provide more context to translators when translating a date string.
 
- -- David Planella <david.planella@ubuntu.com>  Fri, 04 Jul 2014 00:32:41 +0200
+  [ Carla Sella carla.sella@gmail.com ]
+  * New baseline for AP tests.
+
+  [ Alan Pope ]
+  * Fix broken manifest file.
+  * Bump framework. (LP: #1336764)
+  * Correctly fix framework. (LP: #1336764)
+
+  [ Riccardo Padovani ]
+  * Improved design of camera.
+  * Added dialog to inform users if no account is available. (LP:
+    #1289349, #1289342)
+  * Updated ContentImportHint to ContentTransferHint due new API
+    implementation. (LP: #1298057)
+  * Do autologin if a new account is added in system settings.
+  * Added a loading property to Notes, Notebooks and Note in order to
+    display busyindicators.
+  * Fixed #1316176 - Toolbar shows wrong actions. (LP: #1316176)
+  * Use Ubuntu Font as default for noteview. (LP: #1316950)
+  * Initial implementation of the new visual design.
+  * Better gradient on preview images.
+  * Remove wrong actions in toolbar when close note opened from a
+    notebook. (LP: #1318078)
+  * Pull to refresh notes and notebooks. (LP: #1318069, #1318071)
+  * Clear a previous search result when you do a new search. (LP:
+    #1317565)
+  * Removed the height property that causes the loop in the QML Row.
+  * New notebooks indicate the right creation date - today. (LP:
+    #1318751)
+  * First implementation of the new header.
+
+  [ Ken VanDine ]
+  * Updated for API changes in content-hub (LP: #1316942) . (LP:
+    #1316942)
+
+  [ Michael Zanetti ]
+  * load qml file from /usr/share if not found in current dir. (LP:
+    #1276647)
+  * build plugin on any arch, not one for all. (LP: #1284857)
+  * Add command line option -q <qmlfile> to load the main qml file from
+    some other place Also make it a bit more flexible by unhardcoding
+    the fallback searchpath for /usr/share.
+  * Make the app more robust against network outtakes.
+  * Added a loading property to Notes, Notebooks and Note in order to
+    display busyindicators.
+  * Displays error messages when loading fails for some reason (e.g.
+    network down). Also, display an informational message if no notes or
+    reminders are available.
+  * fix errors/warnings regarding images: Create the cachedir on startup
+    if it doesn't exist. Don't scale images to 0,0 if sourceSize is not
+    set. .
+  * cherry-picks notes-headers from new-design branch into trunk.
+  * change how resources are fetched   * hardcode sourceSize to a fixed
+    size to avoid the Image to load the big version * only refresh the
+    notecontent on scrolling if we don't have it yet   * fetch notes
+    without resourcedata by default   * if we detect a resource we don't
+    have cached yet, fetch the note again with the resource. (LP:
+    #1316172)
+  * Initial implementation of the new visual design.
+
+  [ Daniel Holbach ]
+  * relax reminders-app-autopilot dependency on reminders-app somewhat.
+    - add ${shlibs:Depends} to reminders-app dependencies - bump
+    Standards-Version to 3.9.5 - remove duplicate Section: entry.
+
+  [ Carla Sella ]
+  * New baseline for AP tests.
+
+  [ Akiva Avraham ]
+  * Added a Reload Button on the notes page. (LP: #1316827)
+
+  [ Dan Chapman ]
+  * removed -q option from src/app/main.cpp and
+    autopilot/reminders/tests/__init__.py Now looks for reminders.qml in
+    relation to the path of the application executable.
+
+  [ Jason Gerlowski ]
+  * Appends the correct path to the list of "Standard Paths" used to
+    search for the qml file.
+
+  [ Nicholas Skaggs ]
+  * Fix flake8 errors.
+
+  [ Leo Arias ]
+  * Fixed static errors, made consistent use of single quotes. (LP:
+    #1302320)
+  * Fixed the copyright headers. (LP: #1302324)
+  * Fixed the way autopilot starts the locally compiled application.
+  * Added an initial autopilot test.
+  * Fail gracefully if the no account dialog is not present.
+  * Added autopilot test_go_to_account_settings.
+  * Added helpers to create an evernote account in autopilot tests.
+  * Workaround for the API breakage on autopilot 1.5 that moved
+    get_classname_from_path to a private module.
+  * Added an autopiolot test to add a notebook.
+  * Added helpers for setting up and cleaning up the evernote account.
+    Added a test to check that an added note will be created on the
+    server. Make sure that all tests remove all the things they create.
+  * Added logging messages and tests to the credentials autopilot tests
+    helpers.
+
+  [ nskaggs ]
+  * Add check for testability driver when loading binary to ensure
+    autopilot introspection works.
+  * New baseline for AP tests.
+  * Fix misnamed click package during autopilot launch.
+  * Enable jenkins to run python3 tests.
+  * Properly setup environment for autopilot testing by using a faked
+    /home directory on phablet and desktop. (LP: #1316746)
+  * First implementation of the new header.
+  * Update pep8 compliance.
+  * Include the evernote-sdk-python3 depends inline along with a custom
+    version of libthrift.
+
+  [ Boren Zhang ]
+  * Fixed 1279783. (LP: #1279783)
+
+  [ Alberto Mardegan ]
+  * Request access to the Evernote account Use the new
+    OnlineAccounts.Client module to setup the Evernote account.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 04 Jul 2014 07:35:58 +0000
 
 reminders-app (0.4+bzr182ppa4~utopic) utopic; urgency=medium
 
