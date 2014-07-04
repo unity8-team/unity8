@@ -94,6 +94,19 @@ Item {
             compare(text.text, data.text, "Text does not match data");
         }
 
+        function test_stateText_data() {
+            return [ { stateText: "State 1" },
+                     { stateText: "State 2" }
+            ];
+        }
+
+        function test_stateText(data) {
+            transferMenu.stateText = data.stateText;
+
+            var stateText = UtilsJS.findChild(transferMenu, "stateText");
+            compare(stateText.text, data.stateText, "State text does not match data");
+        }
+
         function test_progress_data() {
             return [ { progress: 0.5 },
                      { progress: 1.0 }
@@ -105,6 +118,19 @@ Item {
 
             var progress = UtilsJS.findChild(transferMenu, "progress");
             compare(progress.value, data.progress, "Progress does not match expected value");
+        }
+
+        function test_active() {
+            var progress = UtilsJS.findChild(transferMenu, "progress");
+            var stateText = UtilsJS.findChild(transferMenu, "stateText");
+
+            transferMenu.active = true;
+            compare(progress.visible, true, "Progress should be visible when active");
+            compare(stateText.visible, true, "State should be visible when active");
+
+            transferMenu.active = false;
+            compare(progress.visible, false, "Progress should not be visible when inactive");
+            compare(stateText.visible, false, "State should not be visible when inactive");
         }
     }
 }
