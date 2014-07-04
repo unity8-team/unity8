@@ -98,10 +98,9 @@ ListItem.Empty {
         objectName: "iconSignal"
 
         color: Theme.palette.selected.backgroundText
-        keyColor: "#cccccc"
 
         width: height
-        height: Math.min(units.gu(5), parent.height - units.gu(1))
+        height: Math.min(units.gu(3), parent.height - units.gu(1))
         anchors {
             left: checkbox.right
             leftMargin: units.gu(1)
@@ -146,10 +145,9 @@ ListItem.Empty {
         name: "network-secure"
 
         color: Theme.palette.selected.backgroundText
-        keyColor: "#cccccc"
 
         width: height
-        height: Math.min(units.gu(4), parent.height - units.gu(1))
+        height: Math.min(units.gu(3), parent.height - units.gu(1))
         anchors {
             right: parent.right
             rightMargin: menu.__contentsMargins

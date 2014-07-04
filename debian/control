@@ -5,13 +5,15 @@ Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
                pkg-config,
+               qml-module-qtquick-layouts,
                qt5-default,
                qtbase5-private-dev,
                qtdeclarative5-dev,
                qtdeclarative5-dev-tools,
                qtdeclarative5-qtquick2-plugin,
                qtdeclarative5-test-plugin,
-               qtdeclarative5-ubuntu-ui-toolkit-plugin,
+               qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.48),
+               suru-icon-theme,
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/ubuntu-settings-components
 # If you don't have have commit access to this branch but would like to upload
@@ -23,7 +25,9 @@ Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
 Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: qtdeclarative5-ubuntu-ui-toolkit-plugin,
+Depends: qml-module-qtquick-layouts,
+         qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.48),
+         suru-icon-theme,
          ${misc:Depends},
          ${shlibs:Depends},
 Description: Ubuntu Settings Components
