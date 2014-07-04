@@ -15,4 +15,6 @@ override_dh_auto_configure:
 		-DEVERNOTE_CONSUMER_SECRET="174a72ce5bffbcad"
 
 override_dh_install:
+	# Make sure the dh-exec variable expansion works
+	chmod a+x debian/account-plugin-evernote.install
 	dh_install --fail-missing

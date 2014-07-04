@@ -1,3 +1,9 @@
+reminders-app (0.4-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Trunk release. 
+
+ -- David Planella <david.planella@ubuntu.com>  Fri, 04 Jul 2014 00:32:41 +0200
+
 reminders-app (0.4+bzr182ppa4~utopic) utopic; urgency=medium
 
   * Fixed the account provider file and the condition to check
