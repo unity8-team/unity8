@@ -44,36 +44,41 @@ ListItem.Empty {
 
         UbuntuShape {
             id: imageShape
-            Layout.maximumWidth: units.gu(5)
-            Layout.maximumHeight: units.gu(5)
-            Layout.fillHeight: true
+            Layout.preferredWidth: units.gu(5)
+            Layout.preferredHeight: units.gu(5)
 
             Layout.alignment: Qt.AlignTop
 
             image: Image {
                 objectName: "icon"
                 id: icon
+
+                sourceSize {
+                    width: units.gu(5)
+                    height: units.gu(5)
+                }
             }
         }
 
         ColumnLayout {
             spacing: units.gu(0.5)
-            Layout.fillWidth: true
-            Layout.fillHeight: true
 
             Label {
                 id: label
                 objectName: "text"
                 Layout.fillWidth: true
+
+                elide: Text.ElideRight
+                maximumLineCount: 1
             }
 
             ProgressBar {
                 id: progressBar
                 objectName: "progress"
-                visible: active
+                visible: menu.active
                 value: 0.0
 
-                Layout.maximumHeight: units.gu(2)
+                Layout.preferredHeight: units.gu(2)
                 Layout.fillWidth: true
             }
 
@@ -81,7 +86,10 @@ ListItem.Empty {
                 id: stateLabel
                 objectName: "stateText"
                 Layout.fillWidth: true
-                visible: active
+                visible: menu.active
+
+                elide: Text.ElideRight
+                maximumLineCount: 1
             }
         }
     }

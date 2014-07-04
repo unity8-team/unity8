@@ -24,20 +24,20 @@
 class UBUNTUSETTINGSCOMPONENTS_EXPORT TransferState : public QObject
 {
     Q_OBJECT
-public:
     Q_ENUMS(TransferStates)
+public:
     enum TransferStates {
-        QUEUED,
-        RUNNING,
-        PAUSED,
-        CANCELED,
-        HASHING,
-        PROCESSING,
-        FINISHED,
-        ERROR
+        Queued,
+        Running,
+        Paused,
+        Canceled,
+        Hashing,
+        Processing,
+        Finished,
+        Error
     };
 
-    TransferState(QObject*parent=0):QObject(parent) {}
+    TransferState(QObject* parent = 0): QObject(parent) {}
 };
 
 #endif // UBUNTUSETTINGSMENUSTYPES_H
