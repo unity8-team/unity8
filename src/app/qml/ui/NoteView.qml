@@ -18,7 +18,11 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Components.Extras.Browser 0.2
+// FIXME: we need com.canonical.Oxide to have UserScript type available and
+// WebContextDelegateWorker to intercette messages. As
+// soon as this will be implemented also in Ubuntu.Web we will switch to last
+// one
+import com.canonical.Oxide 1.0 
 import Evernote 0.1
 import "../components"
 
@@ -40,89 +44,37 @@ Item {
         visible: running
     }
 
-    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
-    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
-    // another flickable prevents this from happening.
-    Flickable {
-        anchors { fill: parent }
-        contentHeight: height
+    WebContext {
+        id: webContext 
 
-        UbuntuWebView {
-            id: noteTextArea
-            anchors { fill: parent}
-            property string html: note.htmlContent
-            onHtmlChanged: {
-                loadHtml(html, "file:///")
+        userScripts: [
+            UserScript {
+                url: Qt.resolvedUrl("reminders-scripts.js");
             }
+        ]
 
-            Connections {
-                target: note
-                onResourcesChanged: {
-                    noteTextArea.loadHtml(noteTextArea.html, "file:///")
-                }
-            }
-
-
-            Component.onCompleted: debug(noteTextArea, 0)
-            function debug(id, level) {
-                var level_string = '';
-
-                for (var i = 0; i < level; i++) {
-                    if (i+1 === level) {
-                        level_string += '|--------';
-                    }
-                    else {
-                        level_string += '         ';
-                    }
-                }
-
-                if (level === 0) { 
-                    level_string = 'property ';
-                }
-                else {
-                    level_string += '> ';
-                }
-
-                for (var value in id) {
-
-                    if (value != 'parent' && value != 'anchors' && value != 'data' && value != 'resources' && value != 'children') {
-                        if (typeof(id[value]) === 'function') {
-                            if (level === 0) {
-                                console.log('function ' + value + '()');
-                            }
-                            else {
-                                console.log(level_string + 'function ' + value + '()');
-                            }
-                        }
-                        else if (typeof(id[value]) === 'object') {
-                            console.log(level_string + value + ' [object]');
-                            debug(id[value], level+1);
-                        }
-                        else {
-                            console.log(level_string + value + ': ' + id[value] + ' [' + typeof(id[value]) + ']');
-                        }
-                    }
-                }
-            }
-            /*preferences.standardFontFamily: 'Ubuntu'
-            //preferences.navigatorQtObjectEnabled: true
-            //preferredMinimumContentsWidth: root.width
-            context.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            onMessageReceived: {
-                var data = null;
-                try {
-                    data = JSON.parse(message.data);
-                } catch (error) {
-                    print("Failed to parse message:", message.data, error);
-                }
-
-                switch (data.type) {
-                case "checkboxChanged":
-                    note.markTodo(data.todoId, data.checked);
-                    NotesStore.saveNote(note.guid);
-                    break;
-                }
-            }*/
+        networkRequestDelegate: WebContextDelegateWorker {
+            source: Qt.resolvedUrl("message-api.js");
+            onMessage: console.log('onMessage')
         }
     }
+
+    WebView {
+        id: noteTextArea
+        anchors { fill: parent}
+        property string html: note.htmlContent
+        onHtmlChanged: {
+            loadHtml(html, "file:///")
+        }
+
+        Connections {
+            target: note
+            onResourcesChanged: {
+                noteTextArea.loadHtml(noteTextArea.html, "file:///")
+            }
+        }
+
+        context: webContext;
+        preferences.standardFontFamily: 'Ubuntu'
+     }
 }
