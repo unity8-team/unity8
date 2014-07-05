@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Components.Extras.Browser 0.1
+import Ubuntu.Components.Extras.Browser 0.2
 import Evernote 0.1
 import "../components"
 
@@ -62,11 +62,53 @@ Item {
                 }
             }
 
-            experimental.preferences.standardFontFamily: 'Ubuntu'
-            experimental.preferences.navigatorQtObjectEnabled: true
-            experimental.preferredMinimumContentsWidth: root.width
-            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            experimental.onMessageReceived: {
+
+            Component.onCompleted: debug(noteTextArea, 0)
+            function debug(id, level) {
+                var level_string = '';
+
+                for (var i = 0; i < level; i++) {
+                    if (i+1 === level) {
+                        level_string += '|--------';
+                    }
+                    else {
+                        level_string += '         ';
+                    }
+                }
+
+                if (level === 0) { 
+                    level_string = 'property ';
+                }
+                else {
+                    level_string += '> ';
+                }
+
+                for (var value in id) {
+
+                    if (value != 'parent' && value != 'anchors' && value != 'data' && value != 'resources' && value != 'children') {
+                        if (typeof(id[value]) === 'function') {
+                            if (level === 0) {
+                                console.log('function ' + value + '()');
+                            }
+                            else {
+                                console.log(level_string + 'function ' + value + '()');
+                            }
+                        }
+                        else if (typeof(id[value]) === 'object') {
+                            console.log(level_string + value + ' [object]');
+                            debug(id[value], level+1);
+                        }
+                        else {
+                            console.log(level_string + value + ': ' + id[value] + ' [' + typeof(id[value]) + ']');
+                        }
+                    }
+                }
+            }
+            /*preferences.standardFontFamily: 'Ubuntu'
+            //preferences.navigatorQtObjectEnabled: true
+            //preferredMinimumContentsWidth: root.width
+            context.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
+            onMessageReceived: {
                 var data = null;
                 try {
                     data = JSON.parse(message.data);
@@ -80,7 +122,7 @@ Item {
                     NotesStore.saveNote(note.guid);
                     break;
                 }
-            }
+            }*/
         }
     }
 }
