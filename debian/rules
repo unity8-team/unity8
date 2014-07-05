@@ -8,8 +8,13 @@
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DEVERNOTE_CONSUMER_KEY="ubuntu" \
-		-DEVERNOTE_CONSUMER_SECRET="44f8ee81a8359500"
+	dh_auto_configure -- \
+		-DEVERNOTE_SANDBOX_CONSUMER_KEY="ubuntu" \
+		-DEVERNOTE_SANDBOX_CONSUMER_SECRET="44f8ee81a8359500" \
+		-DEVERNOTE_CONSUMER_KEY="canonicalis" \
+		-DEVERNOTE_CONSUMER_SECRET="174a72ce5bffbcad"
 
-override_dh_install:	
+override_dh_install:
+	# Make sure the dh-exec variable expansion works
+	chmod a+x debian/account-plugin-evernote.install
 	dh_install --fail-missing

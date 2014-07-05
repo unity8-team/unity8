@@ -66,6 +66,7 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         super(RemindersTestCaseWithAccount, self).setUp()
         no_account_dialog = self.app.main_view.no_account_dialog
         self.add_evernote_account()
+        logger.info('Waiting for the Evernote account to be created.')
         no_account_dialog.wait_until_destroyed()
         self.evernote_client = evernote.SandboxEvernoteClient()
 
@@ -93,15 +94,9 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         notebooks_page.add_notebook(test_notebook_title)
 
         last_notebook = notebooks_page.get_notebooks()[-1]
-        # TODO there's a bug with the last updated value: http://pad.lv/1318751
-        # so we can't check the full tuple. Uncomment this as soon as the bug
-        # is fixed. --elopio - 2014-05-12
-        # self.assertEqual(
-        #    last_notebook,
-        #    (test_notebook_title, 'Last edited today', 'Private', 0))
-        self.assertEqual(last_notebook[0], test_notebook_title)
-        self.assertEqual(last_notebook[2], 'Private')
-        self.assertEqual(last_notebook[3], 0)
+        self.assertEqual(
+            last_notebook,
+            (test_notebook_title, 'Last edited today', 'Private', 0))
 
     def test_add_notebook_must_create_it_in_server(self):
         """Test that an added notebook will be created on the server."""

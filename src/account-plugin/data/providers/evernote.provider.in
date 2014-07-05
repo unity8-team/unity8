@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<provider id="evernote">
-  <name>Evernote Developer Sandbox</name>
-  <icon>evernote</icon>
+<provider id="@EVERNOTE_PROVIDER_ID@">
+  <name>@EVERNOTE_ACCOUNT_DISPLAY_NAME@</name>
+  <icon>@EVERNOTE_ICON_NAME@</icon>
   <translations>account-plugins</translations>
   <plugin>generic-oauth</plugin>
   <domains>.*evernote\.com</domains>
@@ -12,12 +12,13 @@
       <setting name="mechanism">HMAC-SHA1</setting>
       <group name="oauth2">
         <group name="HMAC-SHA1">
-          <setting name="RequestEndpoint">https://sandbox.evernote.com/oauth</setting>
-          <setting name="TokenEndpoint">https://sandbox.evernote.com/oauth</setting>
-          <setting name="AuthorizationEndpoint">https://sandbox.evernote.com/OAuth.action</setting>
+          <setting name="RequestEndpoint">https://@EVERNOTE_HOSTNAME@/oauth</setting>
+          <setting name="TokenEndpoint">https://@EVERNOTE_HOSTNAME@/oauth</setting>
+          <setting name="AuthorizationEndpoint">https://@EVERNOTE_HOSTNAME@/OAuth.action</setting>
           <setting name="Callback">https://wiki.ubuntu.com/</setting>
           <setting name="ConsumerKey">@EVERNOTE_CONSUMER_KEY@</setting>
           <setting name="ConsumerSecret">@EVERNOTE_CONSUMER_SECRET@</setting>
+          <setting name="HostName">@EVERNOTE_HOSTNAME@</setting>
         </group>
       </group>
     </group>

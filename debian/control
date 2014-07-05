@@ -3,6 +3,7 @@ Priority: extra
 Maintainer: Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>
 Build-Depends: cmake,
                debhelper (>= 9),
+               dh-exec,
                gettext,
                libboost-dev,
                libssl-dev,
@@ -38,26 +39,38 @@ Description: Expose the Evernote API to QML applications
  This module provides access to the Evernote API from QML applications.
 
 Package: account-plugin-evernote
-Architecture: all
+Architecture: any
 Depends: libaccount-plugin-generic-oauth,
-         qtdeclarative5-evernote0.1,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
-Description: Allow Ubuntu to access the Evernote developer sandbox
+         ${shlibs:Depends},
+Description: Allow Ubuntu applications to access Evernote accounts
+ This plugin enables users to authenticate to their Evernote accounts,
+ providing syncing of Evernote notes across Ubuntu devices.
+
+Package: account-plugin-evernote-sandbox
+Architecture: any
+Depends: account-plugin-evernote,
+         libaccount-plugin-generic-oauth,
+         qtdeclarative5-online-accounts-client0.1,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: Allow Ubuntu applications to access Evernote sandbox accounts
  This plugin enables developers to authenticate to their Evernote developer
  sandbox account, which allows syncing of Evernote notes across Ubuntu devices.
 
 Package: reminders-app-autopilot
 Architecture: all
 Depends: ${misc:Depends},
-         evernote-sdk-python3,
          reminders-app (>= ${source:Version}), reminders-app (<< ${source:Version}.1~),
+         account-plugin-evernote-sandbox,
          libautopilot-qt,
          libqt5test5,
          python3-dbus,
          python3-dbusmock,
          python3-fixtures,
-         python3-thrift,
+         python3-oauthlib,
+         python3-requests-oauthlib,
          ubuntu-ui-toolkit-autopilot,
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package

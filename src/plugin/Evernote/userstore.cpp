@@ -45,7 +45,7 @@ UserStore* UserStore::s_instance = 0;
 UserStore::UserStore(QObject *parent) :
     QObject(parent)
 {
-    connect(EvernoteConnection::instance(), &EvernoteConnection::tokenChanged, this, &UserStore::fetchUsername);
+    connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &UserStore::fetchUsername);
 
     fetchUsername();
 }

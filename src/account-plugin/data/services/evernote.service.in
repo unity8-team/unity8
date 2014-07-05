@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="@EVERNOTE_SERVICE_ID@">
+  <type>sharing</type>
+  <name>@EVERNOTE_ACCOUNT_DISPLAY_NAME@</name>
+  <icon>@EVERNOTE_ICON_NAME@</icon>
+  <provider>@EVERNOTE_PROVIDER_ID@</provider>
+  <translations>account-plugins</translations>
+</service>
