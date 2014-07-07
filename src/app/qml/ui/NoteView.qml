@@ -64,6 +64,8 @@ Item {
         anchors { fill: parent}
         property string html: note.htmlContent
         onHtmlChanged: {
+            console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
+            console.log(html)
             loadHtml(html, "file:///")
         }
 
