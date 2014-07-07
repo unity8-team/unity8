@@ -19,6 +19,7 @@
 
 """Set up and clean up fixtures for the Unity acceptance tests."""
 
+import dbus
 import os
 import subprocess
 import sysconfig
@@ -62,33 +63,37 @@ class LauncherIcon(fixtures.Fixture):
         self._add_messaging_app_icon_to_launcher()
         self.addCleanup(self._set_launcher_icons, self.backup)
 
-    def _backup_launcher_icons(self):
-        raw_output = subprocess.check_output(
-            'gdbus call --system --dest org.freedesktop.Accounts '
-            '--object-path /org/freedesktop/Accounts/User32011 --method '
-            'org.freedesktop.DBus.Properties.Get '
-            'com.canonical.unity.AccountsService launcher-items', shell=True
-        )
+    def _get_accounts_service_dbus_iface(self):
+        bus = dbus.SystemBus()
+        proxy = bus.get_object(
+            'org.freedesktop.Accounts',
+            '/org/freedesktop/Accounts/User32011')
+        return dbus.Interface(proxy, 'org.freedesktop.DBus.Properties')
 
-        self.backup = raw_output.decode().lstrip("(").rstrip(",)\n")
+    def _backup_launcher_icons(self):
+        manager = self._get_accounts_service_dbus_iface()
+        self.backup = manager.Get(
+            'com.canonical.unity.AccountsService',
+            'launcher-items')
 
     def _set_launcher_icons(self, icons_config):
-        subprocess.call(
-            'gdbus call --system --dest org.freedesktop.Accounts '
-            '--object-path /org/freedesktop/Accounts/User32011 --method '
-            'org.freedesktop.DBus.Properties.Set '
-            'com.canonical.unity.AccountsService launcher-items '
-            '"{}"'.format(icons_config), shell=True
-        )
+        manager = self._get_accounts_service_dbus_iface()
+        self.backup = manager.Set(
+            'com.canonical.unity.AccountsService',
+            'launcher-items', icons_config)
 
     def _add_messaging_app_icon_to_launcher(self):
         self._backup_launcher_icons()
 
-        messaging_icon = "<[{ \
-        'count': <0>, \
-        'countVisible': <false>, \
-        'icon': <'image://theme/messages-app'>, \
-        'id': <'messaging-app'>, \
-        'name': <'Messaging'> \
-        }]>"
+        messaging_icon = dbus.Array([dbus.Dictionary({
+        dbus.String('count'): dbus.Int32(0, variant_level=1),
+        dbus.String('countVisible'): dbus.Boolean(False, variant_level=1),
+        dbus.String('name'): dbus.String('Messaging', variant_level=1),
+        dbus.String('id'): dbus.String('messaging-app', variant_level=1),
+        dbus.String('icon'): dbus.String('image://theme/messaging-app',
+            variant_level=1)},
+        signature=dbus.Signature('sv'))],
+        signature=dbus.Signature('a{sv}'),
+        variant_level=1)
+        
         self._set_launcher_icons(messaging_icon)
