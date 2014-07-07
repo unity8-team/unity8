@@ -30,5 +30,7 @@ Depends: qml-module-qtquick-layouts,
          suru-icon-theme,
          ${misc:Depends},
          ${shlibs:Depends},
+Breaks: qtdeclarative5-ubuntu-settings-components-assets (<< 0.3),
+Replaces: qtdeclarative5-ubuntu-settings-components-assets (<< 0.3),
 Description: Ubuntu Settings Components
  Ubuntu settings components for Unity
