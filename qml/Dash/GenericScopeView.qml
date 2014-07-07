@@ -256,10 +256,8 @@ FocusScope {
 
                 height: visible ? implicitHeight : 0
 
-                enableSeeMore: item && item.canGrow
-                enableSeeLess: item && item.canShrink
-                onSeeMoreClicked: item.grow();
-                onSeeLessClicked: item.shrink();
+                canSeeMore: item && item.canGrow
+                onToggled: item.canGrow ? item.grow() : item.shrink();
 
                 anchors {
                     left: parent.left

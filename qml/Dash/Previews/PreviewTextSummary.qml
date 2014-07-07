@@ -78,10 +78,8 @@ PreviewWidget {
         objectName: "seeMore"
         property bool expanded: false
 
-        enableSeeMore: !expanded
-        enableSeeLess: expanded
-        onSeeMoreClicked: expanded = true;
-        onSeeLessClicked: expanded = false;
+        canSeeMore: !expanded
+        onToggled: expanded = !expanded;
 
         anchors {
             left: parent.left
