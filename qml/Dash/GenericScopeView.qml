@@ -262,7 +262,7 @@ FocusScope {
                 anchors {
                     left: parent.left
                     right: parent.right
-                    top: rendererLoader.bottom
+                    bottom: parent.bottom
                 }
                 visible: item && (item.canGrow || item.canShrink)
             }
