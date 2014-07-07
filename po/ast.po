@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-03-21 01:03+0000\n"
-"Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
+"PO-Revision-Date: 2014-07-06 10:23+0000\n"
+"Last-Translator: ivarela <ivarela@ubuntu.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-17 07:15+0000\n"
-"X-Generator: Launchpad (build 17007)\n"
+"X-Launchpad-Export-Date: 2014-07-07 06:08+0000\n"
+"X-Generator: Launchpad (build 17086)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -32,7 +32,7 @@ msgstr "Recordatorios"
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr ""
+msgstr "Nun hai cuenta disponible"
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
@@ -40,7 +40,7 @@ msgstr ""
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr ""
+msgstr "Abrir axustes de cuentes"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
@@ -66,11 +66,11 @@ msgstr ""
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr ""
+msgstr "Marcar como fecho"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr ""
+msgstr "Atrás"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
@@ -106,12 +106,12 @@ msgstr "Guetar"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr ""
+msgstr "Anovar"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr ""
+msgstr "Cuentes"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
@@ -150,32 +150,32 @@ msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr ""
+msgstr "Güei"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "Ayeri"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "Cabera selmana"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "Hai dos selmanes"
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "Fecho"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr ""
+msgstr "Ensin data"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
@@ -183,39 +183,39 @@ msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr ""
+msgstr "Mañana"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr ""
+msgstr "Siguiente selmana"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr ""
+msgstr "En dos selmanes"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr ""
+msgstr "Más tarde"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr ""
+msgstr "güei"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr ""
+msgstr "ayeri"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr ""
+msgstr "selmana pasada"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr ""
+msgstr "hai dos selmanes"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
