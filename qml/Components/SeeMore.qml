@@ -17,11 +17,16 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 
-/*! Widget that can be used in combination with a text area to allow easy 'expand/collapse' functionality. */
+/*! Widget for See More/Less functionality functionality. */
 
 Item {
-    //! Boolean set to true when it suggests expanded functionality
-    property bool more: false
+    id: root
+
+    property alias enableSeeMore: seeMoreMouseArea.enabled
+    property alias enableSeeLess: seeLessMouseArea.enabled
+
+    signal seeMoreClicked()
+    signal seeLessClicked()
 
     implicitHeight: seeMoreLabel.height + units.gu(2)
 
@@ -33,14 +38,16 @@ Item {
             id: seeMoreLabel
             objectName: "seeMoreLabel"
             text: i18n.tr("See more")
-            opacity: !more ? 0.8 : 0.4
+            opacity: root.enableSeeMore ? 0.8 : 0.4
             // TODO: Fix requiring Palette update
             color: "grey" //Theme.palette.selected.backgroundText
             font.weight: Font.Bold
 
             MouseArea {
+                id: seeMoreMouseArea
+                enabled: false
                 anchors.fill: parent
-                onClicked: more = true
+                onClicked: root.seeMoreClicked();
             }
         }
 
@@ -56,14 +63,16 @@ Item {
         Label {
             objectName: "seeLessLabel"
             text: i18n.tr("See less")
-            opacity: more ? 0.8 : 0.4
+            opacity: root.enableSeeLess ? 0.8 : 0.4
             // TODO: Fix requiring Palette update
             color: "grey" //Theme.palette.selected.backgroundText
             font.weight: Font.Bold
 
             MouseArea {
+                id: seeLessMouseArea
+                enabled: false
                 anchors.fill: parent
-                onClicked: more = false
+                onClicked: root.seeLessClicked()
             }
         }
     }

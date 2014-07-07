@@ -115,14 +115,25 @@ FocusScope {
         onOriginYChanged: pageHeader.positionRealHeader();
         onContentHeightChanged: pageHeader.positionRealHeader();
 
-        delegate: ListItems.Base {
+        delegate: Item {
             id: baseItem
             objectName: "dashCategory" + category
-            highlightWhenPressed: false
-            showDivider: false
+            //highlightWhenPressed: false
+            //showDivider: false
+            height: rendererLoader.height + seeMore.height
+            width: parent.width
+            clip: true
 
-            readonly property bool expandable: rendererLoader.item ? rendererLoader.item.expandable : false
-            readonly property bool filtered: rendererLoader.item ? rendererLoader.item.filtered : true
+            Behavior on height {
+                NumberAnimation {
+                    // Duration and easing here match the ListViewWithPageHeader::m_contentYAnimation
+                    // otherwise since both animations can run at the same time you'll get
+                    // some visual weirdness.
+                    duration: 200
+                    easing.type: Easing.InOutQuad
+                }
+            }
+
             readonly property string category: categoryId
             readonly property var item: rendererLoader.item
 
@@ -168,10 +179,7 @@ FocusScope {
                         item.model = Qt.binding(function() { return results })
                     }
                     item.objectName = Qt.binding(function() { return categoryId })
-                    if (item.expandable) {
-                        var shouldFilter = categoryId != categoryView.expandedCategoryId;
-                        item.setFilter(shouldFilter, false /*animate*/);
-                    }
+                    // TODO: Do something here with previously "seen more" categories that are now being recreated
                     updateDelegateCreationRange();
                     item.cardTool = cardTool;
                 }
@@ -203,38 +211,9 @@ FocusScope {
                         previewListView.currentIndex = index;
                         previewListView.open = true
                     }
-                    onExpandableChanged: {
-                        // This can happen with the VJ that doesn't know how height it will be on creation
-                        // so doesn't set expandable until a bit too late for onLoaded
-                        if (rendererLoader.item.expandable) {
-                            var shouldFilter = baseItem.category != categoryView.expandedCategoryId;
-                            rendererLoader.item.setFilter(shouldFilter, false /*animate*/);
-                        }
-                    }
                 }
                 Connections {
                     target: categoryView
-                    onExpandedCategoryIdChanged: {
-                        collapseAllButExpandedCategory();
-                    }
-                    function collapseAllButExpandedCategory() {
-                        var item = rendererLoader.item;
-                        if (item.expandable) {
-                            var shouldFilter = categoryId != categoryView.expandedCategoryId;
-                            if (shouldFilter != item.filter) {
-                                // If the filter animation will be seen start it, otherwise, just flip the switch
-                                var shrinkingVisible = shouldFilter && y + item.collapsedHeight < categoryView.height;
-                                var growingVisible = !shouldFilter && y + height < categoryView.height;
-                                if (!previewListView.open || !shouldFilter) {
-                                    var animate = shrinkingVisible || growingVisible;
-                                    item.setFilter(shouldFilter, animate)
-                                    if (!shouldFilter && !previewListView.open) {
-                                        categoryView.maximizeVisibleArea(index, item.uncollapsedHeight);
-                                    }
-                                }
-                            }
-                        }
-                    }
                     onOriginYChanged: rendererLoader.updateDelegateCreationRange();
                     onContentYChanged: rendererLoader.updateDelegateCreationRange();
                     onHeightChanged: rendererLoader.updateDelegateCreationRange();
@@ -270,31 +249,49 @@ FocusScope {
                         }
                     }
                 }
+            }
 
-                Image {
-                    visible: index != 0
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        right: parent.right
-                    }
-                    fillMode: Image.Stretch
-                    source: "graphics/dash_divider_top_lightgrad.png"
-                    z: -1
-                }
+            SeeMore {
+                id: seeMore
 
-                Image {
-                    // FIXME Should not rely on model.count but view.count, but ListViewWithPageHeader doesn't expose it yet.
-                    visible: index != categoryView.model.count - 1
-                    anchors {
-                        bottom: parent.bottom
-                        left: parent.left
-                        right: parent.right
-                    }
-                    fillMode: Image.Stretch
-                    source: "graphics/dash_divider_top_darkgrad.png"
-                    z: -1
+                height: visible ? implicitHeight : 0
+
+                enableSeeMore: item && item.canGrow
+                enableSeeLess: item && item.canShrink
+                onSeeMoreClicked: item.grow();
+                onSeeLessClicked: item.shrink();
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: rendererLoader.bottom
                 }
+                visible: item && (item.canGrow || item.canShrink)
+            }
+
+            Image {
+                visible: index != 0
+                anchors {
+                    top: rendererLoader.top
+                    left: parent.left
+                    right: parent.right
+                }
+                fillMode: Image.Stretch
+                source: "graphics/dash_divider_top_lightgrad.png"
+                z: -1
+            }
+
+            Image {
+                // FIXME Should not rely on model.count but view.count, but ListViewWithPageHeader doesn't expose it yet.
+                visible: index != categoryView.model.count - 1
+                anchors {
+                    bottom: seeMore.bottom
+                    left: parent.left
+                    right: parent.right
+                }
+                fillMode: Image.Stretch
+                source: "graphics/dash_divider_top_darkgrad.png"
+                z: -1
             }
 
             onHeightChanged: rendererLoader.updateDelegateCreationRange();
@@ -307,17 +304,6 @@ FocusScope {
             property var delegate: categoryView.item(delegateIndex)
             width: categoryView.width
             text: section
-            image: {
-                if (delegate && delegate.expandable)
-                    return delegate.filtered ? "graphics/header_handlearrow.png" : "graphics/header_handlearrow2.png"
-                return "";
-            }
-            onClicked: {
-                if (categoryView.expandedCategoryId != delegate.category)
-                    categoryView.expandedCategoryId = delegate.category;
-                else
-                    categoryView.expandedCategoryId = "";
-            }
         }
         pageHeader: Item {
             implicitHeight: scopeView.tabBarHeight

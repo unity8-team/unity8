@@ -17,15 +17,17 @@
 import QtQuick 2.0
 
 Item {
-    // Can the item be expanded?
-    property bool expandable: false
+    // Can this item grow?
+    property bool canGrow: false
 
-    // In case it can be expanded, is it filtered
-    property bool filtered: true
+    // Can this item shrink?
+    property bool canShrink: false
 
-    property int collapsedHeight: height
+    // Grow the item
+    function grow() {}
 
-    property int uncollapsedHeight: height
+    // Shrink the item
+    function shrink() {}
 
     property int displayMarginBeginning: 0
 

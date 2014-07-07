@@ -58,7 +58,7 @@ PreviewWidget {
             right: parent.right
             top: titleLabel.visible ? titleLabel.bottom : parent.top
         }
-        height: (!seeMore.visible || seeMore.more) ? contentHeight : contentHeight / lineCount * (maximumCollapsedLineCount - 2)
+        height: (!seeMore.visible || seeMore.expanded) ? contentHeight : contentHeight / lineCount * (maximumCollapsedLineCount - 2)
         clip: true
         fontSize: "small"
         lineHeight: 1.2
@@ -76,6 +76,13 @@ PreviewWidget {
     SeeMore {
         id: seeMore
         objectName: "seeMore"
+        property bool expanded: false
+
+        enableSeeMore: !expanded
+        enableSeeLess: expanded
+        onSeeMoreClicked: expanded = true;
+        onSeeLessClicked: expanded = false;
+
         anchors {
             left: parent.left
             right: parent.right
