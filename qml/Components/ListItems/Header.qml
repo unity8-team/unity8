@@ -52,15 +52,15 @@ Item {
             fontSize: "medium"
             elide: Text.ElideRight
             textFormat: Text.PlainText
-            width: parent.width - image.width - image.leftMargin - anchors.leftMargin
+            width: parent.width - image.width - anchors.leftMargin
         }
 
         Image {
             id: image
-            readonly property double leftMargin: units.gu(1)
-            x: label.x + label.contentWidth + leftMargin
             anchors {
                 verticalCenter: parent.verticalCenter
+                right: parent.right
+                rightMargin: units.gu(1)
             }
         }
     }

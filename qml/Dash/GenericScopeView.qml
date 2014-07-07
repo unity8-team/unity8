@@ -117,7 +117,7 @@ FocusScope {
 
         delegate: Item {
             id: baseItem
-            objectName: "dashCategory" + category
+            objectName: "dashCategory" + categoryName
             //highlightWhenPressed: false
             //showDivider: false
             height: rendererLoader.height + seeMore.height
@@ -134,7 +134,8 @@ FocusScope {
                 }
             }
 
-            readonly property string category: categoryId
+            readonly property string categoryName: categoryId
+            readonly property string expansionUri: expansionQuery
             readonly property var item: rendererLoader.item
 
             CardTool {
@@ -298,10 +299,17 @@ FocusScope {
 
         sectionProperty: "name"
         sectionDelegate: ListItems.Header {
-            objectName: "dashSectionHeader" + (delegate ? delegate.category : "")
+            objectName: "dashSectionHeader" + (delegate ? delegate.categoryName : "")
             property var delegate: categoryView.item(delegateIndex)
+            readonly property string expansionQuery: delegate && delegate.expansionUri || ""
             width: categoryView.width
             text: section
+            image: expansionQuery ? "graphics/tabbarchevron.png" : ""
+            onClicked: {
+                if (expansionQuery != "") {
+                    scopeView.scope.performQuery(expansionQuery)
+                }
+            }
         }
         pageHeader: Item {
             implicitHeight: scopeView.tabBarHeight
