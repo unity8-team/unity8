@@ -1,10 +1,10 @@
-ubuntu-settings-components (0.3-0ubuntu1) UNRELEASED; urgency=medium
+ubuntu-settings-components (0.3+14.10.20140708-0ubuntu1) utopic; urgency=medium
 
   [ Nick Dedekind ]
   * Added plugin module for Ubuntu.Settings.Menus
   * Added TransferMenu
 
- -- Nicholas Dedekind <nicholas.dedekind@gmail.com>  Mon, 07 Jul 2014 12:28:37 +0100
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 08 Jul 2014 09:24:00 +0000
 
 ubuntu-settings-components (0.2+14.10.20140701.2-0ubuntu2) utopic; urgency=medium
 
