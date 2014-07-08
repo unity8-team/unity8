@@ -78,7 +78,7 @@ class LauncherIcon(fixtures.Fixture):
 
     def _set_launcher_icons(self, icons_config):
         manager = self._get_accounts_service_dbus_iface()
-        self.backup = manager.Set(
+        manager.Set(
             'com.canonical.unity.AccountsService',
             'launcher-items', icons_config)
 
