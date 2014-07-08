@@ -1,4 +1,6 @@
 module Ubuntu.Settings.Menus
+plugin UbuntuSettingsMenusQml
+typeinfo plugin.qmltypes
 
 AccessPointMenu 0.1 AccessPointMenu.qml
 ButtonMenu 0.1 ButtonMenu.qml
@@ -19,6 +21,7 @@ StandardMenu 0.1 StandardMenu.qml
 SwitchMenu 0.1 SwitchMenu.qml
 TextMessageMenu 0.1 TextMessageMenu.qml
 TimeZoneMenu 0.1 TimeZoneMenu.qml
+TransferMenu 0.1 TransferMenu.qml
 UserSessionMenu 0.1 UserSessionMenu.qml
 
 internal HeroMessageMenu HeroMessageMenu.qml

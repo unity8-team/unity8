@@ -5,9 +5,9 @@ Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
                pkg-config,
+               qml-module-qtquick-layouts,
                qt5-default,
                qtbase5-private-dev,
-               qml-module-qtquick-layouts,
                qtdeclarative5-dev,
                qtdeclarative5-dev-tools,
                qtdeclarative5-qtquick2-plugin,
@@ -26,19 +26,11 @@ Architecture: any
 Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~)
 Depends: qml-module-qtquick-layouts,
-         qtdeclarative5-ubuntu-settings-components-assets (= ${source:Version}),
          qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.48) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.48),
          suru-icon-theme,
          ${misc:Depends},
          ${shlibs:Depends},
+Breaks: qtdeclarative5-ubuntu-settings-components-assets (<< 0.3),
+Replaces: qtdeclarative5-ubuntu-settings-components-assets (<< 0.3),
 Description: Ubuntu Settings Components
- This package provides a link from /usr/lib to /usr/share, so QML can
- find its assets.
-
-Package: qtdeclarative5-ubuntu-settings-components-assets
-Architecture: all
-Multi-Arch: foreign
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
-Description: Ubuntu Settings Components
- Architecture-independent QML and images files for Ubuntu Settings.
+ Ubuntu settings components for Unity
