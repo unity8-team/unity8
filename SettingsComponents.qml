@@ -159,6 +159,25 @@ MainView {
                     onPlay: { mediaPlayer.running = !mediaPlayer.running; }
                 }
 
+                TransferMenu {
+                    text: "Video Downloading"
+                    stateText: "3 minutes remaning"
+                    iconSource: "tests/artwork/speak-now.jpg"
+                    progress: 0.6
+                    active: true
+                    removable: true
+                    confirmRemoval: true
+                }
+
+                TransferMenu {
+                    text: "Video Downloading"
+                    iconSource: "tests/artwork/speak-now.jpg"
+                    progress: 0.6
+                    active: false
+                    removable: true
+                    confirmRemoval: true
+                }
+
                 AccessPointMenu {
                     checked: true
                     secure: true

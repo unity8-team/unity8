@@ -14,8 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// local
 #include "plugin.h"
+#include "types.h"
+
+// Qt
+#include <QtQml/qqml.h>
 
 void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
 {
+    qmlRegisterUncreatableType<TransferState>(uri, 0, 1, "TransferState", "Can't create TransferState class");
 }

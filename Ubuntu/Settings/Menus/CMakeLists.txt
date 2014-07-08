@@ -11,6 +11,7 @@ include_directories(
 
 set(UbuntuSettingsMenusQml_SOURCES
     plugin.cpp
+    types.h
 )
 add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
 
