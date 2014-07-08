@@ -50,5 +50,5 @@ class LauncherTestCase(tests.UnityTestCase):
 
         self.assertThat(
             self.main_window.get_current_focused_app_id,
-            Eventually(Equals('messaging-app'))
+            Eventually(Equals('messaging-app'), timeout=20)
         )
