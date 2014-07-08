@@ -67,9 +67,6 @@ class QQuickView(emulators.UnityEmulatorBase):
     def get_bottombar(self):
         return self.select_single("Bottombar")
 
-    def get_launcher(self):
-        return self.select_single(Launcher)
-
     def get_pinPadLoader(self):
         return self.select_single(
             "QQuickLoader",
@@ -139,3 +136,38 @@ class QQuickView(emulators.UnityEmulatorBase):
 
     def _get_search_indicator(self):
         return self.select_single('SearchIndicator', objectName='search')
+
+    @autopilot_logging.log_action(logger.info)
+    def show_dash_from_launcher(self):
+        """Open the dash clicking the dash icon on the launcher."""
+        launcher = self.open_launcher()
+        launcher.click_dash_icon()
+        return self.get_dash()
+
+    @autopilot_logging.log_action(logger.info)
+    def open_launcher(self):
+        launcher = self._get_launcher()
+        launcher.show()
+        return launcher
+
+    def _get_launcher(self):
+        return self.select_single(Launcher)
+
+    @autopilot_logging.log_action(logger.info)
+    def close_launcher(self):
+        launcher = self._get_launcher()
+        launcher.hide()
+
+    def is_launcher_open(self):
+        return self._get_launcher().shown
+
+    @autopilot_logging.log_action(logger.info)
+    def launch_application(self, application_name):
+        """Launch an application.
+
+        :parameter application_name: The name of the application to launch.
+
+        """
+        launcher = self.open_launcher()
+        launcher.click_application_launcher_icon(application_name)
+        self.get_current_focused_app_id().wait_for(application_name)
