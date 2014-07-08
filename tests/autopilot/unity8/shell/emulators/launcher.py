@@ -36,10 +36,3 @@ class Launcher(UnityEmulatorBase):
         stop_y = start_y
         touch.drag(start_x, start_y, stop_x, stop_y)
         self.shown.wait_for(True)
-
-    def tap_icon(self, name):
-        """Tap an icon in the launcher."""
-        touch = Touch.create()
-
-        icon = self.select_single('LauncherDelegate', objectName=name)
-        touch.tap_object(icon)
