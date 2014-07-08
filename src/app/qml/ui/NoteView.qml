@@ -18,10 +18,6 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-// FIXME: we need com.canonical.Oxide to have UserScript type available and
-// WebContextDelegateWorker to intercette messages. As
-// soon as this will be implemented also in Ubuntu.Web we will switch to last
-// one
 import com.canonical.Oxide 1.0 
 import Evernote 0.1
 import "../components"
@@ -52,11 +48,6 @@ Item {
                 url: Qt.resolvedUrl("reminders-scripts.js");
             }
         ]
-
-        networkRequestDelegate: WebContextDelegateWorker {
-            source: Qt.resolvedUrl("message-api.js");
-            onMessage: console.log('onMessage')
-        }
     }
 
     WebView {
@@ -64,8 +55,6 @@ Item {
         anchors { fill: parent}
         property string html: note.htmlContent
         onHtmlChanged: {
-            console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
-            console.log(html)
             loadHtml(html, "file:///")
         }
 
@@ -75,6 +64,26 @@ Item {
                 noteTextArea.loadHtml(noteTextArea.html, "file:///")
             }
         }
+
+        messageHandlers: [
+            ScriptMessageHandler {
+                callback: function(message) {
+                    var data = null;
+                    try {
+                        data = JSON.parse(message.data);
+                    } catch (error) {
+                        print("Failed to parse message:", message.data, error);
+                    }
+
+                    switch (data.type) {
+                        case "checkboxChanged":
+                        note.markTodo(data.todoId, data.checked);
+                        NotesStore.saveNote(note.guid);
+                        break;
+                    }
+                } 
+            }
+        ]
 
         context: webContext;
         preferences.standardFontFamily: 'Ubuntu'

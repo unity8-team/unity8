@@ -76,7 +76,8 @@ MainView {
         if (root.narrowMode) {
             print("creating noteview");
             var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-            var page = component.createObject(root, {note: note});
+            var page = component.createObject(root);
+            page.note = note;
             page.editNote.connect(function(note) {root.switchToEditMode(note)})
             pagestack.push(page)
         } else {
