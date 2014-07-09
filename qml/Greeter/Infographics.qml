@@ -41,4 +41,3 @@ CrossFadeImage {
         onPressed: mouse.accepted = false
     }
 }
-
