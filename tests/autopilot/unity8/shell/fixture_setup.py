@@ -21,6 +21,7 @@
 
 import os
 import sysconfig
+import dbus
 
 import fixtures
 
@@ -51,3 +52,47 @@ class FakeScopes(fixtures.Fixture):
                 'Expected library path does not exists: %s.' % (
                     ld_library_path))
         return ld_library_path
+
+
+class LauncherIcon(fixtures.Fixture):
+    """Fixture to setup launcher icons."""
+
+    def setUp(self):
+        super(LauncherIcon, self).setUp()
+        self._add_messaging_app_icon_to_launcher()
+
+    def _get_accounts_service_dbus_iface(self):
+        bus = dbus.SystemBus()
+        proxy = bus.get_object(
+            'org.freedesktop.Accounts',
+            '/org/freedesktop/Accounts/User32011')
+        return dbus.Interface(proxy, 'org.freedesktop.DBus.Properties')
+
+    def _backup_launcher_icons(self):
+        manager = self._get_accounts_service_dbus_iface()
+        self.backup = manager.Get(
+            'com.canonical.unity.AccountsService',
+            'launcher-items')
+        self.addCleanup(self._set_launcher_icons, self.backup)
+
+    def _set_launcher_icons(self, icons_config):
+        manager = self._get_accounts_service_dbus_iface()
+        manager.Set(
+            'com.canonical.unity.AccountsService',
+            'launcher-items', icons_config)
+
+    def _add_messaging_app_icon_to_launcher(self):
+        self._backup_launcher_icons()
+
+        messaging_icon = dbus.Array([dbus.Dictionary({
+        dbus.String('count'): dbus.Int32(0, variant_level=1),
+        dbus.String('countVisible'): dbus.Boolean(False, variant_level=1),
+        dbus.String('name'): dbus.String('Messaging', variant_level=1),
+        dbus.String('id'): dbus.String('messaging-app', variant_level=1),
+        dbus.String('icon'): dbus.String('image://theme/messaging-app',
+            variant_level=1)},
+        signature=dbus.Signature('sv'))],
+        signature=dbus.Signature('a{sv}'),
+        variant_level=1)
+
+        self._set_launcher_icons(messaging_icon)

@@ -85,6 +85,14 @@ class QQuickView(emulators.UnityEmulatorBase):
     def get_pinentryField(self):
         return self.select_single(objectName="pinentryField")
 
+    def get_launcher_icon_by_id(self, appId):
+        launcher = self._get_launcher()
+        return launcher.select_single('LauncherDelegate', appId=appId)
+
+    def get_number_of_launcher_icons(self):
+        launcher = self._get_launcher()
+        return len(launcher.select_many('LauncherDelegate', visible=True))
+
     def _get_indicator_widget(self, indicator_name):
         return self.select_single(
             'DefaultIndicatorWidget',
