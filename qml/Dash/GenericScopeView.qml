@@ -142,7 +142,7 @@ FocusScope {
             }
 
             readonly property string categoryName: categoryId
-            readonly property string expansionUri: expansionQuery
+            readonly property string headerLink: model.headerLink
             readonly property var item: rendererLoader.item
 
             CardTool {
@@ -309,14 +309,14 @@ FocusScope {
         sectionDelegate: ListItems.Header {
             objectName: "dashSectionHeader" + (delegate ? delegate.categoryName : "")
             property var delegate: categoryView.item(delegateIndex)
-            readonly property string expansionQuery: delegate && delegate.expansionUri || ""
+            readonly property string headerLink: delegate ? delegate.headerLink : ""
             width: categoryView.width
             text: section
             textColor: scopeStyle ? scopeStyle.foreground : "grey"
-            image: expansionQuery ? "graphics/tabbarchevron.png" : ""
+            image: headerLink ? "graphics/tabbarchevron.png" : ""
             onClicked: {
-                if (expansionQuery != "") {
-                    scopeView.scope.performQuery(expansionQuery)
+                if (headerLink != "") {
+                    scopeView.scope.performQuery(headerLink)
                 }
             }
         }
