@@ -53,7 +53,6 @@ class MainWindowTestCase(tests.UnityTestCase):
         self.main_window.search('Test')
         text_field = self.main_window.get_dash()._get_search_text_field()
         self.assertEqual(text_field.text, 'Test')
-        self.assertEqual(text_field.state, 'idle')
 
     def test_open_launcher_must_return_launcher_custom_proxy_object(self):
         launcher = self.main_window.open_launcher()
