@@ -53,10 +53,16 @@ Item {
     WebView {
         id: noteTextArea
         anchors { fill: parent}
+
         property string html: note.htmlContent
+        
         onHtmlChanged: {
             loadHtml(html, "file:///")
         }
+
+        context: webContext
+        preferences.standardFontFamily: 'Ubuntu'
+        preferences.minimumFontSize: 14
 
         Connections {
             target: note
@@ -84,8 +90,5 @@ Item {
                 } 
             }
         ]
-
-        context: webContext;
-        preferences.standardFontFamily: 'Ubuntu'
      }
 }
