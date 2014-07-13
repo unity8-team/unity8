@@ -45,7 +45,12 @@ Page {
                 text: i18n.tr("Add note")
                 iconName: "add"
                 onTriggered: {
-                    NotesStore.createNote("Untitled");
+                    if (filter) {
+                        NotesStore.createNote("Untitled", filter);
+                    }
+                    else {
+                        NotesStore.createNote("Untitled");
+                    }
                 }   
             }
         }
