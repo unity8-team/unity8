@@ -26,6 +26,16 @@ import "../components"
 Item {
     id: root
     property var note
+    property int noteNotebookIndexModel: 0
+    property var notebooksModel: Notebooks {}
+
+    onNoteChanged: {
+        for (var i = 0; i <= notebookSelector.children.length; i++) {
+            if (notebooksModel.notebook(i).guid == note.notebookGuid) {
+                noteNotebookIndexModel = i;
+            }
+        }
+    }
 
     signal exitEditMode(var note)
     signal attachFromCamera(int position, var note)
@@ -124,8 +134,10 @@ Item {
 
         OptionSelector {
             id: notebookSelector
-            model: Notebooks {}
+            model: notebooksModel
             property string selectedGuid: model.notebook(selectedIndex).guid
+
+            selectedIndex: root.note ? noteNotebookIndexModel : 0;
 
             delegate: OptionSelectorDelegate {
                 text: model.name
