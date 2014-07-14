@@ -132,7 +132,7 @@ Item {
 
         OptionSelector {
             id: notebookSelector
-            model: Notebooks {} 
+            model: Notebooks {}
             property string selectedGuid: model.notebook(selectedIndex).guid
 
             delegate: OptionSelectorDelegate {
