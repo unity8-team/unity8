@@ -27,6 +27,14 @@ Item {
     id: root
     property var note
 
+    onNoteChanged: {
+        for (var i = 0; i < notebookSelector.model.count; i++) {
+            if (notebookSelector.model.notebook(i).guid == note.notebookGuid) {
+                notebookSelector.selectedIndex = i;
+            }
+        }
+    }
+
     signal exitEditMode(var note)
     signal attachFromCamera(int position, var note)
 
