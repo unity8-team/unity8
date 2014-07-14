@@ -45,6 +45,7 @@ Item {
 
         userScripts: [
             UserScript {
+                context: 'reminders://todo'
                 url: Qt.resolvedUrl("reminders-scripts.js");
             }
         ]
@@ -73,10 +74,12 @@ Item {
 
         messageHandlers: [
             ScriptMessageHandler {
-                callback: function(message) {
+                msgId: 'todo'
+                contexts: ['reminders://todo']
+                callback: function(message, frame) {
                     var data = null;
                     try {
-                        data = JSON.parse(message.data);
+                        data = message.args;
                     } catch (error) {
                         print("Failed to parse message:", message.data, error);
                     }
