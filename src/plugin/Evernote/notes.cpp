@@ -29,6 +29,7 @@ Notes::Notes(QObject *parent) :
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
+    connect(NotesStore::instance(), &NotesStore::countChanged, this, &Notes::countChanged);
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleCreated);
     sort(0, Qt::DescendingOrder);
@@ -45,6 +46,7 @@ void Notes::setFilterNotebookGuid(const QString &notebookGuid)
         m_filterNotebookGuid = notebookGuid;
         emit filterNotebookGuidChanged();
         invalidateFilter();
+        emit countChanged();
     }
 }
 
@@ -67,6 +69,7 @@ void Notes::setOnlyReminders(bool onlyReminders)
         }
 
         invalidateFilter();
+        emit countChanged();
     }
 }
 
@@ -81,6 +84,7 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
         m_onlySearchResults = onlySearchResults;
         emit onlySearchResultsChanged();
         invalidateFilter();
+        emit countChanged();
     }
 }
 
@@ -92,6 +96,11 @@ bool Notes::loading() const
 QString Notes::error() const
 {
     return NotesStore::instance()->error();
+}
+
+int Notes::count() const
+{
+    return rowCount();
 }
 
 Note *Notes::note(const QString &guid)
