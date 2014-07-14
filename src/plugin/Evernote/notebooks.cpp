@@ -47,6 +47,11 @@ QString Notebooks::error() const
     return NotesStore::instance()->notebooksError();
 }
 
+int Notebooks::count() const
+{
+    return rowCount();
+}
+
 QVariant Notebooks::data(const QModelIndex &index, int role) const
 {
     Notebook *notebook = NotesStore::instance()->notebook(m_list.at(index.row()));
@@ -103,6 +108,7 @@ void Notebooks::notebookAdded(const QString &guid)
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
     endInsertRows();
+    emit countChanged();
 }
 
 void Notebooks::notebookRemoved(const QString &guid)
@@ -110,6 +116,7 @@ void Notebooks::notebookRemoved(const QString &guid)
     beginRemoveRows(QModelIndex(), m_list.indexOf(guid), m_list.indexOf(guid));
     m_list.removeAll(guid);
     endRemoveRows();
+    emit countChanged();
 }
 
 void Notebooks::noteCountChanged()

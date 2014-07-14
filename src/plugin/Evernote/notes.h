@@ -33,6 +33,7 @@ class Notes : public QSortFilterProxyModel
     Q_PROPERTY(bool onlySearchResults READ onlySearchResults WRITE setOnlySearchResults NOTIFY onlySearchResultsChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     explicit Notes(QObject *parent = 0);
@@ -48,6 +49,7 @@ public:
 
     bool loading() const;
     QString error() const;
+    int count() const;
 
     Q_INVOKABLE Note* note(const QString &guid);
 
@@ -62,6 +64,7 @@ signals:
     void onlySearchResultsChanged();
     void loadingChanged();
     void errorChanged();
+    void countChanged();
 
 private:
     QString m_filterNotebookGuid;
