@@ -26,8 +26,9 @@ import ubuntuuitoolkit
 import autopilot
 from autopilot import logging as autopilot_logging
 from autopilot.introspection import dbus
-from ubuntuuitoolkit import emulators as toolkit_emulators
-
+from ubuntuuitoolkit import _custom_proxy_objects as proxy
+from ubuntuuitoolkit._custom_proxy_objects._common \
+    import UbuntuUIToolkitCustomProxyObjectBase as proxybase
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ class RemindersApp(object):
             NotebooksPage, objectName='notebooksPage')
 
 
-class MainView(toolkit_emulators.MainView):
+class MainView(proxy.MainView):
 
     """Autopilot custom proxy object for the MainView."""
 
@@ -78,7 +79,7 @@ class MainView(toolkit_emulators.MainView):
             return self._no_account_dialog
 
 
-class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+class NoAccountDialog(proxybase):
 
     """Autopilot custom proxy object for the no account dialog."""
 
@@ -104,7 +105,7 @@ class NoAccountDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
         self.pointing_device.click_object(button)
 
 
-class _Page(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+class _Page(proxybase):
 
     def __init__(self, *args):
         super(_Page, self).__init__(*args)
@@ -169,7 +170,7 @@ class NotebooksPage(_Page):
         return notebooks
 
 
-class NotebooksDelegate(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+class NotebooksDelegate(proxybase):
 
     """Autopilot custom proxy object for the NotebooksDelegate."""
 
