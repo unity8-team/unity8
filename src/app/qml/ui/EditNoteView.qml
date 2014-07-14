@@ -26,13 +26,11 @@ import "../components"
 Item {
     id: root
     property var note
-    property int noteNotebookIndexModel: 0
-    property var notebooksModel: Notebooks {}
 
     onNoteChanged: {
-        for (var i = 0; i <= notebookSelector.children.length; i++) {
-            if (notebooksModel.notebook(i).guid == note.notebookGuid) {
-                noteNotebookIndexModel = i;
+        for (var i = 0; i < notebookSelector.model.count; i++) {
+            if (notebookSelector.model.notebook(i).guid == note.notebookGuid) {
+                notebookSelector.selectedIndex = i;
             }
         }
     }
@@ -134,10 +132,8 @@ Item {
 
         OptionSelector {
             id: notebookSelector
-            model: notebooksModel
+            model: Notebooks {} 
             property string selectedGuid: model.notebook(selectedIndex).guid
-
-            selectedIndex: root.note ? noteNotebookIndexModel : 0;
 
             delegate: OptionSelectorDelegate {
                 text: model.name
