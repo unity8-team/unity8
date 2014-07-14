@@ -77,12 +77,7 @@ Item {
                 msgId: 'todo'
                 contexts: ['reminders://todo']
                 callback: function(message, frame) {
-                    var data = null;
-                    try {
-                        data = message.args;
-                    } catch (error) {
-                        print("Failed to parse message:", message.data, error);
-                    }
+                    var data = message.args;
 
                     switch (data.type) {
                         case "checkboxChanged":
