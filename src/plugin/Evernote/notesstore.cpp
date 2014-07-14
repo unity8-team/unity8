@@ -82,6 +82,11 @@ QString NotesStore::notebooksError() const
     return m_notebooksError;
 }
 
+int NotesStore::count() const
+{
+    return rowCount();
+}
+
 int NotesStore::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
@@ -198,6 +203,7 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
         }
         m_notes.clear();
         endResetModel();
+        emit countChanged();
     } else {
         m_loading = true;
         emit loadingChanged();
@@ -260,6 +266,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             m_notes.append(note);
             endInsertRows();
             emit noteAdded(note->guid(), note->notebookGuid());
+            emit countChanged();
         } else {
             QModelIndex noteIndex = index(m_notes.indexOf(note));
             emit dataChanged(noteIndex, noteIndex);
@@ -432,6 +439,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
     emit noteAdded(note->guid(), note->notebookGuid());
     emit noteCreated(note->guid(), note->notebookGuid());
+    emit countChanged();
 }
 
 void NotesStore::saveNote(const QString &guid)
@@ -507,6 +515,7 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     m_notes.takeAt(noteIndex);
     m_notesHash.take(guid)->deleteLater();
     endRemoveRows();
+    emit countChanged();
 }
 
 void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result)

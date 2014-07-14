@@ -51,6 +51,7 @@ class NotesStore : public QAbstractListModel
     Q_PROPERTY(bool notebooksLoading READ notebooksLoading NOTIFY notebooksLoadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString notebooksError READ notebooksError NOTIFY notebooksErrorChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     enum Role {
@@ -82,8 +83,10 @@ public:
     QString error() const;
     QString notebooksError() const;
 
+    int count() const;
+
     // reimplemented from QAbstractListModel
-    int rowCount(const QModelIndex &parent) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
     QHash<int, QByteArray> roleNames() const;
 
@@ -113,6 +116,7 @@ signals:
     void notebooksLoadingChanged();
     void errorChanged();
     void notebooksErrorChanged();
+    void countChanged();
 
     void noteCreated(const QString &guid, const QString &notebookGuid);
     void noteAdded(const QString &guid, const QString &notebookGuid);

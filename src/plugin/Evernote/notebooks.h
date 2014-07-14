@@ -30,6 +30,7 @@ class Notebooks : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     enum Roles {
@@ -44,9 +45,10 @@ public:
 
     bool loading() const;
     QString error() const;
+    int count() const;
 
     QVariant data(const QModelIndex &index, int role) const;
-    int rowCount(const QModelIndex &parent) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QHash<int, QByteArray> roleNames() const;
 
     Q_INVOKABLE Notebook *notebook(int index);
@@ -57,6 +59,7 @@ public slots:
 signals:
     void loadingChanged();
     void errorChanged();
+    void countChanged();
 
 private slots:
     void notebookAdded(const QString &guid);
