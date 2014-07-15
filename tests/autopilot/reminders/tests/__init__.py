@@ -24,10 +24,8 @@ import subprocess
 import fixtures
 from autopilot import logging as autopilot_logging
 from autopilot.testcase import AutopilotTestCase
-from ubuntuuitoolkit import (
-    emulators as toolkit_emulators,
-    fixture_setup as toolkit_fixtures
-)
+import ubuntuuitoolkit
+from ubuntuuitoolkit import fixture_setup as toolkit_fixtures
 
 import reminders
 
@@ -85,7 +83,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             '-q', self.local_location_qml,
             '-s',
             app_type='qt',
-            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
+            emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_installed(self):
@@ -96,14 +94,14 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             '--desktop_file_hint=/usr/share/applications/'
             'reminders.desktop',
             app_type='qt',
-            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
+            emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
     @autopilot_logging.log_action(logger.info)
     def launch_test_click(self):
         return self.launch_click_package(
             'com.ubuntu.reminders',
             '-s',
-            emulator_base=toolkit_emulators.UbuntuUIToolkitEmulatorBase)
+            emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
     def _patch_home(self, test_type):
         temp_dir_fixture = fixtures.TempDir()
