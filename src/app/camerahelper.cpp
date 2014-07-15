@@ -57,7 +57,7 @@ bool CameraHelper::removeTemp()
 {
     const char* location = importLocation().toUtf8();
     if(QFile::remove(location) != true ) {
-        qWarning() << "Error deleting temporary image";
+        qDebug() << "Error deleting temporary image";
     }
   return 0;
 }

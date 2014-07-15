@@ -32,25 +32,46 @@ Page {
         }
     }
 
-    tools: ToolbarItems {
-        locked: true
-        opened: true
+    Rectangle {
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
+        height: units.gu(6)
+        color: "white"
 
-        back: ToolbarButton {
-            text: i18n.tr("Back");
-            iconName: "back";
-            onTriggered: {
-                cameraHelper.removeTemp();
-                pagestack.pop();
+        Icon {
+            name: "back"
+
+            height: units.gu(3)
+            width: height
+
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: units.gu(2)
+            
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    cameraHelper.removeTemp();
+                    pagestack.pop();
+                }
             }
         }
 
-        ToolbarButton {
-            text:  i18n.tr("Use it!");
-            iconName: "camera-symbolic";
-            onTriggered: {
-            	root.imageConfirmed();
-            	pagestack.pop();
+        Icon {
+            name: "tick"
+
+            height: units.gu(3)
+            width: height
+
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: units.gu(2)
+            
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+            	    root.imageConfirmed();
+                    pagestack.pop();
+                }
             }
         }
     }
