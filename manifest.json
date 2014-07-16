@@ -20,7 +20,7 @@
    "x-test": {
            "autopilot": {
                 "autopilot_module": "@AUTOPILOT_DIR@",
-                "depends": ["python3-dbus,python3-dbusmock,python3-fixtures,python3-oauthlib,python3-requests-oauthlib"]
+                "depends": ["python3-dbus", "python3-dbusmock", "python3-fixtures", "python3-oauthlib", "python3-requests-oauthlib"]
             }
    }
 }
