@@ -5,7 +5,7 @@ function handleClickEvent(event) {
         message.type = "checkboxChanged";
         message.todoId = event.srcElement.id;
         message.checked = event.srcElement.checked;
-        navigator.qt.postMessage(JSON.stringify(message));
+        oxide.sendMessage('todo', message);
     }
 }
 

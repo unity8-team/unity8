@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Components.Extras.Browser 0.1
+import com.canonical.Oxide 1.0 
 import Evernote 0.1
 import "../components"
 
@@ -40,47 +40,53 @@ Item {
         visible: running
     }
 
-    // FIXME: This is a workaround for an issue in the WebView. For some reason certain
-    // documents cause a binding loop in the webview's contentHeight. Wrapping it inside
-    // another flickable prevents this from happening.
-    Flickable {
-        anchors { fill: parent }
-        contentHeight: height
+    WebContext {
+        id: webContext 
 
-        UbuntuWebView {
-            id: noteTextArea
-            anchors { fill: parent}
-            property string html: note.htmlContent
-            onHtmlChanged: {
-                loadHtml(html, "file:///")
+        userScripts: [
+            UserScript {
+                context: 'reminders://todo'
+                url: Qt.resolvedUrl("reminders-scripts.js");
             }
+        ]
+    }
 
-            Connections {
-                target: note
-                onResourcesChanged: {
-                    noteTextArea.loadHtml(noteTextArea.html, "file:///")
-                }
-            }
+    WebView {
+        id: noteTextArea
+        anchors { fill: parent}
 
-            experimental.preferences.standardFontFamily: 'Ubuntu'
-            experimental.preferences.navigatorQtObjectEnabled: true
-            experimental.preferredMinimumContentsWidth: root.width
-            experimental.userScripts: [Qt.resolvedUrl("reminders-scripts.js")]
-            experimental.onMessageReceived: {
-                var data = null;
-                try {
-                    data = JSON.parse(message.data);
-                } catch (error) {
-                    print("Failed to parse message:", message.data, error);
-                }
+        property string html: note.htmlContent
+        
+        onHtmlChanged: {
+            loadHtml(html, "file:///")
+        }
 
-                switch (data.type) {
-                case "checkboxChanged":
-                    note.markTodo(data.todoId, data.checked);
-                    NotesStore.saveNote(note.guid);
-                    break;
-                }
+        context: webContext
+        preferences.standardFontFamily: 'Ubuntu'
+        preferences.minimumFontSize: 14
+
+        Connections {
+            target: note
+            onResourcesChanged: {
+                noteTextArea.loadHtml(noteTextArea.html, "file:///")
             }
         }
-    }
+
+        messageHandlers: [
+            ScriptMessageHandler {
+                msgId: 'todo'
+                contexts: ['reminders://todo']
+                callback: function(message, frame) {
+                    var data = message.args;
+
+                    switch (data.type) {
+                        case "checkboxChanged":
+                        note.markTodo(data.todoId, data.checked);
+                        NotesStore.saveNote(note.guid);
+                        break;
+                    }
+                } 
+            }
+        ]
+     }
 }
