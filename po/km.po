@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-07-16 03:26+0000\n"
+"PO-Revision-Date: 2014-07-16 07:53+0000\n"
 "Last-Translator: Khoem Sokhem <khoemsokhem@khmeros.info>\n"
 "Language-Team: Khmer <km@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-16 07:28+0000\n"
-"X-Generator: Launchpad (build 17112)\n"
+"X-Launchpad-Export-Date: 2014-07-17 06:38+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -170,69 +170,69 @@ msgstr "ពីរ​សប្ដាហ៍មុន"
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "រូចរាល់"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr ""
+msgstr "គ្មាន​កាលបរិច្ឆេទ"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr ""
+msgstr "ហួស​កំណត់"
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr ""
+msgstr "ថ្ងៃស្អែក"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr ""
+msgstr "សប្ដាហ៍​ក្រោយ"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr ""
+msgstr "ក្នុង​រយៈពេលពីរ​សប្ដាហ៍"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr ""
+msgstr "ពេលក្រោយ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr ""
+msgstr "ថ្ងៃ​នេះ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr ""
+msgstr "ម្សិលមិញ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr ""
+msgstr "សប្ដាហ៍​មុន"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr ""
+msgstr "ពីរ​សប្ដាហ៍​មុន"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "នៅ %1 %2"
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "កំហុស​ក្នុង​ការ​ផ្ទុក​ចំណាំ​ឡើង​វិញ៖ %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "កំហុស​ក្នុងការ​ផ្ទុក notebooks ឡើងវិញ៖ %1"
