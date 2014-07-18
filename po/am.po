@@ -1,4 +1,4 @@
-# Chinese (Traditional) translation for reminders-app
+# Amharic translation for reminders-app
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the reminders-app package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-07-17 20:03+0000\n"
-"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
-"Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
+"PO-Revision-Date: 2014-07-18 00:53+0000\n"
+"Last-Translator: samson <Unknown>\n"
+"Language-Team: Amharic <am@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,150 +19,150 @@ msgstr ""
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
-msgstr "記事"
+msgstr "ማስታወሻዎች"
 
 #: ../src/app/qml/reminders.qml:225
 msgid "Notebooks"
-msgstr "記事本"
+msgstr "የ ማስታወሻ ደብተሮች"
 
 #: ../src/app/qml/reminders.qml:253
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
-msgstr "提醒"
+msgstr "አስታዋሾች"
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr "沒有帳號可用"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
-msgstr "請在系統設定中設置個帳號"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr "開啟帳號設定"
+msgstr ""
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
 msgid "Last edited %1"
-msgstr "上次編輯 %1"
+msgstr "መጨረሻ የታረመው %1"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
-msgstr "已分享"
+msgstr ""
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Private"
-msgstr "私人"
+msgstr "የ ግል"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr "放開以重新整理"
+msgstr "ለማነቃቃት ይልቀቁ"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr "清除提醒"
+msgstr "አስታዋሽ ማጽጃ"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr "標記為完成"
+msgstr ""
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr "返回"
+msgstr "ወደ ኋላ"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr "使用！"
+msgstr "ልጠቀ!"
 
 #: ../src/app/qml/ui/EditNoteView.qml:90
 #: ../src/app/qml/ui/EditNoteView.qml:102
 msgid "Untitled"
-msgstr "無題"
+msgstr "ያልተሰየመ"
 
 #: ../src/app/qml/ui/NotePage.qml:33 ../src/app/qml/ui/NotesPage.qml:71
 msgid "Delete"
-msgstr "刪除"
+msgstr "ማጥፊያ"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 msgid "Edit reminder"
-msgstr "編輯提醒"
+msgstr "አስታዋሽ ማረሚያ"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr "設定提醒"
+msgstr "አስታዋሽ ማሰናጃ"
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
-msgstr "編輯"
+msgstr "ማረሚያ"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:38 ../src/app/qml/ui/NotesPage.qml:44
 #: ../src/app/qml/ui/RemindersPage.qml:33
 #: ../src/app/qml/ui/SearchNotesPage.qml:56
 msgid "Search"
-msgstr "搜尋"
+msgstr "መፈለጊያ"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr "重新整理"
+msgstr "ማነቃቂያ"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr "帳號"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
-msgstr "新增記事本"
+msgstr "ማስታዋሽ መጨመሪያ"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:164
 msgid "Cancel"
-msgstr "取消"
+msgstr "መሰረዣ"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:172
 msgid "Save"
-msgstr "儲存"
+msgstr "ማስቀመጫ"
 
 #: ../src/app/qml/ui/NotesPage.qml:103
 msgid "Add note"
-msgstr "新增記事"
+msgstr "ማስታዋሽ መጨመሪያ"
 
 #: ../src/app/qml/ui/NotesPage.qml:173
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
-msgstr "沒有可用的記事。您可以透過「新增記事」按鈕建立新記事。"
+msgstr ""
 
 #: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
-msgstr "新增提醒"
+msgstr "አስታዋሽ መጨመሪያ"
 
 #: ../src/app/qml/ui/RemindersPage.qml:113
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
-msgstr "沒有可用的提醒。您可以透過「新增提醒」按鈕建立新提醒，或是在檢視記事之時設定提醒。"
+msgstr ""
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr "請選取提醒的日期與時間："
+msgstr "ሰአት እና ቀን ይምረጡ ለ አስታዋሽ"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr "今天"
+msgstr "ዛሬ"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr "昨天"
+msgstr "ትናንትና"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr "上週"
+msgstr "ባለፈው ሳምንት"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr "兩週前"
+msgstr "ከ ሁለት ሳምንት በፊት"
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
@@ -171,65 +171,65 @@ msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr "完成"
+msgstr "ጨርሷል"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr "沒有日期"
+msgstr "ቀን የለም"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr "逾期"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr "明天"
+msgstr "ነገ"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr "下週"
+msgstr "በሚቀጥለው ሳምንት"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr "接下來兩週"
+msgstr "በ ሁለት ሳምንት ውስጥ"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr "稍後"
+msgstr "በኋላ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr "今天"
+msgstr "ዛሬ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr "昨天"
+msgstr "ትናንትና"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr "上週"
+msgstr "ባለፈው ሳምንት"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr "兩週前"
+msgstr "ከ ሁለት ሳምንት በፊት"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr "於 %2 %1"
+msgstr "በ %1 %2"
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "重新整理記事時發生錯誤：%1"
+msgstr "ስህተት ማስታወሻዎችን በማነቃቃት ላይ: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr "重新整理記事本時發生錯誤：%1"
+msgstr "ስህተት የ ማስታወሻ ደብተር በማነቃቃት ላይ: %1"
