@@ -1,4 +1,4 @@
-# Swedish translation for reminders-app
+# Dutch translation for reminders-app
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the reminders-app package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-07-18 15:12+0000\n"
-"Last-Translator: Arve Eriksson <Unknown>\n"
-"Language-Team: Swedish <sv@li.org>\n"
+"PO-Revision-Date: 2014-07-18 10:06+0000\n"
+"Last-Translator: Pjotr12345 <Unknown>\n"
+"Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,152 +19,155 @@ msgstr ""
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
-msgstr "Anteckningar"
+msgstr "Notities"
 
 #: ../src/app/qml/reminders.qml:225
 msgid "Notebooks"
-msgstr "Anteckningsblock"
+msgstr "Notitieboeken"
 
 #: ../src/app/qml/reminders.qml:253
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
-msgstr "Påminnelser"
+msgstr "Herinneringen"
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr "Inget konto tillgängligt"
+msgstr "Geen account beschikbaar"
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
-msgstr "Ställ in ett konto i systeminställningarna"
+msgstr "Stel a.u.b. in de systeeminstellingen een account in"
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr ""
+msgstr "Accountinstellingen openen"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
 msgid "Last edited %1"
-msgstr "Senast ändrad %1"
+msgstr "Laatst bewerkt %1"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
-msgstr "Delade"
+msgstr "Gedeeld"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Private"
-msgstr "Privat"
+msgstr "Privé"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr "Släpp för att uppdatera"
+msgstr "Vrijgeven om te verversen"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr "Rensa påminnelse"
+msgstr "Herinnering wissen"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr "Markera som klar"
+msgstr "Markeer als afgerond"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr "Bakåt"
+msgstr "Terug"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr ""
+msgstr "Gebruik het!"
 
 #: ../src/app/qml/ui/EditNoteView.qml:90
 #: ../src/app/qml/ui/EditNoteView.qml:102
 msgid "Untitled"
-msgstr "Namnlös"
+msgstr "Naamloos"
 
 #: ../src/app/qml/ui/NotePage.qml:33 ../src/app/qml/ui/NotesPage.qml:71
 msgid "Delete"
-msgstr "Radera"
+msgstr "Verwijderen"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 msgid "Edit reminder"
-msgstr "Ändra påminnelse"
+msgstr "Herinnering bewerken"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "Herinnering instellen"
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
-msgstr "Redigera"
+msgstr "Bewerken"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:38 ../src/app/qml/ui/NotesPage.qml:44
 #: ../src/app/qml/ui/RemindersPage.qml:33
 #: ../src/app/qml/ui/SearchNotesPage.qml:56
 msgid "Search"
-msgstr "Sök"
+msgstr "Zoeken"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr "Uppdatera"
+msgstr "Verversen"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr "Konton"
+msgstr "Accounts"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
-msgstr "Lägg till anteckningsblock"
+msgstr "Notitieboek toevoegen"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:164
 msgid "Cancel"
-msgstr "Avbryt"
+msgstr "Annuleren"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:172
 msgid "Save"
-msgstr "Spara"
+msgstr "Opslaan"
 
 #: ../src/app/qml/ui/NotesPage.qml:103
 msgid "Add note"
-msgstr "Lägg till anteckning"
+msgstr "Notitie toevoegen"
 
 #: ../src/app/qml/ui/NotesPage.qml:173
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
-"Inga anteckningar tillgängliga. Du kan skapa nya anteckningar med knappen "
-"\"Lägg till anteckning\"."
+"Er zijn geen notities beschikbaar. U kunt nieuwe notities maken met de knop "
+"\"Notitie toevoegen\"."
 
 #: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
-msgstr "Lägg till påminnelse"
+msgstr "Herinnering toevoegen"
 
 #: ../src/app/qml/ui/RemindersPage.qml:113
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
+"Er zijn geen herinneringen beschikbaar. U kunt nieuwe herinneringen maken "
+"met de knop \"Herinnering toevoegen\" of door een herinnering in te stellen "
+"bij het bekijken van een notitie."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr "Välj tid och datum för påminnelsen:"
+msgstr "Kies datum en tijd voor de herinnering:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr "Idag"
+msgstr "Vandaag"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr "Igår"
+msgstr "Gisteren"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr "Förra veckan"
+msgstr "Vorige week"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr "Två veckor sedan"
+msgstr "Twee weken geleden"
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
@@ -173,65 +176,65 @@ msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "Klaar"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr "Inget datum"
+msgstr "Geen datum"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr ""
+msgstr "Achterstallig"
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr "Imorgon"
+msgstr "Morgen"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr "Nästa vecka"
+msgstr "Volgende week"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr "Om två veckor"
+msgstr "Over twee weken"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr "Senare"
+msgstr "Later"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr "idag"
+msgstr "vandaag"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr "igår"
+msgstr "gisteren"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr "förra veckan"
+msgstr "vorige week"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr "två veckor sedan"
+msgstr "twee weken geleden"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr "den %1 %2"
+msgstr "op %1 %2"
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "Fel när anteckningar uppdaterades: %1"
+msgstr "Fout bij het verversen van notities: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr "Fel när anteckningsböcker uppdaterades: %1"
+msgstr "Fout bij het verversen van notitieboeken: %1"
