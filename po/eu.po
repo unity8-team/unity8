@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-03-19 22:50+0000\n"
+"PO-Revision-Date: 2014-07-20 20:28+0000\n"
 "Last-Translator: Ibai Oihanguren Sala <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-17 07:15+0000\n"
-"X-Generator: Launchpad (build 17007)\n"
+"X-Launchpad-Export-Date: 2014-07-21 07:06+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
@@ -32,20 +32,20 @@ msgstr "Oroigarriak"
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr ""
+msgstr "Ez dago konturik erabilgarri"
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
-msgstr ""
+msgstr "Konfiguratu kontu bat sistemaren ezarpenetan"
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr ""
+msgstr "Ireki kontuaren ezarpenak"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
 msgid "Last edited %1"
-msgstr ""
+msgstr "Azkenekoz %1(e)an editatua"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
@@ -57,24 +57,24 @@ msgstr "Pribatua"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr ""
+msgstr "Askatu freskatzeko"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "Garbitu gogorarazpenak"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr ""
+msgstr "Markatu eginda gisa"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr ""
+msgstr "Atzera"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr ""
+msgstr "Erabili!"
 
 #: ../src/app/qml/ui/EditNoteView.qml:90
 #: ../src/app/qml/ui/EditNoteView.qml:102
@@ -87,12 +87,12 @@ msgstr "Ezabatu"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 msgid "Edit reminder"
-msgstr ""
+msgstr "Editatu gogorarazpena"
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "Ezarri gogorarazpena"
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
@@ -106,12 +106,12 @@ msgstr "Bilatu"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr ""
+msgstr "Freskatu"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr ""
+msgstr "Kontuak"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
@@ -133,6 +133,8 @@ msgstr "Gehitu oharra"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"Ez dago oharrik eskuragarri. Ohar berriak sor ditzakezu \"Gehitu oharra\" "
+"botoia sakatuz."
 
 #: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
@@ -143,93 +145,96 @@ msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
+"Ez dago gogorarazpenik eskuragarri. Gogorarazpen berriak sor ditzakezu "
+"\"Gehitu gogorarazpena\" botoia sakatuz edo ohar bat ikusterakoan "
+"gogorarazpena ezarriz."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "Hautatu gogorarazpenaren data eta ordua:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr ""
+msgstr "Gaur"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "Atzo"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "Joan den astean"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "Orain bi aste"
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr ""
+msgstr "Eginda"
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr ""
+msgstr "Datarik gabe"
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr ""
+msgstr "Atzeratua"
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr ""
+msgstr "Bihar"
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr ""
+msgstr "Hurrengo astean"
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr ""
+msgstr "Bi aste barru"
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr ""
+msgstr "Geroago"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr ""
+msgstr "gaur"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr ""
+msgstr "atzo"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr ""
+msgstr "joan den astean"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr ""
+msgstr "orain bi aste"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "%2(e)ko %1(e)an"
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "Errorea oharrak freskatzerakoan: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "Errorea koadernoak freskatzerakoan: %1"
