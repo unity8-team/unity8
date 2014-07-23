@@ -23,7 +23,11 @@ Item {
 
     onUidChanged: internal.index = 0
 
+    // for testing purpose
+    signal nextEmitted
+
     function next() {
+        nextEmitted()
         if (internal.index < internal.paths[uid % 4].length - 1)
             internal.index++;
         else

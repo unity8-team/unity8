@@ -44,16 +44,21 @@ Rectangle {
         signalName: "triggered"
     }
 
+    SignalSpy {
+        id: nextSpy
+        target: InfographicsModule.InfographicList
+        signalName: "nextEmitted"
+    }
+
     UT.UnityTestCase {
         name: "Infographics"
         when: windowShown
 
         function test_triggered() {
-            triggeredSpy.clear();
             var oldImage = infographics.source;
             mouseDoubleClick(infographics, infographics.width / 2, infographics.height / 2);
             triggeredSpy.wait()
-            verify(infographics.source != oldImage);
+            nextSpy.wait()
         }
     }
 }
