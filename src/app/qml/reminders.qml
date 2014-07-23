@@ -275,7 +275,7 @@ MainView {
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: pagestack.width / 2
         visible: !root.narrowMode
-        text: "No note selected.\nSelect a note to see it in detail."
+        text: i18n.tr("No note selected.\nSelect a note to see it in detail.")
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
         fontSize: "large"
