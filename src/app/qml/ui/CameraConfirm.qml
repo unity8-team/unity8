@@ -69,7 +69,7 @@ Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-            	    root.imageConfirmed();
+                    root.imageConfirmed();
                     pagestack.pop();
                 }
             }
