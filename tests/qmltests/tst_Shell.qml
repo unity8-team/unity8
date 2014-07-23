@@ -20,6 +20,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import GSettings 1.0
+import LightDM 0.1 as LightDM
 import Unity.Application 0.1
 import Unity.Test 0.1 as UT
 import Powerd 0.1
@@ -48,6 +49,11 @@ Item {
 
     Shell {
         id: shell
+    }
+
+    SignalSpy {
+        id: sessionSpy
+        signalName: "sessionStarted"
     }
 
     UT.UnityTestCase {
@@ -91,6 +97,8 @@ Item {
             verify(ok);
 
             swipeAwayGreeter();
+
+            sessionSpy.target = findChild(shell, "greeter")
         }
 
         function cleanup() {
@@ -104,7 +112,7 @@ Item {
             killApps(ApplicationManager);
 
             var dashContent = findChild(shell, "dashContent");
-            dashContent.previewOpen = false;
+            dashContent.closePreview();
 
             var dashHome = findChild(shell, "clickscope loader");
             swipeUntilScopeViewIsReached(dashHome);
@@ -510,42 +518,6 @@ Item {
             tryCompare(dash, "shown", data.expectedShown);
         }
 
-        function test_searchIndicatorHidesOnAppFocus() {
-            var searchIndicator = findChild(shell, "container")
-            tryCompare(searchIndicator, "opacity", 1)
-            dragLauncherIntoView();
-
-            // Launch an app from the launcher
-            tapOnAppIconInLauncher();
-            waitUntilApplicationWindowIsFullyVisible();
-
-            tryCompare(searchIndicator, "opacity", 0);
-        }
-
-        function test_searchIndicatorHidesOnGreeterShown() {
-            var searchIndicator = findChild(shell, "container")
-            var greeter = findChild(shell, "greeter");
-
-            tryCompare(searchIndicator, "opacity", 1)
-
-            greeter.show()
-            tryCompare(greeter, "shown", true)
-            tryCompare(searchIndicator, "opacity", 0)
-        }
-
-        function test_searchIndicatorHideOnPreviewShown() {
-            var searchIndicator = findChild(shell, "container");
-            var dashContent = findChild(shell, "dashContent");
-
-            verify(dashContent != null);
-
-            tryCompare(searchIndicator, "opacity", 1);
-
-            dashContent.previewOpen = true;
-
-            tryCompare(searchIndicator, "opacity", 0);
-        }
-
         function test_focusRequestedHidesGreeter() {
             var greeter = findChild(shell, "greeter")
 
@@ -555,6 +527,25 @@ Item {
             ApplicationManager.focusRequested("notes-app")
             tryCompare(greeter, "showProgress", 0)
             waitUntilApplicationWindowIsFullyVisible()
+        }
+
+        function test_showGreeterDBusCall() {
+            var greeter = findChild(shell, "greeter")
+            tryCompare(greeter, "showProgress", 0)
+            LightDM.Greeter.showGreeter()
+            tryCompare(greeter, "showProgress", 1)
+        }
+
+        function test_login() {
+            sessionSpy.clear()
+
+            var greeter = findChild(shell, "greeter")
+            greeter.show()
+            tryCompare(greeter, "showProgress", 1)
+
+            tryCompare(sessionSpy, "count", 0)
+            swipeAwayGreeter()
+            tryCompare(sessionSpy, "count", 1)
         }
     }
 }
