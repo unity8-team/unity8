@@ -1,4 +1,4 @@
-# Portuguese translation for reminders-app
+# English (Australia) translation for reminders-app
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the reminders-app package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-15 11:25+0200\n"
-"PO-Revision-Date: 2014-07-23 23:31+0000\n"
-"Last-Translator: Pedro Albuquerque <palbuquerque73@gmail.com>\n"
-"Language-Team: Portuguese <pt@li.org>\n"
+"PO-Revision-Date: 2014-07-24 04:47+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: English (Australia) <en_AU@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,221 +19,217 @@ msgstr ""
 
 #: ../src/app/qml/reminders.qml:196
 msgid "Notes"
-msgstr "Notas"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:225
 msgid "Notebooks"
-msgstr "Bloco de notas"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:253
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
-msgstr "Lembretes"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:310
 msgid "No account available"
-msgstr "Nenhuma conta disponível"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:311
 msgid "Please setup an account in the system settings"
-msgstr "Por favor, crie uma conta nas definições de sistema"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:325
 msgid "Open account settings"
-msgstr "Abrir definições de contas"
+msgstr ""
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:66
 #, qt-format
 msgid "Last edited %1"
-msgstr "Última edição %1"
+msgstr ""
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Shared"
-msgstr "Partilhado"
+msgstr ""
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:72
 msgid "Private"
-msgstr "Privado"
+msgstr ""
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr "Solte para atualizar"
+msgstr ""
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr "Limpar lembrete"
+msgstr ""
 
 #: ../src/app/qml/components/RemindersDelegate.qml:51
 msgid "Mark as done"
-msgstr "Marcar como concluído"
+msgstr ""
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr "Anterior"
+msgstr ""
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr "Use!"
+msgstr ""
 
 #: ../src/app/qml/ui/EditNoteView.qml:90
 #: ../src/app/qml/ui/EditNoteView.qml:102
 msgid "Untitled"
-msgstr "Sem título"
+msgstr ""
 
 #: ../src/app/qml/ui/NotePage.qml:33 ../src/app/qml/ui/NotesPage.qml:71
 msgid "Delete"
-msgstr "Apagar"
+msgstr ""
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 msgid "Edit reminder"
-msgstr "Editar lembrete"
+msgstr ""
 
 #: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr "Definir lembrete"
+msgstr ""
 
 #: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:38 ../src/app/qml/ui/NotesPage.qml:44
 #: ../src/app/qml/ui/RemindersPage.qml:33
 #: ../src/app/qml/ui/SearchNotesPage.qml:56
 msgid "Search"
-msgstr "Pesquisar"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
 msgid "Refresh"
-msgstr "Atualizar"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
 #: ../src/app/qml/ui/RemindersPage.qml:43
 msgid "Accounts"
-msgstr "Contas"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:65
 msgid "Add notebook"
-msgstr "Adicionar bloco de notas"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:164
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #: ../src/app/qml/ui/NotebooksPage.qml:172
 msgid "Save"
-msgstr "Guardar"
+msgstr ""
 
 #: ../src/app/qml/ui/NotesPage.qml:103
 msgid "Add note"
-msgstr "Adicionar nota"
+msgstr ""
 
 #: ../src/app/qml/ui/NotesPage.qml:173
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
-"Sem notas disponíveis. Pode criar novas notas usando o botão \"Adicionar "
-"nota\"."
 
 #: ../src/app/qml/ui/RemindersPage.qml:52
 msgid "Add reminder"
-msgstr "Adicionar lembrete"
+msgstr ""
 
 #: ../src/app/qml/ui/RemindersPage.qml:113
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
-"Sem lembretes disponíveis. Pode criar novos lembretes usando o botão "
-"\"Adicionar lembrete\" ou definindo um lembrete ao ver uma nota."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr "Selecione a data e hora para o lembrete:"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
 msgid "Today"
-msgstr "Hoje"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr "Ontem"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr "Última semana"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr "Duas semanas atrás"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:94
 #, qt-format
 msgid "%1 %2"
-msgstr "%1 %2"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:227
 msgid "Done"
-msgstr "Concluído"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:233
 msgid "No date"
-msgstr "Sem data"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:236
 msgid "Overdue"
-msgstr "Atrasado"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:242
 msgid "Tomorrow"
-msgstr "Amanhã"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:245
 msgid "Next week"
-msgstr "Semana seguinte"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:248
 msgid "In two weeks"
-msgstr "Dentro de duas semanas"
+msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:250
 msgid "Later"
-msgstr "Mais tarde"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:99
 msgid "today"
-msgstr "hoje"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:103
 msgid "yesterday"
-msgstr "ontem"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:107
 msgid "last week"
-msgstr "última semana"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:111
 msgid "two weeks ago"
-msgstr "há duas semanas"
+msgstr ""
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:115
 #, qt-format
 msgid "on %1 %2"
-msgstr "em %1 %2"
+msgstr ""
 
 #: ../src/plugin/Evernote/notesstore.cpp:217
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "Erro ao atualizar as notas: %1"
+msgstr ""
 
 #: ../src/plugin/Evernote/notesstore.cpp:368
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr "Erro ao atualizar bloco de notas: %1"
+msgstr ""
