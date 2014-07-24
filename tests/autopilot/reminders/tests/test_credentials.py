@@ -18,6 +18,7 @@ import logging
 
 from gi.repository import Accounts
 from testtools.matchers import HasLength
+from autopilot import platform
 
 from reminders import credentials, evernote, tests
 

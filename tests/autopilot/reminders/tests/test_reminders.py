@@ -41,12 +41,14 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 
     def test_go_to_account_settings(self):
         """Test that the Go to account settings button calls url-dispatcher."""
-        if platform.model() == 'Desktop':
-            self.skipTest("URL dispatcher doesn't work on the desktop.")
+        #if platform.model() == 'Desktop':
+        #    self.skipTest("URL dispatcher doesn't work on the desktop.")
         url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(url_dispatcher)
 
-        self.app.main_view.no_account_dialog.open_account_settings()
+        #self.app.main_view.no_account_dialog.open_account_settings()
+        button = self.app.main_view.select_single('Button', objectName='openAccountButton')
+        self.app.main_view.pointing_device.click_object(button)
 
         def get_last_dispatch_url_call_parameter():
             # Workaround for http://pad.lv/1312384
