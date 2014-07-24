@@ -19,6 +19,7 @@ import time
 import threading
 
 from gi.repository import Accounts, GLib, Signon
+from pprint import pprint
 
 
 logger = logging.getLogger(__name__)
@@ -60,10 +61,13 @@ class AccountManager(object):
         self._start_main_loop()
 
         account = self._create_account()
+        logger.debug('account %s' % pprint(account.get_settings_dict()))
 
         info = self._get_identity_info(user_name, password)
+        logger.debug('info %s' % info)
 
         identity = Signon.Identity.new()
+        logger.debug('identity %s' % identity)
         identity.store_credentials_with_info(
             info, self._set_credentials_id_to_account,
             {'account': account, 'oauth_token': oauth_token})
@@ -120,11 +124,17 @@ class AccountManager(object):
                 error, 'setting credentials id to account')
 
         logger.debug('Processing session.')
+        logger.debug('account %s, error %s, oauth_token %s' % (account, error, oauth_token))
         account_service = Accounts.AccountService.new(account, None)
+        logger.debug('account_service %s' % account_service)
         auth_data = account_service.get_auth_data()
+        logger.debug('auth_data %s' % auth_data)
         identity = auth_data.get_credentials_id()
+        logger.debug('identity %s' % identity)
         method = auth_data.get_method()
+        logger.debug('method %s' % method)
         mechanism = auth_data.get_mechanism()
+        logger.debug('mechanism %s' % mechanism)
         session_data = auth_data.get_parameters()
         session_data['ProvidedTokens'] = GLib.Variant('a{sv}', {
             'TokenSecret': GLib.Variant('s', 'dummy'),

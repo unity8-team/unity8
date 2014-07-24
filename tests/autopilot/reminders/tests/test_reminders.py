@@ -59,10 +59,12 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
             get_last_dispatch_url_call_parameter,
             Eventually(Equals('settings:///system/online-accounts')))
 
-
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
     def setUp(self):
+        # bug https://bugs.launchpad.net/reminders-app/+bug/1347905
+        if platform.model() != 'Desktop':
+            self.skipTest("Fake Account failure bug 1347905")
         super(RemindersTestCaseWithAccount, self).setUp()
         no_account_dialog = self.app.main_view.no_account_dialog
         self.add_evernote_account()

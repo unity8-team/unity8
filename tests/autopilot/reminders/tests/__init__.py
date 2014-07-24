@@ -100,6 +100,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
     def launch_test_click(self):
         return self.launch_click_package(
             'com.ubuntu.reminders',
+            'reminders',
             '-s',
             emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
