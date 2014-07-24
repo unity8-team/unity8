@@ -37,7 +37,7 @@ ListView {
         anchors.bottom: root.contentItem.top;
         fontSize: 'medium'
         horizontalAlignment: Text.AlignHCenter
-        text: priv.toBeReloaded ? i18n.tr("Release to refresh") : ("Pull down to refresh")
+        text: priv.toBeReloaded ? i18n.tr("Release to refresh") : i18n.tr("Pull down to refresh")
         color: "#b3b3b3" 
     }
 
