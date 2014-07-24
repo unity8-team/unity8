@@ -41,8 +41,8 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
 
     def test_go_to_account_settings(self):
         """Test that the Go to account settings button calls url-dispatcher."""
-        #if platform.model() == 'Desktop':
-        #    self.skipTest("URL dispatcher doesn't work on the desktop.")
+        if platform.model() == 'Desktop':
+            self.skipTest("URL dispatcher doesn't work on the desktop.")
         url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(url_dispatcher)
 
