@@ -481,7 +481,11 @@ Item {
 
             onShowDashHome: showHome()
             onDash: showDash()
-            onDashSwipeChanged: if (dashSwipe) dash.setCurrentScope("clickscope", false, true)
+            onDashSwipeChanged: {
+                if (dashSwipe && ApplicationManager.focusedApplicationId !== "unity8-dash") {
+                    dash.setCurrentScope("clickscope", false, true)
+                }
+            }
             onLauncherApplicationSelected: {
                 if (greeter.fakeActiveForApp !== "") {
                     lockscreen.show()
