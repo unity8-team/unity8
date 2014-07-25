@@ -47,10 +47,7 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(url_dispatcher)
 
-        # self.app.main_view.no_account_dialog.open_account_settings()
-        button = self.app.main_view.select_single(
-            'Button', objectName='openAccountButton')
-        self.app.main_view.pointing_device.click_object(button)
+        self.app.main_view.no_account_dialog.open_account_settings()
 
         def get_last_dispatch_url_call_parameter():
             # Workaround for http://pad.lv/1312384
