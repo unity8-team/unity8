@@ -285,7 +285,9 @@ Rectangle {
                             && spreadView.shiftedContentX === 0 && root.interactive && index === 0
                     swipeToCloseEnabled: spreadView.interactive
                     maximizedAppTopMargin: root.maximizedAppTopMargin
-                    dropShadow: spreadView.shiftedContentX > 0 || spreadDragArea.status == DirectionalDragArea.Undecided
+                    dropShadow: spreadView.shiftedContentX > 0 ||
+                                spreadDragArea.status == DirectionalDragArea.Undecided ||
+                                priv.leftDragAppId == model.appId
 
                     z: behavioredIndex
                     x: {
