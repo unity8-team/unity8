@@ -52,6 +52,8 @@ Page {
         property alias currentZoom: camera.digitalZoom
         property alias maximumZoom: camera.maximumDigitalZoom
 
+        Component.onCompleted: cameraHelper.removeTemp();
+
         imageCapture {
             onImageSaved: {
                 if (videoOutput.orientation != 0) {
