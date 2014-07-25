@@ -244,7 +244,7 @@ Item {
             if (!dragging) {
                 if (distance > panel.width / 2) {
                     if (distance > minimizeDistance) {
-                        root.dash()
+                        root.fadeOut();
                     } else {
                         root.switchToNextState("visible")
                     }

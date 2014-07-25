@@ -192,6 +192,11 @@ Item {
                 property: "spreadEnabled"
                 value: greeter.fakeActiveForApp === "" // to support emergency dialer hack
             }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "inverseProgress"
+                value: launcher.progress
+            }
         }
     }
 

@@ -30,6 +30,8 @@ Item {
     property bool interactive
     property bool spreadEnabled: true // If false, animations and right edge will be disabled
 
+    property real inverseProgress: 0
+
     // State information propagated to the outside
     readonly property bool locked: spreadView.phase == 2
 
@@ -41,6 +43,26 @@ Item {
         spreadView.selectedIndex = -1;
         spreadView.phase = 0;
         spreadView.contentX = -spreadView.shift;
+    }
+
+    onInverseProgressChanged: {
+        if (priv.oldInverseProgress == 0 && ApplicationManager.focusedApplicationId !== "unity8-dash") {
+            // left edge drag started when not the dash is focused
+            // focus the dash to put it into place, but keep the leftDragApp on top, following finger
+            priv.leftDragAppId = ApplicationManager.focusedApplicationId;
+            spreadView.focusChanging = true;
+            ApplicationManager.focusApplication("unity8-dash")
+        }
+        if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
+            // left edge drag released. units.gu(26) is a magic number given by design.
+            if (priv.leftDragAppId != "" && priv.oldInverseProgress < units.gu(26)) {
+                // not far enough, focus back to the previous app...
+                ApplicationManager.focusApplication(priv.leftDragAppId);
+            }
+            priv.leftDragAppId = "";
+        }
+
+        priv.oldInverseProgress = inverseProgress;
     }
 
     Connections {
@@ -79,6 +101,9 @@ Item {
 
         property string focusedAppId: ApplicationManager.focusedApplicationId
         property var focusedApplication: ApplicationManager.findApplication(focusedAppId)
+
+        property real oldInverseProgress: 0
+        property string leftDragAppId: ""
 
         function switchToApp(appId) {
             if (priv.focusedAppId) {
@@ -261,7 +286,16 @@ Item {
                     dropShadow: spreadView.shiftedContentX > 0 || spreadDragArea.status == DirectionalDragArea.Undecided
 
                     z: behavioredIndex
-                    x: index == 0 ? 0 : spreadView.width + (index - 1) * spreadView.tileDistance
+                    x: {
+                       if (index == 0) { // focused app is always positioned at 0
+                           return 0;
+                       }
+                       if (priv.leftDragAppId === model.appId) { // if we have a leftEdgeDrag, follow progress
+                           return root.inverseProgress;
+                       }
+                       // Otherwise line up for the spread
+                       return spreadView.width + (index - 1) * spreadView.tileDistance;
+                    }
                     property real behavioredIndex: index
                     Behavior on behavioredIndex {
                         enabled: spreadView.closingIndex >= 0
@@ -275,11 +309,12 @@ Item {
                     }
 
                     Behavior on x {
-                        enabled: spreadView.focusChanging && index == 0 && root.spreadEnabled
+                        enabled: root.spreadEnabled && index > 0 &&
+                                 (spreadView.focusChanging || priv.leftDragAppId == model.appId)
                         UbuntuNumberAnimation {
                             duration: UbuntuAnimation.FastDuration
                             onRunningChanged: {
-                                if (!running) {
+                                if (!running && root.inverseProgress == 0) {
                                     spreadView.focusChanging = false;
                                 }
                             }
