@@ -1,0 +1,204 @@
+# Hungarian translation for unity
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
+# This file is distributed under the same license as the unity package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: unity\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-07 12:15+0100\n"
+"PO-Revision-Date: 2014-07-24 08:19+0000\n"
+"Last-Translator: Gabor Kelemen <kelemeng@openscope.org>\n"
+"Language-Team: Hungarian <hu@li.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-07-25 07:54+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
+
+#: plugins/Unity/Launcher/launcheritem.cpp:43
+#: plugins/Unity/Launcher/launcheritem.cpp:73
+msgid "Pin shortcut"
+msgstr "Indító rögzítése"
+
+#: plugins/Unity/Launcher/launcheritem.cpp:73
+msgid "Unpin shortcut"
+msgstr "Indító feloldása"
+
+#: qml/Components/EdgeDemoOverlay.qml:151
+msgid "Skip intro"
+msgstr "A bemutató kihagyása"
+
+#: qml/Components/EdgeDemo.qml:113
+msgid "Right edge"
+msgstr "Jobb szél"
+
+#: qml/Components/EdgeDemo.qml:114
+msgid "Try swiping from the right edge to unlock the phone"
+msgstr "A telefon feloldásához csúsztassa ujját a jobb szélről"
+
+#: qml/Components/EdgeDemo.qml:145
+msgid "Top edge"
+msgstr "Felső szél"
+
+#: qml/Components/EdgeDemo.qml:146
+msgid "Try swiping from the top edge to access the indicators"
+msgstr "A jelzők eléréséhez csúsztassa ujját a felső szélről"
+
+#: qml/Components/EdgeDemo.qml:171
+msgid "Close"
+msgstr "Bezárás"
+
+#: qml/Components/EdgeDemo.qml:172
+msgid "Swipe up again to close the settings screen"
+msgstr "A beállítások bezárásához csúsztassa ujját újra felfelé"
+
+#: qml/Components/EdgeDemo.qml:199
+msgid "Left edge"
+msgstr "Bal szél"
+
+#: qml/Components/EdgeDemo.qml:200
+msgid "Swipe from the left to reveal the launcher for quick access to apps"
+msgstr ""
+"Csúsztassa ujját a bal szélről az indítón található alkalmazások gyors "
+"eléréséhez"
+
+#: qml/Components/EdgeDemo.qml:227
+msgid "Well done"
+msgstr "Rendben"
+
+#: qml/Components/EdgeDemo.qml:228
+msgid ""
+"You have now mastered the edge gestures and can start using the "
+"phone<br><br>Tap on the screen to start"
+msgstr ""
+"Elsajátította a gesztusokat, és megkezdheti a telefon használatát."
+"<br><br>Koppintson a képernyőre a kezdéshez."
+
+#: qml/Components/Lockscreen.qml:214
+msgid "Emergency Call"
+msgstr "Vészhívás"
+
+#: qml/Components/Lockscreen.qml:231
+msgid "OK"
+msgstr "OK"
+
+#: qml/Components/PageHeader.qml:366
+msgid "Recent searches"
+msgstr "Legutóbbi keresések"
+
+#: qml/Components/PassphraseLockscreen.qml:60
+#, qt-format
+msgid "Hello %1"
+msgstr "Szia %1"
+
+#: qml/Components/PassphraseLockscreen.qml:60
+msgid "Hello"
+msgstr "Szia"
+
+#: qml/Components/PinLockscreen.qml:198
+msgid "CANCEL"
+msgstr "MÉGSE"
+
+#: qml/Components/PinLockscreen.qml:216
+msgid "DONE"
+msgstr "KÉSZ"
+
+#: qml/Components/SeeMore.qml:35
+msgid "See more"
+msgstr "Több"
+
+#: qml/Components/SeeMore.qml:58
+msgid "See less"
+msgstr "Kevesebb"
+
+#: qml/Dash/DashApps.qml:37
+msgid "Recent"
+msgstr "Legutóbbi"
+
+#: qml/Dash/Previews/PreviewActionCombo.qml:34
+msgid "More..."
+msgstr "Több…"
+
+#: qml/Dash/Previews/PreviewActionCombo.qml:34
+msgid "Less..."
+msgstr "Kevesebb…"
+
+#: qml/Dash/Previews/PreviewRatingInput.qml:82
+msgid "Rate this"
+msgstr "Osztályzás"
+
+#: qml/Dash/Previews/PreviewRatingInput.qml:128
+msgid "Add a review"
+msgstr "Értékelés hozzáadása"
+
+#: qml/Dash/Previews/PreviewRatingInput.qml:168
+msgid "Send"
+msgstr "Küldés"
+
+#: qml/Greeter/Greeter.qml:157
+msgid "Swipe to unlock"
+msgstr "Csúsztasson a feloldáshoz"
+
+#: qml/Hud/HudParametrizedActionsPage.qml:132
+msgid "Confirm"
+msgstr "Megerősítés"
+
+#: qml/Hud/Hud.qml:61 qml/Hud/Hud.qml:99 qml/Hud/Hud.qml:372
+msgid "Type or say a command"
+msgstr "Írjon be vagy mondjon ki egy parancsot"
+
+#: qml/Hud/Hud.qml:84
+msgid "Loading. Please Wait..."
+msgstr "Betöltés, kis türelmet…"
+
+#: qml/Hud/Hud.qml:89
+msgid "Speak Now..."
+msgstr "Most beszéljen…"
+
+#: qml/Hud/Hud.qml:94
+msgid "Speaking..."
+msgstr "Beszéd…"
+
+#: qml/Notifications/NotificationMenuItemFactory.qml:91
+msgid "Show password"
+msgstr "Jelszó megjelenítése"
+
+#: qml/Notifications/NotificationMenuItemFactory.qml:103
+msgid "Please enter SIM PIN"
+msgstr "Adja meg a SIM PIN kódját"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:583
+msgid "In queue…"
+msgstr "Sorban…"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:587
+msgid "Downloading"
+msgstr "Letöltés"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:589
+msgid "Paused, tap to resume"
+msgstr "Szüneteltetve, koppintson a folytatáshoz"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:591
+msgid "Canceled"
+msgstr "Megszakítva"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:593
+msgid "Finished"
+msgstr "Befejeződött"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:595
+msgid "Failed, tap to retry"
+msgstr "Sikertelen, koppintson az újrapróbáláshoz"
+
+#: qml/Panel/SearchIndicator.qml:27
+msgid "Search"
+msgstr "Keresés"
+
+#: qml/Shell.qml:359
+#, qt-format
+msgid "Please enter %1"
+msgstr "Adja meg a következőt: %1"

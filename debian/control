@@ -1,0 +1,188 @@
+Source: unity8
+Section: x11
+Priority: optional
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Build-Depends: cmake,
+               dbus-test-runner,
+               debhelper (>= 9),
+               doxyqml,
+               graphviz,
+# We rely on C++11 features, and to prevent from ABI breaks
+# in libstdc++ causing us issues, we explicitly select a G++
+# version.
+               g++-4.9,
+               libdee-qt5-dev (>= 3.2),
+               libgl1-mesa-dev[!armhf] | libgl-dev[!armhf],
+               libgl1-mesa-dri,
+               libgles2-mesa-dev[armhf],
+               libglib2.0-dev,
+               libgsettings-qt-dev,
+               libhardware-dev,
+               libhud-client2-dev,
+               libpay2-dev,
+               libpulse-dev,
+               libqmenumodel-dev (>= 0.2.8),
+               libqt5xmlpatterns5-dev,
+               libunity-api-dev (>= 7.85),
+               libunity-mir-dev,
+               libusermetricsoutput1-dev,
+               libxcb1-dev,
+               pkg-config,
+               python-setuptools,
+               python3-all:any,
+               python3-setuptools,
+               python:any (>= 2.7),
+               qml-module-qtquick-xmllistmodel,
+               qml-module-qtquick2,
+               qml-module-qttest,
+               qt5-default,
+               qtbase5-dev (>= 5.2.1),
+               qtbase5-dev-tools,
+               qtbase5-private-dev (>= 5.2.1),
+               qtdeclarative5-dev (>= 5.2.1),
+               qtdeclarative5-dev-tools,
+               qtdeclarative5-private-dev (>= 5.2.1),
+               qtdeclarative5-qtmultimedia-plugin,
+               qtdeclarative5-ubuntu-settings-components (>= 0.3),
+               qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.49) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.49),
+               ttf-ubuntu-font-family,
+Standards-Version: 3.9.4
+Homepage: http://launchpad.net/unity
+# If you aren't a member of ~unity-team but need to upload
+# packaging changes, just go ahead. ~unity-team will notice
+# and sync up the code again.
+Vcs-Bzr: https://code.launchpad.net/unity8
+Vcs-Browser: https://bazaar.launchpad.net/~unity-team/unity8/trunk
+
+Package: indicators-client
+Architecture: amd64 armhf i386
+Depends: qmenumodel-qml (>= 0.2.8),
+         qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.49) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.49),
+         unity8 (= ${binary:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: Indicators client test application
+ This package contains the client application for indicators used by autopilot
+
+Package: unity-scope-tool
+Architecture: any
+Depends: unity8-common (= ${source:Version}),
+         unity8-private (= ${binary:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: Development tool for Unity scopes
+ This package contains the development tool for new generation Unity scopes, based
+ on Unity8.
+
+Package: unity8
+Architecture: any
+Provides: indicator-renderer,
+Depends: gsettings-desktop-schemas,
+         libcap2-bin,
+         libglib2.0-bin,
+         libunity-mir1 (>= 0.4),
+         qmenumodel-qml (>= 0.2.8),
+         qml-module-qtquick-xmllistmodel,
+         qtdeclarative5-gsettings1.0,
+         qtdeclarative5-ubuntu-settings-components (>= 0.3),
+         qtdeclarative5-ubuntu-telephony0.1,
+         unity-launcher-impl-3,
+         unity8-common (= ${source:Version}),
+         unity8-private (= ${binary:Version}),
+         unity8-private | unity-launcher-impl,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Recommends: unity-scope-click,
+            unity-scope-mediascanner2,
+            unity-scope-scopes,
+Breaks: indicator-network (<< 0.5.1),
+        ubuntu-touch-session (<< 0.107),
+        unity8-greeter (<< 7.89),
+Replaces: ubuntu-touch-session (<< 0.82~),
+          unity8-greeter (<< 7.89),
+Description: Unity 8 shell
+ The Unity 8 shell is the primary user interface for Ubuntu devices.
+
+Package: unity8-common
+Architecture: all
+Depends: qtdeclarative5-ubuntu-thumbnailer0.1 | ubuntu-thumbnailer-impl,
+         qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 0.1.49) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 0.1.49),
+         qtdeclarative5-unity-notifications-plugin (>= 0.1.2) | unity-notifications-impl,
+         ubuntu-thumbnailer-impl-0,
+         unity-application-impl-2,
+         unity-notifications-impl-3,
+         unity-plugin-scopes | unity-scopes-impl,
+         unity-scopes-impl-2,
+         unity8-fake-env | unity-application-impl,
+         ${misc:Depends},
+Breaks: unity8 (<< 7.86),
+Replaces: unity8 (<< 7.86),
+Description: Unity 8 shell (common files)
+ The Unity 8 shell is the primary user interface for Ubuntu devices.
+ .
+ This package contains the QML, graphics and locale files shared between
+ unity8 and unity-scope-tool.
+
+Package: unity8-autopilot
+Architecture: all
+Depends: gir1.2-glib-2.0,
+         libautopilot-qt (>= 1.4),
+         libqt5test5,
+         libqt5widgets5,
+         python-autopilot,
+         python-evdev,
+         python-fixtures,
+         python-gi,
+         python-mock,
+         python3-autopilot,
+         python3-evdev,
+         python3-fixtures,
+         python3-gi,
+         ubuntu-ui-toolkit-autopilot,
+         unity8 (= ${source:Version}),
+         unity8-fake-env (= ${source:Version}),
+         url-dispatcher-tools,
+         ${misc:Depends},
+         ${python3:Depends},
+         ${python:Depends},
+         ${shlibs:Depends},
+Description: Test package for Unity 8 shell
+ Autopilot tests for the unity8 package
+
+Package: unity8-fake-env
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends},
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Provides: unity-application-impl,
+          unity-application-impl-2,
+Description: Fake environment for running Unity 8 shell
+ Provides fake implementations of some QML modules used by Unity 8 shell
+ (e.g Ubuntu.Application) so that you can run it in a sandboxed environment.
+
+Package: unity8-private
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends},
+Depends: gsettings-ubuntu-schemas,
+         libhardware2,
+         libunity-core-6.0-9,
+         pay-service,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Provides: unity-launcher-impl,
+          unity-launcher-impl-3,
+Description: Unity 8 private libs
+ The Unity 8 shell is the primary user interface for Ubuntu devices.
+ .
+ This package contains the private libraries for QML and other components
+ only used by the shell.
+
+Package: unity8-doc
+Section: doc
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends},
+Description: Documentation for Unity8
+ The Unity 8 shell is the primary user interface for Ubuntu devices. (documentation)
