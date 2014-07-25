@@ -46,7 +46,7 @@ Page {
     Camera {
         id: camera
         flash.mode: Camera.FlashOff
-        focus.focusMode: Camera.FocusAuto
+        focus.focusMode: Camera.FocusContinuous
         focus.focusPointMode: Camera.FocusPointAuto
 
         property alias currentZoom: camera.digitalZoom
