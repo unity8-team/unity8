@@ -21,7 +21,7 @@ import Unity.Application 0.1
 import Utils 0.1
 import "../Components"
 
-Item {
+Rectangle {
     id: root
 
     // Controls to be set from outside
@@ -34,6 +34,8 @@ Item {
 
     // State information propagated to the outside
     readonly property bool locked: spreadView.phase == 2
+
+    color: "black"
 
     function select(appId) {
         spreadView.snapTo(priv.indexOf(appId));
