@@ -19,142 +19,80 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Ubuntu.Settings.Components 0.1 as USC
+import QtQuick.Layouts 1.1
 
-HeroMessageMenu {
+SimpleMessageMenu {
     id: menu
 
-    property string title: ""
-    property string time: ""
-    property string message: ""
-
     property bool activateEnabled: true
-    property alias actionButtonText: actionButton.text
+    property string actionButtonText: "Call back"
 
     property bool replyEnabled: true
-    property alias replyMessages: quickreply.messages
-    property alias replyButtonText: quickreply.buttonText
-
-    expandedHeight: collapsedHeight + buttons.height + quickreply.height
-    heroMessageHeader.titleText.text:  title
-    heroMessageHeader.subtitleText.text: message
-    heroMessageHeader.bodyText.text: time
+    property string replyButtonText: "Send"
 
     signal activated
     signal replied(string value)
 
-    Item {
+    footer: Item {
         id: buttons
 
-        anchors.left: parent.left
-        anchors.leftMargin: units.gu(2)
-        anchors.right: parent.right
-        anchors.rightMargin: units.gu(2)
-        anchors.top: heroMessageHeader.bottom
-        anchors.topMargin: units.gu(1)
-        height: units.gu(4)
-        opacity: 0.0
+        implicitHeight: layout.implicitHeight
 
-        Button {
-            objectName: "messageButton"
-            text: "Message"
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: (parent.width - units.gu(1)) / 2
-            gradient: UbuntuColors.greyGradient
+        ColumnLayout {
+            id: layout
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+            spacing: units.gu(1)
 
-            onClicked: {
-                if (quickreply.state === "") {
-                    quickreply.state = "expanded";
-                } else {
-                    quickreply.state = "";
+            RowLayout {
+                spacing: units.gu(2)
+
+                Button {
+                    objectName: "messageButton"
+                    text: "Message"
+                    gradient: UbuntuColors.greyGradient
+                    Layout.fillWidth: true
+
+                    onClicked: {
+                        if (reply.state === "") {
+                            reply.state = "expanded";
+                        } else {
+                            reply.state = "";
+                        }
+                    }
+                }
+
+                Button {
+                    id: actionButton
+                    objectName: "actionButton"
+                    enabled: menu.activateEnabled
+                    text: actionButtonText
+                    Layout.fillWidth: true
+
+                    onClicked: {
+                        menu.activated();
+                    }
                 }
             }
-        }
 
-        Button {
-            id: actionButton
-            objectName: "actionButton"
-            text: "Call back"
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: (parent.width - units.gu(1)) / 2
-            enabled: menu.activateEnabled
+            USC.ActionTextField {
+                id: reply
 
-            onClicked: {
-                menu.activated();
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: state == "expanded"
+
+                activateEnabled: menu.replyEnabled
+                buttonText: menu.replyButtonText
+
+                onActivated: {
+                    menu.replied(value);
+                }
             }
-        }
-
-        states: State {
-            name: "expanded"
-            when: menu.state === "expanded"
-
-            PropertyChanges {
-                target: buttons
-                opacity: 1.0
-            }
-        }
-        transitions: Transition {
-            NumberAnimation {
-                property: "opacity"
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-    }
-
-    USC.QuickReply {
-        id: quickreply
-
-        onReplied: {
-            menu.replied(value);
-        }
-
-        messages: ""
-        buttonText: "Send"
-        anchors {
-            top: buttons.bottom
-            topMargin: units.gu(2)
-            left: parent.left
-            right: parent.right
-        }
-        height: 0
-        opacity: 0.0
-        enabled: false
-        replyEnabled: menu.replyEnabled
-        messageMargins: __contentsMargins
-
-        states: State {
-            name: "expanded"
-
-            PropertyChanges {
-                target: quickreply
-                height: expandedHeight + units.gu(2)
-                opacity: 1.0
-            }
-
-            PropertyChanges {
-                target: quickreply
-                enabled: true
-            }
-        }
-
-        transitions: Transition {
-            NumberAnimation {
-                properties: "opacity,height"
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-    }
-
-    onStateChanged: {
-        if (state === "") {
-            quickreply.state = "";
         }
     }
 }

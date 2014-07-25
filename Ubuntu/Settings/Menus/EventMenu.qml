@@ -60,7 +60,6 @@ ListItems.Empty {
 
     Components.Label {
         id: dateLabel
-        color: Theme.palette.normal.backgroundText
 
         anchors {
             verticalCenter: parent.verticalCenter

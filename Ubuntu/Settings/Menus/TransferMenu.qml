@@ -41,21 +41,21 @@ ListItem.Empty {
             leftMargin: menu.__contentsMargins
             rightMargin: menu.__contentsMargins
         }
+        spacing: units.gu(2)
 
         UbuntuShape {
             id: imageShape
-            Layout.preferredWidth: units.gu(5)
-            Layout.preferredHeight: units.gu(5)
 
-            Layout.alignment: Qt.AlignTop
+            Layout.preferredWidth: units.gu(6)
+            Layout.preferredHeight: units.gu(6)
 
             image: Image {
                 objectName: "icon"
                 id: icon
 
                 sourceSize {
-                    width: units.gu(5)
-                    height: units.gu(5)
+                    width: units.gu(6)
+                    height: units.gu(6)
                 }
             }
         }
@@ -70,6 +70,7 @@ ListItem.Empty {
 
                 elide: Text.ElideRight
                 maximumLineCount: 1
+                font.weight: Font.DemiBold
             }
 
             ProgressBar {
@@ -78,7 +79,7 @@ ListItem.Empty {
                 visible: menu.active
                 value: 0.0
 
-                Layout.preferredHeight: units.gu(2)
+                Layout.preferredHeight: units.gu(1)
                 Layout.fillWidth: true
             }
 
@@ -88,6 +89,7 @@ ListItem.Empty {
                 Layout.fillWidth: true
                 visible: menu.active
 
+                fontSize: "x-small"
                 elide: Text.ElideRight
                 maximumLineCount: 1
             }

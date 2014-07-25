@@ -28,6 +28,10 @@ MainView {
     width: units.gu(42)
     height: units.gu(75)
 
+    Component.onCompleted: {
+        Theme.name = "Ubuntu.Components.Themes.SuruGradient"
+    }
+
     ListModel {
         id: mediaPlayerModel
         ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "tests/artwork/speak-now.jpg"}
@@ -78,8 +82,8 @@ MainView {
                             text: "Press Me"
                         }
                     }
+                    backColor: Qt.rgba(1,1,1,0.1)
                 }
-
 
                 SliderMenu {
                     id: slider
@@ -150,8 +154,8 @@ MainView {
 
                 PlaybackItemMenu {
                     canPlay: true
-                    canGoNext: true
-                    canGoPrevious: true
+                    canGoNext: mediaPlayer.index < mediaPlayerModel.count - 1
+                    canGoPrevious: mediaPlayer.index > 0
                     playing: mediaPlayer.running
 
                     onPrevious: mediaPlayer.index = Math.max(mediaPlayer.index - 1, 0)
@@ -179,11 +183,13 @@ MainView {
                 }
 
                 AccessPointMenu {
-                    checked: true
+                    active: true
                     secure: true
                     adHoc: false
                     signalStrength: 50
                     text: "Access Point"
+
+                    onTriggered: active = !active
                 }
 
                 GroupedMessageMenu {
@@ -193,20 +199,19 @@ MainView {
 
                 SnapDecisionMenu {
                     title: "Snap Decision"
+                    body: "My mother says I'm handsome!"
                     time: "10:30am"
-                    message: "My mother says I'm handsome!"
-
-                    replyMessages: ["Yeah right", "Sure she did"]
 
                     onTriggered: {
                         selected = !selected;
                     }
                 }
 
-                SimpleTextMessageMenu {
+                SimpleMessageMenu {
                     title: "Simple Text Message"
+                    body: "I am a little teacup, short and stout. Here is my handle, and here is my spout. " +
+                          "Who are you talking about my spout?! This should be truncated"
                     time: "11am"
-                    message: "I am a little teacup"
 
                     onTriggered: {
                         selected = !selected;
@@ -215,8 +220,8 @@ MainView {
 
                 TextMessageMenu {
                     title: "Text Message"
+                    body: "I happen to be tall and thin! But let's try a new line"
                     time: "11am"
-                    message: "I happen to be tall and thin!"
 
                     onTriggered: {
                         selected = !selected;

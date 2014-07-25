@@ -25,85 +25,23 @@ ListItem.Empty {
     id: menu
     implicitHeight: units.gu(5.5)
 
-    property bool checked: false
+    property bool active: false
     property bool secure: false
     property bool adHoc: false
     property int signalStrength: 0
     property alias text: label.text
 
-    __acceptEvents: false
-
-    CheckBox {
-        id: checkbox
-        objectName: "checkBox"
-        property bool enableCheckConnection: true
-
-        height: units.gu(3)
-        width: units.gu(3)
-
-        anchors {
-            left: parent.left
-            leftMargin: menu.__contentsMargins
-            verticalCenter: parent.verticalCenter
-        }
-
-        // need onCompleted to set the initial value
-        // can't use binding otherwise we will get feedback from connections.
-        Component.onCompleted: {
-            enableCheckConnection = false;
-            checked = menu.checked;
-            enableCheckConnection = true;
-        }
-
-        // FIXME : should use Checkbox.toggled signal
-        // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
-        onCheckedChanged: {
-            if (!enableCheckConnection) {
-                return;
-            }
-            var oldEnable = enableCheckConnection;
-            enableCheckConnection = false;
-
-            menu.checked = checked;
-            menu.triggered(menu.checked);
-
-            enableCheckConnection = oldEnable;
-        }
-
-        Connections {
-            target: menu
-            onCheckedChanged: {
-                if (!checkbox.enableCheckConnection) {
-                    return;
-                }
-                var oldEnable = checkbox.enableCheckConnection;
-                checkbox.enableCheckConnection = false;
-
-                checkbox.checked = menu.checked;
-
-                checkbox.enableCheckConnection = oldEnable;
-            }
-        }
-
-        Connections {
-            target: menu.__mouseArea
-            onClicked: {
-                checkbox.clicked();
-            }
-        }
-    }
-
     Icon {
         id: iconSignal
         objectName: "iconSignal"
 
-        color: Theme.palette.selected.backgroundText
+        color: active ? Theme.palette.selected.foreground : Theme.palette.selected.backgroundText
 
         width: height
         height: Math.min(units.gu(3), parent.height - units.gu(1))
         anchors {
-            left: checkbox.right
-            leftMargin: units.gu(1)
+            left: parent.left
+            leftMargin: menu.__contentsMargins
             verticalCenter: parent.verticalCenter
         }
 
@@ -135,7 +73,7 @@ ListItem.Empty {
             rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
-        opacity: label.enabled ? 1.0 : 0.5
+        color: active ? Theme.palette.selected.foreground : Theme.palette.selected.backgroundText
     }
 
     Icon {
@@ -144,7 +82,7 @@ ListItem.Empty {
         visible: secure
         name: "network-secure"
 
-        color: Theme.palette.selected.backgroundText
+        color: active ? Theme.palette.selected.foreground : Theme.palette.selected.backgroundText
 
         width: height
         height: Math.min(units.gu(3), parent.height - units.gu(1))

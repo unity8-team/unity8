@@ -22,7 +22,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Settings.Components 0.1 as USC
 
-SimpleTextMessageMenu {
+SimpleMessageMenu {
     id: menu
 
     property bool replyEnabled: true
@@ -31,7 +31,6 @@ SimpleTextMessageMenu {
     signal replied(string value)
 
     footer: USC.ActionTextField {
-        anchors.fill:  parent
 
         activateEnabled: menu.replyEnabled
         buttonText: menu.replyButtonText

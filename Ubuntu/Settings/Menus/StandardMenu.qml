@@ -27,9 +27,16 @@ ListItems.Empty {
     property alias text: label.text
     property alias iconColor: iconVisual.color
     property alias component: componentLoader.sourceComponent
+    property alias backColor: overlay.color
+
+    Rectangle {
+        id: overlay
+        color: "transparent"
+        visible: color !== "transparent"
+        anchors.fill: parent
+    }
 
     RowLayout {
-
         anchors {
             fill: parent
             leftMargin: menu.__contentsMargins
