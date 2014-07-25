@@ -47,8 +47,8 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.useFixture(url_dispatcher)
 
         # self.app.main_view.no_account_dialog.open_account_settings()
-        button = self.app.main_view. \
-            select_single('Button', objectName='openAccountButton')
+        button = self.app.main_view.select_single(
+            'Button', objectName='openAccountButton')
         self.app.main_view.pointing_device.click_object(button)
 
         def get_last_dispatch_url_call_parameter():
