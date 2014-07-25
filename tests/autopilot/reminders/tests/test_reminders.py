@@ -46,8 +46,9 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         url_dispatcher = fixture_setup.FakeURLDispatcher()
         self.useFixture(url_dispatcher)
 
-        #self.app.main_view.no_account_dialog.open_account_settings()
-        button = self.app.main_view.select_single('Button', objectName='openAccountButton')
+        # self.app.main_view.no_account_dialog.open_account_settings()
+        button = self.app.main_view. \
+            select_single('Button', objectName='openAccountButton')
         self.app.main_view.pointing_device.click_object(button)
 
         def get_last_dispatch_url_call_parameter():
@@ -60,6 +61,7 @@ class RemindersTestCaseWithoutAccount(tests.RemindersAppTestCase):
         self.assertThat(
             get_last_dispatch_url_call_parameter,
             Eventually(Equals('settings:///system/online-accounts')))
+
 
 class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
