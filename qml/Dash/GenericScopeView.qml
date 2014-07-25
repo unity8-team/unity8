@@ -33,6 +33,7 @@ FocusScope {
     property bool hasBackAction: false
     property bool enableHeightBehaviorOnNextCreation: false
     property var categoryView: categoryView
+    property var headersColumnBottom: (categoryView.headersColumnBottom + categoryView.y - categoryView.contentY) * categoryView.scale
 
     property var scopeStyle: ScopeStyle {
         style: scope ? scope.customizations : {}
@@ -121,6 +122,7 @@ FocusScope {
         forceNoClip: previewListView.open
 
         property string expandedCategoryId: ""
+        property var headersColumnBottom: (pageHeader.headersColumnBottom + pageHeader.y) * pageHeader.scale
 
         delegate: ListItems.Base {
             id: baseItem

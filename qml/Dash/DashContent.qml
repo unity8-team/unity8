@@ -80,6 +80,23 @@ Item {
         dashContentList.currentItem.theScope.closeScope(scope)
     }
 
+    Row {
+        Repeater {
+            model: dashContentList.count
+
+            Rectangle {
+                width: 10
+                height: 10
+                color: (index == dashContentList.currentIndex) ? "red" : "green"
+            }
+        }
+
+        y: dashContentList.currentItem.headersColumnBottom
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+        }
+    }
+
     Item {
         id: dashContentListHolder
 
@@ -135,6 +152,8 @@ Item {
                     readonly property string scopeId: scope.id
                     readonly property bool isCurrent: ListView.isCurrentItem
                     readonly property bool isLoaded: status == Loader.Ready
+
+                    property var headersColumnBottom: item.headersColumnBottom * item.scale
 
                     onLoaded: {
                         item.objectName = scope.id

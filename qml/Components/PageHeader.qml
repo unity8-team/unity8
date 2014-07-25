@@ -33,6 +33,7 @@ Item {
     property ListModel searchHistory: SearchHistoryModel
     property alias searchQuery: searchTextField.text
     property bool searchInProgress: false
+    property var headersColumnBottom: (headerContainer.y + headerContainer.headersColumnBottom - headerContainer.contentY) * headerContainer.scale
 
     property alias bottomItem: bottomContainer.children
 
@@ -126,6 +127,7 @@ Item {
 
         property bool showSearch: false
         property var popover: null
+        property var headersColumnBottom: (headersColumn.y + headersColumn.height) * headersColumn.scale
 
         Behavior on contentY {
             UbuntuNumberAnimation {
