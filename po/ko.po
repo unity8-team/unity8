@@ -7,51 +7,58 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-05-15 11:25+0200\n"
+"POT-Creation-Date: 2014-07-23 23:40+0200\n"
 "PO-Revision-Date: 2014-07-19 16:24+0000\n"
 "Last-Translator: MinSik CHO <Unknown>\n"
 "Language-Team: Korean <ko@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-20 06:18+0000\n"
+"X-Launchpad-Export-Date: 2014-07-25 07:55+0000\n"
 "X-Generator: Launchpad (build 17114)\n"
 
-#: ../src/app/qml/reminders.qml:196
+#: ../src/app/qml/reminders.qml:201
 msgid "Notes"
 msgstr "쪽지"
 
-#: ../src/app/qml/reminders.qml:225
+#: ../src/app/qml/reminders.qml:230
 msgid "Notebooks"
 msgstr "쪽지함"
 
-#: ../src/app/qml/reminders.qml:253
+#: ../src/app/qml/reminders.qml:258
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "알림"
 
-#: ../src/app/qml/reminders.qml:310
+#: ../src/app/qml/reminders.qml:278
+msgid ""
+"No note selected.\n"
+"Select a note to see it in detail."
+msgstr ""
+
+#: ../src/app/qml/reminders.qml:315
 msgid "No account available"
 msgstr "등록된 계정이 없습니다."
 
-#: ../src/app/qml/reminders.qml:311
+#: ../src/app/qml/reminders.qml:316
 msgid "Please setup an account in the system settings"
 msgstr "시스템 설정에서 계정을 설정해주세요."
 
-#: ../src/app/qml/reminders.qml:325
-msgid "Open account settings"
-msgstr "계정 설정 열기"
+#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/ui/AccountSelectorPage.qml:63
+msgid "Add account"
+msgstr ""
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:66
+#: ../src/app/qml/components/NotebooksDelegate.qml:68
 #, qt-format
 msgid "Last edited %1"
 msgstr "%1에 마지막 편집"
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:72
+#: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Shared"
 msgstr "공유됨"
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:72
+#: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Private"
 msgstr "개인"
 
@@ -59,12 +66,16 @@ msgstr "개인"
 msgid "Release to refresh"
 msgstr "새로 고치려면 놓으세요."
 
-#: ../src/app/qml/components/RemindersDelegate.qml:51
+#: ../src/app/qml/components/PulldownListView.qml:40
+msgid "Pull down to refresh"
+msgstr ""
+
+#: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
 msgstr "알림 지우기"
 
-#: ../src/app/qml/components/RemindersDelegate.qml:51
+#: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
 msgstr "완료된 것으로 표시"
 
@@ -76,69 +87,65 @@ msgstr "뒤로"
 msgid "Use it!"
 msgstr "사용하세요!"
 
-#: ../src/app/qml/ui/EditNoteView.qml:90
-#: ../src/app/qml/ui/EditNoteView.qml:102
+#: ../src/app/qml/ui/EditNoteView.qml:98
+#: ../src/app/qml/ui/EditNoteView.qml:110
 msgid "Untitled"
 msgstr "이름없음"
 
-#: ../src/app/qml/ui/NotePage.qml:33 ../src/app/qml/ui/NotesPage.qml:71
-msgid "Delete"
-msgstr "제거"
+#: ../src/app/qml/ui/NotePage.qml:34 ../src/app/qml/ui/NotesPage.qml:112
+msgid "Edit"
+msgstr "수정"
 
-#: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
+#: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 msgid "Edit reminder"
 msgstr "알림 수정"
 
-#: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
+#: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr "알림 설정"
 
-#: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
-msgid "Edit"
-msgstr "수정"
+#: ../src/app/qml/ui/NotePage.qml:57 ../src/app/qml/ui/NotesPage.qml:86
+msgid "Delete"
+msgstr "제거"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:38 ../src/app/qml/ui/NotesPage.qml:44
-#: ../src/app/qml/ui/RemindersPage.qml:33
-#: ../src/app/qml/ui/SearchNotesPage.qml:56
-msgid "Search"
-msgstr "검색"
-
-#: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
-msgid "Refresh"
-msgstr "새로 고침"
-
-#: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
-#: ../src/app/qml/ui/RemindersPage.qml:43
-msgid "Accounts"
-msgstr "계정"
-
-#: ../src/app/qml/ui/NotebooksPage.qml:65
+#: ../src/app/qml/ui/NotebooksPage.qml:41
 msgid "Add notebook"
 msgstr "쪽지함 추가"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:164
+#: ../src/app/qml/ui/NotebooksPage.qml:51 ../src/app/qml/ui/NotesPage.qml:55
+#: ../src/app/qml/ui/RemindersPage.qml:34
+#: ../src/app/qml/ui/SearchNotesPage.qml:58
+msgid "Search"
+msgstr "검색"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:61 ../src/app/qml/ui/NotesPage.qml:65
+msgid "Refresh"
+msgstr "새로 고침"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:71 ../src/app/qml/ui/NotesPage.qml:75
+#: ../src/app/qml/ui/RemindersPage.qml:44
+msgid "Accounts"
+msgstr "계정"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:173
 msgid "Cancel"
 msgstr "취소"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:172
+#: ../src/app/qml/ui/NotebooksPage.qml:182
 msgid "Save"
 msgstr "저장"
 
-#: ../src/app/qml/ui/NotesPage.qml:103
+#: ../src/app/qml/ui/NotesPage.qml:45
 msgid "Add note"
 msgstr "쪽지 추가"
 
-#: ../src/app/qml/ui/NotesPage.qml:173
+#: ../src/app/qml/ui/NotesPage.qml:185
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr "저장된 쪽지가 없습니다. \"쪽지 추가\" 버튼을 이용해 새 쪽지를 만드세요."
 
-#: ../src/app/qml/ui/RemindersPage.qml:52
-msgid "Add reminder"
-msgstr "알림 추가"
-
-#: ../src/app/qml/ui/RemindersPage.qml:113
+#: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
@@ -148,7 +155,7 @@ msgstr "설정된 알림이 없습니다. \"알림 추가\" 버튼을 누르거�
 msgid "Select date and time for the reminder:"
 msgstr "알림을 설정할 날짜와 시간을 고르세요:"
 
-#: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
+#: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
 msgstr "오늘"
 
@@ -164,72 +171,89 @@ msgstr "지난 주"
 msgid "Two weeks ago"
 msgstr "2주 전"
 
-#: ../src/plugin/Evernote/note.cpp:94
+#. TRANSLATORS: the first argument refers to a month name and the second to a year
+#: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: ../src/plugin/Evernote/note.cpp:227
+#: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
 msgstr "완료"
 
-#: ../src/plugin/Evernote/note.cpp:233
+#: ../src/plugin/Evernote/note.cpp:234
 msgid "No date"
 msgstr "날짜 없음"
 
-#: ../src/plugin/Evernote/note.cpp:236
+#: ../src/plugin/Evernote/note.cpp:237
 msgid "Overdue"
 msgstr "기한 지남"
 
-#: ../src/plugin/Evernote/note.cpp:242
+#: ../src/plugin/Evernote/note.cpp:243
 msgid "Tomorrow"
 msgstr "내일"
 
-#: ../src/plugin/Evernote/note.cpp:245
+#: ../src/plugin/Evernote/note.cpp:246
 msgid "Next week"
 msgstr "다음 주"
 
-#: ../src/plugin/Evernote/note.cpp:248
+#: ../src/plugin/Evernote/note.cpp:249
 msgid "In two weeks"
 msgstr "2주"
 
-#: ../src/plugin/Evernote/note.cpp:250
+#: ../src/plugin/Evernote/note.cpp:251
 msgid "Later"
 msgstr "나중에"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: ../src/plugin/Evernote/notebook.cpp:99
+#: ../src/plugin/Evernote/notebook.cpp:100
 msgid "today"
 msgstr "오늘"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: ../src/plugin/Evernote/notebook.cpp:103
+#: ../src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "어제"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: ../src/plugin/Evernote/notebook.cpp:107
+#: ../src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
 msgstr "지난 주"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: ../src/plugin/Evernote/notebook.cpp:111
+#: ../src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "2주 전"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: ../src/plugin/Evernote/notebook.cpp:115
+#: ../src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "%2 %1에 작성됨"
 
-#: ../src/plugin/Evernote/notesstore.cpp:217
+#: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "쪽지 '%1'를 새로 고치는데 오류 발생"
 
-#: ../src/plugin/Evernote/notesstore.cpp:368
+#: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "쪽지함 '%1'를 새로 고치는데 오류 발생"
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
+msgid "Authentication expired."
+msgstr ""
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
+msgid "Limit exceeded."
+msgstr ""
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
+msgid "Rate limit exceeded."
+msgstr ""
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
+msgid "Quota exceeded."
+msgstr ""

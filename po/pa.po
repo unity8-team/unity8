@@ -7,51 +7,58 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-05-15 11:25+0200\n"
+"POT-Creation-Date: 2014-07-23 23:40+0200\n"
 "PO-Revision-Date: 2014-07-22 05:08+0000\n"
 "Last-Translator: Gursharnjit_singh <ubuntuser13@gmail.com>\n"
 "Language-Team: Punjabi <pa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-23 07:02+0000\n"
+"X-Launchpad-Export-Date: 2014-07-25 07:55+0000\n"
 "X-Generator: Launchpad (build 17114)\n"
 
-#: ../src/app/qml/reminders.qml:196
+#: ../src/app/qml/reminders.qml:201
 msgid "Notes"
 msgstr "ਨੋਟ"
 
-#: ../src/app/qml/reminders.qml:225
+#: ../src/app/qml/reminders.qml:230
 msgid "Notebooks"
 msgstr "ਨੋਟਬੁੱਕ"
 
-#: ../src/app/qml/reminders.qml:253
+#: ../src/app/qml/reminders.qml:258
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "ਰੀਮਾਈਂਡਰ"
 
-#: ../src/app/qml/reminders.qml:310
+#: ../src/app/qml/reminders.qml:278
+msgid ""
+"No note selected.\n"
+"Select a note to see it in detail."
+msgstr ""
+
+#: ../src/app/qml/reminders.qml:315
 msgid "No account available"
 msgstr "ਕੋਈ ਖਾਤਾ ਮੌਜੂਦ ਨਹੀ"
 
-#: ../src/app/qml/reminders.qml:311
+#: ../src/app/qml/reminders.qml:316
 msgid "Please setup an account in the system settings"
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਸਿਸਟਮ ਸੈਟਿੰਗ ਵਿੱਚ ਇੱਕ ਖਾਤਾ ਕਾਇਮ ਕਰੋ"
 
-#: ../src/app/qml/reminders.qml:325
-msgid "Open account settings"
-msgstr "ਖਾਤਾ ਸੈਟਿੰਗ ਖੋਲ੍ਹੋ"
+#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/ui/AccountSelectorPage.qml:63
+msgid "Add account"
+msgstr ""
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:66
+#: ../src/app/qml/components/NotebooksDelegate.qml:68
 #, qt-format
 msgid "Last edited %1"
 msgstr "ਆਖਰੀ ਸੋਧ ਹੋਇਆ %1"
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:72
+#: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Shared"
 msgstr "ਸਾਂਝਾ"
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:72
+#: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Private"
 msgstr "ਨਿੱਜੀ"
 
@@ -59,12 +66,16 @@ msgstr "ਨਿੱਜੀ"
 msgid "Release to refresh"
 msgstr "ਤਾਜਾ ਕਰਨ ਲਈ ਜਾਰੀ"
 
-#: ../src/app/qml/components/RemindersDelegate.qml:51
+#: ../src/app/qml/components/PulldownListView.qml:40
+msgid "Pull down to refresh"
+msgstr ""
+
+#: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
 msgstr "ਰੀਮਾਈਂਡਰ ਮਿਟਾਓ"
 
-#: ../src/app/qml/components/RemindersDelegate.qml:51
+#: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
 msgstr "ਮੁੰਕਮਲ ਦੇ ਤੌਰ ਤੇ ਨਿਸ਼ਾਨ"
 
@@ -76,70 +87,66 @@ msgstr "ਪਿੱਛੇ"
 msgid "Use it!"
 msgstr "ਇਸ ਨੂੰ ਵਰਤੋਂ!"
 
-#: ../src/app/qml/ui/EditNoteView.qml:90
-#: ../src/app/qml/ui/EditNoteView.qml:102
+#: ../src/app/qml/ui/EditNoteView.qml:98
+#: ../src/app/qml/ui/EditNoteView.qml:110
 msgid "Untitled"
 msgstr "ਬਿਨਾਂ ਨਾਂ"
 
-#: ../src/app/qml/ui/NotePage.qml:33 ../src/app/qml/ui/NotesPage.qml:71
-msgid "Delete"
-msgstr "ਹਟਾਓ"
+#: ../src/app/qml/ui/NotePage.qml:34 ../src/app/qml/ui/NotesPage.qml:112
+msgid "Edit"
+msgstr "ਸੋਧ"
 
-#: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
+#: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 msgid "Edit reminder"
 msgstr "ਰੀਮਾਈਂਡਰ ਸੋਧ"
 
-#: ../src/app/qml/ui/NotePage.qml:42 ../src/app/qml/ui/NotesPage.qml:79
+#: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr "ਰੀਮਾਈਂਡਰ ਸੈੱਟ ਕਰੋ"
 
-#: ../src/app/qml/ui/NotePage.qml:54 ../src/app/qml/ui/NotesPage.qml:93
-msgid "Edit"
-msgstr "ਸੋਧ"
+#: ../src/app/qml/ui/NotePage.qml:57 ../src/app/qml/ui/NotesPage.qml:86
+msgid "Delete"
+msgstr "ਹਟਾਓ"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:38 ../src/app/qml/ui/NotesPage.qml:44
-#: ../src/app/qml/ui/RemindersPage.qml:33
-#: ../src/app/qml/ui/SearchNotesPage.qml:56
-msgid "Search"
-msgstr "ਖੋਜ"
-
-#: ../src/app/qml/ui/NotebooksPage.qml:46 ../src/app/qml/ui/NotesPage.qml:52
-msgid "Refresh"
-msgstr "ਤਾਜ਼ਾ"
-
-#: ../src/app/qml/ui/NotebooksPage.qml:56 ../src/app/qml/ui/NotesPage.qml:60
-#: ../src/app/qml/ui/RemindersPage.qml:43
-msgid "Accounts"
-msgstr "ਖਾਤੇ"
-
-#: ../src/app/qml/ui/NotebooksPage.qml:65
+#: ../src/app/qml/ui/NotebooksPage.qml:41
 msgid "Add notebook"
 msgstr "ਨੋਟਬੁੱਕ ਜੋੜੋ"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:164
+#: ../src/app/qml/ui/NotebooksPage.qml:51 ../src/app/qml/ui/NotesPage.qml:55
+#: ../src/app/qml/ui/RemindersPage.qml:34
+#: ../src/app/qml/ui/SearchNotesPage.qml:58
+msgid "Search"
+msgstr "ਖੋਜ"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:61 ../src/app/qml/ui/NotesPage.qml:65
+msgid "Refresh"
+msgstr "ਤਾਜ਼ਾ"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:71 ../src/app/qml/ui/NotesPage.qml:75
+#: ../src/app/qml/ui/RemindersPage.qml:44
+msgid "Accounts"
+msgstr "ਖਾਤੇ"
+
+#: ../src/app/qml/ui/NotebooksPage.qml:173
 msgid "Cancel"
 msgstr "ਰੱਦ"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:172
+#: ../src/app/qml/ui/NotebooksPage.qml:182
 msgid "Save"
 msgstr "ਸੰਭਾਲ੍ਹੋ"
 
-#: ../src/app/qml/ui/NotesPage.qml:103
+#: ../src/app/qml/ui/NotesPage.qml:45
 msgid "Add note"
 msgstr "ਨੋਟ  ਜੋੜੋ"
 
-#: ../src/app/qml/ui/NotesPage.qml:173
+#: ../src/app/qml/ui/NotesPage.qml:185
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
 "ਕੋਈ ਨੋਟ ਮੌਜੂਦ ਨਹੀ । ਤੁਸੀ \"ਨੋਟ ਜੋੜੋ\" ਬਟਨ ਦੀ ਵਰਤੋਂ ਨਾਲ ਨਵੇਂ ਨੋਟ ਰੱਚ ਸਕਦੇ ਹੋ ।"
 
-#: ../src/app/qml/ui/RemindersPage.qml:52
-msgid "Add reminder"
-msgstr "ਰੀਮਾਈਂਡਰ ਜੋੜੋ"
-
-#: ../src/app/qml/ui/RemindersPage.qml:113
+#: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
@@ -151,7 +158,7 @@ msgstr ""
 msgid "Select date and time for the reminder:"
 msgstr "ਰੀਮਾਈਂਡਰ ਲਈ ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਚੁਣੋ:"
 
-#: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:239
+#: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
 msgstr "ਅੱਜ"
 
@@ -167,72 +174,89 @@ msgstr "ਪਿਛਲੇ ਹਫ਼ਤੇ"
 msgid "Two weeks ago"
 msgstr "ਦੋ ਹਫ਼ਤੇ ਪਹਿਲਾਂ"
 
-#: ../src/plugin/Evernote/note.cpp:94
+#. TRANSLATORS: the first argument refers to a month name and the second to a year
+#: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: ../src/plugin/Evernote/note.cpp:227
+#: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
 msgstr "ਮੁਕੰਮਲ"
 
-#: ../src/plugin/Evernote/note.cpp:233
+#: ../src/plugin/Evernote/note.cpp:234
 msgid "No date"
 msgstr "ਕੋਈ ਤਾਰੀਖ ਨਹੀਂ"
 
-#: ../src/plugin/Evernote/note.cpp:236
+#: ../src/plugin/Evernote/note.cpp:237
 msgid "Overdue"
 msgstr "ਮਿਆਦ ਲੰਘੀ"
 
-#: ../src/plugin/Evernote/note.cpp:242
+#: ../src/plugin/Evernote/note.cpp:243
 msgid "Tomorrow"
 msgstr "ਭਲਕੇ"
 
-#: ../src/plugin/Evernote/note.cpp:245
+#: ../src/plugin/Evernote/note.cpp:246
 msgid "Next week"
 msgstr "ਅਗਲੇ ਹਫ਼ਤੇ"
 
-#: ../src/plugin/Evernote/note.cpp:248
+#: ../src/plugin/Evernote/note.cpp:249
 msgid "In two weeks"
 msgstr "ਦੋ ਹਫ਼ਤਿਅਾਂ ਵਿੱਚ"
 
-#: ../src/plugin/Evernote/note.cpp:250
+#: ../src/plugin/Evernote/note.cpp:251
 msgid "Later"
 msgstr "ਬਾਅਦ ਵਿੱਚ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: ../src/plugin/Evernote/notebook.cpp:99
+#: ../src/plugin/Evernote/notebook.cpp:100
 msgid "today"
 msgstr "ਅੱਜ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: ../src/plugin/Evernote/notebook.cpp:103
+#: ../src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "ਕੱਲ੍ਹ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: ../src/plugin/Evernote/notebook.cpp:107
+#: ../src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
 msgstr "ਪਿਛਲੇ ਹਫ਼ਤੇ"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: ../src/plugin/Evernote/notebook.cpp:111
+#: ../src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "ਦੋ ਹਫ਼ਤੇ ਪਹਿਲਾਂ"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: ../src/plugin/Evernote/notebook.cpp:115
+#: ../src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "ਉੱਪਰ %1 %2"
 
-#: ../src/plugin/Evernote/notesstore.cpp:217
+#: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "ਨੋਟ ਤਾਜ਼ਾ ਕਰਨ ਵੇਲੇ ਖਾਮੀ: %1"
 
-#: ../src/plugin/Evernote/notesstore.cpp:368
+#: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "ਨੋਟਬੁੱਕ ਤਾਜ਼ਾ ਕਰਨ ਵੇਲੇ ਖਾਮੀ: %1"
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
+msgid "Authentication expired."
+msgstr ""
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
+msgid "Limit exceeded."
+msgstr ""
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
+msgid "Rate limit exceeded."
+msgstr ""
+
+#: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
+msgid "Quota exceeded."
+msgstr ""
