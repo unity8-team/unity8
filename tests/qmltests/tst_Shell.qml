@@ -350,7 +350,7 @@ Item {
             tryCompareFunction(function() { return app.surface != null }, true);
 
             // Minimize the application we just launched
-            swipeFromLeftEdge(units.gu(27));
+            swipeFromLeftEdge(units.gu(26) + 1);
 
             waitUntilDashIsFocused();
 

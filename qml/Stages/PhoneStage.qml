@@ -54,8 +54,8 @@ Item {
             ApplicationManager.focusApplication("unity8-dash")
         }
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
-            // left edge drag released. units.gu(26) is a magic number given by design.
-            if (priv.leftDragAppId != "" && priv.oldInverseProgress < units.gu(26)) {
+            // left edge drag released. Minimum distance is given by design.
+            if (priv.leftDragAppId != "" && priv.oldInverseProgress < units.gu(22)) {
                 // not far enough, focus back to the previous app...
                 ApplicationManager.focusApplication(priv.leftDragAppId);
             }
