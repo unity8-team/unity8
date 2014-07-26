@@ -154,7 +154,7 @@ Item {
             }
 
             onApplicationAdded: {
-                if (greeter.shown) {
+                if (greeter.shown && appId != "unity8-dash") {
                     greeter.hide();
                 }
             }
