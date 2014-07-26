@@ -48,21 +48,15 @@ Rectangle {
 
     onInverseProgressChanged: {
         if (priv.oldInverseProgress == 0 && ApplicationManager.focusedApplicationId !== "unity8-dash") {
-            // left edge drag started when not the dash is focused
-            // focus the dash to put it into place, but keep the leftDragApp on top, following finger
+            // left edge drag started when an app (not the dash) is focused
             priv.leftDragAppId = ApplicationManager.focusedApplicationId;
-            spreadView.focusChanging = true;
-            ApplicationManager.focusApplication("unity8-dash")
         }
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
             // left edge drag released. Minimum distance is given by design.
-            if (priv.leftDragAppId != "" && priv.oldInverseProgress < units.gu(22)) {
-                // not far enough, focus back to the previous app...
-                ApplicationManager.focusApplication(priv.leftDragAppId);
+            if (priv.oldInverseProgress > units.gu(22)) {
+                ApplicationManager.focusApplication("unity8-dash");
             }
-            priv.leftDragAppId = "";
         }
-
         priv.oldInverseProgress = inverseProgress;
     }
 
@@ -102,9 +96,12 @@ Rectangle {
 
         property string focusedAppId: ApplicationManager.focusedApplicationId
         property var focusedApplication: ApplicationManager.findApplication(focusedAppId)
+        property var focusedAppDelegate: null
 
         property real oldInverseProgress: 0
         property string leftDragAppId: ""
+
+        onFocusedAppIdChanged: focusedAppDelegate = spreadRepeater.itemAt(0);
 
         function switchToApp(appId) {
             if (priv.focusedAppId) {
@@ -133,6 +130,8 @@ Rectangle {
         interactive: (spreadDragArea.status == DirectionalDragArea.Recognized || phase > 1) && draggedIndex == -1
         contentWidth: spreadRow.width - shift
         contentX: -shift
+
+        readonly property bool isActive: shiftedContentX > 0 || spreadDragArea.dragging
 
         // The flickable needs to fill the screen in order to get touch events all over.
         // However, we don't want to the user to be able to scroll back all the way. For
@@ -284,32 +283,33 @@ Rectangle {
                             && spreadView.shiftedContentX === 0 && root.interactive && index === 0
                     swipeToCloseEnabled: spreadView.interactive
                     maximizedAppTopMargin: root.maximizedAppTopMargin
-                    dropShadow: spreadView.shiftedContentX > 0 ||
-                                spreadDragArea.status == DirectionalDragArea.Undecided ||
-                                priv.leftDragAppId == model.appId
+                    dropShadow: spreadView.isActive ||
+                                priv.focusedAppDelegate.x !== 0
 
-                    z: {
-                        if (spreadView.focusChanging && index == 1 &&
-                                priv.leftDragAppId != model.appId) {
-                            return -1;
-                        }
-                        return behavioredIndex
-                    }
+                    readonly property bool isDash: model.appId == "unity8-dash"
+
+                    z: isDash && !spreadView.isActive ? -1 : behavioredIndex
+
                     x: {
-                       if (index == 0) { // focused app is always positioned at 0
+                        // focused app is always positioned at 0 except when following left edge drag
+                        if (index == 0) {
+                            if (!isDash && root.inverseProgress > 0) {
+                                return root.inverseProgress;
+                            }
                            return 0;
-                       }
-                       if (priv.leftDragAppId === model.appId) { // if we have a leftEdgeDrag, follow progress
-                           return root.inverseProgress;
-                       }
+                        }
+                        if (isDash && !spreadView.isActive && !spreadDragArea.dragging) {
+                           return 0;
+                        }
 
-                       // Otherwise line up for the spread
-                       return spreadView.width + (index - 1) * spreadView.tileDistance;
+                        // Otherwise line up for the spread
+                        return spreadView.width + (index - 1) * spreadView.tileDistance;
                     }
                     property real behavioredIndex: index
                     Behavior on behavioredIndex {
                         enabled: spreadView.closingIndex >= 0
                         UbuntuNumberAnimation {
+                            id: appXAnimation
                             onRunningChanged: {
                                 if (!running) {
                                     spreadView.closingIndex = -1;
@@ -319,8 +319,9 @@ Rectangle {
                     }
 
                     Behavior on x {
-                        enabled: root.spreadEnabled && /*index > 0 &&*/
-                                 (spreadView.focusChanging || priv.leftDragAppId == model.appId)
+                        enabled: root.spreadEnabled &&
+                                 !spreadView.isActive &&
+                                 !snapAnimation.running
                         UbuntuNumberAnimation {
                             duration: UbuntuAnimation.FastDuration
                             onRunningChanged: {
@@ -364,6 +365,10 @@ Rectangle {
                         }
                         return progress;
                     }
+
+                    // Hiding tiles when their progress is negative or reached the maximum
+                    visible: (progress >= 0 && progress < 1.7) ||
+                             (model.appId == "unity8-dash" && priv.focusedAppDelegate.x !== 0)
 
                     EasingCurve {
                         id: snappingCurve
