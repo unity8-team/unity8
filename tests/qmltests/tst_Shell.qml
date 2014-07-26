@@ -86,11 +86,10 @@ Item {
             hideIndicators();
         }
 
-        function killApps(apps) {
-            if (!apps) return;
-            while (apps.count > 1) {
-                var appIndex = apps.get(0).appId == "unity8-dash" ? 1 : 0
-                ApplicationManager.stopApplication(apps.get(appIndex).appId);
+        function killApps() {
+            while (ApplicationManager.count > 1) {
+                var appIndex = ApplicationManager.get(0).appId == "unity8-dash" ? 1 : 0
+                ApplicationManager.stopApplication(ApplicationManager.get(appIndex).appId);
             }
             compare(ApplicationManager.count, 1)
         }
