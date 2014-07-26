@@ -29,8 +29,7 @@ Rectangle {
     property real maximizedAppTopMargin
     property bool interactive
     property bool spreadEnabled: true // If false, animations and right edge will be disabled
-
-    property real inverseProgress: 0
+    property real inverseProgress: 0 // This is the progress for left edge drags, in pixels.
 
     // State information propagated to the outside
     readonly property bool locked: spreadView.phase == 2
