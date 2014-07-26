@@ -289,7 +289,13 @@ Rectangle {
                                 spreadDragArea.status == DirectionalDragArea.Undecided ||
                                 priv.leftDragAppId == model.appId
 
-                    z: behavioredIndex
+                    z: {
+                        if (spreadView.focusChanging && index == 1 &&
+                                priv.leftDragAppId != model.appId) {
+                            return -1;
+                        }
+                        return behavioredIndex
+                    }
                     x: {
                        if (index == 0) { // focused app is always positioned at 0
                            return 0;
@@ -297,6 +303,7 @@ Rectangle {
                        if (priv.leftDragAppId === model.appId) { // if we have a leftEdgeDrag, follow progress
                            return root.inverseProgress;
                        }
+
                        // Otherwise line up for the spread
                        return spreadView.width + (index - 1) * spreadView.tileDistance;
                     }
@@ -313,7 +320,7 @@ Rectangle {
                     }
 
                     Behavior on x {
-                        enabled: root.spreadEnabled && index > 0 &&
+                        enabled: root.spreadEnabled && /*index > 0 &&*/
                                  (spreadView.focusChanging || priv.leftDragAppId == model.appId)
                         UbuntuNumberAnimation {
                             duration: UbuntuAnimation.FastDuration
