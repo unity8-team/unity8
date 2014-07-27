@@ -136,7 +136,7 @@ SpreadDelegate {
                      !snapAnimation.running &&
                      model.appId !== "unity8-dash"
             UbuntuNumberAnimation {
-                duration: UbuntuAnimation.SlowDuration
+                duration: UbuntuAnimation.SlowFast
             }
         }
 
