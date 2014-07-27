@@ -140,7 +140,7 @@ SpreadDelegate {
                      model.appId !== "unity8-dash" &&
                      !spreadView.sideStageDragging
             UbuntuNumberAnimation {
-                duration: UbuntuAnimation.SlowFast
+                duration: root.dragOffset > 0 ? 1 : UbuntuAnimation.FastDuration
             }
         }
 

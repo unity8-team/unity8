@@ -514,11 +514,7 @@ Rectangle {
 
                     onClicked: {
                         if (spreadView.phase == 2) {
-                            if (ApplicationManager.focusedApplicationId == ApplicationManager.get(index).appId) {
-                                spreadView.snapTo(index);
-                            } else {
-                                ApplicationManager.requestFocusApplication(ApplicationManager.get(index).appId);
-                            }
+                            spreadView.snapTo(index);
                         }
                     }
 
