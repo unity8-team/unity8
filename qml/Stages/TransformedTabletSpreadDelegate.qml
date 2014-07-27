@@ -137,7 +137,8 @@ SpreadDelegate {
         Behavior on xTranslate {
             enabled: !spreadView.isActive &&
                      !snapAnimation.running &&
-                     model.appId !== "unity8-dash"
+                     model.appId !== "unity8-dash" &&
+                     !spreadView.sideStageDragging
             UbuntuNumberAnimation {
                 duration: UbuntuAnimation.SlowFast
             }
