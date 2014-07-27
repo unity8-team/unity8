@@ -450,7 +450,6 @@ Rectangle {
                     interactive: !spreadView.interactive && spreadView.phase === 0 && root.interactive
                     swipeToCloseEnabled: spreadView.interactive
                     maximizedAppTopMargin: root.maximizedAppTopMargin
-                    dropShadow: spreadView.contentX > 0 || spreadDragArea.status == DirectionalDragArea.Undecided
                     dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 ? root.inverseProgress : 0
 
                     readonly property bool isDash: model.appId == "unity8-dash"

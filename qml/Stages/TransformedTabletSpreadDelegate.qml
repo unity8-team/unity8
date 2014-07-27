@@ -49,6 +49,9 @@ SpreadDelegate {
 
     property int dragOffset: 0
 
+    dropShadow: spreadView.isActive ||
+                (active && model.stage == ApplicationInfoInterface.MainStage && priv.xTranslate != 0)
+
     onSelectedChanged: {
         if (selected) {
             priv.snapshot();
