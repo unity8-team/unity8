@@ -55,6 +55,7 @@ ApplicationManager::ApplicationManager(QObject *parent)
     buildListOfAvailableApplications();
 
     startApplication("unity8-dash");
+    focusApplication("unity8-dash");
 }
 
 ApplicationManager::~ApplicationManager()
@@ -355,7 +356,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setAppId("unity8-dash");
     application->setName("Unity 8 Mock Dash");
     application->setIcon(QUrl("unity8-dash"));
-    application->setStage(ApplicationInfo::SideStage);
+    application->setStage(ApplicationInfo::MainStage);
     generateQmlStrings(application);
     m_availableApplications.append(application);
 

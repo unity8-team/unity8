@@ -47,10 +47,6 @@ Rectangle {
     }
 
     onInverseProgressChanged: {
-        if (priv.oldInverseProgress == 0 && ApplicationManager.focusedApplicationId !== "unity8-dash") {
-            // left edge drag started when an app (not the dash) is focused
-            priv.leftDragAppId = ApplicationManager.focusedApplicationId;
-        }
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
             // left edge drag released. Minimum distance is given by design.
             if (priv.oldInverseProgress > units.gu(22)) {
@@ -99,7 +95,6 @@ Rectangle {
         property var focusedAppDelegate: null
 
         property real oldInverseProgress: 0
-        property string leftDragAppId: ""
 
         onFocusedAppIdChanged: focusedAppDelegate = spreadRepeater.itemAt(0);
 

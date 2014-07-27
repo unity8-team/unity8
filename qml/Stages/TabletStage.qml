@@ -21,10 +21,11 @@ import Unity.Application 0.1
 import Utils 0.1
 import "../Components"
 
-Item {
+Rectangle {
     id: root
     objectName: "stages"
     anchors.fill: parent
+    color: "black"
 
     // Controls to be set from outside
     property bool shown: false
@@ -32,9 +33,20 @@ Item {
     property int dragAreaWidth
     property real maximizedAppTopMargin
     property bool interactive
+    property real inverseProgress: 0 // This is the progress for left edge drags, in pixels.
 
     // State information propagated to the outside
     readonly property bool locked: spreadView.phase == 2
+
+    onInverseProgressChanged: {
+        if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
+            // left edge drag released. Minimum distance is given by design.
+            if (priv.oldInverseProgress > units.gu(22)) {
+                ApplicationManager.focusApplication("unity8-dash");
+            }
+        }
+        priv.oldInverseProgress = inverseProgress;
+    }
 
     QtObject {
         id: priv
@@ -48,6 +60,8 @@ Item {
         // For convenience, keep properties of the first two apps in the model
         property string appId0
         property string appId1
+
+        property int oldInverseProgress: 0
 
         onFocusedAppIdChanged: {
             if (priv.focusedAppId.length > 0) {
@@ -130,6 +144,8 @@ Item {
         property int tileDistance: units.gu(20)
         property int sideStageWidth: units.gu(40)
         property bool sideStageVisible: priv.sideStageAppId
+
+        readonly property bool isActive: contentX > 0 || spreadDragArea.dragging
 
         // Phase of the animation:
         // 0: Starting from right edge, a new app (index 1) comes in from the right
@@ -331,9 +347,8 @@ Item {
             }
         }
 
-        Rectangle {
+        Item {
             id: spreadRow
-            color: "black"
             x: spreadView.contentX
             height: root.height
             width: spreadView.width + Math.max(spreadView.width, ApplicationManager.count * spreadView.tileDistance)
@@ -427,8 +442,6 @@ Item {
                     id: spreadTile
                     height: spreadView.height
                     width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
-                    x: spreadView.width
-                    z: spreadView.indexToZIndex(index)
                     active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
                     zIndex: z
                     selected: spreadView.selectedIndex == index
@@ -438,6 +451,19 @@ Item {
                     swipeToCloseEnabled: spreadView.interactive
                     maximizedAppTopMargin: root.maximizedAppTopMargin
                     dropShadow: spreadView.contentX > 0 || spreadDragArea.status == DirectionalDragArea.Undecided
+                    dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 ? root.inverseProgress : 0
+
+                    readonly property bool isDash: model.appId == "unity8-dash"
+
+                    z: {
+                        if (!spreadView.isActive && isDash && !active) {
+                            return -1;
+                        }
+
+                        return spreadView.indexToZIndex(index)
+                    }
+
+                    x: spreadView.width
 
                     property real behavioredZIndex: zIndex
                     Behavior on behavioredZIndex {
