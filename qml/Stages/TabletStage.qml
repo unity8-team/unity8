@@ -125,20 +125,22 @@ Rectangle {
             if (spreadView.phase == 2) {
                 spreadView.snapTo(ApplicationManager.count - 1);
             } else {
+                spreadView.phase = 0;
+                spreadView.contentX = -spreadView.shift;
                 ApplicationManager.focusApplication(appId);
             }
         }
 
         onApplicationRemoved: {
             if (priv.mainStageAppId == appId) {
-                priv.mainStageAppId = "";
+                ApplicationManager.focusApplication("unity8-dash")
             }
             if (priv.sideStageAppId == appId) {
                 priv.sideStageAppId = "";
             }
             if (ApplicationManager.count == 0) {
                 spreadView.phase = 0;
-                spreadView.contentX = 0;
+                spreadView.contentX = -spreadView.shift;
             }
         }
     }
@@ -146,14 +148,24 @@ Rectangle {
     Flickable {
         id: spreadView
         anchors.fill: parent
-        contentWidth: spreadRow.width
         interactive: (spreadDragArea.status == DirectionalDragArea.Recognized || phase > 1) && draggedIndex == -1
+        contentWidth: spreadRow.width - shift
+        contentX: -shift
 
         property int tileDistance: units.gu(20)
         property int sideStageWidth: units.gu(40)
         property bool sideStageVisible: priv.sideStageAppId
 
-        readonly property bool isActive: contentX > 0 || spreadDragArea.dragging
+        readonly property bool isActive: shiftedContentX > 0 || spreadDragArea.dragging
+        onIsActiveChanged: print("spreadView isActive changed", isActive)
+
+        // The flickable needs to fill the screen in order to get touch events all over.
+        // However, we don't want to the user to be able to scroll back all the way. For
+        // that, the beginning of the gesture starts with a negative value for contentX
+        // so the flickable wants to pull it into the view already. "shift" tunes the
+        // distance where to "lock" the content.
+        readonly property real shift: width / 2
+        readonly property real shiftedContentX: contentX + shift
 
         // Phase of the animation:
         // 0: Starting from right edge, a new app (index 1) comes in from the right
@@ -248,31 +260,31 @@ Rectangle {
             return "empty";
         }
 
-        onContentXChanged: {
-            if (spreadView.phase == 0 && spreadView.contentX > spreadView.width * spreadView.positionMarker2) {
+        onShiftedContentXChanged: {
+            if (spreadView.phase == 0 && spreadView.shiftedContentX > spreadView.width * spreadView.positionMarker2) {
                 spreadView.phase = 1;
-            } else if (spreadView.phase == 1 && spreadView.contentX > spreadView.width * spreadView.positionMarker4) {
+            } else if (spreadView.phase == 1 && spreadView.shiftedContentX > spreadView.width * spreadView.positionMarker4) {
                 spreadView.phase = 2;
-            } else if (spreadView.phase == 1 && spreadView.contentX < spreadView.width * spreadView.positionMarker2) {
+            } else if (spreadView.phase == 1 && spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2) {
                 spreadView.phase = 0;
             }
         }
 
         function snap() {
-            if (contentX < phase0Width) {
-                snapAnimation.targetContentX = 0;
+            if (shiftedContentX < phase0Width) {
+                snapAnimation.targetContentX = -shift;
                 snapAnimation.start();
-            } else if (contentX < phase1Width) {
+            } else if (shiftedContentX < phase1Width) {
                 snapTo(1);
             } else {
                 // Add 1 pixel to make sure we definitely hit positionMarker4 even with rounding errors of the animation.
-                snapAnimation.targetContentX = spreadView.width * spreadView.positionMarker4 + 1;
+                snapAnimation.targetContentX = spreadView.width * spreadView.positionMarker4 + 1 - shift;
                 snapAnimation.start();
             }
         }
         function snapTo(index) {
             spreadView.selectedIndex = index;
-            snapAnimation.targetContentX = 0;
+            snapAnimation.targetContentX = -shift;
             snapAnimation.start();
         }
 
@@ -333,7 +345,7 @@ Rectangle {
 
         SequentialAnimation {
             id: snapAnimation
-            property int targetContentX: 0
+            property int targetContentX: -spreadView.shift
 
             UbuntuNumberAnimation {
                 target: spreadView
@@ -349,7 +361,7 @@ Rectangle {
                         spreadView.selectedIndex = -1;
                         ApplicationManager.focusApplication(ApplicationManager.get(newIndex).appId);
                         spreadView.phase = 0;
-                        spreadView.contentX = 0;
+                        spreadView.contentX = -spreadView.shift;
                     }
                 }
             }
@@ -403,7 +415,7 @@ Rectangle {
                 MouseArea {
                     id: sideStageDragHandleMouseArea
                     anchors.fill: parent
-                    enabled: spreadView.contentX == 0
+                    enabled: spreadView.shiftedContentX == 0
                     property int startX
                     property var gesturePoints: new Array()
 
@@ -451,7 +463,7 @@ Rectangle {
                     height: spreadView.height
                     width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
                     active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
-                    zIndex: z
+                    zIndex: spreadView.indexToZIndex(index)
                     selected: spreadView.selectedIndex == index
                     otherSelected: spreadView.selectedIndex >= 0 && !selected
                     isInSideStage: priv.sideStageAppId == model.appId
@@ -462,14 +474,13 @@ Rectangle {
 
                     readonly property bool isDash: model.appId == "unity8-dash"
 
-                    z: {
-                        if (!spreadView.isActive && isDash && !active) {
-                            return -1;
-                        }
-
-                        return spreadView.indexToZIndex(index)
+                    // FIXME: A regular binding doesn't update any more after closing an app.
+                    // Using a Binding for now.
+                    Binding {
+                        target: spreadTile
+                        property: "z"
+                        value: (!spreadView.isActive && isDash && !active) ? -1 : spreadTile.zIndex
                     }
-
                     x: spreadView.width
 
                     property real behavioredZIndex: zIndex
@@ -491,7 +502,7 @@ Rectangle {
                     }
 
                     progress: {
-                        var tileProgress = (spreadView.contentX - behavioredZIndex * spreadView.tileDistance) / spreadView.width;
+                        var tileProgress = (spreadView.shiftedContentX - behavioredZIndex * spreadView.tileDistance) / spreadView.width;
                         // Some tiles (nextInStack, active) need to move directly from the beginning, normalize progress to immediately start at 0
                         if ((index == spreadView.nextInStack && spreadView.phase < 2) || (active && spreadView.phase < 1)) {
                             tileProgress += behavioredZIndex * spreadView.tileDistance / spreadView.width;
@@ -547,12 +558,12 @@ Rectangle {
         onTouchXChanged: {
             if (!dragging) {
                 spreadView.phase = 0;
-                spreadView.contentX = 0;
+                spreadView.contentX = -spreadView.shift;
             }
 
-            if (attachedToView) {
-                spreadView.contentX = -touchX + spreadDragArea.width;
-                if (spreadView.contentX > spreadView.phase0Width + spreadView.phase1Width / 2) {
+            if (dragging && attachedToView) {
+                spreadView.contentX = -touchX + spreadDragArea.width - spreadView.shift;
+                if (spreadView.shiftedContentX > spreadView.phase0Width + spreadView.phase1Width / 2) {
                     attachedToView = false;
                     spreadView.snap();
                 }
@@ -577,14 +588,14 @@ Rectangle {
             var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
             gesturePoints = [];
 
-            if (oneWayFlick && spreadView.contentX < spreadView.positionMarker1 * spreadView.width) {
+            if (oneWayFlick && spreadView.shiftedContentX < spreadView.positionMarker1 * spreadView.width) {
                 // If it was a short one-way movement, do the Alt+Tab switch
                 // no matter if we didn't cross positionMarker1 yet.
                 spreadView.snapTo(spreadView.nextInStack);
             } else if (!dragging && attachedToView) {
-                if (spreadView.contentX < spreadView.width * spreadView.positionMarker1) {
+                if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker1) {
                     spreadView.snap();
-                } else if (spreadView.contentX < spreadView.width * spreadView.positionMarker2) {
+                } else if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2) {
                     spreadView.snapTo(spreadView.nextInStack);
                 } else {
                     // otherwise snap to the closest snap position we can find
