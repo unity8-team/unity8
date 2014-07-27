@@ -134,7 +134,6 @@ void ApplicationManager::add(ApplicationInfo *application) {
     Q_EMIT applicationAdded(application->appId());
     Q_EMIT countChanged();
     if (count() == 1) Q_EMIT emptyChanged(isEmpty()); // was empty but not anymore
-    Q_EMIT focusRequested(application->appId());
 
     connect(application, &ApplicationInfo::surfaceChanged, this, [application, this]() {
         QModelIndex appIndex = findIndex(application);

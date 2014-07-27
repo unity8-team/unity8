@@ -63,7 +63,7 @@ Rectangle {
             if (spreadView.phase > 0) {
                 spreadView.snapTo(priv.indexOf(appId));
             } else {
-                priv.switchToApp(appId);
+                ApplicationManager.focusApplication(appId);
             }
         }
 
@@ -73,7 +73,7 @@ Rectangle {
             } else {
                 spreadView.phase = 0;
                 spreadView.contentX = -spreadView.shift;
-                priv.switchToApp(appId);
+                ApplicationManager.focusApplication(appId);
             }
         }
 
@@ -97,15 +97,6 @@ Rectangle {
         property real oldInverseProgress: 0
 
         onFocusedAppIdChanged: focusedAppDelegate = spreadRepeater.itemAt(0);
-
-        function switchToApp(appId) {
-            if (priv.focusedAppId) {
-                spreadView.focusChanging = true;
-                ApplicationManager.focusApplication(appId);
-            } else {
-                ApplicationManager.focusApplication(appId);
-            }
-        }
 
         function indexOf(appId) {
             for (var i = 0; i < ApplicationManager.count; i++) {

@@ -121,6 +121,14 @@ Rectangle {
             }
         }
 
+        onApplicationAdded: {
+            if (spreadView.phase == 2) {
+                spreadView.snapTo(ApplicationManager.count - 1);
+            } else {
+                ApplicationManager.focusApplication(appId);
+            }
+        }
+
         onApplicationRemoved: {
             if (priv.mainStageAppId == appId) {
                 priv.mainStageAppId = "";
