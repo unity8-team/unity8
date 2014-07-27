@@ -204,6 +204,12 @@ Rectangle {
             }
         }
 
+        // In case the ApplicationManager already holds an app when starting up we're missing animations
+        // Make sure we end up in the same state
+        Component.onCompleted: {
+            spreadView.contentX = -spreadView.shift
+        }
+
         property int nextInStack: {
             switch (state) {
             case "main":
@@ -448,7 +454,7 @@ Rectangle {
 
                     onRunningChanged: {
                         if (!running) {
-                            sideStageDragHandle.dragging = false;;
+                            sideStageDragHandle.dragging = false;
                         }
                     }
                 }
