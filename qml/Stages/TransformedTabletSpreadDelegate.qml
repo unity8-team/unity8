@@ -172,7 +172,7 @@ SpreadDelegate {
                 }
                 newTranslate += root.dragOffset;
             }
-            if (spreadView.contentX == 0 && model.appId == "unity8-dash" && !root.active) {
+            if (!spreadView.isActive && model.appId == "unity8-dash" && !root.active) {
                 newTranslate -= root.width;
             }
 
