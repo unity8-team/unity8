@@ -319,8 +319,9 @@ Item {
         }
 
         function waitUntilApplicationWindowIsFullyVisible() {
-            var spreadView = findChild(shell, "surfaceContainer0");
-            tryCompareFunction(function() { return spreadView.surface !== null; }, true);
+            var appDelegate = findChild(shell, "appDelegate0")
+            var surfaceContainer = findChild(appDelegate, "surfaceContainer");
+            tryCompareFunction(function() { return surfaceContainer.surface !== null; }, true);
         }
 
         function waitUntilDashIsFocused() {
@@ -368,8 +369,9 @@ Item {
 
             showIndicators();
 
+            var oldCount = ApplicationManager.count;
             ApplicationManager.startApplication("camera-app");
-            tryCompare(ApplicationManager, "count", 1);
+            tryCompare(ApplicationManager, "count", oldCount + 1);
 
             tryCompare(indicators, "fullyClosed", true);
         }
