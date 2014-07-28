@@ -186,7 +186,7 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "interactive"
-                value: !greeter.shown && !lockscreen.shown && panel.indicators.fullyClosed
+                value: !greeter.shown && !lockscreen.shown && panel.indicators.fullyClosed && launcher.progress == 0
             }
             Binding {
                 target: applicationsDisplayLoader.item
