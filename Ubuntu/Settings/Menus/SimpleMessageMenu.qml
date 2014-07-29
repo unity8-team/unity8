@@ -86,7 +86,7 @@ ListItem.Empty {
         }
     }
 
-    onClicked: if (!footer || selected) messageHeader.twiddle();
+    onTriggered: if (!footer || !selected) messageHeader.shakeIcon();
 
     states: State {
         name: "expanded"

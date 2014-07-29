@@ -35,7 +35,7 @@ Item {
 
     implicitHeight: layout.height
 
-    function twiddle() {
+    function shakeIcon() {
         ani.restart();
     }
 
