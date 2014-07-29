@@ -204,7 +204,7 @@ ListView {
 
                     // Styling properties
                     property color color: Theme.palette.selected.backgroundText
-                    property color todayColor: "#DD4814"
+                    property color todayColor: Theme.palette.selected.foreground
                     property string fontSize: "large"
                     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
                     property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)

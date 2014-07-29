@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
+import QtQuick.Layouts 1.1
 
 ListItem.Empty {
     id: menu
@@ -35,7 +36,7 @@ ListItem.Empty {
     implicitHeight: column.height + units.gu(2)
     Behavior on implicitHeight { UbuntuNumberAnimation {} }
 
-    Column {
+    ColumnLayout {
         id: column
         anchors {
             left: parent.left
@@ -47,17 +48,15 @@ ListItem.Empty {
         }
         height: running ? trackRow.height : playerRow.height
 
-        Row {
+        RowLayout {
             objectName: "player"
             id: playerRow
             spacing: menu.__contentsMargins
             visible: !running
 
-            Behavior on opacity { UbuntuNumberAnimation {} }
-
             UbuntuShape {
-                width: units.gu(5)
-                height: width
+                Layout.preferredHeight: units.gu(5)
+                Layout.preferredWidth: units.gu(5)
 
                 image: Image {
                     id: playerIcon
@@ -70,38 +69,42 @@ ListItem.Empty {
             }
         }
 
-        Row {
+        RowLayout {
             objectName: "albumArt"
             id: trackRow
             width: menu.width
             spacing: units.gu(2)
             visible: running
 
-            Behavior on opacity { UbuntuNumberAnimation {} }
-
             UbuntuShape {
-                width: units.gu(10)
-                height: width
+                Layout.preferredHeight: units.gu(10)
+                Layout.preferredWidth: units.gu(10)
 
                 image: Image {
                     id: albumArtImage
                 }
             }
 
-            Column {
-                spacing: units.gu(1)
+            ColumnLayout {
                 anchors.verticalCenter: parent.verticalCenter
 
                 Label {
                     id: songLabel
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
                 }
 
                 Label {
                     id: artistLabel
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
                 }
 
                 Label {
                     id: albumLabel
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    fontSize: "small"
                 }
             }
         }

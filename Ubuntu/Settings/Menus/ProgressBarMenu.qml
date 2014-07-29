@@ -17,17 +17,25 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
-    property alias indeterminate: progressBar.indeterminate
-    property alias minimumValue: progressBar.minimumValue
-    property alias maximumValue: progressBar.maximumValue
-    property alias value: progressBar.value
+StandardMenu {
+    id: menu
+    property bool indeterminate: false
+    property real minimumValue: 0.0
+    property real maximumValue: 1.0
+    property real value: 0.0
 
-    control: ProgressBar {
-        id: progressBar
-        width: units.gu(20)
+    component: Component {
+        ProgressBar {
+            id: progressBar
+            width: units.gu(20)
+
+            indeterminate: menu.indeterminate
+            minimumValue: menu.minimumValue
+            maximumValue: menu.maximumValue
+            value: menu.value
+        }
     }
 }

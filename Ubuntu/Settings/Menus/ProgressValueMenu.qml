@@ -19,18 +19,19 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
+StandardMenu {
     id: menuItem
 
     property int value : 0.0
 
-    control: Label {
-        id: progress
-        objectName: "progress"
+    component: Component {
+        Label {
+            id: progress
+            objectName: "progress"
 
-        text: menuItem.value + " %"
-        fontSize: "medium"
+            text: menuItem.value + " %"
+            fontSize: "medium"
+        }
     }
 }

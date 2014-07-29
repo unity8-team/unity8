@@ -33,7 +33,7 @@ Item {
 
     signal iconClicked()
 
-    implicitHeight: layout.implicitHeight
+    implicitHeight: layout.height
 
     function twiddle() {
         ani.restart();
@@ -44,6 +44,7 @@ Item {
         anchors {
             left: parent.left
             right: parent.right
+            rightMargin: units.gu(4)
         }
         spacing: units.gu(2)
 
@@ -69,6 +70,8 @@ Item {
                 fontSize: "medium"
 
                 Layout.fillWidth: true
+                // calculate width with regard to the time's incursion into this layout's space.
+                Layout.maximumWidth: parent.width - timeText.width + units.gu(3)
             }
             spacing: units.gu(0.5)
 
@@ -84,37 +87,40 @@ Item {
                 Layout.fillWidth: true
             }
         }
+    }
 
-        ColumnLayout {
-            Label {
-                id: timeText
-                objectName: "subtitle"
-                elide: Text.ElideRight
-                fontSize: "small"
-                maximumLineCount: 1
-                horizontalAlignment: Text.AlignRight
+    ColumnLayout {
+        id: timeIcon
+        anchors.right: parent.right
+
+        Label {
+            id: timeText
+            objectName: "subtitle"
+            elide: Text.ElideRight
+            fontSize: "x-small"
+            maximumLineCount: 1
+            horizontalAlignment: Text.AlignRight
+        }
+        spacing: units.gu(0.5)
+
+        Image {
+            id: iconImage
+            objectName: "appIcon"
+            Layout.preferredHeight: units.gu(3)
+            Layout.preferredWidth: units.gu(3)
+            Layout.alignment: Qt.AlignRight
+
+            fillMode: Image.PreserveAspectFit
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: messageHeader.iconClicked()
             }
-            spacing: units.gu(0.5)
 
-            Image {
-                id: iconImage
-                objectName: "appIcon"
-                Layout.preferredHeight: units.gu(3)
-                Layout.preferredWidth: units.gu(3)
-                Layout.alignment: Qt.AlignRight
-
-                fillMode: Image.PreserveAspectFit
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: messageHeader.iconClicked()
-                }
-
-                SequentialAnimation {
-                    id: ani
-                    PropertyAnimation { target: iconImage; property: "rotation"; duration: 50; to: -20 }
-                    SpringAnimation { target: iconImage; property: "rotation"; from: -20; to: 0; mass: 0.5; spring: 12; damping: 0.1 }
-                }
+            SequentialAnimation {
+                id: ani
+                PropertyAnimation { target: iconImage; property: "rotation"; duration: 50; to: -20 }
+                SpringAnimation { target: iconImage; property: "rotation"; from: -20; to: 0; mass: 0.5; spring: 15; damping: 0.1 }
             }
         }
     }

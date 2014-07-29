@@ -19,50 +19,50 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
+StandardMenu {
     id: menu
 
     property bool checked: false
-    iconFrame: false
 
-    control: Switch {
-        id: switcher
-        objectName: "switcher"
-        property bool enableCheckConnection: true
+    component: Component {
+        Switch {
+            id: switcher
+            objectName: "switcher"
+            property bool enableCheckConnection: true
 
-        Component.onCompleted: {
-            checked = menu.checked;
-        }
-
-        // FIXME : should use Checkbox.toggled signal
-        // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
-        onCheckedChanged: {
-            if (!enableCheckConnection) {
-                return;
+            Component.onCompleted: {
+                checked = menu.checked;
             }
-            var oldEnable = enableCheckConnection;
-            enableCheckConnection = false;
 
-            menu.checked = checked;
-            menu.triggered(menu.checked);
-
-            enableCheckConnection = oldEnable;
-        }
-
-        Connections {
-            target: menu
+            // FIXME : should use Checkbox.toggled signal
+            // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
             onCheckedChanged: {
-                if (!switcher.enableCheckConnection) {
+                if (!enableCheckConnection) {
                     return;
                 }
-                var oldEnable = switcher.enableCheckConnection;
-                switcher.enableCheckConnection = false;
+                var oldEnable = enableCheckConnection;
+                enableCheckConnection = false;
 
-                switcher.checked = menu.checked;
+                menu.checked = checked;
+                menu.triggered(menu.checked);
 
-                switcher.enableCheckConnection = oldEnable;
+                enableCheckConnection = oldEnable;
+            }
+
+            Connections {
+                target: menu
+                onCheckedChanged: {
+                    if (!switcher.enableCheckConnection) {
+                        return;
+                    }
+                    var oldEnable = switcher.enableCheckConnection;
+                    switcher.enableCheckConnection = false;
+
+                    switcher.checked = menu.checked;
+
+                    switcher.enableCheckConnection = oldEnable;
+                }
             }
         }
     }

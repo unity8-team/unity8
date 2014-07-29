@@ -39,39 +39,27 @@ ListItem.Empty {
 
     RowLayout {
         id: layout
-        anchors {
-            top: parent.top
-            topMargin: units.gu(1)
-            left: parent.left
-            right: parent.right
-        }
+        anchors.centerIn: parent
         spacing: units.gu(3)
 
-        Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+        USC.IconVisual {
+            objectName: "previousButton"
 
-            USC.IconVisual {
-                objectName: "previousButton"
+            Layout.preferredWidth: units.gu(5)
+            Layout.preferredHeight: units.gu(5)
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                height: units.gu(5)
-                width: units.gu(5)
+            source: "image://theme/media-skip-backward"
+            color: {
+                if (!enabled)
+                    return Theme.palette.normal.backgroundText;
+                return prevMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+            }
+            enabled: canGoPrevious
 
-                source: "image://theme/media-skip-backward"
-                color: {
-                    if (!enabled)
-                        return Theme.palette.normal.backgroundText;
-                    return prevMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
-                }
-                enabled: canGoPrevious
-
-                MouseArea {
-                    id: prevMA
-                    anchors.fill: parent
-                    onClicked: menu.previous()
-                }
+            MouseArea {
+                id: prevMA
+                anchors.fill: parent
+                onClicked: menu.previous()
             }
         }
 
@@ -96,31 +84,24 @@ ListItem.Empty {
             }
         }
 
-        Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+        USC.IconVisual {
+            objectName: "nextButton"
 
-            USC.IconVisual {
-                objectName: "nextButton"
+            Layout.preferredWidth: units.gu(5)
+            Layout.preferredHeight: units.gu(5)
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                height: units.gu(5)
-                width: units.gu(5)
+            source: "image://theme/media-skip-forward"
+            color: {
+                if (!enabled)
+                    return Theme.palette.normal.backgroundText;
+                return nextMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+            }
+            enabled: canGoNext
 
-                source: "image://theme/media-skip-forward"
-                color: {
-                    if (!enabled)
-                        return Theme.palette.normal.backgroundText;
-                    return nextMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
-                }
-                enabled: canGoNext
-
-                MouseArea {
-                    id: nextMA
-                    anchors.fill: parent
-                    onClicked: menu.next()
-                }
+            MouseArea {
+                id: nextMA
+                anchors.fill: parent
+                onClicked: menu.next()
             }
         }
     }

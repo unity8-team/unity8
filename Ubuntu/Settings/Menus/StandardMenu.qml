@@ -22,11 +22,13 @@ import QtQuick.Layouts 1.1
 
 ListItems.Empty {
     id: menu
+    enabled: false
 
     property alias iconSource: iconVisual.source
     property alias text: label.text
     property alias iconColor: iconVisual.color
     property alias component: componentLoader.sourceComponent
+    property alias foregroundColor: label.color
     property alias backColor: overlay.color
 
     Rectangle {
@@ -63,11 +65,15 @@ ListItems.Empty {
 
             elide: Text.ElideRight
             maximumLineCount: 1
-            opacity: label.enabled ? 1.0 : 0.5
         }
 
         Loader {
             id: componentLoader
+            asynchronous: false
+            visible: status == Loader.Ready
+
+            Layout.preferredHeight: item ? item.height : 0
+            Layout.preferredWidth: item ? item.width : 0
         }
     }
 }

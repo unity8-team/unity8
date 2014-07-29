@@ -22,41 +22,37 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
-ListItem.Standard {
+StandardMenu {
     id: menu
 
-    property alias count: label.text
+    property string count: "0"
 
     signal dismissed()
 
     iconSource: Qt.resolvedUrl("artwork/default_app.svg")
 
-    control: UbuntuShape {
-        height: label.height + units.gu(2)
-        width: label.width + units.gu(2)
-        color: Theme.palette.normal.backgroundText
-        radius: "medium"
+    component: Component {
+        UbuntuShape {
+            height: label.implicitHeight + units.gu(2)
+            width: label.implicitWidth + units.gu(2)
 
-        Label {
-            id: label
-            objectName: "messageCount"
+            color: Theme.palette.normal.backgroundText
+            radius: "medium"
 
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                verticalCenter: parent.verticalCenter
-            }
-            horizontalAlignment: Text.AlignRight
-            font.weight: Font.DemiBold
-            fontSize: "medium"
-            text: "0"
+            Label {
+                id: label
+                objectName: "messageCount"
 
-            color: Theme.palette.normal.foregroundText
-        }
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    verticalCenter: parent.verticalCenter
+                }
+                horizontalAlignment: Text.AlignRight
+                font.weight: Font.DemiBold
+                fontSize: "medium"
+                text: menu.count
 
-        Connections {
-            target: menu.__mouseArea
-            onClicked: {
-                menu.clicked();
+                color: Theme.palette.normal.foregroundText
             }
         }
     }

@@ -39,7 +39,7 @@ ListItem.Empty {
 
     property alias footer: footerLoader.sourceComponent
 
-    implicitHeight: layout.height
+    implicitHeight: layout.height + units.gu(3)
 
     Rectangle {
         id: background
@@ -54,15 +54,13 @@ ListItem.Empty {
         id: layout
 
         anchors {
-            top: parent.top
-            topMargin: units.gu(1)
             left: parent.left
             right: parent.right
             leftMargin: units.gu(2)
             rightMargin: units.gu(2)
+            verticalCenter: parent.verticalCenter
         }
-        height: implicitHeight + units.gu(2)
-        spacing: units.gu(1)
+        spacing: units.gu(1.5)
 
         USC.MessageHeader {
             id: messageHeader

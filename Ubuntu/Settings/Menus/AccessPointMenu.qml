@@ -18,7 +18,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 
 ListItem.Empty {
@@ -35,7 +35,7 @@ ListItem.Empty {
         id: iconSignal
         objectName: "iconSignal"
 
-        color: active ? Theme.palette.selected.foreground : Theme.palette.selected.backgroundText
+        color: active ? UbuntuColors.green : Theme.palette.selected.backgroundText
 
         width: height
         height: Math.min(units.gu(3), parent.height - units.gu(1))
@@ -73,7 +73,7 @@ ListItem.Empty {
             rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
-        color: active ? Theme.palette.selected.foreground : Theme.palette.selected.backgroundText
+        color: active ? UbuntuColors.green : Theme.palette.selected.backgroundText
     }
 
     Icon {
@@ -82,7 +82,7 @@ ListItem.Empty {
         visible: secure
         name: "network-secure"
 
-        color: active ? Theme.palette.selected.foreground : Theme.palette.selected.backgroundText
+        color: active ? UbuntuColors.green : Theme.palette.selected.backgroundText
 
         width: height
         height: Math.min(units.gu(3), parent.height - units.gu(1))

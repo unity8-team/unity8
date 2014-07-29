@@ -15,7 +15,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 import QtQuick.Layouts 1.1
 
@@ -78,6 +78,7 @@ ListItem.Empty {
                 objectName: "progress"
                 visible: menu.active
                 value: 0.0
+                showProgressPercentage: false
 
                 Layout.preferredHeight: units.gu(1)
                 Layout.fillWidth: true
