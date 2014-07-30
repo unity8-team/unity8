@@ -22,7 +22,6 @@ import QtQuick.Layouts 1.1
 
 ListItems.Empty {
     id: menu
-    enabled: false
 
     property alias iconSource: iconVisual.source
     property alias text: label.text

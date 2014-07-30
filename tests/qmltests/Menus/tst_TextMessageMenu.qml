@@ -45,8 +45,8 @@ Item {
                 removable: false
 
                 title: "Text Message"
+                body: "I am a little teapot"
                 time: "11:08am"
-                message: "I am a little teapot"
             }
 
             TextMessageMenu {
@@ -70,8 +70,8 @@ Item {
     property string textMessageReply: ""
 
     SignalSpy {
-        id: signalSpyActivateApp
-        signalName: "appActivated"
+        id: signalSpyIconActivated
+        signalName: "iconActivated"
         target: messageMenuSelected
     }
 
@@ -92,7 +92,7 @@ Item {
         when: windowShown
 
         function init() {
-            signalSpyActivateApp.clear();
+            signalSpyIconActivated.clear();
             signalSpyDismiss.clear();
             signalSpyReply.clear();
             textMessageReply = "";
@@ -126,39 +126,71 @@ Item {
         function test_time(data) {
             messageMenu.time = data.time;
 
-            var subtitle = UtilsJS.findChild(messageMenu, "subtitle");
-            verify(subtitle !== undefined, "No subtitle");
+            var subtitle = UtilsJS.findChild(messageMenu, "time");
+            verify(subtitle !== undefined, "No time");
             compare(subtitle.text, data.time, "Time does not match set time.");
         }
 
-        function test_appIcon_data() {
+        function test_avatar_data() {
             return [
-                { appIcon: Qt.resolvedUrl("../../artwork/avatar.png") },
-                { appIcon: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
+                { avatar: Qt.resolvedUrl("../../artwork/avatar.png") },
+                { avatar: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
             ];
         }
 
-        function test_appIcon(data) {
-            messageMenu.appIcon = data.appIcon;
+        function test_avatar(data) {
+            messageMenu.avatar = data.avatar;
 
-            var appIcon = UtilsJS.findChild(messageMenu, "appIcon");
-            verify(appIcon !== undefined, "No app icon");
-            compare(appIcon.source, data.appIcon, "App Icon does not match set icon.");
+            var avatar = UtilsJS.findChild(messageMenu, "avatar");
+            verify(avatar !== undefined, "No avatar");
+            compare(avatar.source, data.avatar, "Avatar does not match set avatar.");
         }
 
-        function test_message_data() {
+        function test_icon_data() {
             return [
-                { message: "This is a test." },
-                { message: "Test is also a test." },
+                { icon: Qt.resolvedUrl("../../artwork/avatar.png") },
+                { icon: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
             ];
         }
 
-        function test_message(data) {
-            messageMenu.message = data.message;
+        function test_icon(data) {
+            messageMenu.icon = data.icon;
+
+            var icon = UtilsJS.findChild(messageMenu, "icon");
+            verify(icon !== undefined, "No icon");
+            compare(icon.source, data.icon, "Icon does not match set icon.");
+        }
+
+        function test_body_data() {
+            return [
+                { body: "This is a test." },
+                { body: "Test is also a test." },
+            ];
+        }
+
+        function test_body(data) {
+            messageMenu.body = data.body;
 
             var body = UtilsJS.findChild(messageMenu, "body");
             verify(body !== undefined, "No body");
-            compare(body.text, data.message, "Message does not match set message.");
+            compare(body.text, data.body, "Message does not match set message.");
+        }
+
+        function test_iconActivated() {
+            var icon = UtilsJS.findChild(messageMenuSelected, "icon");
+
+            mouseClick(icon, icon.width / 2, icon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            compare(signalSpyIconActivated.count > 0, true, "activate icon should have been triggered");
+        }
+
+        function test_dismiss() {
+            mouseFlick(messageMenuRemovable,
+                       messageMenuRemovable.width / 2,
+                       messageMenuRemovable.height / 2,
+                       messageMenuRemovable.width,
+                       messageMenuRemovable.height / 2,
+                       true, true, units.gu(1), 10);
+            tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
 
         function test_replyButtonText_data() {
@@ -174,31 +206,6 @@ Item {
             var button = UtilsJS.findChild(messageMenu, "sendButton");
             verify(button !== undefined, "No send button");
             compare(button.text, data.buttonText, "Button text does not match set text.");
-        }
-
-        function test_activateApp() {
-            var appIcon = UtilsJS.findChild(messageMenuSelected, "appIcon");
-
-            mouseClick(appIcon, appIcon.width * 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count, 0, "activate app should not have been triggered");
-
-            messageMenuSelected.selected = false;
-            mouseClick(appIcon, appIcon.width / 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count, 0, "activate app should not have been triggered when not selected");
-
-            messageMenuSelected.selected = true;
-            mouseClick(appIcon, appIcon.width / 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count > 0, true, "activate app should have been triggered when selected");
-        }
-
-        function test_dismiss() {
-            mouseFlick(messageMenuRemovable,
-                       messageMenuRemovable.width / 2,
-                       messageMenuRemovable.height / 2,
-                       messageMenuRemovable.width,
-                       messageMenuRemovable.height / 2,
-                       true, true, units.gu(1), 10);
-            tryCompareFunction(function() { return signalSpyDismiss.count > 0; }, true);
         }
 
         function test_replyEnabled_data() {

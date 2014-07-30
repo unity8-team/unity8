@@ -34,7 +34,7 @@ ListItem.Empty {
     property url avatar
     property url icon
 
-    signal appActivated
+    signal iconActivated
     signal dismissed
 
     property alias footer: footerLoader.sourceComponent
@@ -73,7 +73,7 @@ ListItem.Empty {
             state: menu.state
 
             onIconClicked:  {
-                menu.appActivated();
+                menu.iconActivated();
             }
         }
 

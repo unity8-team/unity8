@@ -30,7 +30,7 @@ StandardMenu {
             text: menu.buttonText
             width: Math.max(units.gu(5), implicitWidth)
 
-            onClicked: menu.clicked
+            onClicked: menu.clicked()
         }
     }
 }

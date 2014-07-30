@@ -95,7 +95,7 @@ Item {
 
         Label {
             id: timeText
-            objectName: "subtitle"
+            objectName: "time"
             elide: Text.ElideRight
             fontSize: "x-small"
             maximumLineCount: 1
@@ -105,12 +105,16 @@ Item {
 
         Image {
             id: iconImage
-            objectName: "appIcon"
+            objectName: "icon"
             Layout.preferredHeight: units.gu(3)
             Layout.preferredWidth: units.gu(3)
             Layout.alignment: Qt.AlignRight
 
             fillMode: Image.PreserveAspectFit
+            sourceSize  {
+                width: width
+                height: height
+            }
 
             MouseArea {
                 anchors.fill: parent

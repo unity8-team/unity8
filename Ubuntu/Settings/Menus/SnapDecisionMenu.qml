@@ -26,13 +26,13 @@ import QtQuick.Layouts 1.1
 SimpleMessageMenu {
     id: menu
 
-    property bool activateEnabled: true
+    property bool actionEnabled: true
     property string actionButtonText: "Call back"
 
     property bool replyEnabled: true
     property string replyButtonText: "Send"
 
-    signal activated
+    signal actionActivated
     signal replied(string value)
 
     footer: Item {
@@ -69,12 +69,12 @@ SimpleMessageMenu {
                 Button {
                     id: actionButton
                     objectName: "actionButton"
-                    enabled: menu.activateEnabled
+                    enabled: menu.actionEnabled
                     text: actionButtonText
                     Layout.fillWidth: true
 
                     onClicked: {
-                        menu.activated();
+                        menu.actionActivated();
                     }
                 }
             }
