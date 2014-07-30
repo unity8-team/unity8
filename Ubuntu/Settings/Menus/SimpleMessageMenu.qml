@@ -67,8 +67,8 @@ ListItem.Empty {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
 
-            avatar: menu.avatar != "" ? menu.avatar : "artwork/default_contact.png"
-            icon: menu.icon != "" ? menu.icon : "artwork/default_app.svg"
+            avatar: menu.avatar != "" ? menu.avatar : "image://theme/contact"
+            icon: menu.icon != "" ? menu.icon : "image://theme/message"
 
             state: menu.state
 

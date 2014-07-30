@@ -54,7 +54,7 @@ Item {
         property Image source: visible ? image : null
         property color keyColorOut: Qt.rgba(0.0, 0.0, 0.0, 0.0)
         property color keyColorIn: "#808080"
-        property real threshold: 0.6
+        property real threshold: 0.1
 
         fragmentShader: source ? "
             varying highp vec2 qt_TexCoord0;

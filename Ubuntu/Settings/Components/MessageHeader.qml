@@ -103,18 +103,13 @@ Item {
         }
         spacing: units.gu(0.5)
 
-        Image {
+        IconVisual {
             id: iconImage
             objectName: "icon"
             Layout.preferredHeight: units.gu(3)
             Layout.preferredWidth: units.gu(3)
             Layout.alignment: Qt.AlignRight
-
-            fillMode: Image.PreserveAspectFit
-            sourceSize  {
-                width: width
-                height: height
-            }
+            color: Theme.palette.selected.backgroundText
 
             MouseArea {
                 anchors.fill: parent

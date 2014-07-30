@@ -31,7 +31,7 @@ Item {
             title: "Text Message"
             body: "I am a little teacup, short and stout. Here is my handle, and here is my spout. Who are you talking about my spout?! This should be truncated"
             time: "Sat 31 Oct, 11:00"
-            icon: "image://theme/stock_message"
+            icon: "image://theme/message"
             avatar: "artwork/farm.jpg"
         }
         ListElement {
@@ -39,7 +39,7 @@ Item {
             title: "Simple Text Message Simple"
             body: "I happen to be tall and thin! But let's try a new line"
             time: "Yesterday, 10:00"
-            icon: "image://theme/stock_message"
+            icon: "image://theme/message"
             avatar: "artwork/beach.jpg"
         }
         ListElement {
@@ -47,7 +47,7 @@ Item {
             title: "Snap Decision"
             body: "My mother says I'm handsome!"
             time: "10:30am"
-            icon: "image://theme/stock_message"
+            icon: "image://theme/missed-call"
             avatar: "artwork/night.jpg"
         }
     }
