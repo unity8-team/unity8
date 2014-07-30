@@ -18,7 +18,6 @@ import logging
 
 from gi.repository import Accounts
 from testtools.matchers import HasLength
-from autopilot import platform
 
 from reminders import credentials, evernote, tests
 
@@ -29,9 +28,6 @@ logger = logging.getLogger(__name__)
 class EvernoteCredentialsTestCase(tests.BaseTestCaseWithTempHome):
 
     def setUp(self):
-        # bug https://bugs.launchpad.net/reminders-app/+bug/1347905
-        if platform.model() != 'Desktop':
-            self.skipTest("Fake Account failure bug 1347905")
         super(EvernoteCredentialsTestCase, self).setUp()
         self.account_manager = credentials.AccountManager()
 
