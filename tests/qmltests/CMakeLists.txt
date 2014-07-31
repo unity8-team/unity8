@@ -3,12 +3,33 @@ include(QmlTest)
 
 set(qmltest_DEFAULT_TARGETS qmluitests)
 set(qmltest_DEFAULT_NO_ADD_TEST TRUE)
-set(qmltest_DEFAULT_PROPERTIES "")
+set(qmltest_DEFAULT_PROPERTIES ENVIRONMENT "LC_ALL=C")
 
 set(qmltest_DEFAULT_IMPORT_PATHS
   ${CMAKE_BINARY_DIR}
   ${CMAKE_BINARY_DIR}/tests/utils/modules
 )
 
-add_subdirectory(Menus)
-add_subdirectory(Components)
+add_qml_test(Components Calendar)
+add_qml_test(Components StatusIcon)
+
+add_qml_test(Menus AccessPointMenu)
+add_qml_test(Menus ButtonMenu)
+add_qml_test(Menus CalendarMenu)
+add_qml_test(Menus CheckableMenu)
+add_qml_test(Menus EventMenu)
+add_qml_test(Menus GroupedMessageMenu)
+add_qml_test(Menus MediaPlayerMenu)
+add_qml_test(Menus PlaybackItemMenu)
+add_qml_test(Menus ProgressBarMenu)
+add_qml_test(Menus ProgressValueMenu)
+add_qml_test(Menus SectionMenu)
+add_qml_test(Menus SimpleMessageMenu)
+add_qml_test(Menus SliderMenu)
+add_qml_test(Menus SnapDecisionMenu)
+add_qml_test(Menus SwitchMenu)
+add_qml_test(Menus UserSessionMenu)
+add_qml_test(Menus TextMessageMenu)
+add_qml_test(Menus TimeZoneMenu)
+add_qml_test(Menus TransferMenu)
+
