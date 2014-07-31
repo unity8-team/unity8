@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-07-29 01:56+0000\n"
+"PO-Revision-Date: 2014-07-31 01:16+0000\n"
 "Last-Translator: Luo Lei <luolei@ubuntukylin.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-30 07:08+0000\n"
+"X-Launchpad-Export-Date: 2014-07-31 07:16+0000\n"
 "X-Generator: Launchpad (build 17131)\n"
 
 #: ../src/app/qml/reminders.qml:201
 msgid "Notes"
-msgstr "笔记"
+msgstr "记事"
 
 #: ../src/app/qml/reminders.qml:230
 msgid "Notebooks"
-msgstr "笔记本"
+msgstr "记事本"
 
 #: ../src/app/qml/reminders.qml:258
 #: ../.build/com.ubuntu.reminders.desktop.js:1
@@ -35,6 +35,8 @@ msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"没有选择记事。\n"
+"请选择要查看的记事。"
 
 #: ../src/app/qml/reminders.qml:315
 msgid "No account available"
@@ -111,7 +113,7 @@ msgstr "删除"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:41
 msgid "Add notebook"
-msgstr "添加笔记本"
+msgstr "添加记事本"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:51 ../src/app/qml/ui/NotesPage.qml:55
 #: ../src/app/qml/ui/RemindersPage.qml:34
@@ -138,18 +140,18 @@ msgstr "保存"
 
 #: ../src/app/qml/ui/NotesPage.qml:45
 msgid "Add note"
-msgstr "添加笔记"
+msgstr "添加记事"
 
 #: ../src/app/qml/ui/NotesPage.qml:185
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
-msgstr "没有笔记。您可以用“添加笔记”按钮创建新笔记。"
+msgstr "没有记事。您可以通过“添加记事”按钮创建新记事。"
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
-msgstr "没有提醒。您可以用“添加提醒”按钮或在浏览笔记的时候设置一个提醒的方式来添加新提醒。"
+msgstr "没有提醒。您可以通过“添加提醒”按钮创建新提醒，或在浏览记事时设置一个新提醒。"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
@@ -235,7 +237,7 @@ msgstr "%2年%1月"
 #: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "刷新笔记出错：%1"
+msgstr "刷新记事失败：%1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
@@ -248,7 +250,7 @@ msgstr "认证过期。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Limit exceeded."
-msgstr "超过限制。"
+msgstr "超出限制。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Rate limit exceeded."
@@ -256,4 +258,4 @@ msgstr ""
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
-msgstr ""
+msgstr "超出配额限制。"
