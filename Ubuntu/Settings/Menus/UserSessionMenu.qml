@@ -38,8 +38,15 @@ ListItem.Standard {
 
         Image {
             id: checkMark
-            source: "artwork/CheckMark.png"
+            source: "image://theme/tick"
+            height: units.gu(2)
+            width: height
             anchors.centerIn: parent
+
+            sourceSize {
+                height: height
+                width: width
+            }
         }
     }
 }

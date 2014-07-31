@@ -29,7 +29,7 @@ StandardMenu {
 
     signal dismissed()
 
-    iconSource: Qt.resolvedUrl("artwork/default_app.svg")
+    iconSource: Qt.resolvedUrl("image://theme/message")
 
     component: Component {
         UbuntuShape {
