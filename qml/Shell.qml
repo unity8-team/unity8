@@ -376,7 +376,7 @@ Item {
 
         onShowPrompt: {
             if (greeter.narrowMode) {
-                lockscreen.placeholderText = i18n.tr("Please enter %1").arg(text.toLowerCase());
+                lockscreen.placeholderText = i18n.tr("Please enter passcode");
                 lockscreen.show();
             }
         }
