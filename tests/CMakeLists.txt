@@ -8,3 +8,4 @@ add_custom_target(qmltests)
 add_dependencies(qmltests qmluitests)
 
 add_subdirectory(qmltests)
+add_subdirectory(uqmlscene)
