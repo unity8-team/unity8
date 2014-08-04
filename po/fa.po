@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-04-11 15:19+0000\n"
-"Last-Translator: Danial Behzadi <dani.behzi@gmail.com>\n"
+"PO-Revision-Date: 2014-08-03 12:12+0000\n"
+"Last-Translator: bijan <bijanebrahimi@riseup.net>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-25 07:55+0000\n"
-"X-Generator: Launchpad (build 17114)\n"
+"X-Launchpad-Export-Date: 2014-08-04 06:33+0000\n"
+"X-Generator: Launchpad (build 17147)\n"
 
 #: ../src/app/qml/reminders.qml:201
 msgid "Notes"
@@ -35,24 +35,26 @@ msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"هیچ یادداشتی انتخاب نشده.\n"
+"یادداشتی را برای دیدن جزئیاتش انتخاب کنید."
 
 #: ../src/app/qml/reminders.qml:315
 msgid "No account available"
-msgstr ""
+msgstr "هیچ حساب کاربری‌ای موجود نیست"
 
 #: ../src/app/qml/reminders.qml:316
 msgid "Please setup an account in the system settings"
-msgstr ""
+msgstr "لطفاً در تنظیمات سامانه یم حساب کاربری برپا کنید"
 
 #: ../src/app/qml/reminders.qml:336
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
-msgstr ""
+msgstr "افزودن حساب کاربری"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:68
 #, qt-format
 msgid "Last edited %1"
-msgstr ""
+msgstr "آخرین ویرایش در %1"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Shared"
@@ -64,28 +66,28 @@ msgstr "خصوصی"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr ""
+msgstr "برای تازه‌سازی رها کنید"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr ""
+msgstr "برای تازه سازی به پایین بکشید"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "پاک کردن یادآدور"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
-msgstr ""
+msgstr "علامت گذاری به عنوان انجام شده"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
-msgstr ""
+msgstr "بازگشت"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:49
 msgid "Use it!"
-msgstr ""
+msgstr "از این استفاده کنید!"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
 #: ../src/app/qml/ui/EditNoteView.qml:110
@@ -98,12 +100,12 @@ msgstr "ویرایش"
 
 #: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 msgid "Edit reminder"
-msgstr ""
+msgstr "ویرایش یادآور"
 
 #: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "نظیم یادآور"
 
 #: ../src/app/qml/ui/NotePage.qml:57 ../src/app/qml/ui/NotesPage.qml:86
 msgid "Delete"
@@ -121,12 +123,12 @@ msgstr "جست‌وجو"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:61 ../src/app/qml/ui/NotesPage.qml:65
 msgid "Refresh"
-msgstr ""
+msgstr "تازه‌سازی"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:71 ../src/app/qml/ui/NotesPage.qml:75
 #: ../src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
-msgstr ""
+msgstr "حساب‌های کاربری"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:173
 msgid "Cancel"
@@ -144,116 +146,120 @@ msgstr "افزودن يادداشت"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"هیچ یادداشتی موجود نیست. می‌توانید با استفاده از دکمه‌ی «افزودن یادداشت» "
+"یادداشت‌های جدیدی ایجاد کنید."
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
+"هیچ يادآوری موجود نیست. می‌توانید با استفاده از دکمه‌ی «افزودن یادآور» یا با "
+"تنظیم یک یادآور هنگام دیدن یک یادداشت، یادآورهای جدیدی ایجاد کنید."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "انتخاب تاریخ و زمان یادآور:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
-msgstr ""
+msgstr "امروز"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "دیروز"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "هفته‌ی پیش"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "دو هفته پیش"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
 #: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "‫%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
-msgstr ""
+msgstr "انجام شد"
 
 #: ../src/plugin/Evernote/note.cpp:234
 msgid "No date"
-msgstr ""
+msgstr "بدون تاریخ"
 
 #: ../src/plugin/Evernote/note.cpp:237
 msgid "Overdue"
-msgstr ""
+msgstr "معوقه"
 
 #: ../src/plugin/Evernote/note.cpp:243
 msgid "Tomorrow"
-msgstr ""
+msgstr "فردا"
 
 #: ../src/plugin/Evernote/note.cpp:246
 msgid "Next week"
-msgstr ""
+msgstr "هفته‌ی آینده"
 
 #: ../src/plugin/Evernote/note.cpp:249
 msgid "In two weeks"
-msgstr ""
+msgstr "در دو هفته"
 
 #: ../src/plugin/Evernote/note.cpp:251
 msgid "Later"
-msgstr ""
+msgstr "بعداً"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:100
 msgid "today"
-msgstr ""
+msgstr "امروز"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
-msgstr ""
+msgstr "دیروز"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
-msgstr ""
+msgstr "هفته‌ی پیش"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
-msgstr ""
+msgstr "دو هفته پیش"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "در %1 %2"
 
 #: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "خطا در تازه‌سازی یادداشت‌ها: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "خطا در تازه‌سازی دفترچه یادداشت‌ها: %1"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
 msgid "Authentication expired."
-msgstr ""
+msgstr "تأییدیه منقضی شده است."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Limit exceeded."
-msgstr ""
+msgstr "از محدودیت تجاوز شده است."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Rate limit exceeded."
-msgstr ""
+msgstr "از محدودیت رتبه‌بندی  تجاوز شده است."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
-msgstr ""
+msgstr "از حد سهمیه  تجاوز شده است."
