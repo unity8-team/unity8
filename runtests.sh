@@ -26,10 +26,10 @@
 # floating point operations and xml writing is natively supported.
 
 
-if test -e SettingsComponents.qml; then
+if test -e runtests.sh; then
   echo In-source build detected.
   SRCDIR=`pwd`
-elif test -e ../SettingsComponents.qml; then
+elif test -e ../runtests.sh; then
   echo Out-of-source build detected. Found source dir at ..
   SRCDIR=`pwd`/..
 else
