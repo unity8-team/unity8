@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-07-28 13:51+0000\n"
-"Last-Translator: Kristóf Kiszel <Unknown>\n"
+"PO-Revision-Date: 2014-08-04 08:02+0000\n"
+"Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-29 06:54+0000\n"
-"X-Generator: Launchpad (build 17131)\n"
+"X-Launchpad-Export-Date: 2014-08-05 06:46+0000\n"
+"X-Generator: Launchpad (build 17147)\n"
 
 #: ../src/app/qml/reminders.qml:201
 msgid "Notes"
@@ -40,11 +40,11 @@ msgstr ""
 
 #: ../src/app/qml/reminders.qml:315
 msgid "No account available"
-msgstr "Nem érhető el felhasználó"
+msgstr "Nincs elérhető fiók"
 
 #: ../src/app/qml/reminders.qml:316
 msgid "Please setup an account in the system settings"
-msgstr "Állítson be egy felhasználót a rendszerbeállításokban"
+msgstr "Állítson be egy fiókot a rendszerbeállításokban"
 
 #: ../src/app/qml/reminders.qml:336
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -79,7 +79,7 @@ msgstr "Emlékeztető törlése"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
-msgstr "Megjelölés késznek"
+msgstr "Elvégzettnek jelölés"
 
 #: ../src/app/qml/ui/CameraConfirm.qml:40
 msgid "Back"
@@ -182,11 +182,11 @@ msgstr "Két héttel ezelőtt"
 #: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
-msgstr "%1 %2"
+msgstr "%2 %1"
 
 #: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
-msgstr "Kész"
+msgstr "Elvégezve"
 
 #: ../src/plugin/Evernote/note.cpp:234
 msgid "No date"
