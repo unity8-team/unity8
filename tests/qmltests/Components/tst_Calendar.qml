@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1
 import "../utils.js" as UtilsJS
 
@@ -26,7 +26,7 @@ Item {
     width: units.gu(42)
     height: units.gu(75)
 
-    Label {
+    Text {
         id: label
         anchors {
             left: parent.left
@@ -35,7 +35,6 @@ Item {
             margins: units.gu(2)
         }
         height: units.gu(5)
-        fontSize: "large"
         text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
     }
 
@@ -50,7 +49,7 @@ Item {
         selectedDate: new Date()
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "Calendar"
         when: windowShown
 

@@ -20,6 +20,17 @@
 #include "TouchEventSequenceWrapper.h"
 
 #include <qqml.h>
+#include <QQmlEngine>
+
+static QObject *s_testRootObject = nullptr;
+static QObject *testRootObject(QQmlEngine *engine, QJSEngine *jsEngine)
+{
+    Q_UNUSED(jsEngine);
+    if (!s_testRootObject) {
+        s_testRootObject = new QObject(engine);
+    }
+    return s_testRootObject;
+}
 
 static QObject *testutil_provider(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine */)
 {
@@ -33,4 +44,11 @@ void UbuntuTestPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<TestUtil>(uri, 0, 1, "Util", testutil_provider);
     qmlRegisterUncreatableType<TouchEventSequenceWrapper>(uri, 0, 1, "TouchEventSequence",
             "You cannot directly create a TouchEventSequence object.");
+}
+
+void UbuntuTestPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
+{
+    Q_UNUSED(uri);
+    Q_UNUSED(engine);
+    qmlRegisterSingletonType<QObject>("Qt.test.qtestroot", 1, 0, "QTestRootObject", testRootObject);
 }

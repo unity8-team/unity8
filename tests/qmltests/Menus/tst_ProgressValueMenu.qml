@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
 import "../utils.js" as UtilsJS
 
@@ -48,7 +48,7 @@ Item {
         }
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "ProgressValueMenu"
         when: windowShown
 
