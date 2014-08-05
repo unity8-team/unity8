@@ -3,7 +3,8 @@
 . /etc/environment
 export QML2_IMPORT_PATH
 
-QML_PHONE_SHELL_PATH=./builddir/src/unity8
+UNITY8_PATH=./builddir/src/unity8
+UNITY8_DASH_PATH=./builddir/Dash/src/unity8-dash
 GDB=false
 FAKE=false
 PINLOCK=false
@@ -66,9 +67,9 @@ else
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/builddir/tests/mocks/LightDM/single
 fi
 
-QML_PHONE_SHELL_ARGS=""
+UNITY8_ARGS=""
 if $MOUSE_TOUCH; then
-  QML_PHONE_SHELL_ARGS="$QML_PHONE_SHELL_ARGS -mousetouch"
+  UNITY8_ARGS="$UNITY8_ARGS -mousetouch"
 fi
 
 control_c()
@@ -77,16 +78,32 @@ control_c()
   exit $?
 }
 
-trap control_c INT
-
 if $GDB; then
-  gdb -ex run --args $QML_PHONE_SHELL_PATH $QML_PHONE_SHELL_ARGS $@
+  gdb -ex run --args $UNITY8_PATH $UNITY8_ARGS $@
 else
-  status=`/sbin/initctl status unity8`
-  if [ "$status" != "unity8 stop/waiting" ]; then
-    echo "Unity8 is already running, please stop it first"
+  if ! status=`/sbin/initctl status unity8`; then
+    echo "Unity8 upstart job unavailable, please install unity8"
+    echo "or copy data/unity8.conf to ~/.config/upstart"
     exit 1
   fi
-  /sbin/initctl start unity8 BINARY="`readlink -f $QML_PHONE_SHELL_PATH` $QML_PHONE_SHELL_ARGS $@" QML2_IMPORT_PATH=$QML2_IMPORT_PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+  if [ "$status" != "unity8 stop/waiting" ]; then
+    echo "Unity8 is already running, please stop it first"
+    exit 2
+  fi
+
+  if ! status=`/sbin/initctl status unity8-dash` ; then
+    echo "Unity8 dash upstart job unavailable, please install unity8"
+    echo "or copy data/unity8-dash.conf to ~/.config/upstart"
+    exit 3
+  fi
+  if [ "$status" != "unity8-dash stop/waiting" ]; then
+    echo "Unity8 Dash is already running, please stop it first"
+    exit 4
+  fi
+
+  trap control_c INT
+
+  /sbin/initctl start unity8 BINARY="`readlink -f $UNITY8_PATH` $UNITY8_ARGS $@" QML2_IMPORT_PATH=$QML2_IMPORT_PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+  /sbin/initctl restart unity8-dash BINARY="`readlink -f $UNITY8_DASH_PATH` $UNITY8_ARGS $@" QML2_IMPORT_PATH=$QML2_IMPORT_PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH
   tailf -n 0 ~/.cache/upstart/unity8.log
 fi
