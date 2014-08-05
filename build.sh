@@ -72,13 +72,8 @@ if [ -f "/usr/bin/ccache" ] ; then
   fi
 fi
 
-if [ -f "/usr/bin/ninja" ] ; then
+if [ ! -e builddir/CMakeCache.txt -a -f "/usr/bin/ninja" ] ; then
   GENERATOR="-G Ninja"
-  # Ninja does not need -j, it parallelizes automatically.
-  BUILD_COMMAND="ninja"
-else
-  GENERATOR=
-  BUILD_COMMAND="make -j$NUM_JOBS"
 fi
 
 if $SETUP; then
@@ -89,5 +84,5 @@ else
     cd builddir
     mk_build_deps
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CODE_DIR ${GENERATOR} || exit 6
-    ${BUILD_COMMAND} || exit 7
+    cmake --build . -- -j${NUM_JOBS} || exit 7
 fi
