@@ -72,5 +72,6 @@ Depends: ${misc:Depends},
          python3-oauthlib,
          python3-requests-oauthlib,
          ubuntu-ui-toolkit-autopilot,
+         account-plugin-evernote-sandbox
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package
