@@ -16,9 +16,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(40)
@@ -30,7 +29,7 @@ Item {
         height: units.gu(3)
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "StatusIcon"
         when: windowShown
 
@@ -43,14 +42,14 @@ Item {
         function test_icon() {
             icon.source = "image://theme/bar,gps,baz";
 
-            var image = UtilsJS.findChild(icon, "image");
+            var image = findChild(icon, "image");
             tryCompare(image, "source", "file://" + image.iconPath.arg("status").arg("gps"));
         }
 
         function test_iconFallback() {
             icon.source = "image://theme/foo,bar,baz";
 
-            var image = UtilsJS.findChild(icon, "image");
+            var image = findChild(icon, "image");
             tryCompare(image, "source", "file://" + image.iconPath.arg("status").arg("baz"));
         }
 
@@ -58,7 +57,7 @@ Item {
             icon.source = "image://theme/bar,add,baz";
             icon.sets = [ "foo", "actions", "bar" ]
 
-            var image = UtilsJS.findChild(icon, "image");
+            var image = findChild(icon, "image");
             tryCompare(image, "source", "file://" + image.iconPath.arg("actions").arg("add"));
         }
 
@@ -66,12 +65,12 @@ Item {
             icon.source = "image://theme/add,bar,baz";
             icon.sets = [ "foo", "bar", "baz" ]
 
-            var image = UtilsJS.findChild(icon, "image");
+            var image = findChild(icon, "image");
             tryCompare(image, "source", "file://" + image.iconPath.arg("baz").arg("baz"));
         }
 
         function test_iconSource() {
-            var image = UtilsJS.findChild(icon, "image");
+            var image = findChild(icon, "image");
             icon.source = image.iconPath.arg("status").arg("gps");
 
             tryCompare(image, "source", "file://" + image.iconPath.arg("status").arg("gps"));

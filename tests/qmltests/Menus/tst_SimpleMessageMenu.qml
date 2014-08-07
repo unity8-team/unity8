@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -94,7 +93,7 @@ Item {
         function test_title(data) {
             messageMenu.title = data.title;
 
-            var title = UtilsJS.findChild(messageMenu, "title");
+            var title = findChild(messageMenu, "title");
             verify(title, "No title");
             compare(title.text, data.title, "Title does not match set title.");
         }
@@ -109,7 +108,7 @@ Item {
         function test_time(data) {
             messageMenu.time = data.time;
 
-            var time = UtilsJS.findChild(messageMenu, "time");
+            var time = findChild(messageMenu, "time");
             verify(time !== undefined, "No time");
             compare(time.text, data.time, "Time does not match set time.");
         }
@@ -124,7 +123,7 @@ Item {
         function test_avatar(data) {
             messageMenu.avatar = data.avatar;
 
-            var avatar = UtilsJS.findChild(messageMenu, "avatar");
+            var avatar = findChild(messageMenu, "avatar");
             verify(avatar !== undefined, "No avatar");
             compare(avatar.source, data.avatar, "Avatar does not match set avatar.");
         }
@@ -139,7 +138,7 @@ Item {
         function test_icon(data) {
             messageMenu.icon = data.icon;
 
-            var icon = UtilsJS.findChild(messageMenu, "icon");
+            var icon = findChild(messageMenu, "icon");
             verify(icon !== undefined, "No icon");
             compare(icon.source, data.icon, "Icon does not match set icon.");
         }
@@ -154,13 +153,13 @@ Item {
         function test_body(data) {
             messageMenu.body = data.body;
 
-            var body = UtilsJS.findChild(messageMenu, "body");
+            var body = findChild(messageMenu, "body");
             verify(body !== undefined, "No body");
             compare(body.text, data.body, "Message does not match set message.");
         }
 
         function test_iconActivated() {
-            var icon = UtilsJS.findChild(messageMenuSelected, "icon");
+            var icon = findChild(messageMenuSelected, "icon");
 
             mouseClick(icon, icon.width / 2, icon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyIconActivated.count > 0, true, "activate icon should have been triggered");

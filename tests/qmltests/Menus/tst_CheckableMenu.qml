@@ -18,9 +18,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -52,7 +51,7 @@ Item {
         target: checkMenu
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "CheckableMenu"
         when: windowShown
 
@@ -62,7 +61,7 @@ Item {
         }
 
         function test_checkChanged() {
-            var checkbox = UtilsJS.findChild(checkMenu, "checkbox");
+            var checkbox = findChild(checkMenu, "checkbox");
             verify(checkbox !== undefined);
 
             compare(checkbox.checked, false, "Checkbox should initially be unchecked");
@@ -71,7 +70,7 @@ Item {
         }
 
         function test_clickCheckBox() {
-            var checkbox = UtilsJS.findChild(checkMenu, "checkbox");
+            var checkbox = findChild(checkMenu, "checkbox");
             verify(checkbox !== undefined);
 
             mouseClick(checkMenu, checkbox.width / 2, checkbox.height / 2, Qt.LeftButton, Qt.NoModifier, 0);

@@ -19,9 +19,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
-import Ubuntu.Components 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -109,8 +107,6 @@ Item {
             messageMenuSelected.selected = false;
         }
 
-
-
         function test_title_data() {
             return [
                 { title: "title1" },
@@ -121,7 +117,7 @@ Item {
         function test_title(data) {
             messageMenu.title = data.title;
 
-            var title = UtilsJS.findChild(messageMenu, "title");
+            var title = findChild(messageMenu, "title");
             verify(title, "No title");
             compare(title.text, data.title, "Title does not match set title.");
         }
@@ -136,7 +132,7 @@ Item {
         function test_time(data) {
             messageMenu.time = data.time;
 
-            var subtitle = UtilsJS.findChild(messageMenu, "time");
+            var subtitle = findChild(messageMenu, "time");
             verify(subtitle !== undefined, "No time");
             compare(subtitle.text, data.time, "Time does not match set time.");
         }
@@ -151,7 +147,7 @@ Item {
         function test_avatar(data) {
             messageMenu.avatar = data.avatar;
 
-            var avatar = UtilsJS.findChild(messageMenu, "avatar");
+            var avatar = findChild(messageMenu, "avatar");
             verify(avatar !== undefined, "No avatar");
             compare(avatar.source, data.avatar, "Avatar does not match set avatar.");
         }
@@ -166,7 +162,7 @@ Item {
         function test_icon(data) {
             messageMenu.icon = data.icon;
 
-            var icon = UtilsJS.findChild(messageMenu, "icon");
+            var icon = findChild(messageMenu, "icon");
             verify(icon !== undefined, "No icon");
             compare(icon.source, data.icon, "Icon does not match set icon.");
         }
@@ -181,13 +177,13 @@ Item {
         function test_body(data) {
             messageMenu.body = data.body;
 
-            var body = UtilsJS.findChild(messageMenu, "body");
+            var body = findChild(messageMenu, "body");
             verify(body !== undefined, "No body");
             compare(body.text, data.body, "Message does not match set message.");
         }
 
         function test_iconActivated() {
-            var icon = UtilsJS.findChild(messageMenuSelected, "icon");
+            var icon = findChild(messageMenuSelected, "icon");
 
             mouseClick(icon, icon.width / 2, icon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyIconActivated.count > 0, true, "activate icon should have been triggered");
@@ -213,7 +209,7 @@ Item {
         function test_replyButtonText(data) {
             messageMenu.replyButtonText = data.buttonText;
 
-            var button = UtilsJS.findChild(messageMenu, "sendButton");
+            var button = findChild(messageMenu, "sendButton");
             verify(button !== undefined, "No send button");
             compare(button.text, data.buttonText, "Button text does not match set text.");
         }
@@ -222,7 +218,7 @@ Item {
             messageMenuSelected.selected = true;
             messageMenuSelected.actionEnabled = false;
 
-            var actionButton = UtilsJS.findChild(messageMenuSelected, "actionButton");
+            var actionButton = findChild(messageMenuSelected, "actionButton");
             verify(actionButton !== undefined, "Action button not found");
 
             compare(actionButton.enabled, false, "Action button should not be enabled when activateEnabled=false");
@@ -234,7 +230,7 @@ Item {
             messageMenuSelected.selected = true;
             messageMenuSelected.actionEnabled = true;
 
-            var actionButton = UtilsJS.findChild(messageMenuSelected, "actionButton");
+            var actionButton = findChild(messageMenuSelected, "actionButton");
             verify(actionButton !== undefined, "Action button not found");
 
             mouseClick(actionButton, actionButton.width / 2, actionButton.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
@@ -254,15 +250,15 @@ Item {
             messageMenuSelected.selected = true;
             messageMenuSelected.replyEnabled = data.enabled
 
-            var replyText = UtilsJS.findChild(messageMenuSelected, "replyText");
+            var replyText = findChild(messageMenuSelected, "replyText");
             verify(replyText !== undefined, "Reply text not found");
             replyText.text = data.reply;
 
-            var messageButton = UtilsJS.findChild(messageMenuSelected, "messageButton");
+            var messageButton = findChild(messageMenuSelected, "messageButton");
             verify(messageButton !== undefined, "Message button not found");
             mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 300);
 
-            var sendButton = UtilsJS.findChild(messageMenuSelected, "sendButton");
+            var sendButton = findChild(messageMenuSelected, "sendButton");
             verify(sendButton !== undefined, "Send button not found");
 
             compare(sendButton.enabled, data.expected, "Reply button is not in correct state");
@@ -272,15 +268,15 @@ Item {
             messageMenuSelected.selected = true;
             messageMenuSelected.replyEnabled = true;
 
-            var replyText = UtilsJS.findChild(messageMenuSelected, "replyText");
+            var replyText = findChild(messageMenuSelected, "replyText");
             verify(replyText !== undefined, "Reply text not found");
             replyText.text = "reply1";
 
-            var messageButton = UtilsJS.findChild(messageMenuSelected, "messageButton");
+            var messageButton = findChild(messageMenuSelected, "messageButton");
             verify(messageButton !== undefined, "Message button not found");
             mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2, Qt.LeftButton, Qt.NoModifier, 300);
 
-            var sendButton = UtilsJS.findChild(messageMenuSelected, "sendButton");
+            var sendButton = findChild(messageMenuSelected, "sendButton");
             verify(sendButton !== undefined, "Send button not found");
 
             mouseClick(sendButton, sendButton.width / 2, sendButton.height / 2, Qt.LeftButton, Qt.NoModifier, 0);

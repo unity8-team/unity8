@@ -16,9 +16,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -57,7 +56,7 @@ Item {
         }
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "TransferMenu"
         when: windowShown
 
@@ -77,7 +76,7 @@ Item {
         function test_iconSource(data) {
             transferMenu.iconSource = data.icon;
 
-            var icon = UtilsJS.findChild(transferMenu, "icon");
+            var icon = findChild(transferMenu, "icon");
             compare(icon.source, data.icon, "Icon does not match data");
         }
 
@@ -90,7 +89,7 @@ Item {
         function test_text(data) {
             transferMenu.text = data.text;
 
-            var text = UtilsJS.findChild(transferMenu, "text");
+            var text = findChild(transferMenu, "text");
             compare(text.text, data.text, "Text does not match data");
         }
 
@@ -103,7 +102,7 @@ Item {
         function test_stateText(data) {
             transferMenu.stateText = data.stateText;
 
-            var stateText = UtilsJS.findChild(transferMenu, "stateText");
+            var stateText = findChild(transferMenu, "stateText");
             compare(stateText.text, data.stateText, "State text does not match data");
         }
 
@@ -116,13 +115,13 @@ Item {
         function test_progress(data) {
             transferMenu.progress = data.progress;
 
-            var progress = UtilsJS.findChild(transferMenu, "progress");
+            var progress = findChild(transferMenu, "progress");
             compare(progress.value, data.progress, "Progress does not match expected value");
         }
 
         function test_active() {
-            var progress = UtilsJS.findChild(transferMenu, "progress");
-            var stateText = UtilsJS.findChild(transferMenu, "stateText");
+            var progress = findChild(transferMenu, "progress");
+            var stateText = findChild(transferMenu, "stateText");
 
             transferMenu.active = true;
             compare(progress.visible, true, "Progress should be visible when active");

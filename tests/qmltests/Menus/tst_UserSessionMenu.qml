@@ -18,9 +18,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -55,7 +54,7 @@ Item {
         }
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "UserSessionMenu"
         when: windowShown
 
@@ -65,12 +64,12 @@ Item {
         }
 
         function test_active() {
-            var activeIcon = UtilsJS.findChild(userSessionMenu, "activeIcon")
+            var activeIcon = findChild(userSessionMenu, "activeIcon")
             compare(activeIcon.visible, true, "Active icon should be visible when active")
         }
 
         function test_inactive() {
-            var activeIcon = UtilsJS.findChild(userSessionMenu2, "activeIcon")
+            var activeIcon = findChild(userSessionMenu2, "activeIcon")
             compare(activeIcon.visible, false, "Active icon should not be visible when inactive")
         }
     }
