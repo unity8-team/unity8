@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -68,7 +67,7 @@ Item {
         }
 
         function test_checkChanged() {
-            var switcher = UtilsJS.findChild(switchMenu, "switcher");
+            var switcher = findChild(switchMenu, "switcher");
             verify(switcher !== undefined);
 
             compare(switcher.checked, false, "Checkbox should initially be unchecked");
@@ -77,7 +76,7 @@ Item {
         }
 
         function test_clickSwitchBox() {
-            var switcher = UtilsJS.findChild(switchMenu, "switcher");
+            var switcher = findChild(switchMenu, "switcher");
             mouseClick(switchMenu, switcher.width / 2, switcher.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on switcher click");
         }

@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -94,7 +93,7 @@ Item {
         function test_title(data) {
             messageMenu.title = data.title;
 
-            var title = UtilsJS.findChild(messageMenu, "title");
+            var title = findChild(messageMenu, "title");
             verify(title, "No title");
             compare(title.text, data.title, "Title does not match set title.");
         }
@@ -109,7 +108,7 @@ Item {
         function test_time(data) {
             messageMenu.time = data.time;
 
-            var subtitle = UtilsJS.findChild(messageMenu, "subtitle");
+            var subtitle = findChild(messageMenu, "subtitle");
             verify(subtitle !== undefined, "No subtitle");
             compare(subtitle.text, data.time, "Time does not match set time.");
         }
@@ -124,7 +123,7 @@ Item {
         function test_appIcon(data) {
             messageMenu.appIcon = data.appIcon;
 
-            var appIcon = UtilsJS.findChild(messageMenu, "appIcon");
+            var appIcon = findChild(messageMenu, "appIcon");
             verify(appIcon !== undefined, "No app icon");
             compare(appIcon.source, data.appIcon, "App Icon does not match set icon.");
         }
@@ -139,13 +138,13 @@ Item {
         function test_message(data) {
             messageMenu.message = data.message;
 
-            var body = UtilsJS.findChild(messageMenu, "body");
+            var body = findChild(messageMenu, "body");
             verify(body !== undefined, "No body");
             compare(body.text, data.message, "Message does not match set message.");
         }
 
         function test_activateApp() {
-            var appIcon = UtilsJS.findChild(messageMenuSelected, "appIcon");
+            var appIcon = findChild(messageMenuSelected, "appIcon");
 
             mouseClick(appIcon, appIcon.width * 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
             compare(signalSpyActivateApp.count, 0, "activate app should not have been triggered");

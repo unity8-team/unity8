@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -94,7 +93,7 @@ Item {
         function test_buttons(data) {
             playbackItem[data.enableProp] = data.enableValue;
 
-            var button = UtilsJS.findChild(playbackItem, data.objectName);
+            var button = findChild(playbackItem, data.objectName);
             mouseClick(button, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
 
             compare(data.signalSpy.count > 0, data.enableValue, data.enableValue ? "signal should be triggered" : "signal should not be triggered");

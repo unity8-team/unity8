@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -93,7 +92,7 @@ Item {
             calendar.firstDayOfWeek = data.firstDayOfWeek;
 
             for (var i = 0; i < (6*7); i++) {
-                var dayColumn = UtilsJS.findChild(calendar, "dayItem" + i);
+                var dayColumn = findChild(calendar, "dayItem" + i);
                 verify(dayColumn);
 
                 compare(dayColumn.dayStart.getDay(), (data.firstDayOfWeek + i)%7, "Day column does not match expected for firstDayOfWeek");

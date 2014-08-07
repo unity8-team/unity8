@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -53,7 +52,7 @@ Item {
         name: "CalendarMenu"
         when: windowShown
 
-        property var calendar: UtilsJS.findChild(calendarMenu, "calendar")
+        property var calendar: findChild(calendarMenu, "calendar")
 
         function test_collapsed() {
             calendarMenu.collapsed = true

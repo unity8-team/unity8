@@ -20,7 +20,6 @@ import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -96,7 +95,7 @@ Item {
 
         // simulates dragging the slider to a value
         function test_setSliderValue() {
-            var slider = UtilsJS.findChild(sliderMenu, "slider");
+            var slider = findChild(sliderMenu, "slider");
             verify(slider !== undefined);
 
             slider.value = 20;
@@ -105,7 +104,7 @@ Item {
 
         // simulates dragging the slider to a value
         function test_setMenuValue() {
-            var slider = UtilsJS.findChild(sliderMenu, "slider");
+            var slider = findChild(sliderMenu, "slider");
             verify(slider !== undefined);
 
             sliderMenu.value = 20;
@@ -148,13 +147,13 @@ Item {
 
         // simulates clicking the min/max buttons
         function test_minmaxButtons() {
-            var slider = UtilsJS.findChild(sliderMenu2, "slider");
+            var slider = findChild(sliderMenu2, "slider");
             verify(slider !== undefined);
 
-            var leftButton = UtilsJS.findChild(sliderMenu2, "leftButton");
+            var leftButton = findChild(sliderMenu2, "leftButton");
             verify(leftButton !== undefined);
 
-            var rightButton = UtilsJS.findChild(sliderMenu2, "rightButton");
+            var rightButton = findChild(sliderMenu2, "rightButton");
             verify(rightButton !== undefined);
 
             mouseClick(leftButton, leftButton.width / 2, leftButton.height / 2);
