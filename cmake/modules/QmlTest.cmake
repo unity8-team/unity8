@@ -118,4 +118,3 @@ macro(add_qml_test SUBPATH COMPONENT_NAME)
 
     add_manual_qml_test(${SUBPATH} ${COMPONENT_NAME} ${ARGN})
 endmacro(add_qml_test)
-
