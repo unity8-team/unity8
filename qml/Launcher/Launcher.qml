@@ -19,6 +19,7 @@ import "../Components"
 import Ubuntu.Components 0.1
 import Ubuntu.Gestures 0.1
 import Unity.Launcher 0.1
+import Unity.Application 0.1
 
 Item {
     id: root
@@ -243,7 +244,10 @@ Item {
         onDraggingChanged: {
             if (!dragging) {
                 if (distance > panel.width / 2) {
-                    if (distance > minimizeDistance) {
+                    // FIXME: This is a mess! Do not land this!
+                    // Shouldn't access greeter from in here...
+                    if (distance > minimizeDistance && 
+                                (ApplicationManager.focusedApplicationId !== "unity8-dash" || greeter.shown)) {
                         root.dash();
                     } else {
                         root.switchToNextState("visible")
