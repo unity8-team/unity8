@@ -246,7 +246,7 @@ Item {
                 if (distance > panel.width / 2) {
                     // FIXME: This is a mess! Do not land this!
                     // Shouldn't access greeter from in here...
-                    if (distance > minimizeDistance && 
+                    if (distance > minimizeDistance &&
                                 (ApplicationManager.focusedApplicationId !== "unity8-dash" || greeter.shown)) {
                         root.dash();
                     } else {
