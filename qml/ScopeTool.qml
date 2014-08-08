@@ -93,7 +93,7 @@ Rectangle {
             spacing: units.gu(1)
 
             Label {
-                text: "Search query"
+                text: i18n.tr("Search query")
             }
 
             TextField {
@@ -109,7 +109,7 @@ Rectangle {
             }
 
             Label {
-                text: "Category"
+                text: i18n.tr("Category")
                 height: units.gu(4)
                 verticalAlignment: Text.AlignBottom
             }
@@ -141,7 +141,7 @@ Rectangle {
 
             Button {
                 width: parent.width
-                text: "Override category"
+                text: i18n.tr("Override category")
                 onClicked: {
                     PopupUtils.open(categoryEditor)
                 }

@@ -25,7 +25,7 @@ Rectangle {
 
         anchors.fill: parent
         verticalAlignment: Text.AlignVCenter
-        text: "Clear"
+        text: i18n.tr("Clear")
         fontSize: "medium"
         color: "#e8e1d0"
         font.bold: true

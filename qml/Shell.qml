@@ -544,7 +544,7 @@ Item {
         anchors.centerIn: parent
         visible: ApplicationManager.fake ? ApplicationManager.fake : false
         z: dialogs.z + 10
-        text: "EARLY ALPHA\nNOT READY FOR USE"
+        text: i18n.tr("EARLY ALPHA\nNOT READY FOR USE")
         color: "lightgrey"
         opacity: 0.2
         font.weight: Font.Black

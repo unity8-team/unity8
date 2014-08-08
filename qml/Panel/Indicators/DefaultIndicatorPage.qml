@@ -197,7 +197,7 @@ IndicatorBase {
         color: "#e8e1d0"
         fontSize: "medium"
 
-        text: "Empty!"
+        text: i18n.tr("Empty!")
     }
 
     function start()

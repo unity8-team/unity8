@@ -33,7 +33,7 @@ Page {
 
     ListItem.Standard {
         id: visualCheckItem
-        text: "Enable Visual Representation"
+        text: i18n.tr("Enable Visual Representation")
         control: Switch {
             id: visualCheck
             checked: true
@@ -84,7 +84,7 @@ Page {
             anchors {
                 left: parent.left
             }
-            text: "Back"
+            text: i18n.tr("Back")
             onClicked: page.pageStack.reset()
         }
     }
