@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-08-07 21:19+0000\n"
-"Last-Translator: Florian K <florian.kuhn@gmail.com>\n"
+"PO-Revision-Date: 2014-08-08 09:50+0000\n"
+"Last-Translator: Martin Pitt <martin.pitt@ubuntu.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-08 07:07+0000\n"
+"X-Launchpad-Export-Date: 2014-08-09 05:48+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 
 #: ../src/app/qml/reminders.qml:201
@@ -35,6 +35,8 @@ msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"Keine Notiz ausgewählt.\n"
+"Wählen Sie eine Notiz zur Detailansicht aus."
 
 #: ../src/app/qml/reminders.qml:315
 msgid "No account available"
@@ -64,16 +66,16 @@ msgstr "Privat"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr ""
+msgstr "Zum Aktualisieren loslassen"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr ""
+msgstr "Zum Aktualisieren herunterziehen"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "Erinnerung entfernen"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
@@ -144,16 +146,21 @@ msgstr "Notiz hinzufügen"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"Keine Notizen verfügbar. Sie können diese erstellen, indem Sie auf „Notiz "
+"hinzufügen“ tippen."
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders using the \"Add "
 "reminder\" button or by setting a reminder when viewing a note."
 msgstr ""
+"Keine Erinnerungen verfügbar. Sie können diese hinzufügen, indem Sie "
+"entweder auf \"Erinnerung hinzufügen\" tippen oder eine Erinnerung beim "
+"Anzeigen einer Notiz erstellen."
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "Wählen sie ein Datum und eine Zeit für die Erinnerung"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
@@ -235,25 +242,25 @@ msgstr "im %1 %2"
 #: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "Fehler beim Aktualisieren der Notizen: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "Fehler beim Aktualisieren der Notizbücher: %1"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
 msgid "Authentication expired."
-msgstr ""
+msgstr "Authentifizierung abgelaufen."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Limit exceeded."
-msgstr ""
+msgstr "Obergrenze überschritten."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Rate limit exceeded."
-msgstr ""
+msgstr "Obergrenze für Rate überschritten."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
-msgstr ""
+msgstr "Kontingent überschritten."
