@@ -9,7 +9,7 @@
             "desktop": "com.ubuntu.reminders.desktop"
         }
     },
-    "maintainer": "Ubuntu Reminders app developers <ubuntu-phone@lists.launchpad.net>",
+    "maintainer": "Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>",
     "name": "com.ubuntu.reminders",
     "title": "Reminders",
     "version": "0.5.@BZR_REVNO@",
