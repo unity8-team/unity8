@@ -22,7 +22,8 @@ import "../Components/ListItems"
 
 Item {
     id: root
-    readonly property real panelHeight: indicatorArea.y + d.indicatorHeight
+    readonly property real panelHeight: indicators.panelHeight + indicatorsSeparatorLine.height
+    readonly property real panelBottomY: indicatorArea.y + panelHeight
     property alias indicators: __indicators
     property alias callHint: __callHint
     property bool fullscreenMode: false
@@ -32,7 +33,7 @@ Item {
         property real darkenedOpacity: 0.6
         anchors {
             top: parent.top
-            topMargin: panelHeight
+            topMargin: panelBottomY
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -165,11 +166,6 @@ Item {
         }
     }
 
-    QtObject {
-        id: d
-        readonly property real indicatorHeight: indicators.panelHeight + indicatorsSeparatorLine.height
-    }
-
     states: [
         State {
             name: "onscreen" //fully opaque and visible at top edge of screen
@@ -184,7 +180,7 @@ Item {
             when: fullscreenMode
             PropertyChanges {
                 target: indicatorArea;
-                anchors.topMargin: indicators.state === "initial" ? -d.indicatorHeight : 0
+                anchors.topMargin: indicators.state === "initial" ? -panelHeight : 0
             }
         }
     ]

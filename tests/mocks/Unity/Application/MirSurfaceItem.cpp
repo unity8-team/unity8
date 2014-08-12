@@ -56,9 +56,6 @@ MirSurfaceItem::~MirSurfaceItem()
     }
     if (m_parentSurface)
         m_parentSurface->removeChildSurface(this);
-
-    if (m_application)
-        m_application->removeSurface(this);
 }
 
 void MirSurfaceItem::paint(QPainter * painter)

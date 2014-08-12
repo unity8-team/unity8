@@ -99,6 +99,9 @@ class ApplicationManager : public ApplicationManagerInterface {
     Q_INVOKABLE bool stopApplication(const QString &appId) override;
     Q_INVOKABLE bool updateScreenshot(const QString &appId) override;
 
+    Q_INVOKABLE bool registerSurfaceSizerCallback(const QJSValue &callback) override;
+    Q_INVOKABLE void deregisterSurfaceSizerCallback() override;
+
     QString focusedApplicationId() const override;
     bool suspended() const;
     void setSuspended(bool suspended);

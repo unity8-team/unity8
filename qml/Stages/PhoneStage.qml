@@ -86,6 +86,7 @@ Rectangle {
 
     QtObject {
         id: priv
+        objectName: "priv"
 
         property string focusedAppId: ApplicationManager.focusedApplicationId
         property var focusedApplication: ApplicationManager.findApplication(focusedAppId)
@@ -104,6 +105,18 @@ Rectangle {
             return -1;
         }
 
+        function surfaceSizer(surface) {
+            surface.width = root.width;
+            surface.height = root.height - maximizedAppTopMargin;
+            return surface;
+        }
+
+        Component.onCompleted: {
+            ApplicationManager.registerSurfaceSizerCallback(priv.surfaceSizer);
+        }
+        Component.onDestruction: {
+            ApplicationManager.deregisterSurfaceSizerCallback();
+        }
     }
 
     Flickable {

@@ -46,7 +46,7 @@ Item {
     property real edgeSize: units.gu(2)
     property url defaultBackground: Qt.resolvedUrl(shell.width >= units.gu(60) ? "graphics/tablet_background.jpg" : "graphics/phone_background.jpg")
     property url background
-    readonly property real panelHeight: panel.panelHeight
+//    readonly property real panelHeight: panel.panelHeight
 
     property bool sideStageEnabled: shell.width >= units.gu(100)
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
@@ -161,8 +161,7 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "maximizedAppTopMargin"
-                // Not just using panel.panelHeight as that changes depending on the focused app.
-                value: panel.indicators.panelHeight
+                value: panel.panelHeight
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -185,7 +184,7 @@ Item {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
-        anchors { fill: parent; topMargin: panel.panelHeight }
+        anchors { fill: parent; topMargin: panel.panelBottomY }
         z: notifications.useModal || panel.indicators.shown ? overlay.z + 1 : overlay.z - 1
     }
 
@@ -213,17 +212,17 @@ Item {
         id: lockscreen
         objectName: "lockscreen"
 
-        readonly property int backgroundTopMargin: -panel.panelHeight
+        readonly property int backgroundTopMargin: -panel.panelBottomY
 
         hides: [launcher, panel.indicators]
         shown: false
         enabled: true
         showAnimation: StandardAnimation { property: "opacity"; to: 1 }
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
-        y: panel.panelHeight
+        y: panel.panelBottomY
         visible: required
         width: parent.width
-        height: parent.height - panel.panelHeight
+        height: parent.height - panel.panelBottomY
         background: shell.background
         alphaNumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
         minPinLength: 4
@@ -299,9 +298,9 @@ Item {
         // Just a tiny wrapper to adjust greeter's x without messing with its own dragging
         id: greeterWrapper
         x: launcher.progress
-        y: panel.panelHeight
+        y: panel.panelBottomY
         width: parent.width
-        height: parent.height - panel.panelHeight
+        height: parent.height - panel.panelBottomY
 
         Behavior on x {
             enabled: !launcher.dashSwipe
@@ -502,9 +501,9 @@ Item {
             model: NotificationBackend.Model
             margin: units.gu(1)
 
-            y: panel.panelHeight
+            y: panel.panelBottomY
             width: parent.width
-            height: parent.height - panel.panelHeight
+            height: parent.height - panel.panelBottomY
 
             states: [
                 State {

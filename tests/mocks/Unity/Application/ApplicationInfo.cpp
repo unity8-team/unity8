@@ -78,7 +78,7 @@ void ApplicationInfo::createSurface()
 
 void ApplicationInfo::setSurface(MirSurfaceItem* surface)
 {
-    qDebug() << "Application::setSurface - appId=" << appId() << "surface=" << surface;
+    qDebug() << "Application::setSurface - appId=" << appId() << "surface=" << (surface ? surface->name() : "null");
     if (m_surface == surface)
         return;
 
@@ -97,7 +97,6 @@ void ApplicationInfo::setSurface(MirSurfaceItem* surface)
     }
 
     Q_EMIT surfaceChanged(m_surface);
-    SurfaceManager::singleton()->registerSurface(m_surface);
 }
 
 void ApplicationInfo::addPromptSurface(MirSurfaceItem* surface)

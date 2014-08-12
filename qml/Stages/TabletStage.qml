@@ -106,6 +106,27 @@ Rectangle {
             }
             return oneWayFlick;
         }
+
+        function surfaceSizer(surface) {
+            surface.width = root.width;
+            surface.height = root.height - maximizedAppTopMargin;
+
+            if (surface.appId) { // if app side stage, set different width
+                var app = ApplicationManager.findApplication(surface.appId);
+                if (app && app.stage === ApplicationInfoInterface.SideStage) {
+                    surface.width = spreadView.sideStageWidth;
+                }
+            }
+
+            return surface;
+        }
+
+        Component.onCompleted: {
+            ApplicationManager.registerSurfaceSizerCallback(priv.surfaceSizer);
+        }
+        Component.onDestruction: {
+            ApplicationManager.deregisterSurfaceSizerCallback();
+        }
     }
 
     Connections {

@@ -26,20 +26,11 @@ Item {
     width: units.gu(70)
     height: units.gu(70)
 
-    Rectangle {
-
-    }
-
     PhoneStage {
         id: phoneStage
         anchors { fill: parent; rightMargin: units.gu(30) }
         dragAreaWidth: units.gu(2)
-    }
-
-    Binding {
-        target: ApplicationManager
-        property: "rightMargin"
-        value: phoneStage.anchors.rightMargin
+        maximizedAppTopMargin: units.gu(3) + units.dp(2)
     }
 
     Rectangle {
@@ -228,6 +219,15 @@ Item {
             tryCompare(spreadView, "contentX", -spreadView.shift);
 
             compare(ApplicationManager.focusedApplicationId, selectedApp.appId);
+        }
+
+        function test_surfaceSizer() {
+            var surface = { width: 100, height: 200 };
+            var phoneStagePriv = findInvisibleChild(phoneStage, "priv");
+
+            surface = phoneStagePriv.surfaceSizer(surface);
+            compare(surface.width, phoneStage.width);
+            compare(surface.height, phoneStage.height - phoneStage.maximizedAppTopMargin);
         }
 
         function cleanup() {
