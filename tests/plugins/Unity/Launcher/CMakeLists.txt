@@ -16,7 +16,7 @@ add_definitions(-DLAUNCHER_TESTING)
 
 ### LauncherBackendTest
 set(testBackendCommand dbus-test-runner --task ${CMAKE_CURRENT_BINARY_DIR}/launcherbackendtestExec
-      --parameter -o --parameter ${CMAKE_BINARY_DIR}/launcherbackendtest.xml,xunitxml
+      --parameter -o --parameter ${CMAKE_BINARY_DIR}/testlauncherbackend.xml,xunitxml
       --parameter -o --parameter -,txt)
 add_test(NAME launcherbackendtest COMMAND ${testBackendCommand})
 add_custom_target(launcherbackendtest ${testBackendCommand})
@@ -31,7 +31,7 @@ qt5_use_modules(launcherbackendtestExec Test Core DBus)
 
 ### LauncherModelTest
 set(testModelCommand ${CMAKE_CURRENT_BINARY_DIR}/launchermodeltestExec
-      -o ${CMAKE_BINARY_DIR}/launchermodeltest.xml,xunitxml
+      -o ${CMAKE_BINARY_DIR}/testlaunchermodel.xml,xunitxml
       -o -,txt)
 add_test(NAME launchermodeltest COMMAND ${testModelCommand})
 add_custom_target(launchermodeltest ${testModelCommand})

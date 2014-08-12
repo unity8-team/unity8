@@ -18,7 +18,7 @@ macro(indicator_test TEST)
     cmake_parse_arguments(test "" "" "${multi_value_keywords}" ${ARGN})
 
     set(testCommand ${CMAKE_CURRENT_BINARY_DIR}/${TEST}Exec
-          -o ${CMAKE_BINARY_DIR}/${TEST}.xml,xunitxml
+          -o ${CMAKE_BINARY_DIR}/test${TEST}.xml,xunitxml
           -o -,txt)
     add_test(NAME ${TEST} COMMAND ${testCommand})
     add_custom_target(${TEST} ${testCommand})

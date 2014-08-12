@@ -8,7 +8,7 @@ macro(run_tests)
     set(_test_list "")
     foreach(_test ${ARGN})
         set(testCommand ${CMAKE_CURRENT_BINARY_DIR}/${_test}Exec
-              -o ${CMAKE_BINARY_DIR}/${_test}.xml,xunitxml
+              -o ${CMAKE_BINARY_DIR}/test${_test}.xml,xunitxml
               -o -,txt)
         add_test(NAME ${_test} COMMAND ${testCommand})
         set_tests_properties(${_test} PROPERTIES ENVIRONMENT "LC_ALL=C")

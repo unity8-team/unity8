@@ -9,7 +9,7 @@ add_definitions(-DSESSION_TESTING)
 
 ### SessionBackendTest
 set(testBackendCommand dbus-test-runner --task ${CMAKE_CURRENT_BINARY_DIR}/sessionbackendtestExec
-      --parameter -o --parameter ${CMAKE_BINARY_DIR}/sessionbackendtest.xml,xunitxml
+      --parameter -o --parameter ${CMAKE_BINARY_DIR}/testsessionbackend.xml,xunitxml
       --parameter -o --parameter -,txt)
 add_test(NAME sessionbackendtest COMMAND ${testBackendCommand})
 add_custom_target(sessionbackendtest ${testBackendCommand})
