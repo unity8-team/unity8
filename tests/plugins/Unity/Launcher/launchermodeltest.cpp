@@ -97,8 +97,8 @@ public:
     bool requestFocusApplication(const QString &appId) { Q_UNUSED(appId); return true; }
     bool suspended() const { return false; }
     void setSuspended(bool) {}
-    bool registerSurfaceSizerCallback(const QJSValue &callback) override { Q_UNUSED(callback); return true; }
-    void deregisterSurfaceSizerCallback() override {};
+    QJSValue surfaceAboutToBeCreatedCallback() const override { return QJSValue(false); }
+    void setSurfaceAboutToBeCreatedCallback(const QJSValue &callback) override { Q_UNUSED(callback); }
 
 private:
     QList<MockApp*> m_list;

@@ -99,12 +99,12 @@ class ApplicationManager : public ApplicationManagerInterface {
     Q_INVOKABLE bool stopApplication(const QString &appId) override;
     Q_INVOKABLE bool updateScreenshot(const QString &appId) override;
 
-    Q_INVOKABLE bool registerSurfaceSizerCallback(const QJSValue &callback) override;
-    Q_INVOKABLE void deregisterSurfaceSizerCallback() override;
-
     QString focusedApplicationId() const override;
-    bool suspended() const;
-    void setSuspended(bool suspended);
+    bool suspended() const override;
+    void setSuspended(bool suspended) override;
+
+    QJSValue surfaceAboutToBeCreatedCallback() const override;
+    void setSurfaceAboutToBeCreatedCallback(const QJSValue &callback) override;
 
     // Only for testing
     Q_INVOKABLE QStringList availableApplications();
@@ -125,6 +125,7 @@ class ApplicationManager : public ApplicationManagerInterface {
     void buildListOfAvailableApplications();
     void generateQmlStrings(ApplicationInfo *application);
     bool m_suspended;
+    QJSValue m_surfaceAboutToBeCreatedCallback;
     QList<ApplicationInfo*> m_runningApplications;
     QList<ApplicationInfo*> m_availableApplications;
 

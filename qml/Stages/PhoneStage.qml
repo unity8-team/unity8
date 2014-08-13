@@ -112,10 +112,10 @@ Rectangle {
         }
 
         Component.onCompleted: {
-            ApplicationManager.registerSurfaceSizerCallback(priv.surfaceSizer);
+            ApplicationManager.surfaceAboutToBeCreatedCallback = priv.surfaceSizer;
         }
         Component.onDestruction: {
-            ApplicationManager.deregisterSurfaceSizerCallback();
+            ApplicationManager.surfaceAboutToBeCreatedCallback = null;
         }
     }
 

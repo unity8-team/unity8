@@ -48,6 +48,7 @@ ApplicationManager *ApplicationManager::singleton()
 ApplicationManager::ApplicationManager(QObject *parent)
     : ApplicationManagerInterface(parent)
     , m_suspended(false)
+    , m_surfaceAboutToBeCreatedCallback(QJSValue::UndefinedValue)
 {
     m_roleNames.insert(RoleSurface, "surface");
     m_roleNames.insert(RoleFullscreen, "fullscreen");
@@ -341,13 +342,23 @@ void ApplicationManager::unfocusCurrentApplication()
     Q_EMIT focusedApplicationIdChanged();
 }
 
-bool ApplicationManager::registerSurfaceSizerCallback(const QJSValue &callback)
+QJSValue ApplicationManager::surfaceAboutToBeCreatedCallback() const
 {
-    Q_UNUSED(callback)
+    return m_surfaceAboutToBeCreatedCallback;
 }
 
-void ApplicationManager::deregisterSurfaceSizerCallback()
+void ApplicationManager::setSurfaceAboutToBeCreatedCallback(const QJSValue &callback)
 {
+    if (m_surfaceAboutToBeCreatedCallback.equals(callback))
+        return;
+
+    if (callback.isCallable()) {
+        m_surfaceAboutToBeCreatedCallback = callback;
+    } else {
+        qWarning() << "ApplicationManager::setSurfaceAboutToBeCreatedCallback - attempted to register a non-function!";
+        m_surfaceAboutToBeCreatedCallback = QJSValue::UndefinedValue;
+    }
+    Q_EMIT surfaceAboutToBeCreatedCallbackChanged();
 }
 
 void ApplicationManager::generateQmlStrings(ApplicationInfo *application)
