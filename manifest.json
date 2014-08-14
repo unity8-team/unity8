@@ -7,6 +7,11 @@
             "account-application": "com.ubuntu.reminders_reminders.application",
             "apparmor": "apparmor.json",
             "desktop": "com.ubuntu.reminders.desktop"
+        },
+        "evernote-account-plugin": {
+            "account-qml-plugin": "evernote",
+            "account-provider": "evernote.provider",
+            "account-service": "evernote.service"
         }
     },
     "maintainer": "Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>",
@@ -17,10 +22,17 @@
         "vcs-bzr": "lp:reminders-app",
         "vcs-bzr-revno": "@BZR_REVNO@"
     },
-   "x-test": {
-           "autopilot": {
-                "autopilot_module": "@AUTOPILOT_DIR@",
-                "depends": ["python3-dbus", "python3-dbusmock", "python3-fixtures", "python3-oauthlib", "python3-requests-oauthlib", "account-plugin-evernote-sandbox"]
-            }
-   }
+    "x-test": {
+        "autopilot": {
+            "autopilot_module": "@AUTOPILOT_DIR@",
+            "depends": [
+                "python3-dbus",
+                "python3-dbusmock",
+                "python3-fixtures",
+                "python3-oauthlib",
+                "python3-requests-oauthlib",
+                "account-plugin-evernote-sandbox"
+            ]
+        }
+    }
 }
