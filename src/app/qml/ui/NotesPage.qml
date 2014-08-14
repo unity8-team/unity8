@@ -23,7 +23,7 @@ import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
 import "../components"
 
-Page {
+PageWithBottomEdge {
     id: root
 
     property var selectedNote: null
@@ -38,6 +38,10 @@ Page {
             NotesStore.refreshNotes();
         }
     }
+
+    onIsCollapsedChanged: {
+        console.log(bottomEdgeEnabled)
+    } 
 
     tools: ToolbarItems {
         ToolbarButton {
@@ -98,8 +102,8 @@ Page {
                 // ubuntu-mobile-icons theme to suru:
                 //iconName: root.selectedNote.reminder ? "reminder" : "reminder-new"
                 iconSource: root.selectedNote.reminder ?
-                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
-                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
                 visible: root.selectedNote !== null
                 onTriggered: {
                     root.selectedNote.reminder = !root.selectedNote.reminder
@@ -118,7 +122,7 @@ Page {
                 }
             }
         }
-   }
+    }
 
     Notes {
         id: notes
