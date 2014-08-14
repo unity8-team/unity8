@@ -19,6 +19,11 @@ set(APP_HARDCODE reminders)
 set(MAIN_QML ${APP_HARDCODE}.qml)
 set(EXEC "reminders")
 
+set(ACCOUNT_ICON_DIR ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
+set(ACCOUNT_PROVIDER_DIR ${CMAKE_INSTALL_DATADIR}/accounts/providers)
+set(ACCOUNT_SERVICE_DIR ${CMAKE_INSTALL_DATADIR}/accounts/services)
+set(ACCOUNT_QML_PLUGIN_DIR ${CMAKE_INSTALL_DATADIR}/accounts/qml-plugins)
+
 if(CLICK_MODE)
     if(NOT DEFINED BZR_SOURCE)
         set(BZR_SOURCE "lp:${APP_HARDCODE}")
@@ -54,11 +59,6 @@ else(CLICK_MODE)
     set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
     set(APPLICATION_DIR ${CMAKE_INSTALL_DATADIR}/accounts/applications)
 endif(CLICK_MODE)
-
-set(ACCOUNT_ICON_DIR ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
-set(ACCOUNT_PROVIDER_DIR ${CMAKE_INSTALL_DATADIR}/accounts/providers)
-set(ACCOUNT_SERVICE_DIR ${CMAKE_INSTALL_DATADIR}/accounts/services)
-set(ACCOUNT_QML_PLUGIN_DIR ${CMAKE_INSTALL_DATADIR}/accounts/qml-plugins)
 
 file(GLOB_RECURSE I18N_SRC_FILES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
