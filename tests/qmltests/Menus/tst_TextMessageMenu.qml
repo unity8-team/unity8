@@ -45,18 +45,21 @@ Item {
                 title: "Text Message"
                 body: "I am a little teapot"
                 time: "11:08am"
+                _animationDuration: 0
             }
 
             TextMessageMenu {
                 id: messageMenuRemovable
                 removable: true
                 anchors.top: messageMenu.bottom
+                _animationDuration: 0
             }
 
             TextMessageMenu {
                 id: messageMenuSelected
                 removable: true
                 anchors.top: messageMenuRemovable.bottom
+                _animationDuration: 0
 
                 onReplied: {
                     textMessageReply = value;
@@ -177,7 +180,7 @@ Item {
         function test_iconActivated() {
             var icon = findChild(messageMenuSelected, "icon");
 
-            mouseClick(icon, icon.width / 2, icon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(icon, icon.width / 2, icon.height / 2);
             compare(signalSpyIconActivated.count > 0, true, "activate icon should have been triggered");
         }
 
@@ -241,7 +244,7 @@ Item {
             var sendButton = findChild(messageMenuSelected, "sendButton");
             verify(sendButton !== undefined, "Send button not found");
 
-            mouseClick(sendButton, sendButton.width / 2, sendButton.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(sendButton, sendButton.width / 2, sendButton.height / 2);
             compare(signalSpyReply.count > 0, true);
             compare(textMessageReply, "reply1", "Text message did not reply with correct text.");
         }

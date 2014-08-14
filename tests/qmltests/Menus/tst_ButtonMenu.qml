@@ -69,7 +69,7 @@ Item {
             var button2 = findChild(buttonMenu2, "button");
             verify(button !== undefined);
 
-            mouseClick(button, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(button, button.width / 2, button.height / 2);
             compare(signalSpy.count > 0, true, "signal clicked not triggered");
         }
     }

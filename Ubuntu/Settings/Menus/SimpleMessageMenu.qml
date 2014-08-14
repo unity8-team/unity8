@@ -38,8 +38,10 @@ ListItem.Empty {
     signal dismissed
 
     property alias footer: footerLoader.sourceComponent
+    property real _animationDuration: UbuntuAnimation.FastDuration
 
     implicitHeight: layout.height + units.gu(3)
+    clip: state == "expanded"
 
     Rectangle {
         id: background
@@ -58,7 +60,8 @@ ListItem.Empty {
             right: parent.right
             leftMargin: units.gu(2)
             rightMargin: units.gu(2)
-            verticalCenter: parent.verticalCenter
+            top: parent.top
+            topMargin: units.gu(1.5)
         }
         spacing: units.gu(1.5)
 
@@ -80,9 +83,17 @@ ListItem.Empty {
         Loader {
             id: footerLoader
             visible: menu.state === "expanded"
+            opacity: 0.0
             asynchronous: false
             Layout.fillWidth: true
             Layout.fillHeight: true
+        }
+    }
+
+    Behavior on height {
+        NumberAnimation {
+            duration: _animationDuration
+            easing.type: Easing.OutQuad
         }
     }
 
@@ -96,16 +107,16 @@ ListItem.Empty {
             target: background
             alpha: 0.05
         }
+        PropertyChanges {
+            target: footerLoader
+            opacity: 1.0
+        }
     }
 
     transitions: Transition {
         ParallelAnimation {
-            NumberAnimation {
-                properties: "height"
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-            ColorAnimation { target: background}
+            NumberAnimation { target: background; property: "alpha"; duration: _animationDuration }
+            PropertyAnimation { target: footerLoader; property: "opacity"; duration:  _animationDuration }
         }
     }
 

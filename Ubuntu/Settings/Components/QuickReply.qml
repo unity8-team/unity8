@@ -97,7 +97,7 @@ Item {
                         rightMargin: messageMargins
                     }
                     verticalAlignment: Text.AlignVCenter
-                    fontSize: "medium"v
+                    fontSize: "medium"
                     text: modelData
                 }
 

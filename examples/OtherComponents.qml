@@ -125,7 +125,7 @@ Item {
 
             UserSessionMenu {
                 name: i18n.tr("Lola Chang")
-                iconSource: Qt.resolvedUrl("../tests/artwork/avatar.png")
+                iconSource: "image://theme/contact"
                 active: true
             }
 
@@ -197,6 +197,7 @@ Item {
                         text: model.text
                         eventColor: model.eventColor
                         time: model.time
+                        enabled: false
                     }
                 }
             }

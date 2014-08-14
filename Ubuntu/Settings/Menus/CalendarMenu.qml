@@ -54,7 +54,6 @@ ListItem.Empty {
                 right: parent.right
             }
             fontSize: "large"
-            //ItemStyle.class: "label label-date"
             text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
         }
 

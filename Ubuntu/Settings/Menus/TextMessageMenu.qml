@@ -26,7 +26,7 @@ SimpleMessageMenu {
     id: menu
 
     property bool replyEnabled: true
-    property string replyButtonText: "Send"
+    property string replyButtonText: i18n.tr("Send")
 
     signal replied(string value)
 

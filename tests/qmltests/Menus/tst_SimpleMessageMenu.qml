@@ -161,7 +161,7 @@ Item {
         function test_iconActivated() {
             var icon = findChild(messageMenuSelected, "icon");
 
-            mouseClick(icon, icon.width / 2, icon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(icon, icon.width / 2, icon.height / 2);
             compare(signalSpyIconActivated.count > 0, true, "activate icon should have been triggered");
         }
 

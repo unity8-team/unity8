@@ -36,7 +36,7 @@ Item {
     implicitHeight: layout.height
 
     function shakeIcon() {
-        ani.restart();
+        shake.restart();
     }
 
     RowLayout {
@@ -56,6 +56,10 @@ Item {
                 id: avatarImage
                 objectName: "avatar"
                 fillMode: Image.PreserveAspectFit
+                sourceSize {
+                    width: width
+                    height: height
+                }
             }
         }
 
@@ -117,7 +121,7 @@ Item {
             }
 
             SequentialAnimation {
-                id: ani
+                id: shake
                 PropertyAnimation { target: iconImage; property: "rotation"; duration: 50; to: -20 }
                 SpringAnimation { target: iconImage; property: "rotation"; from: -20; to: 0; mass: 0.5; spring: 15; damping: 0.1 }
             }

@@ -74,7 +74,7 @@ Item {
         }
 
         function test_activate() {
-            mouseClick(accessPoint, accessPoint.width / 2, accessPoint.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(accessPoint, accessPoint.width / 2, accessPoint.height / 2);
             compare(signalSpyTriggered.count > 0, true, "activate signal should have been triggered");
         }
 

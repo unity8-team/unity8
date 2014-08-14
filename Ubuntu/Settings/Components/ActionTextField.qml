@@ -19,7 +19,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import QtQuick.Layouts 1.1
 
 Item {
@@ -44,7 +44,7 @@ Item {
             id: replyField
             objectName: "replyText"
 
-            placeholderText: "Reply"
+            placeholderText: i18n.tr("Reply")
             hasClearButton: false
 
             Layout.fillWidth: true
@@ -63,7 +63,7 @@ Item {
             objectName: "sendButton"
             Layout.preferredWidth: units.gu(9)
             enabled: replyField.text !== "" && textField.activateEnabled
-            color: enabled ? "#c94212" : "#bababa"
+            color: UbuntuColors.green
 
             onClicked: {
                 textField.activated(replyField.text);

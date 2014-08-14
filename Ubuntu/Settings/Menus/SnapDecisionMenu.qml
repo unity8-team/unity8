@@ -27,10 +27,10 @@ SimpleMessageMenu {
     id: menu
 
     property bool actionEnabled: true
-    property string actionButtonText: "Call back"
+    property string actionButtonText: i18n.tr("Call back")
 
     property bool replyEnabled: true
-    property string replyButtonText: "Send"
+    property string replyButtonText: i18n.tr("Send")
 
     signal actionActivated
     signal replied(string value)
@@ -53,8 +53,7 @@ SimpleMessageMenu {
 
                 Button {
                     objectName: "messageButton"
-                    text: "Message"
-                    gradient: UbuntuColors.greyGradient
+                    text: i18n.tr("Message")
                     Layout.fillWidth: true
 
                     onClicked: {
@@ -71,6 +70,7 @@ SimpleMessageMenu {
                     objectName: "actionButton"
                     enabled: menu.actionEnabled
                     text: actionButtonText
+                    color: UbuntuColors.green
                     Layout.fillWidth: true
 
                     onClicked: {

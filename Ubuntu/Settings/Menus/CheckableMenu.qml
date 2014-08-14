@@ -43,8 +43,7 @@ ListItem.Empty {
             checked = menu.checked;
         }
 
-        // FIXME : should use Checkbox.toggled signal
-        // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
+        // FIXME : create a bi-directional feedback component
         onCheckedChanged: {
             if (!enableCheckConnection) {
                 return;
@@ -91,6 +90,5 @@ ListItem.Empty {
             verticalCenter: parent.verticalCenter
         }
         elide: Text.ElideRight
-        opacity: label.enabled ? 1.0 : 0.5
     }
 }

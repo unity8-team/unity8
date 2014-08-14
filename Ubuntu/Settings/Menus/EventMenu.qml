@@ -55,7 +55,8 @@ ListItems.Empty {
             rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
-        opacity: label.enabled ? 1.0 : 0.5
+        maximumLineCount: 1
+        opacity: enabled ? 1.0 : 0.5
     }
 
     Components.Label {
@@ -66,5 +67,6 @@ ListItems.Empty {
             right: parent.right
             rightMargin: menu.__contentsMargins
         }
+        opacity: enabled ? 1.0 : 0.5
     }
 }

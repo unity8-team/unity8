@@ -46,7 +46,6 @@ ListItem.Empty {
             leftMargin: menu.__contentsMargins
             rightMargin: menu.__contentsMargins
         }
-        height: running ? trackRow.height : playerRow.height
 
         RowLayout {
             objectName: "player"
