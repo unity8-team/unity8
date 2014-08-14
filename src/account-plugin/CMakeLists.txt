@@ -1,3 +1,8 @@
+set(EVERNOTE_SANDBOX_CONSUMER_KEY "ubuntu")
+set(EVERNOTE_SANDBOX_CONSUMER_SECRET "44f8ee81a8359500")
+set(EVERNOTE_CONSUMER_KEY "canonicalis")
+set(EVERNOTE_CONSUMER_SECRET "174a72ce5bffbcad")
+
 function(EvernoteOnlineAccountSetup account_display_name account_name hostname consumer_key consumer_secret)
 
     set(EVERNOTE_DATA_FILENAME evernote)
@@ -21,24 +26,19 @@ function(EvernoteOnlineAccountSetup account_display_name account_name hostname c
     set(SERVICE_FILE data/services/${account_name}.service)
     set(QML_PLUGIN_FILE qml/${account_name}/Main.qml)
 
-    set(ICON_DIR ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
-    set(PROVIDER_DIR ${CMAKE_INSTALL_DATADIR}/accounts/providers)
-    set(SERVICE_DIR ${CMAKE_INSTALL_DATADIR}/accounts/services)
-    set(QML_PLUGIN_DIR ${CMAKE_INSTALL_DATADIR}/accounts/qml-plugins)
-
-    install(FILES ${ICON_FILE} DESTINATION ${ICON_DIR})
+    install(FILES ${ICON_FILE} DESTINATION ${ACCOUNT_ICON_DIR})
 
     configure_file(${PROVIDER_FILE_IN} ${CMAKE_CURRENT_BINARY_DIR}/${PROVIDER_FILE})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROVIDER_FILE}
-            DESTINATION ${PROVIDER_DIR})
+            DESTINATION ${ACCOUNT_PROVIDER_DIR})
 
     configure_file(${SERVICE_FILE_IN} ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_FILE})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_FILE}
-            DESTINATION ${SERVICE_DIR})
+            DESTINATION ${ACCOUNT_SERVICE_DIR})
 
     configure_file(${QML_PLUGIN_FILE_IN} ${CMAKE_CURRENT_BINARY_DIR}/${QML_PLUGIN_FILE})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${QML_PLUGIN_FILE}
-            DESTINATION ${QML_PLUGIN_DIR}/${EVERNOTE_ACCOUNT_NAME})
+            DESTINATION ${ACCOUNT_QML_PLUGIN_DIR}/${EVERNOTE_ACCOUNT_NAME})
 
 endfunction()
 
@@ -46,6 +46,9 @@ endfunction()
 EvernoteOnlineAccountSetup(Evernote evernote www.evernote.com
                            ${EVERNOTE_CONSUMER_KEY} ${EVERNOTE_CONSUMER_SECRET})
 
-# Build and install the files for the sandbox plugin
-EvernoteOnlineAccountSetup("Evernote Developer Sandbox" evernote-sandbox sandbox.evernote.com
-                           ${EVERNOTE_SANDBOX_CONSUMER_KEY} ${EVERNOTE_SANDBOX_CONSUMER_SECRET})
+if(NOT CLICK_MODE)
+    # Build and install the files for the sandbox plugin
+    # We're only building it as a .deb package for Jenkins, we don't need it in the click package
+    EvernoteOnlineAccountSetup("Evernote Developer Sandbox" evernote-sandbox sandbox.evernote.com
+                               ${EVERNOTE_SANDBOX_CONSUMER_KEY} ${EVERNOTE_SANDBOX_CONSUMER_SECRET})
+endif(NOT CLICK_MODE)

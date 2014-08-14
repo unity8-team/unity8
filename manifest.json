@@ -9,9 +9,9 @@
             "desktop": "com.ubuntu.reminders.desktop"
         },
         "evernote-account-plugin": {
-            "account-qml-plugin": "evernote",
-            "account-provider": "evernote.provider",
-            "account-service": "evernote.service"
+            "account-qml-plugin": "@ACCOUNT_SERVICE_DIR@/evernote",
+            "account-provider": "@ACCOUNT_PROVIDER_DIR@/evernote.provider",
+            "account-service": "@ACCOUNT_SERVICE_DIR@/evernote.service"
         }
     },
     "maintainer": "Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>",

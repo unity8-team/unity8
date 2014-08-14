@@ -55,6 +55,11 @@ else(CLICK_MODE)
     set(APPLICATION_DIR ${CMAKE_INSTALL_DATADIR}/accounts/applications)
 endif(CLICK_MODE)
 
+set(ACCOUNT_ICON_DIR ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
+set(ACCOUNT_PROVIDER_DIR ${CMAKE_INSTALL_DATADIR}/accounts/providers)
+set(ACCOUNT_SERVICE_DIR ${CMAKE_INSTALL_DATADIR}/accounts/services)
+set(ACCOUNT_QML_PLUGIN_DIR ${CMAKE_INSTALL_DATADIR}/accounts/qml-plugins)
+
 file(GLOB_RECURSE I18N_SRC_FILES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     src/app/qml/*.qml *.desktop.in)
