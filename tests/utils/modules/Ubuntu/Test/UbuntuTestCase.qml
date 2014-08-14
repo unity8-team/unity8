@@ -15,7 +15,7 @@
  */
 
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Ubuntu.Test 0.1 as UT
 
 TestCase {
