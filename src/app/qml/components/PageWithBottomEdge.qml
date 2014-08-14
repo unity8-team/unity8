@@ -64,6 +64,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Evernote 0.1
 
 Page {
     id: page
@@ -81,6 +82,8 @@ Page {
     readonly property bool isCollapsed: (tip.opacity === 1.0)
     readonly property bool bottomEdgePageLoaded: (edgeLoader.status == Loader.Ready)
     property var temporaryProperties: null
+
+    property bool bottomEdgeLabelVisible: true
 
     property bool _showEdgePageWhenReady: false
     property int _areaWhenExpanded: 0
@@ -105,7 +108,9 @@ Page {
     {
         if (edgeLoader.status === Loader.Ready) {
             edgeLoader.item.active = true
-            page.pageStack.push(edgeLoader.item)
+
+            NotesStore.createNote("Untitled", filter);
+
             if (edgeLoader.item.flickable) {
                 edgeLoader.item.flickable.contentY = -page.header.height
                 edgeLoader.item.flickable.returnToBounds()
@@ -150,6 +155,8 @@ Page {
 
         readonly property int tipHeight: units.gu(3)
         readonly property int pageStartY: 0
+
+        visible: bottomEdgeLabelVisible
 
         z: 1
         color: Theme.palette.normal.background
