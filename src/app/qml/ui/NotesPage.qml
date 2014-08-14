@@ -27,8 +27,15 @@ PageWithBottomEdge {
     id: root
 
     property var selectedNote: null
+    property bool narrowMode
 
     property alias filter: notes.filterNotebookGuid
+
+    bottomEdgeLabelVisible: narrowMode
+    bottomEdgeTitle: i18n.tr("Add note")
+    bottomEdgePageComponent: EditNotePage {
+        onExitEditMode: pagestack.pop();
+    }
 
     signal openSearch()
     signal editNote(var note)
@@ -39,13 +46,10 @@ PageWithBottomEdge {
         }
     }
 
-    onIsCollapsedChanged: {
-        console.log(bottomEdgeEnabled)
-    } 
-
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
+                visible: !narrowMode
                 text: i18n.tr("Add note")
                 iconName: "add"
                 onTriggered: {
