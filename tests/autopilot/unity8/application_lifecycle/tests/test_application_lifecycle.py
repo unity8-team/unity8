@@ -106,7 +106,7 @@ class ApplicationLifecycleTests(tests.ApplicationLifeCycleTestCase):
         self.assert_current_focused_application(application_name)
 
         self.main_window.show_dash_swiping()
-        self.assert_current_focused_application('')
+        self.assert_current_focused_application('unity8-dash')
 
         process_helpers.lock_unity()
         greeter = self.main_window.get_greeter()
@@ -114,4 +114,19 @@ class ApplicationLifecycleTests(tests.ApplicationLifeCycleTestCase):
 
         self.launch_upstart_application(application_name)
         self.assertThat(greeter.created, Eventually(Equals(False)))
+        self.assert_current_focused_application(application_name)
+
+    def test_click_dash_icon_must_unfocus_application(self):
+        application_name = self.launch_fake_app()
+        self.assert_current_focused_application(application_name)
+
+        self.main_window.show_dash_from_launcher()
+
+        self.assert_current_focused_application('unity8-dash')
+
+    def test_click_app_icon_on_dash_must_focus_it(self):
+        application_name = self.launch_fake_app()
+        self.main_window.show_dash_from_launcher()
+
+        self.main_window.launch_application(application_name)
         self.assert_current_focused_application(application_name)
