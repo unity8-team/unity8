@@ -7,30 +7,30 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
+"POT-Creation-Date: 2014-08-14 18:16+0100\n"
 "PO-Revision-Date: 2014-08-08 09:50+0000\n"
 "Last-Translator: Martin Pitt <martin.pitt@ubuntu.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:48+0000\n"
+"X-Launchpad-Export-Date: 2014-08-16 06:52+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
 msgstr "Notizen"
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr "Notizbücher"
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "Erinnerungen"
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -38,15 +38,15 @@ msgstr ""
 "Keine Notiz ausgewählt.\n"
 "Wählen Sie eine Notiz zur Detailansicht aus."
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
 msgstr "Kein Konto vorhanden"
 
-#: ../src/app/qml/reminders.qml:316
+#: ../src/app/qml/reminders.qml:320
 msgid "Please setup an account in the system settings"
 msgstr "Bitte stellen Sie ein Konto in den Systemeinstellungen ein"
 
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "Konto hinzufügen"
@@ -81,16 +81,12 @@ msgstr "Erinnerung entfernen"
 msgid "Mark as done"
 msgstr "Als erledigt markieren"
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr "Zurück"
-
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
-msgstr "Benutze es!"
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
+msgstr ""
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr "Unbenannt"
 
@@ -157,6 +153,10 @@ msgstr ""
 "Keine Erinnerungen verfügbar. Sie können diese hinzufügen, indem Sie "
 "entweder auf \"Erinnerung hinzufügen\" tippen oder eine Erinnerung beim "
 "Anzeigen einer Notiz erstellen."
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
+msgstr ""
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"

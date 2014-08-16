@@ -7,30 +7,30 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
+"POT-Creation-Date: 2014-08-14 18:16+0100\n"
 "PO-Revision-Date: 2014-07-25 06:38+0000\n"
 "Last-Translator: Fohanno Thierry <thierry.fohanno@ofis-bzh.org>\n"
 "Language-Team: Breton <br@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-26 07:17+0000\n"
-"X-Generator: Launchpad (build 17131)\n"
+"X-Launchpad-Export-Date: 2014-08-16 06:52+0000\n"
+"X-Generator: Launchpad (build 17156)\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
 msgstr "Notennoù"
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr "Karnedoù"
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "Degas-soñj"
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -38,15 +38,15 @@ msgstr ""
 "N'eus bet diuzet notenn ebet.\n"
 "Diuzit un notenn da welet anezhi en he hed."
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
 msgstr "N'eus kont ebet"
 
-#: ../src/app/qml/reminders.qml:316
+#: ../src/app/qml/reminders.qml:320
 msgid "Please setup an account in the system settings"
 msgstr "Krouit ur gont en arventennoù ar reizhiad, mar plij"
 
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "Ouzhpennañ ur gont"
@@ -81,16 +81,12 @@ msgstr "Diverkañ an degas-soñj"
 msgid "Mark as done"
 msgstr "Merkañ ez eo graet"
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr "Distreiñ"
-
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
-msgstr "Implijit anezhañ !"
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
+msgstr ""
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr "Hep titl"
 
@@ -157,6 +153,10 @@ msgstr ""
 "N'eus degas-soñj ebet. Gallout a rit krouiñ un degas-soñj nevez oc'h "
 "implijout ar bouton \"Ouzhpennañ degas-soñj\" pe o lakaat un degas-soñj pa "
 "sellit ouzh un notenn."
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
+msgstr ""
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
