@@ -143,6 +143,8 @@ Page {
     Rectangle {
         id: bgVisual
 
+        visible: bottomEdgeLabelVisible 
+
         color: "black"
         anchors.fill: page
         opacity: 0.7 * ((page.height - bottomEdge.y) / page.height)

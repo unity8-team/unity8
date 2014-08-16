@@ -26,6 +26,7 @@ import "../components"
 Item {
     id: root
     property var note
+    property bool isBottomEdge: false
 
     onNoteChanged: {
         for (var i = 0; i < notebookSelector.model.count; i++) {
@@ -74,6 +75,7 @@ Item {
         spacing: units.gu(1)
 
         Row {
+            visible: !root.isBottomEdge
             anchors { left: parent.left; right: parent.right }
             height: units.gu(5)
             spacing: units.gu(2)
@@ -126,6 +128,7 @@ Item {
         }
 
         Divider {
+            visible: !root.isBottomEdge
             anchors { leftMargin: -units.gu(2); rightMargin: -units.gu(2) }
             height: units.gu(2)
         }

@@ -35,6 +35,7 @@ PageWithBottomEdge {
     bottomEdgeTitle: i18n.tr("Add note")
     bottomEdgePageComponent: EditNotePage {
         onExitEditMode: pagestack.pop();
+        isBottomEdge: true;
     }
 
     signal openSearch()
