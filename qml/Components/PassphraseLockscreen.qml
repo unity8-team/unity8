@@ -23,8 +23,8 @@ Item {
     height: highlightItem.height
 
     property string placeholderText
-    property string wrongPlaceholderText
     property string username: ""
+    property bool entryEnabled: true
 
     signal entered(string passphrase)
     signal cancel()
@@ -33,6 +33,7 @@ Item {
         pinentryField.text = "";
         if (playAnimation) {
             wrongPasswordAnimation.start();
+            pinentryField.forceActiveFocus();
         } else {
             pinentryField.focus = false
         }
@@ -74,7 +75,8 @@ Item {
             echoMode: TextInput.Password
             opacity: 0.9
             hasClearButton: false
-            placeholderText: wrongPasswordAnimation.running ? root.wrongPlaceholderText : root.placeholderText
+            enabled: entryEnabled
+            placeholderText: root.placeholderText
 
             onAccepted: {
                 if (pinentryField.text) {
