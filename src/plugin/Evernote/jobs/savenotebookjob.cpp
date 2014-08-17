@@ -38,7 +38,7 @@ void SaveNotebookJob::startJob()
     evernote::edam::Notebook notebook;
     notebook.guid = m_notebook->guid().toStdString();
     notebook.__isset.guid = true;
-    notebook.name = m_notebook->guid().toStdString();
+    notebook.name = m_notebook->name().toStdString();
     notebook.__isset.name = true;
 
     client()->updateNotebook(token().toStdString(), notebook);
