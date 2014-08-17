@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -26,7 +26,7 @@
 SaveNotebookJob::SaveNotebookJob(Notebook *notebook, QObject *parent) :
     NotesStoreJob(parent)
 {
-    // Need to clone it. As startJob() will run in another thread we can't access the real note from there.
+    // Need to clone it. As startJob() will run in another thread we can't access the real notebook from there.
     m_notebook = notebook->clone();
 
     // Make sure we delete the clone when done
