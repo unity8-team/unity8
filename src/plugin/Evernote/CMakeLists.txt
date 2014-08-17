@@ -19,6 +19,7 @@ set(evernoteplugin_SRCS
     jobs/createnotejob.cpp
     jobs/evernotejob.cpp
     jobs/savenotejob.cpp
+    jobs/savenotebookjob.cpp
     jobs/deletenotejob.cpp
     evernoteconnection.cpp
     jobs/userstorejob.cpp

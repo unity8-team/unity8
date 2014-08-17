@@ -30,6 +30,7 @@
 #include "jobs/fetchnotejob.h"
 #include "jobs/createnotejob.h"
 #include "jobs/savenotejob.h"
+#include "jobs/savenotebookjob.h"
 #include "jobs/deletenotejob.h"
 #include "jobs/createnotebookjob.h"
 #include "jobs/expungenotebookjob.h"
@@ -183,6 +184,18 @@ void NotesStore::createNotebook(const QString &name)
 {
     CreateNotebookJob *job = new CreateNotebookJob(name);
     connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
+    EvernoteConnection::instance()->enqueue(job);
+}
+
+void NotesStore::saveNotebook(const QString &guid)
+{
+    Notebook *notebook = m_notebooksHash.value(guid);
+    if (!notebook) {
+        qWarning() << "Can't save notebook. Guid not found:" << guid;
+        return;
+    }
+    SaveNotebookJob *job = new SaveNotebookJob(notebook, this);
+    connect(job, &SaveNotebookJob::jobDone, this, &NotesStore::saveNotebookJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
 
@@ -470,6 +483,17 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
 
         QModelIndex noteIndex = index(m_notes.indexOf(note));
         emit dataChanged(noteIndex, noteIndex);
+    }
+}
+
+void NotesStore::saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
+{
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "error saving notebook" << errorMessage;
+
+        // Lets fetch the notebook from the server again to reflect the non-saved state...
+        refreshNotebooks();
+        return;
     }
 }
 
