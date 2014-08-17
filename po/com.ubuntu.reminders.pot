@@ -1,6 +1,6 @@
-# reminders-app translations
-# Copyright (C) 2014 Canonical Ltd.
-# This file is distributed under the same license as the reminders-app package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Canonical Ltd.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.ubuntu.reminders\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-14 18:16+0100\n"
+"POT-Creation-Date: 2014-08-17 18:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgid "No account available"
 msgstr ""
 
 #: ../src/app/qml/reminders.qml:320
-msgid "Please setup an account in the system settings"
+msgid "Please configure and authorise an Evernote account in System Settings"
 msgstr ""
 
 #: ../src/app/qml/reminders.qml:340
@@ -143,8 +143,8 @@ msgstr ""
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add reminder"
-"\" button or by setting a reminder when viewing a note."
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
 msgstr ""
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
