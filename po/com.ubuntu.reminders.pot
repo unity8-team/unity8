@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.ubuntu.reminders\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
+"POT-Creation-Date: 2014-08-14 18:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:316
+#: ../src/app/qml/reminders.qml:320
 msgid "Please setup an account in the system settings"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr ""
@@ -79,16 +79,12 @@ msgstr ""
 msgid "Mark as done"
 msgstr ""
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr ""
-
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
 msgstr ""
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr ""
 
@@ -149,6 +145,10 @@ msgstr ""
 msgid ""
 "No reminders available. You can create new reminders using the \"Add reminder"
 "\" button or by setting a reminder when viewing a note."
+msgstr ""
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
 msgstr ""
 
 #: ../src/app/qml/ui/SetReminderView.qml:36

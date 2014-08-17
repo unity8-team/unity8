@@ -28,12 +28,14 @@ class Notebook : public QObject
 {
     Q_OBJECT
 
+    // Don't forget to update clone() if you add new properties
     Q_PROPERTY(QString guid READ guid CONSTANT)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int noteCount READ noteCount NOTIFY noteCountChanged)
     Q_PROPERTY(bool published READ published NOTIFY publishedChanged)
     Q_PROPERTY(QDateTime lastUpdated READ lastUpdated NOTIFY lastUpdatedChanged)
     Q_PROPERTY(QString lastUpdatedString READ lastUpdatedString NOTIFY lastUpdatedChanged)
+    // Don't forget to update clone() if you add new properties
 
 public:
     explicit Notebook(QString guid, QObject *parent = 0);
@@ -52,6 +54,11 @@ public:
     void setLastUpdated(const QDateTime &lastUpdated);
 
     QString lastUpdatedString() const;
+
+    Notebook *clone();
+
+public slots:
+    void save();
 
 signals:
     void nameChanged();

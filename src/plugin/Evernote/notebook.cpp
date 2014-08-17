@@ -117,6 +117,21 @@ QString Notebook::lastUpdatedString() const
     return QString(gettext("on %1 %2")).arg(QLocale::system().standaloneMonthName(updateDate.month())).arg(updateDate.year());
 }
 
+Notebook *Notebook::clone()
+{
+    Notebook *notebook = new Notebook(m_guid);
+    notebook->setName(m_name);
+    notebook->setLastUpdated(m_lastUpdated);
+    notebook->setPublished(m_published);
+
+    return notebook;
+}
+
+void Notebook::save()
+{
+    NotesStore::instance()->saveNotebook(m_guid);
+}
+
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(noteGuid)
