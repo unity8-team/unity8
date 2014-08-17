@@ -135,12 +135,16 @@ MainView {
 
     AccountService {
         id: accountService
-        onObjectHandleChanged: authenticate(null);
+        onObjectHandleChanged: {
+            // FIXME: workaround for lp:1351041. We'd normally set the hostname
+            // under onAuthenticated, but it seems that now returns empty parameters
+            EvernoteConnection.hostname = accountService.authData.parameters["HostName"];
+            authenticate(null);
+        }
         onAuthenticated: {
             if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
                 EvernoteConnection.clearToken();
-            }
-            EvernoteConnection.hostname = accountService.authData.parameters["HostName"];
+            }            
             EvernoteConnection.token = reply.AccessToken;
         }
         onAuthenticationError: {
@@ -279,7 +283,7 @@ MainView {
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: pagestack.width / 2
         visible: !root.narrowMode
-        text: "No note selected.\nSelect a note to see it in detail."
+        text: i18n.tr("No note selected.\nSelect a note to see it in detail.")
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
         fontSize: "large"

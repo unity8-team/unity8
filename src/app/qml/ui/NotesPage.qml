@@ -57,7 +57,7 @@ PageWithBottomEdge {
                 text: i18n.tr("Add note")
                 iconName: "add"
                 onTriggered: {
-                    NotesStore.createNote("Untitled", filter);
+                    NotesStore.createNote(i18n.tr("Untitled"), filter);
                 }
             }
         }
@@ -110,8 +110,8 @@ PageWithBottomEdge {
                 // ubuntu-mobile-icons theme to suru:
                 //iconName: root.selectedNote.reminder ? "reminder" : "reminder-new"
                 iconSource: root.selectedNote.reminder ?
-                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
-                Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
+                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
+                    Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
                 visible: root.selectedNote !== null
                 onTriggered: {
                     root.selectedNote.reminder = !root.selectedNote.reminder
