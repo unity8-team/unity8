@@ -31,10 +31,13 @@ PageWithBottomEdge {
 
     property alias filter: notes.filterNotebookGuid
 
-    bottomEdgeLabelVisible: narrowMode
+    // We enable bottomEdge only in narrowMode.
+    // To avoid flashing when a notebook is loaded, we wait to have all notes
+    // loaded, but only in notebook view (when a filter is set), not in notes
+    // page, because there isn't he flashing.
+    bottomEdgeLabelVisible: narrowMode && (!notes.filterNotebookGuid || !notes.loading)
     bottomEdgeTitle: i18n.tr("Add note")
     bottomEdgePageComponent: EditNotePage {
-        onExitEditMode: pagestack.pop();
         isBottomEdge: true;
     }
 
@@ -55,7 +58,7 @@ PageWithBottomEdge {
                 iconName: "add"
                 onTriggered: {
                     NotesStore.createNote("Untitled", filter);
-                }   
+                }
             }
         }
 

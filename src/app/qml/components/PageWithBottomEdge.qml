@@ -143,7 +143,7 @@ Page {
     Rectangle {
         id: bgVisual
 
-        visible: bottomEdgeLabelVisible 
+        visible: bottomEdgeLabelVisible
 
         color: "black"
         anchors.fill: page
