@@ -53,6 +53,7 @@ QString Notebook::name() const
 
 void Notebook::setName(const QString &name)
 {
+    qDebug() << "Setting new notebook name..." << name;
     if (m_name != name) {
         m_name = name;
         emit nameChanged();

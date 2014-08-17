@@ -20,6 +20,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
+import Evernote 0.1
 
 Empty {
     id: root
@@ -58,11 +59,40 @@ Empty {
                 Layout.fillWidth: true
 
                 Label {
+                    id: notebookTitleLabel
                     objectName: 'notebookTitleLabel'
                     text: model.name
                     color: root.notebookColor
                     fontSize: "large"
+
+                    MouseArea {
+                        onPressAndHold: {
+                            notebookTitleLabel.visible = false;
+                            notebookTitleTextField.forceActiveFocus();
+                        }
+                        anchors.fill: parent
+                        propagateComposedEvents: true
+                    }
                 }
+
+                TextField {
+                    id: notebookTitleTextField
+                    text: model.name
+                    color: root.notebookColor
+                    visible: !notebookTitleLabel.visible
+
+                    InverseMouseArea {
+                        onClicked: {
+                            if (notebookTitleTextField.text) {
+                                notebooks.notebook(index).name = notebookTitleTextField.text;
+                                notebookTitleLabel.text = notebookTitleTextField.text;
+                                notebookTitleLabel.visible = true;
+                            }
+                        }
+                        anchors.fill: parent
+                    }
+                }
+
                 Label {
                     objectName: 'notebookLastUpdatedLabel'
                     text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
