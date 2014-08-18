@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-14 18:16+0100\n"
-"PO-Revision-Date: 2014-07-30 15:47+0000\n"
-"Last-Translator: Adolfo Jayme <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2014-08-17 08:25+0000\n"
+"Last-Translator: Paco Molinero <paco@byasl.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-16 06:52+0000\n"
+"X-Launchpad-Export-Date: 2014-08-18 07:21+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -36,7 +36,7 @@ msgid ""
 "Select a note to see it in detail."
 msgstr ""
 "No se seleccionó ninguna nota.\n"
-"Seleccione una nota para verla a detalle."
+"Seleccione una nota para verla en detalle."
 
 #: ../src/app/qml/reminders.qml:319
 msgid "No account available"
@@ -44,7 +44,7 @@ msgstr "No hay cuentas disponibles"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please setup an account in the system settings"
-msgstr "Defina una cuenta en Configuración del sistema"
+msgstr "Defina una cuenta en configuración del sistema"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -83,7 +83,7 @@ msgstr "Marcar como hecho"
 
 #: ../src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
-msgstr ""
+msgstr "Seleccione la cuenta de Evernote"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
 #: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
@@ -142,7 +142,7 @@ msgstr "Añadir nota"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
-"NO hay notas. Puede crear notas nuevas usando el botón «Añadir nota»."
+"No hay notas. Puede crear notas nuevas usando el botón «Añadir nota»."
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
@@ -154,11 +154,11 @@ msgstr ""
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
-msgstr ""
+msgstr "Buscar notas"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr "Elija la fecha y la hora del recordatorio:"
+msgstr "Elija la fecha y hora del recordatorio:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
@@ -253,12 +253,12 @@ msgstr "Autenticación caducada"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Limit exceeded."
-msgstr "Límite sobrepasado"
+msgstr "Límite sobrepasado."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Rate limit exceeded."
-msgstr "Límite sobrepasado"
+msgstr "Límite sobrepasado."
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
-msgstr "Cuota sobrepasada"
+msgstr "Cuota sobrepasada."

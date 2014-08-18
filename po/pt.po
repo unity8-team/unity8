@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-14 18:16+0100\n"
-"PO-Revision-Date: 2014-07-25 12:40+0000\n"
+"PO-Revision-Date: 2014-08-17 20:33+0000\n"
 "Last-Translator: Ivo Xavier <ivofernandes12@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-16 06:52+0000\n"
+"X-Launchpad-Export-Date: 2014-08-18 07:21+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -83,7 +83,7 @@ msgstr "Marcar como concluído"
 
 #: ../src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
-msgstr ""
+msgstr "Selecionar conta do Evernote"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
 #: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
@@ -155,7 +155,7 @@ msgstr ""
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
-msgstr ""
+msgstr "Pesquisar notas"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
