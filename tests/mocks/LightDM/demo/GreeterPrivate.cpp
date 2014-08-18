@@ -58,7 +58,7 @@ public:
         // Clear out any existing PAM interactions first (we can't simply
         // cancel our QFuture because QtConcurrent::run doesn't support cancel)
         if (pamHandle != NULL) {
-#ifdef DONT_HANG_DESKTOP
+#ifndef DONT_HANG_DESKTOP
             return;
 #endif
             pam_handle *handle = pamHandle;
