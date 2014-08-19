@@ -154,7 +154,7 @@ class InteractiveNotificationBase(NotificationsBase):
             'Notification', objectName='notification1')
         notification = get_notification()
 
-        self.touch.tap_object(
+        notification.pointing_device.click_object(
             notification.select_single(objectName="interactiveArea")
         )
 
@@ -201,11 +201,14 @@ class InteractiveNotificationBase(NotificationsBase):
             'Notification', objectName='notification1')
         notification = get_notification()
         self._assert_notification(notification, summary, body, True, True, 1.0)
-        initial_height = notification.height
-        self.touch.tap_object(notification.select_single(objectName="combobutton_dropdown"))
-        self.assertThat(notification.select_single(objectName="button2").expanded, Eventually(Equals(True)))
+        notification.pointing_device.click_object(
+            notification.select_single(objectName="combobutton_dropdown"))
+        self.assertThat(
+            notification.select_single(objectName="button2").expanded,
+            Eventually(Equals(True)))
         time.sleep(2)
-        self.touch.tap_object(notification.select_single(objectName="button4"))
+        notification.pointing_device.click_object(
+            notification.select_single(objectName="button4"))
         self.assert_notification_action_id_was_called("action_decline_4")
 
     def test_modal_sd_without_greeter(self):
@@ -239,8 +242,8 @@ class InteractiveNotificationBase(NotificationsBase):
         # the shell)
         time.sleep(1)
         self.main_window.show_dash_swiping()
-        launcher = self.main_window.get_launcher()
-        self.assertThat(launcher.shown, Eventually(Equals(False)))
+        self.assertThat(
+            self.main_window.is_launcher_open, Eventually(Equals(False)))
 
         # verify and interact with the triggered snap-decision notification
         notify_list = self._get_notifications_list()
@@ -249,7 +252,8 @@ class InteractiveNotificationBase(NotificationsBase):
         notification = get_notification()
         self._assert_notification(
             notification, summary, body, True, False, 1.0)
-        self.touch.tap_object(notification.select_single(objectName="button0"))
+        notification.pointing_device.click_object(
+            notification.select_single(objectName="button0"))
         self.assert_notification_action_id_was_called("action_accept")
 
     def test_modal_sd_with_greeter(self):
@@ -291,7 +295,8 @@ class InteractiveNotificationBase(NotificationsBase):
         notification = get_notification()
         self._assert_notification(
             notification, summary, body, True, False, 1.0)
-        self.touch.tap_object(notification.select_single(objectName="button0"))
+        notification.pointing_device.click_object(
+            notification.select_single(objectName="button0"))
         self.assert_notification_action_id_was_called("action_accept")
 
     def _create_interactive_notification(

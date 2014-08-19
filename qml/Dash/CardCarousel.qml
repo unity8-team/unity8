@@ -21,13 +21,8 @@ import "../Components"
 DashRenderer {
     id: cardCarousel
 
-    property alias cacheBuffer: carousel.cacheBuffer
-    property alias itemComponent: carousel.itemComponent
-    property alias minimumTileWidth: carousel.minimumTileWidth
-    property alias selectedItemScaleFactor: carousel.selectedItemScaleFactor
-    property alias tileAspectRatio: carousel.tileAspectRatio
-
-    height: carousel.implicitHeight + units.gu(6)
+    expandedHeight: carousel.implicitHeight + units.gu(6)
+    collapsedHeight: expandedHeight
 
     Carousel {
         id: carousel
@@ -53,8 +48,8 @@ DashRenderer {
 
             objectName: "carouselDelegate" + index
 
-            function clicked() { cardCarousel.clicked(index, model.result) }
-            function pressAndHold() { cardCarousel.pressAndHold(index, model.result) }
+            function clicked() { cardCarousel.clicked(index, model.result, loader.item, model) }
+            function pressAndHold() { cardCarousel.pressAndHold(index, model) }
 
             sourceComponent: cardTool.cardComponent
             onLoaded: {

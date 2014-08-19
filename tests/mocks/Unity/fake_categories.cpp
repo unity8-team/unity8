@@ -109,11 +109,13 @@ Categories::data(const QModelIndex& index, int role) const
             }
             case RoleComponents:
             {
-                QVariantMap map, artMap;
+                QVariantMap map, artMap, attributeMap;
                 artMap["aspect-ratio"] = "1.0";
                 artMap["field"] = "art";
                 map["art"] = artMap;
                 map["title"] = "HOLA";
+                attributeMap["field"] = "attribute";
+                map["attributes"] = attributeMap;
                 return map;
             }
             case RoleHeaderLink:
@@ -145,15 +147,21 @@ Categories::data(const QModelIndex& index, int role) const
                 } else {
                     map["category-layout"] = "carousel";
                     map["card-size"] = "medium";
-                    map["collapsed-rows"] = 2;
                     map["overlay"] = true;
+                }
+                if (index.row() == 18) {
+                    map["category-layout"] = "horizontal-list";
+                }
+                if (index.row() == 19) {
+                    map["category-layout"] = "grid";
+                    map["collapsed-rows"] = 0;
                 }
                 map["card-size"] = "small";
                 return map;
             }
             case RoleComponents:
             {
-                QVariantMap map, artMap;
+                QVariantMap map, artMap, attributeMap;
                 if (index.row() % 2 != 0) {
                     artMap["aspect-ratio"] = QString("1.%1").arg(index.row());
                 } else {
@@ -163,9 +171,14 @@ Categories::data(const QModelIndex& index, int role) const
                 map["art"] = artMap;
                 map["title"] = "HOLA";
                 map["subtitle"] = "HOLA";
+                attributeMap["field"] = "attribute";
+                map["attributes"] = attributeMap;
                 return map;
             }
             case RoleHeaderLink:
+                if (index.row() == 1 || index.row() == 4) {
+                    return QString("scope://query/1");
+                }
                 return QString();
             case RoleResults:
                 return QVariant::fromValue(resultsModel);
@@ -176,4 +189,10 @@ Categories::data(const QModelIndex& index, int role) const
                 return QVariant();
         }
     }
+}
+
+QVariant
+Categories::data(int row, int role) const
+{
+    return data(index(row, 0), role);
 }
