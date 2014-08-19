@@ -20,6 +20,7 @@
 // Qt
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QProcess>
 
 DBusUnitySessionService::DBusUnitySessionService() : QObject()
 {
@@ -34,6 +35,11 @@ DBusUnitySessionService::DBusUnitySessionService() : QObject()
 
 DBusUnitySessionService::~DBusUnitySessionService()
 {
+}
+
+void DBusUnitySessionService::Screenshot()
+{
+    QProcess::startDetached("/usr/local/bin/unityscreenshot");
 }
 
 void DBusUnitySessionService::Logout()

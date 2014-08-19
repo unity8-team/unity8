@@ -106,7 +106,12 @@ Item {
     WindowKeysFilter {
         // Handle but do not filter out volume keys
         Keys.onVolumeUpPressed: { volumeControl.volumeUp(); event.accepted = false; }
-        Keys.onVolumeDownPressed: { volumeControl.volumeDown(); event.accepted = false; }
+        Keys.onVolumeDownPressed: { 
+            volumeControl.volumeDown(); 
+            event.accepted = false; 
+            // FIXME: maybe a key combination?
+            screenshotFlash.start(); 
+        }
 
         Keys.onPressed: {
             if (event.key == Qt.Key_PowerOff || event.key == Qt.Key_PowerDown) {
@@ -645,6 +650,34 @@ Item {
                 if (shutdownFadeOutRectangle.enabled && shutdownFadeOutRectangle.visible) {
                     DBusUnitySessionService.Shutdown();
                 }
+            }
+        }
+    }
+
+    Rectangle {
+        id: screenshotFlashRectangle
+        enabled: false
+        z: edgeDemo.z + 10
+        color: "white"
+        anchors.fill: parent
+        opacity: 0.0
+        NumberAnimation on opacity {
+            id: screenshotFlash
+            from: 0.0
+            to: 1
+            duration: 300
+            running: false
+            onStopped: {
+                screenshotFadeOut.start();
+            }
+        }
+        NumberAnimation on opacity {
+            id: screenshotFadeOut
+            from: 1
+            to: 0
+            running: false
+            onStopped: {
+                DBusUnitySessionService.Screenshot();
             }
         }
     }
