@@ -88,6 +88,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         cache: true; \n\
                                         asynchronous: root.asynchronous; \n\
                                         fillMode: Image.PreserveAspectCrop; \n\
+                                        sourceSize { width: width; height: height } \n\
                                         width: %2; \n\
                                         height: %3; \n\
                                     } \n\
