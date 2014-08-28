@@ -317,7 +317,7 @@ MainView {
             id: noAccount
             objectName: "noAccountDialog"
             title: i18n.tr("No account available")
-            text: i18n.tr("Please configure and authorise an Evernote account in System Settings")
+            text: i18n.tr("Please configure and authorize an Evernote account in System Settings")
 
             Connections {
                 target: accounts
