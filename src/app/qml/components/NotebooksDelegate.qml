@@ -86,7 +86,7 @@ Empty {
                             if (notebookTitleTextField.text) {
                                 notebooks.notebook(index).name = notebookTitleTextField.text;
                                 NotesStore.saveNotebook(notebooks.notebook(index).guid);
-//                                notebookTitleLabel.text = notebookTitleTextField.text;
+                                notebookTitleLabel.text = notebookTitleTextField.text;
                                 notebookTitleLabel.visible = true;
                             }
                         }
