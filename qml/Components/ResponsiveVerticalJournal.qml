@@ -47,7 +47,7 @@ Item {
     property alias delegate: verticalJournalView.delegate
     property alias displayMarginBeginning: verticalJournalView.displayMarginBeginning
     property alias displayMarginEnd: verticalJournalView.displayMarginEnd
-    implicitHeight: verticalJournalView.implicitHeight
+    implicitHeight: verticalJournalView.implicitHeight + verticalJournalView.anchors.topMargin + verticalJournalView.anchors.bottomMargin
 
     VerticalJournal {
         id: verticalJournalView
