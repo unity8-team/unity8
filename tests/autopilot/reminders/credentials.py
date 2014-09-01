@@ -178,17 +178,13 @@ class AccountManager(object):
         """
         logger.info('Deleting the account with id {}.'.format(account.id))
         self._start_main_loop()
-        logger.info('Thread started')
         # XXX There seems to be a problem when we try to delete the account too
         # soon after starting the main loop.
         # Reported as bug http://pad.lv/1363604. --elopio - 2014-09-01
         time.sleep(10)
         account.delete()
-        logger.info('Delete finished')
         account.store(self._on_account_deleted, None)
-        logger.info('Store finished')
         self._join_main_loop()
-        logger.info('Main loop joined.')
 
     def _on_account_deleted(self, account, error, _):
         if error:
