@@ -19,6 +19,7 @@
 #include <QObject>
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QDBusPendingCall>
 #include <QDebug>
 
 DashCommunicator::DashCommunicator(QObject *parent):
@@ -39,5 +40,5 @@ void DashCommunicator::setCurrentScope(const QString &scopeId, bool animate, boo
                            "",
                            connection);
 
-    dashIface.call("SetCurrentScope", scopeId, animate, reset);
+    dashIface.asyncCall("SetCurrentScope", scopeId, animate, reset);
 }
