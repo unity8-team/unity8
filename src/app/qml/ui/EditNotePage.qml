@@ -25,7 +25,7 @@ import "../components"
 Page {
     id: root
     property alias note: editNoteView.note
-    property bool isBottomEdge: false
+    property alias isBottomEdge: editNoteView.isBottomEdge
 
     signal exitEditMode(var note)
 
@@ -37,8 +37,6 @@ Page {
     EditNoteView {
         id: editNoteView
         anchors.fill: parent
-
-        isBottomEdge: root.isBottomEdge
 
         onExitEditMode: root.exitEditMode(note);
     }
