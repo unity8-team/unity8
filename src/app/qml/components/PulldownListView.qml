@@ -47,8 +47,13 @@ ListView {
     }
 
     onContentYChanged: {
-        if (priv.wasAtYBeginning && priv.initialContentY - contentY > units.gu(5)) {
-            priv.toBeReloaded = true
+        if (dragging) {
+            if (priv.wasAtYBeginning && priv.initialContentY - contentY > units.gu(5)) {
+                priv.toBeReloaded = true
+            }
+            else {
+                priv.toBeReloaded = false
+            }
         }
     }
 
