@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-14 18:16+0100\n"
+"POT-Creation-Date: 2014-08-29 14:53+0200\n"
 "PO-Revision-Date: 2014-08-18 16:10+0000\n"
 "Last-Translator: Mitsuya Shibata <mty.shibata@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-19 06:59+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
 msgid "Notes"
@@ -43,8 +43,8 @@ msgid "No account available"
 msgstr "アカウントが設定されていません"
 
 #: ../src/app/qml/reminders.qml:320
-msgid "Please setup an account in the system settings"
-msgstr "システム設定でアカウントを設定してください"
+msgid "Please configure and authorize an Evernote account in System Settings"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -145,10 +145,9 @@ msgstr "利用可能なノートはありません。「ノートの追加」ボ
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add "
-"reminder\" button or by setting a reminder when viewing a note."
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
 msgstr ""
-"利用可能なリマインダーはありません。「リマインダーの追加」ボタンかノートを閲覧中にリマインダーをセットすることで新しいリマインダーを作成してください。"
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -260,3 +259,12 @@ msgstr "回数上限を越えました。"
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "サイズ上限を越えました。"
+
+#~ msgid "Please setup an account in the system settings"
+#~ msgstr "システム設定でアカウントを設定してください"
+
+#~ msgid ""
+#~ "No reminders available. You can create new reminders using the \"Add "
+#~ "reminder\" button or by setting a reminder when viewing a note."
+#~ msgstr ""
+#~ "利用可能なリマインダーはありません。「リマインダーの追加」ボタンかノートを閲覧中にリマインダーをセットすることで新しいリマインダーを作成してください。"

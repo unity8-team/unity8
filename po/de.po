@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-14 18:16+0100\n"
+"POT-Creation-Date: 2014-08-29 14:53+0200\n"
 "PO-Revision-Date: 2014-08-17 17:21+0000\n"
 "Last-Translator: Christian Gärtner <chrisdagardner@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-18 07:21+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
 msgid "Notes"
@@ -43,8 +43,8 @@ msgid "No account available"
 msgstr "Kein Konto vorhanden"
 
 #: ../src/app/qml/reminders.qml:320
-msgid "Please setup an account in the system settings"
-msgstr "Bitte stellen Sie ein Konto in den Systemeinstellungen ein"
+msgid "Please configure and authorize an Evernote account in System Settings"
+msgstr ""
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -147,12 +147,9 @@ msgstr ""
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add "
-"reminder\" button or by setting a reminder when viewing a note."
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
 msgstr ""
-"Keine Erinnerungen verfügbar. Sie können diese hinzufügen, indem Sie "
-"entweder auf \"Erinnerung hinzufügen\" tippen oder eine Erinnerung beim "
-"Anzeigen einer Notiz erstellen."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -264,3 +261,14 @@ msgstr "Obergrenze für Rate überschritten."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Kontingent überschritten."
+
+#~ msgid "Please setup an account in the system settings"
+#~ msgstr "Bitte stellen Sie ein Konto in den Systemeinstellungen ein"
+
+#~ msgid ""
+#~ "No reminders available. You can create new reminders using the \"Add "
+#~ "reminder\" button or by setting a reminder when viewing a note."
+#~ msgstr ""
+#~ "Keine Erinnerungen verfügbar. Sie können diese hinzufügen, indem Sie "
+#~ "entweder auf \"Erinnerung hinzufügen\" tippen oder eine Erinnerung beim "
+#~ "Anzeigen einer Notiz erstellen."
