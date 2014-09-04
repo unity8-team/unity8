@@ -144,7 +144,7 @@ MainView {
         onAuthenticated: {
             if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
                 EvernoteConnection.clearToken();
-            }            
+            }
             EvernoteConnection.token = reply.AccessToken;
         }
         onAuthenticationError: {
@@ -317,7 +317,7 @@ MainView {
             id: noAccount
             objectName: "noAccountDialog"
             title: i18n.tr("No account available")
-            text: i18n.tr("Please setup an account in the system settings")
+            text: i18n.tr("Please configure and authorize an Evernote account in System Settings")
 
             Connections {
                 target: accounts
