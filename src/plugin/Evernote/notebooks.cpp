@@ -103,7 +103,10 @@ void Notebooks::refresh()
 void Notebooks::notebookAdded(const QString &guid)
 {
     Notebook *notebook = NotesStore::instance()->notebook(guid);
+    connect(notebook, &Notebook::nameChanged, this, &Notebooks::nameChanged);
     connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
+    connect(notebook, &Notebook::publishedChanged, this, &Notebooks::publishedChanged);
+    connect(notebook, &Notebook::lastUpdatedChanged, this, &Notebooks::lastUpdatedChanged);
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
@@ -119,9 +122,30 @@ void Notebooks::notebookRemoved(const QString &guid)
     emit countChanged();
 }
 
+void Notebooks::nameChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleName);
+}
+
 void Notebooks::noteCountChanged()
 {
     Notebook *notebook = static_cast<Notebook*>(sender());
     QModelIndex idx = index(m_list.indexOf(notebook->guid()));
     emit dataChanged(idx, idx, QVector<int>() << RoleNoteCount);
+}
+
+void Notebooks::publishedChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RolePublished);
+}
+
+void Notebooks::lastUpdatedChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleLastUpdated);
 }
