@@ -207,6 +207,8 @@ MainView {
                 page: NotesPage {
                     id: notesPage
 
+                    narrowMode: root.narrowMode
+
                     onEditNote: {
                         root.switchToEditMode(note)
                     }
@@ -236,11 +238,13 @@ MainView {
                 page: NotebooksPage {
                     id: notebooksPage
 
+                    narrowMode: root.narrowMode
+
                     onOpenNotebook: {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title, filter: notebookGuid});
+                        pagestack.push(page, {title: title, filter: notebookGuid, narrowMode: narrowMode});
                         page.selectedNoteChanged.connect(function() {
                             print("foo", page.selectedNote);
                             if (page.selectedNote) {

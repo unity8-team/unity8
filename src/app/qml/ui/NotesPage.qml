@@ -23,12 +23,23 @@ import Ubuntu.Components.ListItems 0.1
 import Evernote 0.1
 import "../components"
 
-Page {
+PageWithBottomEdge {
     id: root
 
     property var selectedNote: null
+    property bool narrowMode
 
     property alias filter: notes.filterNotebookGuid
+
+    // We enable bottomEdge only in narrowMode.
+    // To avoid flashing when a notebook is loaded, we wait to have all notes
+    // loaded, but only in notebook view (when a filter is set), not in notes
+    // page, because there isn't he flashing.
+    bottomEdgeLabelVisible: narrowMode && (!notes.filterNotebookGuid || !notes.loading)
+    bottomEdgeTitle: i18n.tr("Add note")
+    bottomEdgePageComponent: EditNotePage {
+        isBottomEdge: true;
+    }
 
     signal openSearch()
     signal editNote(var note)
@@ -42,11 +53,12 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
+                visible: !narrowMode
                 text: i18n.tr("Add note")
                 iconName: "add"
                 onTriggered: {
                     NotesStore.createNote(i18n.tr("Untitled"), filter);
-                }   
+                }
             }
         }
 
@@ -118,7 +130,7 @@ Page {
                 }
             }
         }
-   }
+    }
 
     Notes {
         id: notes

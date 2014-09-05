@@ -26,7 +26,9 @@ Page {
     id: root
     objectName: 'notebooksPage'
 
-    signal openNotebook(string title, string notebookGuid)
+    property bool narrowMode
+
+    signal openNotebook(string title, string notebookGuid, bool narrowMode)
 
     onActiveChanged: {
         if (active) {
@@ -135,7 +137,7 @@ Page {
             delegate: NotebooksDelegate {
                 onClicked: {
                     print("selected notebook:", model.guid)
-                    root.openNotebook(name, model.guid)
+                    root.openNotebook(name, model.guid, narrowMode)
                 }
             }
 
