@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-15 10:37+0000\n"
+"PO-Revision-Date: 2014-09-05 07:01+0000\n"
 "Last-Translator: Walter Cheuk <wwycheuk@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:36+0000\n"
+"X-Launchpad-Export-Date: 2014-09-05 07:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -44,7 +44,7 @@ msgstr "沒有帳號可用"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr ""
+msgstr "請在系統設定設定並授權 Evernote 帳號"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -147,7 +147,7 @@ msgstr "沒有可用的記事。您可以透過「新增記事」按鈕建立新
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
-msgstr ""
+msgstr "無可用提醒。可在檢視記事時設置新提醒。"
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -259,11 +259,3 @@ msgstr "超出速度限制。"
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "超出限額。"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr "沒有可用的提醒。您可以透過「新增提醒」按鈕建立新提醒，或是在檢視記事之時設定提醒。"
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "請在系統設定設置帳號"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-16 17:21+0000\n"
+"PO-Revision-Date: 2014-09-04 12:20+0000\n"
 "Last-Translator: Åka Sikrom <Unknown>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:36+0000\n"
+"X-Launchpad-Export-Date: 2014-09-05 07:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -45,6 +45,7 @@ msgstr "Ingen konto er tilgjengelig"
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
+"Du må sette opp og godkjenne en Evernote-konto i systeminnstillingene"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -149,7 +150,7 @@ msgstr ""
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
-msgstr ""
+msgstr "Ingen påminnelser. Du kan lage en påminnelse mens du viser et notat."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -261,13 +262,3 @@ msgstr "Frekvensgrense er overskredet."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Kvota er oppbrukt."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Du må legge til en konto i systeminnstillingene"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "Ingen notater er tilgjengelig. Du kan lage nye notater ved å bruke «Legg til "
-#~ "notat»-knappen. Du kan også lage en påminnelse når du ser på et notat."

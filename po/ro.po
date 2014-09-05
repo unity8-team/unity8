@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-16 11:44+0000\n"
+"PO-Revision-Date: 2014-09-05 05:39+0000\n"
 "Last-Translator: Marian Vasile <marianvasile1972@gmail.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:36+0000\n"
+"X-Launchpad-Export-Date: 2014-09-05 07:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -44,7 +44,7 @@ msgstr "Nu este disponibil niciun cont"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr ""
+msgstr "Configurați și autorizați un cont Evernote în Configurări de sistem"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -149,6 +149,8 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"Nicio alarmă disponibilă. Puteți crea alarme noi prin configurarea unei "
+"alarme la citirea unei notițe."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -260,13 +262,3 @@ msgstr "Limita ratei a fost depășită."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Spațiul alocat a fost depășit."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Creați un cont în configurările de sistem"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "Nu există mementouri. Puteți crea mementouri noi utilizând butonul „Adăugare "
-#~ "memento” sau prin stabilirea unui memento la vizualizarea unei notițe."

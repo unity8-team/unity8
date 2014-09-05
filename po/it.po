@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Launchpad-Export-Date: 2014-09-05 07:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -264,14 +264,3 @@ msgstr "Limite di rate superato."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Limite di quota superato."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Configurare un account nelle impostazioni di sistema"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "Nessun promemoria disponibile. È possibile creare un nuovo promemoria usando "
-#~ "il pulsante «Aggiungi promemoria» o impostarlo durante la visualizzazione di "
-#~ "una nota."

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-26 06:17+0000\n"
+"PO-Revision-Date: 2014-09-05 06:19+0000\n"
 "Last-Translator: Fohanno Thierry <thierry.fohanno@ofis-bzh.org>\n"
 "Language-Team: Breton <br@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Launchpad-Export-Date: 2014-09-05 07:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -45,6 +45,7 @@ msgstr "N'eus kont ebet"
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
+"Kefluniit hag aotreit ur gont Evernote en Arventennoù ar reizhiad, mar plij"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -150,6 +151,8 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"N'eus degas-da-soñj ebet da gaout. Gallout a rit krouiñ re nevez o lakaat un "
+"degas-da-soñj pa lennit un notenn."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -261,14 +264,3 @@ msgstr "Emeur en tu all d'ar feur."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Emeur en tu all d'ar c'hota."
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "N'eus degas-soñj ebet. Gallout a rit krouiñ un degas-soñj nevez oc'h "
-#~ "implijout ar bouton \"Ouzhpennañ degas-soñj\" pe o lakaat un degas-soñj pa "
-#~ "sellit ouzh un notenn."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Krouit ur gont en arventennoù ar reizhiad, mar plij"
