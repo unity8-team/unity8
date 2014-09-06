@@ -69,7 +69,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             launcher = self.launch_test_installed
             test_type = 'deb'
         else:
-            launcher = self.launch_test_click
+            launcher = self.launch_ubuntu_app
             test_type = 'click'
         return launcher, test_type
 
@@ -97,12 +97,33 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
     @autopilot_logging.log_action(logger.info)
-    def launch_test_click(self):
-        return self.launch_click_package(
-            'com.ubuntu.reminders',
-            'reminders',
-            '-s',
+    def launch_ubuntu_app(self):
+        desktop_file_path = self.write_sandbox_desktop_file()
+        desktop_file_name = os.path.basename(desktop_file_path)
+        application_name, _ = os.path.splitext(desktop_file_name)
+        return self.launch_upstart_application(
+            application_name,
             emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
+
+    def write_sandbox_desktop_file():
+        desktop_file_dir = self.get_local_desktop_file_directory()
+        desktop_file = self._named_temporary_file(
+            suffix='.desktop', dir=desktop_file_dir)
+        desktop_file.write('[Desktop Entry]\n')
+        desktop_file_dict = {
+            'Type': 'Application',
+            'Name': 'reminders',
+            'Exec': 'reminders -s'
+            'Icon': 'Not important'
+        }
+        for key, value in desktop_file_dict.items():
+            desktop_file.write('{key}={value}\n'.format(key=key, value=value))
+        desktop_file.close()
+        return desktop_file.name
+
+    def get_local_desktop_file_directory(self):
+        return os.path.join(
+            os.environ.get('HOME'), '.local', 'share', 'applications')
 
     def _patch_home(self, test_type):
         temp_dir_fixture = fixtures.TempDir()
