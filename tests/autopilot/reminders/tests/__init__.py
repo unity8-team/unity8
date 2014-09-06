@@ -18,6 +18,7 @@
 
 import logging
 import os
+import tempfile
 import shutil
 import subprocess
 
@@ -107,7 +108,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
 
     def write_sandbox_desktop_file(self):
         desktop_file_dir = self.get_local_desktop_file_directory()
-        desktop_file = self._named_temporary_file(
+        desktop_file = self.get_named_temporary_file(
             suffix='.desktop', dir=desktop_file_dir)
         desktop_file.write('[Desktop Entry]\n')
         desktop_file_dict = {
@@ -124,6 +125,15 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
     def get_local_desktop_file_directory(self):
         return os.path.join(
             os.environ.get('HOME'), '.local', 'share', 'applications')
+
+    def get_named_temporary_file(self, dir=None, mode='w+t',
+        delete=False, suffix=''):
+        # Discard files with underscores which look like an APP_ID to Unity
+        # See https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1329141
+        chars = tempfile._RandomNameSequence.characters.strip("_")
+        tempfile._RandomNameSequence.characters = chars
+        return tempfile.NamedTemporaryFile(dir=dir, mode=mode,
+        delete=delete, suffix=suffix)
 
     def _patch_home(self, test_type):
         temp_dir_fixture = fixtures.TempDir()
