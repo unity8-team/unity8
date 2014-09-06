@@ -105,7 +105,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             application_name,
             emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
-    def write_sandbox_desktop_file():
+    def write_sandbox_desktop_file(self):
         desktop_file_dir = self.get_local_desktop_file_directory()
         desktop_file = self._named_temporary_file(
             suffix='.desktop', dir=desktop_file_dir)
@@ -113,7 +113,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         desktop_file_dict = {
             'Type': 'Application',
             'Name': 'reminders',
-            'Exec': 'reminders -s'
+            'Exec': 'reminders -s',
             'Icon': 'Not important'
         }
         for key, value in desktop_file_dict.items():
