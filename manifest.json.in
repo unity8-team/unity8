@@ -1,11 +1,11 @@
 {
     "description": "Ubuntu Reminders app, powered by Evernote",
     "framework": "ubuntu-sdk-14.10-dev2",
-    "architecture": "armhf",
+    "architecture": "@CLICK_ARCH@",
     "hooks": {
         "reminders": {
             "account-application": "com.ubuntu.reminders_reminders.application",
-            "apparmor": "apparmor.json",
+            "apparmor": "reminders.apparmor",
             "desktop": "com.ubuntu.reminders.desktop"
         }
     },
@@ -17,10 +17,17 @@
         "vcs-bzr": "lp:reminders-app",
         "vcs-bzr-revno": "@BZR_REVNO@"
     },
-   "x-test": {
-           "autopilot": {
-                "autopilot_module": "@AUTOPILOT_DIR@",
-                "depends": ["python3-dbus", "python3-dbusmock", "python3-fixtures", "python3-oauthlib", "python3-requests-oauthlib", "account-plugin-evernote-sandbox"]
-            }
-   }
+    "x-test": {
+        "autopilot": {
+            "autopilot_module": "@AUTOPILOT_DIR@",
+            "depends": [
+                "python3-dbus",
+                "python3-dbusmock",
+                "python3-fixtures",
+                "python3-oauthlib",
+                "python3-requests-oauthlib",
+                "account-plugin-evernote-sandbox"
+            ]
+        }
+    }
 }

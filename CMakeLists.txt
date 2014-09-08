@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wa
 include(GNUInstallDirs)
 
 option(INSTALL_TESTS "Install the tests on make install" on)
-option(CLICK_MODE "Installs to a contained location" off)
+option(CLICK_MODE "Installs to a contained location" on)
 
 set(APP_NAME reminders)
 set(DESKTOP_FILE "${PROJECT_NAME}.desktop")
@@ -18,6 +18,7 @@ set(AUTOPILOT_DIR reminders)
 set(APP_HARDCODE reminders)
 set(MAIN_QML ${APP_HARDCODE}.qml)
 set(EXEC "reminders")
+set(UBUNTU_MANIFEST_PATH "manifest.json.in" CACHE INTERNAL "Relative path to the manifest file")
 
 if(CLICK_MODE)
     if(NOT DEFINED BZR_SOURCE)
@@ -38,8 +39,22 @@ if(CLICK_MODE)
     if(NOT BZR_REVNO)
         set(BZR_REVNO "latest")
     endif(NOT BZR_REVNO)
-    configure_file(manifest.json ${CMAKE_CURRENT_BINARY_DIR}/manifest.json)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json apparmor.json
+
+    execute_process(
+      COMMAND dpkg-architecture -qDEB_HOST_ARCH
+      OUTPUT_VARIABLE CLICK_ARCH
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    configure_file(manifest.json.in ${CMAKE_CURRENT_BINARY_DIR}/manifest.json)
+
+    # make the click files visible in qtcreator
+    file(GLOB CLICK_FILES
+         RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+         *.json *.json.in *.apparmor)
+
+    add_custom_target(com_ubuntu_reminders_CLICKFiles ALL SOURCES ${CLICK_FILES})
+
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json reminders.apparmor
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES COPYING DESTINATION ${CMAKE_INSTALL_PREFIX})
 else(CLICK_MODE)
