@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-09-03 10:30+0000\n"
+"PO-Revision-Date: 2014-09-07 09:57+0000\n"
 "Last-Translator: Nicat Məmmədov <n1c4t97@gmail.com>\n"
 "Language-Team: Azerbaijani <az@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Launchpad-Export-Date: 2014-09-08 06:59+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -35,6 +35,8 @@ msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"Heç bir qeyd seçilməyib.\n"
+"Təfərrüatları görmək üçün bir qeyd seçin."
 
 #: ../src/app/qml/reminders.qml:319
 msgid "No account available"
@@ -56,11 +58,11 @@ msgstr ""
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Shared"
-msgstr ""
+msgstr "Paylaşmış"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Private"
-msgstr ""
+msgstr "Özəl"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
@@ -68,78 +70,80 @@ msgstr ""
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr ""
+msgstr "Təzələmək üçün aşağı çəkin"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "Xatırladıcını sil"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
-msgstr ""
+msgstr "Tamamlanmış kimi işarələ"
 
 #: ../src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
-msgstr ""
+msgstr "Evernote hesabını seçin"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
 #: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
-msgstr ""
+msgstr "Başlıqsız"
 
 #: ../src/app/qml/ui/NotePage.qml:34 ../src/app/qml/ui/NotesPage.qml:112
 msgid "Edit"
-msgstr ""
+msgstr "Redaktə"
 
 #: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 msgid "Edit reminder"
-msgstr ""
+msgstr "Xatırladıcını redaktə et"
 
 #: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "Xatırladıcını quraşdır"
 
 #: ../src/app/qml/ui/NotePage.qml:57 ../src/app/qml/ui/NotesPage.qml:86
 msgid "Delete"
-msgstr ""
+msgstr "Sil"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:41
 msgid "Add notebook"
-msgstr ""
+msgstr "Qeyd kitabçası əlavə et"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:51 ../src/app/qml/ui/NotesPage.qml:55
 #: ../src/app/qml/ui/RemindersPage.qml:34
 #: ../src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
-msgstr ""
+msgstr "Axtar"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:61 ../src/app/qml/ui/NotesPage.qml:65
 msgid "Refresh"
-msgstr ""
+msgstr "Təzələ"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:71 ../src/app/qml/ui/NotesPage.qml:75
 #: ../src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
-msgstr ""
+msgstr "Hesablar"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:173
 msgid "Cancel"
-msgstr ""
+msgstr "İmtina"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:182
 msgid "Save"
-msgstr ""
+msgstr "Saxla"
 
 #: ../src/app/qml/ui/NotesPage.qml:45
 msgid "Add note"
-msgstr ""
+msgstr "Qeyd əlavə et"
 
 #: ../src/app/qml/ui/NotesPage.qml:185
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"Heç bir qeyd mövcud deyil. \"Qeyd əlavə et\" düyməsindən istifadə edərək "
+"yeni qeydlər yarada bilərsiniz."
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
@@ -149,53 +153,53 @@ msgstr ""
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
-msgstr ""
+msgstr "Qeydləri axtar"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "Xatırladıcı üçün tarix və vaxt seçin:"
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
-msgstr ""
+msgstr "Bu gün"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "Dünən"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "Keçən həftə"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "İki həftə əvvəl"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
 #: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
-msgstr ""
+msgstr "Bitdi"
 
 #: ../src/plugin/Evernote/note.cpp:234
 msgid "No date"
-msgstr ""
+msgstr "Tarix yoxdur"
 
 #: ../src/plugin/Evernote/note.cpp:237
 msgid "Overdue"
-msgstr ""
+msgstr "Vaxtı keçmiş"
 
 #: ../src/plugin/Evernote/note.cpp:243
 msgid "Tomorrow"
-msgstr ""
+msgstr "Sabah"
 
 #: ../src/plugin/Evernote/note.cpp:246
 msgid "Next week"
-msgstr ""
+msgstr "Gələn həftə"
 
 #: ../src/plugin/Evernote/note.cpp:249
 msgid "In two weeks"
@@ -203,44 +207,44 @@ msgstr ""
 
 #: ../src/plugin/Evernote/note.cpp:251
 msgid "Later"
-msgstr ""
+msgstr "Daha Sonra"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:100
 msgid "today"
-msgstr ""
+msgstr "bu gün"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
-msgstr ""
+msgstr "dünən"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
-msgstr ""
+msgstr "keçən həftə"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
-msgstr ""
+msgstr "iki həftə əvvəl"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "%1 %2 tarixində"
 
 #: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "Qeydləri təzələyərkən xəta meydana gəldi: %1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "Qeyd kitabçalarını təzələyərkən xəta meydana gəldi: %1"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
 msgid "Authentication expired."
