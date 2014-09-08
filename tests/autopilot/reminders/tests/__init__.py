@@ -142,11 +142,11 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         delete=delete, suffix=suffix)
 
     def get_installed_version_and_directory(self):
-        for package in self._get_click_manifest():
+        for package in self.get_click_manifest():
             if package['name'] == 'com.ubuntu.reminders':
                 return package['version'], package['_directory']
 
-    def _get_click_manifest(self):
+    def get_click_manifest(self):
         """Return the click package manifest as a python list."""
         # XXX This is duplicated from autopilot. We need to find a better place
         # to put helpers for click. --elopio - 2014-09-08
