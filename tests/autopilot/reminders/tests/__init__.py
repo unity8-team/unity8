@@ -16,6 +16,7 @@
 
 """Reminders app autopilot tests."""
 
+import json
 import logging
 import os
 import tempfile
@@ -111,11 +112,16 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         desktop_file = self.get_named_temporary_file(
             suffix='.desktop', dir=desktop_file_dir)
         desktop_file.write('[Desktop Entry]\n')
+        version, installed_path = self.get_installed_version_and_directory()
+        reminders_sandbox_exec = (
+            'aa-exec-click -p com.ubuntu.reminders_reminders_{}'
+            ' -- reminders -s'.format(version))
         desktop_file_dict = {
             'Type': 'Application',
             'Name': 'reminders',
-            'Exec': 'reminders -s',
-            'Icon': 'Not important'
+            'Exec': reminders_sandbox_exec,
+            'Icon': 'Not important',
+            'Path': installed_path
         }
         for key, value in desktop_file_dict.items():
             desktop_file.write('{key}={value}\n'.format(key=key, value=value))
@@ -134,6 +140,21 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         tempfile._RandomNameSequence.characters = chars
         return tempfile.NamedTemporaryFile(dir=dir, mode=mode,
         delete=delete, suffix=suffix)
+
+    def get_installed_version_and_directory(self):
+        for package in self._get_click_manifest():
+            if package['name'] == 'com.ubuntu.reminders':
+                return package['version'], package['_directory']
+
+    def _get_click_manifest(self):
+        """Return the click package manifest as a python list."""
+        # XXX This is duplicated from autopilot. We need to find a better place
+        # to put helpers for click. --elopio - 2014-09-08
+        # get the whole click package manifest every time - it seems fast
+        # enough but this is a potential optimisation point for the future:
+        click_manifest_str = subprocess.check_output(
+            ["click", "list", "--manifest"], universal_newlines=True)
+        return json.loads(click_manifest_str)
 
     def _patch_home(self, test_type):
         temp_dir_fixture = fixtures.TempDir()
