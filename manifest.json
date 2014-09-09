@@ -5,13 +5,13 @@
     "hooks": {
         "reminders": {
             "account-application": "com.ubuntu.reminders_reminders.application",
+            "account-service": "@ACCOUNT_SERVICE_DIR@/evernote.service",
             "apparmor": "apparmor.json",
             "desktop": "com.ubuntu.reminders.desktop"
         },
         "evernote-account-plugin": {
             "account-qml-plugin": "@ACCOUNT_QML_PLUGIN_DIR@/evernote",
-            "account-provider": "@ACCOUNT_PROVIDER_DIR@/evernote.provider",
-            "account-service": "@ACCOUNT_SERVICE_DIR@/evernote.service"
+            "account-provider": "@ACCOUNT_PROVIDER_DIR@/evernote.provider"
         }
     },
     "maintainer": "Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>",
