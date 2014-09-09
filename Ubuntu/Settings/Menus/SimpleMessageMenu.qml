@@ -43,15 +43,6 @@ ListItem.Empty {
     implicitHeight: layout.height + units.gu(3)
     clip: state == "expanded"
 
-    Rectangle {
-        id: background
-        property real alpha: 0.0
-
-        anchors.fill: parent
-        color: Qt.rgba(1.0, 1.0, 1.0, alpha)
-        z: -1
-    }
-
     ColumnLayout {
         id: layout
 
@@ -104,10 +95,6 @@ ListItem.Empty {
         when: selected && footerLoader.status == Loader.Ready
 
         PropertyChanges {
-            target: background
-            alpha: 0.05
-        }
-        PropertyChanges {
             target: footerLoader
             opacity: 1.0
         }
@@ -115,7 +102,6 @@ ListItem.Empty {
 
     transitions: Transition {
         ParallelAnimation {
-            NumberAnimation { target: background; property: "alpha"; duration: _animationDuration }
             PropertyAnimation { target: footerLoader; property: "opacity"; duration:  _animationDuration }
         }
     }
