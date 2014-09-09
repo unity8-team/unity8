@@ -55,11 +55,11 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         super(BaseTestCaseWithTempHome, self).setUp()
         _, test_type = self.get_launcher_method_and_type()
         if test_type != 'click':
-            # The temp home directory is making the tests fail when running on
-            # the phone with the preinstalled click. Reported as bug here:
-            # http://pad.lv/1363601
             self.home_dir = self._patch_home(test_type)
         else:
+            # The temp home directory is making the tests fail when running on
+            # the phone with the preinstalled click. --elopio - 2014-09-08
+            # Reported as bug here: http://pad.lv/1363601
             self.home_dir = os.environ.get('HOME')
 
     def kill_signond(self):
