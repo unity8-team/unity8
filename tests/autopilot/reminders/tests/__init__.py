@@ -16,7 +16,6 @@
 
 """Reminders app autopilot tests."""
 
-import json
 import logging
 import os
 import tempfile
@@ -24,9 +23,10 @@ import shutil
 import subprocess
 
 import fixtures
+import ubuntuuitoolkit
 from autopilot import logging as autopilot_logging
 from autopilot.testcase import AutopilotTestCase
-import ubuntuuitoolkit
+from gi.repository import Click
 
 import reminders
 
@@ -147,19 +147,13 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             dir=dir, mode=mode, delete=delete, suffix=suffix)
 
     def get_installed_version_and_directory(self):
-        for package in self.get_click_manifest():
-            if package['name'] == 'com.ubuntu.reminders':
-                return package['version'], package['_directory']
-
-    def get_click_manifest(self):
-        """Return the click package manifest as a python list."""
-        # XXX This is duplicated from autopilot. We need to find a better place
-        # to put helpers for click. --elopio - 2014-09-08
-        # get the whole click package manifest every time - it seems fast
-        # enough but this is a potential optimisation point for the future:
-        click_manifest_str = subprocess.check_output(
-            ["click", "list", "--manifest"], universal_newlines=True)
-        return json.loads(click_manifest_str)
+        db = Click.DB()
+        db.read()
+        package_name = 'com.ubuntu.reminders'
+        registry = Click.User.for_user(db, name=os.environ.get('USER'))
+        version = registry.get_version(package_name)
+        directory = registry.get_path(package_name)
+        return version, directory
 
     def _patch_home(self, test_type):
         temp_dir_fixture = fixtures.TempDir()
