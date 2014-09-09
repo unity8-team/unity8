@@ -27,7 +27,6 @@ import fixtures
 from autopilot import logging as autopilot_logging
 from autopilot.testcase import AutopilotTestCase
 import ubuntuuitoolkit
-from ubuntuuitoolkit import fixture_setup as toolkit_fixtures
 
 import reminders
 
@@ -55,7 +54,13 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         self.addCleanup(self.kill_signond)
         super(BaseTestCaseWithTempHome, self).setUp()
         _, test_type = self.get_launcher_method_and_type()
-        self.home_dir = self._patch_home(test_type)
+        if test_type != 'click':
+            # The temp home directory is making the tests fail when running on
+            # the phone with the preinstalled click. Reported as bug here:
+            # http://pad.lv/1363601
+            self.home_dir = self._patch_home(test_type)
+        else:
+            self.home_dir = os.environ.get('HOME')
 
     def kill_signond(self):
         # We kill signond so it's restarted using the temporary HOME. Otherwise
@@ -168,18 +173,11 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         # make sure we copy it to our temp home directory
         self._copy_xauthority_file(temp_dir)
 
-        # click requires using initctl env (upstart), but the desktop can set
-        # an environment variable instead
-        if test_type == 'click':
-            self.useFixture(
-                toolkit_fixtures.InitctlEnvironmentVariable(
-                    HOME=temp_dir, XDG_CONFIG_HOME=temp_xdg_config_home))
-        else:
-            self.useFixture(
-                fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
-            self.useFixture(
-                fixtures.EnvironmentVariable(
-                    'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
+        self.useFixture(
+            fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
+        self.useFixture(
+            fixtures.EnvironmentVariable(
+                'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
 
         logger.debug('Patched home to fake home directory ' + temp_dir)
 
