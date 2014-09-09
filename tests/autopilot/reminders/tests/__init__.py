@@ -132,14 +132,14 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         return os.path.join(
             os.environ.get('HOME'), '.local', 'share', 'applications')
 
-    def get_named_temporary_file(self, dir=None, mode='w+t',
-        delete=False, suffix=''):
+    def get_named_temporary_file(
+            self, dir=None, mode='w+t', delete=False, suffix=''):
         # Discard files with underscores which look like an APP_ID to Unity
         # See https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1329141
         chars = tempfile._RandomNameSequence.characters.strip("_")
         tempfile._RandomNameSequence.characters = chars
-        return tempfile.NamedTemporaryFile(dir=dir, mode=mode,
-        delete=delete, suffix=suffix)
+        return tempfile.NamedTemporaryFile(
+            dir=dir, mode=mode, delete=delete, suffix=suffix)
 
     def get_installed_version_and_directory(self):
         for package in self.get_click_manifest():
