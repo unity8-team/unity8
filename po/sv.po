@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-09-01 18:08+0000\n"
-"Last-Translator: Anders Wallenquist <anders.wallenquist@vertel.se>\n"
+"PO-Revision-Date: 2014-09-09 14:40+0000\n"
+"Last-Translator: Josef Andersson <Unknown>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:36+0000\n"
+"X-Launchpad-Export-Date: 2014-09-10 08:02+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 "Language: sv\n"
 
@@ -45,7 +45,7 @@ msgstr "Inget konto tillgängligt"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr ""
+msgstr "Konfigurera och auktorisera ett Evernotekonto i Systeminställningar"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -151,6 +151,8 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"Inga påminnelser tillgängliga. Du kan skapa nya påminnelser genom att skapa "
+"en påminnelse när du tittar på en anteckning."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -262,14 +264,3 @@ msgstr "Överskriden hastighet."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Överskriden kvot."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Ställ in ett konto i systeminställningarna"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "Inga påminnelser tillgängliga. Du kan skapa nya påminnelser med knappen "
-#~ "”Lägg till påminnelse”, eller genom att ställa in en påminnelse när du visar "
-#~ "en anteckning."
