@@ -99,6 +99,11 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
 
     @autopilot_logging.log_action(logger.info)
     def launch_ubuntu_app(self):
+        # We need to pass the -s argument to the reminders binary, but
+        # ubuntu-app-launch doesn't pass arguments to the exec line on the
+        # desktop file. So instead of calling launch_click_application to
+        # launch the installed click package, we make a test desktop file that
+        # has the -s on the exec line.
         desktop_file_path = self.write_sandbox_desktop_file()
         desktop_file_name = os.path.basename(desktop_file_path)
         application_name, _ = os.path.splitext(desktop_file_name)
