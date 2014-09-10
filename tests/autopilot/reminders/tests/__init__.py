@@ -176,7 +176,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
                 fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
             self.useFixture(
                 fixtures.EnvironmentVariable(
-                'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
+                    'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
 
             logger.debug('Patched home to fake home directory ' + temp_dir)
 
