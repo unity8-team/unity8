@@ -54,13 +54,7 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         self.addCleanup(self.kill_signond)
         super(BaseTestCaseWithTempHome, self).setUp()
         _, test_type = self.get_launcher_method_and_type()
-        if test_type != 'click':
-            self.home_dir = self._patch_home(test_type)
-        else:
-            # The temp home directory is making the tests fail when running on
-            # the phone with the preinstalled click. --elopio - 2014-09-08
-            # Reported as bug here: http://pad.lv/1363601
-            self.home_dir = os.environ.get('HOME')
+        self.home_dir = self._patch_home(test_type)
 
     def kill_signond(self):
         # We kill signond so it's restarted using the temporary HOME. Otherwise
@@ -156,26 +150,32 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         return version, directory
 
     def _patch_home(self, test_type):
-        temp_dir_fixture = fixtures.TempDir()
-        self.useFixture(temp_dir_fixture)
-        temp_dir = temp_dir_fixture.path
-        temp_xdg_config_home = os.path.join(temp_dir, '.config')
+        if test_type == 'click':
+            # The temp home directory is making the tests fail when running on
+            # the phone with the preinstalled click. --elopio - 2014-09-08
+            # Reported as bug here: http://pad.lv/1363601
+            return os.environ.get('HOME')
+        else:
+            temp_dir_fixture = fixtures.TempDir()
+            self.useFixture(temp_dir_fixture)
+            temp_dir = temp_dir_fixture.path
+            temp_xdg_config_home = os.path.join(temp_dir, '.config')
 
-        # If running under xvfb, as jenkins does,
-        # xsession will fail to start without xauthority file
-        # Thus if the Xauthority file is in the home directory
-        # make sure we copy it to our temp home directory
-        self._copy_xauthority_file(temp_dir)
+            # If running under xvfb, as jenkins does,
+            # xsession will fail to start without xauthority file
+            # Thus if the Xauthority file is in the home directory
+            # make sure we copy it to our temp home directory
+            self._copy_xauthority_file(temp_dir)
 
-        self.useFixture(
-            fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
-        self.useFixture(
-            fixtures.EnvironmentVariable(
+            self.useFixture(
+                fixtures.EnvironmentVariable('HOME', newvalue=temp_dir))
+            self.useFixture(
+                fixtures.EnvironmentVariable(
                 'XDG_CONFIG_HOME',  newvalue=temp_xdg_config_home))
 
-        logger.debug('Patched home to fake home directory ' + temp_dir)
+            logger.debug('Patched home to fake home directory ' + temp_dir)
 
-        return temp_dir
+            return temp_dir
 
     def _copy_xauthority_file(self, directory):
         """Copy .Xauthority file to directory, if it exists in /home."""
