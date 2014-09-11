@@ -57,8 +57,8 @@ Item {
                 objectName: "avatar"
                 fillMode: Image.PreserveAspectFit
                 sourceSize {
-                    width: width
-                    height: height
+                    width: units.gu(6)
+                    height: units.gu(6)
                 }
             }
         }

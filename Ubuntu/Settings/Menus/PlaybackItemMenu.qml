@@ -35,6 +35,7 @@ ListItem.Empty {
     signal play(bool play)
     signal previous()
 
+    highlightWhenPressed: false
     implicitHeight: layout.implicitHeight + units.gu(2)
 
     RowLayout {

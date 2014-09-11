@@ -33,7 +33,7 @@ ListItem.Empty {
     property alias artist: artistLabel.text
     property alias album: albumLabel.text
 
-    implicitHeight: column.height + units.gu(2)
+    __height: column.height + units.gu(2)
     Behavior on implicitHeight { UbuntuNumberAnimation {} }
 
     ColumnLayout {

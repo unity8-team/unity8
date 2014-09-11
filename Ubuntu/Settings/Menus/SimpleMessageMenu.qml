@@ -40,8 +40,8 @@ ListItem.Empty {
     property alias footer: footerLoader.sourceComponent
     property real _animationDuration: UbuntuAnimation.FastDuration
 
-    implicitHeight: layout.height + units.gu(3)
-    clip: state == "expanded"
+    __height: layout.implicitHeight + units.gu(3)
+    clip: heightAnimation.running
 
     ColumnLayout {
         id: layout
@@ -83,6 +83,7 @@ ListItem.Empty {
 
     Behavior on height {
         NumberAnimation {
+            id: heightAnimation
             duration: _animationDuration
             easing.type: Easing.OutQuad
         }

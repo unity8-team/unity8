@@ -31,7 +31,7 @@ ListItem.Empty {
     property alias minimumDate: calendar.minimumDate
     property alias selectedDate: calendar.selectedDate
 
-    implicitHeight: column.height
+    __height: column.height
 
     Column {
         id: column

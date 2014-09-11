@@ -24,6 +24,9 @@ import Ubuntu.Settings.Menus 0.1
 Item {
     property string title: "Transfer Components"
 
+    width: units.gu(42)
+    height: units.gu(75)
+
     ListModel {
         id: model
         ListElement {

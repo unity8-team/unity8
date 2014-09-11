@@ -33,7 +33,8 @@ Item {
         Component.onCompleted: ready = true
 
         anchors.fill: parent
-        source: ready && width > 0 && height > 0 && icon.source ? icon.source : ""
+        // don't want to try get the image until we have a valid source size.
+        source: ready && sourceSize.width > 0 && sourceSize.height > 0 && icon.source ? icon.source : ""
         sourceSize {
             width: width
             height: height

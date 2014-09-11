@@ -24,6 +24,9 @@ import Ubuntu.Settings.Menus 0.1
 Item {
     property string title: "MessageComponents"
 
+    width: units.gu(42)
+    height: units.gu(75)
+
     ListModel {
         id: model
         ListElement {
@@ -32,7 +35,7 @@ Item {
             body: "I am a little teacup, short and stout. Here is my handle, and here is my spout. Who are you talking about my spout?! This should be truncated"
             time: "Sat 31 Oct, 11:00"
             icon: "image://theme/message"
-            avatar: "artwork/farm.jpg"
+            avatar: "image://theme/contact"
         }
         ListElement {
             type: "simple"
@@ -76,6 +79,7 @@ Item {
                     title: model.title
                     body: model.body
                     time: model.time
+                    removable: true
                 }
             }
 
@@ -87,6 +91,7 @@ Item {
                     title: model.title
                     body: model.body
                     time: model.time
+                    removable: true
 
                     onTriggered: {
                         selected = !selected;
@@ -102,6 +107,7 @@ Item {
                     title: model.title
                     body: model.body
                     time: model.time
+                    removable: true
 
                     onTriggered: {
                         selected = !selected;

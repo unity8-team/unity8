@@ -23,7 +23,7 @@ import Ubuntu.Components.ListItems 1.0 as ListItem
 
 ListItem.Empty {
     id: menu
-    implicitHeight: units.gu(5.5)
+    __height: units.gu(5.5)
 
     property bool active: false
     property bool secure: false

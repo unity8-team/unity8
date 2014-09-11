@@ -30,7 +30,7 @@ ListItem.Empty {
 
     property alias maximum: progressBar.maximumValue
 
-    implicitHeight: row.height + units.gu(2)
+    __height: row.height + units.gu(2)
 
     RowLayout {
         id: row
