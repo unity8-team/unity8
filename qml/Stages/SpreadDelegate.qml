@@ -35,35 +35,57 @@ Item {
     property real maximizedAppTopMargin
     property alias swipeToCloseEnabled: dragArea.enabled
     property bool closeable
-    property alias application: appWindow.application
+    property var application: null
 
-    Item {
-        objectName: "appWindowWithShadow"
-
+    Loader {
+        id: appWindowLoader
         y: dragArea.distance
         width: parent.width
         height: parent.height
+        sourceComponent: appWindowComponent
+        asynchronous: true
 
-        BorderImage {
-            anchors {
-                fill: appWindow
-                margins: -units.gu(2)
-            }
-            source: "graphics/dropshadow2gu.sci"
-            opacity: root.dropShadow ? .3 : 0
-            Behavior on opacity { UbuntuNumberAnimation {} }
-        }
-
-        ApplicationWindow {
-            id: appWindow
-            anchors {
-                fill: parent
-                topMargin: appWindow.fullscreen ? 0 : maximizedAppTopMargin
-            }
-
-            interactive: root.interactive
+        Binding {
+            target: appWindowLoader.item
+            property: "application"
+            value: root.application
         }
     }
+
+    Component {
+        id: appWindowComponent
+
+        Item {
+            objectName: "appWindowWithShadow"
+
+            y: dragArea.distance
+            width: parent.width
+            height: parent.height
+            property alias application: appWindow.application
+
+            BorderImage {
+                anchors {
+                    fill: appWindow
+                    margins: -units.gu(2)
+                }
+                source: "graphics/dropshadow2gu.sci"
+                opacity: root.dropShadow ? .3 : 0
+                Behavior on opacity { UbuntuNumberAnimation {} }
+            }
+
+            ApplicationWindow {
+                id: appWindow
+                anchors {
+                    fill: parent
+                    topMargin: appWindow.fullscreen ? 0 : maximizedAppTopMargin
+                }
+
+                interactive: root.interactive
+            }
+        }
+    }
+
+
 
     DraggingArea {
         id: dragArea
