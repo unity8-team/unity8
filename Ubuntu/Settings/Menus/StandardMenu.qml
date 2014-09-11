@@ -15,8 +15,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1 as Components
-import Ubuntu.Settings.Components 0.1 as USC
+import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItems
 import QtQuick.Layouts 1.1
 
@@ -45,9 +44,9 @@ ListItems.Empty {
         }
         spacing: menu.__contentsMargins
 
-        USC.IconVisual {
+        Icon {
             id: iconVisual
-            visible: status == Image.Ready
+            visible: source != ""
             color: Theme.palette.selected.backgroundText
 
             readonly property real size: Math.min(units.gu(3), parent.height - menu.__contentsMargins)
@@ -57,7 +56,7 @@ ListItems.Empty {
             Layout.alignment: Qt.AlignVCenter
         }
 
-        Components.Label {
+        Label {
             id: label
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter

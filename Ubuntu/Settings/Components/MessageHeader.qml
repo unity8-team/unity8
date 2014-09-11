@@ -75,7 +75,7 @@ Item {
 
                 Layout.fillWidth: true
                 // calculate width with regard to the time's incursion into this layout's space.
-                Layout.maximumWidth: parent.width - timeText.width + units.gu(3)
+                Layout.maximumWidth: layout.width - timeLayout.width - units.gu(4)
             }
             spacing: units.gu(0.5)
 
@@ -94,7 +94,7 @@ Item {
     }
 
     ColumnLayout {
-        id: timeIcon
+        id: timeLayout
         anchors.right: parent.right
 
         Label {
@@ -107,7 +107,7 @@ Item {
         }
         spacing: units.gu(0.5)
 
-        IconVisual {
+        Icon {
             id: iconImage
             objectName: "icon"
             Layout.preferredHeight: units.gu(3)

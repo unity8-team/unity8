@@ -17,7 +17,6 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Settings.Components 0.1 as USC
 import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItem
 import QtQuick.Layouts 1.1
@@ -43,7 +42,7 @@ ListItem.Empty {
         anchors.centerIn: parent
         spacing: units.gu(3)
 
-        USC.IconVisual {
+       Icon {
             objectName: "previousButton"
 
             Layout.preferredWidth: units.gu(5)
@@ -64,7 +63,7 @@ ListItem.Empty {
             }
         }
 
-        USC.IconVisual {
+        Icon {
             objectName: "playButton"
 
             Layout.preferredWidth: units.gu(5)
@@ -85,7 +84,7 @@ ListItem.Empty {
             }
         }
 
-        USC.IconVisual {
+        Icon {
             objectName: "nextButton"
 
             Layout.preferredWidth: units.gu(5)
