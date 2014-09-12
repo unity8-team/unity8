@@ -144,7 +144,7 @@ MainView {
         onAuthenticated: {
             if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
                 EvernoteConnection.clearToken();
-            }            
+            }
             EvernoteConnection.token = reply.AccessToken;
         }
         onAuthenticationError: {
@@ -207,6 +207,8 @@ MainView {
                 page: NotesPage {
                     id: notesPage
 
+                    narrowMode: root.narrowMode
+
                     onEditNote: {
                         root.switchToEditMode(note)
                     }
@@ -236,11 +238,13 @@ MainView {
                 page: NotebooksPage {
                     id: notebooksPage
 
+                    narrowMode: root.narrowMode
+
                     onOpenNotebook: {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title, filter: notebookGuid});
+                        pagestack.push(page, {title: title, filter: notebookGuid, narrowMode: narrowMode});
                         page.selectedNoteChanged.connect(function() {
                             print("foo", page.selectedNote);
                             if (page.selectedNote) {
@@ -317,7 +321,7 @@ MainView {
             id: noAccount
             objectName: "noAccountDialog"
             title: i18n.tr("No account available")
-            text: i18n.tr("Please setup an account in the system settings")
+            text: i18n.tr("Please configure and authorize an Evernote account in System Settings")
 
             Connections {
                 target: accounts

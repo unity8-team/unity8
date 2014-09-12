@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -14,31 +14,30 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1
-import Evernote 0.1
-import "../components"
+#ifndef SAVENOTEBOOKJOB_H
+#define SAVENOTEBOOKJOB_H
 
-Page {
-    id: root
-    property alias note: editNoteView.note
-    property alias isBottomEdge: editNoteView.isBottomEdge
+#include "notesstorejob.h"
 
-    signal exitEditMode(var note)
+class SaveNotebookJob : public NotesStoreJob
+{
+    Q_OBJECT
+public:
+    explicit SaveNotebookJob(Notebook *notebook, QObject *parent = 0);
 
-    tools: ToolbarItems {
-        locked: true
-        opened: false
-    }
+signals:
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
-    EditNoteView {
-        id: editNoteView
-        anchors.fill: parent
+protected:
+    void startJob();
+    void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
-        onExitEditMode: root.exitEditMode(note);
-    }
-}
+private:
+    Notebook* m_notebook;
+};
 
+#endif // SAVENOTEBOOKJOB_H

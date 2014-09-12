@@ -103,6 +103,7 @@ public:
     QList<Notebook*> notebooks() const;
     Q_INVOKABLE Notebook* notebook(const QString &guid);
     Q_INVOKABLE void createNotebook(const QString &name);
+    Q_INVOKABLE void saveNotebook(const QString &guid);
     Q_INVOKABLE void expungeNotebook(const QString &guid);
 
 public slots:
@@ -133,6 +134,7 @@ private slots:
     void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, bool withResourceContent);
     void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
     void deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
     void createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result);
     void expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);

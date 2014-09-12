@@ -7,47 +7,49 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-07-17 20:03+0000\n"
-"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
+"POT-Creation-Date: 2014-08-29 14:53+0200\n"
+"PO-Revision-Date: 2014-09-05 07:01+0000\n"
+"Last-Translator: Walter Cheuk <wwycheuk@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-25 07:55+0000\n"
-"X-Generator: Launchpad (build 17114)\n"
+"X-Launchpad-Export-Date: 2014-09-06 07:35+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
 msgstr "記事"
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr "記事本"
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "提醒"
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"未有選取記事。\n"
+"請選取記事以觀看詳情。"
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
 msgstr "沒有帳號可用"
 
-#: ../src/app/qml/reminders.qml:316
-msgid "Please setup an account in the system settings"
-msgstr "請在系統設定中設置個帳號"
+#: ../src/app/qml/reminders.qml:320
+msgid "Please configure and authorize an Evernote account in System Settings"
+msgstr "請在系統設定設定並授權 Evernote 帳號"
 
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
-msgstr ""
+msgstr "新增帳號"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:68
 #, qt-format
@@ -68,7 +70,7 @@ msgstr "放開以重新整理"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr ""
+msgstr "向下拉以重新整理"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
@@ -79,16 +81,12 @@ msgstr "清除提醒"
 msgid "Mark as done"
 msgstr "標記為完成"
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr "返回"
-
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
-msgstr "使用！"
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
+msgstr "選取 Evernote 帳號"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr "無題"
 
@@ -147,9 +145,13 @@ msgstr "沒有可用的記事。您可以透過「新增記事」按鈕建立新
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add "
-"reminder\" button or by setting a reminder when viewing a note."
-msgstr "沒有可用的提醒。您可以透過「新增提醒」按鈕建立新提醒，或是在檢視記事之時設定提醒。"
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
+msgstr "無可用提醒。可在檢視記事時設置新提醒。"
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
+msgstr "搜尋記事"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
@@ -157,11 +159,11 @@ msgstr "請選取提醒的日期與時間："
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
-msgstr "今天"
+msgstr "今日"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr "昨天"
+msgstr "昨日"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
@@ -175,7 +177,7 @@ msgstr "兩週前"
 #: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
-msgstr "%1 %2"
+msgstr "%2年%1"
 
 #: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
@@ -191,7 +193,7 @@ msgstr "逾期"
 
 #: ../src/plugin/Evernote/note.cpp:243
 msgid "Tomorrow"
-msgstr "明天"
+msgstr "明日"
 
 #: ../src/plugin/Evernote/note.cpp:246
 msgid "Next week"
@@ -199,7 +201,7 @@ msgstr "下週"
 
 #: ../src/plugin/Evernote/note.cpp:249
 msgid "In two weeks"
-msgstr "接下來兩週"
+msgstr "兩週後"
 
 #: ../src/plugin/Evernote/note.cpp:251
 msgid "Later"
@@ -208,12 +210,12 @@ msgstr "稍後"
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:100
 msgid "today"
-msgstr "今天"
+msgstr "今日"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
-msgstr "昨天"
+msgstr "昨日"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:108
@@ -230,7 +232,7 @@ msgstr "兩週前"
 #: ../src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr "於 %2 %1"
+msgstr "於%2年%1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
@@ -244,16 +246,16 @@ msgstr "重新整理記事本時發生錯誤：%1"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
 msgid "Authentication expired."
-msgstr ""
+msgstr "身分核實已過期。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Limit exceeded."
-msgstr ""
+msgstr "超出限制。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Rate limit exceeded."
-msgstr ""
+msgstr "超出速度限制。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
-msgstr ""
+msgstr "超出限額。"

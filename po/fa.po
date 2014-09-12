@@ -7,30 +7,30 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-08-03 12:12+0000\n"
-"Last-Translator: bijan <bijanebrahimi@riseup.net>\n"
+"POT-Creation-Date: 2014-08-29 14:53+0200\n"
+"PO-Revision-Date: 2014-09-07 19:12+0000\n"
+"Last-Translator: Danial Behzadi <dani.behzi@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-04 06:33+0000\n"
-"X-Generator: Launchpad (build 17147)\n"
+"X-Launchpad-Export-Date: 2014-09-08 06:59+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr "دفترچه‌های یادداشت"
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "یادآورها"
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -38,15 +38,16 @@ msgstr ""
 "هیچ یادداشتی انتخاب نشده.\n"
 "یادداشتی را برای دیدن جزئیاتش انتخاب کنید."
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
 msgstr "هیچ حساب کاربری‌ای موجود نیست"
 
-#: ../src/app/qml/reminders.qml:316
-msgid "Please setup an account in the system settings"
-msgstr "لطفاً در تنظیمات سامانه یم حساب کاربری برپا کنید"
+#: ../src/app/qml/reminders.qml:320
+msgid "Please configure and authorize an Evernote account in System Settings"
+msgstr ""
+"لطفاً یک حساب کاربری اورنوت را در تنظیمات سامانه پیکربندی و تأیید کنید."
 
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "افزودن حساب کاربری"
@@ -81,16 +82,12 @@ msgstr "پاک کردن یادآدور"
 msgid "Mark as done"
 msgstr "علامت گذاری به عنوان انجام شده"
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr "بازگشت"
-
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
-msgstr "از این استفاده کنید!"
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
+msgstr "انتخاب حساب کاربری اورنوت"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr "بی‌عنوان"
 
@@ -151,11 +148,15 @@ msgstr ""
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add "
-"reminder\" button or by setting a reminder when viewing a note."
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
 msgstr ""
-"هیچ يادآوری موجود نیست. می‌توانید با استفاده از دکمه‌ی «افزودن یادآور» یا با "
-"تنظیم یک یادآور هنگام دیدن یک یادداشت، یادآورهای جدیدی ایجاد کنید."
+"هیچ یادآوری موجود نیست. می‌توانید با تنظیم یک یادآور هنگام مشاهده‌ی یک "
+"یادداشت، یادآورهای جدید بسازید."
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
+msgstr "جست‌وجوی یادداشت‌ها"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"

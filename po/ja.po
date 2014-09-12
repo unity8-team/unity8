@@ -7,52 +7,54 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
-"PO-Revision-Date: 2014-01-26 10:26+0000\n"
-"Last-Translator: Kentaro Kazuhama <Unknown>\n"
+"POT-Creation-Date: 2014-08-29 14:53+0200\n"
+"PO-Revision-Date: 2014-08-18 16:10+0000\n"
+"Last-Translator: Mitsuya Shibata <mty.shibata@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-25 07:55+0000\n"
-"X-Generator: Launchpad (build 17114)\n"
+"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
-msgstr ""
+msgstr "ノート"
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr "ノートブック"
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "リマインダー"
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"ノートが選択されていません。\n"
+"詳細を見るにはノートを選択してください。"
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
+msgstr "アカウントが設定されていません"
+
+#: ../src/app/qml/reminders.qml:320
+msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:316
-msgid "Please setup an account in the system settings"
-msgstr ""
-
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
-msgstr ""
+msgstr "アカウントの追加"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:68
 #, qt-format
 msgid "Last edited %1"
-msgstr ""
+msgstr "更新日 %1"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Shared"
@@ -60,35 +62,31 @@ msgstr "共有"
 
 #: ../src/app/qml/components/NotebooksDelegate.qml:75
 msgid "Private"
-msgstr ""
+msgstr "非公開"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr ""
+msgstr "指を離して更新"
 
 #: ../src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr ""
+msgstr "画面を引き下げて更新"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 #: ../src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr ""
+msgstr "リマインダーをクリア"
 
 #: ../src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
-msgstr ""
+msgstr "完了にする"
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr ""
-
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
-msgstr ""
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
+msgstr "Evernoteアカウントを選択"
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr "無題"
 
@@ -98,12 +96,12 @@ msgstr "編集"
 
 #: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 msgid "Edit reminder"
-msgstr ""
+msgstr "リマインダーを編集"
 
 #: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
 #: ../src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr ""
+msgstr "リマインダーをセットする"
 
 #: ../src/app/qml/ui/NotePage.qml:57 ../src/app/qml/ui/NotesPage.qml:86
 msgid "Delete"
@@ -111,7 +109,7 @@ msgstr "削除"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:41
 msgid "Add notebook"
-msgstr ""
+msgstr "ノートブックの追加"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:51 ../src/app/qml/ui/NotesPage.qml:55
 #: ../src/app/qml/ui/RemindersPage.qml:34
@@ -121,12 +119,12 @@ msgstr "検索"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:61 ../src/app/qml/ui/NotesPage.qml:65
 msgid "Refresh"
-msgstr ""
+msgstr "更新"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:71 ../src/app/qml/ui/NotesPage.qml:75
 #: ../src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
-msgstr ""
+msgstr "アカウント"
 
 #: ../src/app/qml/ui/NotebooksPage.qml:173
 msgid "Cancel"
@@ -138,122 +136,135 @@ msgstr "保存"
 
 #: ../src/app/qml/ui/NotesPage.qml:45
 msgid "Add note"
-msgstr ""
+msgstr "ノートの追加"
 
 #: ../src/app/qml/ui/NotesPage.qml:185
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
-msgstr ""
+msgstr "利用可能なノートはありません。「ノートの追加」ボタンを使ってノートを作成してください。"
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add "
-"reminder\" button or by setting a reminder when viewing a note."
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
 msgstr ""
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
+msgstr "ノートを検索"
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "リマインダーの日時を選択してください："
 
 #: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
 msgid "Today"
-msgstr ""
+msgstr "今日"
 
 #: ../src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr ""
+msgstr "昨日"
 
 #: ../src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr ""
+msgstr "先週"
 
 #: ../src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr ""
+msgstr "二週間前"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
 #: ../src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
-msgstr ""
+msgstr "%2年%1"
 
 #: ../src/plugin/Evernote/note.cpp:228
 msgid "Done"
-msgstr ""
+msgstr "完了"
 
 #: ../src/plugin/Evernote/note.cpp:234
 msgid "No date"
-msgstr ""
+msgstr "日付なし"
 
 #: ../src/plugin/Evernote/note.cpp:237
 msgid "Overdue"
-msgstr ""
+msgstr "期限切れ"
 
 #: ../src/plugin/Evernote/note.cpp:243
 msgid "Tomorrow"
-msgstr ""
+msgstr "明日"
 
 #: ../src/plugin/Evernote/note.cpp:246
 msgid "Next week"
-msgstr ""
+msgstr "来週"
 
 #: ../src/plugin/Evernote/note.cpp:249
 msgid "In two weeks"
-msgstr ""
+msgstr "二週間以内"
 
 #: ../src/plugin/Evernote/note.cpp:251
 msgid "Later"
-msgstr ""
+msgstr "後で"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: ../src/plugin/Evernote/notebook.cpp:100
 msgid "today"
-msgstr ""
+msgstr "本日"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: ../src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
-msgstr ""
+msgstr "昨日"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: ../src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
-msgstr ""
+msgstr "先週"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: ../src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
-msgstr ""
+msgstr "二週間前"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: ../src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "%2年%1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:223
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr ""
+msgstr "ノート更新中にエラー：%1"
 
 #: ../src/plugin/Evernote/notesstore.cpp:375
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "ノートブック更新中にエラー：%1"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
 msgid "Authentication expired."
-msgstr ""
+msgstr "認証が期限切れです。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Limit exceeded."
-msgstr ""
+msgstr "上限を越えました。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Rate limit exceeded."
-msgstr ""
+msgstr "回数上限を越えました。"
 
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
-msgstr ""
+msgstr "サイズ上限を越えました。"
+
+#~ msgid "Please setup an account in the system settings"
+#~ msgstr "システム設定でアカウントを設定してください"
+
+#~ msgid ""
+#~ "No reminders available. You can create new reminders using the \"Add "
+#~ "reminder\" button or by setting a reminder when viewing a note."
+#~ msgstr ""
+#~ "利用可能なリマインダーはありません。「リマインダーの追加」ボタンかノートを閲覧中にリマインダーをセットすることで新しいリマインダーを作成してください。"

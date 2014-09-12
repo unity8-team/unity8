@@ -8,30 +8,30 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: Folmer Fredslund <folmerf@gmail.com>\n"
-"POT-Creation-Date: 2014-07-23 23:40+0200\n"
+"POT-Creation-Date: 2014-08-29 14:53+0200\n"
 "PO-Revision-Date: 2014-07-30 12:37+0000\n"
 "Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-31 07:15+0000\n"
-"X-Generator: Launchpad (build 17131)\n"
+"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/app/qml/reminders.qml:201
+#: ../src/app/qml/reminders.qml:205
 msgid "Notes"
 msgstr "Noter"
 
-#: ../src/app/qml/reminders.qml:230
+#: ../src/app/qml/reminders.qml:234
 msgid "Notebooks"
 msgstr "Notesblokke"
 
-#: ../src/app/qml/reminders.qml:258
+#: ../src/app/qml/reminders.qml:262
 #: ../.build/com.ubuntu.reminders.desktop.js:1
 msgid "Reminders"
 msgstr "Påmindelser"
 
-#: ../src/app/qml/reminders.qml:278
+#: ../src/app/qml/reminders.qml:282
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -39,15 +39,15 @@ msgstr ""
 "Ingen note valgt.\n"
 "Vælg en note for at se den i detaljer."
 
-#: ../src/app/qml/reminders.qml:315
+#: ../src/app/qml/reminders.qml:319
 msgid "No account available"
 msgstr "Ingen konto tilgængelig"
 
-#: ../src/app/qml/reminders.qml:316
-msgid "Please setup an account in the system settings"
-msgstr "Sæt venligst en konto op i systemindstillingerne"
+#: ../src/app/qml/reminders.qml:320
+msgid "Please configure and authorize an Evernote account in System Settings"
+msgstr ""
 
-#: ../src/app/qml/reminders.qml:336
+#: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "Tilføj konto"
@@ -82,17 +82,12 @@ msgstr "Ryd påmindelse"
 msgid "Mark as done"
 msgstr "Markér som færdig"
 
-#: ../src/app/qml/ui/CameraConfirm.qml:40
-msgid "Back"
-msgstr "Tilbage"
-
-# noget med kamera/billede?
-#: ../src/app/qml/ui/CameraConfirm.qml:49
-msgid "Use it!"
-msgstr "Brug det!"
+#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+msgid "Select Evernote account"
+msgstr ""
 
 #: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110
+#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
 msgid "Untitled"
 msgstr "Uden titel"
 
@@ -153,11 +148,13 @@ msgstr ""
 
 #: ../src/app/qml/ui/RemindersPage.qml:108
 msgid ""
-"No reminders available. You can create new reminders using the \"Add "
-"reminder\" button or by setting a reminder when viewing a note."
+"No reminders available. You can create new reminders by setting a reminder "
+"when viewing a note."
 msgstr ""
-"Ingen tilgængelige påmindelser. Du kan oprette nye påmindelser med \"Tilføj "
-"påmindelse\"-knappen eller ved at angive en påmindelse når du ser på en note."
+
+#: ../src/app/qml/ui/SearchNotesPage.qml:30
+msgid "Search notes"
+msgstr ""
 
 #: ../src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
@@ -266,3 +263,13 @@ msgstr "Hastighedsgrænse overskredet."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Kvote overskredet."
+
+#~ msgid "Please setup an account in the system settings"
+#~ msgstr "Sæt venligst en konto op i systemindstillingerne"
+
+#~ msgid ""
+#~ "No reminders available. You can create new reminders using the \"Add "
+#~ "reminder\" button or by setting a reminder when viewing a note."
+#~ msgstr ""
+#~ "Ingen tilgængelige påmindelser. Du kan oprette nye påmindelser med \"Tilføj "
+#~ "påmindelse\"-knappen eller ved at angive en påmindelse når du ser på en note."

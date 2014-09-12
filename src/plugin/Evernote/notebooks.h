@@ -64,7 +64,11 @@ signals:
 private slots:
     void notebookAdded(const QString &guid);
     void notebookRemoved(const QString &guid);
+
+    void nameChanged();
     void noteCountChanged();
+    void publishedChanged();
+    void lastUpdatedChanged();
 
 private:
     QList<QString> m_list;
