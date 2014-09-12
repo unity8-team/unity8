@@ -42,6 +42,7 @@ static void observer(PayPackage* /* package */, const char* itemid, PayPackageIt
         Q_EMIT self->purchaseCompleted();
         break;
     default:
+        Q_EMIT self->purchaseError("Can't complete the purchase");
         break;
     }
 }
