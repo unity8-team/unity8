@@ -4,10 +4,10 @@
   <description>Reminders</description>
 
   <services>
-    <service id="evernote">
+    <service id="com.ubuntu.reminders_evernote-account-plugin">
       <description>Synchronize your notes with Evernote</description>
     </service>
-    <service id="evernote-sandbox">
+    <service id="com.ubuntu.reminders_evernote-account-plugin-sandbox">
       <description>Synchronize your notes with the Evernote Sandbox</description>
     </service>
   </services>

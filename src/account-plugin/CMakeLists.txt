@@ -3,7 +3,7 @@ set(EVERNOTE_SANDBOX_CONSUMER_SECRET "44f8ee81a8359500")
 set(EVERNOTE_CONSUMER_KEY "canonicalis")
 set(EVERNOTE_CONSUMER_SECRET "174a72ce5bffbcad")
 
-function(EvernoteOnlineAccountSetup account_display_name account_name hostname consumer_key consumer_secret)
+function(EvernoteOnlineAccountSetup account_display_name account_name provider_id hostname consumer_key consumer_secret)
 
     set(EVERNOTE_DATA_FILENAME evernote)
     set(EVERNOTE_CONSUMER_KEY ${consumer_key})
@@ -13,7 +13,7 @@ function(EvernoteOnlineAccountSetup account_display_name account_name hostname c
     set(EVERNOTE_ACCOUNT_NAME ${account_name})
     set(EVERNOTE_HOSTNAME ${hostname})
 
-    set(EVERNOTE_PROVIDER_ID ${account_name})
+    set(EVERNOTE_PROVIDER_ID ${provider_id})
     set(EVERNOTE_SERVICE_ID ${account_name})
     set(EVERNOTE_ICON_NAME ${account_name})
 
@@ -43,12 +43,12 @@ function(EvernoteOnlineAccountSetup account_display_name account_name hostname c
 endfunction()
 
 # Build and install the files for the production plugin
-EvernoteOnlineAccountSetup(Evernote evernote www.evernote.com
+EvernoteOnlineAccountSetup(Evernote evernote com.ubuntu.reminders_evernote-account-plugin www.evernote.com
                            ${EVERNOTE_CONSUMER_KEY} ${EVERNOTE_CONSUMER_SECRET})
 
 if(NOT CLICK_MODE)
     # Build and install the files for the sandbox plugin
     # We're only building it as a .deb package for Jenkins, we don't need it in the click package
-    EvernoteOnlineAccountSetup("Evernote Developer Sandbox" evernote-sandbox sandbox.evernote.com
+    EvernoteOnlineAccountSetup("Evernote Developer Sandbox" evernote-sandbox com.ubuntu.reminders_evernote-account-plugin-sandbox sandbox.evernote.com
                                ${EVERNOTE_SANDBOX_CONSUMER_KEY} ${EVERNOTE_SANDBOX_CONSUMER_SECRET})
 endif(NOT CLICK_MODE)
