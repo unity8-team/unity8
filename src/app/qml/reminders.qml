@@ -332,7 +332,7 @@ MainView {
             Setup {
                 id: setup
                 applicationId: "com.ubuntu.reminders_reminders"
-                providerId: "com.ubuntu.reminders_evernote-account-plugin"
+                providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
             }
 
             Button {
