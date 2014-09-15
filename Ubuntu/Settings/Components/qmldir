@@ -5,3 +5,4 @@ Calendar 0.1 Calendar.qml
 MessageHeader 0.1 MessageHeader.qml
 QuickReply 0.1 QuickReply.qml
 StatusIcon 0.1 StatusIcon.qml
+UbuntuShapeForItem 0.1 UbuntuShapeForItem.qml

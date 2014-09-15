@@ -48,17 +48,21 @@ Item {
         }
         spacing: units.gu(2)
 
-        UbuntuShape {
-            id: avatarImageContainer
-            Layout.preferredHeight: units.gu(6)
+        UbuntuShapeForItem {
             Layout.preferredWidth: units.gu(6)
-            image: Image {
+            Layout.preferredHeight: units.gu(6)
+
+            image: avatarImage
+            Icon {
                 id: avatarImage
                 objectName: "avatar"
-                fillMode: Image.PreserveAspectFit
-                sourceSize {
-                    width: units.gu(6)
-                    height: units.gu(6)
+                anchors.fill: parent
+
+                color: {
+                    if (String(source).match(/^image:\/\/theme/)) {
+                        return Theme.palette.selected.backgroundText;
+                    }
+                    return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }
             }
         }

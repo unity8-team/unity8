@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.1
+import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItem
-import QtQuick.Layouts 1.1
+import Ubuntu.Settings.Components 0.1
 
 ListItem.Empty {
     id: menu
@@ -43,19 +44,21 @@ ListItem.Empty {
         }
         spacing: units.gu(2)
 
-        UbuntuShape {
-            id: imageShape
-
+        UbuntuShapeForItem {
             Layout.preferredWidth: units.gu(6)
             Layout.preferredHeight: units.gu(6)
 
-            image: Image {
-                objectName: "icon"
+            image: icon
+            Icon {
                 id: icon
+                objectName: "icon"
+                anchors.fill: parent
 
-                sourceSize {
-                    width: units.gu(6)
-                    height: units.gu(6)
+                color: {
+                    if (String(source).match(/^image:\/\/theme/)) {
+                        return Theme.palette.selected.backgroundText;
+                    }
+                    return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }
             }
         }
