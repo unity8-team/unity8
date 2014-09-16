@@ -25,6 +25,8 @@ StandardMenu {
 
     property bool checked: false
 
+    onClicked: menu.checked = !menu.checked
+
     component: Component {
         Switch {
             id: switcher

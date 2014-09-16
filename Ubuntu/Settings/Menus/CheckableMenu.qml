@@ -28,6 +28,8 @@ ListItem.Empty {
     property bool checked: false
     __acceptEvents: false
 
+    onClicked: menu.checked = !menu.checked
+
     Components.CheckBox {
         id: checkbox
         objectName: "checkbox"
