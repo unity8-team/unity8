@@ -26,7 +26,6 @@ ListItem.Empty {
 
     property alias text: label.text
     property bool checked: false
-    __acceptEvents: false
 
     onClicked: menu.checked = !menu.checked
 
@@ -71,13 +70,6 @@ ListItem.Empty {
                 checkbox.checked = menu.checked;
 
                 checkbox.enableCheckConnection = oldEnable;
-            }
-        }
-
-        Connections {
-            target: menu.__mouseArea
-            onClicked: {
-                checkbox.clicked();
             }
         }
     }
