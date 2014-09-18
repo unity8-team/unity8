@@ -1,3 +1,10 @@
+ubuntu-settings-components (0.4+14.10.20140918-0ubuntu1) utopic; urgency=low
+
+  [ Nick Dedekind ]
+  * Added ability to use try*. Added target for test files in qcreator.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 18 Sep 2014 09:48:32 +0000
+
 ubuntu-settings-components (0.3+14.10.20140708-0ubuntu1) utopic; urgency=medium
 
   [ Nick Dedekind ]
