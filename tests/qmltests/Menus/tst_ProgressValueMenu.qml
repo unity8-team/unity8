@@ -18,9 +18,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -48,12 +47,12 @@ Item {
         }
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "ProgressValueMenu"
         when: windowShown
 
         function test_label() {
-            var progress = UtilsJS.findChild(progressMenu, "progress");
+            var progress = findChild(progressMenu, "progress");
             verify(progress !== undefined);
 
             progressMenu.value = 20;

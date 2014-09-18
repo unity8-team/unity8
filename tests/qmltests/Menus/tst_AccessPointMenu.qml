@@ -18,9 +18,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -62,7 +61,7 @@ Item {
         target: accessPoint
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "AccessPointMenu"
         when: windowShown
 
@@ -108,14 +107,14 @@ Item {
             accessPoint.signalStrength = data.signal;
             accessPoint.adHoc = data.adHoc;
 
-            var icon = UtilsJS.findChild(accessPoint, "iconSignal");
+            var icon = findChild(accessPoint, "iconSignal");
             verify(icon !== undefined);
 
             compare(icon.name, data.icon, "Incorret icon for strength");
         }
 
         function test_secure(data) {
-            var icon = UtilsJS.findChild(accessPoint, "iconSecure");
+            var icon = findChild(accessPoint, "iconSecure");
             verify(icon !== undefined);
 
             accessPoint.secure = true;
@@ -126,7 +125,7 @@ Item {
         }
 
         function test_checkBox(data) {
-            var checkBox = UtilsJS.findChild(accessPoint, "checkBox");
+            var checkBox = findChild(accessPoint, "checkBox");
             verify(checkBox !== undefined);
 
             accessPoint.checked = true;
@@ -137,7 +136,7 @@ Item {
         }
 
         function test_checkBox_on_default_checked() {
-            var checkBox = UtilsJS.findChild(accessPoint2, "checkBox");
+            var checkBox = findChild(accessPoint2, "checkBox");
             verify(checkBox !== undefined);
 
             compare(checkBox.checked, true, "Check box should be checked if default to checked")

@@ -18,9 +18,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -59,15 +58,15 @@ Item {
         target: buttonMenu
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "ButtonMenu"
         when: windowShown
 
         function test_click() {
             signalSpy.clear();
 
-            var button = UtilsJS.findChild(buttonMenu, "button");
-            var button2 = UtilsJS.findChild(buttonMenu2, "button");
+            var button = findChild(buttonMenu, "button");
+            var button2 = findChild(buttonMenu2, "button");
             verify(button !== undefined);
 
             mouseClick(button, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0);

@@ -27,6 +27,7 @@ class UbuntuTestPlugin : public QQmlExtensionPlugin
 
 public:
     void registerTypes(const char *uri);
+    void initializeEngine(QQmlEngine *engine, const char *uri);
 };
 
 #endif // UBUNTU_TEST_PLUGIN_H

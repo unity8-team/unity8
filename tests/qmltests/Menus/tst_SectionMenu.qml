@@ -18,9 +18,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Test 0.1
 import Ubuntu.Settings.Menus 0.1
-import "../utils.js" as UtilsJS
 
 Item {
     width: units.gu(42)
@@ -52,7 +51,7 @@ Item {
         }
     }
 
-    TestCase {
+    UbuntuTestCase {
         name: "SectionMenu"
         when: windowShown
 
@@ -61,7 +60,7 @@ Item {
         }
 
         function test_busy() {
-            var indicator = UtilsJS.findChild(section1, "indicator");
+            var indicator = findChild(section1, "indicator");
             verify(indicator.running === false);
 
             section1.busy = true

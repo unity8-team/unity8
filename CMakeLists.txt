@@ -69,6 +69,29 @@ if(GENERATE_DOC)
     endif()
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wall -Wextra")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "release" OR "${CMAKE_BUILD_TYPE}" STREQUAL "relwithdebinfo")
+    option(Werror "Treat warnings as errors" ON)
+else()
+    option(Werror "Treat warnings as errors" OFF)
+endif()
+
+if (Werror)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+endif()
+
+file(GLOB_RECURSE QML_EXTRA_FILES
+    ${CMAKE_SOURCE_DIR}/tests/*.qml
+    ${CMAKE_SOURCE_DIR}/tests/*.js
+    ${CMAKE_SOURCE_DIR}/tests/*.jpg
+    ${CMAKE_SOURCE_DIR}/tests/*.png
+    ${CMAKE_SOURCE_DIR}/tests/*.sci
+    ${CMAKE_SOURCE_DIR}/tests/*.svg
+)
+add_custom_target(qml_fake_target SOURCES ${QML_EXTRA_FILES})
+
 # Tests
 enable_testing()
 
