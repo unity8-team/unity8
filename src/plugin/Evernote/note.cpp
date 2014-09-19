@@ -117,6 +117,7 @@ void Note::setEnmlContent(const QString &enmlContent)
 {
     if (m_content.enml() != enmlContent) {
         m_content.setEnml(enmlContent);
+        m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
     }
 }
@@ -135,6 +136,7 @@ void Note::setRichTextContent(const QString &richTextContent)
 {
     if (m_content.toRichText(m_guid) != richTextContent) {
         m_content.setRichText(richTextContent);
+        m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
     }
 }
@@ -142,6 +144,11 @@ void Note::setRichTextContent(const QString &richTextContent)
 QString Note::plaintextContent() const
 {
     return m_content.toPlaintext().trimmed();
+}
+
+QString Note::tagline() const
+{
+    return m_tagline;
 }
 
 bool Note::reminder() const

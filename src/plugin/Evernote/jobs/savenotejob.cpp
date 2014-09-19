@@ -33,6 +33,21 @@ SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
     m_note->setParent(this);
 }
 
+bool SaveNoteJob::operator==(const EvernoteJob *other) const
+{
+    const SaveNoteJob *otherJob = qobject_cast<const SaveNoteJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_note == otherJob->m_note;
+}
+
+void SaveNoteJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const SaveNoteJob *otherJob = static_cast<const SaveNoteJob*>(other);
+    connect(otherJob, &SaveNoteJob::jobDone, this, &SaveNoteJob::jobDone);
+}
+
 void SaveNoteJob::startJob()
 {
     evernote::edam::Note note;

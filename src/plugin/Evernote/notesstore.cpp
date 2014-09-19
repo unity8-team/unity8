@@ -125,6 +125,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->richTextContent();
     case RolePlaintextContent:
         return m_notes.at(index.row())->plaintextContent();
+    case RoleTagline:
+        return m_notes.at(index.row())->tagline();
     case RoleResourceUrls:
         return m_notes.at(index.row())->resourceUrls();
     case RoleReminderSorting:
@@ -152,6 +154,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleRichTextContent, "richTextContent");
     roles.insert(RoleHtmlContent, "htmlContent");
     roles.insert(RolePlaintextContent, "plaintextContent");
+    roles.insert(RoleTagline, "tagline");
     roles.insert(RoleResourceUrls, "resourceUrls");
     return roles;
 }

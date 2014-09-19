@@ -27,6 +27,21 @@ FetchNoteJob::FetchNoteJob(const QString &guid, bool withResources, QObject *par
 {
 }
 
+bool FetchNoteJob::operator==(const EvernoteJob *other) const
+{
+    const FetchNoteJob *otherJob = qobject_cast<const FetchNoteJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_guid == otherJob->m_guid && this->m_withResources == otherJob->m_withResources;
+}
+
+void FetchNoteJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const FetchNoteJob *otherJob = static_cast<const FetchNoteJob*>(other);
+    connect(otherJob, &FetchNoteJob::resultReady, this, &FetchNoteJob::resultReady);
+}
+
 void FetchNoteJob::startJob()
 {
     client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, m_withResources, false, false);
