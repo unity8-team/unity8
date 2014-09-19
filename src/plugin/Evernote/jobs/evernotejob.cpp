@@ -48,7 +48,6 @@ EvernoteJob::~EvernoteJob()
 
 void EvernoteJob::run()
 {
-    qDebug() << "starting job";
     if (!EvernoteConnection::instance()->isConnected()) {
         qWarning() << "EvernoteConnection is not connected. (" << this->metaObject()->className() << ")";
         emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("Not connected."));
@@ -116,7 +115,6 @@ void EvernoteJob::run()
                 emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
         }
     }
-    qDebug() << "job done";
 }
 
 QString EvernoteJob::token()
