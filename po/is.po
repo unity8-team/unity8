@@ -10,13 +10,13 @@ msgstr ""
 "Project-Id-Version: po_com.ubuntu.reminders-is\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-21 10:53+0000\n"
+"PO-Revision-Date: 2014-09-20 10:58+0000\n"
 "Last-Translator: Sveinn í Felli <sv1@fellsnet.is>\n"
 "Language-Team: Icelandic <translation-team-is@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Launchpad-Export-Date: 2014-09-21 06:25+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 "Language: is\n"
 
@@ -47,7 +47,7 @@ msgstr "Enginn aðgangur tiltækur"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr ""
+msgstr "Þú verður að stilla og auðkenna Evernote aðgang í kerfisstillingum"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -153,6 +153,8 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"Engar áminningar tiltækar. Þú getur búið til nýjar áminningar um leið og þú "
+"skoðar minnismiða."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -264,13 +266,3 @@ msgstr "Yfir hraðamörkum."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Yfir kvóta."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Settu upp aðgangsreikning í kerfisstillingum"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "Engir áminningar tiltækar. Þú getur búið til nýja áminningar með \"Bæta við "
-#~ "áminningu\"."
