@@ -39,6 +39,16 @@ PageWithBottomEdge {
     bottomEdgeTitle: i18n.tr("Add note")
     bottomEdgePageComponent: EditNotePage {
         isBottomEdge: true;
+
+        MouseArea {
+            anchors.fill: parent
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: root.bottomEdgeContentShown
+            visible: true
+        }
     }
 
     signal openSearch()

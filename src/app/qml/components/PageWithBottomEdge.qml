@@ -91,6 +91,8 @@ Page {
     signal bottomEdgeReleased()
     signal bottomEdgeDismissed()
 
+    readonly property bool bottomEdgeContentShown: bottomEdge.y < page.height
+
 
     function showBottomEdgePage(source, properties)
     {
