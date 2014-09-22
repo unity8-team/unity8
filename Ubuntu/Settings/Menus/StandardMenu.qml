@@ -33,7 +33,12 @@ ListItems.Empty {
         id: overlay
         color: "transparent"
         visible: color !== "transparent"
-        anchors.fill: parent
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+        height: menu.height - menu.divider.height
     }
 
     RowLayout {
