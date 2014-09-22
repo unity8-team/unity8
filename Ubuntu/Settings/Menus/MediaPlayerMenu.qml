@@ -53,13 +53,10 @@ ListItem.Empty {
             spacing: menu.__contentsMargins
             visible: !running
 
-            UbuntuShape {
+            Image {
+                id: playerIcon
                 Layout.preferredHeight: units.gu(5)
                 Layout.preferredWidth: units.gu(5)
-
-                image: Image {
-                    id: playerIcon
-                }
             }
 
             Label {
