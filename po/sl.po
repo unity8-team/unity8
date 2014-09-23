@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-26 15:07+0000\n"
-"Last-Translator: Dražen Matešić <Unknown>\n"
+"PO-Revision-Date: 2014-09-08 17:11+0000\n"
+"Last-Translator: Damir Jerovšek <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:36+0000\n"
+"X-Launchpad-Export-Date: 2014-09-09 07:55+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -44,7 +44,7 @@ msgstr "Ni razpoložljivih računov"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr ""
+msgstr "Nastavite in pooblastite račun Evernote v Nastavitvah sistema"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -150,6 +150,8 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"Na voljo ni nobenega opomnika. Nove opomnike lahko nastavite med "
+"ogledovanjem opombe."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -261,13 +263,3 @@ msgstr "Prekoračitev omejitve prometa."
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "Količinska omejitev je presežena."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "Nastavite račun s sistemskih nastavitvah"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "Na voljo ni opomnikov. Nove opomnike lahko ustvarite s pomočjo gumba \"Dodaj "
-#~ "opomnik\" ali z nastavitvijo opomnika, ko si oglejujete opombo."
