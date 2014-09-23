@@ -26,9 +26,9 @@ Item {
 
     ListModel {
         id: mediaPlayerModel
-        ListElement { song: "Mine"; artist: "Taylor Swift"; album: "Speak Now"; albumArt: "../tests/artwork/speak-now.jpg"}
-        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "../tests/artwork/electric.jpg"}
-        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "../tests/artwork/the-man-machine.jpg"}
+        ListElement { song: "You're The First, The Last, My Everything"; artist: "Barry White"; album: "Hot Soul"; albumArt: "artwork/beach.jpg"}
+        ListElement { song: "Stony Ground"; artist: "Richard Thompson"; album: "Electric"; albumArt: "artwork/farm.jpg"}
+        ListElement { song: "Los Robots"; artist: "Kraftwerk"; album: "The Man-Machine"; albumArt: "artwork/insane.jpg"}
     }
 
     ListModel {
@@ -135,10 +135,10 @@ Item {
 
                 playerName: "Rhythmbox"
                 playerIcon: Qt.resolvedUrl("../tests/artwork/rhythmbox.png")
+                albumArt: mediaPlayerModel.get(index).albumArt;
                 song: mediaPlayerModel.get(index).song;
                 artist: mediaPlayerModel.get(index).artist;
                 album: mediaPlayerModel.get(index).album;
-                albumArt: mediaPlayerModel.get(index).albumArt;
             }
 
             PlaybackItemMenu {

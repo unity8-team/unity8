@@ -61,20 +61,22 @@ ListItem.Empty {
 
             Label {
                 id: playerNameLabel
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                elide: Text.ElideRight
+                maximumLineCount: 1
             }
         }
 
         RowLayout {
             objectName: "albumArt"
             id: trackRow
-            width: menu.width
             spacing: units.gu(2)
             visible: running
 
             UbuntuShape {
-                Layout.preferredHeight: units.gu(10)
-                Layout.preferredWidth: units.gu(10)
+                Layout.preferredHeight: units.gu(8)
+                Layout.preferredWidth: units.gu(8)
 
                 image: Image {
                     id: albumArtImage
@@ -82,25 +84,31 @@ ListItem.Empty {
             }
 
             ColumnLayout {
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.alignment: Qt.AlignVCenter
 
                 Label {
                     id: songLabel
+                    Layout.fillWidth: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
+                    visible: text !== ""
                 }
 
                 Label {
                     id: artistLabel
+                    Layout.fillWidth: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
+                    visible: text !== ""
                 }
 
                 Label {
                     id: albumLabel
+                    Layout.fillWidth: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     fontSize: "small"
+                    visible: text !== ""
                 }
             }
         }
