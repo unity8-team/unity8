@@ -36,15 +36,14 @@ ListItem.Empty {
     __height: column.height + units.gu(2)
     Behavior on implicitHeight { UbuntuNumberAnimation {} }
 
-    ColumnLayout {
+    Column {
         id: column
         anchors {
             left: parent.left
             right: parent.right
-            top: parent.top
-            topMargin: units.gu(1)
             leftMargin: menu.__contentsMargins
             rightMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
 
         RowLayout {
@@ -52,6 +51,7 @@ ListItem.Empty {
             id: playerRow
             spacing: menu.__contentsMargins
             visible: !running
+            anchors { left: parent.left; right: parent.right }
 
             Image {
                 id: playerIcon
@@ -73,6 +73,7 @@ ListItem.Empty {
             id: trackRow
             spacing: units.gu(2)
             visible: running
+            anchors { left: parent.left; right: parent.right }
 
             UbuntuShape {
                 Layout.preferredHeight: units.gu(8)
@@ -83,32 +84,34 @@ ListItem.Empty {
                 }
             }
 
-            ColumnLayout {
+            Column {
                 Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: true
+                spacing: units.gu(0.5)
 
                 Label {
                     id: songLabel
-                    Layout.fillWidth: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     visible: text !== ""
+                    anchors { left: parent.left; right: parent.right }
                 }
 
                 Label {
                     id: artistLabel
-                    Layout.fillWidth: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     visible: text !== ""
+                    anchors { left: parent.left; right: parent.right }
                 }
 
                 Label {
                     id: albumLabel
-                    Layout.fillWidth: true
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     fontSize: "small"
                     visible: text !== ""
+                    anchors { left: parent.left; right: parent.right }
                 }
             }
         }

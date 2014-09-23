@@ -42,7 +42,7 @@ ListItem.Empty {
         anchors.centerIn: parent
         spacing: units.gu(3)
 
-       Icon {
+        Icon {
             objectName: "previousButton"
 
             Layout.preferredWidth: units.gu(5)
