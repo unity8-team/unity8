@@ -27,6 +27,20 @@ FetchNotebooksJob::FetchNotebooksJob(QObject *parent) :
 {
 }
 
+bool FetchNotebooksJob::operator==(const EvernoteJob *other) const
+{
+    const FetchNotebooksJob  *otherJob = qobject_cast<const FetchNotebooksJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return true;
+}
+
+void FetchNotebooksJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const FetchNotebooksJob *otherJob = static_cast<const FetchNotebooksJob*>(other);
+    connect(otherJob, &FetchNotebooksJob::jobDone, this, &FetchNotebooksJob::jobDone);
+}
 
 void FetchNotebooksJob::startJob()
 {

@@ -28,6 +28,21 @@ ExpungeNotebookJob::ExpungeNotebookJob(const QString &guid, QObject *parent) :
 {
 }
 
+bool ExpungeNotebookJob::operator==(const EvernoteJob *other) const
+{
+    const ExpungeNotebookJob *otherJob = qobject_cast<const ExpungeNotebookJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_guid == otherJob->m_guid;
+}
+
+void ExpungeNotebookJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const ExpungeNotebookJob *otherJob = static_cast<const ExpungeNotebookJob*>(other);
+    connect(otherJob, &ExpungeNotebookJob::jobDone, this, &ExpungeNotebookJob::jobDone);
+}
+
 void ExpungeNotebookJob::startJob()
 {
     client()->expungeNotebook(token().toStdString(), m_guid.toStdString());

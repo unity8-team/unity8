@@ -25,6 +25,21 @@ FetchUsernameJob::FetchUsernameJob(QObject *parent) :
 {
 }
 
+bool FetchUsernameJob::operator==(const EvernoteJob *other) const
+{
+    const FetchUsernameJob *otherJob = qobject_cast<const FetchUsernameJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return true;
+}
+
+void FetchUsernameJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const FetchUsernameJob *otherJob = static_cast<const FetchUsernameJob*>(other);
+    connect(otherJob, &FetchUsernameJob::jobDone, this, &FetchUsernameJob::jobDone);
+}
+
 void FetchUsernameJob::startJob()
 {
     evernote::edam::User user;

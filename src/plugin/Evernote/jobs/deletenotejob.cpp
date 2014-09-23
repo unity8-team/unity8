@@ -26,6 +26,21 @@ DeleteNoteJob::DeleteNoteJob(const QString &guid, QObject *parent):
 {
 }
 
+bool DeleteNoteJob::operator==(const EvernoteJob *other) const
+{
+    const DeleteNoteJob *otherJob = qobject_cast<const DeleteNoteJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_guid == otherJob->m_guid;
+}
+
+void DeleteNoteJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const DeleteNoteJob *otherJob = static_cast<const DeleteNoteJob*>(other);
+    connect(otherJob, &DeleteNoteJob::jobDone, this, &DeleteNoteJob::jobDone);
+}
+
 void DeleteNoteJob::startJob()
 {
     client()->deleteNote(token().toStdString(), m_guid.toStdString());

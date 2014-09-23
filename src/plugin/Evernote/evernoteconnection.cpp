@@ -292,12 +292,31 @@ bool EvernoteConnection::connectNotesStore()
     return false;
 }
 
+EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
+{
+    foreach (EvernoteJob *queuedJob, m_jobQueue) {
+        // explicitly use custom operator==()
+        if (job->operator ==(queuedJob)) {
+            return queuedJob;
+        }
+    }
+    return nullptr;
+}
+
 void EvernoteConnection::enqueue(EvernoteJob *job)
 {
-    connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
-
-    m_jobQueue.append(job);
-    startJobQueue();
+    EvernoteJob *duplicate = findDuplicate(job);
+    if (duplicate) {
+        job->attachToDuplicate(duplicate);
+        connect(duplicate, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
+        // reprioritze the repeated request
+        m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
+    } else {
+        connect(job, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
+        connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
+        m_jobQueue.prepend(job);
+        startJobQueue();
+    }
 }
 
 bool EvernoteConnection::isConnected() const
@@ -319,6 +338,7 @@ void EvernoteConnection::startJobQueue()
     if (m_currentJob) {
         return;
     }
+
     m_currentJob = m_jobQueue.takeFirst();
     m_currentJob->start();
 }

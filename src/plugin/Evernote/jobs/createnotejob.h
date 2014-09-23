@@ -29,6 +29,9 @@ class CreateNoteJob : public NotesStoreJob
 public:
     explicit CreateNoteJob(const QString &title, const QString &notebookGuid = QString(), const QString &content = QString(), QObject *parent = 0);
 
+    virtual bool operator==(const EvernoteJob *other) const;
+    virtual void attachToDuplicate(const EvernoteJob *other) override;
+
 signals:
     void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, evernote::edam::Note note);
 

@@ -39,6 +39,16 @@ PageWithBottomEdge {
     bottomEdgeTitle: i18n.tr("Add note")
     bottomEdgePageComponent: EditNotePage {
         isBottomEdge: true;
+
+        MouseArea {
+            anchors.fill: parent
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: root.bottomEdgeContentShown
+            visible: true
+        }
     }
 
     signal openSearch()
@@ -151,12 +161,12 @@ PageWithBottomEdge {
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
-            content: model.plaintextContent
+            content: model.tagline
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
             Component.onCompleted: {
-                if (!model.plaintextContent) {
+                if (!model.tagline) {
                     NotesStore.refreshNoteContent(model.guid);
                 }
             }

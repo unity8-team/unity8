@@ -35,6 +35,21 @@ void CreateNotebookJob::startJob()
     client()->createNotebook(m_result, token().toStdString(), m_result);
 }
 
+bool CreateNotebookJob::operator==(const EvernoteJob *other) const
+{
+    const CreateNotebookJob *otherJob = qobject_cast<const CreateNotebookJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_name == otherJob->m_name;
+}
+
+void CreateNotebookJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const CreateNotebookJob *otherJob = static_cast<const CreateNotebookJob*>(other);
+    connect(otherJob, &CreateNotebookJob::jobDone, this, &CreateNotebookJob::jobDone);
+}
+
 void CreateNotebookJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
     emit jobDone(errorCode, errorMessage, m_result);

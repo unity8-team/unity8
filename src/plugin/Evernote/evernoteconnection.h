@@ -100,6 +100,8 @@ private:
     bool connectUserStore();
     bool connectNotesStore();
 
+    EvernoteJob* findDuplicate(EvernoteJob *job);
+
     bool m_useSSL;
     bool m_isConnected;
     QString m_notesStorePath;

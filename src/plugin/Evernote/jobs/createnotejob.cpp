@@ -30,6 +30,23 @@ CreateNoteJob::CreateNoteJob(const QString &title, const QString &notebookGuid, 
 {
 }
 
+bool CreateNoteJob::operator==(const EvernoteJob *other) const
+{
+    const CreateNoteJob *otherJob = qobject_cast<const CreateNoteJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_title == otherJob->m_title
+            && this->m_notebookGuid == otherJob->m_notebookGuid
+            && this->m_content == otherJob->m_content;
+}
+
+void CreateNoteJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const CreateNoteJob *otherJob = static_cast<const CreateNoteJob*>(other);
+    connect(otherJob, &CreateNoteJob::jobDone, this, &CreateNoteJob::jobDone);
+}
+
 void CreateNoteJob::startJob()
 {
     evernote::edam::Note input;

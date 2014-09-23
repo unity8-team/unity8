@@ -34,6 +34,22 @@ FetchNotesJob::FetchNotesJob(const QString &filterNotebookGuid, const QString &s
 {
 }
 
+bool FetchNotesJob::operator==(const EvernoteJob *other) const
+{
+    const FetchNotesJob *otherJob = qobject_cast<const FetchNotesJob*>(other);
+    if (!otherJob) {
+        return false;
+    }
+    return this->m_filterNotebookGuid == otherJob->m_filterNotebookGuid
+            && this->m_searchWords == otherJob->m_searchWords;
+}
+
+void FetchNotesJob::attachToDuplicate(const EvernoteJob *other)
+{
+    const FetchNotesJob *otherJob = static_cast<const FetchNotesJob*>(other);
+    connect(otherJob, &FetchNotesJob::jobDone, this, &FetchNotesJob::jobDone);
+}
+
 void FetchNotesJob::startJob()
 {
     // TODO: fix start/end (use smaller chunks and continue fetching if there are more notes available)

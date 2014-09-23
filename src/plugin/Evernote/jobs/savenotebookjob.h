@@ -29,6 +29,9 @@ class SaveNotebookJob : public NotesStoreJob
 public:
     explicit SaveNotebookJob(Notebook *notebook, QObject *parent = 0);
 
+    virtual bool operator==(const EvernoteJob *other) const override;
+    virtual void attachToDuplicate(const EvernoteJob *other) override;
+
 signals:
     void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 

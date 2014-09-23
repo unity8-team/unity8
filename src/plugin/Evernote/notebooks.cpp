@@ -92,6 +92,9 @@ QHash<int, QByteArray> Notebooks::roleNames() const
 
 Notebook *Notebooks::notebook(int index)
 {
+    if (index < 0 || index >= m_list.count()) {
+        return nullptr;
+    }
     return NotesStore::instance()->notebook(m_list.at(index));
 }
 
