@@ -44,6 +44,7 @@ class Note : public QObject
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
     Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString plaintextContent READ plaintextContent NOTIFY contentChanged)
+    Q_PROPERTY(QString tagline READ tagline NOTIFY contentChanged)
     Q_PROPERTY(QStringList resourceUrls READ resourceUrls NOTIFY resourcesChanged)
     Q_PROPERTY(bool reminder READ reminder WRITE setReminder NOTIFY reminderChanged)
     Q_PROPERTY(bool hasReminderTime READ hasReminderTime WRITE setHasReminderTime NOTIFY reminderTimeChanged)
@@ -83,6 +84,8 @@ public:
     void setRichTextContent(const QString &richTextContent);
 
     QString plaintextContent() const;
+
+    QString tagline() const;
 
     // setting reminder to false will reset the reminderOrder to 0, setting it to true will
     // create a new timestamp for it.
@@ -151,6 +154,7 @@ private:
     QDateTime m_created;
     QString m_title;
     EnmlDocument m_content;
+    QString m_tagline;
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;

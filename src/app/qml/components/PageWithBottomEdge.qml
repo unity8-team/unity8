@@ -62,8 +62,8 @@
 
 */
 
-import QtQuick 2.0
-import Ubuntu.Components 0.1
+import QtQuick 2.3
+import Ubuntu.Components 1.1
 import Evernote 0.1
 
 Page {
@@ -90,6 +90,8 @@ Page {
 
     signal bottomEdgeReleased()
     signal bottomEdgeDismissed()
+
+    readonly property bool bottomEdgeContentShown: bottomEdge.y < page.height
 
 
     function showBottomEdgePage(source, properties)

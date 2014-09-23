@@ -22,6 +22,7 @@
 #define EVERNOTEJOB_H
 
 #include "notesstore.h"
+#include "evernoteconnection.h"
 
 #include <QThread>
 
@@ -33,6 +34,8 @@
  *   - Keep the convention of jobDone(EvernoteConnection::ErrorCode errorCode, const QString &message [, ...])
  * - Emit jobDone() in your implementation of emitJobDone().
  *   - NOTE: emitJobDone() might be called with an error even before startJob() is triggered.
+ * - reimplement attachToDuplciate(). In case there's already the exact same job in the queue
+ *   your job won't be executed but you should instead forward the other's job results.
  *
  * Jobs can be enqueue()d in NotesStore.
  * They will destroy themselves when finished.
@@ -46,6 +49,10 @@ public:
     virtual ~EvernoteJob();
 
     void run() final;
+
+    virtual bool operator==(const EvernoteJob *other) const = 0;
+
+    virtual void attachToDuplicate(const EvernoteJob *other) = 0;
 
 signals:
     void connectionLost(const QString &errorMessage);

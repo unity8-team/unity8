@@ -29,6 +29,9 @@ class FetchNotesJob : public NotesStoreJob
 public:
     explicit FetchNotesJob(const QString &filterNotebookGuid = QString(), const QString &searchWords = QString(), QObject *parent = 0);
 
+    virtual bool operator==(const EvernoteJob *other) const override;
+    virtual void attachToDuplicate(const EvernoteJob *other) override;
+
 signals:
     void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
 

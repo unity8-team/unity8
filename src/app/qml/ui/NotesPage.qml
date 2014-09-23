@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.3
 import QtQuick.Layouts 1.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 import "../components"
 
@@ -39,6 +39,16 @@ PageWithBottomEdge {
     bottomEdgeTitle: i18n.tr("Add note")
     bottomEdgePageComponent: EditNotePage {
         isBottomEdge: true;
+
+        MouseArea {
+            anchors.fill: parent
+        }
+
+        ActivityIndicator {
+            anchors.centerIn: parent
+            running: root.bottomEdgeContentShown
+            visible: true
+        }
     }
 
     signal openSearch()
@@ -151,12 +161,12 @@ PageWithBottomEdge {
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
-            content: model.plaintextContent
+            content: model.tagline
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
             Component.onCompleted: {
-                if (!model.plaintextContent) {
+                if (!model.tagline) {
                     NotesStore.refreshNoteContent(model.guid);
                 }
             }

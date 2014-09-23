@@ -70,6 +70,7 @@ public:
         RoleHtmlContent,
         RoleRichTextContent,
         RolePlaintextContent,
+        RoleTagline,
         RoleResourceUrls,
         RoleReminderSorting
     };
