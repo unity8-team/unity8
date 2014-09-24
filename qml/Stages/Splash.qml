@@ -60,6 +60,37 @@ Rectangle {
         anchors.bottomMargin: units.gu(12)
     }
 
+    Label {
+        id: timerLabel
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: units.gu(6)
+        fontSize: "large"
+        property int secs: ms / 1000
+        property int ms: 0
+        property string msStr: pad((ms % 1000).toString(), 3)
+        text: secs + ":" + msStr
+
+        function pad (str, max) {
+            print("padding", str, str.length, max)
+            return str.length < max ? pad("0" + str, max) : str;
+        }
+    }
+
+    Timer {
+        interval: 10
+        running: true
+        repeat: true
+        property var startTime: null
+        Component.onCompleted: startTime = new Date()
+        onTriggered: {
+            var nowTime = new Date()
+            var elapsedMillis = nowTime.getTime() - startTime.getTime()
+            timerLabel.ms = elapsedMillis
+        }
+    }
+
+
     MouseArea {
         anchors.fill: parent
         enabled: parent.visible
