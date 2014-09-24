@@ -52,16 +52,16 @@ Item {
             var player = findChild(mediaPlayerMenu, "player");
             var albumArt = findChild(mediaPlayerMenu, "albumArt");
 
-            var running = mediaPlayerMenu.running
+            var showTrack = mediaPlayerMenu.showTrack
 
-            compare(player.visible, !running, "player should be not visible when running");
-            compare(albumArt.visible, running, "albumn art should be visible when running");
+            compare(player.visible, !showTrack, "player should be not visible when running");
+            compare(albumArt.visible, showTrack, "albumn art should be visible when running");
 
-            running = !running;
-            mediaPlayerMenu.running = running;
+            showTrack = !showTrack;
+            mediaPlayerMenu.showTrack = showTrack;
 
-            compare(player.visible, !running, "player should be not visible when running");
-            compare(albumArt.visible, running, "albumn art should be visible when running");
+            compare(player.visible, !showTrack, "player should be not visible when running");
+            compare(albumArt.visible, showTrack, "albumn art should be visible when running");
         }
     }
 }
