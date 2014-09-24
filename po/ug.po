@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-29 14:53+0200\n"
-"PO-Revision-Date: 2014-08-28 09:28+0000\n"
+"PO-Revision-Date: 2014-09-23 23:12+0000\n"
 "Last-Translator: Gheyret T.Kenji <Unknown>\n"
 "Language-Team: Uyghur Computer Science Association <UKIJ@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:36+0000\n"
+"X-Launchpad-Export-Date: 2014-09-24 07:42+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../src/app/qml/reminders.qml:205
@@ -44,7 +44,7 @@ msgstr "ئىشلەتكىلى بولىدىغان ھېسابات يوق"
 
 #: ../src/app/qml/reminders.qml:320
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr ""
+msgstr "‹سىستېما تەڭشىكى› دە Evernote ھېساباتىنى سەپلەڭ ۋە كىملىك دەلىللەڭ"
 
 #: ../src/app/qml/reminders.qml:340
 #: ../src/app/qml/ui/AccountSelectorPage.qml:63
@@ -149,6 +149,8 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"ئىشلەتكىلى بولىدىغان ئەسكەرتكۈچلەر يوق. ئىزاھلارنى كۆرۈش جەريانىدا "
+"ئەسكەرتكۈچ تەڭشەش ئارقىلىق يېڭى ئەسكەرتكۈچلەرنى ياسىيالايسىز."
 
 #: ../src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
@@ -260,13 +262,3 @@ msgstr "تېزلىكى چەكتىن ئېشىپ كەتتى"
 #: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Quota exceeded."
 msgstr "نورمىدىن ئېشىپ كەتتى"
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "سىستېما تەڭشىكىدە ھېساباتتىن بىرنى ئورنىتىڭ"
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "ئىشلەتكىلى بولىدىغان ئەسكەرتكۈچلەر يوق. «ئەسكەرتكۈچ قوش» توپچىسىنى باسسىڭىز "
-#~ "ياسىلىدۇ ياكى ئىزاھنى كۆرۈۋاتقاندا بەلگىلىسىڭىز بولىدۇ."
