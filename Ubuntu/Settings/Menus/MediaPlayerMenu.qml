@@ -24,7 +24,7 @@ import QtQuick.Layouts 1.1
 ListItem.Empty {
     id: menu
 
-    property bool running: false
+    property bool showTrack: false
     property alias playerName: playerNameLabel.text
     property alias playerIcon: playerIcon.source
 
@@ -50,7 +50,7 @@ ListItem.Empty {
             objectName: "player"
             id: playerRow
             spacing: menu.__contentsMargins
-            visible: !running
+            visible: !showTrack
             anchors { left: parent.left; right: parent.right }
 
             Image {
@@ -72,7 +72,7 @@ ListItem.Empty {
             objectName: "albumArt"
             id: trackRow
             spacing: units.gu(2)
-            visible: running
+            visible: showTrack
             anchors { left: parent.left; right: parent.right }
 
             UbuntuShape {

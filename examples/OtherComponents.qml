@@ -139,17 +139,19 @@ Item {
                 song: mediaPlayerModel.get(index).song;
                 artist: mediaPlayerModel.get(index).artist;
                 album: mediaPlayerModel.get(index).album;
+                showTrack: mediaControl.playing
             }
 
             PlaybackItemMenu {
+                id: mediaControl
                 canPlay: true
                 canGoNext: mediaPlayer.index < mediaPlayerModel.count - 1
                 canGoPrevious: mediaPlayer.index > 0
-                playing: mediaPlayer.running
+                playing: false
 
                 onPrevious: mediaPlayer.index = Math.max(mediaPlayer.index - 1, 0)
                 onNext: mediaPlayer.index = Math.min(mediaPlayer.index + 1, mediaPlayerModel.count - 1)
-                onPlay: { mediaPlayer.running = !mediaPlayer.running; }
+                onPlay: { playing = !playing; }
             }
 
             AccessPointMenu {
