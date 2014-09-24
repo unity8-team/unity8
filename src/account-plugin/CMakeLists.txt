@@ -22,8 +22,8 @@ function(EvernoteOnlineAccountSetup account_display_name account_name provider_i
     set(SERVICE_FILE_IN data/services/${EVERNOTE_DATA_FILENAME}.service.in)
     set(QML_PLUGIN_FILE_IN qml/${EVERNOTE_DATA_FILENAME}/Main.qml.in)
 
-    set(PROVIDER_FILE data/providers/${account_name}.provider)
-    set(SERVICE_FILE data/services/${account_name}.service)
+    set(PROVIDER_FILE data/providers/${provider_id}.provider)
+    set(SERVICE_FILE data/services/${provider_id}.service)
     set(QML_PLUGIN_FILE qml/${account_name}/Main.qml)
 
     install(FILES ${ICON_FILE} DESTINATION ${ACCOUNT_ICON_DIR})
