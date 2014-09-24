@@ -2,6 +2,6 @@
 
 usr/share/accounts/providers/com.ubuntu.reminders_evernote-account-plugin.provider
 usr/share/accounts/qml-plugins/evernote/Main.qml
-usr/share/accounts/services/com.ubuntu.reminders_evernote-account-plugin.service
+usr/share/accounts/services/com.ubuntu.reminders_reminders.service
 usr/share/icons/hicolor/32x32/apps/evernote.png
 usr/lib/*/qt5/qml/Evernote usr/lib/${DEB_HOST_MULTIARCH}/ubuntu-system-settings/private
