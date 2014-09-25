@@ -60,7 +60,7 @@ Item {
                 height: parent.height
                 verticalAlignment: Text.AlignVCenter
                 fontSize: "small"
-                text: "Quick reply with:"
+                text: i18n.tr("Quick reply with:")
             }
         }
 
