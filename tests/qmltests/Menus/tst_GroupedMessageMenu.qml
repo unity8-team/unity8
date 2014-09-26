@@ -79,7 +79,7 @@ Item {
         }
 
         function test_triggered() {
-            mouseClick(messageMenu, messageMenu.width / 2, messageMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(messageMenu, messageMenu.width / 2, messageMenu.height / 2);
             compare(signalSpyTriggered.count > 0, true, "should have been triggered");
         }
 

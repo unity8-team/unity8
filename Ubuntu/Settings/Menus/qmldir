@@ -14,7 +14,7 @@ ProgressBarMenu 0.1 ProgressBarMenu.qml
 ProgressValueMenu 0.1 ProgressValueMenu.qml
 SectionMenu 0.1 SectionMenu.qml
 SeparatorMenu 0.1 SeparatorMenu.qml
-SimpleTextMessageMenu 0.1 SimpleTextMessageMenu.qml
+SimpleMessageMenu 0.1 SimpleMessageMenu.qml
 SliderMenu 0.1 SliderMenu.qml
 SnapDecisionMenu 0.1 SnapDecisionMenu.qml
 StandardMenu 0.1 StandardMenu.qml
@@ -23,5 +23,3 @@ TextMessageMenu 0.1 TextMessageMenu.qml
 TimeZoneMenu 0.1 TimeZoneMenu.qml
 TransferMenu 0.1 TransferMenu.qml
 UserSessionMenu 0.1 UserSessionMenu.qml
-
-internal HeroMessageMenu HeroMessageMenu.qml

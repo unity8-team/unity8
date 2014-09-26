@@ -2,7 +2,7 @@ module Ubuntu.Settings.Components
 
 ActionTextField 0.1 ActionTextField.qml
 Calendar 0.1 Calendar.qml
-HeroMessageHeader 0.1 HeroMessageHeader.qml
-IconVisual 0.1 IconVisual.qml
+MessageHeader 0.1 MessageHeader.qml
 QuickReply 0.1 QuickReply.qml
 StatusIcon 0.1 StatusIcon.qml
+UbuntuShapeForItem 0.1 UbuntuShapeForItem.qml

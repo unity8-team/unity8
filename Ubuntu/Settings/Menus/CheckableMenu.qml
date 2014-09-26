@@ -18,15 +18,16 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1 as Components
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1 as Components
+import Ubuntu.Components.ListItems 1.0 as ListItem
 
 ListItem.Empty {
     id: menu
 
     property alias text: label.text
     property bool checked: false
-    __acceptEvents: false
+
+    onClicked: menu.checked = !menu.checked
 
     Components.CheckBox {
         id: checkbox
@@ -43,8 +44,7 @@ ListItem.Empty {
             checked = menu.checked;
         }
 
-        // FIXME : should use Checkbox.toggled signal
-        // lp:~nick-dedekind/ubuntu-ui-toolkit/checkbox.toggled
+        // FIXME : create a bi-directional feedback component
         onCheckedChanged: {
             if (!enableCheckConnection) {
                 return;
@@ -72,13 +72,6 @@ ListItem.Empty {
                 checkbox.enableCheckConnection = oldEnable;
             }
         }
-
-        Connections {
-            target: menu.__mouseArea
-            onClicked: {
-                checkbox.clicked();
-            }
-        }
     }
 
     Components.Label {
@@ -91,6 +84,5 @@ ListItem.Empty {
             verticalCenter: parent.verticalCenter
         }
         elide: Text.ElideRight
-        opacity: label.enabled ? 1.0 : 0.5
     }
 }

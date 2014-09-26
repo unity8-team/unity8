@@ -19,8 +19,8 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItem
 
 Item {
     id: quickReply
@@ -53,14 +53,14 @@ Item {
                 width: units.gu(2)
                 height: width
                 fillMode: Image.PreserveAspectFit
-                source: "artwork/message_sms01_54px.png"
+                source: "image://theme/message"
             }
 
             Label {
                 height: parent.height
                 verticalAlignment: Text.AlignVCenter
                 fontSize: "small"
-                text: "Quick reply with:"
+                text: i18n.tr("Quick reply with:")
             }
         }
 

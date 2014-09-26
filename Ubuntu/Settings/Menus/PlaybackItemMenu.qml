@@ -17,8 +17,9 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItem
+import QtQuick.Layouts 1.1
 
 ListItem.Empty {
     id: menu
@@ -33,66 +34,74 @@ ListItem.Empty {
     signal play(bool play)
     signal previous()
 
-    implicitHeight: controlsRow.height + units.gu(2)
+    highlightWhenPressed: false
+    implicitHeight: layout.implicitHeight + units.gu(2)
 
-    Row {
-        id: controlsRow
+    RowLayout {
+        id: layout
+        anchors.centerIn: parent
+        spacing: units.gu(3)
 
-        anchors {
-            top: parent.top
-            topMargin: units.gu(1)
-            horizontalCenter: parent.horizontalCenter
-        }
-        spacing: units.gu(2)
-
-        Button {
+        Icon {
             objectName: "previousButton"
-            width: units.gu(5)
-            height: width
-            onClicked: menu.previous()
-            text: ""
+
+            Layout.preferredWidth: units.gu(5)
+            Layout.preferredHeight: units.gu(5)
+
+            source: "image://theme/media-skip-backward"
+            color: {
+                if (!enabled)
+                    return Theme.palette.normal.backgroundText;
+                return prevMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+            }
             enabled: canGoPrevious
-            anchors.verticalCenter: parent.verticalCenter
 
-            Icon {
+            MouseArea {
+                id: prevMA
                 anchors.fill: parent
-                anchors.margins: units.gu(1)
-                name: "media-skip-backward"
-                color: Theme.palette.normal.foregroundText
+                onClicked: menu.previous()
             }
         }
 
-        Button {
+        Icon {
             objectName: "playButton"
-            width: units.gu(6)
-            height: width
-            onClicked: menu.play(!playing)
-            text: ""
-            enabled: canPlay
-            anchors.verticalCenter: parent.verticalCenter
 
-            Icon {
+            Layout.preferredWidth: units.gu(5)
+            Layout.preferredHeight: units.gu(5)
+
+            source: playing ? "image://theme/media-playback-pause" : "image://theme/media-playback-start"
+            color: {
+                if (!enabled)
+                    return Theme.palette.normal.backgroundText;
+                return playMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+            }
+            enabled: canPlay
+
+            MouseArea {
+                id: playMA
                 anchors.fill: parent
-                anchors.margins: units.gu(1)
-                name: playing ? "media-playback-pause" : "media-playback-start"
-                color:  Theme.palette.normal.foregroundText
+                onClicked: menu.play(!playing)
             }
         }
 
-        Button {
+        Icon {
             objectName: "nextButton"
-            width: units.gu(5)
-            height: width
-            onClicked: menu.next()
-            text: ""
-            enabled: canGoNext
-            anchors.verticalCenter: parent.verticalCenter
 
-            Icon {
+            Layout.preferredWidth: units.gu(5)
+            Layout.preferredHeight: units.gu(5)
+
+            source: "image://theme/media-skip-forward"
+            color: {
+                if (!enabled)
+                    return Theme.palette.normal.backgroundText;
+                return nextMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+            }
+            enabled: canGoNext
+
+            MouseArea {
+                id: nextMA
                 anchors.fill: parent
-                anchors.margins: units.gu(1)
-                name: "media-skip-forward"
-                color:  Theme.palette.normal.foregroundText
+                onClicked: menu.next()
             }
         }
     }

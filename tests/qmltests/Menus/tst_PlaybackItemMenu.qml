@@ -94,7 +94,7 @@ Item {
             playbackItem[data.enableProp] = data.enableValue;
 
             var button = findChild(playbackItem, data.objectName);
-            mouseClick(button, button.width / 2, button.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(button, button.width / 2, button.height / 2);
 
             compare(data.signalSpy.count > 0, data.enableValue, data.enableValue ? "signal should be triggered" : "signal should not be triggered");
         }

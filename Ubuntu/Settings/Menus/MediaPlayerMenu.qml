@@ -17,13 +17,14 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItem
+import QtQuick.Layouts 1.1
 
 ListItem.Empty {
     id: menu
 
-    property bool running: false
+    property bool showTrack: false
     property alias playerName: playerNameLabel.text
     property alias playerIcon: playerIcon.source
 
@@ -32,7 +33,7 @@ ListItem.Empty {
     property alias artist: artistLabel.text
     property alias album: albumLabel.text
 
-    implicitHeight: column.height + units.gu(2)
+    __height: column.height + units.gu(2)
     Behavior on implicitHeight { UbuntuNumberAnimation {} }
 
     Column {
@@ -40,48 +41,43 @@ ListItem.Empty {
         anchors {
             left: parent.left
             right: parent.right
-            top: parent.top
-            topMargin: units.gu(1)
             leftMargin: menu.__contentsMargins
             rightMargin: menu.__contentsMargins
+            verticalCenter: parent.verticalCenter
         }
-        height: running ? trackRow.height : playerRow.height
 
-        Row {
+        RowLayout {
             objectName: "player"
             id: playerRow
             spacing: menu.__contentsMargins
-            visible: !running
+            visible: !showTrack
+            anchors { left: parent.left; right: parent.right }
 
-            Behavior on opacity { UbuntuNumberAnimation {} }
-
-            UbuntuShape {
-                width: units.gu(5)
-                height: width
-
-                image: Image {
-                    id: playerIcon
-                }
+            Image {
+                id: playerIcon
+                Layout.preferredHeight: units.gu(5)
+                Layout.preferredWidth: units.gu(5)
             }
 
             Label {
                 id: playerNameLabel
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                elide: Text.ElideRight
+                maximumLineCount: 1
             }
         }
 
-        Row {
+        RowLayout {
             objectName: "albumArt"
             id: trackRow
-            width: menu.width
             spacing: units.gu(2)
-            visible: running
-
-            Behavior on opacity { UbuntuNumberAnimation {} }
+            visible: showTrack
+            anchors { left: parent.left; right: parent.right }
 
             UbuntuShape {
-                width: units.gu(10)
-                height: width
+                Layout.preferredHeight: units.gu(8)
+                Layout.preferredWidth: units.gu(8)
 
                 image: Image {
                     id: albumArtImage
@@ -89,19 +85,33 @@ ListItem.Empty {
             }
 
             Column {
-                spacing: units.gu(1)
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: true
+                spacing: units.gu(0.5)
 
                 Label {
                     id: songLabel
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    visible: text !== ""
+                    anchors { left: parent.left; right: parent.right }
                 }
 
                 Label {
                     id: artistLabel
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    visible: text !== ""
+                    anchors { left: parent.left; right: parent.right }
                 }
 
                 Label {
                     id: albumLabel
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    fontSize: "small"
+                    visible: text !== ""
+                    anchors { left: parent.left; right: parent.right }
                 }
             }
         }

@@ -5,6 +5,14 @@ ubuntu-settings-components (0.4+14.10.20140918-0ubuntu1) utopic; urgency=low
 
  -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 18 Sep 2014 09:48:32 +0000
 
+ubuntu-settings-components (0.4-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ Nick Dedekind ]
+
+  * Updated components UI for design review
+
+ -- Nicholas Dedekind <nicholas.dedekind@gmail.com>  Thu, 31 Jul 2014 17:57:51 +0100
+
 ubuntu-settings-components (0.3+14.10.20140708-0ubuntu1) utopic; urgency=medium
 
   [ Nick Dedekind ]

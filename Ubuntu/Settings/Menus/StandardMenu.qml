@@ -15,9 +15,8 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1 as Components
-import Ubuntu.Settings.Components 0.1 as USC
-import Ubuntu.Components.ListItems 0.1 as ListItems
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItems
 import QtQuick.Layouts 1.1
 
 ListItems.Empty {
@@ -27,9 +26,22 @@ ListItems.Empty {
     property alias text: label.text
     property alias iconColor: iconVisual.color
     property alias component: componentLoader.sourceComponent
+    property alias foregroundColor: label.color
+    property alias backColor: overlay.color
+
+    Rectangle {
+        id: overlay
+        color: "transparent"
+        visible: color !== "transparent"
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+        height: menu.height - menu.divider.height
+    }
 
     RowLayout {
-
         anchors {
             fill: parent
             leftMargin: menu.__contentsMargins
@@ -37,9 +49,9 @@ ListItems.Empty {
         }
         spacing: menu.__contentsMargins
 
-        USC.IconVisual {
+        Icon {
             id: iconVisual
-            visible: status == Image.Ready
+            visible: source != ""
             color: Theme.palette.selected.backgroundText
 
             readonly property real size: Math.min(units.gu(3), parent.height - menu.__contentsMargins)
@@ -49,18 +61,22 @@ ListItems.Empty {
             Layout.alignment: Qt.AlignVCenter
         }
 
-        Components.Label {
+        Label {
             id: label
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
 
             elide: Text.ElideRight
             maximumLineCount: 1
-            opacity: label.enabled ? 1.0 : 0.5
         }
 
         Loader {
             id: componentLoader
+            asynchronous: false
+            visible: status == Loader.Ready
+
+            Layout.preferredHeight: item ? item.height : 0
+            Layout.preferredWidth: item ? item.width : 0
         }
     }
 }

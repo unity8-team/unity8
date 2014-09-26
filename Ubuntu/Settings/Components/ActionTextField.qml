@@ -19,7 +19,8 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
+import QtQuick.Layouts 1.1
 
 Item {
     id: textField
@@ -29,43 +30,44 @@ Item {
 
     signal activated(var value)
 
-    TextField {
-        id: replyField
-        objectName: "replyText"
+    implicitHeight: layout.implicitHeight
 
+    RowLayout {
+        id: layout
         anchors {
-            top: parent.top
-            bottom: parent.bottom
             left: parent.left
-            right: sendButton.left
-            rightMargin: units.gu(1)
-        }
-        placeholderText: "Reply"
-        hasClearButton: false
-
-        onEnabledChanged: {
-            //Make sure that the component lost focus when enabled = false,
-            //otherwise it will get focus again when enable = true
-            if (!enabled) {
-                focus = false;
-            }
-        }
-    }
-
-    Button {
-        id: sendButton
-        objectName: "sendButton"
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
             right: parent.right
         }
-        width: units.gu(9)
-        enabled: replyField.text !== "" && textField.activateEnabled
-        color: enabled ? "#c94212" : "#bababa"
+        spacing: units.gu(1)
 
-        onClicked: {
-            textField.activated(replyField.text);
+        TextField {
+            id: replyField
+            objectName: "replyText"
+
+            placeholderText: i18n.tr("Reply")
+            hasClearButton: false
+
+            Layout.fillWidth: true
+
+            onEnabledChanged: {
+                //Make sure that the component lost focus when enabled = false,
+                //otherwise it will get focus again when enable = true
+                if (!enabled) {
+                    focus = false;
+                }
+            }
+        }
+
+        Button {
+            id: sendButton
+            objectName: "sendButton"
+            Layout.preferredWidth: units.gu(9)
+            enabled: replyField.text !== "" && textField.activateEnabled
+            color: UbuntuColors.green
+
+            onClicked: {
+                textField.activated(replyField.text);
+            }
         }
     }
 }

@@ -17,18 +17,20 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1
 
-ListItem.Standard {
-    property alias buttonText: button.text
+StandardMenu {
+    id: menu
+    property string buttonText
 
-    iconFrame: false
-    Component.onCompleted: button.clicked.connect(clicked)
+    component: Component {
+        Button {
+            id: button
+            objectName: "button"
+            text: menu.buttonText
+            width: Math.max(units.gu(5), implicitWidth)
 
-    control: Button {
-        id: button
-        objectName: "button"
-        width: Math.max(units.gu(5), implicitWidth)
+            onClicked: menu.clicked()
+        }
     }
 }

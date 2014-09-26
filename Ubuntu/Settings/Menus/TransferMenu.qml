@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import QtQuick 2.1
 import QtQuick.Layouts 1.1
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItem
+import Ubuntu.Settings.Components 0.1
 
 ListItem.Empty {
     id: menu
@@ -30,7 +31,7 @@ ListItem.Empty {
 
     property alias maximum: progressBar.maximumValue
 
-    implicitHeight: row.height + units.gu(2)
+    __height: row.height + units.gu(2)
 
     RowLayout {
         id: row
@@ -41,21 +42,23 @@ ListItem.Empty {
             leftMargin: menu.__contentsMargins
             rightMargin: menu.__contentsMargins
         }
+        spacing: units.gu(2)
 
-        UbuntuShape {
-            id: imageShape
-            Layout.preferredWidth: units.gu(5)
-            Layout.preferredHeight: units.gu(5)
+        UbuntuShapeForItem {
+            Layout.preferredWidth: units.gu(6)
+            Layout.preferredHeight: units.gu(6)
 
-            Layout.alignment: Qt.AlignTop
-
-            image: Image {
-                objectName: "icon"
+            image: icon
+            Icon {
                 id: icon
+                objectName: "icon"
+                anchors.fill: parent
 
-                sourceSize {
-                    width: units.gu(5)
-                    height: units.gu(5)
+                color: {
+                    if (String(source).match(/^image:\/\/theme/)) {
+                        return Theme.palette.selected.backgroundText;
+                    }
+                    return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }
             }
         }
@@ -70,6 +73,7 @@ ListItem.Empty {
 
                 elide: Text.ElideRight
                 maximumLineCount: 1
+                font.weight: Font.DemiBold
             }
 
             ProgressBar {
@@ -77,8 +81,9 @@ ListItem.Empty {
                 objectName: "progress"
                 visible: menu.active
                 value: 0.0
+                showProgressPercentage: false
 
-                Layout.preferredHeight: units.gu(2)
+                Layout.preferredHeight: units.gu(1)
                 Layout.fillWidth: true
             }
 
@@ -88,6 +93,7 @@ ListItem.Empty {
                 Layout.fillWidth: true
                 visible: menu.active
 
+                fontSize: "x-small"
                 elide: Text.ElideRight
                 maximumLineCount: 1
             }

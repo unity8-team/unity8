@@ -17,9 +17,8 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1 as Components
-import Ubuntu.Settings.Components 0.1 as USC
-import Ubuntu.Components.ListItems 0.1 as ListItems
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItems
 
 ListItems.Empty {
     id: menu
@@ -29,10 +28,10 @@ ListItems.Empty {
     property alias time: dateLabel.text
     property alias eventColor: iconVisual.color
 
-    USC.IconVisual {
+    Icon {
         id: iconVisual
         source: "image://theme/calendar"
-        visible: status == Image.Ready
+        visible: source != ""
         color: Theme.palette.selected.backgroundText
 
         height: Math.min(units.gu(3), parent.height - units.gu(1))
@@ -45,7 +44,7 @@ ListItems.Empty {
         }
     }
 
-    Components.Label {
+    Label {
         id: label
         anchors {
             verticalCenter: parent.verticalCenter
@@ -55,17 +54,18 @@ ListItems.Empty {
             rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
-        opacity: label.enabled ? 1.0 : 0.5
+        maximumLineCount: 1
+        opacity: enabled ? 1.0 : 0.5
     }
 
-    Components.Label {
+    Label {
         id: dateLabel
-        color: Theme.palette.normal.backgroundText
 
         anchors {
             verticalCenter: parent.verticalCenter
             right: parent.right
             rightMargin: menu.__contentsMargins
         }
+        opacity: enabled ? 1.0 : 0.5
     }
 }

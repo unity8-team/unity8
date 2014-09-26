@@ -19,19 +19,18 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Ubuntu.Settings.Components 0.1 as USC
 
-SimpleTextMessageMenu {
+SimpleMessageMenu {
     id: menu
 
     property bool replyEnabled: true
-    property string replyButtonText: "Send"
+    property string replyButtonText: i18n.tr("Send")
 
     signal replied(string value)
 
     footer: USC.ActionTextField {
-        anchors.fill:  parent
 
         activateEnabled: menu.replyEnabled
         buttonText: menu.replyButtonText

@@ -96,4 +96,5 @@ add_custom_target(qml_fake_target SOURCES ${QML_EXTRA_FILES})
 enable_testing()
 
 add_subdirectory(Ubuntu)
+add_subdirectory(examples)
 add_subdirectory(tests)

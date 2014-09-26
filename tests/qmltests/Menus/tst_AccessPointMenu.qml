@@ -46,7 +46,7 @@ Item {
                 id: accessPoint2
                 anchors.top: accessPoint.bottom
 
-                checked: true
+                active: true
                 secure: true
                 adHoc: true
                 signalStrength: 50
@@ -66,7 +66,7 @@ Item {
         when: windowShown
 
         function init() {
-            accessPoint.checked = false;
+            accessPoint.active = false;
             accessPoint.secure = false;
             accessPoint.adHoc = false;
             accessPoint.signalStrength = 0;
@@ -74,7 +74,7 @@ Item {
         }
 
         function test_activate() {
-            mouseClick(accessPoint, accessPoint.width / 2, accessPoint.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(accessPoint, accessPoint.width / 2, accessPoint.height / 2);
             compare(signalSpyTriggered.count > 0, true, "activate signal should have been triggered");
         }
 
@@ -122,24 +122,6 @@ Item {
 
             accessPoint.secure = false;
             compare(icon.visible, false, "Secure icon should not be visible when access point is not secure");
-        }
-
-        function test_checkBox(data) {
-            var checkBox = findChild(accessPoint, "checkBox");
-            verify(checkBox !== undefined);
-
-            accessPoint.checked = true;
-            compare(checkBox.checked, true, "Checkbox should be checked when access point is checked");
-
-            accessPoint.checked = false;
-            compare(checkBox.checked, false, "Checkbox should not be checked when access point is not checked");
-        }
-
-        function test_checkBox_on_default_checked() {
-            var checkBox = findChild(accessPoint2, "checkBox");
-            verify(checkBox !== undefined);
-
-            compare(checkBox.checked, true, "Check box should be checked if default to checked")
         }
     }
 }

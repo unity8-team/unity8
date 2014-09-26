@@ -17,29 +17,38 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItem
 
-ListItem.Standard {
+StandardMenu {
     id: userSessionMenu
 
     property alias name: userSessionMenu.text
-    property alias active: activeIcon.visible
+    property bool active: false
 
-    control: Rectangle {
-        id: activeIcon
-        objectName: "activeIcon"
-        width: checkMark.width + units.gu(1.5)
-        height: checkMark.height + units.gu(1.5)
-        radius: width / 2
-        antialiasing: true
-        color: Theme.palette.normal.backgroundText
-        visible: false
+    component: Component {
+        Rectangle {
+            id: activeIcon
+            objectName: "activeIcon"
+            width: checkMark.width + units.gu(1.5)
+            height: checkMark.height + units.gu(1.5)
+            radius: width / 2
+            antialiasing: true
+            color: Theme.palette.normal.backgroundText
+            visible: userSessionMenu.active
 
-        Image {
-            id: checkMark
-            source: "artwork/CheckMark.png"
-            anchors.centerIn: parent
+            Image {
+                id: checkMark
+                source: "image://theme/tick"
+                height: units.gu(2)
+                width: height
+                anchors.centerIn: parent
+
+                sourceSize {
+                    height: height
+                    width: width
+                }
+            }
         }
     }
 }

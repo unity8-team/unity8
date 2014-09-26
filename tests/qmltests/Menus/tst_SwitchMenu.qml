@@ -77,12 +77,12 @@ Item {
 
         function test_clickSwitchBox() {
             var switcher = findChild(switchMenu, "switcher");
-            mouseClick(switchMenu, switcher.width / 2, switcher.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(switchMenu, switcher.width / 2, switcher.height / 2);
             compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on switcher click");
         }
 
         function test_clickSwitchMenu() {
-            mouseClick(switchMenu, switchMenu.width / 2, switchMenu.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
+            mouseClick(switchMenu, switchMenu.width / 2, switchMenu.height / 2);
             compare(signalSpyTriggered.count > 0, true, "signal checked not triggered on switchMenu click");
         }
     }

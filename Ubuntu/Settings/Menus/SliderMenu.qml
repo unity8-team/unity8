@@ -17,9 +17,8 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Settings.Components 0.1 as USC
-import Ubuntu.Components.ListItems 0.1 as ListItem
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItem
 
 ListItem.Empty {
     id: menu
@@ -126,10 +125,10 @@ ListItem.Empty {
             }
             height: slider.height
 
-            USC.IconVisual {
+            Icon {
                 id: leftButton
                 objectName: "leftButton"
-                visible: status === Image.Ready
+                visible: source != ""
                 anchors.left: row.left
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
@@ -182,10 +181,10 @@ ListItem.Empty {
                 }
             }
 
-            USC.IconVisual {
+            Icon {
                 id: rightButton
                 objectName: "rightButton"
-                visible: status === Image.Ready
+                visible: source != ""
                 anchors.right: row.right
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)

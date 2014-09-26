@@ -38,22 +38,22 @@ Item {
             width: flickable.width
             height: childrenRect.height
 
-            SimpleTextMessageMenu {
+            SimpleMessageMenu {
                 id: messageMenu
                 removable: false
 
                 title: "Text Message"
+                body: "I am a little teapot"
                 time: "11:08am"
-                message: "I am a little teapot"
             }
 
-            SimpleTextMessageMenu {
+            SimpleMessageMenu {
                 id: messageMenuRemovable
                 removable: true
                 anchors.top: messageMenu.bottom
             }
 
-            TextMessageMenu {
+            SimpleMessageMenu {
                 id: messageMenuSelected
                 removable: true
                 anchors.top: messageMenuRemovable.bottom
@@ -62,8 +62,8 @@ Item {
     }
 
     SignalSpy {
-        id: signalSpyActivateApp
-        signalName: "appActivated"
+        id: signalSpyIconActivated
+        signalName: "iconActivated"
         target: messageMenuSelected
     }
 
@@ -78,7 +78,7 @@ Item {
         when: windowShown
 
         function init() {
-            signalSpyActivateApp.clear();
+            signalSpyIconActivated.clear();
             signalSpyDismiss.clear();
             messageMenuSelected.selected = false;
         }
@@ -108,54 +108,61 @@ Item {
         function test_time(data) {
             messageMenu.time = data.time;
 
-            var subtitle = findChild(messageMenu, "subtitle");
-            verify(subtitle !== undefined, "No subtitle");
-            compare(subtitle.text, data.time, "Time does not match set time.");
+            var time = findChild(messageMenu, "time");
+            verify(time !== undefined, "No time");
+            compare(time.text, data.time, "Time does not match set time.");
         }
 
-        function test_appIcon_data() {
+        function test_avatar_data() {
             return [
-                { appIcon: Qt.resolvedUrl("../../artwork/avatar.png") },
-                { appIcon: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
+                { avatar: Qt.resolvedUrl("../../artwork/avatar.png") },
+                { avatar: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
             ];
         }
 
-        function test_appIcon(data) {
-            messageMenu.appIcon = data.appIcon;
+        function test_avatar(data) {
+            messageMenu.avatar = data.avatar;
 
-            var appIcon = findChild(messageMenu, "appIcon");
-            verify(appIcon !== undefined, "No app icon");
-            compare(appIcon.source, data.appIcon, "App Icon does not match set icon.");
+            var avatar = findChild(messageMenu, "avatar");
+            verify(avatar !== undefined, "No avatar");
+            compare(avatar.source, data.avatar, "Avatar does not match set avatar.");
         }
 
-        function test_message_data() {
+        function test_icon_data() {
             return [
-                { message: "This is a test." },
-                { message: "Test is also a test." },
+                { icon: Qt.resolvedUrl("../../artwork/avatar.png") },
+                { icon: Qt.resolvedUrl("../../artwork/rhythmbox.png") },
             ];
         }
 
-        function test_message(data) {
-            messageMenu.message = data.message;
+        function test_icon(data) {
+            messageMenu.icon = data.icon;
+
+            var icon = findChild(messageMenu, "icon");
+            verify(icon !== undefined, "No icon");
+            compare(icon.source, data.icon, "Icon does not match set icon.");
+        }
+
+        function test_body_data() {
+            return [
+                { body: "This is a test." },
+                { body: "Test is also a test." },
+            ];
+        }
+
+        function test_body(data) {
+            messageMenu.body = data.body;
 
             var body = findChild(messageMenu, "body");
             verify(body !== undefined, "No body");
-            compare(body.text, data.message, "Message does not match set message.");
+            compare(body.text, data.body, "Message does not match set message.");
         }
 
-        function test_activateApp() {
-            var appIcon = findChild(messageMenuSelected, "appIcon");
+        function test_iconActivated() {
+            var icon = findChild(messageMenuSelected, "icon");
 
-            mouseClick(appIcon, appIcon.width * 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count, 0, "activate app should not have been triggered");
-
-            messageMenuSelected.selected = false;
-            mouseClick(appIcon, appIcon.width / 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count, 0, "activate app should not have been triggered when not selected");
-
-            messageMenuSelected.selected = true;
-            mouseClick(appIcon, appIcon.width / 2, appIcon.height / 2, Qt.LeftButton, Qt.NoModifier, 0);
-            compare(signalSpyActivateApp.count > 0, true, "activate app should have been triggered when selected");
+            mouseClick(icon, icon.width / 2, icon.height / 2);
+            compare(signalSpyIconActivated.count > 0, true, "activate icon should have been triggered");
         }
 
         function test_dismiss() {
