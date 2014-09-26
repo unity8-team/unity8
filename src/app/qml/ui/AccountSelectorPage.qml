@@ -47,12 +47,12 @@ Page {
             id: listView
             width: parent.width
             height: units.gu(10)
-            model: accounts
             currentIndex: -1
 
             delegate: Standard {
                 objectName: "EvernoteAccount"
                 text: displayName
+		
                 MouseArea {
                     anchors.fill: parent
                     onClicked: root.accountSelected(accountServiceHandle)

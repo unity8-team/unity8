@@ -133,6 +133,12 @@ MainView {
         service: useSandbox ? "evernote-sandbox" : "evernote"
     }
 
+    AccountServiceModel {
+        id: allAccounts
+        service: useSandbox ? "evernote-sandbox" : "evernote"
+        includeDisabled: true
+    }
+
     AccountService {
         id: accountService
         onObjectHandleChanged: {
