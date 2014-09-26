@@ -109,7 +109,7 @@ class UpstartIntegrationTests(UnityTestCase):
         try:
             self.assertThat(
                 lambda: os.WIFSTOPPED(self._get_status()),
-                Eventually(Equals(True)))
+                Eventually(Equals(True), timeout=15)) # can take longer than 10 seconds for unity8 to start
         except MismatchError:
             pass
         else:
@@ -128,7 +128,7 @@ class UpstartIntegrationTests(UnityTestCase):
         self._launch_unity()
         self.assertThat(
             lambda: os.WIFSTOPPED(self._get_status()),
-            Eventually(Equals(True)), "Unity8 should raise SIGSTOP when ready")
+            Eventually(Equals(True), timeout=15), "Unity8 should raise SIGSTOP when ready") # can take longer than 10 seconds for unity8 to start
 
         self.process.send_signal(signal.SIGCONT)
         self.assertThat(
