@@ -1,10 +1,9 @@
 [Desktop Entry]
-Name=Reminders
-Comment=Ubuntu Reminders app, powered by Evernote
+_Name=Reminders
+_Comment=Ubuntu Reminders app, powered by Evernote
 Exec=@EXEC@
 Icon=@ICON@
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true
-X-Ubuntu-Gettext-Domain=@PROJECT_NAME@
 X-Ubuntu-Default-Department-ID=accessories
