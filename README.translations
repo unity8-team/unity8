@@ -10,10 +10,9 @@ However, there is one task that needs to be taken care of: exposing new
 translatable messages to translators. So whenever you add new translatable
 messages in the code, make sure to follow these steps:
 
- 1. Change directory to the po/ folder: `cd po`
- 2. Update the translations template: `qmake && make pot`
- 3. Commit the generated .pot file: `bzr commit -m"Updated translation template"`
- 4. Push the branch and send a merge proposal as usual
+ 1. Run click-buddy retaining the build directory:
+    `click-buddy --dir . --no-clean`
+ 2. Commit and push the branch and send a merge proposal as usual
 
 And that's it, once the branch lands Launchpad should take care of all the rest!
 

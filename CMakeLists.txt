@@ -1,5 +1,7 @@
 project(com.ubuntu.reminders C CXX)
 cmake_minimum_required(VERSION 2.8.9)
+find_program(INTLTOOL_MERGE intltool-merge)
+find_program(INTLTOOL_EXTRACT intltool-extract)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wall -Wextra -fPIC")
@@ -72,7 +74,8 @@ endif(CLICK_MODE)
 
 file(GLOB_RECURSE I18N_SRC_FILES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    src/app/qml/*.qml *.desktop.in)
+    *.qml *.js *.cpp *.h)
+list(APPEND I18N_SRC_FILES ${DESKTOP_FILE}.in.in.h)
 list(SORT I18N_SRC_FILES)
 
 file(GLOB SRC_FILES
@@ -80,7 +83,12 @@ file(GLOB SRC_FILES
     *.qml *.js *.png *.js)
 install(FILES ${SRC_FILES}  DESTINATION ${DATA_DIR})
 
-configure_file(${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
+configure_file(${DESKTOP_FILE}.in.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE}.in)
+
+add_custom_target(${DESKTOP_FILE} ALL
+    COMMENT "Merging translations into ${DESKTOP_FILE}"
+    COMMAND LC_ALL=C ${INTLTOOL_MERGE} -d -u ${CMAKE_SOURCE_DIR}/po ${DESKTOP_FILE}.in ${DESKTOP_FILE} > /dev/null
+)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} DESTINATION ${DESKTOP_DIR})
 
 configure_file(${APPLICATION_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${APPLICATION_FILE})

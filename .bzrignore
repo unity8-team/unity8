@@ -11,3 +11,5 @@ debian/tmp/
 obj-*/
 reminders-app.qmlproject.user
 reminders-app.pro.user
+*.desktop.in
+*.desktop.in.in.h
