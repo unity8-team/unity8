@@ -51,14 +51,16 @@ class EvernoteCredentialsTestCase(tests.BaseTestCaseWithTempHome):
     def test_add_evernote_account_must_set_provider(self):
         account = self.add_evernote_account()
 
-        self.assertEqual(account.get_provider_name(), 'com.ubuntu.reminders_evernote-account-plugin-sandbox')
+        provider_id = 'com.ubuntu.reminders_evernote-account-plugin-sandbox'
+        self.assertEqual(account.get_provider_name(), provider_id)
 
     def test_add_evernote_account_must_enable_evernote_service(self):
         account = self.add_evernote_account()
         services = account.list_services()
 
         self.assertThat(services, HasLength(1))
-        self.assertEqual(services[0].get_name(), 'com.ubuntu.reminders_reminders-sandbox')
+        service_id = 'com.ubuntu.reminders_reminders-sandbox'
+        self.assertEqual(services[0].get_name(), provider_id)
         service = Accounts.AccountService.new(account, services[0])
         self.assertTrue(service.get_enabled())
 
