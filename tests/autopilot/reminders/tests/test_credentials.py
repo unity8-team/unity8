@@ -58,7 +58,7 @@ class EvernoteCredentialsTestCase(tests.BaseTestCaseWithTempHome):
         services = account.list_services()
 
         self.assertThat(services, HasLength(1))
-        self.assertEqual(services[0].get_name(), 'com.ubuntu.reminders_reminders')
+        self.assertEqual(services[0].get_name(), 'com.ubuntu.reminders_reminders-sandbox')
         service = Accounts.AccountService.new(account, services[0])
         self.assertTrue(service.get_enabled())
 

@@ -143,7 +143,7 @@ class AccountManager(object):
 
     def _enable_evernote_service(self, account):
         logger.debug('Enabling evernote service.')
-        service = self._manager.get_service('com.ubuntu.reminders_reminders')
+        service = self._manager.get_service('com.ubuntu.reminders_reminders-sandbox')
         account.select_service(service)
         account.set_enabled(True)
         account.store(self._on_service_enabled, None)
