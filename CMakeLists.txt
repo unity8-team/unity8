@@ -41,6 +41,13 @@ if(CLICK_MODE)
     set(DATA_DIR /)
     set(DESKTOP_DIR ${DATA_DIR})
     set(APPLICATION_DIR ${DATA_DIR})
+
+    # Sets BZR_REVNO
+    execute_process(
+        COMMAND bzr revno ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE BZR_REVNO
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
     if(NOT BZR_REVNO)
         set(BZR_REVNO "latest")
     endif(NOT BZR_REVNO)
