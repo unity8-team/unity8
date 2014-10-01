@@ -9,7 +9,7 @@ Build-Depends: cmake,
                libssl-dev,
                python3-all,
                qt5-default,
-               qtdeclarative5-dev,
+               qtdeclarative5-dev
 Standards-Version: 3.9.5
 Section: misc
 Homepage: https://launchpad.net/reminders-app
@@ -17,24 +17,24 @@ Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 
 Package: reminders-app
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends},
-         account-plugin-evernote,
+Depends: account-plugin-evernote,
          qtdeclarative5-accounts-plugin,
          qtdeclarative5-evernote0.1,
-         qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          qtdeclarative5-localstorage-plugin,
          qtdeclarative5-online-accounts-client0.1 (>= 0.3+14.10.20140506),
-         qtdeclarative5-quicklayouts-plugin,
          qtdeclarative5-qtquick2-plugin,
+         qtdeclarative5-quicklayouts-plugin,
+         qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          signon-plugin-oauth2 (>= 0.19-0~57~),
          suru-icon-theme | ubuntu-mobile-icons,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Description: Reminders application
  Note taking application powered by Evernote
 
 Package: qtdeclarative5-evernote0.1
 Architecture: any
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Expose the Evernote API to QML applications
  This module provides access to the Evernote API from QML applications.
 
@@ -43,7 +43,7 @@ Architecture: any
 Depends: libaccount-plugin-generic-oauth,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
-         ${shlibs:Depends},
+         ${shlibs:Depends}
 Description: Allow Ubuntu applications to access Evernote accounts
  This plugin enables users to authenticate to their Evernote accounts,
  providing syncing of Evernote notes across Ubuntu devices.
@@ -54,16 +54,14 @@ Depends: account-plugin-evernote,
          libaccount-plugin-generic-oauth,
          qtdeclarative5-online-accounts-client0.1,
          ${misc:Depends},
-         ${shlibs:Depends},
+         ${shlibs:Depends}
 Description: Allow Ubuntu applications to access Evernote sandbox accounts
  This plugin enables developers to authenticate to their Evernote developer
  sandbox account, which allows syncing of Evernote notes across Ubuntu devices.
 
 Package: reminders-app-autopilot
 Architecture: all
-Depends: ${misc:Depends},
-         reminders-app (>= ${source:Version}), reminders-app (<< ${source:Version}.1~),
-         account-plugin-evernote-sandbox,
+Depends: account-plugin-evernote-sandbox,
          libautopilot-qt,
          libclick-0.4-0,
          libqt5test5,
@@ -72,7 +70,9 @@ Depends: ${misc:Depends},
          python3-fixtures,
          python3-oauthlib,
          python3-requests-oauthlib,
+         reminders-app (<< ${source:Version}.1~),
+         reminders-app (>= ${source:Version}),
          ubuntu-ui-toolkit-autopilot,
-         account-plugin-evernote-sandbox
+         ${misc:Depends}
 Description: Test package for the Reminders app
  Autopilot tests for the Reminders app package
