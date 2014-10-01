@@ -38,6 +38,10 @@ override_dh_install:
 	cd $(CURDIR)
 	dh_install -X'*.pyc' --fail-missing
 
+override_dh_auto_test:
+	make test
+	make qmltests
+
 # use private lib directories
 override_dh_makeshlibs:
 	dh_makeshlibs -Nunity8-private -Nunity8-fake-env
