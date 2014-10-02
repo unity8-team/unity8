@@ -22,6 +22,11 @@ set(MAIN_QML ${APP_HARDCODE}.qml)
 set(EXEC "reminders")
 set(UBUNTU_MANIFEST_PATH "manifest.json.in" CACHE INTERNAL "Relative path to the manifest file")
 
+set(ACCOUNT_ICON_DIR ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
+set(ACCOUNT_PROVIDER_DIR ${CMAKE_INSTALL_DATADIR}/accounts/providers)
+set(ACCOUNT_SERVICE_DIR ${CMAKE_INSTALL_DATADIR}/accounts/services)
+set(ACCOUNT_QML_PLUGIN_DIR ${CMAKE_INSTALL_DATADIR}/accounts/qml-plugins)
+
 if(CLICK_MODE)
     if(NOT DEFINED BZR_SOURCE)
         set(BZR_SOURCE "lp:${APP_HARDCODE}")
@@ -38,6 +43,13 @@ if(CLICK_MODE)
     set(DATA_DIR /)
     set(DESKTOP_DIR ${DATA_DIR})
     set(APPLICATION_DIR ${DATA_DIR})
+
+    # Sets BZR_REVNO
+    execute_process(
+        COMMAND bzr revno ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE BZR_REVNO
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
     if(NOT BZR_REVNO)
         set(BZR_REVNO "latest")
     endif(NOT BZR_REVNO)

@@ -130,7 +130,7 @@ MainView {
 
     AccountServiceModel {
         id: accounts
-        service: useSandbox ? "evernote-sandbox" : "evernote"
+        applicationId: "com.ubuntu.reminders_reminders"
     }
 
     AccountService {
@@ -336,7 +336,7 @@ MainView {
             Setup {
                 id: setup
                 applicationId: "com.ubuntu.reminders_reminders"
-                providerId: "evernote"
+                providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
             }
 
             Button {

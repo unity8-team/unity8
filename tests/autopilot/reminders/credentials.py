@@ -81,7 +81,8 @@ class AccountManager(object):
 
     def _create_account(self):
         logger.debug('Creating the Evernote account.')
-        account = self._manager.create_account('evernote-sandbox')
+        provider_id = 'com.ubuntu.reminders_evernote-account-plugin-sandbox'
+        account = self._manager.create_account(provider_id)
         account.set_enabled(True)
         account.store(self._on_account_created, None)
         return account
@@ -143,7 +144,8 @@ class AccountManager(object):
 
     def _enable_evernote_service(self, account):
         logger.debug('Enabling evernote service.')
-        service = self._manager.get_service('evernote-sandbox')
+        service_id = 'com.ubuntu.reminders_reminders-sandbox'
+        service = self._manager.get_service(service_id)
         account.select_service(service)
         account.set_enabled(True)
         account.store(self._on_service_enabled, None)
