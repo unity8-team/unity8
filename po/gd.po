@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-09-28 11:05+0200\n"
-"PO-Revision-Date: 2014-09-12 19:40+0000\n"
+"PO-Revision-Date: 2014-10-03 15:31+0000\n"
 "Last-Translator: GunChleoc <Unknown>\n"
 "Language-Team: Fòram na Gàidhlig\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-01 06:26+0000\n"
+"X-Launchpad-Export-Date: 2014-10-04 06:29+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 "Language: gd\n"
 
@@ -24,7 +24,7 @@ msgstr "Cuimhneachain"
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr ""
+msgstr "Aplacaid nan cuimhneachan aig Ubuntu le cumhachd Evernote"
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
