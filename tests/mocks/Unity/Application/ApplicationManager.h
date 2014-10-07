@@ -52,9 +52,8 @@ class ApplicationManager : public ApplicationManagerInterface {
     static ApplicationManager *singleton();
 
     enum MoreRoles {
-        RoleSurface = RoleFocused+1,
+        RoleSession = RoleFocused+1,
         RoleFullscreen,
-        RoleApplication,
     };
     enum Role {
         Dash, Default, Indicators, Notifications, Greeter, Launcher, OnScreenKeyboard,
@@ -103,6 +102,9 @@ class ApplicationManager : public ApplicationManagerInterface {
     bool suspended() const override;
     void setSuspended(bool suspended) override;
 
+    bool forceDashActive() const override;
+    void setForceDashActive(bool forceDashActive) override;
+
     QJSValue surfaceAboutToBeCreatedCallback() const override;
     void setSurfaceAboutToBeCreatedCallback(const QJSValue &callback) override;
 
@@ -128,6 +130,7 @@ class ApplicationManager : public ApplicationManagerInterface {
     void buildListOfAvailableApplications();
     void onWindowCreated();
     bool m_suspended;
+    bool m_forceDashActive;
     QJSValue m_surfaceAboutToBeCreatedCallback;
     QList<ApplicationInfo*> m_runningApplications;
     QList<ApplicationInfo*> m_availableApplications;
