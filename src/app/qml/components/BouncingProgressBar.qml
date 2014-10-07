@@ -19,28 +19,30 @@
 import QtQuick 2.3
 import Ubuntu.Components 1.1
 
-ProgressBar {
-    // Using dp and not gu because we want always a little bar, that doesn't
-    // change with screen size
+Item {
     height: units.dp(3)
     width: parent.width
 
-    value: 0.3
+    onVisibleChanged: visible ? animation.start() : animation.stop()
 
-    showProgressPercentage: false
+    Rectangle {
+        id: rectangle
+        anchors.fill: parent
+        color: UbuntuColors.orange
+        visible: animation.running // Avoid to show the orange bar before animation starts
+    }
 
-    SequentialAnimation on x {
+    SequentialAnimation {
+        id: animation
         loops: Animation.Infinite
-        running: parent.visible
 
-        PropertyAnimation {
-            to: 2/3 * parent.width
-            duration: 1000
+        ParallelAnimation {
+            PropertyAnimation { target: rectangle; property: "anchors.leftMargin"; from: 0; to: width * 7/8; duration: 1000; easing: Easing.InOutQuad }
+            PropertyAnimation { target: rectangle; property: "anchors.rightMargin"; from: width * 7/8; to: 0; duration: 1000; easing: Easing.InOutQuad }
         }
-
-        PropertyAnimation {
-            to: 0
-            duration: 1000
+        ParallelAnimation {
+            PropertyAnimation { target: rectangle; property: "anchors.leftMargin"; from: width * 7/8; to: 0; duration: 1000; easing: Easing.InOutQuad }
+            PropertyAnimation { target: rectangle; property: "anchors.rightMargin"; from: 0; to: width * 7/8; duration: 1000; easing: Easing.InOutQuad }
         }
     }
 }
