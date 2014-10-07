@@ -37,12 +37,12 @@ Item {
         loops: Animation.Infinite
 
         ParallelAnimation {
-            PropertyAnimation { target: rectangle; property: "anchors.leftMargin"; from: 0; to: width * 7/8; duration: 1000; easing: Easing.InOutQuad }
-            PropertyAnimation { target: rectangle; property: "anchors.rightMargin"; from: width * 7/8; to: 0; duration: 1000; easing: Easing.InOutQuad }
+            PropertyAnimation { target: rectangle; property: "anchors.leftMargin"; from: 0; to: width * 7/8; duration: 1000; easing.type: Easing.InOutQuad }
+            PropertyAnimation { target: rectangle; property: "anchors.rightMargin"; from: width * 7/8; to: 0; duration: 1000; easing.type: Easing.InOutQuad }
         }
         ParallelAnimation {
-            PropertyAnimation { target: rectangle; property: "anchors.leftMargin"; from: width * 7/8; to: 0; duration: 1000; easing: Easing.InOutQuad }
-            PropertyAnimation { target: rectangle; property: "anchors.rightMargin"; from: 0; to: width * 7/8; duration: 1000; easing: Easing.InOutQuad }
+            PropertyAnimation { target: rectangle; property: "anchors.leftMargin"; from: width * 7/8; to: 0; duration: 1000; easing.type: Easing.InOutQuad }
+            PropertyAnimation { target: rectangle; property: "anchors.rightMargin"; from: 0; to: width * 7/8; duration: 1000; easing.type: Easing.InOutQuad }
         }
     }
 }
