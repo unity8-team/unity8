@@ -30,6 +30,7 @@ Page {
 
     property alias accounts: listView.model
     property bool isChangingAccount
+    property bool unauthorizedAccounts
 
     signal accountSelected(var handle)
 
@@ -52,22 +53,37 @@ Page {
             delegate: Standard {
                 objectName: "EvernoteAccount"
                 text: displayName
-		
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: root.accountSelected(accountServiceHandle)
                 }
             }
 
-            footer: Button {
-                text: i18n.tr("Add account")
-                onClicked: setup.exec()
+            footer: Column {
+                spacing: units.gu(2)
+                width: parent.width
+                Text {
+                    width: parent.width
+                    visible: unauthorizedAccounts
+                    text: i18n.tr("Reminders is not authorised to use your Evernote account. Authorise it by tapping the button below.")
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+                Button {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: i18n.tr("Add account")
+                    color: UbuntuColors.orange
+                    onClicked: setup.exec()
+                }
             }
         }
     }
 
-    tools: ToolbarItems {
-        locked: !isChangingAccount
-        opened: isChangingAccount
+    head.backAction: Action {
+        visible: isChangingAccount
+        iconName: "back"
+        text: i18n.tr("Back")
+        onTriggered: { pagestack.pop(); }
     }
 }
