@@ -42,13 +42,31 @@ Item {
         y: dragArea.distance
         width: parent.width
         height: parent.height
-        sourceComponent: appWindowComponent
+        sourceComponent: application && application.appId == "unity8-dash" ? fakeDashComponent : appWindowComponent
         asynchronous: true
 
         Binding {
             target: appWindowLoader.item
             property: "application"
             value: root.application
+        }
+    }
+
+    Component {
+        id: fakeDashComponent
+        Rectangle {
+            color: "blue"
+            Label {
+                anchors.centerIn: parent
+                text: "TODO: Make this the fake dash!"
+
+                 /**
+                 To fake adding a new app, call ApplicationManager.startApplication(appId)
+                 See tests/mocks/Unity/Application/ApplicationManager.cpp buildListOfAvailableApplications()
+                 for available appIds. Add your fake apps (scopes) there. Put screenshots into
+                 qml/graphics/applicationIcons/
+                 */
+            }
         }
     }
 
