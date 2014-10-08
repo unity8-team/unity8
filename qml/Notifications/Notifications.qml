@@ -33,7 +33,7 @@ ListView {
         id: snapDecisionProxyModel
 
         model: notificationList.model
-        filterRole: UnityNotifications.ModelInterface.RoleType
+        filterRole: UnityNotifications.ModelInterface != undefined ? UnityNotifications.ModelInterface.RoleType : 0
         filterRegExp: RegExp(UnityNotifications.Notification.SnapDecision)
     }
 
@@ -63,7 +63,8 @@ ListView {
 
         // make sure there's no opacity-difference between the several
         // elements in a notification
-        layer.enabled: add.running || remove.running || populate.running
+        // FIXME: disabled all transitions because of LP: #1354406 workaround
+        //layer.enabled: add.running || remove.running || populate.running
 
         Component.onCompleted: {
             if (index == 1) {
@@ -79,7 +80,8 @@ ListView {
         }
     }
 
-    populate: Transition {
+    // FIXME: disabled all transitions because of LP: #1354406 workaround
+    /*populate: Transition {
         UbuntuNumberAnimation {
             property: "opacity"
             to: 1
@@ -107,5 +109,5 @@ ListView {
             properties: "x,y"
             duration: UbuntuAnimation.SnapDuration
         }
-    }
+    }*/
 }

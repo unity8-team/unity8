@@ -148,7 +148,12 @@ Item {
 
     ScopeStyle {
         id: overviewScopeStyle
-        style: { "foreground-color" : "white", "background-color" : "transparent" }
+        style: { "foreground-color" : "white",
+                 "background-color" : "transparent",
+                 "page-header": {
+                    "background": "color:///transparent"
+                 }
+        }
     }
 
     DashBackground {
@@ -198,7 +203,7 @@ Item {
             }
             width: parent.width
             clip: true
-            title: i18n.tr("Manage Dash")
+            title: i18n.tr("Manage Scopes")
             scopeStyle: overviewScopeStyle
             showSignatureLine: false
             searchEntryEnabled: true
@@ -381,6 +386,7 @@ Item {
 
         Rectangle {
             id: bottomBar
+            objectName: "bottomBar"
             color: "black"
             height: units.gu(8)
             width: parent.width
@@ -393,6 +399,11 @@ Item {
                 } else {
                     return parent.height - (root.progress - 0.5) * height * 2;
                 }
+            }
+
+            MouseArea {
+                // Just eat any other press since this parent is black opaque
+                anchors.fill: parent
             }
 
             AbstractButton {
@@ -458,10 +469,13 @@ Item {
         objectName: "scopesOverviewPreviewListView"
         scope: root.scope
         scopeStyle: overviewScopeStyle
+        showSignatureLine: false
         visible: x != width
         width: parent.width
         height: parent.height
         anchors.left: scopesOverviewContent.right
+
+        onBackClicked: open = false
     }
 
     Item {
@@ -534,6 +548,19 @@ Item {
                 }
                 scopesOverviewXYScaler.opacity = 0;
                 middleItems.overrideOpacity = -1;
+            }
+            // TODO Add tests for these connections
+            Connections {
+                target: tempScopeItem.scope
+                onOpenScope: {
+                    // TODO Animate the newly opened scope into the foreground (stacked on top of the current scope)
+                    tempScopeItem.scope = scope;
+                }
+                onGotoScope: {
+                    tempScopeItem.backClicked();
+                    root.currentTab = 0;
+                    root.scope.gotoScope(scopeId);
+                }
             }
         }
     }

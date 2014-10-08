@@ -17,6 +17,7 @@
 import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 0.1
+import Ubuntu.Connectivity 1.0
 import Unity.Test 0.1 as UT
 import "../../../qml/Dash"
 import "CardHelpers.js" as Helpers
@@ -29,9 +30,9 @@ Rectangle {
 
     property string cardData: '
     {
-      "art": "../../../tests/qmltests/Dash/artwork/music-player-design.png",
-      "mascot": "../../../tests/qmltests/Dash/artwork/avatar.png",
-      "emblem": "../../../tests/qmltests/Dash/artwork/emblem.png",
+      "art": "'+Qt.resolvedUrl("artwork/music-player-design.png").toString()+'",
+      "mascot": "'+Qt.resolvedUrl("artwork/avatar.png").toString()+'",
+      "emblem": "'+Qt.resolvedUrl("artwork/emblem.png").toString()+'",
       "title": "foo",
       "subtitle": "bar",
       "summary": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
@@ -95,6 +96,11 @@ Rectangle {
             "name": "Art, header - image background",
             "layout": { "template": { "card-background": Qt.resolvedUrl("artwork/checkers.png") },
                         "components": JSON.parse(Helpers.fullMapping) }
+        },
+        {
+            "name": "Art, title - overlaid",
+            "layout": { "template": { "overlay": true },
+                        "components": { "art": "art", "title": "title" } }
         },
     ]
 
@@ -200,6 +206,11 @@ Rectangle {
         property Item backgroundImage: findChild(card, "backgroundImage")
         property Item mascotImage: findChild(card, "mascotImage");
 
+        function init() {
+            loader.visible = true;
+            NetworkingStatus.limitedBandwith = false;
+        }
+
         function cleanup() {
             selector.selectedIndex = -1;
         }
@@ -217,6 +228,7 @@ Rectangle {
 
         function test_card_binding(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
             waitForRendering(card);
 
             tryCompareFunction(function() { return testCase[data.object] !== null }, true);
@@ -247,6 +259,8 @@ Rectangle {
 
         function test_card_size(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
+            waitForRendering(card);
 
             if (data.hasOwnProperty("card_layout")) {
                 cardTool.template['card-layout'] = data.card_layout;
@@ -279,6 +293,7 @@ Rectangle {
 
         function test_art_size(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
             if (data.hasOwnProperty("size")) {
                 cardTool.template['card-size'] = data.size;
                 cardTool.templateChanged();
@@ -310,6 +325,7 @@ Rectangle {
 
         function test_art_shape_fixed_size() {
             selector.selectedIndex = 6;
+            waitForRendering(selector);
             card.fixedArtShapeSize = Qt.size( units.gu(8), units.gu(4) );
             waitForRendering(card);
             tryCompare(art, "width", units.gu(8));
@@ -326,6 +342,7 @@ Rectangle {
 
         function test_art_layout(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
             waitForRendering(card);
 
             tryCompare(headerRow, "x", data.left());
@@ -344,6 +361,7 @@ Rectangle {
 
         function test_header_layout(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
             waitForRendering(card);
 
             tryCompareFunction(function() { return testCase.headerRow.y === data.top() }, true);
@@ -359,7 +377,7 @@ Rectangle {
 
         function test_summary_layout(data) {
             selector.selectedIndex = data.index;
-
+            waitForRendering(selector);
             waitForRendering(card);
 
             tryCompareFunction(function() { return art.height > 0 && testCase.summary.y === data.top() }, true);
@@ -367,6 +385,8 @@ Rectangle {
 
         function test_art_visibility() {
             selector.selectedIndex = 8;
+            waitForRendering(selector);
+            waitForRendering(card);
 
             compare(testCase.artImage, null);
             compare(testCase.art, null);
@@ -389,6 +409,7 @@ Rectangle {
 
         function test_background(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
 
             if (data.hasOwnProperty("background")) {
                 card.cardData["background"] = data.background;
@@ -425,6 +446,8 @@ Rectangle {
 
         function test_font_weights(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
+            waitForRendering(card);
 
             tryCompare(testCase.title.font, "weight", data.weight);
         }
@@ -448,6 +471,7 @@ Rectangle {
 
         function test_fontColor(data) {
             selector.selectedIndex = 10;
+            waitForRendering(selector);
             waitForRendering(card);
 
             background.color = data.tag;
@@ -470,6 +494,7 @@ Rectangle {
 
         function test_emblemIcon(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
             waitForRendering(card);
 
             var emblemIcon = findChild(card, "emblemIcon");
@@ -486,6 +511,7 @@ Rectangle {
 
         function test_mascotShape(data) {
             selector.selectedIndex = data.index;
+            waitForRendering(selector);
             waitForRendering(card);
 
             var shape = findChild(card, "mascotShapeLoader");
@@ -496,6 +522,8 @@ Rectangle {
 
         function test_touchdown_visibility() {
             selector.selectedIndex = 0;
+            waitForRendering(selector);
+            waitForRendering(card);
 
             var touchdown = findChild(card, "touchdown");
 
@@ -504,6 +532,65 @@ Rectangle {
             compare(touchdown.visible, true);
             mouseRelease(card, card.width/2, card.height/2);
             compare(touchdown.visible, false);
+        }
+
+        function test_paddings_data() {
+            return [
+                { tag: "Art and summary", index: 0 },
+                { tag: "No Summary", index: 6 },
+                { tag: "No header", index: 7 },
+                { tag: "Header only", index: 8 },
+                { tag: "Art, header, summary - overlaid", index: 9 },
+                { tag: "Art, title - overlaid", index: 13 },
+            ];
+        }
+
+        function test_paddings(data) {
+            selector.selectedIndex = data.index;
+            waitForRendering(selector);
+            waitForRendering(card);
+
+            if (title) var titleToCard = title.mapToItem(card, 0, 0, title.width, title.height);
+
+            // left margin
+            if (mascotImage) {
+                var mascotToCard = mascotImage.mapToItem(card, 0, 0, mascotImage.width, mascotImage.height);
+                verify(mascotToCard.x === units.gu(1));
+                if (title) {
+                    verify((titleToCard.x - mascotToCard.x - mascotToCard.width) === units.gu(1));
+                }
+            } else if (title) {
+                verify(titleToCard.x === units.gu(1));
+            }
+
+            // right margin
+            var emblemIcon = findChild(card, "emblemIcon");
+            if (emblemIcon) {
+                var emblemToCard = emblemIcon.mapToItem(card, 0, 0, emblemIcon.width, emblemIcon.height);
+                verify((card.width - emblemToCard.x - emblemToCard.width) === units.gu(1));
+            } else if (title) {
+                verify((card.width - titleToCard.x - titleToCard.width) === units.gu(1));
+            }
+        }
+
+        function test_load_images_visibility_network_data() {
+            return [
+                { tag: "Visible, network", visible: true, limitedBandwith: false },
+                { tag: "Visible, no network", visible: true, limitedBandwith: true },
+                { tag: "Not Visible, network", visible: false, limitedBandwith: false },
+                { tag: "Not Visible, no network", visible: false, limitedBandwith: true }
+            ];
+        }
+
+        function test_load_images_visibility_network(data) {
+            loader.visible = data.visible;
+            NetworkingStatus.limitedBandwith = data.limitedBandwith;
+
+            selector.selectedIndex = 0;
+            waitForRendering(selector);
+            waitForRendering(card);
+
+            verify(data.visible || !data.limitedBandwith || artImage.source == "");
         }
     }
 }

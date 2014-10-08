@@ -37,20 +37,47 @@ PreviewWidget {
 
         color: Theme.palette.selected.foreground
         text: paymentClient.formattedPrice
-        onClicked: paymentClient.start()
+        onClicked: {
+            paymentClient.start();
+            paymentButton.opacity = 0;
+        }
         anchors.right: parent.right
         width: (root.width - units.gu(1)) / 2
+        opacity: 1
+        visible: paymentButton.opacity == 0 ? false : true
+        Behavior on opacity { PropertyAnimation { duration: UbuntuAnimation.FastDuration } }
 
         Payments {
             id: paymentClient
+            objectName: "paymentClient"
 
             property var source: widgetData["source"]
 
             price: source["price"]
             currency: source["currency"]
             storeItemId: source["store_item_id"]
-            onPurchaseCompleted: root.triggered(widgetId, "purchaseCompleted", source)
-            onPurchaseError: root.triggered(widgetId, "purchaseError", source)
+            onPurchaseCompleted: {
+                root.triggered(widgetId, "purchaseCompleted", source);
+            }
+            onPurchaseError: {
+                paymentButton.opacity = 1;
+                root.triggered(widgetId, "purchaseError", source);
+            }
+            onPurchaseCancelled: {
+                paymentButton.opacity = 1;
+                // DO NOT emit the signal right now, as it causes a new
+                // preview to be requested, when that is not what we want.
+                //root.triggered(widgetId, "purchaseCancelled", source);
+            }
         }
+    }
+
+    ProgressBar {
+        id: loadingBar
+        objectName: "loadingBar"
+        indeterminate: true
+        anchors.fill: paymentButton
+        opacity: 1 - paymentButton.opacity
+        visible: !paymentButton.visible
     }
 }

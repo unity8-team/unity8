@@ -24,18 +24,24 @@ Showable {
     // Determine if a numeric or alphanumeric pad is used.
     property bool alphaNumeric: false
 
-    // Placeholder text
-    property string placeholderText: ""
-    // Placeholder text while shaking (e.g. Incorrect passprase)
-    property string wrongPlaceholderText: ""
-    // Retries text (e.g. 3 retries left)
-    property string retryText: ""
+    // Whether to show an emergency call button
+    property bool showEmergencyCallButton: true
 
-    // Informational text. (e.g. some text to tell which domain this is pin is entered for.
+    // Whether to show a cancel button (not all lockscreen types normally do anyway)
+    property bool showCancelButton: true
+
+    // Informational text. (e.g. some text to tell which domain this is pin is entered for)
     property string infoText: ""
 
-    // In case the Lockscreen can show a greeter message, this is the username
-    property string username: ""
+    // Retries text (e.g. 3 retries left)
+    // (This is not currently used, but will be necessary for SIM unlock screen)
+    property string retryText: ""
+
+    // The text to be displayed in case the login failed
+    property string errorText: ""
+
+    // If > 0, a forced delay is happening
+    property int delayMinutes: 0
 
     // Set those to a value greater 0 to restrict the pin length.
     // If both are unset, the Lockscreen will show a confirm button and allow typing any length of pin before
@@ -55,16 +61,7 @@ Showable {
     signal emergencyCall()
     signal infoPopupConfirmed()
 
-    onRequiredChanged: {
-        if (required && pinPadLoader.item) {
-            clear(false)
-        }
-    }
-
-    function forceDelay(delay) {
-        forcedDelayTimer.interval = delay
-        forcedDelayTimer.start()
-    }
+    onActiveFocusChanged: if (activeFocus && pinPadLoader.item) pinPadLoader.item.forceActiveFocus()
 
     function reset() {
         // This causes the loader below to destry and recreate the source
@@ -84,16 +81,12 @@ Showable {
         PopupUtils.open(infoPopupComponent, root, {title: title, text: text})
     }
 
-    Timer {
-        id: forcedDelayTimer
-        onTriggered: pinPadLoader.showWrongText = false
-    }
-
     Rectangle {
-        // In case background fails to load or is undefined
+        // In case background fails to load
         id: backgroundBackup
         anchors.fill: parent
         color: "black"
+        visible: root.background.toString() !== ""
     }
 
     Image {
@@ -108,152 +101,141 @@ Showable {
 
     MouseArea {
         anchors.fill: root
-    }
-
-    Column {
-        spacing: units.gu(2)
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: pinPadLoader.top
-            bottomMargin: units.gu(2)
-        }
-        Label {
-            objectName: "retryCountLabel"
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-            text: root.retryText
-            horizontalAlignment: Text.AlignHCenter
-            color: "#f3f3e7"
-            opacity: 0.6
-            visible: root.retryText.length > 0
-        }
-        Label {
-            id: infoTextLabel
-            objectName: "infoTextLabel"
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-            text: root.infoText
-            horizontalAlignment: Text.AlignHCenter
-            color: "#f3f3e7"
-            opacity: 0.6
-            visible: root.infoText.length > 0
+        onClicked: {
+            if (pinPadLoader.item)
+                pinPadLoader.item.forceActiveFocus()
         }
     }
 
-    Loader {
-        id: pinPadLoader
-        objectName: "pinPadLoader"
-        anchors {
-            left: parent.left
-            right: parent.right
-            verticalCenter: parent.verticalCenter
-            verticalCenterOffset: root.alphaNumeric ? -units.gu(10) : -units.gu(4)
-        }
-        property bool resetting: false
-        property bool waiting: false
-        property bool showWrongText: false
+    FocusScope {
+        id: loaderScope
+        anchors.fill: parent
 
-        readonly property string forcedDelayText: i18n.tr("Too many incorrect attempts") +
-                                                  "\n" +
-                                                  i18n.tr("Please wait")
+        Loader {
+            id: pinPadLoader
+            objectName: "pinPadLoader"
+            anchors.fill: parent
+            property bool resetting: false
+            property bool waiting: false
+            property bool showWrongText: false
 
-        source: (!resetting && root.required) ? (root.alphaNumeric ? "PassphraseLockscreen.qml" : "PinLockscreen.qml") : ""
-        onSourceChanged: {
-            waiting = false
-            showWrongText = false
-        }
-
-        Connections {
-            target: pinPadLoader.item
-
-            onEntered: {
-                pinPadLoader.waiting = true
-                root.entered(passphrase);
+            source: {
+                if (resetting || !root.required) {
+                    return ""
+                } else if (root.delayMinutes > 0) {
+                    return "DelayedLockscreen.qml"
+                } else if (root.alphaNumeric) {
+                    return "PassphraseLockscreen.qml"
+                } else {
+                    return "PinLockscreen.qml"
+                }
+            }
+            onSourceChanged: {
+                waiting = false
+                showWrongText = false
+                if (loaderScope.activeFocus && pinPadLoader.item)
+                    pinPadLoader.item.forceActiveFocus()
             }
 
-            onCancel: {
-                root.cancel()
+            Connections {
+                target: pinPadLoader.item
+
+                onEntered: {
+                    pinPadLoader.waiting = true
+                    root.entered(passphrase);
+                }
+
+                onCancel: {
+                    root.cancel()
+                }
+            }
+
+            Binding {
+                target: pinPadLoader.item
+                property: "minPinLength"
+                value: root.minPinLength
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "maxPinLength"
+                value: root.maxPinLength
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "infoText"
+                value: root.infoText
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "retryText"
+                value: root.retryText
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "errorText"
+                value: pinPadLoader.showWrongText ? root.errorText : ""
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "entryEnabled"
+                value: !pinPadLoader.waiting
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "alphaNumeric"
+                value: root.alphaNumeric
+            }
+            Binding {
+                target: pinPadLoader.item
+                property: "delayMinutes"
+                value: root.delayMinutes
             }
         }
-
         Binding {
             target: pinPadLoader.item
-            property: "minPinLength"
-            value: root.minPinLength
-        }
-        Binding {
-            target: pinPadLoader.item
-            property: "maxPinLength"
-            value: root.maxPinLength
-        }
-        Binding {
-            target: pinPadLoader.item
-            property: "placeholderText"
-            value: forcedDelayTimer.running ? pinPadLoader.forcedDelayText :
-                   (pinPadLoader.showWrongText ? root.wrongPlaceholderText :
-                    root.placeholderText)
-        }
-        Binding {
-            target: pinPadLoader.item
-            property: "username"
-            value: root.username
-        }
-        Binding {
-            target: pinPadLoader.item
-            property: "entryEnabled"
-            value: !pinPadLoader.waiting && !forcedDelayTimer.running
+            property: "showCancelButton"
+            value: root.showCancelButton
         }
     }
 
-    Column {
-        id: emergencyCallColumn
+    Item {
+        id: emergencyCallRow
 
-        // FIXME: We *should* show emergency dialer if there is a SIM present,
-        // regardless of whether the side stage is enabled.  But right now,
-        // the assumption is that narrow screens are phones which have SIMs
-        // and wider screens are tablets which don't.  When we do allow this
-        // on devices with a side stage and a SIM, work should be done to
-        // ensure that the main stage is disabled while the dialer is present
-        // in the side stage.
-        visible: !shell.sideStageEnabled
+        visible: showEmergencyCallButton
 
         anchors {
-            left: parent.left
             bottom: parent.bottom
-            bottomMargin: units.gu(4)
+            bottomMargin: units.gu(7) + (Qt.inputMethod.visible ? Qt.inputMethod.keyboardRectangle.height : 0)
+            left: parent.left
             right: parent.right
-        }
-        height: childrenRect.height
-        spacing: units.gu(1)
-
-        Icon {
-            objectName: "emergencyCallIcon"
-            height: units.gu(3)
-            width: height
-            anchors.horizontalCenter: parent.horizontalCenter
-            name: "phone-app-call-symbolic"
-            color: "#f3f3e7"
-            opacity: 0.6
         }
 
         Label {
+            id: emergencyCallLabel
+            objectName: "emergencyCallLabel"
+            anchors.horizontalCenter: parent.horizontalCenter
+
             text: i18n.tr("Emergency Call")
             color: "#f3f3e7"
-            opacity: 0.6
-            fontSize: "medium"
-            anchors.horizontalCenter: parent.horizontalCenter
         }
-    }
 
-    MouseArea {
-        anchors.fill: emergencyCallColumn
-        onClicked: root.emergencyCall()
-        enabled: emergencyCallColumn.visible
+        Icon {
+            id: emergencyCallIcon
+            anchors.left: emergencyCallLabel.right
+            anchors.leftMargin: units.gu(1)
+            width: emergencyCallLabel.height
+            height: emergencyCallLabel.height
+            name: "call-start"
+            color: "#f3f3e7"
+        }
+
+        MouseArea {
+            anchors.top: emergencyCallLabel.top
+            anchors.bottom: emergencyCallLabel.bottom
+            anchors.left: emergencyCallLabel.left
+            anchors.right: emergencyCallIcon.right
+            onClicked: root.emergencyCall()
+        }
     }
 
     Component {

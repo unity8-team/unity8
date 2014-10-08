@@ -31,21 +31,23 @@ Item {
     property string title
 
     property bool searchEntryEnabled: false
+    property bool settingsEnabled: false
+    property bool favoriteEnabled: false
+    property bool favorite: false
     property ListModel searchHistory: SearchHistoryModel
     property alias searchQuery: searchTextField.text
     property alias searchHint: searchTextField.placeholderText
-    property alias showSignatureLine: bottomBorder.visible
+    property bool showSignatureLine: true
 
     property alias bottomItem: bottomContainer.children
     property int paginationCount: 0
     property int paginationIndex: -1
 
-    // TODO We should use foreground for the icons
-    // of the toolbar but unfortunately Action does not have
-    // the keyColor property as Icon does :-/
     property var scopeStyle: null
 
     signal backClicked()
+    signal settingsClicked()
+    signal favoriteClicked()
 
     onScopeStyleChanged: refreshLogo()
     onSearchQueryChanged: {
@@ -62,9 +64,12 @@ Item {
         }
     }
 
-    function closePopup() {
+    function closePopup(keepFocus) {
         if (headerContainer.popover != null) {
+            headerContainer.popover.unfocusOnDestruction = !keepFocus;
             PopupUtils.close(headerContainer.popover);
+        } else if (!keepFocus) {
+            unfocus();
         }
     }
 
@@ -72,11 +77,8 @@ Item {
         if (searchHistory) {
             searchHistory.addQuery(searchTextField.text);
         }
-        if (!keepFocus) {
-            unfocus();
-        }
         searchTextField.text = "";
-        closePopup();
+        closePopup(keepFocus);
     }
 
     function unfocus() {
@@ -100,7 +102,7 @@ Item {
     }
 
     function refreshLogo() {
-        if (scopeStyle ? scopeStyle.headerLogo != "" : false) {
+        if (root.scopeStyle ? root.scopeStyle.headerLogo != "" : false) {
             header.contents = imageComponent.createObject();
         } else if (header.contents) {
             header.contents.destroy();
@@ -117,11 +119,10 @@ Item {
         anchors { fill: parent; margins: units.gu(1); bottomMargin: units.gu(3) + bottomContainer.height }
         visible: headerContainer.showSearch
         onPressed: {
-            closePopup();
+            closePopup(/* keepFocus */false);
             if (!searchTextField.text) {
                 headerContainer.showSearch = false;
             }
-            searchTextField.focus = false;
             mouse.accepted = false;
         }
     }
@@ -131,7 +132,7 @@ Item {
         objectName: "headerContainer"
         clip: contentY < height
         anchors { left: parent.left; top: parent.top; right: parent.right }
-        height: units.gu(6.5)
+        height: units.gu(7)
         contentHeight: headersColumn.height
         interactive: false
         contentY: showSearch ? 0 : height
@@ -226,7 +227,7 @@ Item {
 
                     onTextChanged: {
                         if (text != "") {
-                            closePopup();
+                            closePopup(/* keepFocus */true);
                         }
                     }
                 }
@@ -240,6 +241,7 @@ Item {
                 contentHeight: height
                 opacity: headerContainer.clip || !headerContainer.showSearch ? 1 : 0 // setting visible false cause column to relayout
                 separatorSource: ""
+                separatorBottomSource: ""
                 property var styledItem: header
                 property string title: root.title
                 property var config: PageHeadConfiguration {
@@ -247,20 +249,33 @@ Item {
                     backAction: Action {
                         iconName: "back"
                         visible: root.showBackButton
-                        onTriggered: {
-                            root.backClicked();
-                        }
+                        onTriggered: root.backClicked()
                     }
 
                     actions: [
                         Action {
                             objectName: "search"
+                            text: i18n.tr("Search")
                             iconName: "search"
                             visible: root.searchEntryEnabled
                             onTriggered: {
                                 headerContainer.showSearch = true;
                                 searchTextField.forceActiveFocus();
                             }
+                        },
+                        Action {
+                            objectName: "settings"
+                            text: i18n.tr("Settings")
+                            iconName: "settings"
+                            visible: root.settingsEnabled
+                            onTriggered: root.settingsClicked()
+                        },
+                        Action {
+                            objectName: "favorite"
+                            text: root.favorite ? i18n.tr("Remove from Favorites") : i18n.tr("Add to Favorites")
+                            iconName: root.favorite ? "starred" : "non-starred"
+                            visible: root.favoriteEnabled
+                            onTriggered: root.favoriteClicked()
                         }
                     ]
                 }
@@ -272,7 +287,7 @@ Item {
                     id: imageComponent
 
                     Item {
-                        anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+                        anchors { fill: parent; topMargin: units.gu(1.5); bottomMargin: units.gu(1.5) }
                         clip: true
                         Image {
                             objectName: "titleImage"
@@ -288,33 +303,19 @@ Item {
         }
     }
 
-    Row {
-        spacing: units.gu(.5)
-        Repeater {
-            objectName: "paginationRepeater"
-            model: root.paginationCount
-            Image {
-                objectName: "paginationDots_" + index
-                height: units.gu(1)
-                width: height
-                source: (index == root.paginationIndex) ? "graphics/pagination_dot_on.png" : "graphics/pagination_dot_off.png"
-            }
-        }
-        anchors {
-            top: headerContainer.bottom
-            horizontalCenter: headerContainer.horizontalCenter
-            topMargin: units.gu(.5)
-        }
-    }
-
     Component {
         id: popoverComponent
         Popover {
             id: popover
             autoClose: false
 
+            property bool unfocusOnDestruction: false
+
             Component.onDestruction: {
                 headerContainer.popover = null;
+                if (unfocusOnDestruction) {
+                    root.unfocus();
+                }
             }
 
             Column {
@@ -335,8 +336,7 @@ Item {
                         onClicked: {
                             searchHistory.addQuery(text);
                             searchTextField.text = text;
-                            closePopup();
-                            unfocus();
+                            closePopup(/* keepFocus */false);
                         }
                     }
                 }
@@ -344,8 +344,9 @@ Item {
         }
     }
 
-    BorderImage {
+    Rectangle {
         id: bottomBorder
+        visible: showSignatureLine
         anchors {
             top: headerContainer.bottom
             left: parent.left
@@ -353,7 +354,66 @@ Item {
             bottom: bottomContainer.top
         }
 
-        source: "graphics/PageHeaderBaseDivider.sci"
+        color: root.scopeStyle ? root.scopeStyle.headerDividerColor : "#e0e0e0"
+
+        Rectangle {
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: units.dp(1)
+            color: Qt.darker(parent.color, 1.1)
+        }
+    }
+
+    Row {
+        visible: bottomBorder.visible
+        spacing: units.gu(.5)
+        Repeater {
+            objectName: "paginationRepeater"
+            model: root.paginationCount
+            Image {
+                objectName: "paginationDots_" + index
+                height: units.gu(1)
+                width: height
+                source: (index == root.paginationIndex) ? "graphics/pagination_dot_on.png" : "graphics/pagination_dot_off.png"
+            }
+        }
+        anchors {
+            top: headerContainer.bottom
+            horizontalCenter: headerContainer.horizontalCenter
+            topMargin: units.gu(.5)
+        }
+    }
+
+    // FIXME this doesn't work with solid scope backgrounds due to z-ordering
+    Item {
+        id: bottomHighlight
+        visible: bottomBorder.visible
+        anchors {
+            top: bottomContainer.top
+            left: parent.left
+            right: parent.right
+        }
+        z: 1
+        height: units.dp(1)
+        opacity: 0.6
+
+        // FIXME this should be a shader when bottomItem exists
+        // to support image backgrounds
+        Rectangle {
+            anchors.fill: parent
+            color: if (bottomItem && bottomItem.background) {
+                       Qt.lighter(Qt.rgba(bottomItem.background.topColor.r,
+                                          bottomItem.background.topColor.g,
+                                          bottomItem.background.topColor.b, 1.0), 1.2);
+                   } else if (!bottomItem && root.scopeStyle) {
+                       Qt.lighter(Qt.rgba(root.scopeStyle.background.r,
+                                          root.scopeStyle.background.g,
+                                          root.scopeStyle.background.b, 1.0), 1.2);
+                   } else "#CCFFFFFF"
+        }
     }
 
     Item {

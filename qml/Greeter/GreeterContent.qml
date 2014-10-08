@@ -47,6 +47,9 @@ Item {
             topMargin: backgroundTopMargin
         }
         fillMode: Image.PreserveAspectCrop
+        // Limit how much memory we'll reserve for this image
+        sourceSize.height: height
+        sourceSize.width: width
     }
 
     // See Shell.qml's backgroundSettings treatment for why we need a separate
@@ -87,7 +90,6 @@ Item {
 
         onLoaded: {
             item.currentIndex = greeterContentLoader.currentIndex;
-            item.resetAuthentication();
         }
 
         Binding {

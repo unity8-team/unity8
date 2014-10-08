@@ -7,48 +7,108 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-13 14:09-0400\n"
-"PO-Revision-Date: 2014-01-15 09:50+0000\n"
-"Last-Translator: Turan Mahmudov <turan.mahmudov@gmail.com>\n"
+"POT-Creation-Date: 2014-10-03 08:13-0400\n"
+"PO-Revision-Date: 2014-09-03 16:39+0000\n"
+"Last-Translator: Nicat Məmmədov <n1c4t97@gmail.com>\n"
 "Language-Team: Azerbaijani <az@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-15 06:28+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2014-10-07 06:58+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
-#: plugins/LightDM/Greeter.cpp:129
+#: plugins/LightDM/Greeter.cpp:130
 msgid "Password: "
-msgstr ""
+msgstr "Şifrә: "
 
-#: plugins/Unity/Launcher/launcheritem.cpp:43
-#: plugins/Unity/Launcher/launcheritem.cpp:73
+#: plugins/Unity/Launcher/launcheritem.cpp:45
+#: plugins/Unity/Launcher/launcheritem.cpp:91
 msgid "Pin shortcut"
-msgstr ""
+msgstr "Pin qısayolu"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:73
+#: plugins/Unity/Launcher/launcheritem.cpp:91
 msgid "Unpin shortcut"
+msgstr "Açma qısayolu"
+
+#: qml/Components/DelayedLockscreen.qml:47
+msgid "Device Locked"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:142
-msgid "Are you sure you would like to turn power off?"
+#: qml/Components/DelayedLockscreen.qml:62
+msgid "You have been locked out due to too many failed passphrase attempts."
 msgstr ""
+
+#: qml/Components/DelayedLockscreen.qml:63
+msgid "You have been locked out due to too many failed passcode attempts."
+msgstr ""
+
+#: qml/Components/DelayedLockscreen.qml:72
+#, qt-format
+msgid "Please wait %1 minute and then try again…"
+msgid_plural "Please wait %1 minutes and then try again…"
+msgstr[0] ""
+msgstr[1] ""
+
+#: qml/Components/Dialogs.qml:70
+msgid "Log out"
+msgstr "Çıxış"
+
+#: qml/Components/Dialogs.qml:71
+msgid "Are you sure you want to log out?"
+msgstr "Çıxmaq istәdiyinizdәn әminsiniz?"
+
+#: qml/Components/Dialogs.qml:73 qml/Components/Dialogs.qml:97
+#: qml/Components/Dialogs.qml:122
+msgid "No"
+msgstr "Yox"
+
+#: qml/Components/Dialogs.qml:80 qml/Components/Dialogs.qml:104
+#: qml/Components/Dialogs.qml:129
+msgid "Yes"
+msgstr "Hə"
+
+#: qml/Components/Dialogs.qml:94
+msgid "Shut down"
+msgstr "Sistemi Söndür"
+
+#: qml/Components/Dialogs.qml:95
+msgid "Are you sure you want to shut down?"
+msgstr "Sistemi söndürmәk istәdiyinizә әminsiniz?"
+
+#: qml/Components/Dialogs.qml:119
+msgid "Reboot"
+msgstr "Yenidən yüklə"
+
+#: qml/Components/Dialogs.qml:120
+msgid "Are you sure you want to reboot?"
+msgstr "Yenidәn başlatmaq istәdiyinizә әminsiniz?"
 
 #: qml/Components/Dialogs.qml:144
-msgid "Power off"
+msgid "Power"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:153
+#: qml/Components/Dialogs.qml:145
+msgid ""
+"Are you sure you would like\n"
+"to power off?"
+msgstr ""
+
+#: qml/Components/Dialogs.qml:147
+msgid "Power off"
+msgstr "Söndür"
+
+#: qml/Components/Dialogs.qml:157
 msgid "Restart"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:162
+#: qml/Components/Dialogs.qml:167
 msgid "Cancel"
-msgstr ""
+msgstr "İmtina"
 
 #: qml/Components/EdgeDemoOverlay.qml:151
 msgid "Skip intro"
-msgstr "Intro -nu keç"
+msgstr "Tәqdimatı keç"
 
 #: qml/Components/EdgeDemo.qml:112
 msgid "Right edge"
@@ -56,7 +116,7 @@ msgstr "Sağ Künc"
 
 #: qml/Components/EdgeDemo.qml:113
 msgid "Try swiping from the right edge to unlock the phone"
-msgstr "Kilidi açmaq üçün sağ küncdən çəkin"
+msgstr "Kilidi açmaq üçün sağ küncdən sürüşdürün"
 
 #: qml/Components/EdgeDemo.qml:144
 msgid "Top edge"
@@ -64,7 +124,7 @@ msgstr "Yuxarı künc"
 
 #: qml/Components/EdgeDemo.qml:145
 msgid "Try swiping from the top edge to access the indicators"
-msgstr "Göstəricilərə keçid üçün yuxarı küncdən çəkin"
+msgstr "Göstəriciləri görmәk üçün yuxarı küncdən sürüşdürün"
 
 #: qml/Components/EdgeDemo.qml:170
 msgid "Close"
@@ -72,7 +132,7 @@ msgstr "Bağla"
 
 #: qml/Components/EdgeDemo.qml:171
 msgid "Swipe up again to close the settings screen"
-msgstr "Nizamlamalar ekranını bağlamaq üçün yenidən yuxarı çəkin"
+msgstr "Nizamlamalar ekranını bağlamaq üçün yenidən yuxarı sürüşdürün"
 
 #: qml/Components/EdgeDemo.qml:198
 msgid "Left edge"
@@ -92,63 +152,53 @@ msgid ""
 "You have now mastered the edge gestures and can start using the "
 "phone<br><br>Tap on the screen to start"
 msgstr ""
+"Siz künc hәrәkәtlәrini öyrәndiniz və telefonu istifadə etməyə başlaya "
+"bilərsiniz.<br><br>Başlamaq üçün ekrana toxunun"
 
-#: qml/Components/Lockscreen.qml:161
-msgid "Too many incorrect attempts"
-msgstr ""
-
-#: qml/Components/Lockscreen.qml:163
-msgid "Please wait"
-msgstr ""
-
-#: qml/Components/Lockscreen.qml:245
+#: qml/Components/Lockscreen.qml:218
 msgid "Emergency Call"
 msgstr "Zərurət zəngi"
 
-#: qml/Components/Lockscreen.qml:268
+#: qml/Components/Lockscreen.qml:250
 msgid "OK"
-msgstr ""
+msgstr "Oldu"
 
-#: qml/Components/PassphraseLockscreen.qml:61
-#, qt-format
-msgid "Hello %1"
-msgstr "Xoş gördük %1"
-
-#: qml/Components/PassphraseLockscreen.qml:61
-msgid "Hello"
-msgstr "Xoş gördük"
-
-#: qml/Components/PinLockscreen.qml:197
-msgid "CANCEL"
-msgstr ""
-
-#: qml/Components/PinLockscreen.qml:215
-msgid "DONE"
-msgstr ""
-
-#: qml/Dash/GenericScopeView.qml:360
+#: qml/Dash/GenericScopeView.qml:411 qml/Dash/GenericScopeView.qml:568
 msgid "See less"
-msgstr ""
+msgstr "Daha azını gör"
 
-#: qml/Dash/GenericScopeView.qml:360
+#: qml/Dash/GenericScopeView.qml:411
 msgid "See all"
-msgstr ""
+msgstr "Hamısını gör"
 
-#: qml/Dash/GenericScopeView.qml:423 qml/Panel/SearchIndicator.qml:27
+#: qml/Dash/GenericScopeView.qml:473 qml/Dash/PageHeader.qml:258
+#: qml/Panel/SearchIndicator.qml:27
 msgid "Search"
 msgstr "Axtar"
 
-#: qml/Dash/Previews/PreviewActionCombo.qml:34
-msgid "More..."
-msgstr ""
+#: qml/Dash/PageHeader.qml:268
+msgid "Settings"
+msgstr "Tənzimləmələr"
 
-#: qml/Dash/Previews/PreviewActionCombo.qml:34
+#: qml/Dash/PageHeader.qml:275
+msgid "Remove from Favorites"
+msgstr "Seçilmişlәrdәn çıxart"
+
+#: qml/Dash/PageHeader.qml:275
+msgid "Add to Favorites"
+msgstr "Seçilmişlәrә әlavә et"
+
+#: qml/Dash/Previews/PreviewActionCombo.qml:35
+msgid "More..."
+msgstr "Daha çox..."
+
+#: qml/Dash/Previews/PreviewActionCombo.qml:35
 msgid "Less..."
-msgstr ""
+msgstr "Az..."
 
 #: qml/Dash/Previews/PreviewRatingInput.qml:81
 msgid "Rate this"
-msgstr "Qiymət ver"
+msgstr "Qiymәtlәndir"
 
 #: qml/Dash/Previews/PreviewRatingInput.qml:126
 msgid "Add a review"
@@ -158,37 +208,45 @@ msgstr "Rəy yaz"
 msgid "Send"
 msgstr "Göndər"
 
-#: qml/Dash/ScopesOverview.qml:201
-msgid "Manage Dash"
+#: qml/Dash/PullToRefreshScopeStyle.qml:55
+msgid "Pull to refresh…"
 msgstr ""
 
-#: qml/Dash/ScopesOverview.qml:408
+#: qml/Dash/PullToRefreshScopeStyle.qml:60
+msgid "Release to refresh…"
+msgstr ""
+
+#: qml/Dash/ScopesOverview.qml:206
+msgid "Manage Scopes"
+msgstr ""
+
+#: qml/Dash/ScopesOverview.qml:428
 msgid "Done"
-msgstr ""
+msgstr "Başa çatdı"
 
-#: qml/Dash/ScopesOverview.qml:434
+#: qml/Dash/ScopesOverview.qml:454
 msgid "Store"
 msgstr ""
 
 #: qml/Dash/ScopesOverviewTab.qml:36
 msgid "Favorites"
-msgstr ""
+msgstr "Seçilmişlər"
 
 #: qml/Dash/ScopesOverviewTab.qml:54
 msgid "All"
-msgstr ""
+msgstr "Hamısı"
 
 #: qml/Greeter/Greeter.qml:157
-msgid "Swipe to unlock"
+msgid "Unlock"
 msgstr ""
 
-#: qml/Hud/HudParametrizedActionsPage.qml:132
+#: qml/Hud/HudParametrizedActionsPage.qml:139
 msgid "Confirm"
 msgstr "Təsdiqlə"
 
 #: qml/Hud/Hud.qml:61 qml/Hud/Hud.qml:99 qml/Hud/Hud.qml:372
 msgid "Type or say a command"
-msgstr "Əmri söyləyin və ya yazın"
+msgstr "Bir әmr söyləyin və ya yazın"
 
 #: qml/Hud/Hud.qml:84
 msgid "Loading. Please Wait..."
@@ -202,96 +260,139 @@ msgstr "Danışın..."
 msgid "Speaking..."
 msgstr "Danışır..."
 
-#: qml/Notifications/NotificationMenuItemFactory.qml:100
+#: qml/Notifications/NotificationMenuItemFactory.qml:108
 msgid "Show password"
-msgstr "Parolu göstər"
+msgstr "Şifrәni göstәr"
 
-#: qml/Notifications/NotificationMenuItemFactory.qml:115
-msgid "Please enter SIM PIN"
-msgstr ""
+#: qml/Notifications/NotificationMenuItemFactory.qml:124
+msgid "Enter SIM PIN"
+msgstr "SIM PIN kodunuzu daxil edin"
+
+#: qml/Notifications/NotificationMenuItemFactory.qml:125
+msgid "Sorry, incorrect PIN"
+msgstr "Bağışlayın, PIN yanlışdır"
 
 #: qml/Panel/ActiveCallHint.qml:77
 msgid "Tap to return to call..."
-msgstr ""
+msgstr "Zəngə qayıtmaq üçün toxunun..."
 
 #: qml/Panel/ActiveCallHint.qml:90
 msgid "Conference"
+msgstr "Konfrans"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:600
+msgid "Nothing is playing"
 msgstr ""
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:651
+#: qml/Panel/Indicators/MenuItemFactory.qml:748
 msgid "In queue…"
-msgstr ""
+msgstr "Növbədədir..."
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:655
+#: qml/Panel/Indicators/MenuItemFactory.qml:752
 msgid "Downloading"
-msgstr ""
+msgstr "Endirilir"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:657
+#: qml/Panel/Indicators/MenuItemFactory.qml:754
 msgid "Paused, tap to resume"
-msgstr ""
+msgstr "Dayandırıldı. Davam etmək üçün toxunun"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:659
+#: qml/Panel/Indicators/MenuItemFactory.qml:756
 msgid "Canceled"
-msgstr ""
+msgstr "İmtina edildi"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:661
+#: qml/Panel/Indicators/MenuItemFactory.qml:758
 msgid "Finished"
-msgstr ""
+msgstr "Bitdi"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:663
+#: qml/Panel/Indicators/MenuItemFactory.qml:760
 msgid "Failed, tap to retry"
-msgstr ""
+msgstr "Alınmadı. Yenidәn cәhd etmək üçün toxunun"
 
 #: qml/Panel/Indicators/ModemInfoItem.qml:105
 msgid "Unlock SIM"
-msgstr ""
+msgstr "SIM kilidini aç"
 
 #: qml/Panel/Indicators/RoamingIndication.qml:27
 msgid "Roaming"
+msgstr "Rominq"
+
+#: qml/Shell.qml:340
+msgid "Enter passphrase"
 msgstr ""
 
-#: qml/Shell.qml:267
-msgid "passphrase"
-msgstr ""
+#: qml/Shell.qml:341
+msgid "Sorry, incorrect passphrase"
+msgstr "Bağışlayın, açar söz yanlışdır"
 
-#: qml/Shell.qml:267
-msgid "passcode"
-msgstr ""
-
-#: qml/Shell.qml:269
-#, qt-format
-msgid "Enter your %1"
-msgstr ""
-
-#: qml/Shell.qml:270
-#, qt-format
-msgid "Incorrect %1"
-msgstr ""
-
-#: qml/Shell.qml:272
+#: qml/Shell.qml:342
 msgid "Please re-enter"
 msgstr ""
 
-#: qml/Shell.qml:306
+#: qml/Shell.qml:344
+msgid "Enter passcode"
+msgstr ""
+
+#: qml/Shell.qml:345
+msgid "Sorry, incorrect passcode"
+msgstr ""
+
+#: qml/Shell.qml:348
+#, qt-format
+msgid "Enter %1"
+msgstr ""
+
+#: qml/Shell.qml:349
+#, qt-format
+msgid "Sorry, incorrect %1"
+msgstr "Bağışlayın, %1 yanlışdır"
+
+#: qml/Shell.qml:384
 msgid "Sorry, incorrect passphrase."
-msgstr ""
+msgstr "Bağışlayın, açar söz yanlışdır."
 
-#: qml/Shell.qml:307
+#: qml/Shell.qml:385
 msgid "Sorry, incorrect passcode."
-msgstr ""
+msgstr "Təəssüf ki, açar kod yanlışdır."
 
-#: qml/Shell.qml:308
+#: qml/Shell.qml:386
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Bu sizin son cəhdiniz olacaq."
 
-#: qml/Shell.qml:310
+#: qml/Shell.qml:388
 msgid ""
 "If passphrase is entered incorrectly, your phone will conduct a factory "
 "reset and all personal data will be deleted."
 msgstr ""
+"Əgər açar söz yanlış daxil edilibsə, onda telefonunuz fabrika parametrlərinə "
+"geri qayıdacaq və bütün şəxsi məlumatlarınız silinəcək."
 
-#: qml/Shell.qml:311
+#: qml/Shell.qml:389
 msgid ""
 "If passcode is entered incorrectly, your phone will conduct a factory reset "
 "and all personal data will be deleted."
 msgstr ""
+"Əgər açar kod yanlış daxil edilibsə, onda telefonunuz fabrika parametrlərinə "
+"geri qayıdacaq və bütün şəxsi məlumatlarınız silinəcək."
+
+#~ msgid "Swipe to unlock"
+#~ msgstr "Kilidi açmaq üçün sürüşdürün"
+
+#, qt-format
+#~ msgid "Enter your %1"
+#~ msgstr "%1 daxil edin"
+
+#~ msgid "Enter your passphrase"
+#~ msgstr "Açar sözünüzü daxil edin"
+
+#~ msgid "Please wait"
+#~ msgstr "Xahiş edirik gözləyin"
+
+#~ msgid "Too many incorrect attempts"
+#~ msgstr "Çoxlu yanlış cəhdlәr"
+
+#, qt-format
+#~ msgid "Hello %1"
+#~ msgstr "Salam %1"
+
+#~ msgid "Hello"
+#~ msgstr "Salam"

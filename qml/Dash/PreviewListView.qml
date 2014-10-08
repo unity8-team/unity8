@@ -23,8 +23,11 @@ import "Previews" as Previews
 Item {
     id: root
 
+    property int initialIndex: -1
     property var scope: null
     property var scopeStyle: null
+
+    property alias showSignatureLine: header.showSignatureLine
 
     property alias open: previewListView.open
     property alias model: previewListView.model
@@ -35,16 +38,18 @@ Item {
     readonly property bool processing: currentItem && (!currentItem.previewModel.loaded
                                                        || currentItem.previewModel.processingAction)
 
+    signal backClicked()
+
     PageHeader {
         id: header
         objectName: "pageHeader"
         width: parent.width
-        title: scope ? scope.name : ""
+        title: root.scope ? root.scope.name : ""
         showBackButton: true
         searchEntryEnabled: false
         scopeStyle: root.scopeStyle
 
-        onBackClicked: root.open = false
+        onBackClicked: root.backClicked()
     }
 
     ListView  {
@@ -73,8 +78,15 @@ Item {
                 if (previewListView.currentItem && previewListView.currentItem.previewData !== undefined) {
                     previewListView.currentItem.previewData.cancelAction();
                 }
-                scope.cancelActivation();
+                root.scope.cancelActivation();
                 model = undefined;
+            }
+        }
+
+        onCountChanged: {
+            if (count > 0 && initialIndex >= 0) {
+                currentIndex = initialIndex;
+                initialIndex = -1;
             }
         }
 

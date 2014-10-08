@@ -1,10 +1,10 @@
-set(MOCK_CONNECTIVITY_SOURCES
+add_library(connectivity-qml SHARED
+    networking-status.cpp
     plugin.cpp
-    MockConnectivity.cpp
 )
+qt5_use_modules(connectivity-qml Qml)
 
-add_library(MockConnectivity MODULE ${MOCK_CONNECTIVITY_SOURCES})
-
-qt5_use_modules(MockConnectivity Qml Quick Core)
-
-add_unity8_mock(Ubuntu.Connectivity 0.1 Ubuntu/Connectivity TARGETS MockConnectivity)
+# copy qmldir file into build directory for shadow builds
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/qmldir"
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    )

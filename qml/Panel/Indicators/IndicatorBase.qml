@@ -26,6 +26,7 @@ Item {
     enabled: menuObjectPath != ""
 
     //const
+    property string identifier
     property string busName
     property string actionsObjectPath
     property string menuObjectPath
@@ -34,6 +35,7 @@ Item {
     property string deviceMenuObjectPath: menuObjectPath
 
     property alias menuModel: cachedModel.model
+    property alias rootActionState: rootAction
 
     CachedUnityMenuModel {
         id: cachedModel
@@ -42,8 +44,9 @@ Item {
         menuObjectPath: indicatorItem.deviceMenuObjectPath
     }
 
-    property RootActionState rootActionState: RootActionState {
-        menu: menuModel
+    RootActionState {
+        id: rootAction
+        menu: menuModel ? menuModel : null
         onUpdated: indicatorItem.rootActionStateChanged()
     }
 }

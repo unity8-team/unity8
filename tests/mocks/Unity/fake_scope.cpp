@@ -22,12 +22,13 @@
 #include "fake_navigation.h"
 #include "fake_resultsmodel.h"
 #include "fake_scopes.h"
+#include "fake_settingsmodel.h"
 
-Scope::Scope(Scopes* parent) : Scope(QString(), QString(), false, parent)
+Scope::Scope(Scopes* parent) : Scope("MockScope5", "Mock Scope", false, parent)
 {
 }
 
-Scope::Scope(QString const& id, QString const& name, bool favorite, Scopes* parent, int categories)
+Scope::Scope(QString const& id, QString const& name, bool favorite, Scopes* parent, int categories, bool returnNullPreview)
     : unity::shell::scopes::ScopeInterface(parent)
     , m_id(id)
     , m_name(name)
@@ -39,6 +40,8 @@ Scope::Scope(QString const& id, QString const& name, bool favorite, Scopes* pare
     , m_previewRendererName("preview-generic")
     , m_categories(new Categories(categories, this))
     , m_openScope(nullptr)
+    , m_settings(new SettingsModel(this))
+    , m_returnNullPreview(returnNullPreview)
 {
 }
 
@@ -94,7 +97,7 @@ unity::shell::scopes::CategoriesInterface* Scope::categories() const
 
 unity::shell::scopes::SettingsModelInterface* Scope::settings() const
 {
-    return nullptr;
+    return m_settings;
 }
 
 QString Scope::noResultsHint() const
@@ -143,6 +146,23 @@ void Scope::setFavorite(const bool favorite)
         Q_EMIT favoriteChanged();
     }
 }
+
+void Scope::setId(const QString &id)
+{
+    if (id != m_id) {
+        m_id = id;
+        Q_EMIT idChanged();
+    }
+}
+
+void Scope::setName(const QString &name)
+{
+    if (name != m_name) {
+        m_name = name;
+        Q_EMIT nameChanged();
+    }
+}
+
 void Scope::setSearchInProgress(const bool inProg)
 {
     if (inProg != m_searching) {
@@ -173,9 +193,13 @@ PreviewStack* Scope::preview(QVariant const& result)
 {
     Q_UNUSED(result);
 
-    // This probably leaks, do we don't care
-    // it's a  test after all
-    return new PreviewStack;
+    if (m_returnNullPreview) {
+        return nullptr;
+    } else {
+        // This probably leaks, do we don't care
+        // it's a  test after all
+        return new PreviewStack;
+    }
 }
 
 void Scope::cancelActivation()
@@ -224,9 +248,17 @@ QVariantMap Scope::customizations() const
         m["background-color"] = "red";
         m["foreground-color"] = "blue";
         m["page-header"] = h;
+    } else if (m_id == "MockScope4") {
+        h["navigation-background"] = QUrl("../../../tests/qmltests/Dash/artwork/background.png");
+        m["page-header"] = h;
     } else if (m_id == "MockScope5") {
         h["background"] = "gradient:///lightgrey/grey";
         h["logo"] = QUrl("../../../tests/qmltests/Dash/tst_PageHeader/logo-ubuntu-orange.svg");
+        h["divider-color"] = "red";
+        h["navigation-background"] = "color:///black";
+        m["page-header"] = h;
+    } else if (m_id == "MockScope6") {
+        h["navigation-background"] = "gradient:///blue/red";
         m["page-header"] = h;
     }
     return m;
@@ -234,7 +266,7 @@ QVariantMap Scope::customizations() const
 
 void Scope::refresh()
 {
-    qDebug() << "Scope::refresh is currently not implmented in the fake scopes plugin";
+    Q_EMIT refreshed();
 }
 
 unity::shell::scopes::NavigationInterface* Scope::getNavigation(const QString& id)
@@ -261,11 +293,16 @@ unity::shell::scopes::NavigationInterface* Scope::getAltNavigation(QString const
 
     QString parentId;
     QString parentLabel;
-    if (id.startsWith("altmiddle")) {
+    if (id != "altroot") {
         parentId = "altroot";
         parentLabel = "altroot";
     }
-    return new Navigation(id, id, "all"+id, parentId, parentLabel, this);
+    auto result = new Navigation(id, id, "all"+id, parentId, parentLabel, this);
+    if (id == "altroot") {
+        m_currentAltNavigationId = "altrootChild1";
+        Q_EMIT currentAltNavigationIdChanged();
+    }
+    return result;
 }
 
 void Scope::setNavigationState(const QString &navigationId, bool isAltNavigation)

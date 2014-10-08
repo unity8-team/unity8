@@ -66,7 +66,7 @@ class Dash(emulators.UnityEmulatorBase):
         return resp_grid.select_single('Tile', text=text)
 
     def get_scope(self, scope_name='clickscope'):
-        return self.dash_content_list.select_single(
+        return self.dash_content_list.wait_select_single(
             'QQuickLoader', scopeId=scope_name)
 
     @autopilot_logging.log_action(logger.info)
@@ -86,14 +86,14 @@ class Dash(emulators.UnityEmulatorBase):
 
     def _get_scope_loader(self, scope_id):
         try:
-            return self.dash_content_list.select_single(
+            return self.dash_content_list.wait_select_single(
                 'QQuickLoader', scopeId=scope_id)
         except dbus.StateNotFoundError:
             raise emulators.UnityEmulatorException(
                 'No scope found with id {0}'.format(scope_id))
 
     def _get_scope_from_loader(self, loader):
-        return loader.get_children()[0]
+        return loader.wait_select_single('GenericScopeView');
 
     def _open_scope_scrolling(self, scope_loader):
         scroll = self._get_scroll_direction(scope_loader)
@@ -102,8 +102,8 @@ class Dash(emulators.UnityEmulatorBase):
             scroll()
             self.dash_content_list.moving.wait_for(False)
 
+        scope_loader.isCurrent.wait_for(True)
         scope = self._get_scope_from_loader(scope_loader)
-        scope.isCurrent.wait_for(True)
         return scope
 
     def _get_scroll_direction(self, scope_loader):
@@ -140,10 +140,9 @@ class Dash(emulators.UnityEmulatorBase):
 
     def enter_search_query(self, query):
         current_header = self._get_current_page_header()
-        self.pointing_device.move(current_header.globalRect.x +
-                                  current_header.width - current_header.height / 4,
-                                  current_header.globalRect.y +
-                                  current_header.height / 4)
+        search_button = current_header.select_single(objectName="search_header_button")
+        self.pointing_device.move(search_button.globalRect.x + search_button.width / 2,
+                                  search_button.globalRect.y + search_button.height / 2)
         self.pointing_device.click()
         headerContainer = current_header.select_single(
             objectName="headerContainer")
@@ -186,7 +185,8 @@ class GenericScopeView(emulators.UnityEmulatorBase):
         # --elopio - 2014-1-14
         self.click_scope_item(category, app_name)
         preview_list = self.wait_select_single(
-            'PreviewListView', objectName='previewListView')
+            'QQuickLoader', objectName='subPageLoader')
+        preview_list.subPageShown.wait_for(True)
         preview_list.x.wait_for(0)
         return preview_list.select_single(
             Preview, objectName='preview{}'.format(preview_list.currentIndex))

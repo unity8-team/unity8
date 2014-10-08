@@ -1,3 +1,2 @@
 module Ubuntu.Connectivity
-plugin MockConnectivity
-typeinfo Connectivity.qmltypes
+plugin connectivity-qml
