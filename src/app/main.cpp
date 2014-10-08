@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         view.engine()->rootContext()->setContextProperty("phone", QVariant(true));
     } else if (qgetenv("QT_QPA_PLATFORM") != "ubuntumirclient") {
         // Default to tablet size on X11
-        view.engine()->rootContext()->setContextProperty("phone", QVariant(true));
+        view.engine()->rootContext()->setContextProperty("tablet", QVariant(true));
     }
 
     view.engine()->setImportPathList(importPathList);
