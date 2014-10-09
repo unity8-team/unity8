@@ -103,7 +103,7 @@ MainView {
             var i;
             for (i = 0; i < accounts.count; i++) {
                 if (accounts.get(i, "displayName") == accountName) {
-                    print("Account", accountName, "still valid in Online Accounts.")
+                    print("Account", accountName, "still valid in Online Accounts.");
                     accountService.objectHandle = accounts.get(i, "accountServiceHandle");
                 }
             }
@@ -115,7 +115,7 @@ MainView {
         if (!accountService.objectHandle) {
             switch (accounts.count) {
             case 0:
-                PopupUtils.open(noAccountDialog, root)
+                PopupUtils.open(noAccountDialog, root);
                 print("No account available! Please setup an account in the system settings");
                 break;
             case 1:
@@ -123,7 +123,7 @@ MainView {
                 accountService.objectHandle = accounts.get(0, "accountServiceHandle");
                 break;
             default:
-                print("There are multiple accounts. Allowing user to select one.")
+                print("There are multiple accounts. Allowing user to select one.");
                 openAccountPage(false);
             }
         }
