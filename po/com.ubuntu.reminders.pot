@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-28 11:05+0200\n"
+"POT-Creation-Date: 2014-10-09 18:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:266
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:268
 msgid "Reminders"
 msgstr ""
 
@@ -55,29 +55,29 @@ msgstr ""
 msgid "Mark as done"
 msgstr ""
 
-#: src/app/qml/reminders.qml:205
+#: src/app/qml/reminders.qml:207
 msgid "Notes"
 msgstr ""
 
-#: src/app/qml/reminders.qml:236
+#: src/app/qml/reminders.qml:238
 msgid "Notebooks"
 msgstr ""
 
-#: src/app/qml/reminders.qml:286
+#: src/app/qml/reminders.qml:296
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
 
-#: src/app/qml/reminders.qml:323
+#: src/app/qml/reminders.qml:333
 msgid "No account available"
 msgstr ""
 
-#: src/app/qml/reminders.qml:324
+#: src/app/qml/reminders.qml:334
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: src/app/qml/reminders.qml:344 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:354 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr ""
 
