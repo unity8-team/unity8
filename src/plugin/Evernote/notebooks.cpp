@@ -33,8 +33,8 @@ Notebooks::Notebooks(QObject *parent) :
 
     connect(NotesStore::instance(), &NotesStore::notebooksLoadingChanged, this, &Notebooks::loadingChanged);
     connect(NotesStore::instance(), &NotesStore::notebooksErrorChanged, this, &Notebooks::errorChanged);
-    connect(NotesStore::instance(), SIGNAL(notebookAdded(const QString &)), SLOT(notebookAdded(const QString &)));
-    connect(NotesStore::instance(), SIGNAL(notebookRemoved(const QString &)), SLOT(notebookRemoved(const QString &)));
+    connect(NotesStore::instance(), &NotesStore::notebookAdded, this, &Notebooks::notebookAdded);
+    connect(NotesStore::instance(), &NotesStore::notebookRemoved, this, &Notebooks::notebookRemoved);
 }
 
 bool Notebooks::loading() const
@@ -90,7 +90,7 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     return roles;
 }
 
-Notebook *Notebooks::notebook(int index)
+Notebook *Notebooks::notebook(int index) const
 {
     if (index < 0 || index >= m_list.count()) {
         return nullptr;

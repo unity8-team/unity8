@@ -28,6 +28,8 @@
 #include "note.h"
 #include "resource.h"
 #include "notebook.h"
+#include "tags.h"
+#include "tag.h"
 #include "resourceimageprovider.h"
 
 #include "utils/textformat.h"
@@ -57,8 +59,10 @@ void EvernotePlugin::registerTypes(const char *uri)
 
     qmlRegisterType<Notes>(uri, 0, 1, "Notes");
     qmlRegisterType<Notebooks>(uri, 0, 1, "Notebooks");
+    qmlRegisterType<Tags>(uri, 0, 1, "Tags");
     qmlRegisterUncreatableType<Note>(uri, 0, 1, "Note", "Cannot create Notes in QML. Use NotesStore.createNote() instead.");
     qmlRegisterUncreatableType<Notebook>(uri, 0, 1, "Notebook", "Cannot create Notes in QML. Use NotesStore.createNotebook() instead.");
+    qmlRegisterUncreatableType<Tag>(uri, 0, 1, "Tag", "Cannot create Tags in QML. Use NotesStore.createTag() instead.");
     qmlRegisterUncreatableType<Resource>(uri, 0, 1, "Resource", "Cannot create Resources. Use Note.attachFile() instead.");
 
     qmlRegisterUncreatableType<TextFormat>(uri, 0, 1, "TextFormat", "TextFormat is not creatable. It's just here to export enums to QML");

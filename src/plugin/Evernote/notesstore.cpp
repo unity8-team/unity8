@@ -23,6 +23,7 @@
 #include "notebooks.h"
 #include "notebook.h"
 #include "note.h"
+#include "tag.h"
 #include "utils/enmldocument.h"
 
 #include "jobs/fetchnotesjob.h"
@@ -34,6 +35,9 @@
 #include "jobs/deletenotejob.h"
 #include "jobs/createnotebookjob.h"
 #include "jobs/expungenotebookjob.h"
+#include "jobs/fetchtagsjob.h"
+#include "jobs/createtagjob.h"
+#include "jobs/savetagjob.h"
 
 #include <QImage>
 #include <QDebug>
@@ -43,15 +47,19 @@ NotesStore* NotesStore::s_instance = 0;
 NotesStore::NotesStore(QObject *parent) :
     QAbstractListModel(parent),
     m_loading(false),
-    m_notebooksLoading(false)
+    m_notebooksLoading(false),
+    m_tagsLoading(false)
 {
     connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshNotebooks);
     connect(EvernoteConnection::instance(), SIGNAL(isConnectedChanged()), this, SLOT(refreshNotes()));
+    connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshTags);
 
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
     qRegisterMetaType<std::vector<evernote::edam::Notebook> >("std::vector<evernote::edam::Notebook>");
     qRegisterMetaType<evernote::edam::Notebook>("evernote::edam::Notebook");
+    qRegisterMetaType<std::vector<evernote::edam::Tag> >("std::vector<evernote::edam::Tag>");
+    qRegisterMetaType<evernote::edam::Tag>("evernote::edam::Tag");
 
 }
 
@@ -73,6 +81,11 @@ bool NotesStore::notebooksLoading() const
     return m_notebooksLoading;
 }
 
+bool NotesStore::tagsLoading() const
+{
+    return m_tagsLoading;
+}
+
 QString NotesStore::error() const
 {
     return m_error;
@@ -81,6 +94,11 @@ QString NotesStore::error() const
 QString NotesStore::notebooksError() const
 {
     return m_notebooksError;
+}
+
+QString NotesStore::tagsError() const
+{
+    return m_tagsError;
 }
 
 int NotesStore::count() const
@@ -133,6 +151,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         // done reminders get +1000000000000 (this will break sorting in year 2286 :P)
         return QVariant::fromValue(m_notes.at(index.row())->reminderTime().toMSecsSinceEpoch() +
                 (m_notes.at(index.row())->reminderDone() ? 10000000000000 : 0));
+    case RoleTagGuids:
+        return m_notes.at(index.row())->tagGuids();
     }
     return QVariant();
 }
@@ -156,6 +176,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RolePlaintextContent, "plaintextContent");
     roles.insert(RoleTagline, "tagline");
     roles.insert(RoleResourceUrls, "resourceUrls");
+    roles.insert(RoleTagGuids, "tagGuids");
     return roles;
 }
 
@@ -202,11 +223,112 @@ void NotesStore::saveNotebook(const QString &guid)
     EvernoteConnection::instance()->enqueue(job);
 }
 
+void NotesStore::saveTag(const QString &guid)
+{
+    Tag *tag = m_tagsHash.value(guid);
+    if (!tag) {
+        qWarning() << "Can't save tag. Guid not found:" << guid;
+        return;
+    }
+    SaveTagJob *job = new SaveTagJob(tag);
+    connect(job, &SaveTagJob::jobDone, this, &NotesStore::saveTagJobDone);
+    EvernoteConnection::instance()->enqueue(job);
+}
+
 void NotesStore::expungeNotebook(const QString &guid)
 {
     ExpungeNotebookJob *job = new ExpungeNotebookJob(guid);
     connect(job, &ExpungeNotebookJob::jobDone, this, &NotesStore::expungeNotebookJobDone);
     EvernoteConnection::instance()->enqueue(job);
+}
+
+QList<Tag *> NotesStore::tags() const
+{
+    return m_tags;
+}
+
+Tag *NotesStore::tag(const QString &guid)
+{
+    return m_tagsHash.value(guid);
+}
+
+void NotesStore::createTag(const QString &name)
+{
+    CreateTagJob *job = new CreateTagJob(name);
+    connect(job, &CreateTagJob::jobDone, this, &NotesStore::createTagJobDone);
+    EvernoteConnection::instance()->enqueue(job);
+}
+
+void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result)
+{
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error creating tag:" << errorMessage;
+        return;
+    }
+    Tag *tag = new Tag(QString::fromStdString(result.guid));
+    tag->setName(QString::fromStdString(result.name));
+    m_tags.append(tag);
+    m_tagsHash.insert(tag->guid(), tag);
+    emit tagAdded(tag->guid());
+}
+
+void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
+{
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "error updating tag" << errorMessage;
+
+        // Lets fetch the tags from the server again to reflect the non-saved state...
+        refreshTags();
+        return;
+    }
+}
+
+void NotesStore::tagNote(const QString &noteGuid, const QString &tagGuid)
+{
+    Note *note = m_notesHash.value(noteGuid);
+    if (!note) {
+        qWarning() << "No such note" << noteGuid;
+        return;
+    }
+
+    Tag *tag = m_tagsHash.value(tagGuid);
+    if (!tag) {
+        qWarning() << "No such tag" << tagGuid;
+        return;
+    }
+
+    if (note->tagGuids().contains(tagGuid)) {
+        qWarning() << "Note" << noteGuid << "already tagged with tag" << tagGuid;
+        return;
+    }
+
+    note->setTagGuids(note->tagGuids() << tagGuid);
+    saveNote(noteGuid);
+}
+
+void NotesStore::untagNote(const QString &noteGuid, const QString &tagGuid)
+{
+    Note *note = m_notesHash.value(noteGuid);
+    if (!note) {
+        qWarning() << "No such note" << noteGuid;
+        return;
+    }
+
+    Tag *tag = m_tagsHash.value(tagGuid);
+    if (!tag) {
+        qWarning() << "No such tag" << tagGuid;
+        return;
+    }
+
+    if (!note->tagGuids().contains(tagGuid)) {
+        qWarning() << "Note" << noteGuid << "is not tagged with tag" << tagGuid;
+        return;
+    }
+
+    QStringList newTagGuids = note->tagGuids();
+    newTagGuids.removeAll(tagGuid);
+    note->setTagGuids(newTagGuids);
+    saveNote(noteGuid);
 }
 
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
@@ -260,6 +382,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
         note->setReminderOrder(result.attributes.reminderOrder);
+        QStringList tagGuids;
+        for (quint32 i = 0; i < result.tagGuids.size(); i++) {
+            tagGuids << QString::fromStdString(result.tagGuids.at(i));
+        }
+        note->setTagGuids(tagGuids);
 
         if (!results.searchedWords.empty()) {
             note->setIsSearchResult(true);
@@ -400,20 +527,72 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
     for (unsigned int i = 0; i < results.size(); ++i) {
         evernote::edam::Notebook result = results.at(i);
         Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
-        bool newNoteNotebook = notebook == 0;
-        if (newNoteNotebook) {
+        bool newNotebook = notebook == 0;
+        if (newNotebook) {
             notebook = new Notebook(QString::fromStdString(result.guid), this);
         }
         notebook->setName(QString::fromStdString(result.name));
         notebook->setPublished(result.published);
         notebook->setLastUpdated(QDateTime::fromMSecsSinceEpoch(result.serviceUpdated));
 
-        if (newNoteNotebook) {
+        if (newNotebook) {
             m_notebooksHash.insert(notebook->guid(), notebook);
             m_notebooks.append(notebook);
             emit notebookAdded(notebook->guid());
         } else {
             emit notebookChanged(notebook->guid());
+        }
+    }
+}
+
+void NotesStore::refreshTags()
+{
+    if (EvernoteConnection::instance()->token().isEmpty()) {
+        foreach (Tag *tag, m_tags) {
+            emit tagRemoved(tag->guid());
+            tag->deleteLater();
+        }
+        m_tags.clear();
+    } else {
+        m_tagsLoading = true;
+        emit tagsLoadingChanged();
+        FetchTagsJob *job = new FetchTagsJob();
+        connect(job, &FetchTagsJob::jobDone, this, &NotesStore::fetchTagsJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
+}
+
+void NotesStore::fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Tag> &results)
+{
+    m_tagsLoading = false;
+    emit tagsLoadingChanged();
+
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error fetching tags:" << errorMessage;
+        m_tagsError = tr("Error refreshing tags: %1").arg(errorMessage);
+        emit tagsErrorChanged();
+        return;
+    }
+    if (!m_tagsError.isEmpty()) {
+        m_tagsError.clear();
+        emit tagsErrorChanged();
+    }
+
+    for (unsigned int i = 0; i < results.size(); ++i) {
+        evernote::edam::Tag result = results.at(i);
+        Tag *tag = m_tagsHash.value(QString::fromStdString(result.guid));
+        bool newTag = tag == 0;
+        if (newTag) {
+            tag = new Tag(QString::fromStdString(result.guid), this);
+        }
+        tag->setName(QString::fromStdString(result.name));
+
+        if (newTag) {
+            m_tagsHash.insert(tag->guid(), tag);
+            m_tags.append(tag);
+            emit tagAdded(tag->guid());
+        } else {
+            emit tagChanged(tag->guid());
         }
     }
 }

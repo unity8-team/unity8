@@ -244,9 +244,8 @@ MainView {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title, filter: notebookGuid, narrowMode: narrowMode});
+                        pagestack.push(page, {title: title, filterNotebookGuid: notebookGuid, narrowMode: narrowMode});
                         page.selectedNoteChanged.connect(function() {
-                            print("foo", page.selectedNote);
                             if (page.selectedNote) {
                                 root.displayNote(page.selectedNote);
                                 if (root.narrowMode) {
@@ -274,6 +273,33 @@ MainView {
                             sideViewLoader.clear();
                         }
                     }
+                }
+            }
+
+            Tab {
+                title: i18n.tr("Tags")
+                page: TagsPage {
+                    id: tagsPage
+
+                    onOpenTaggedNotes: {
+                        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
+                        var page = component.createObject();
+                        print("opening note page for tag", tagGuid)
+                        pagestack.push(page, {title: title, filterTagGuid: tagGuid, narrowMode: narrowMode});
+                        page.selectedNoteChanged.connect(function() {
+                            if (page.selectedNote) {
+                                root.displayNote(page.selectedNote);
+                                if (root.narrowMode) {
+                                    page.selectedNote = null;
+                                }
+                            }
+                        })
+                        page.editNote.connect(function(note) {
+                            root.switchToEditMode(note)
+                        })
+                        NotesStore.refreshNotes();
+                    }
+
                 }
             }
         }
