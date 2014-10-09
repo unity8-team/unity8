@@ -32,6 +32,14 @@ Page {
 
     onActiveChanged: {
         if (active) {
+            // We really want to refresh notes, not tags here.
+            // If a new tag appears on a note, the plugin will automatically update tags
+            // but just refreshing tags alone wouldn't update the tag count because we
+            // still wouldn't know on which notes the tags are attached.
+            NotesStore.refreshNotes();
+            // Lets refresh tags nevertheless for the unlikely case that the user added
+            // a tag alone without attaching it to a note from another app (You can't do
+            // that in the webinterface)
             tags.refresh();
         }
     }

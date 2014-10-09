@@ -28,13 +28,7 @@ Tag::Tag(const QString &guid, QObject *parent) :
     m_guid(guid),
     m_noteCount(0)
 {
-    foreach (Note *note, NotesStore::instance()->notes()) {
-        if (note->tagGuids().contains(m_guid)) {
-            m_noteCount++;
-        }
-    }
-    connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Tag::noteAdded);
-    connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Tag::noteRemoved);
+    updateNoteCount();
 }
 
 Tag::~Tag()
@@ -71,22 +65,16 @@ Tag *Tag::clone()
     return tag;
 }
 
-void Tag::noteAdded(const QString &noteGuid, const QString &notebookGuid)
+void Tag::updateNoteCount()
 {
-    Q_UNUSED(notebookGuid)
-    Note *note = NotesStore::instance()->note(noteGuid);
-    if (note->tagGuids().contains(m_guid)) {
-        m_noteCount++;
-        emit noteCountChanged();
+    int noteCount = 0;
+    foreach (Note *note, NotesStore::instance()->notes()) {
+        if (note->tagGuids().contains(m_guid)) {
+            noteCount++;
+        }
     }
-}
-
-void Tag::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
-{
-    Q_UNUSED(notebookGuid)
-    Note *note = NotesStore::instance()->note(noteGuid);
-    if (note->tagGuids().contains(m_guid)) {
-        m_noteCount--;
+    if (m_noteCount != noteCount) {
+        m_noteCount = noteCount;
         emit noteCountChanged();
     }
 }

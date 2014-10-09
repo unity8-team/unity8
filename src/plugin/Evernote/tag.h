@@ -53,19 +53,19 @@ public:
 
     Tag *clone();
 
+    void updateNoteCount();
+
 signals:
     void nameChanged();
     void noteCountChanged();
-
-private slots:
-    void noteAdded(const QString &noteGuid, const QString &notebookGuid);
-    void noteRemoved(const QString &noteGuid, const QString &notebookGuid);
 
 private:
     QString m_guid;
     QString m_name;
 
     int m_noteCount;
+
+    friend class NotesStore;
 };
 
 #endif // TAG_H

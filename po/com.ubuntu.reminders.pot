@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-09 02:07+0200\n"
+"POT-Creation-Date: 2014-10-09 19:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,11 +129,11 @@ msgstr ""
 msgid "Accounts"
 msgstr ""
 
-#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:175
+#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:183
 msgid "Cancel"
 msgstr ""
 
-#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:184
+#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:192
 msgid "Save"
 msgstr ""
 
@@ -258,12 +258,12 @@ msgstr ""
 msgid "Error refreshing notes: %1"
 msgstr ""
 
-#: src/plugin/Evernote/notesstore.cpp:518
+#: src/plugin/Evernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr ""
 
-#: src/plugin/Evernote/notesstore.cpp:572
+#: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr ""

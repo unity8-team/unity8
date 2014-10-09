@@ -386,6 +386,30 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         for (quint32 i = 0; i < result.tagGuids.size(); i++) {
             tagGuids << QString::fromStdString(result.tagGuids.at(i));
         }
+        if (note->tagGuids() != tagGuids) {
+            foreach (const QString &tagGuid, tagGuids) {
+                if (!note->tagGuids().contains(tagGuid)) {
+                    Tag *tag = m_tagsHash.value(tagGuid);
+                    if (tag) {
+                        tag->m_noteCount++;
+                        emit tag->noteCountChanged();
+                    } else {
+                        refreshTags();
+                    }
+                }
+            }
+            foreach (const QString &tagGuid, note->tagGuids()) {
+                if (!tagGuids.contains(tagGuid)) {
+                    Tag *tag = m_tagsHash.value(tagGuid);
+                    if (tag) {
+                        tag->m_noteCount--;
+                        emit tag->noteCountChanged();
+                    } else {
+                        refreshTags();
+                    }
+                }
+            }
+        }
         note->setTagGuids(tagGuids);
 
         if (!results.searchedWords.empty()) {
