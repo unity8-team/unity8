@@ -193,10 +193,9 @@ PageWithBottomEdge {
             }
         }
 
-        ActivityIndicator {
-            anchors.centerIn: parent
-            running: notes.loading
-            visible: running
+        BouncingProgressBar {
+            anchors.top: parent.top
+            visible: notes.loading
         }
         Label {
             anchors.centerIn: parent
