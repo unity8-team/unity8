@@ -89,6 +89,7 @@ Item {
             } else {
                 root.allFavoriteSelected(scopeId);
             }
+            previewListView.open = false;
         }
     }
 
@@ -96,6 +97,14 @@ Item {
         target: scope
         property: "isActive"
         value: progress === 1
+    }
+
+    function closeTempScope() {
+        if (tempScopeItem.scope) {
+            root.scope.closeScope(tempScopeItem.scope);
+            tempScopeItem.scope = null;
+            tempScopeItem.backClicked()
+        }
     }
 
     function animateDashFromAll(scopeId) {
@@ -203,7 +212,7 @@ Item {
             }
             width: parent.width
             clip: true
-            title: i18n.tr("Manage Dash")
+            title: i18n.tr("Manage Scopes")
             scopeStyle: overviewScopeStyle
             showSignatureLine: false
             searchEntryEnabled: true
@@ -531,7 +540,6 @@ Item {
 
             width: parent.width
             height: parent.height
-            scale: dash.contentScale
             clip: scale != 1.0
             visible: scope != null
             hasBackAction: true

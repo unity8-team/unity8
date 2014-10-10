@@ -35,10 +35,12 @@ Item {
     property real maximizedAppTopMargin
     property alias swipeToCloseEnabled: dragArea.enabled
     property bool closeable
+
     property var application: null
 
     Loader {
         id: appWindowLoader
+
         y: dragArea.distance
         width: parent.width
         height: parent.height
@@ -102,8 +104,6 @@ Item {
             }
         }
     }
-
-
 
     DraggingArea {
         id: dragArea

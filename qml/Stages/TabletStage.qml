@@ -34,6 +34,7 @@ Rectangle {
     property real maximizedAppTopMargin
     property bool interactive
     property real inverseProgress: 0 // This is the progress for left edge drags, in pixels.
+    property int orientation: Qt.PortraitOrientation
 
     onInverseProgressChanged: {
         // This can't be a simple binding because that would be triggered after this handler
@@ -138,9 +139,16 @@ Rectangle {
             if (priv.sideStageAppId == appId) {
                 priv.sideStageAppId = "";
             }
+
             if (ApplicationManager.count == 0) {
                 spreadView.phase = 0;
                 spreadView.contentX = -spreadView.shift;
+            } else if (spreadView.closingIndex == -1) {
+                // Unless we're closing the app ourselves in the spread,
+                // lets make sure the spread doesn't mess up by the changing app list.
+                spreadView.phase = 0;
+                spreadView.contentX = -spreadView.shift;
+                ApplicationManager.focusApplication(ApplicationManager.get(0).appId);
             }
         }
     }
@@ -533,6 +541,13 @@ Rectangle {
                             }
                         }
                         return progress;
+                    }
+
+                    Binding {
+                        target: spreadTile
+                        property: "orientation"
+                        when: spreadTile.interactive
+                        value: root.orientation
                     }
 
                     onClicked: {
