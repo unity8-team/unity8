@@ -42,7 +42,7 @@ Page {
 
     Column {
         anchors { fill: parent; margins: units.gu(2) }
-        spacing: units.gu(1)
+        spacing: units.gu(5)
 
         ListView {
             id: listView
@@ -60,30 +60,30 @@ Page {
                 }
             }
 
-            footer: Column {
-                spacing: units.gu(2)
-                width: parent.width
-                Text {
-                    width: parent.width
-                    visible: unauthorizedAccounts
-                    text: i18n.tr("Reminders is not authorised to use your Evernote account. Authorise it by tapping the button below.")
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
-                }
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: i18n.tr("Add account")
-                    color: UbuntuColors.orange
-                    onClicked: setup.exec()
-                }
-            }
-        }
-    }
+            footer: Standard {
+                 visible: unauthorizedAccounts
+                 text: i18n.tr("Unknown - tap to authorize")
 
-    head.backAction: Action {
-        visible: isChangingAccount
-        iconName: "back"
-        text: i18n.tr("Back")
-        onTriggered: { pagestack.pop(); }
-    }
+                 MouseArea {
+                     anchors.fill: parent
+                     onClicked: setup.exec()
+                 }
+             }
+         }
+
+         Button {
+             anchors.horizontalCenter: parent.horizontalCenter
+             width: parent.width - units.gu(2)
+             text: i18n.tr("Add new account")
+             color: UbuntuColors.orange
+             onClicked: setup.exec()
+         }
+     }
+
+     head.backAction: Action {
+         visible: isChangingAccount
+         iconName: "back"
+         text: i18n.tr("Back")
+         onTriggered: { pagestack.pop(); }
+     }
 }
