@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-09-28 11:05+0200\n"
+"POT-Creation-Date: 2014-10-09 18:42+0200\n"
 "PO-Revision-Date: 2014-10-03 16:20+0000\n"
 "Last-Translator: Ivo Xavier <ivofernandes12@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-04 06:29+0000\n"
+"X-Launchpad-Export-Date: 2014-10-10 05:23+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:266
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:268
 msgid "Reminders"
 msgstr "Lembretes"
 
@@ -55,15 +55,15 @@ msgstr "Limpar lembrete"
 msgid "Mark as done"
 msgstr "Marcar como concluído"
 
-#: src/app/qml/reminders.qml:205
+#: src/app/qml/reminders.qml:207
 msgid "Notes"
 msgstr "Notas"
 
-#: src/app/qml/reminders.qml:236
+#: src/app/qml/reminders.qml:238
 msgid "Notebooks"
 msgstr "Bloco de notas"
 
-#: src/app/qml/reminders.qml:286
+#: src/app/qml/reminders.qml:296
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -71,17 +71,17 @@ msgstr ""
 "Nenhuma nota selecionada.\n"
 "Selecione uma nota para ver em detalhe."
 
-#: src/app/qml/reminders.qml:323
+#: src/app/qml/reminders.qml:333
 msgid "No account available"
 msgstr "Nenhuma conta disponível"
 
-#: src/app/qml/reminders.qml:324
+#: src/app/qml/reminders.qml:334
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 "Por favor, configure e autorize uma conta do Evernote nas definições de "
 "sistema."
 
-#: src/app/qml/reminders.qml:344 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:354 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "Adicionar conta"
 

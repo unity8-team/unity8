@@ -26,10 +26,6 @@ import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
 import Ubuntu.OnlineAccounts.Client 0.1
 
-/*!
-    \brief MainView with a Label and Button elements.
-*/
-
 MainView {
     id: root
 
@@ -46,12 +42,10 @@ MainView {
      when the device is rotated. The default is false.
     */
     //automaticOrientation: true
-    onWidthChanged: print("********************* width", width)
 
     property bool narrowMode: root.width < units.gu(80)
 
     onNarrowModeChanged: {
-        print("#################################", narrowMode)
         if (narrowMode) {
             // Clean the toolbar
             notesPage.selectedNote = null;
@@ -68,7 +62,7 @@ MainView {
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
         accountPage = component.createObject(root, {accounts: accounts, isChangingAccount: isChangingAccount});
-        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); });
+        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
 
@@ -103,26 +97,33 @@ MainView {
     }
 
     function doLogin() {
-        print("got accounts:", accounts.count)
         var accountName = preferences.accountName;
         if (accountName) {
+            print("Last used account:", accountName);
             var i;
             for (i = 0; i < accounts.count; i++) {
                 if (accounts.get(i, "displayName") == accountName) {
+                    print("Account", accountName, "still valid in Online Accounts.");
                     accountService.objectHandle = accounts.get(i, "accountServiceHandle");
                 }
             }
         }
+        if (accountName && !accountService.objectHandle) {
+            print("Last used account doesn't seem to be valid any more");
+        }
+
         if (!accountService.objectHandle) {
             switch (accounts.count) {
             case 0:
-                PopupUtils.open(noAccountDialog)
+                PopupUtils.open(noAccountDialog, root);
                 print("No account available! Please setup an account in the system settings");
                 break;
             case 1:
+                print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
                 accountService.objectHandle = accounts.get(0, "accountServiceHandle");
                 break;
             default:
+                print("There are multiple accounts. Allowing user to select one.");
                 openAccountPage(false);
             }
         }
@@ -195,6 +196,7 @@ MainView {
     PageStack {
         id: pagestack
         anchors.rightMargin: root.narrowMode ? 0 : root.width - units.gu(40)
+        opacity: root.accountPage || EvernoteConnection.isConnected ? 1 : 0
 
         Tabs {
             id: rootTabs
@@ -304,6 +306,14 @@ MainView {
             }
         }
     }
+
+    ActivityIndicator {
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: units.gu(4.5)
+        running: visible
+        visible: !EvernoteConnection.isConnected && root.accountPage == null
+    }
+
 
     Label {
         anchors.centerIn: parent
