@@ -24,7 +24,7 @@ import "../components"
 
 Page {
     id: root
-    objectName: 'notebooksPage'
+    objectName: 'tagsPage'
 
     property bool narrowMode
 
