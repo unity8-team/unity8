@@ -108,6 +108,19 @@ void Note::setTitle(const QString &title)
     }
 }
 
+QStringList Note::tagGuids() const
+{
+    return m_tagGuids;
+}
+
+void Note::setTagGuids(const QStringList &tagGuids)
+{
+    if (m_tagGuids != tagGuids) {
+        m_tagGuids = tagGuids;
+        emit tagGuidsChanged();
+    }
+}
+
 QString Note::enmlContent() const
 {
     return m_content.enml();
@@ -352,6 +365,16 @@ void Note::attachFile(int position, const QUrl &fileName)
 void Note::format(int startPos, int endPos, TextFormat::Format format)
 {
     qDebug() << "Should format from" << startPos << "to" << endPos << "with format:" << format;
+}
+
+void Note::addTag(const QString &tagGuid)
+{
+    NotesStore::instance()->tagNote(m_guid, tagGuid);
+}
+
+void Note::removeTag(const QString &tagGuid)
+{
+    NotesStore::instance()->untagNote(m_guid, tagGuid);
 }
 
 Note *Note::clone()

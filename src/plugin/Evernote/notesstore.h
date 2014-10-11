@@ -41,6 +41,7 @@
 
 class Notebook;
 class Note;
+class Tag;
 
 using namespace apache::thrift::transport;
 
@@ -72,7 +73,8 @@ public:
         RolePlaintextContent,
         RoleTagline,
         RoleResourceUrls,
-        RoleReminderSorting
+        RoleReminderSorting,
+        RoleTagGuids
     };
 
     ~NotesStore();
@@ -80,9 +82,11 @@ public:
 
     bool loading() const;
     bool notebooksLoading() const;
+    bool tagsLoading() const;
 
     QString error() const;
     QString notebooksError() const;
+    QString tagsError() const;
 
     int count() const;
 
@@ -107,17 +111,27 @@ public:
     Q_INVOKABLE void saveNotebook(const QString &guid);
     Q_INVOKABLE void expungeNotebook(const QString &guid);
 
+    QList<Tag*> tags() const;
+    Q_INVOKABLE Tag* tag(const QString &guid);
+    Q_INVOKABLE void createTag(const QString &name);
+    Q_INVOKABLE void saveTag(const QString &guid);
+    Q_INVOKABLE void tagNote(const QString &noteGuid, const QString &tagGuid);
+    Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
+
 public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString());
     void refreshNoteContent(const QString &guid, bool withResourceContent = false);
     void refreshNotebooks();
+    void refreshTags();
 
 signals:
     void tokenChanged();
     void loadingChanged();
     void notebooksLoadingChanged();
+    void tagsLoadingChanged();
     void errorChanged();
     void notebooksErrorChanged();
+    void tagsErrorChanged();
     void countChanged();
 
     void noteCreated(const QString &guid, const QString &notebookGuid);
@@ -129,6 +143,10 @@ signals:
     void notebookChanged(const QString &guid);
     void notebookRemoved(const QString &guid);
 
+    void tagAdded(const QString &guid);
+    void tagChanged(const QString &guid);
+    void tagRemoved(const QString &guid);
+
 private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
     void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
@@ -139,6 +157,9 @@ private slots:
     void deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
     void createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result);
     void expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
+    void fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Tag> &results);
+    void createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result);
+    void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
     void emitDataChanged();
 private:
@@ -147,16 +168,20 @@ private:
 
     bool m_loading;
     bool m_notebooksLoading;
+    bool m_tagsLoading;
 
     QString m_error;
     QString m_notebooksError;
+    QString m_tagsError;
 
     QList<Note*> m_notes;
     QList<Notebook*> m_notebooks;
+    QList<Tag*> m_tags;
 
-    // Keep hashes for faster lookups as we always identify notes via guid
+    // Keep hashes for faster lookups as we always identify things via guid
     QHash<QString, Note*> m_notesHash;
     QHash<QString, Notebook*> m_notebooksHash;
+    QHash<QString, Tag*> m_tagsHash;
 };
 
 #endif // NOTESSTORE_H

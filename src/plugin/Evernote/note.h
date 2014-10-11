@@ -40,6 +40,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime created READ created CONSTANT)
     Q_PROPERTY(QString createdString READ createdString CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QStringList tagGuids READ tagGuids WRITE setTagGuids NOTIFY tagGuidsChanged)
     Q_PROPERTY(QString htmlContent READ htmlContent NOTIFY contentChanged)
     Q_PROPERTY(QString richTextContent READ richTextContent WRITE setRichTextContent NOTIFY contentChanged)
     Q_PROPERTY(QString enmlContent READ enmlContent WRITE setEnmlContent NOTIFY contentChanged)
@@ -74,6 +75,9 @@ public:
 
     QString title() const;
     void setTitle(const QString &title);
+
+    QStringList tagGuids() const;
+    void setTagGuids(const QStringList &tagGuids);
 
     QString enmlContent() const;
     void setEnmlContent(const QString &enmlContent);
@@ -126,6 +130,8 @@ public:
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
     Q_INVOKABLE void format(int startPos, int endPos, TextFormat::Format format);
+    Q_INVOKABLE void addTag(const QString &tagGuid);
+    Q_INVOKABLE void removeTag(const QString &tagGuid);
 
     Note* clone();
 
@@ -136,6 +142,7 @@ public slots:
 signals:
     void titleChanged();
     void notebookGuidChanged();
+    void tagGuidsChanged();
     void contentChanged();
     void resourcesChanged();
     void reminderChanged();
@@ -153,6 +160,7 @@ private:
     QString m_notebookGuid;
     QDateTime m_created;
     QString m_title;
+    QStringList m_tagGuids;
     EnmlDocument m_content;
     QString m_tagline;
     qint64 m_reminderOrder;

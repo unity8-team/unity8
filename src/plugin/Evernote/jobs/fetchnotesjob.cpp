@@ -80,6 +80,9 @@ void FetchNotesJob::startJob()
     resultSpec.includeAttributes = true;
     resultSpec.__isset.includeAttributes = true;
 
+    resultSpec.includeTagGuids = true;
+    resultSpec.__isset.includeTagGuids = true;
+
     client()->findNotesMetadata(m_results, token().toStdString(), filter, start, end, resultSpec);
 }
 

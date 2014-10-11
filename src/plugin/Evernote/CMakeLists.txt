@@ -13,6 +13,8 @@ set(evernoteplugin_SRCS
     note.cpp
     resource.cpp
     notebook.cpp
+    tag.cpp
+    tags.cpp
     jobs/fetchnotesjob.cpp
     jobs/fetchnotebooksjob.cpp
     jobs/fetchnotejob.cpp
@@ -27,6 +29,9 @@ set(evernoteplugin_SRCS
     jobs/fetchusernamejob.cpp
     jobs/createnotebookjob.cpp
     jobs/expungenotebookjob.cpp
+    jobs/fetchtagsjob.cpp
+    jobs/createtagjob.cpp
+    jobs/savetagjob.cpp
     resourceimageprovider.cpp
     utils/enmldocument.cpp
     utils/textformat.cpp

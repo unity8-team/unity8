@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -18,14 +18,14 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#ifndef NOTEBOOKS_H
-#define NOTEBOOKS_H
+#ifndef TAGS_H
+#define TAGS_H
 
 #include "notesstore.h"
 
 #include <QAbstractListModel>
 
-class Notebooks : public QAbstractListModel
+class Tags: public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
@@ -36,12 +36,9 @@ public:
     enum Roles {
         RoleGuid,
         RoleName,
-        RoleNoteCount,
-        RolePublished,
-        RoleLastUpdated,
-        RoleLastUpdatedString
+        RoleNoteCount
     };
-    explicit Notebooks(QObject *parent = 0);
+    explicit Tags(QObject *parent = 0);
 
     bool loading() const;
     QString error() const;
@@ -51,7 +48,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QHash<int, QByteArray> roleNames() const;
 
-    Q_INVOKABLE Notebook *notebook(int index) const;
+    Q_INVOKABLE Tag* tag(int index) const;
 
 public slots:
     void refresh();
@@ -62,13 +59,11 @@ signals:
     void countChanged();
 
 private slots:
-    void notebookAdded(const QString &guid);
-    void notebookRemoved(const QString &guid);
+    void tagAdded(const QString &guid);
+    void tagRemoved(const QString &guid);
 
     void nameChanged();
     void noteCountChanged();
-    void publishedChanged();
-    void lastUpdatedChanged();
 
 private:
     QList<QString> m_list;

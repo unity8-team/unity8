@@ -29,6 +29,7 @@ Empty {
     property date creationDate
     property string content
     property string resource
+    property string tags
     property string notebookColor: preferences.colorForNotebook(model.guid)
 
     showDivider: false;
@@ -69,7 +70,7 @@ Empty {
                         onClicked: root.clicked()   // Propagate the signal
 
                         ColumnLayout {
-                            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+                            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1); rightMargin: -units.gu(2) }
 
                             Label {
                                 Layout.fillWidth: true
@@ -90,12 +91,22 @@ Empty {
                                 color: "black"
                             }
 
-                            Label {
-                                Layout.minimumWidth: parent.width + units.gu(2)
-                                text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
-                                color: "#b3b3b3"
-                                fontSize: "small"
-                                horizontalAlignment: Text.AlignRight
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: root.tags
+                                    fontSize: "small"
+                                    color: "#b3b3b3"
+
+                                }
+                                Label {
+//                                    Layout.minimumWidth: parent.width + units.gu(2)
+                                    text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
+                                    color: "#b3b3b3"
+                                    fontSize: "small"
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
                         }
                     }
