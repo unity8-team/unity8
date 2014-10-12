@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 12:50+0200\n"
+"POT-Creation-Date: 2014-10-10 21:11+0200\n"
 "PO-Revision-Date: 2014-10-07 10:50+0000\n"
 "Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-11 05:14+0000\n"
+"X-Launchpad-Export-Date: 2014-10-12 06:55+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:268
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
 msgstr "Recordatoris"
 
@@ -63,7 +63,11 @@ msgstr "Notes"
 msgid "Notebooks"
 msgstr "Llibretes"
 
-#: src/app/qml/reminders.qml:296
+#: src/app/qml/reminders.qml:282
+msgid "Tags"
+msgstr ""
+
+#: src/app/qml/reminders.qml:322
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -71,17 +75,17 @@ msgstr ""
 "No heu seleccionat cap nota.\n"
 "Seleccioneu-ne una per veure'n els detalls."
 
-#: src/app/qml/reminders.qml:333
+#: src/app/qml/reminders.qml:359
 msgid "No account available"
 msgstr "No hi ha cap compte disponible"
 
-#: src/app/qml/reminders.qml:334
+#: src/app/qml/reminders.qml:360
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 "Configureu i autoritzeu un compte de l'Evernote a la Configuració del "
 "sistema."
 
-#: src/app/qml/reminders.qml:354 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "Afegeix un compte"
 
@@ -90,24 +94,24 @@ msgid "Select Evernote account"
 msgstr "Seleccioneu el compte de l'Evernote"
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
-#: src/app/qml/ui/NotesPage.qml:70
+#: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr "Sense títol"
 
-#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:134
+#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
 msgstr "Edita"
 
-#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:118
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
 msgstr "Edita'l"
 
-#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:118
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr "Defineix un recordatori"
 
-#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:108
+#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
 msgstr "Suprimeix"
 
@@ -115,33 +119,33 @@ msgstr "Suprimeix"
 msgid "Add notebook"
 msgstr "Afegeix una llibreta"
 
-#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:77
+#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
 #: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
 msgstr "Cerca"
 
-#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:87
+#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
 msgstr "Actualitza"
 
-#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:97
+#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
 #: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
 msgstr "Comptes"
 
-#: src/app/qml/ui/NotebooksPage.qml:175
+#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: src/app/qml/ui/NotebooksPage.qml:184
+#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
 msgstr "Desa"
 
-#: src/app/qml/ui/NotesPage.qml:39 src/app/qml/ui/NotesPage.qml:67
+#: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
 msgstr "Afegeix una nota"
 
-#: src/app/qml/ui/NotesPage.qml:206
+#: src/app/qml/ui/NotesPage.qml:214
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
@@ -164,6 +168,10 @@ msgstr "Cerca de notes"
 msgid "Select date and time for the reminder:"
 msgstr "Seleccioneu la data i l'hora per al recordatori:"
 
+#: src/app/qml/ui/TagsPage.qml:175
+msgid "No tags available. You can tag notes while viewing them."
+msgstr ""
+
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr "L'autenticació ha vençut"
@@ -180,7 +188,7 @@ msgstr "S'ha excedit el límit de creació de notes."
 msgid "Quota exceeded."
 msgstr "S'ha excedit el límit d'espai."
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:247
+#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
 msgid "Today"
 msgstr "Avui"
 
@@ -202,31 +210,31 @@ msgstr "Fa dues setmanes"
 msgid "%1 %2"
 msgstr "%1 de %2"
 
-#: src/plugin/Evernote/note.cpp:235
+#: src/plugin/Evernote/note.cpp:248
 msgid "Done"
 msgstr "Fet"
 
-#: src/plugin/Evernote/note.cpp:241
+#: src/plugin/Evernote/note.cpp:254
 msgid "No date"
 msgstr "Sense data"
 
-#: src/plugin/Evernote/note.cpp:244
+#: src/plugin/Evernote/note.cpp:257
 msgid "Overdue"
 msgstr "Endarrerit"
 
-#: src/plugin/Evernote/note.cpp:250
+#: src/plugin/Evernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "Demà"
 
-#: src/plugin/Evernote/note.cpp:253
+#: src/plugin/Evernote/note.cpp:266
 msgid "Next week"
 msgstr "La setmana que ve"
 
-#: src/plugin/Evernote/note.cpp:256
+#: src/plugin/Evernote/note.cpp:269
 msgid "In two weeks"
 msgstr "D'aquí a dues setmanes"
 
-#: src/plugin/Evernote/note.cpp:258
+#: src/plugin/Evernote/note.cpp:271
 msgid "Later"
 msgstr "Més endavant"
 
@@ -257,12 +265,17 @@ msgstr "fa dues setmanes"
 msgid "on %1 %2"
 msgstr "%1 de %2"
 
-#: src/plugin/Evernote/notesstore.cpp:239
+#: src/plugin/Evernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "S'ha produït un error en actualitzar les notes: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:391
+#: src/plugin/Evernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "S'ha produït un error en actualitzar les llibretes: %1"
+
+#: src/plugin/Evernote/notesstore.cpp:596
+#, qt-format
+msgid "Error refreshing tags: %1"
+msgstr ""

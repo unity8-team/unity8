@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 12:50+0200\n"
+"POT-Creation-Date: 2014-10-10 21:11+0200\n"
 "PO-Revision-Date: 2014-01-28 19:32+0000\n"
 "Last-Translator: Atanas Kovachki <Unknown>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-11 05:13+0000\n"
+"X-Launchpad-Export-Date: 2014-10-12 06:55+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:268
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
 msgstr "Напомняния"
 
@@ -63,21 +63,25 @@ msgstr "Бележки"
 msgid "Notebooks"
 msgstr "Бележници"
 
-#: src/app/qml/reminders.qml:296
+#: src/app/qml/reminders.qml:282
+msgid "Tags"
+msgstr ""
+
+#: src/app/qml/reminders.qml:322
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
 
-#: src/app/qml/reminders.qml:333
+#: src/app/qml/reminders.qml:359
 msgid "No account available"
 msgstr ""
 
-#: src/app/qml/reminders.qml:334
+#: src/app/qml/reminders.qml:360
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: src/app/qml/reminders.qml:354 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr ""
 
@@ -86,24 +90,24 @@ msgid "Select Evernote account"
 msgstr ""
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
-#: src/app/qml/ui/NotesPage.qml:70
+#: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr "Неозаглавено"
 
-#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:134
+#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
 msgstr "Редактирай"
 
-#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:118
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
 msgstr ""
 
-#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:118
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr ""
 
-#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:108
+#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
 msgstr "Изтрий"
 
@@ -111,33 +115,33 @@ msgstr "Изтрий"
 msgid "Add notebook"
 msgstr "Добави бележника"
 
-#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:77
+#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
 #: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
 msgstr "Търси"
 
-#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:87
+#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
 msgstr ""
 
-#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:97
+#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
 #: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
 msgstr ""
 
-#: src/app/qml/ui/NotebooksPage.qml:175
+#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
 msgstr "Отмени"
 
-#: src/app/qml/ui/NotebooksPage.qml:184
+#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
 msgstr "Съхрани"
 
-#: src/app/qml/ui/NotesPage.qml:39 src/app/qml/ui/NotesPage.qml:67
+#: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
 msgstr "Добави бележка"
 
-#: src/app/qml/ui/NotesPage.qml:206
+#: src/app/qml/ui/NotesPage.qml:214
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
@@ -156,6 +160,10 @@ msgstr ""
 msgid "Select date and time for the reminder:"
 msgstr ""
 
+#: src/app/qml/ui/TagsPage.qml:175
+msgid "No tags available. You can tag notes while viewing them."
+msgstr ""
+
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr ""
@@ -172,7 +180,7 @@ msgstr ""
 msgid "Quota exceeded."
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:247
+#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
 msgid "Today"
 msgstr ""
 
@@ -194,31 +202,31 @@ msgstr ""
 msgid "%1 %2"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:235
+#: src/plugin/Evernote/note.cpp:248
 msgid "Done"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:241
+#: src/plugin/Evernote/note.cpp:254
 msgid "No date"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:244
+#: src/plugin/Evernote/note.cpp:257
 msgid "Overdue"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:250
+#: src/plugin/Evernote/note.cpp:263
 msgid "Tomorrow"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:253
+#: src/plugin/Evernote/note.cpp:266
 msgid "Next week"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:256
+#: src/plugin/Evernote/note.cpp:269
 msgid "In two weeks"
 msgstr ""
 
-#: src/plugin/Evernote/note.cpp:258
+#: src/plugin/Evernote/note.cpp:271
 msgid "Later"
 msgstr ""
 
@@ -249,12 +257,17 @@ msgstr ""
 msgid "on %1 %2"
 msgstr ""
 
-#: src/plugin/Evernote/notesstore.cpp:239
+#: src/plugin/Evernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr ""
 
-#: src/plugin/Evernote/notesstore.cpp:391
+#: src/plugin/Evernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
+msgstr ""
+
+#: src/plugin/Evernote/notesstore.cpp:596
+#, qt-format
+msgid "Error refreshing tags: %1"
 msgstr ""

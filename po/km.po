@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 12:50+0200\n"
+"POT-Creation-Date: 2014-10-10 21:11+0200\n"
 "PO-Revision-Date: 2014-08-20 04:56+0000\n"
 "Last-Translator: Sophea Sok <sksophea@gmail.com>\n"
 "Language-Team: Khmer <km@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-11 05:14+0000\n"
+"X-Launchpad-Export-Date: 2014-10-12 06:56+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:268
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
 msgstr "កម្មវិធី​រំលឹក"
 
@@ -63,7 +63,11 @@ msgstr "ចំណាំ"
 msgid "Notebooks"
 msgstr "Notebooks"
 
-#: src/app/qml/reminders.qml:296
+#: src/app/qml/reminders.qml:282
+msgid "Tags"
+msgstr ""
+
+#: src/app/qml/reminders.qml:322
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -71,15 +75,15 @@ msgstr ""
 "មិន​បាន​ជ្រើស​ចំណាំ។\n"
 "ជ្រើស​ចំណាំ​ដើម្បី​មើល​ព័ត៌មាន​លម្អិត។"
 
-#: src/app/qml/reminders.qml:333
+#: src/app/qml/reminders.qml:359
 msgid "No account available"
 msgstr "មិន​មាន​គណនី"
 
-#: src/app/qml/reminders.qml:334
+#: src/app/qml/reminders.qml:360
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: src/app/qml/reminders.qml:354 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "បន្ថែម​គណនី"
 
@@ -88,24 +92,24 @@ msgid "Select Evernote account"
 msgstr "ជ្រើស​គណនី Evernote"
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
-#: src/app/qml/ui/NotesPage.qml:70
+#: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr "គ្មាន​ចំណងជើង"
 
-#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:134
+#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
 msgstr "កែសម្រួល"
 
-#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:118
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
 msgstr "កែសម្រួល​កម្មវិធី​រំលឹក"
 
-#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:118
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr "កំណត់​កម្មវិធី​រំលឹក"
 
-#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:108
+#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
 msgstr "លុប​"
 
@@ -113,33 +117,33 @@ msgstr "លុប​"
 msgid "Add notebook"
 msgstr "បន្ថែម​ notebook"
 
-#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:77
+#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
 #: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
 msgstr "ស្វែងរក"
 
-#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:87
+#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
 msgstr "ផ្ទុក​ឡើងវិញ"
 
-#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:97
+#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
 #: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
 msgstr "គណនី"
 
-#: src/app/qml/ui/NotebooksPage.qml:175
+#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
 msgstr "បោះបង់"
 
-#: src/app/qml/ui/NotebooksPage.qml:184
+#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
 msgstr "រក្សា​​ទុក​​"
 
-#: src/app/qml/ui/NotesPage.qml:39 src/app/qml/ui/NotesPage.qml:67
+#: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
 msgstr "បន្ថែម​ចំណាំ"
 
-#: src/app/qml/ui/NotesPage.qml:206
+#: src/app/qml/ui/NotesPage.qml:214
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
@@ -159,6 +163,10 @@ msgstr "ស្វែងរក​ចំណាំ"
 msgid "Select date and time for the reminder:"
 msgstr "ជ្រើស​កាលបរិច្ឆេទ និងពេលវេលា​សម្រាប់​កម្មវិធីរំលឹក៖"
 
+#: src/app/qml/ui/TagsPage.qml:175
+msgid "No tags available. You can tag notes while viewing them."
+msgstr ""
+
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr "ការ​ផ្ទៀង​ផ្ទាត់​បាន​ផុត​កំណត់។"
@@ -175,7 +183,7 @@ msgstr "បាន​លើស​អត្រា​ដែន​កំណត់។
 msgid "Quota exceeded."
 msgstr "បាន​លើស​កូតា។"
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:247
+#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
 msgid "Today"
 msgstr "ថ្ងៃ​នេះ"
 
@@ -197,31 +205,31 @@ msgstr "ពីរ​សប្ដាហ៍មុន"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/note.cpp:235
+#: src/plugin/Evernote/note.cpp:248
 msgid "Done"
 msgstr "រូចរាល់"
 
-#: src/plugin/Evernote/note.cpp:241
+#: src/plugin/Evernote/note.cpp:254
 msgid "No date"
 msgstr "គ្មាន​កាលបរិច្ឆេទ"
 
-#: src/plugin/Evernote/note.cpp:244
+#: src/plugin/Evernote/note.cpp:257
 msgid "Overdue"
 msgstr "ហួស​កំណត់"
 
-#: src/plugin/Evernote/note.cpp:250
+#: src/plugin/Evernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "ថ្ងៃស្អែក"
 
-#: src/plugin/Evernote/note.cpp:253
+#: src/plugin/Evernote/note.cpp:266
 msgid "Next week"
 msgstr "សប្ដាហ៍​ក្រោយ"
 
-#: src/plugin/Evernote/note.cpp:256
+#: src/plugin/Evernote/note.cpp:269
 msgid "In two weeks"
 msgstr "ក្នុង​រយៈពេលពីរ​សប្ដាហ៍"
 
-#: src/plugin/Evernote/note.cpp:258
+#: src/plugin/Evernote/note.cpp:271
 msgid "Later"
 msgstr "ពេលក្រោយ"
 
@@ -252,12 +260,17 @@ msgstr "ពីរ​សប្ដាហ៍​មុន"
 msgid "on %1 %2"
 msgstr "នៅ %1 %2"
 
-#: src/plugin/Evernote/notesstore.cpp:239
+#: src/plugin/Evernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "កំហុស​ក្នុង​ការ​ផ្ទុក​ចំណាំ​ឡើង​វិញ៖ %1"
 
-#: src/plugin/Evernote/notesstore.cpp:391
+#: src/plugin/Evernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "កំហុស​ក្នុងការ​ផ្ទុក notebooks ឡើងវិញ៖ %1"
+
+#: src/plugin/Evernote/notesstore.cpp:596
+#, qt-format
+msgid "Error refreshing tags: %1"
+msgstr ""
