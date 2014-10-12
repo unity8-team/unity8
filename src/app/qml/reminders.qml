@@ -26,10 +26,6 @@ import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
 import Ubuntu.OnlineAccounts.Client 0.1
 
-/*!
-    \brief MainView with a Label and Button elements.
-*/
-
 MainView {
     id: root
 
@@ -46,12 +42,10 @@ MainView {
      when the device is rotated. The default is false.
     */
     //automaticOrientation: true
-    onWidthChanged: print("********************* width", width)
 
     property bool narrowMode: root.width < units.gu(80)
 
     onNarrowModeChanged: {
-        print("#################################", narrowMode)
         if (narrowMode) {
             // Clean the toolbar
             notesPage.selectedNote = null;
@@ -69,7 +63,7 @@ MainView {
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
         accountPage = component.createObject(root, { accounts: accounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
-        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); });
+        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
 
@@ -104,26 +98,33 @@ MainView {
     }
 
     function doLogin() {
-        print("got accounts:", accounts.count)
         var accountName = preferences.accountName;
         if (accountName) {
+            print("Last used account:", accountName);
             var i;
             for (i = 0; i < accounts.count; i++) {
                 if (accounts.get(i, "displayName") == accountName) {
+                    print("Account", accountName, "still valid in Online Accounts.");
                     accountService.objectHandle = accounts.get(i, "accountServiceHandle");
                 }
             }
         }
+        if (accountName && !accountService.objectHandle) {
+            print("Last used account doesn't seem to be valid any more");
+        }
+
         if (!accountService.objectHandle) {
             switch (accounts.count) {
             case 0:
-                PopupUtils.open(noAccountDialog)
+                PopupUtils.open(noAccountDialog, root);
                 print("No account available! Please setup an account in the system settings");
                 break;
             case 1:
+                print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
                 accountService.objectHandle = accounts.get(0, "accountServiceHandle");
                 break;
             default:
+                print("There are multiple accounts. Allowing user to select one.");
                 openAccountPage(false);
             }
         }
@@ -131,7 +132,7 @@ MainView {
 
     AccountServiceModel {
         id: accounts
-        service: useSandbox ? "evernote-sandbox" : "evernote"
+        applicationId: "com.ubuntu.reminders_reminders"
     }
 
     AccountServiceModel {
@@ -202,6 +203,7 @@ MainView {
     PageStack {
         id: pagestack
         anchors.rightMargin: root.narrowMode ? 0 : root.width - units.gu(40)
+        opacity: root.accountPage || EvernoteConnection.isConnected ? 1 : 0
 
         Tabs {
             id: rootTabs
@@ -251,9 +253,8 @@ MainView {
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title, filter: notebookGuid, narrowMode: narrowMode});
+                        pagestack.push(page, {title: title, filterNotebookGuid: notebookGuid, narrowMode: narrowMode});
                         page.selectedNoteChanged.connect(function() {
-                            print("foo", page.selectedNote);
                             if (page.selectedNote) {
                                 root.displayNote(page.selectedNote);
                                 if (root.narrowMode) {
@@ -283,8 +284,43 @@ MainView {
                     }
                 }
             }
+
+            Tab {
+                title: i18n.tr("Tags")
+                page: TagsPage {
+                    id: tagsPage
+
+                    onOpenTaggedNotes: {
+                        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
+                        var page = component.createObject();
+                        print("opening note page for tag", tagGuid)
+                        pagestack.push(page, {title: title, filterTagGuid: tagGuid, narrowMode: narrowMode});
+                        page.selectedNoteChanged.connect(function() {
+                            if (page.selectedNote) {
+                                root.displayNote(page.selectedNote);
+                                if (root.narrowMode) {
+                                    page.selectedNote = null;
+                                }
+                            }
+                        })
+                        page.editNote.connect(function(note) {
+                            root.switchToEditMode(note)
+                        })
+                        NotesStore.refreshNotes();
+                    }
+
+                }
+            }
         }
     }
+
+    ActivityIndicator {
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: units.gu(4.5)
+        running: visible
+        visible: !EvernoteConnection.isConnected && root.accountPage == null
+    }
+
 
     Label {
         anchors.centerIn: parent
@@ -343,7 +379,7 @@ MainView {
             Setup {
                 id: setup
                 applicationId: "com.ubuntu.reminders_reminders"
-                providerId: "evernote"
+                providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
             }
 
             Button {

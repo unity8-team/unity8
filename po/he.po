@@ -7,30 +7,67 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-29 14:53+0200\n"
+"POT-Creation-Date: 2014-10-10 21:11+0200\n"
 "PO-Revision-Date: 2014-08-18 06:15+0000\n"
 "Last-Translator: Yaron <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 08:35+0000\n"
+"X-Launchpad-Export-Date: 2014-10-12 06:56+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/app/qml/reminders.qml:205
-msgid "Notes"
-msgstr "פתקיות"
-
-#: ../src/app/qml/reminders.qml:234
-msgid "Notebooks"
-msgstr "פנקסים"
-
-#: ../src/app/qml/reminders.qml:262
-#: ../.build/com.ubuntu.reminders.desktop.js:1
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
 msgstr "תזכורות"
 
-#: ../src/app/qml/reminders.qml:282
+#: com.ubuntu.reminders.desktop.in.in.h:2
+msgid "Ubuntu Reminders app, powered by Evernote"
+msgstr ""
+
+#: src/app/qml/components/NotebooksDelegate.qml:98
+#, qt-format
+msgid "Last edited %1"
+msgstr "עריכה אחרונה: %1"
+
+#: src/app/qml/components/NotebooksDelegate.qml:105
+msgid "Shared"
+msgstr "משותף"
+
+#: src/app/qml/components/NotebooksDelegate.qml:105
+msgid "Private"
+msgstr "פרטי"
+
+#: src/app/qml/components/PulldownListView.qml:40
+msgid "Release to refresh"
+msgstr "יש לשחרר כדי לרענן"
+
+#: src/app/qml/components/PulldownListView.qml:40
+msgid "Pull down to refresh"
+msgstr "יש לגרור למטה כדי לרענן"
+
+#: src/app/qml/components/RemindersDelegate.qml:50
+#: src/app/qml/ui/SetReminderView.qml:55
+msgid "Clear reminder"
+msgstr "מחיקת תזכורת"
+
+#: src/app/qml/components/RemindersDelegate.qml:50
+msgid "Mark as done"
+msgstr "סימון כבוצע"
+
+#: src/app/qml/reminders.qml:207
+msgid "Notes"
+msgstr "פתקיות"
+
+#: src/app/qml/reminders.qml:238
+msgid "Notebooks"
+msgstr "פנקסים"
+
+#: src/app/qml/reminders.qml:282
+msgid "Tags"
+msgstr ""
+
+#: src/app/qml/reminders.qml:322
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -38,234 +75,201 @@ msgstr ""
 "לא נבחרו פתקיות.\n"
 "יש לבחור בפתקית כדי לצפות בפרטים עליה."
 
-#: ../src/app/qml/reminders.qml:319
+#: src/app/qml/reminders.qml:359
 msgid "No account available"
 msgstr "אין חשבון זמין"
 
-#: ../src/app/qml/reminders.qml:320
+#: src/app/qml/reminders.qml:360
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: ../src/app/qml/reminders.qml:340
-#: ../src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
 msgstr "הוספת חשבון"
 
-#: ../src/app/qml/components/NotebooksDelegate.qml:68
-#, qt-format
-msgid "Last edited %1"
-msgstr "עריכה אחרונה: %1"
-
-#: ../src/app/qml/components/NotebooksDelegate.qml:75
-msgid "Shared"
-msgstr "משותף"
-
-#: ../src/app/qml/components/NotebooksDelegate.qml:75
-msgid "Private"
-msgstr "פרטי"
-
-#: ../src/app/qml/components/PulldownListView.qml:40
-msgid "Release to refresh"
-msgstr "יש לשחרר כדי לרענן"
-
-#: ../src/app/qml/components/PulldownListView.qml:40
-msgid "Pull down to refresh"
-msgstr "יש לגרור למטה כדי לרענן"
-
-#: ../src/app/qml/components/RemindersDelegate.qml:50
-#: ../src/app/qml/ui/SetReminderView.qml:55
-msgid "Clear reminder"
-msgstr "מחיקת תזכורת"
-
-#: ../src/app/qml/components/RemindersDelegate.qml:50
-msgid "Mark as done"
-msgstr "סימון כבוצע"
-
-#: ../src/app/qml/ui/AccountSelectorPage.qml:29
+#: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
 msgstr "בחירת חשבון Evernote"
 
-#: ../src/app/qml/ui/EditNoteView.qml:98
-#: ../src/app/qml/ui/EditNoteView.qml:110 ../src/app/qml/ui/NotesPage.qml:48
+#: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
+#: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr "ללא כותרת"
 
-#: ../src/app/qml/ui/NotePage.qml:34 ../src/app/qml/ui/NotesPage.qml:112
+#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
 msgstr "עריכה"
 
-#: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
 msgstr "עריכת תזכורת"
 
-#: ../src/app/qml/ui/NotePage.qml:43 ../src/app/qml/ui/NotesPage.qml:96
-#: ../src/app/qml/ui/SetReminderView.qml:66
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
+#: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr "הגדרת תזכורת"
 
-#: ../src/app/qml/ui/NotePage.qml:57 ../src/app/qml/ui/NotesPage.qml:86
+#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
 msgstr "מחיקה"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:41
+#: src/app/qml/ui/NotebooksPage.qml:43
 msgid "Add notebook"
 msgstr "הוספת פנקס"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:51 ../src/app/qml/ui/NotesPage.qml:55
-#: ../src/app/qml/ui/RemindersPage.qml:34
-#: ../src/app/qml/ui/SearchNotesPage.qml:58
+#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
+#: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
 msgstr "חיפוש"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:61 ../src/app/qml/ui/NotesPage.qml:65
+#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
 msgstr "רענון"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:71 ../src/app/qml/ui/NotesPage.qml:75
-#: ../src/app/qml/ui/RemindersPage.qml:44
+#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
+#: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
 msgstr "חשבונות"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:173
+#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
 msgstr "ביטול"
 
-#: ../src/app/qml/ui/NotebooksPage.qml:182
+#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
 msgstr "שמירה"
 
-#: ../src/app/qml/ui/NotesPage.qml:45
+#: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
 msgstr "הוספת הערה"
 
-#: ../src/app/qml/ui/NotesPage.qml:185
+#: src/app/qml/ui/NotesPage.qml:214
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr "אין פתקיות זמינים. ניתן ליצור פתקית חדשה בעזרת הלחצן „הוספת פתקית“."
 
-#: ../src/app/qml/ui/RemindersPage.qml:108
+#: src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
 
-#: ../src/app/qml/ui/SearchNotesPage.qml:30
+#: src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
 msgstr "חיפוש בפתקיות"
 
-#: ../src/app/qml/ui/SetReminderView.qml:36
+#: src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
 msgstr "נא לבחור בתאריך ובשעה לתזכורת:"
 
-#: ../src/plugin/Evernote/note.cpp:82 ../src/plugin/Evernote/note.cpp:240
+#: src/app/qml/ui/TagsPage.qml:175
+msgid "No tags available. You can tag notes while viewing them."
+msgstr ""
+
+#: src/plugin/Evernote/jobs/evernotejob.cpp:91
+msgid "Authentication expired."
+msgstr "האימות פג."
+
+#: src/plugin/Evernote/jobs/evernotejob.cpp:95
+msgid "Limit exceeded."
+msgstr "המגבלה הושגה."
+
+#: src/plugin/Evernote/jobs/evernotejob.cpp:99
+msgid "Rate limit exceeded."
+msgstr "מגבלת הדירוג הושגה."
+
+#: src/plugin/Evernote/jobs/evernotejob.cpp:103
+msgid "Quota exceeded."
+msgstr "המכסה הושגה."
+
+#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
 msgid "Today"
 msgstr "היום"
 
-#: ../src/plugin/Evernote/note.cpp:85
+#: src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
 msgstr "אתמול"
 
-#: ../src/plugin/Evernote/note.cpp:88
+#: src/plugin/Evernote/note.cpp:88
 msgid "Last week"
 msgstr "שבוע שעבר"
 
-#: ../src/plugin/Evernote/note.cpp:91
+#: src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
 msgstr "לפני שבועיים"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: ../src/plugin/Evernote/note.cpp:95
+#: src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: ../src/plugin/Evernote/note.cpp:228
+#: src/plugin/Evernote/note.cpp:248
 msgid "Done"
 msgstr "Done"
 
-#: ../src/plugin/Evernote/note.cpp:234
+#: src/plugin/Evernote/note.cpp:254
 msgid "No date"
 msgstr "אין תאריך"
 
-#: ../src/plugin/Evernote/note.cpp:237
+#: src/plugin/Evernote/note.cpp:257
 msgid "Overdue"
 msgstr "תפוגה"
 
-#: ../src/plugin/Evernote/note.cpp:243
+#: src/plugin/Evernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "מחר"
 
-#: ../src/plugin/Evernote/note.cpp:246
+#: src/plugin/Evernote/note.cpp:266
 msgid "Next week"
 msgstr "שבוע הבא"
 
-#: ../src/plugin/Evernote/note.cpp:249
+#: src/plugin/Evernote/note.cpp:269
 msgid "In two weeks"
 msgstr "בעוד שבועיים"
 
-#: ../src/plugin/Evernote/note.cpp:251
+#: src/plugin/Evernote/note.cpp:271
 msgid "Later"
 msgstr "מאוחר יותר"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: ../src/plugin/Evernote/notebook.cpp:100
+#: src/plugin/Evernote/notebook.cpp:100
 msgid "today"
 msgstr "היום"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: ../src/plugin/Evernote/notebook.cpp:104
+#: src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "אתמול"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: ../src/plugin/Evernote/notebook.cpp:108
+#: src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
 msgstr "שבוע שעבר"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: ../src/plugin/Evernote/notebook.cpp:112
+#: src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "לפני שבועיים"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: ../src/plugin/Evernote/notebook.cpp:116
+#: src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "ב־%1 %2"
 
-#: ../src/plugin/Evernote/notesstore.cpp:223
+#: src/plugin/Evernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "אירעה שגיאה בעת רענון הפתקיות: %1"
 
-#: ../src/plugin/Evernote/notesstore.cpp:375
+#: src/plugin/Evernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "אירעה שגיאה בעת רענון הפנקסים: %1"
 
-#: ../src/plugin/Evernote/jobs/evernotejob.cpp:87
-msgid "Authentication expired."
-msgstr "האימות פג."
-
-#: ../src/plugin/Evernote/jobs/evernotejob.cpp:91
-msgid "Limit exceeded."
-msgstr "המגבלה הושגה."
-
-#: ../src/plugin/Evernote/jobs/evernotejob.cpp:95
-msgid "Rate limit exceeded."
-msgstr "מגבלת הדירוג הושגה."
-
-#: ../src/plugin/Evernote/jobs/evernotejob.cpp:99
-msgid "Quota exceeded."
-msgstr "המכסה הושגה."
-
-#~ msgid ""
-#~ "No reminders available. You can create new reminders using the \"Add "
-#~ "reminder\" button or by setting a reminder when viewing a note."
-#~ msgstr ""
-#~ "אין תזכורות זמינות. ניתן ליצור תזכורות חדשות בעזרת הלחצן „הוספת תזכורת“ או "
-#~ "על ידי הגדרת תזכורת בעת צפייה בפתקית."
-
-#~ msgid "Please setup an account in the system settings"
-#~ msgstr "נא להגדיר חשבון בהגדרות המערכת"
+#: src/plugin/Evernote/notesstore.cpp:596
+#, qt-format
+msgid "Error refreshing tags: %1"
+msgstr ""

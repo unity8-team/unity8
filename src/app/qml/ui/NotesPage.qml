@@ -29,7 +29,8 @@ PageWithBottomEdge {
     property var selectedNote: null
     property bool narrowMode
 
-    property alias filter: notes.filterNotebookGuid
+    property alias filterNotebookGuid: notes.filterNotebookGuid
+    property alias filterTagGuid: notes.filterTagGuid
 
     // We enable bottomEdge only in narrowMode.
     // To avoid flashing when a notebook is loaded, we wait to have all notes
@@ -162,6 +163,13 @@ PageWithBottomEdge {
             title: model.title
             creationDate: model.created
             content: model.tagline
+            tags: {
+                var tags = new Array();
+                for (var i = 0; i < model.tagGuids.length; i++) {
+                    tags.push(NotesStore.tag(model.tagGuids[i]).name)
+                }
+                return tags.join(" ");
+            }
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
@@ -193,10 +201,9 @@ PageWithBottomEdge {
             }
         }
 
-        ActivityIndicator {
-            anchors.centerIn: parent
-            running: notes.loading
-            visible: running
+        BouncingProgressBar {
+            anchors.top: parent.top
+            visible: notes.loading
         }
         Label {
             anchors.centerIn: parent

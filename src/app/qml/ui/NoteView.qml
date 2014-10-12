@@ -18,30 +18,31 @@
 
 import QtQuick 2.3
 import Ubuntu.Components 1.1
-import com.canonical.Oxide 1.0 
+import com.canonical.Oxide 1.0
 import Evernote 0.1
 import "../components"
 
 Item {
     id: root
-    property string title: note.title
-    property var note
+    property string title: note ? note.title : ""
+    property var note: null
 
     signal editNote(var note)
 
     onNoteChanged: {
-        print("refreshing note:", root.note.guid)
-        NotesStore.refreshNoteContent(root.note.guid)
+        if (root.note != null) {
+            NotesStore.refreshNoteContent(root.note.guid)
+        }
     }
 
-    ActivityIndicator {
-        anchors.centerIn: parent
-        running: root.note.loading
-        visible: running
+    BouncingProgressBar {
+        anchors.top: parent.top
+        visible: root.note == null || root.note.loading
+        z: 10
     }
 
     WebContext {
-        id: webContext 
+        id: webContext
 
         userScripts: [
             UserScript {
@@ -55,8 +56,8 @@ Item {
         id: noteTextArea
         anchors { fill: parent}
 
-        property string html: note.htmlContent
-        
+        property string html: root.note ? note.htmlContent : ""
+
         onHtmlChanged: {
             loadHtml(html, "file:///")
         }
@@ -66,7 +67,7 @@ Item {
         preferences.minimumFontSize: 14
 
         Connections {
-            target: note
+            target: note ? note : null
             onResourcesChanged: {
                 noteTextArea.loadHtml(noteTextArea.html, "file:///")
             }
@@ -85,7 +86,7 @@ Item {
                         NotesStore.saveNote(note.guid);
                         break;
                     }
-                } 
+                }
             }
         ]
      }

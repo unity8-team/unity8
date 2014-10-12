@@ -50,6 +50,21 @@ void Notes::setFilterNotebookGuid(const QString &notebookGuid)
     }
 }
 
+QString Notes::filterTagGuid() const
+{
+    return m_filterTagGuid;
+}
+
+void Notes::setFilterTagGuid(const QString &tagGuid)
+{
+    if (m_filterTagGuid != tagGuid) {
+        m_filterTagGuid = tagGuid;
+        emit filterTagGuidChanged();
+        invalidateFilter();
+        emit countChanged();
+    }
+}
+
 bool Notes::onlyReminders() const
 {
     return m_onlyReminders;
@@ -127,6 +142,11 @@ bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) con
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
     if (!m_filterNotebookGuid.isEmpty()) {
         if (sourceModel()->data(sourceIndex, NotesStore::RoleNotebookGuid).toString() != m_filterNotebookGuid) {
+            return false;
+        }
+    }
+    if (!m_filterTagGuid.isEmpty()) {
+        if (!sourceModel()->data(sourceIndex, NotesStore::RoleTagGuids).toStringList().contains(m_filterTagGuid)) {
             return false;
         }
     }

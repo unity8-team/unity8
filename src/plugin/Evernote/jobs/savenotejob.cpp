@@ -51,12 +51,23 @@ void SaveNoteJob::attachToDuplicate(const EvernoteJob *other)
 void SaveNoteJob::startJob()
 {
     evernote::edam::Note note;
+
     note.guid = m_note->guid().toStdString();
     note.__isset.guid = true;
+
     note.title = m_note->title().toStdString();
     note.__isset.title = true;
+
     note.notebookGuid = m_note->notebookGuid().toStdString();
     note.__isset.notebookGuid = true;
+
+    std::vector<evernote::edam::Guid> tags;
+    foreach (const QString &tag, m_note->tagGuids()) {
+        tags.push_back(tag.toStdString());
+    }
+    note.tagGuids = tags;
+    note.__isset.tagGuids = true;
+
     note.content = m_note->enmlContent().toStdString();
     note.__isset.content = true;
     note.contentLength = m_note->enmlContent().length();
