@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-09 09:42+0000\n"
+"PO-Revision-Date: 2014-10-12 16:13+0000\n"
 "Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:55+0000\n"
+"X-Launchpad-Export-Date: 2014-10-13 06:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -65,7 +65,7 @@ msgstr "Cuadernos de notes"
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr ""
+msgstr "Etiquetes"
 
 #: src/app/qml/reminders.qml:322
 msgid ""
@@ -168,6 +168,7 @@ msgstr "Seleiciona la data y la hora del recordatoriu:"
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
+"Nun hai nenguna etiqueta disponible. Puedes etiquetar les notes al veles."
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
@@ -275,4 +276,4 @@ msgstr "Fallu al anovar les notes: %1"
 #: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr ""
+msgstr "Error al refrescar les etiquetes: %1"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-07 10:50+0000\n"
+"PO-Revision-Date: 2014-10-12 07:19+0000\n"
 "Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:55+0000\n"
+"X-Launchpad-Export-Date: 2014-10-13 06:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -65,7 +65,7 @@ msgstr "Llibretes"
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr ""
+msgstr "Etiquetes"
 
 #: src/app/qml/reminders.qml:322
 msgid ""
@@ -104,12 +104,12 @@ msgstr "Edita"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
-msgstr "Edita'l"
+msgstr "Ed. el recordatori"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr "Defineix un recordatori"
+msgstr "Af. un recordatori"
 
 #: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"

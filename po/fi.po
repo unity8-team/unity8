@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-04 07:57+0000\n"
+"PO-Revision-Date: 2014-10-12 15:30+0000\n"
 "Last-Translator: Jiri Grönroos <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:55+0000\n"
+"X-Launchpad-Export-Date: 2014-10-13 06:16+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -65,7 +65,7 @@ msgstr "Muistivihkot"
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr ""
+msgstr "Tunnisteet"
 
 #: src/app/qml/reminders.qml:322
 msgid ""
@@ -149,8 +149,8 @@ msgstr "Lisää muistiinpano"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
-"Ei muistiinpanoja käytettävissä. Voit luoda uusia muistiinpanoja \"Lisää "
-"muistiinpano\"-painiketta käyttäen."
+"Ei muistiinpanoja. Voit luoda uusia muistiinpanoja \"Lisää muistiinpano\"-"
+"painiketta käyttäen."
 
 #: src/app/qml/ui/RemindersPage.qml:108
 msgid ""
@@ -171,6 +171,7 @@ msgstr "Valitse päivä ja aika muistutukselle:"
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
+"Ei tunnisteita. Voit lisätä muistiinpanoa katsellessasi siihen tunnisteita."
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
@@ -278,4 +279,4 @@ msgstr "Virhe päivittäessä muistivihkoja: %1"
 #: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr ""
+msgstr "Virhe tunnisteita päivittäessä: %1"

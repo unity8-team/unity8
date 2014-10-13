@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-09-05 23:33+0000\n"
+"PO-Revision-Date: 2014-10-12 09:38+0000\n"
 "Last-Translator: Jared Norris <jarednorris@ubuntu.com>\n"
 "Language-Team: English (Australia) <en_AU@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:56+0000\n"
+"X-Launchpad-Export-Date: 2014-10-13 06:16+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -23,7 +23,7 @@ msgstr "Reminders"
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr ""
+msgstr "Ubuntu Reminders app, powered by Evernote"
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
@@ -65,7 +65,7 @@ msgstr "Notebooks"
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr ""
+msgstr "Tags"
 
 #: src/app/qml/reminders.qml:322
 msgid ""
@@ -168,7 +168,7 @@ msgstr "Select date and time for the reminder:"
 
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
-msgstr ""
+msgstr "No tags available. You can tag notes while viewing them."
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
@@ -276,4 +276,4 @@ msgstr "Error refreshing notebooks: %1"
 #: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr ""
+msgstr "Error refreshing tags: %1"
