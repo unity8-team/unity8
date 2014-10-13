@@ -29,8 +29,8 @@ Item {
     property var note
 
     ColumnLayout {
-        anchors { top: parent.top; topMargin: units.gu(2); horizontalCenter: parent.horizontalCenter }
-        spacing: units.gu(2)
+        anchors { top: parent.top; topMargin: units.gu(1); horizontalCenter: parent.horizontalCenter }
+        spacing: units.gu(1)
 
         Label {
             text: i18n.tr("Select date and time for the reminder:")
@@ -48,35 +48,31 @@ Item {
             date: note.hasReminderTime ? note.reminderTime : new Date()
         }
 
-        RowLayout {
+        Button {
             Layout.fillWidth: true
-
-            Button {
-                text: i18n.tr("Clear reminder")
-                Layout.fillWidth: true
-                onClicked: {
-                    note.reminder = false;
-                    NotesStore.saveNote(note.guid);
-                    pageStack.pop();
-                }
+            text: i18n.tr("Set reminder")
+            color: UbuntuColors.lightGrey
+            onClicked: {
+                note.reminder = true;
+                var date = datePicker.date
+                var time = timePicker.date
+                date.setHours(time.getHours());
+                date.setMinutes(time.getMinutes());
+                note.reminderTime = date;
+                print("set reminder time to", Qt.formatDate(date))
+                NotesStore.saveNote(note.guid)
+                pageStack.pop();
             }
+        }
 
-            Button {
-                Layout.fillWidth: true
-                text: i18n.tr("Set reminder")
-                onClicked: {
-                    note.reminder = true;
-                    var date = datePicker.date
-                    var time = timePicker.date
-                    date.setHours(time.getHours());
-                    date.setMinutes(time.getMinutes());
-                    note.reminderTime = date;
-                    print("set reminder time to", Qt.formatDate(date))
-                    NotesStore.saveNote(note.guid)
-                    pageStack.pop();
-                }
+        Button {
+            text: i18n.tr("Clear reminder")
+            Layout.fillWidth: true
+            onClicked: {
+                note.reminder = false;
+                NotesStore.saveNote(note.guid);
+                pageStack.pop();
             }
-
         }
     }
 }
