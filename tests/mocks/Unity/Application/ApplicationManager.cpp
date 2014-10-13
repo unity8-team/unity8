@@ -230,7 +230,7 @@ ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
     return application;
 }
 
-ApplicationInfo* ApplicationManager::add(QString appId)
+ApplicationInfo* ApplicationManager::add(const QString &appId)
 {
     ApplicationInfo *application = 0;
 
@@ -245,6 +245,20 @@ ApplicationInfo* ApplicationManager::add(QString appId)
         add(application);
 
     return application;
+}
+
+void ApplicationManager::simulateAppCrashing(const QString &appId)
+{
+    Q_FOREACH (ApplicationInfo *app, m_runningApplications) {
+        if (app->appId() == appId) {
+            QModelIndex index = findIndex(app);
+            beginRemoveRows(QModelIndex(), index.row(), index.row());
+            m_runningApplications.takeAt(index.row())->deleteLater();
+            endRemoveRows();
+            break;
+        }
+    }
+    unfocusCurrentApplication();
 }
 
 bool ApplicationManager::stopApplication(const QString &appId)

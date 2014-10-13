@@ -186,6 +186,11 @@ Item {
             }
 
             onFocusedApplicationIdChanged: {
+                // If the focused app id turns empty while not in spread, the app has crashed
+                // refocus dash
+                if (ApplicationManager.focusedApplicationId == "" && !applicationsDisplayLoader.interctive) {
+                    ApplicationManager.focusApplication("unity8-dash");
+                }
                 if (greeter.hasLockedApp && greeter.lockedApp !== ApplicationManager.focusedApplicationId) {
                     greeter.startUnlock()
                 }

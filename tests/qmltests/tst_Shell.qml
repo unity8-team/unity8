@@ -572,5 +572,16 @@ Row {
 
             tryCompare(greeter, "showProgress", data.unlocked ? 0 : 1);
         }
+
+        function test_focusOtherAppOnCurrentCrashing() {
+            var app = ApplicationManager.startApplication("dialer-app");
+            waitUntilAppWindowIsFullyLoaded(app);
+            tryCompare(app.session.surface, "focus", true);
+
+            tryCompare(ApplicationManager, "focusedApplicationId", "dialer-app");
+
+            ApplicationManager.simulateAppCrashing("dialer-app");
+            tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash");
+        }
     }
 }

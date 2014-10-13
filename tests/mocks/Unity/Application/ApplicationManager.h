@@ -107,7 +107,8 @@ class ApplicationManager : public ApplicationManagerInterface {
 
     // Only for testing
     Q_INVOKABLE QStringList availableApplications();
-    Q_INVOKABLE ApplicationInfo* add(QString appId);
+    Q_INVOKABLE ApplicationInfo* add(const QString &appId);
+    Q_INVOKABLE void simulateAppCrashing(const QString &appId);
 
     QModelIndex findIndex(ApplicationInfo* application);
 
