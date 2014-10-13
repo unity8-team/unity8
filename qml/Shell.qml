@@ -186,8 +186,8 @@ Item {
             }
 
             onFocusedApplicationIdChanged: {
-                // If the focused app id turns empty while not in spread, the app has crashed
-                // refocus dash
+                // If the focused app id turns empty while not in spread, the app has crashed, closed itself
+                // or kas been killed by commandline => refocus dash
                 if (ApplicationManager.focusedApplicationId == "" && !applicationsDisplayLoader.interactive) {
                     ApplicationManager.focusApplication("unity8-dash");
                 }
