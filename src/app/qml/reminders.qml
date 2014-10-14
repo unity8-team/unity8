@@ -62,7 +62,7 @@ MainView {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, { accounts: accounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
+        accountPage = component.createObject(root, { accounts: allAccounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
         accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
