@@ -66,6 +66,7 @@ Item {
             color: UbuntuColors.green
 
             onClicked: {
+                Qt.inputMethod.commit();
                 textField.activated(replyField.text);
             }
         }
