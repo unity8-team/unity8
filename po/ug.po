@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-09-23 23:12+0000\n"
+"PO-Revision-Date: 2014-10-14 02:53+0000\n"
 "Last-Translator: Gheyret T.Kenji <Unknown>\n"
 "Language-Team: Uyghur Computer Science Association <UKIJ@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:56+0000\n"
+"X-Launchpad-Export-Date: 2014-10-14 07:13+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -23,7 +23,7 @@ msgstr "ئەسكەرتكۈچلەر"
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr ""
+msgstr "ئۇبۇنتۇ ئەسكەرتكۈچ ئەپى، Evernote نى ئاساس قىلغان."
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
@@ -65,7 +65,7 @@ msgstr "دەپتەرلەر"
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr ""
+msgstr "خەتكۈشلەر"
 
 #: src/app/qml/reminders.qml:322
 msgid ""
@@ -168,6 +168,7 @@ msgstr "ئەسكەرتكۈچنىڭ چېسلا ۋە ۋاقتىنى تاللاش:"
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
+"ھېچقانداق خەتكۈش يوق. ئىزاھلارنى كۆرۈۋاتقاندا ئۇنىغا خەتكۈش بېكىتەلەيسىز."
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
@@ -275,4 +276,4 @@ msgstr "خاتىرە دەپتەرنى يېڭىلاشتا خاتالىق كۆرۈ
 #: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr ""
+msgstr "خەتكۈشلەرنى يېڭىلاۋاتقاندا خاتالىق كۆرۈلدى: %1"
