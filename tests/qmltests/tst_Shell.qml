@@ -31,9 +31,11 @@ import Powerd 0.1
 
 import "../../qml"
 
-Row {
+Item {
     id: root
-    spacing: 0
+
+    width: units.gu(60)
+    height: units.gu(71)
 
     QtObject {
         id: applicationArguments
@@ -51,23 +53,44 @@ Row {
         }
     }
 
-    Loader {
-        id: shellLoader
+    Row {
+        anchors.fill: parent
 
-        // Copied from Shell.qml
-        property bool tablet: false
-        width: tablet ? units.gu(160)
-                      : applicationArguments.hasGeometry() ? applicationArguments.width()
-                                                           : units.gu(40)
-        height: tablet ? units.gu(100)
-                       : applicationArguments.hasGeometry() ? applicationArguments.height()
-                                                            : units.gu(71)
+        Loader {
+            id: shellLoader
 
-        property bool itemDestroyed: false
-        sourceComponent: Component {
-            Shell {
-                Component.onDestruction: {
-                    shellLoader.itemDestroyed = true;
+            property bool itemDestroyed: false
+            sourceComponent: Component {
+                Shell {
+                    Component.onDestruction: {
+                        shellLoader.itemDestroyed = true;
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            color: "white"
+            width: units.gu(30)
+            height: shellLoader.height
+
+            Column {
+                anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
+                spacing: units.gu(1)
+                Row {
+                    anchors { left: parent.left; right: parent.right }
+                    Button {
+                        text: "Show Greeter"
+                        onClicked: {
+                            if (shellLoader.status !== Loader.Ready)
+                                return;
+
+                            var greeter = testCase.findChild(shellLoader.item, "greeter");
+                            if (!greeter.shown) {
+                                greeter.show();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -99,31 +122,6 @@ Row {
         }
     }
 
-    Rectangle {
-        color: "white"
-        width: units.gu(30)
-        height: shellLoader.height
-
-        Column {
-            anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
-            spacing: units.gu(1)
-            Row {
-                anchors { left: parent.left; right: parent.right }
-                Button {
-                    text: "Show Greeter"
-                    onClicked: {
-                        if (shellLoader.status !== Loader.Ready)
-                            return;
-
-                        var greeter = testCase.findChild(shellLoader.item, "greeter");
-                        if (!greeter.shown) {
-                            greeter.show();
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     SignalSpy {
         id: sessionSpy
@@ -208,7 +206,7 @@ Row {
             // Open an application and focus
             waitUntilApplicationWindowIsFullyVisible(app);
             ApplicationManager.focusApplication(app);
-            compare(app.session.surface.activeFocus, true, "Focused application didn't have activeFocus");
+            compare(app.session.surface.focus, true, "Focused application didn't have activeFocus");
 
             notifications.model = mockNotificationsModel;
 
@@ -228,7 +226,7 @@ Row {
             verify(notification !== undefined && notification != null, "notification wasn't found");
 
             // Make sure activeFocus went away from the app window
-            compare(app.session.surface.activeFocus, false, "Notification didn't take active focus");
+            compare(app.session.surface.focus, false, "Notification didn't take active focus");
             compare(stage.interactive, false, "the stage is interactive with a notification showing")
 
             // Clicking the button should dismiss the notification and return focus
@@ -236,7 +234,7 @@ Row {
             mouseClick(buttonAccept, buttonAccept.width / 2, buttonAccept.height / 2);
 
             // Make sure we're back to normal
-            compare(app.session.surface.activeFocus, true, "App didn't take active focus after snap notification was dismissed");
+            compare(app.session.surface.focus, true, "App didn't take active focus after snap notification was dismissed");
             compare(stage.interactive, true, "Stages not interactive again after modal notification has closed");
         }
 
@@ -574,6 +572,7 @@ Row {
             tryCompare(greeter, "showProgress", 0)
             waitForRendering(greeter);
             LightDM.Greeter.showGreeter()
+            waitForRendering(greeter)
             tryCompare(greeter, "showProgress", 1)
             LightDM.Greeter.hideGreeter()
             tryCompare(greeter, "showProgress", 0)
