@@ -21,6 +21,11 @@ import QtQuick 2.0
 import Ubuntu.Components 1.1
 import "../Components"
 
+// to launch apps
+import Unity.Application 0.1
+
+
+
 Item {
     id: root
 
@@ -56,9 +61,11 @@ Item {
 
     Component {
         id: fakeDashComponent
+
         Rectangle {
             color: "blue"
             Label {
+                id: label
                 anchors.centerIn: parent
                 text: "TODO: Make this the fake dash!"
 
@@ -68,6 +75,18 @@ Item {
                  for available appIds. Add your fake apps (scopes) there. Put screenshots into
                  qml/graphics/applicationIcons/
                  */
+            }
+            Button {
+                id: createButton
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    top: label.bottom
+                    margins: units.gu(2)
+                }
+
+                text: "create a new feed"
+                onClicked: shell.activateApplication("video-feed") //ApplicationManager.startApplication("video-feed")
+                onPressAndHold: ApplicationManager.stopApplication("video-feed")
             }
         }
     }

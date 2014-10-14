@@ -480,6 +480,14 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("YouTube");
     application->setIconId("youtube");
     m_availableApplications.append(application);
+
+    // Vesa
+    application = new ApplicationInfo(this);
+    application->setAppId("video-feed");
+    application->setName("Videos");
+    //application->setIconId("video-feed");
+    application->setScreenshotId("video-feed");
+    m_availableApplications.append(application);
 }
 
 
