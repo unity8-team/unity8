@@ -56,56 +56,60 @@ Page {
         onlyReminders: true
     }
 
-    ListView {
-        id: remindersListView
+    Item {
         anchors.fill: parent
+        ListView {
+            id: remindersListView
+            anchors { left: parent.left; right: parent.right }
+            height: parent.height - y
 
-        delegate: RemindersDelegate {
-            width: remindersListView.width
-            note: notes.note(guid)
+            delegate: RemindersDelegate {
+                width: remindersListView.width
+                note: notes.note(guid)
 
-            Component.onCompleted: {
-                if (!model.plaintextContent) {
-                    NotesStore.refreshNoteContent(model.guid)
+                Component.onCompleted: {
+                    if (!model.plaintextContent) {
+                        NotesStore.refreshNoteContent(model.guid)
+                    }
+                }
+
+                onClicked: {
+                    root.selectedNote = NotesStore.note(guid);
                 }
             }
 
-            onClicked: {
-                root.selectedNote = NotesStore.note(guid);
-            }
-        }
+            model: notes
 
-        model: notes
-
-        section.criteria: ViewSection.FullString
-        section.property: "reminderTimeString"
-        section.delegate: Empty {
-            height: units.gu(5)
-            RowLayout {
-                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
-                Label {
-                    text: section
-                    Layout.fillWidth: true
-                }
-                Label {
-                    text: "(" + notes.sectionCount("reminderTimeString", section) + ")"
+            section.criteria: ViewSection.FullString
+            section.property: "reminderTimeString"
+            section.delegate: Empty {
+                height: units.gu(5)
+                RowLayout {
+                    anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
+                    Label {
+                        text: section
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: "(" + notes.sectionCount("reminderTimeString", section) + ")"
+                    }
                 }
             }
-        }
 
-        ActivityIndicator {
-            anchors.centerIn: parent
-            running: notes.loading
-            visible: running
-        }
-        Label {
-            anchors.centerIn: parent
-            visible: !notes.loading && (notes.error || remindersListView.count == 0)
-            width: parent.width - units.gu(4)
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-            text: notes.error ? notes.error :
-                                i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
+            ActivityIndicator {
+                anchors.centerIn: parent
+                running: notes.loading
+                visible: running
+            }
+            Label {
+                anchors.centerIn: parent
+                visible: !notes.loading && (notes.error || remindersListView.count == 0)
+                width: parent.width - units.gu(4)
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                text: notes.error ? notes.error :
+                i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
+            }
         }
     }
 }
