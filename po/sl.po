@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-07 10:58+0000\n"
+"PO-Revision-Date: 2014-10-14 13:22+0000\n"
 "Last-Translator: Damir Jerovšek <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:56+0000\n"
+"X-Launchpad-Export-Date: 2014-10-15 06:16+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -65,7 +65,7 @@ msgstr "Beležke"
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr ""
+msgstr "Oznake"
 
 #: src/app/qml/reminders.qml:322
 msgid ""
@@ -168,7 +168,7 @@ msgstr "Izberite datum in čas za opomnik:"
 
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
-msgstr ""
+msgstr "Ni oznak. Opombe lahko označite med njih ogledovanjem."
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
@@ -276,4 +276,4 @@ msgstr "Napaka med osveževanjem beležke: %1"
 #: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr ""
+msgstr "Napaka med osveževanjem oznak: %1"
