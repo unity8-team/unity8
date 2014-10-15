@@ -38,14 +38,14 @@ Indicators.FakeIndicatorsModel {
         Indicators.UnityMenuModelCache.setCachedModelData("com.canonical.indicators.fake3",
                                            "/com/canonical/indicators/fake3",
                                            "/com/canonical/indicators/fake3",
-                                           getUnityMenuModelData("fake-indicator-sound",
+                                           getUnityMenuModelData("fake-indicator-messages",
                                                                  "Messages (F)",
                                                                  "",
                                                                  [ "image://theme/messages-new" ]));
         Indicators.UnityMenuModelCache.setCachedModelData("com.canonical.indicators.fake4",
                                            "/com/canonical/indicators/fake4",
                                            "/com/canonical/indicators/fake4",
-                                           getUnityMenuModelData("fake-indicator-power",
+                                           getUnityMenuModelData("fake-indicator-sound",
                                                                  "Sound (F)",
                                                                  "",
                                                                  [ "image://theme/audio-volume-high" ]));
@@ -56,6 +56,13 @@ Indicators.FakeIndicatorsModel {
                                                                  "Battery (F)",
                                                                  "",
                                                                  [ "image://theme/battery-020" ]));
+        Indicators.UnityMenuModelCache.setCachedModelData("com.canonical.indicators.fake6",
+                                           "/com/canonical/indicators/fake6",
+                                           "/com/canonical/indicators/fake6",
+                                           getUnityMenuModelData("fake-indicator-datetime",
+                                                                 "Upcoming Events (F)",
+                                                                 "12:04",
+                                                                 []));
     }
 
     function getUnityMenuModelData(identifier, title, label, icons) {
@@ -105,9 +112,7 @@ Indicators.FakeIndicatorsModel {
 
     property var originalModelData: [
         {
-            "identifier": "indicator-fake1",
-            "widgetSource": "Indicators/DefaultIndicatorWidget.qml",
-            "pageSource": "Indicators/DefaultIndicatorPage.qml",
+            "identifier": "fake-indicator-bluetooth",
             "indicatorProperties": {
                 "enabled": true,
                 "busName": "com.canonical.indicators.fake1",
@@ -116,9 +121,7 @@ Indicators.FakeIndicatorsModel {
             }
         },
         {
-            "identifier": "indicator-fake2",
-            "widgetSource": "Indicators/DefaultIndicatorWidget.qml",
-            "pageSource": "Indicators/DefaultIndicatorPage.qml",
+            "identifier": "fake-indicator-network",
             "indicatorProperties": {
                 "enabled": true,
                 "busName": "com.canonical.indicators.fake2",
@@ -127,9 +130,7 @@ Indicators.FakeIndicatorsModel {
             }
         },
         {
-            "identifier": "indicator-fake3",
-            "widgetSource": "Indicators/DefaultIndicatorWidget.qml",
-            "pageSource": "Indicators/DefaultIndicatorPage.qml",
+            "identifier": "fake-indicator-messages",
             "indicatorProperties": {
                 "enabled": true,
                 "busName": "com.canonical.indicators.fake3",
@@ -138,9 +139,7 @@ Indicators.FakeIndicatorsModel {
             }
         },
         {
-            "identifier": "indicator-fake4",
-            "widgetSource": "Indicators/DefaultIndicatorWidget.qml",
-            "pageSource": "Indicators/DefaultIndicatorPage.qml",
+            "identifier": "fake-indicator-sound",
             "indicatorProperties": {
                 "enabled": true,
                 "busName": "com.canonical.indicators.fake4",
@@ -149,14 +148,21 @@ Indicators.FakeIndicatorsModel {
             }
         },
         {
-            "identifier": "indicator-fake5",
-            "widgetSource": "Indicators/DefaultIndicatorWidget.qml",
-            "pageSource": "Indicators/DefaultIndicatorPage.qml",
+            "identifier": "fake-indicator-power",
             "indicatorProperties": {
                 "enabled": true,
                 "busName": "com.canonical.indicators.fake5",
                 "menuObjectPath": "/com/canonical/indicators/fake5",
                 "actionsObjectPath": "/com/canonical/indicators/fake5"
+            }
+        },
+        {
+            "identifier": "fake-indicator-datetime",
+            "indicatorProperties": {
+                "enabled": true,
+                "busName": "com.canonical.indicators.fake6",
+                "menuObjectPath": "/com/canonical/indicators/fake6",
+                "actionsObjectPath": "/com/canonical/indicators/fake6"
             }
         }
     ]

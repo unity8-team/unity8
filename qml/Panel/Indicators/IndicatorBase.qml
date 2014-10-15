@@ -32,8 +32,6 @@ Item {
     property string menuObjectPath
     property string rootMenuType: "com.canonical.indicator.root"
 
-    property string deviceMenuObjectPath: menuObjectPath
-
     property alias menuModel: cachedModel.model
     property alias rootActionState: rootAction
 
@@ -41,7 +39,7 @@ Item {
         id: cachedModel
         busName: indicatorItem.busName
         actions: { "indicator": indicatorItem.actionsObjectPath }
-        menuObjectPath: indicatorItem.deviceMenuObjectPath
+        menuObjectPath: indicatorItem.menuObjectPath
     }
 
     RootActionState {
