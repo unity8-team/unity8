@@ -63,8 +63,9 @@ class AccountManager(object):
         logger.debug('account %s' % account.get_settings_dict())
 
         if not account.get_settings_dict():
+            self._delete_account_on_error(account)
             self._quit_main_loop_on_error('account is blank', 'add account')
-
+            
         info = self._get_identity_info(user_name, password)
 
         identity = Signon.Identity.new()
@@ -97,6 +98,16 @@ class AccountManager(object):
     def _on_account_created(self, account, error, _):
         if error:
             self._quit_main_loop_on_error(error, 'storing account')
+
+    def _delete_account_on_error(self, account):
+        # attempt to clean up after ourselves, since normal
+        # addCleanups will not run in this case
+        try:
+            logger.debug('Cleaning up account %s' % account.id)
+            account.delete()
+            account.store(self._on_account_deleted, None)
+        except:
+            logger.warn('Failed to cleanup account')
 
     def _quit_main_loop_on_error(self, error, step):
         logger.error('Error {}.'.format(step))
@@ -137,6 +148,7 @@ class AccountManager(object):
         identity = auth_data.get_credentials_id()
         method = auth_data.get_method()
         if method is None:
+            self._delete_account_on_error(account)
             self._quit_main_loop_on_error('Method is none',
                                           'processing auth data')
         mechanism = auth_data.get_mechanism()
