@@ -65,7 +65,7 @@ class AccountManager(object):
         if not account.get_settings_dict():
             self._delete_account_on_error(account)
             self._quit_main_loop_on_error('account is blank', 'add account')
-            
+
         info = self._get_identity_info(user_name, password)
 
         identity = Signon.Identity.new()
