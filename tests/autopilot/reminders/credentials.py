@@ -60,6 +60,10 @@ class AccountManager(object):
         self._start_main_loop()
 
         account = self._create_account()
+        logger.debug('account %s' % account.get_settings_dict())
+
+        if not account.get_settings_dict():
+            self._quit_main_loop_on_error('account is blank', 'add account')
 
         info = self._get_identity_info(user_name, password)
 
@@ -67,6 +71,9 @@ class AccountManager(object):
         identity.store_credentials_with_info(
             info, self._set_credentials_id_to_account,
             {'account': account, 'oauth_token': oauth_token})
+        logger.debug('identity %s' % identity.list_properties())
+
+        logger.debug('Joining loop')
 
         self._join_main_loop()
 
@@ -95,6 +102,7 @@ class AccountManager(object):
         logger.error('Error {}.'.format(step))
         self.error = error
         self._main_loop.quit()
+        raise CredentialsException(error)
 
     def _get_identity_info(self, user_name, password):
         info = Signon.IdentityInfo.new()
@@ -106,7 +114,7 @@ class AccountManager(object):
     def _set_credentials_id_to_account(
             self, identity, id_, error, account_dict):
         if error:
-            self._quit_main_loop_on_error(
+            self._quit_main_loop_on_error_quit_main_loop_on_error(
                 error, 'storing credentials with info')
 
         logger.debug('Setting credentials to account.')
@@ -114,6 +122,7 @@ class AccountManager(object):
         oauth_token = account_dict.get('oauth_token')
         account.set_variant('CredentialsId', GLib.Variant('u', id_))
         account.store(self._process_session, oauth_token)
+        logger.debug('Account stored')
 
     def _process_session(self, account, error, oauth_token):
         if error:
@@ -122,8 +131,13 @@ class AccountManager(object):
 
         logger.debug('Processing session.')
         account_service = Accounts.AccountService.new(account, None)
+        logger.debug('account_service %s' % account_service.list_properties())
         auth_data = account_service.get_auth_data()
+        logger.debug('auth_data %s' % auth_data.get_parameters())
         identity = auth_data.get_credentials_id()
+        if not identity:
+            self._quit_main_loop_on_error('Identity is blank',
+                                          'processing auth data')
         method = auth_data.get_method()
         mechanism = auth_data.get_mechanism()
         session_data = auth_data.get_parameters()
@@ -131,9 +145,13 @@ class AccountManager(object):
             'TokenSecret': GLib.Variant('s', 'dummy'),
             'AccessToken': GLib.Variant('s', oauth_token),
         })
+        logger.debug('session_data %s' % session_data)
+        logger.debug('Authenticating session %s, %s' % (identity, method))
         session = Signon.AuthSession.new(identity, method)
+        logger.debug('Send session %s' % session)
         session.process(
             session_data, mechanism, self._on_login_processed, None)
+        logger.debug('Session processed')
 
     def _on_login_processed(self, session, reply, error, userdata):
         if error:
