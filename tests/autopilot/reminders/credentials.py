@@ -114,7 +114,7 @@ class AccountManager(object):
     def _set_credentials_id_to_account(
             self, identity, id_, error, account_dict):
         if error:
-            self._quit_main_loop_on_error_quit_main_loop_on_error(
+            self._quit_main_loop_on_error(
                 error, 'storing credentials with info')
 
         logger.debug('Setting credentials to account.')
