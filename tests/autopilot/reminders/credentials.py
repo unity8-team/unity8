@@ -46,7 +46,7 @@ class AccountManager(object):
     def _join_main_loop(self):
         self._main_loop_thread.join()
         if self.error is not None:
-            raise CredentialsException(self.error.message)
+            raise CredentialsException(self.error)
 
     def add_evernote_account(self, user_name, password, oauth_token):
         """Add an evernote account.
@@ -135,10 +135,10 @@ class AccountManager(object):
         auth_data = account_service.get_auth_data()
         logger.debug('auth_data %s' % auth_data.get_parameters())
         identity = auth_data.get_credentials_id()
-        if not identity:
-            self._quit_main_loop_on_error('Identity is blank',
-                                          'processing auth data')
         method = auth_data.get_method()
+        if method is None:
+            self._quit_main_loop_on_error('Method is none',
+                                          'processing auth data')
         mechanism = auth_data.get_mechanism()
         session_data = auth_data.get_parameters()
         session_data['ProvidedTokens'] = GLib.Variant('a{sv}', {
