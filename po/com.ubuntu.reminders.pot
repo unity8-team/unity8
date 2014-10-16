@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-15 22:00-0400\n"
+"POT-Creation-Date: 2014-10-10 21:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,13 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1
-#: po/com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
 msgstr ""
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
-#: po/com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
 msgstr ""
 
@@ -49,7 +47,7 @@ msgid "Pull down to refresh"
 msgstr ""
 
 #: src/app/qml/components/RemindersDelegate.qml:50
-#: src/app/qml/ui/SetReminderView.qml:69
+#: src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
 msgstr ""
 
@@ -105,7 +103,7 @@ msgid "Edit reminder"
 msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
-#: src/app/qml/ui/SetReminderView.qml:53
+#: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
 msgstr ""
 
