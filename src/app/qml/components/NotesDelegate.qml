@@ -79,7 +79,7 @@ Empty {
                                 font.weight: Font.Light
                                 elide: Text.ElideRight
                                 color: root.notebookColor
-                            } 
+                            }
 
                             Label {
                                 Layout.fillWidth: true
@@ -103,7 +103,7 @@ Empty {
                                 }
                                 Label {
 //                                    Layout.minimumWidth: parent.width + units.gu(2)
-                                    text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm") + "/" + Qt.formatDateTime(root.changedDate, "dddd, hh:mm")
+                                    text: i18n.tr("Last modification: " + Qt.formatDateTime(root.changedDate, "dddd, hh:mm"))
                                     color: "#b3b3b3"
                                     fontSize: "small"
                                     horizontalAlignment: Text.AlignRight
@@ -120,7 +120,7 @@ Empty {
                     Layout.maximumWidth: parent.width / 2
 
                     Rectangle {
-                        height: parent.width / 4 
+                        height: parent.width / 4
                         width: parent.height
 
                         anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: parent.width/2 - height/2 }
