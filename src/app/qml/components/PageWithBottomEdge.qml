@@ -111,7 +111,7 @@ Page {
         if (edgeLoader.status === Loader.Ready) {
             edgeLoader.item.active = true
 
-            NotesStore.createNote("Untitled", filter);
+            NotesStore.createNote("Untitled", filterNotebookGuid);
 
             if (edgeLoader.item.flickable) {
                 edgeLoader.item.flickable.contentY = -page.header.height
