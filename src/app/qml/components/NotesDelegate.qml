@@ -27,6 +27,7 @@ Empty {
 
     property string title
     property date creationDate
+    property date changedDate
     property string content
     property string resource
     property string tags
@@ -102,7 +103,7 @@ Empty {
                                 }
                                 Label {
 //                                    Layout.minimumWidth: parent.width + units.gu(2)
-                                    text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
+                                    text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm") + "/" + Qt.formatDateTime(root.changedDate, "dddd, hh:mm")
                                     color: "#b3b3b3"
                                     fontSize: "small"
                                     horizontalAlignment: Text.AlignRight
