@@ -68,7 +68,7 @@ PageWithBottomEdge {
                 text: i18n.tr("Add note")
                 iconName: "add"
                 onTriggered: {
-                    NotesStore.createNote(i18n.tr("Untitled"), filter);
+                    NotesStore.createNote(i18n.tr("Untitled"), filterNotebookGuid);
                 }
             }
         }
