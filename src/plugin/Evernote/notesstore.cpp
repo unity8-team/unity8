@@ -385,6 +385,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
         }
 
+        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
         note->setReminderOrder(result.attributes.reminderOrder);
@@ -475,6 +476,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     note->setLoading(false);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
+    note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
 
     // Notes are fetched without resources by default. if we discover one or more resources where we don't have
     // data in the cache, just refresh the note again with resource data.
