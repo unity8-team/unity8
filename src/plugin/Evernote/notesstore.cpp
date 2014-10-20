@@ -123,6 +123,10 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->created();
     case RoleCreatedString:
         return m_notes.at(index.row())->createdString();
+    case RoleUpdated:
+        return m_notes.at(index.row())->updated();
+    case RoleUpdatedString:
+        return m_notes.at(index.row())->updatedString();
     case RoleTitle:
         return m_notes.at(index.row())->title();
     case RoleReminder:
@@ -164,6 +168,8 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleNotebookGuid, "notebookGuid");
     roles.insert(RoleCreated, "created");
     roles.insert(RoleCreatedString, "createdString");
+    roles.insert(RoleUpdated, "updated");
+    roles.insert(RoleUpdatedString, "updatedString");
     roles.insert(RoleTitle, "title");
     roles.insert(RoleReminder, "reminder");
     roles.insert(RoleReminderTime, "reminderTime");
@@ -650,6 +656,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
     note->setEnmlContent(QString::fromStdString(result.content));
+    note->setUpdated(created);
 
     beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
     m_notesHash.insert(note->guid(), note);
@@ -684,6 +691,7 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
     if (note) {
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
 
         emit noteChanged(note->guid(), note->notebookGuid());
 

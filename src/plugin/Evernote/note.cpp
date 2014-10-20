@@ -95,6 +95,40 @@ QString Note::createdString() const
     return QString(gettext("%1 %2")).arg(QLocale::system().standaloneMonthName(createdDate.month())).arg(createdDate.year());
 }
 
+QDateTime Note::updated() const
+{
+    return m_updated;
+}
+
+void Note::setUpdated(const QDateTime &updated)
+{
+    if (m_updated!= updated) {
+        m_updated = updated;
+        emit updatedChanged();
+    }
+}
+
+QString Note::updatedString() const
+{
+    QDate updatedDate = m_updated.date();
+    QDate today = QDate::currentDate();
+    if (updatedDate == today) {
+        return gettext("Today");
+    }
+    if (updatedDate == today.addDays(-1)) {
+        return gettext("Yesterday");
+    }
+    if (updatedDate >= today.addDays(-7)) {
+        return gettext("Last week");
+    }
+    if (updatedDate >= today.addDays(-14)) {
+        return gettext("Two weeks ago");
+    }
+
+    // TRANSLATORS: the first argument refers to a month name and the second to a year
+    return QString(gettext("%1 %2")).arg(QLocale::system().standaloneMonthName(updatedDate.month())).arg(updatedDate.year());
+}
+
 QString Note::title() const
 {
     return m_title;
@@ -382,6 +416,7 @@ Note *Note::clone()
     Note *note = new Note(m_guid, m_created);
     note->setNotebookGuid(m_notebookGuid);
     note->setTitle(m_title);
+    note->setUpdated(m_updated);
     note->setEnmlContent(m_content.enml());
     note->setReminderOrder(m_reminderOrder);
     note->setReminderTime(m_reminderTime);
