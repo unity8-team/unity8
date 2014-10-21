@@ -102,8 +102,9 @@ Empty {
 
                                 }
                                 Label {
-//                                    Layout.minimumWidth: parent.width + units.gu(2)
-                                    text: i18n.tr("Last modification: " + Qt.formatDateTime(root.changedDate, "dddd, hh:mm"))
+                                    // TRANSLATORS: the argument is a modification date that follows this format:
+                                    // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+                                    text: i18n.tr("Last modification: %1").arg(Qt.formatDateTime(root.changedDate, i18n.tr("dddd, d hh:mm")))
                                     color: "#b3b3b3"
                                     fontSize: "small"
                                     horizontalAlignment: Text.AlignRight
@@ -125,20 +126,20 @@ Empty {
 
                         anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: parent.width/2 - height/2 }
                         rotation: 90
-                        
+
                         gradient: Gradient {
                             GradientStop{ position: 0; color: "#383838" }
                             GradientStop{ position: 1; color: "transparent" }
                         }
                     }
-                
+
                     Rectangle {
-                        height: parent.width / 4 
+                        height: parent.width / 4
                         width: parent.height
 
                         anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: -parent.width/2 + height/2 }
                         rotation: 270
-                        
+
                         gradient: Gradient {
                             GradientStop{ position: 0; color: "#383838" }
                             GradientStop{ position: 1; color: "transparent" }
