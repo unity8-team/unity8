@@ -12,15 +12,15 @@ Item {
     property string feedName: feedName_m //from model
     property bool isFavourite: favourite_m //from model
     property bool isPersistent: persistent_m //from model
-    property real mouseY: handle.mouseY
-
     property bool isChecked: false
+    property real mouseY: handle.mouseY
 
     signal pressAndHold()
     signal moveStarted()
     signal moveEnded()
     signal toggleFavourite()
     signal remove()
+    signal clicked()
 
     width: 100
     height: 62
@@ -82,6 +82,14 @@ Item {
         property real previousMouseXHelper
 
         onPressAndHold: if (!dragging) feedDelegate.pressAndHold()
+        onClicked: {
+            if (!dragging) {
+                mouseArea.direction = Qt.RightToLeft
+                horizontalDragEndAnimation.restart()
+                feedDelegate.clicked()
+            }
+        }
+
         onPressed: {
             dragging = false
             pressedX = mouseX
@@ -131,8 +139,6 @@ Item {
             id: topLayerBg
             anchors.fill: parent
             color: "#303030"
-            border.width: 1
-            border.color: "#FFFFFF"
         }
 
         Item {
@@ -228,6 +234,15 @@ Item {
         }
     }
 
+    Image {
+        id: divider
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        source: "graphics/ListItemDividerHorizontal.png"
+    }
 
     SequentialAnimation {
         id: horizontalDragEndAnimation

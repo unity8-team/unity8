@@ -54,4 +54,3 @@ Item {
         id: applicationManager
     }
 }
-

@@ -13,6 +13,7 @@ Showable {
     readonly property real __feedHeight: units.gu(7)
 
     signal close()
+    signal feedSelected(string feedName)
 
     // Timer to allow displacement animation to finish before calculating need for
     // reorganizing next time
@@ -112,6 +113,12 @@ Showable {
             onPressAndHold: feedManager.editModeOn ? feedManager.editModeOn = false : feedManager.editModeOn = true
             onToggleFavourite: isFavourite ? fakeDashRoot.applicationManager.unfavouriteFeed(feedName) : fakeDashRoot.applicationManager.favouriteFeed(feedName)
             onRemove: applicationManager.removeInstalledFeed(feedName)
+            onClicked: {
+                feedManager.feedSelected(feedName)
+                listView.resetDelegates()
+                feedManager.editModeOn = false
+                feedManager.close()
+            }
         }
 
         section.property: "favourite_m"
@@ -131,6 +138,17 @@ Showable {
                 fontSize: "small"
                 color: "white"
                 opacity: 0.9
+            }
+
+            Image {
+                id: divider
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    bottom: parent.bottom
+                }
+
+                source: "graphics/ListItemDividerHorizontal.png"
             }
         }
 
