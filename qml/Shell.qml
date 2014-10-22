@@ -714,7 +714,7 @@ Item {
         z: dialogs.z + 10
         text: "EARLY ALPHA\nNOT READY FOR USE"
         color: "lightgrey"
-        opacity: 0.2
+        opacity: 0
         font.weight: Font.Black
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

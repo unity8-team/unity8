@@ -20,6 +20,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 1.1
 import "../Components"
+import "FakeDash"
 
 // to launch apps
 import Unity.Application 0.1
@@ -62,20 +63,26 @@ Item {
     Component {
         id: fakeDashComponent
 
+        FakeDashMain {
+            anchors.fill: parent
+            anchors.topMargin: maximizedAppTopMargin
+        }
+
+/*
         Rectangle {
             color: "blue"
             Label {
                 id: label
                 anchors.centerIn: parent
                 text: "TODO: Make this the fake dash!"
-
+*/
                  /**
                  To fake adding a new app, call ApplicationManager.startApplication(appId)
                  See tests/mocks/Unity/Application/ApplicationManager.cpp buildListOfAvailableApplications()
                  for available appIds. Add your fake apps (scopes) there. Put screenshots into
                  qml/graphics/applicationIcons/
                  */
-            }
+  /*          }
             Button {
                 id: createButton
                 anchors {
@@ -88,7 +95,7 @@ Item {
                 onClicked: shell.activateApplication("video-feed") //ApplicationManager.startApplication("video-feed")
                 onPressAndHold: ApplicationManager.stopApplication("video-feed")
             }
-        }
+        }*/
     }
 
     Component {
