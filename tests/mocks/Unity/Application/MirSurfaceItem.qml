@@ -25,10 +25,11 @@ Rectangle {
     implicitHeight: units.gu(70)
 
     rotation: {
-        if (orientation == Qt.PortraitOrientation) return 0;
+        /*if (orientation == Qt.PortraitOrientation) return 0;
         else if (orientation == Qt.LandscapeOrientation) return 90;
         else if (orientation == Qt.InvertedPortraitOrientation) return 180;
-        else return 270;
+        else return 270;*/
+        return 0
     }
     x: parent ? (parent.width - width) / 2 : 0
     y: parent ? (parent.height - height) / 2 : 0
@@ -57,11 +58,12 @@ Rectangle {
         fontSizeMode: Text.Fit
         minimumPixelSize: 10; font.pixelSize: 200
         verticalAlignment: Text.AlignVCenter
+        visible: false
     }
 
-    MultiPointTouchArea {
+    /*MultiPointTouchArea {
         anchors.fill: parent
         onPressed: { root.wantInputMethod = true; root.touchPressCount++; }
         onReleased: { root.touchReleaseCount++; }
-    }
+    }*/
 }
