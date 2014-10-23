@@ -21,7 +21,7 @@
 // Qt
 #include <QtQml/qqml.h>
 
-void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
+void UbuntuSettingsMenusPlugin::registerTypes(const char *uri)
 {
     qmlRegisterUncreatableType<TransferState>(uri, 0, 1, "TransferState", "Can't create TransferState class");
 }

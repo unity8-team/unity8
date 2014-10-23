@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UBUNTUSETTINGSMENUS_PLUGIN_H
-#define UBUNTUSETTINGSMENUS_PLUGIN_H
+#ifndef UBUNTUSETTINGSCOMPOENNTS_PLUGIN_H
+#define UBUNTUSETTINGSCOMPOENNTS_PLUGIN_H
 
 #include <QtQml/QQmlExtensionPlugin>
 
-class UbuntuSettingsMenusPlugin : public QQmlExtensionPlugin
+class UbuntuSettingsComponentsPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
@@ -27,4 +27,4 @@ public:
     void registerTypes(const char *uri);
 };
 
-#endif // UBUNTUSETTINGSMENUS_PLUGIN_H
+#endif // UBUNTUSETTINGSCOMPOENNTS_PLUGIN_H

@@ -14,17 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UBUNTUSETTINGSMENUS_PLUGIN_H
-#define UBUNTUSETTINGSMENUS_PLUGIN_H
+// local
+#include "plugin.h"
+#include "signalbinder.h"
 
-#include <QtQml/QQmlExtensionPlugin>
+// Qt
+#include <QtQml/qqml.h>
 
-class UbuntuSettingsMenusPlugin : public QQmlExtensionPlugin
+void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
-public:
-    void registerTypes(const char *uri);
-};
-
-#endif // UBUNTUSETTINGSMENUS_PLUGIN_H
+    qmlRegisterType<SignalBinder>(uri, 0, 1, "SignalBinder");
+}
