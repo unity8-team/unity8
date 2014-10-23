@@ -33,10 +33,10 @@ Item {
 
         Image {
             id: screenshotImage
-            property string screenshotSource: dashFeedDelegate.feedScreenshot
             width: parent.width
             height: width * sourceSize.height / sourceSize.width
-            source: feed_screenshot_m != "" ? "graphics/feedScreenshots/" + screenshotSource : ""
+            source: dashFeedDelegate.feedScreenshot != "" ? "graphics/feedScreenshots/" + dashFeedDelegate.feedScreenshot : ""
+            onSourceChanged: console.log("source", source)
         }
     }
 

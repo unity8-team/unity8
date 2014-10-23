@@ -63,8 +63,8 @@ Item {
     function favouriteFeed(feedName) {
         console.log("Favourite a feed:", feedName)
 
-        var foundManageIndex = __findFirstModelIndex(manageDashModel, feedName)
-        var foundDashIndex = __findFirstModelIndex(dashModel, feedName)
+        var foundManageIndex = findFirstModelIndexByName(manageDashModel, feedName)
+        var foundDashIndex = findFirstModelIndexByName(dashModel, feedName)
 
         if (foundManageIndex != -1 && foundDashIndex == -1) {
             manageDashModel.setProperty(foundManageIndex, "favourite_m", true)
@@ -82,7 +82,7 @@ Item {
     function unfavouriteFeed(feedName) {
         console.log("Unfavourite a feed:", feedName)
 
-        var foundIndex = __findFirstModelIndex(manageDashModel, feedName)
+        var foundIndex = findFirstModelIndexByName(manageDashModel, feedName)
         if (foundIndex != -1) {
             manageDashModel.get(foundIndex).favourite_m = false
         } else {
@@ -90,7 +90,7 @@ Item {
         }
 
         // remove item in Dash model
-        foundIndex = __findFirstModelIndex(dashModel, feedName)
+        foundIndex = findFirstModelIndexByName(dashModel, feedName)
         if (foundIndex != -1) {
             dashModel.remove(foundIndex)
         } else {
@@ -102,8 +102,8 @@ Item {
 
     function moveFavouriteFeed(feedName, toIndex) {
         console.log("moveFavouriteFeed, feed:", feedName, " to:", toIndex)
-        var foundManageIndex = __findFirstModelIndex(manageDashModel, feedName)
-        var foundDashIndex = __findFirstModelIndex(dashModel, feedName)
+        var foundManageIndex = findFirstModelIndexByName(manageDashModel, feedName)
+        var foundDashIndex = findFirstModelIndexByName(dashModel, feedName)
         if (foundManageIndex != -1 && foundDashIndex != -1) {
             manageDashModel.move(foundManageIndex, toIndex, 1)
             dashModel.move(foundDashIndex, toIndex, 1)
@@ -116,7 +116,7 @@ Item {
         console.log("removeInstalledFeed:", feedName)
 
         // remove item in Dash model
-        var foundIndex = __findFirstModelIndex(dashModel, feedName)
+        var foundIndex = findFirstModelIndexByName(dashModel, feedName)
         if (foundIndex != -1) {
             dashModel.remove(foundIndex)
         } else {
@@ -124,7 +124,7 @@ Item {
         }
 
         // remove item in Dash model
-        foundIndex = __findFirstModelIndex(manageDashModel, feedName)
+        foundIndex = findFirstModelIndexByName(manageDashModel, feedName)
         if (foundIndex != -1) {
             manageDashModel.remove(foundIndex)
         } else {
@@ -134,9 +134,18 @@ Item {
     }
 
     // helpers--------------------------------------------------
-    function __findFirstModelIndex(model, feedName) {
+    function findFirstModelIndexByName(model, feedName) {
         for (var i = 0; i < model.count; i++) {
             if (model.get(i).feedName_m == feedName) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    function findFirstModelIndexById(model, feedId) {
+        for (var i = 0; i < model.count; i++) {
+            if (model.get(i).feedId_m == feedId) {
                 return i
             }
         }

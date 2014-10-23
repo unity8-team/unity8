@@ -481,13 +481,32 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setIconId("youtube");
     m_availableApplications.append(application);
 
-    // Vesa
+    // Vesa additions
+    application = new ApplicationInfo(this);
+    application->setAppId("home-feed");
+    application->setName("Home Feed");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("apps-feed");
+    application->setName("Apps Feed");
+    m_availableApplications.append(application);
+
     application = new ApplicationInfo(this);
     application->setAppId("video-feed");
-    application->setName("Videos");
-    //application->setIconId("video-feed");
-    application->setScreenshotId("video-feed");
+    application->setName("Video Feed");
     m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("music-feed");
+    application->setName("Music Feed");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("news-feed");
+    application->setName("News Feed");
+    m_availableApplications.append(application);
+
 }
 
 

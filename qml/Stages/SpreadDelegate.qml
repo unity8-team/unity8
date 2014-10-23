@@ -51,7 +51,22 @@ Item {
         y: dragArea.distance
         width: parent.width
         height: parent.height
-        sourceComponent: application && application.appId == "unity8-dash" ? fakeDashComponent : appWindowComponent
+        sourceComponent: {
+            if (application && application.appId == "unity8-dash") {
+                return fakeDashComponent
+            } else if (application
+                       && (application.appId == "home-feed"
+                       || application.appId == "video-feed"
+                       || application.appId == "music-feed"
+                       || application.appId == "news-feed"
+                       || application.appId == "apps-feed"
+                       )) {
+                return fakeFeedComponent
+            } else {
+                return appWindowComponent
+            }
+        }
+
         asynchronous: true
 
         Binding {
@@ -73,6 +88,15 @@ Item {
         FakeDash {
             anchors.fill: parent
             anchors.topMargin: maximizedAppTopMargin
+            onFeedLaunch: {
+                console.log("onFeedLaunch", feedName)
+                var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
+                console.log("foundModelIndex", foundModelIndex)
+                if (foundModelIndex != -1) {
+                    //console.log("shell.activateApplication with id", manageDashModel.get(foundModelIndex).feedId_m)
+                    shell.activateApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
+                }
+            }
         }
 
 /*
@@ -103,6 +127,35 @@ Item {
                 onPressAndHold: ApplicationManager.stopApplication("video-feed")
             }
         }*/
+    }
+
+    Component {
+        id: fakeFeedComponent
+
+        DashFeedDelegate {
+            anchors.fill: parent
+            anchors.topMargin: maximizedAppTopMargin
+            feedName: {
+                var foundModelIndex = feedManager.findFirstModelIndexById(feedManager.manageDashModel, application.appId)
+                if (foundModelIndex == -1) {
+                    console.log("Error. corresponding feed not found. id:", application.appId)
+                    return ""
+                } else {
+                    return feedManager.manageDashModel.get(foundModelIndex).feedName_m
+                }
+            }
+            feedScreenshot: {
+                var foundModelIndex = feedManager.findFirstModelIndexById(feedManager.manageDashModel, application.appId)
+                console.log("foundModelIndex", foundModelIndex)
+                if (foundModelIndex == -1) {
+                    console.log("Error. corresponding feed not found. id:", application.appId)
+                    return ""
+                } else {
+                    console.log(feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m)
+                    return feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m
+                }
+            }
+        }
     }
 
     Component {
