@@ -786,5 +786,6 @@ void NotesStore::clear()
         note->deleteLater();
     }
     m_notes.clear();
+    m_notesHash.clear();
     endResetModel();
 }
