@@ -1,3 +1,9 @@
+ubuntu-settings-components (0.5-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Added SyncSwitch & SyncCheckBox components
+
+ -- Nick Dedekind <nick.dedekind@canonical.com>  Thu, 23 Oct 2014 17:09:21 -0400
+
 ubuntu-settings-components (0.4+14.10.20140926-0ubuntu1) utopic; urgency=low
 
   * New rebuild forced
