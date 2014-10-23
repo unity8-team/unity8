@@ -2,7 +2,10 @@ import QtQuick 2.0
 import Ubuntu.Components 1.1
 
 Item {
-    id: feedDelegate
+    id: dashFeedDelegate
+
+    property string feedName: feedName_m
+    property string feedScreenshot: feed_screenshot_m
 
     width: dash.width
     height: dash.height
@@ -15,7 +18,7 @@ Item {
 
         Label {
             anchors.centerIn: parent
-            text: feedName_m
+            text: dashFeedDelegate.feedName
             color: "white"
             fontSize: "large"
         }
@@ -30,7 +33,7 @@ Item {
 
         Image {
             id: screenshotImage
-            property string screenshotSource: feed_screenshot_m
+            property string screenshotSource: dashFeedDelegate.feedScreenshot
             width: parent.width
             height: width * sourceSize.height / sourceSize.width
             source: feed_screenshot_m != "" ? "graphics/feedScreenshots/" + screenshotSource : ""

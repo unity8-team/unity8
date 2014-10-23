@@ -3,7 +3,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 
 Item {
-    id: applicationManager
+    id: feedManager
 
     width: 100
     height: 100
@@ -155,10 +155,6 @@ Item {
 
     AllFeedsModel {
         id: allFeedsModel
-    }
-
-    AllAppsModel {
-        id: allAppsModel
     }
 
     ListModel {

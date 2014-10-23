@@ -26,16 +26,16 @@ Item {
             right: parent.right
             top: parent.top
         }
-        height: units.gu(6)
+        height: units.gu(7)
 
         Image {
             id: backButton
             anchors {
                 left: parent.left
-                top: parent.top
-                bottom: parent.bottom
-                margins: units.gu(1.5)
+                leftMargin: units.gu(1.5)
+                verticalCenter: parent.verticalCenter
             }
+            height: units.gu(2.5)
             width: height * sourceSize.width/sourceSize.height
             source: "graphics/go-previous.svg"
 
@@ -54,13 +54,9 @@ Item {
 
         Image {
             id: cancelButton
-            anchors {
-                left: parent.left
-                top: parent.top
-                bottom: parent.bottom
-                margins: units.gu(1.5)
-            }
-            width: height
+            anchors.centerIn: backButton
+            height: units.gu(2.5)
+            width: height * sourceSize.width / sourceSize.height
             source: "graphics/cancel.svg"
 
             visible: opacity > 000.1
@@ -85,26 +81,23 @@ Item {
             }
 
             text: "Manage"
-            color: "#f3f3e7"
-            opacity: 0.6
+            color: "#5b5b5b"
+            opacity: 1
             font.family: "Ubuntu"
             font.weight: Font.Light
             fontSize: "x-large"
             elide: Text.ElideRight
-            style: Text.Raised
-            styleColor: "black"
         }
 
         Image {
             id: storeIcon
             anchors {
                 right: searchIcon.left
-                top: parent.top
-                bottom: parent.bottom
-                margins: units.gu(1.5)
                 rightMargin: units.gu(2.5)
+                verticalCenter: parent.verticalCenter
             }
-            width: height
+            height: units.gu(2.5)
+            width: height * sourceSize.width / sourceSize.height
             source: "graphics/stock_application.svg"
 
             visible: opacity > 000.1
@@ -122,8 +115,9 @@ Item {
 
         Image {
             id: checkAllIcon
-            anchors.fill: storeIcon
-            width: height
+            anchors.centerIn: storeIcon
+            height: units.gu(2.5)
+            width: height * sourceSize.width / sourceSize.height
             source: "graphics/select.svg"
 
             visible: opacity > 000.1
@@ -145,7 +139,7 @@ Item {
                 right: parent.right
                 top: parent.top
                 bottom: parent.bottom
-                margins: units.gu(1.5)
+                margins: units.gu(2)
             }
             width: height
             source: "graphics/search.svg"
@@ -193,5 +187,6 @@ Item {
             left: parent.left
             right: parent.right
         }
+        opacity: 0.3
     }
 }

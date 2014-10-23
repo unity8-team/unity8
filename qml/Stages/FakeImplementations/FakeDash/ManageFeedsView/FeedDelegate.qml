@@ -48,14 +48,15 @@ Item {
             bottom: parent.bottom
         }
         width: mouseArea.maxDrag
-        color: isPersistent ? "black" : "red"
+        color: isPersistent ? "#050505" : "red"
 
         Image {
             id: trashbin
-            height: units.gu(3)
+            height: units.gu(2.5)
             width: height
             anchors.centerIn: parent
-            source: isPersistent ? "" : "graphics/edit-delete.svg"
+            source: isPersistent ? "" : "graphics/edit-delete-white.svg"
+            opacity: 0.9
         }
 
         MouseArea {
@@ -75,7 +76,7 @@ Item {
         property int direction: Qt.LeftToRight
         property real pressedX
         property real maxDrag: units.gu(8)
-        property real dragStartThreshold: units.gu(1)
+        property real dragStartThreshold: units.gu(2)
         property bool dragging: false
 
         property real previousMouseX
@@ -134,22 +135,21 @@ Item {
         id: topLayer
         width: parent.width
         height: parent.height
-
+        Behavior on x {enabled: !horizontalDragEndAnimation.running;}
         Rectangle {
             id: topLayerBg
             anchors.fill: parent
-            color: "#303030"
+            color: "#f5f5f5"
         }
 
         Item {
             id: checkboxContainer
             anchors {
                 left: parent.left
-                leftMargin: units.gu(1.5)
                 verticalCenter: parent.verticalCenter
             }
-            height: units.gu(3)
-            width: editModeOn ? height : 0
+            height: parent.height
+            width: editModeOn ? units.gu(4) : 0
             Behavior on width {NumberAnimation{duration: UbuntuAnimation.FastDuration; easing: UbuntuAnimation.StandardEasing}}
             visible: opacity > 000.1 && !isPersistent
             opacity: editModeOn ? 1 : 0
@@ -159,6 +159,7 @@ Item {
 
             Image {
                 id: checkbox
+                anchors.centerIn: parent
                 height: units.gu(3)
                 width: height
                 source: isChecked ? "graphics/select.svg": "graphics/select-nonselected.svg"
@@ -175,17 +176,19 @@ Item {
             id: feedIcon
             anchors {
                 left: checkboxContainer.right
-                leftMargin: units.gu(1.5)
+                leftMargin: units.gu(1)
                 verticalCenter: parent.verticalCenter
             }
-            height: units.gu(4)
+            height: units.gu(5)
             width: height
-            opacity: 0.7
+            opacity: 0.1
+            color: "black"
+            radius: units.gu(1)
         }
 
         Label {
             text: feedDelegate.feedName
-            color: "white"
+            color: "black"
             fontSize: "large"
             anchors {
                 left: feedIcon.right
@@ -198,7 +201,7 @@ Item {
             id: handle
             anchors {
                 right: parent.right
-                rightMargin: units.gu(1.5)
+                rightMargin: units.gu(2)
                 verticalCenter: parent.verticalCenter
             }
 
@@ -214,10 +217,10 @@ Item {
             id: favIcon
             anchors {
                 right: parent.right
-                rightMargin: units.gu(1.5)
+                rightMargin: units.gu(2)
                 verticalCenter: parent.verticalCenter
             }
-            height: units.gu(3)
+            height: units.gu(2.5)
             width: sourceSize.width / sourceSize.height * height
             source: isFavourite ? "graphics/starred.svg" : "graphics/non-starred.svg"
             visible: opacity > 000.1
@@ -234,14 +237,15 @@ Item {
         }
     }
 
-    Image {
+    Rectangle {
         id: divider
         anchors {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
         }
-        source: "graphics/ListItemDividerHorizontal.png"
+        height: units.dp(1)
+        color: "#d8d8d8"
     }
 
     SequentialAnimation {

@@ -20,7 +20,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 1.1
 import "../Components"
-import "FakeDash"
+import "FakeImplementations/FakeDash"
 
 // to launch apps
 import Unity.Application 0.1
@@ -43,6 +43,7 @@ Item {
     property bool closeable
 
     property var application: null
+    property var feedManager: null
 
     Loader {
         id: appWindowLoader
@@ -58,12 +59,18 @@ Item {
             property: "application"
             value: root.application
         }
+
+        Binding {
+            target: appWindowLoader.item
+            property: "feedManager"
+            value: root.feedManager
+        }
     }
 
     Component {
         id: fakeDashComponent
 
-        FakeDashMain {
+        FakeDash {
             anchors.fill: parent
             anchors.topMargin: maximizedAppTopMargin
         }

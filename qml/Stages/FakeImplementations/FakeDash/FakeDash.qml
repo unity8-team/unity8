@@ -1,13 +1,14 @@
 import QtQuick 2.0
 import Ubuntu.Components 1.1
-import "FeedManager"
+import "ManageFeedsView"
 import "../Components"
 
 Item {
-    id: dash
+    id: fakeDash
 
-    property ListModel dashModel: null
-    property ListModel manageDashModel: null
+    property var feedManager: null
+
+    signal feedLaunch(string feedName)
 
     function activateFeed(feedName) {
         var feedModelIndex = -1
@@ -22,7 +23,7 @@ Item {
             // focus to correct feed
             listView.currentIndex = feedModelIndex
         } else {
-            console.log("feed not favourite feed. Needs to be launched as Non-favourite")
+            fakeDash.feedLaunch(feedName)
         }
     }
 
@@ -30,7 +31,7 @@ Item {
         id: listView
 
         anchors.fill: parent
-        model: dashModel
+        model: feedManager ? feedManager.dashModel : null
         orientation: Qt.Horizontal
         snapMode: ListView.SnapOneItem
         highlightRangeMode: ListView.StrictlyEnforceRange
@@ -39,40 +40,40 @@ Item {
         boundsBehavior: ListView.DragOverBounds
 
         delegate: DashFeedDelegate {
-            width: dash.width
-            height: dash.height
+            width: fakeDash.width
+            height: fakeDash.height
         }
-        visible: Math.abs(feedManager.y - feedManagerRevealer.openedValue) > 0.0001 //perf
+        visible: Math.abs(manageFeedsView.y - manageFeedsRevealer.openedValue) > 0.0001 //perf fix
     }
 
-    FeedManager {
-        id: feedManager
+    ManageFeedsView {
+        id: manageFeedsView
         width: parent.width
         height: parent.height
-        feedsModel: manageDashModel
+        feedsModel: feedManager ? feedManager.manageDashModel : null
 
         property int animationDuration: UbuntuAnimation.BriskDuration
-        showAnimation: NumberAnimation { property: "y"; duration: feedManager.animationDuration; to: feedManagerRevealer.openedValue; easing: UbuntuAnimation.StandardEasing }
-        hideAnimation: NumberAnimation { property: "y"; duration: feedManager.animationDuration; to: feedManagerRevealer.closedValue; easing: UbuntuAnimation.StandardEasing }
+        showAnimation: NumberAnimation { property: "y"; duration: manageFeedsView.animationDuration; to: manageFeedsRevealer.openedValue; easing: UbuntuAnimation.StandardEasing }
+        hideAnimation: NumberAnimation { property: "y"; duration: manageFeedsView.animationDuration; to: manageFeedsRevealer.closedValue; easing: UbuntuAnimation.StandardEasing }
         shown: false
 
         onClose: hide()
-        onFeedSelected: dash.activateFeed(feedName)
-        visible: Math.abs(feedManager.y - feedManagerRevealer.closedValue) > 0.0001
+        onFeedSelected: fakeDash.activateFeed(feedName)
+        visible: Math.abs(manageFeedsView.y - manageFeedsRevealer.closedValue) > 0.0001 //perf fix
 
     }
 
     Revealer {
-        id: feedManagerRevealer
+        id: manageFeedsRevealer
 
-        target: feedManager
+        target: manageFeedsView
         orientation: Qt.Vertical
         direction: Qt.RightToLeft
         anchors.fill: parent
         hintDisplacement: units.gu(1)
         handleSize: target.shown ? units.gu(0) : units.gu(2)
         openedValue: 0
-        closedValue: dash.height
+        closedValue: fakeDash.height
         width: parent.width
     }
 

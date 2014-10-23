@@ -5,11 +5,11 @@ import "../../Components/Math.js" as MathLocal
 import "../../Components"
 
 Showable {
-    id: feedManager
+    id: manageFeedsView
 
     property bool editModeOn: false
     property ListModel feedsModel: null
-    property color bgColor: "#303030"
+    property color bgColor: "#f5f5f5"
     readonly property real __feedHeight: units.gu(7)
 
     signal close()
@@ -52,7 +52,7 @@ Showable {
                 // let's not do any direct model manipulations here.
                 // ask app manager to move feed. As it updates the model it will be reflected here as well. Application manager
                 // keeps then other models up to date as well.
-                fakeDashRoot.applicationManager.moveFavouriteFeed(movingItem.feedName, itemUnderMouse.ownIndex)
+                fakeDash.feedManager.moveFavouriteFeed(movingItem.feedName, itemUnderMouse.ownIndex)
             }
         }
 
@@ -78,7 +78,7 @@ Showable {
             for (i; i >= 0; i--) {
                 listView.currentIndex = i
                 if(listView.currentItem.isChecked) {
-                    applicationManager.removeInstalledFeed(listView.currentItem.feedName)
+                    fakeDash.feedManager.removeInstalledFeed(listView.currentItem.feedName)
                 }
             }
         }
@@ -108,16 +108,16 @@ Showable {
             id: feedDelegate
             ownIndex: index
             width: parent.width
-            height: feedManager.__feedHeight
-            editModeOn: feedManager.editModeOn
-            onPressAndHold: feedManager.editModeOn ? feedManager.editModeOn = false : feedManager.editModeOn = true
-            onToggleFavourite: isFavourite ? fakeDashRoot.applicationManager.unfavouriteFeed(feedName) : fakeDashRoot.applicationManager.favouriteFeed(feedName)
-            onRemove: applicationManager.removeInstalledFeed(feedName)
+            height: manageFeedsView.__feedHeight
+            editModeOn: manageFeedsView.editModeOn
+            onPressAndHold: manageFeedsView.editModeOn ? manageFeedsView.editModeOn = false : manageFeedsView.editModeOn = true
+            onToggleFavourite: isFavourite ? fakeDash.feedManager.unfavouriteFeed(feedName) : fakeDash.feedManager.favouriteFeed(feedName)
+            onRemove: fakeDash.feedManager.removeInstalledFeed(feedName)
             onClicked: {
-                feedManager.feedSelected(feedName)
+                manageFeedsView.feedSelected(feedName)
                 listView.resetDelegates()
-                feedManager.editModeOn = false
-                feedManager.close()
+                manageFeedsView.editModeOn = false
+                manageFeedsView.close()
             }
         }
 
@@ -126,7 +126,7 @@ Showable {
         section.delegate: Rectangle {
             width: parent.width
             height: units.gu(3)
-            color: feedManager.bgColor
+            color: "#eaeaea"
 
             Label {
                 anchors {
@@ -136,19 +136,19 @@ Showable {
                 }
                 text: section == "true" ? "Home" : "Others"
                 fontSize: "small"
-                color: "white"
-                opacity: 0.9
+                color: "black"
+                opacity: 1
             }
 
-            Image {
+            Rectangle {
                 id: divider
                 anchors {
                     left: parent.left
                     right: parent.right
                     bottom: parent.bottom
                 }
-
-                source: "graphics/ListItemDividerHorizontal.png"
+                height: units.dp(1)
+                color: "#d8d8d8"
             }
         }
 
@@ -162,7 +162,7 @@ Showable {
                 bottom: parent.bottom
                 right: parent.right
             }
-            width: editModeOn ? feedManager.__feedHeight : 0
+            width: editModeOn ? manageFeedsView.__feedHeight : 0
 
             function handleScrolling() {
                 if (mouseY < scrollAreaHeight) {
@@ -260,7 +260,7 @@ Showable {
 
         parent: listView
         width: listView.width
-        height: feedManager.__feedHeight
+        height: manageFeedsView.__feedHeight
         editModeOn: true
         feedName: listView.movingItem ? listView.movingItem.feedName : ""
         isFavourite: true
@@ -277,11 +277,11 @@ Showable {
             right: parent.right
             top: parent.top
         }
-        editModeOn: feedManager.editModeOn
+        editModeOn: manageFeedsView.editModeOn
 
         onBack: {
-            feedManager.editModeOn = false
-            feedManager.close()
+            manageFeedsView.editModeOn = false
+            manageFeedsView.close()
         }
         onLaunchStore: {
             console.log("launch store")
@@ -290,7 +290,7 @@ Showable {
             console.log("search")
         }
         onCancel: {
-            feedManager.editModeOn = false
+            manageFeedsView.editModeOn = false
             listView.resetDelegates()
         }
         onCheckAll: {

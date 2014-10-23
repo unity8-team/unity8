@@ -21,6 +21,7 @@ import Unity.Application 0.1
 import Unity.Session 0.1
 import Utils 0.1
 import "../Components"
+import "FakeImplementations/FakeFeedManager"
 
 Rectangle {
     id: root
@@ -307,6 +308,7 @@ Rectangle {
                     }
 
                     application: ApplicationManager.get(index)
+                    feedManager: fakeFeedManager
                     closeable: !isDash
 
                     property real behavioredIndex: index
@@ -414,6 +416,10 @@ Rectangle {
                 }
             }
         }
+    }
+
+    FakeFeedManager {
+        id: fakeFeedManager
     }
 
     EdgeDragArea {
