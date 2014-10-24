@@ -21,6 +21,7 @@ import QtQuick 2.0
 import Ubuntu.Components 1.1
 import "../Components"
 import "FakeImplementations/FakeDash"
+import "FakeImplementations/FeedStore"
 
 // to launch apps
 import Unity.Application 0.1
@@ -62,6 +63,8 @@ Item {
                        || application.appId == "apps-feed"
                        )) {
                 return fakeFeedComponent
+            } else if (application && (application.appId == "store-feed")) {
+                return storeFeedComponent
             } else {
                 return appWindowComponent
             }
@@ -109,6 +112,9 @@ Item {
                     ApplicationManager.stopApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
                 }
             }
+            onStoreLaunched: {
+                shell.activateApplication("store-feed")
+            }
         }
 
 /*
@@ -139,6 +145,19 @@ Item {
                 onPressAndHold: ApplicationManager.stopApplication("video-feed")
             }
         }*/
+    }
+
+    Component {
+        id: storeFeedComponent
+
+        FeedStore {
+            id: feedStore
+
+            anchors.fill: parent
+            anchors.topMargin: maximizedAppTopMargin
+            feedManager: root.feedManager
+            state: "shown"
+        }
     }
 
     Component {

@@ -113,10 +113,10 @@ Item {
         }
     }
 
-    function removeInstalledFeed(feedName) {
-        console.log("removeInstalledFeed:", feedName)
+    function unsubscribeFromFeed(feedName) {
+        console.log("unsubscribeFromFeed:", feedName)
 
-        // remove item in Dash model
+        // remove item from Dash model
         var foundIndex = findFirstModelIndexByName(dashModel, feedName)
         if (foundIndex != -1) {
             dashModel.remove(foundIndex)
@@ -124,7 +124,7 @@ Item {
             console.log("Unfavourite: Feed is not part of dash")
         }
 
-        // remove item in Dash model
+        // remove item from manage Dash model
         foundIndex = findFirstModelIndexByName(manageDashModel, feedName)
         if (foundIndex != -1) {
             manageDashModel.remove(foundIndex)
@@ -132,6 +132,36 @@ Item {
             console.log("Unfavourite: Feed is not part of manageDash model")
         }
 
+        // change status in all feeds model
+        foundIndex = findFirstModelIndexByName(allFeedsModel, feedName)
+        if (foundIndex != -1) {
+            allFeedsModel.setProperty(foundIndex, "installed_m", false)
+            allFeedsModel.setProperty(foundIndex, "favourite_m", false)
+        } else {
+            console.log("error: feed not found")
+        }
+    }
+
+    function subscribeToFeed(feedName) {
+        console.log("subscribeToFeed:", feedName)
+
+        // change status in all feeds model
+        var foundIndex = findFirstModelIndexByName(allFeedsModel, feedName)
+        if (foundIndex != -1) {
+            allFeedsModel.setProperty(foundIndex, "installed_m", true)
+        } else {
+            console.log("error: feed not found")
+            return;
+        }
+
+        // make sure that feed is not found yet from manageDashModel
+        var foundManageIndex = findFirstModelIndexByName(manageDashModel, feedName)
+        if (foundManageIndex != -1) {
+            console.log("Error: subscribed feed already in manage dash model")
+            return
+        } else {
+            manageDashModel.append(allFeedsModel.get(foundIndex))
+        }
     }
 
     // helpers--------------------------------------------------

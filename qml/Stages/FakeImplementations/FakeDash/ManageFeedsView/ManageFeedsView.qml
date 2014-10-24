@@ -17,6 +17,7 @@ Showable {
     signal feedUninstalled(string feedName)
     signal feedUnfavourited(string feedName)
     signal feedFavourited(string feedName)
+    signal storeLaunched()
 
     // Timer to allow displacement animation to finish before calculating need for
     // reorganizing next time
@@ -82,7 +83,7 @@ Showable {
                 listView.currentIndex = i
                 if(listView.currentItem.isChecked) {
                     manageFeedsView.feedUninstalled(listView.currentItem.feedName)
-                    fakeDash.feedManager.removeInstalledFeed(listView.currentItem.feedName)
+                    fakeDash.feedManager.unsubscribeFromFeed(listView.currentItem.feedName)
                 }
             }
         }
@@ -107,7 +108,7 @@ Showable {
                 id: displacedTransition
                 property real displaceDuration: listView.movingItem ? waitTimer.interval : 0
                 NumberAnimation {id: moveTransition; properties: "y"; duration: displacedTransition.displaceDuration; easing.type: Easing.InOutCubic }
-            }
+        }
         delegate: FeedDelegate {
             id: feedDelegate
             ownIndex: index
@@ -125,7 +126,7 @@ Showable {
                 originalFavouriteState ? manageFeedsView.feedUnfavourited(feedName) : manageFeedsView.feedFavourited(feedName)
             }
             onRemove: {
-                fakeDash.feedManager.removeInstalledFeed(feedName)
+                fakeDash.feedManager.unsubscribeFromFeed(feedName)
                 manageFeedsView.feedUninstalled(feedName)
             }
             onClicked: {
@@ -264,7 +265,6 @@ Showable {
                 listView.movingItem = null
             }
         }
-
     }
 
     FeedDelegate {
@@ -310,7 +310,10 @@ Showable {
             manageFeedsView.close()
         }
         onLaunchStore: {
-            console.log("launch store")
+            manageFeedsView.editModeOn = false
+            listView.resetDelegates()
+            manageFeedsView.close()
+            manageFeedsView.storeLaunched()
         }
         onSearch: {
             console.log("search")
@@ -346,5 +349,4 @@ Showable {
              }
          }
     }
-
 }

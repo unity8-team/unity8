@@ -507,6 +507,11 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("News Feed");
     m_availableApplications.append(application);
 
+    application = new ApplicationInfo(this);
+    application->setAppId("store-feed");
+    application->setName("Feed Store");
+    m_availableApplications.append(application);
+
 }
 
 

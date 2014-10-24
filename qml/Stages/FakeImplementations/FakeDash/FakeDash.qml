@@ -14,6 +14,7 @@ Item {
     signal feedUninstalled(string feedName)
     signal feedUnfavourited(string feedName)
     signal feedFavourited(string feedName)
+    signal storeLaunched()
 
     function activateFeed(feedName) {
         var feedModelIndex = -1
@@ -67,6 +68,7 @@ Item {
         onFeedUninstalled: fakeDash.feedUninstalled(feedName)
         onFeedUnfavourited: fakeDash.feedUnfavourited(feedName)
         onFeedFavourited: fakeDash.feedFavourited(feedName)
+        onStoreLaunched: fakeDash.storeLaunched()
 
         visible: Math.abs(manageFeedsView.y - manageFeedsRevealer.closedValue) > 0.0001 //perf fix
 
