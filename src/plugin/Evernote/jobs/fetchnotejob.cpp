@@ -20,11 +20,12 @@
 
 #include "fetchnotejob.h"
 
-FetchNoteJob::FetchNoteJob(const QString &guid, bool withResources, QObject *parent) :
+FetchNoteJob::FetchNoteJob(const QString &guid, LoadWhat what, QObject *parent) :
     NotesStoreJob(parent),
     m_guid(guid),
-    m_withResources(withResources)
+    m_what(what)
 {
+    qRegisterMetaType<LoadWhat>("LoadWhat");
 }
 
 bool FetchNoteJob::operator==(const EvernoteJob *other) const
@@ -33,7 +34,7 @@ bool FetchNoteJob::operator==(const EvernoteJob *other) const
     if (!otherJob) {
         return false;
     }
-    return this->m_guid == otherJob->m_guid && this->m_withResources == otherJob->m_withResources;
+    return this->m_guid == otherJob->m_guid && this->m_what == otherJob->m_what;
 }
 
 void FetchNoteJob::attachToDuplicate(const EvernoteJob *other)
@@ -44,10 +45,10 @@ void FetchNoteJob::attachToDuplicate(const EvernoteJob *other)
 
 void FetchNoteJob::startJob()
 {
-    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), true, m_withResources, false, false);
+    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), m_what == LoadContent, m_what == LoadResources, false, false);
 }
 
 void FetchNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit resultReady(errorCode, errorMessage, m_result, m_withResources);
+    emit resultReady(errorCode, errorMessage, m_result, m_what);
 }
