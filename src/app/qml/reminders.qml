@@ -52,6 +52,48 @@ MainView {
         }
     }
 
+    Connections {
+        target: UriHandler
+        onOpened: {
+            var commands = uris.split("://")[1].split("/");
+
+            switch(commands[0]) {
+                case "note":
+                    if (commands[1]) {
+                        displayNote(commands[1]);
+                    }
+                    break;
+
+                case "notebooks":
+                    if (commands[1]) {
+                        notebooksPage.openNotebook(commands[1]);
+                    }
+                    break;
+
+                case "tags":
+                    if (commands[1]) {
+                        tagsPage.openTaggedNotes(commands[1]);
+                    }
+                    break;
+
+                case "newnote":
+                    if (commands[1]) {
+                        NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
+                    }
+                    else {
+                        NotesStore.createNote(i18n.tr("Untitled"));
+                    }
+                    break;
+
+                case "editNote":
+                    if (commands[1]) {
+                        switchToEditMode(commands[1]);
+                    }
+                    break;
+            }
+        }
+    }
+
     backgroundColor: "#dddddd"
 
     property var accountPage;

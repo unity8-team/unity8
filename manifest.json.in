@@ -8,6 +8,7 @@
             "account-service": "@ACCOUNT_SERVICE_DIR@/com.ubuntu.reminders_reminders.service",
             "apparmor": "reminders.apparmor",
             "desktop": "com.ubuntu.reminders.desktop"
+            "urls": "reminders.url-dispatcher"
         },
         "evernote-account-plugin": {
             "account-qml-plugin": "@ACCOUNT_QML_PLUGIN_DIR@/evernote",
