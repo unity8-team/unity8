@@ -104,7 +104,7 @@ Empty {
                                 Label {
                                     // TRANSLATORS: the argument is a modification date that follows this format:
                                     // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
-                                    text: i18n.tr("Last modification: %1").arg(Qt.formatDateTime(root.changedDate, i18n.tr("dddd, d hh:mm")))
+                                    text: Qt.formatDateTime(root.creationDate, i18n.tr("dddd, d hh:mm"))
                                     color: "#b3b3b3"
                                     fontSize: "small"
                                     horizontalAlignment: Text.AlignRight
