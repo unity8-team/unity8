@@ -71,7 +71,7 @@ Page {
                         optionSelector.selectedIndex = index;
                     }
                     if (!model.enabled) {
-                        text = text + i18n.tr(" - Tap to authorize")
+                        text = i18n.tr("%1 - Tap to authorize").arg(text)
                     }
                 }
             }
