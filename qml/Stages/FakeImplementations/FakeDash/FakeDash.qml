@@ -7,8 +7,13 @@ Item {
     id: fakeDash
 
     property var feedManager: null
+    property bool clipDash: true
+    property bool clipFeed: true
 
-    signal feedLaunch(string feedName)
+    signal feedLaunched(string feedName)
+    signal feedUninstalled(string feedName)
+    signal feedUnfavourited(string feedName)
+    signal feedFavourited(string feedName)
 
     function activateFeed(feedName) {
         var feedModelIndex = -1
@@ -23,7 +28,7 @@ Item {
             // focus to correct feed
             listView.currentIndex = feedModelIndex
         } else {
-            fakeDash.feedLaunch(feedName)
+            fakeDash.feedLaunched(feedName)
         }
     }
 
@@ -38,7 +43,7 @@ Item {
         highlightFollowsCurrentItem: true
         highlightMoveDuration: 300
         boundsBehavior: ListView.DragOverBounds
-
+        clip: clipDash
         delegate: DashFeedDelegate {
             width: fakeDash.width
             height: fakeDash.height
@@ -59,6 +64,10 @@ Item {
 
         onClose: hide()
         onFeedSelected: fakeDash.activateFeed(feedName)
+        onFeedUninstalled: fakeDash.feedUninstalled(feedName)
+        onFeedUnfavourited: fakeDash.feedUnfavourited(feedName)
+        onFeedFavourited: fakeDash.feedFavourited(feedName)
+
         visible: Math.abs(manageFeedsView.y - manageFeedsRevealer.closedValue) > 0.0001 //perf fix
 
     }
@@ -75,6 +84,34 @@ Item {
         openedValue: 0
         closedValue: fakeDash.height
         width: parent.width
+    }
+
+    Rectangle {
+        id: dropShadow
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: manageFeedsView.top
+        }
+        height: units.gu(0.5)
+        visible: manageFeedsView.visible
+        opacity: 0.2
+        gradient: Gradient {
+                 GradientStop { position: 0.0; color: "transparent" }
+                 GradientStop { position: 0.8; color: "black" }
+                 GradientStop { position: 1.0; color: "black" }
+             }
+    }
+
+    Image {
+        id: manageFeedsHandle
+        height: manageFeedsRevealer.handleSize
+        width: sourceSize.width / sourceSize.height * height
+        anchors {
+            bottom: manageFeedsView.top
+            horizontalCenter: parent.horizontalCenter
+        }
+        source: "graphics/overview_hint.png"
     }
 
 }

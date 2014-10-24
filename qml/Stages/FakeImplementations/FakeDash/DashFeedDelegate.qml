@@ -9,6 +9,13 @@ Item {
 
     width: dash.width
     height: dash.height
+    clip: true
+
+    Rectangle {
+        id: feedBg
+        anchors.fill: parent
+        color: "#303030"
+    }
 
     Rectangle {
         id: bg

@@ -10,6 +10,7 @@ Item {
 
     property alias dashModel: dashModel
     property alias manageDashModel: manageDashModel
+    property alias allFeedsModel: allFeedsModel
 
     Component.onCompleted: {
         __initialize()

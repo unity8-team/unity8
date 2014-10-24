@@ -88,13 +88,25 @@ Item {
         FakeDash {
             anchors.fill: parent
             anchors.topMargin: maximizedAppTopMargin
-            onFeedLaunch: {
-                console.log("onFeedLaunch", feedName)
+            onFeedLaunched: {
                 var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
-                console.log("foundModelIndex", foundModelIndex)
                 if (foundModelIndex != -1) {
-                    //console.log("shell.activateApplication with id", manageDashModel.get(foundModelIndex).feedId_m)
                     shell.activateApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
+                }
+            }
+            onFeedUninstalled: {
+                console.log("onFeedUninstalled", feedName)
+                var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.allFeedsModel, feedName)
+                if (foundModelIndex != -1) {
+                    console.log("ask to stop application wit id", feedManager.allFeedsModel.get(foundModelIndex).feedId_m)
+                    ApplicationManager.stopApplication(feedManager.allFeedsModel.get(foundModelIndex).feedId_m)
+                }
+            }
+            onFeedUnfavourited: console.log("feedUnfavourited", feedName, "-> do nothing now.")
+            onFeedFavourited: {
+                var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
+                if (foundModelIndex != -1) {
+                    ApplicationManager.stopApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
                 }
             }
         }

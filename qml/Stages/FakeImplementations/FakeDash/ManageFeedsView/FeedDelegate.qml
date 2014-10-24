@@ -84,9 +84,13 @@ Item {
 
         onPressAndHold: if (!dragging) feedDelegate.pressAndHold()
         onClicked: {
-            if (!dragging) {
+            // Clicked handled only if horizontal dragging not ongoing
+            if (!dragging && !horizontalDragEndAnimation.running) {
+                // reset delegate if clicked
                 mouseArea.direction = Qt.RightToLeft
                 horizontalDragEndAnimation.restart()
+
+                // emit signal
                 feedDelegate.clicked()
             }
         }
@@ -126,7 +130,10 @@ Item {
 
         }
         onReleased: {
-            if (dragging) horizontalDragEndAnimation.restart()
+            if (dragging) {
+                dragging = false
+                horizontalDragEndAnimation.restart()
+            }
             feedDelegate.ListView.view.interactive = true
         }
     }
@@ -135,7 +142,8 @@ Item {
         id: topLayer
         width: parent.width
         height: parent.height
-        Behavior on x {enabled: !horizontalDragEndAnimation.running;}
+        // to smoothen out the horizontal dragging
+        Behavior on x {enabled: !horizontalDragEndAnimation.running; SmoothedAnimation{duration: 50; velocity: 150; easing.type: Easing.OutQuart}}
         Rectangle {
             id: topLayerBg
             anchors.fill: parent
@@ -250,7 +258,6 @@ Item {
 
     SequentialAnimation {
         id: horizontalDragEndAnimation
-
         NumberAnimation {
             target: topLayer
             property: "x"

@@ -14,6 +14,9 @@ Showable {
 
     signal close()
     signal feedSelected(string feedName)
+    signal feedUninstalled(string feedName)
+    signal feedUnfavourited(string feedName)
+    signal feedFavourited(string feedName)
 
     // Timer to allow displacement animation to finish before calculating need for
     // reorganizing next time
@@ -78,6 +81,7 @@ Showable {
             for (i; i >= 0; i--) {
                 listView.currentIndex = i
                 if(listView.currentItem.isChecked) {
+                    manageFeedsView.feedUninstalled(listView.currentItem.feedName)
                     fakeDash.feedManager.removeInstalledFeed(listView.currentItem.feedName)
                 }
             }
@@ -111,8 +115,19 @@ Showable {
             height: manageFeedsView.__feedHeight
             editModeOn: manageFeedsView.editModeOn
             onPressAndHold: manageFeedsView.editModeOn ? manageFeedsView.editModeOn = false : manageFeedsView.editModeOn = true
-            onToggleFavourite: isFavourite ? fakeDash.feedManager.unfavouriteFeed(feedName) : fakeDash.feedManager.favouriteFeed(feedName)
-            onRemove: fakeDash.feedManager.removeInstalledFeed(feedName)
+            onToggleFavourite: {
+                var originalFavouriteState = isFavourite
+
+                // let feedManager handle toggling in model. It will propagate to the model and delegates here.
+                isFavourite ? fakeDash.feedManager.unfavouriteFeed(feedName) : fakeDash.feedManager.favouriteFeed(feedName)
+
+                // signal
+                originalFavouriteState ? manageFeedsView.feedUnfavourited(feedName) : manageFeedsView.feedFavourited(feedName)
+            }
+            onRemove: {
+                fakeDash.feedManager.removeInstalledFeed(feedName)
+                manageFeedsView.feedUninstalled(feedName)
+            }
             onClicked: {
                 manageFeedsView.feedSelected(feedName)
                 listView.resetDelegates()
@@ -268,6 +283,17 @@ Showable {
         visible: false
         y: initialY + yChange
         isChecked: listView.movingItem ? listView.movingItem.isChecked : false
+
+        Rectangle {
+            id: topDivider
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+            height: units.dp(1)
+            color: "#d8d8d8"
+        }
     }
 
     HeaderWithDivider {
