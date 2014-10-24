@@ -41,7 +41,7 @@ MainView {
      This property enables the application to change orientation
      when the device is rotated. The default is false.
     */
-    //automaticOrientation: true
+    automaticOrientation: true
 
     property bool narrowMode: root.width < units.gu(80)
 
