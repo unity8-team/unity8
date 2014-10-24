@@ -60,6 +60,8 @@ public:
         RoleNotebookGuid,
         RoleCreated,
         RoleCreatedString,
+        RoleUpdated,
+        RoleUpdatedString,
         RoleTitle,
         RoleReminder,
         RoleReminderTime,
@@ -135,6 +137,7 @@ signals:
     void countChanged();
 
     void noteCreated(const QString &guid, const QString &notebookGuid);
+    void noteUpdated(const QString &guid, const QString &notebookGuid);
     void noteAdded(const QString &guid, const QString &notebookGuid);
     void noteChanged(const QString &guid, const QString &notebookGuid);
     void noteRemoved(const QString &guid, const QString &notebookGuid);

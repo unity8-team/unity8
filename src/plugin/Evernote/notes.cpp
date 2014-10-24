@@ -31,7 +31,7 @@ Notes::Notes(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
     connect(NotesStore::instance(), &NotesStore::countChanged, this, &Notes::countChanged);
     setSourceModel(NotesStore::instance());
-    setSortRole(NotesStore::RoleCreated);
+    setSortRole(NotesStore::RoleUpdated);
     sort(0, Qt::DescendingOrder);
 }
 
@@ -79,7 +79,7 @@ void Notes::setOnlyReminders(bool onlyReminders)
             setSortRole(NotesStore::RoleReminderSorting);
             sort(0, Qt::AscendingOrder);
         } else {
-            setSortRole(NotesStore::RoleCreated);
+            setSortRole(NotesStore::RoleUpdated);
             sort(0, Qt::DescendingOrder);
         }
 
