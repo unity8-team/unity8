@@ -44,6 +44,7 @@ MainView {
     //automaticOrientation: true
 
     property bool narrowMode: root.width < units.gu(80)
+    property var commands: undefined
 
     onNarrowModeChanged: {
         if (narrowMode) {
@@ -53,45 +54,58 @@ MainView {
     }
 
     Connections {
-        target: UriHandler
-        onOpened: {
-            var commands = uris.split("://")[1].split("/");
-
-            switch(commands[0]) {
-                case "note":
-                    if (commands[1]) {
-                        displayNote(commands[1]);
-                    }
+        target: EvernoteConnection
+        onIsConnectedChanged: {
+            if (isConnected && commands) {
+                switch(commands[0]) {
+                    case "note":
+                        if (commands[1]) {
+                            displayNote(commands[1]);
+                        }
+                        commands = undefined;
                     break;
 
-                case "notebooks":
-                    if (commands[1]) {
-                        notebooksPage.openNotebook(commands[1]);
-                    }
+                    case "notebooks":
+                        if (commands[1]) {
+                            notebooksPage.openNotebook(commands[1]);
+                        }
+                        commands = undefined;
                     break;
 
-                case "tags":
-                    if (commands[1]) {
-                        tagsPage.openTaggedNotes(commands[1]);
-                    }
+                    case "tags":
+                        if (commands[1]) {
+                            tagsPage.openTaggedNotes(commands[1]);
+                        }
+                        commands = undefined;
                     break;
 
-                case "newnote":
-                    if (commands[1]) {
-                        NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
-                    }
-                    else {
-                        NotesStore.createNote(i18n.tr("Untitled"));
-                    }
+                    case "newnote":
+                        if (commands[1]) {
+                            NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
+                        }
+                        else {
+                            NotesStore.createNote(i18n.tr("Untitled"));
+                        }
+                        commands = undefined;
                     break;
 
-                case "editNote":
-                    if (commands[1]) {
-                        switchToEditMode(commands[1]);
-                    }
+                    case "editNote":
+                        if (commands[1]) {
+                            switchToEditMode(commands[1]);
+                        }
+                        commands = undefined;
                     break;
+                }
             }
         }
+    }
+
+    Connections {
+        target: UriHandler
+        onOpened: {
+            commands = uris.split("://")[1].split("/");
+
+                    }
     }
 
     backgroundColor: "#dddddd"
