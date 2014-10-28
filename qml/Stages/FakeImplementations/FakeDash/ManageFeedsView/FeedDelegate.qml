@@ -231,7 +231,7 @@ Item {
             height: units.gu(2.5)
             width: sourceSize.width / sourceSize.height * height
             source: isFavourite ? "graphics/starred.svg" : "graphics/non-starred.svg"
-            visible: opacity > 000.1
+            visible: opacity > 000.1 && !isPersistent
             opacity: !editModeOn ? 1 : 0
             Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
             scale: !editModeOn ? 1 : 0.5

@@ -56,12 +56,7 @@ Item {
             if (application && application.appId == "unity8-dash") {
                 return fakeDashComponent
             } else if (application
-                       && (application.appId == "home-feed"
-                       || application.appId == "video-feed"
-                       || application.appId == "music-feed"
-                       || application.appId == "news-feed"
-                       || application.appId == "apps-feed"
-                       )) {
+                       && application.appId.indexOf("feed") > -1) {
                 return fakeFeedComponent
             } else if (application && (application.appId == "store-feed")) {
                 return storeFeedComponent
@@ -85,6 +80,18 @@ Item {
         }
     }
 
+    function handleFeedFavourited(feedName) {
+        var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
+        if (foundModelIndex != -1) {
+            ApplicationManager.stopApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
+        }
+    }
+    function handleFeedUnfavourited(feedName) {
+        // Find a way to launch an application to app stack position 1. meaning next from the currently running.
+
+        console.log("feedUnfavourited", feedName, "-> do nothing now. Should possibly start a standalone feed instance.")
+    }
+
     Component {
         id: fakeDashComponent
 
@@ -105,46 +112,12 @@ Item {
                     ApplicationManager.stopApplication(feedManager.allFeedsModel.get(foundModelIndex).feedId_m)
                 }
             }
-            onFeedUnfavourited: console.log("feedUnfavourited", feedName, "-> do nothing now.")
-            onFeedFavourited: {
-                var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
-                if (foundModelIndex != -1) {
-                    ApplicationManager.stopApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
-                }
-            }
+            onFeedUnfavourited: handleFeedUnfavourited(feedName)
+            onFeedFavourited: handleFeedFavourited(feedName)
             onStoreLaunched: {
                 shell.activateApplication("store-feed")
             }
         }
-
-/*
-        Rectangle {
-            color: "blue"
-            Label {
-                id: label
-                anchors.centerIn: parent
-                text: "TODO: Make this the fake dash!"
-*/
-                 /**
-                 To fake adding a new app, call ApplicationManager.startApplication(appId)
-                 See tests/mocks/Unity/Application/ApplicationManager.cpp buildListOfAvailableApplications()
-                 for available appIds. Add your fake apps (scopes) there. Put screenshots into
-                 qml/graphics/applicationIcons/
-                 */
-  /*          }
-            Button {
-                id: createButton
-                anchors {
-                    horizontalCenter: parent.horizontalCenter
-                    top: label.bottom
-                    margins: units.gu(2)
-                }
-
-                text: "create a new feed"
-                onClicked: shell.activateApplication("video-feed") //ApplicationManager.startApplication("video-feed")
-                onPressAndHold: ApplicationManager.stopApplication("video-feed")
-            }
-        }*/
     }
 
     Component {
@@ -162,29 +135,35 @@ Item {
 
     Component {
         id: fakeFeedComponent
-
         DashFeedDelegate {
+            id: dashFeedDelegate
             anchors.fill: parent
             anchors.topMargin: maximizedAppTopMargin
-            feedName: {
+            Component.onCompleted: setDelegateData()
+
+            function setDelegateData() {
                 var foundModelIndex = feedManager.findFirstModelIndexById(feedManager.manageDashModel, application.appId)
                 if (foundModelIndex == -1) {
                     console.log("Error. corresponding feed not found. id:", application.appId)
-                    return ""
+                    return false
                 } else {
-                    return feedManager.manageDashModel.get(foundModelIndex).feedName_m
+                    dashFeedDelegate.feedName = feedManager.manageDashModel.get(foundModelIndex).feedName_m
+                    dashFeedDelegate.feedScreenshot = feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m
+                    dashFeedDelegate.isFavourite = feedManager.manageDashModel.get(foundModelIndex).favourite_m
+                    dashFeedDelegate.isPersistent = feedManager.manageDashModel.get(foundModelIndex).persistent_m
+                    return true
                 }
             }
-            feedScreenshot: {
-                var foundModelIndex = feedManager.findFirstModelIndexById(feedManager.manageDashModel, application.appId)
-                console.log("foundModelIndex", foundModelIndex)
-                if (foundModelIndex == -1) {
-                    console.log("Error. corresponding feed not found. id:", application.appId)
-                    return ""
-                } else {
-                    console.log(feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m)
-                    return feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m
-                }
+
+            onToggleFavourite: {
+                // duplicate code. can be found from fake dash as well. handle somehow better!!
+                var originalFavouriteState = isFavourite
+
+                // let feedManager handle toggling in model. It will propagate to the model and delegates here.
+                isFavourite ? feedManager.unfavouriteFeed(feedName) : feedManager.favouriteFeed(feedName)
+
+                // handle action
+                originalFavouriteState ? handleFeedUnfavourited(feedName) : handleFeedFavourited(feedName)
             }
         }
     }

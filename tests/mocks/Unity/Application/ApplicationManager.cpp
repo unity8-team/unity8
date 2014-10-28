@@ -508,6 +508,16 @@ void ApplicationManager::buildListOfAvailableApplications()
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
+    application->setAppId("amazon-feed");
+    application->setName("Amazon");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("ebay-feed");
+    application->setName("Ebay");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
     application->setAppId("store-feed");
     application->setName("Feed Store");
     m_availableApplications.append(application);

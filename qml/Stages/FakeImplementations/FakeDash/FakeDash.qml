@@ -48,6 +48,18 @@ Item {
         delegate: DashFeedDelegate {
             width: fakeDash.width
             height: fakeDash.height
+            onToggleFavourite: {
+
+                // duplicate code. handle somehow better!!
+                var originalFavouriteState = isFavourite
+
+                console.log("toggle favourite")
+                // let feedManager handle toggling in model. It will propagate to the model and delegates here.
+                isFavourite ? fakeDash.feedManager.unfavouriteFeed(feedName) : fakeDash.feedManager.favouriteFeed(feedName)
+
+                // signal
+                originalFavouriteState ? fakeDash.feedUnfavourited(feedName) : fakeDash.feedFavourited(feedName)
+            }
         }
         visible: Math.abs(manageFeedsView.y - manageFeedsRevealer.openedValue) > 0.0001 //perf fix
     }

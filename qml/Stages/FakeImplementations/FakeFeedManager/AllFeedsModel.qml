@@ -43,16 +43,16 @@ ListModel {
         feed_screenshot_m: "music-feed.jpg"
     }
     ListElement {
-        feedName_m: "Feed6"
-        feedId_m: "feed6-feed"
+        feedName_m: "Amazon"
+        feedId_m: "amazon-feed"
         installed_m: true
         favourite_m: false
         persistent_m: false
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed7"
-        feedId_m: "feed7-feed"
+        feedName_m: "Ebay"
+        feedId_m: "ebay-feed"
         installed_m: true
         favourite_m: false
         persistent_m: false
