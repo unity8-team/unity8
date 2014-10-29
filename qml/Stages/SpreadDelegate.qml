@@ -35,6 +35,7 @@ Item {
     readonly property bool dragged: dragArea.moving
     signal clicked()
     signal closed()
+    signal feedNeedsDashFocusing(string feedName)
 
     // to be set from outside
     property bool interactive: true
@@ -55,12 +56,12 @@ Item {
         sourceComponent: {
             if (application && application.appId == "unity8-dash") {
                 return fakeDashComponent
+            } else if (application && (application.appId == "store-feed")) {
+                return storeFeedComponent
             } else if (application
                        && application.appId.indexOf("feed") > -1) {
                 return fakeFeedComponent
-            } else if (application && (application.appId == "store-feed")) {
-                return storeFeedComponent
-            } else {
+            }  else {
                 return appWindowComponent
             }
         }
@@ -80,15 +81,31 @@ Item {
         }
     }
 
-    function handleFeedFavourited(feedName) {
+    function focusDashToFeed(feedName) {
+        if (application.appId == "unity8-dash") {
+            appWindowLoader.item.activateFeed(feedName)
+        } else {
+            // do nothing
+        }
+    }
+
+    function handleFeedFavourited(feedName, focusToFeed) {
+        if (focusToFeed) {
+            root.feedNeedsDashFocusing(feedName)
+        }
+
         var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
         if (foundModelIndex != -1) {
             ApplicationManager.stopApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
         }
+
+        // Focus to dash
+        ApplicationManager.requestFocusApplication("unity8-dash")
+
+
     }
     function handleFeedUnfavourited(feedName) {
         // Find a way to launch an application to app stack position 1. meaning next from the currently running.
-
         console.log("feedUnfavourited", feedName, "-> do nothing now. Should possibly start a standalone feed instance.")
     }
 
@@ -105,15 +122,13 @@ Item {
                 }
             }
             onFeedUninstalled: {
-                console.log("onFeedUninstalled", feedName)
                 var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.allFeedsModel, feedName)
                 if (foundModelIndex != -1) {
-                    console.log("ask to stop application wit id", feedManager.allFeedsModel.get(foundModelIndex).feedId_m)
                     ApplicationManager.stopApplication(feedManager.allFeedsModel.get(foundModelIndex).feedId_m)
                 }
             }
             onFeedUnfavourited: handleFeedUnfavourited(feedName)
-            onFeedFavourited: handleFeedFavourited(feedName)
+            onFeedFavourited: handleFeedFavourited(feedName, false)
             onStoreLaunched: {
                 shell.activateApplication("store-feed")
             }
@@ -130,6 +145,7 @@ Item {
             anchors.topMargin: maximizedAppTopMargin
             feedManager: root.feedManager
             state: "shown"
+            showBack: false
         }
     }
 
@@ -163,7 +179,7 @@ Item {
                 isFavourite ? feedManager.unfavouriteFeed(feedName) : feedManager.favouriteFeed(feedName)
 
                 // handle action
-                originalFavouriteState ? handleFeedUnfavourited(feedName) : handleFeedFavourited(feedName)
+                originalFavouriteState ? handleFeedUnfavourited(feedName) : handleFeedFavourited(feedName, true)
             }
         }
     }

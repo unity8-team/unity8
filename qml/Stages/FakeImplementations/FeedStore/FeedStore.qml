@@ -44,6 +44,10 @@ Item {
         id: header
         anchors.left: listView.left
         onBack: feedStore.hide()
+        text: "Feed Store"
+        showFavIcon: false
+        isFavourite: false
+        showBack: true
     }
 
     state: "hidden"

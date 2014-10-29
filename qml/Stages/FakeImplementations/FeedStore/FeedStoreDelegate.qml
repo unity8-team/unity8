@@ -84,7 +84,7 @@ Item {
             border.color: fontColor
             color: "transparent"
             radius: units.gu(0.5)
-
+            visible: !persistent_m
             Rectangle {
                 anchors.fill: parent
             }
@@ -98,7 +98,7 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: installed_m ? feedManager.unsubscribeFromFeed(feedName_m) : feedManager.subscribeToFeed(feedName_m)
+                onClicked: activity.start() //installed_m ? feedManager.unsubscribeFromFeed(feedName_m) : feedManager.subscribeToFeed(feedName_m)
             }
         }
     }
@@ -112,5 +112,11 @@ Item {
         }
         height: units.dp(1)
         color: "#d8d8d8"
+    }
+
+    SubscribingActivity {
+        id: activity
+        anchors.fill: parent
+        onFinished: installed_m ? feedManager.unsubscribeFromFeed(feedName_m) : feedManager.subscribeToFeed(feedName_m)
     }
 }

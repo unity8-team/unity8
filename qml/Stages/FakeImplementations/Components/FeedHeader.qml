@@ -59,7 +59,7 @@ Item {
                 verticalCenter: parent.verticalCenter
             }
 
-            text: "Feed Store"
+            text: ""
             color: "#5b5b5b"
             opacity: 1
             font.family: "Ubuntu"

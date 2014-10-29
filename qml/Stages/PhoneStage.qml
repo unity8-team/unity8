@@ -186,6 +186,17 @@ Rectangle {
             }
         }
 
+        function focusDashToFeed(feedName) {
+            // find Dash
+            for (var i = 0; spreadRow.children.length; i++) {
+                if (spreadRow.children[i].isDash) {
+                    // focus to feed
+                    spreadRow.children[i].focusDashToFeed(feedName)
+                    break;
+                }
+            }
+        }
+
         function snap() {
             if (shiftedContentX < positionMarker1 * width) {
                 snapAnimation.targetContentX = -shift;
@@ -413,6 +424,7 @@ Rectangle {
                         spreadView.closingIndex = index;
                         ApplicationManager.stopApplication(ApplicationManager.get(index).appId);
                     }
+                    onFeedNeedsDashFocusing: spreadView.focusDashToFeed(feedName)
                 }
             }
         }

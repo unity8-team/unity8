@@ -53,7 +53,6 @@ Item {
                 // duplicate code. handle somehow better!!
                 var originalFavouriteState = isFavourite
 
-                console.log("toggle favourite")
                 // let feedManager handle toggling in model. It will propagate to the model and delegates here.
                 isFavourite ? fakeDash.feedManager.unfavouriteFeed(feedName) : fakeDash.feedManager.favouriteFeed(feedName)
 
