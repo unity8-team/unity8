@@ -54,13 +54,14 @@ MainView {
     }
 
     Connections {
-        target: EvernoteConnection
-        onIsConnectedChanged: {
-            if (isConnected && commands) {
+        target: UriHandler
+        onOpened: {
+            commands = uris.toString().split("://")[1].split("/");
+            if (EvernoteConnection.isConnected && commands) {
                 switch(commands[0]) {
                     case "note":
                         if (commands[1]) {
-                            displayNote(commands[1]);
+                            displayNote(NotesStore.note(commands[1]));
                         }
                         commands = undefined;
                     break;
@@ -98,14 +99,6 @@ MainView {
                 }
             }
         }
-    }
-
-    Connections {
-        target: UriHandler
-        onOpened: {
-            commands = uris.split("://")[1].split("/");
-
-                    }
     }
 
     backgroundColor: "#dddddd"
