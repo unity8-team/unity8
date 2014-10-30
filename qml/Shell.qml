@@ -371,6 +371,10 @@ Item {
         onHideGreeter: greeter.login()
 
         onShowPrompt: {
+            shell.enabled = true;
+            if (!LightDM.Greeter.active) {
+                return; // could happen if hideGreeter() comes in before we prompt
+            }
             if (greeter.narrowMode) {
                 if (isDefaultPrompt) {
                     if (lockscreen.alphaNumeric) {
@@ -391,6 +395,9 @@ Item {
         }
 
         onPromptlessChanged: {
+            if (!LightDM.Greeter.active) {
+                return; // could happen if hideGreeter() comes in before we prompt
+            }
             if (greeter.narrowMode) {
                 if (LightDM.Greeter.promptless && LightDM.Greeter.authenticated) {
                     lockscreen.hide()
@@ -402,6 +409,7 @@ Item {
         }
 
         onAuthenticationComplete: {
+            shell.enabled = true;
             if (LightDM.Greeter.authenticated) {
                 AccountsService.failedLogins = 0
             }
@@ -538,6 +546,11 @@ Item {
 
             onShownChanged: {
                 if (shown) {
+                    // Disable everything so that user can't swipe greeter or
+                    // launcher until we get first prompt/authenticate, which
+                    // will re-enable the shell.
+                    shell.enabled = false;
+
                     if (greeter.narrowMode) {
                         LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole));
                     } else {
@@ -594,7 +607,8 @@ Item {
         target: Powerd
 
         onStatusChanged: {
-            if (Powerd.status === Powerd.Off && !callManager.hasCalls && !edgeDemo.running) {
+            if (Powerd.status === Powerd.Off && reason !== Powerd.Proximity &&
+                    !callManager.hasCalls && !edgeDemo.running) {
                 greeter.showNow()
             }
         }
@@ -610,7 +624,7 @@ Item {
         }
 
         var animate = !LightDM.Greeter.active && !stages.shown
-        dash.setCurrentScope("clickscope", animate, false)
+        dash.setCurrentScope(0, animate, false)
         ApplicationManager.requestFocusApplication("unity8-dash")
     }
 
@@ -658,6 +672,9 @@ Item {
                 // TODO: This should be sourced by device type (eg "desktop", "tablet", "phone"...)
                 Component.onCompleted: initialise(indicatorProfile)
             }
+            callHint {
+                greeterShown: greeter.shown || lockscreen.shown
+            }
 
             property bool topmostApplicationIsFullscreen:
                 ApplicationManager.focusedApplicationId &&
@@ -683,7 +700,7 @@ Item {
             onDash: showDash()
             onDashSwipeChanged: {
                 if (dashSwipe) {
-                    dash.setCurrentScope("clickscope", false, true)
+                    dash.setCurrentScope(0, false, true)
                 }
             }
             onLauncherApplicationSelected: {
@@ -703,7 +720,7 @@ Item {
         Rectangle {
             id: modalNotificationBackground
 
-            visible: notifications.useModal && !greeter.shown && (notifications.state == "narrow")
+            visible: notifications.useModal && (notifications.state == "narrow")
             color: "#000000"
             anchors.fill: parent
             opacity: 0.9
