@@ -162,6 +162,7 @@ PageWithBottomEdge {
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
+            changedDate: model.updated
             content: model.tagline
             tags: {
                 var tags = new Array();

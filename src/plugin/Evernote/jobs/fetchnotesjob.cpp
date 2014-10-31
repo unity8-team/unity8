@@ -74,6 +74,9 @@ void FetchNotesJob::startJob()
     resultSpec.includeCreated = true;
     resultSpec.__isset.includeCreated = true;
 
+    resultSpec.includeUpdated = true;
+    resultSpec.__isset.includeUpdated = true;
+
     resultSpec.includeTitle = true;
     resultSpec.__isset.includeTitle = true;
 
