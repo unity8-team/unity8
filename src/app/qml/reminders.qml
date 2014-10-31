@@ -57,48 +57,13 @@ MainView {
         target: UriHandler
         onOpened: {
             commands = uris.toString().split("://")[1].split("/");
-            if (EvernoteConnection.isConnected && commands) {
-                switch(commands[0]) {
-                    case "note":
-                        if (commands[1]) {
-                            displayNote(NotesStore.note(commands[1]));
-                        }
-                        commands = undefined;
-                    break;
-
-                    case "notebooks":
-                        if (commands[1]) {
-                            notebooksPage.openNotebook(commands[1]);
-                        }
-                        commands = undefined;
-                    break;
-
-                    case "tags":
-                        if (commands[1]) {
-                            tagsPage.openTaggedNotes(commands[1]);
-                        }
-                        commands = undefined;
-                    break;
-
-                    case "newnote":
-                        if (commands[1]) {
-                            NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
-                        }
-                        else {
-                            NotesStore.createNote(i18n.tr("Untitled"));
-                        }
-                        commands = undefined;
-                    break;
-
-                    case "editNote":
-                        if (commands[1]) {
-                            switchToEditMode(commands[1]);
-                        }
-                        commands = undefined;
-                    break;
-                }
-            }
+            processUri();
         }
+    }
+
+    Connections {
+        target: EvernoteConnection
+        onIsConnectedChanged: processUri();
     }
 
     backgroundColor: "#dddddd"
@@ -174,6 +139,50 @@ MainView {
             default:
                 print("There are multiple accounts. Allowing user to select one.");
                 openAccountPage(false);
+            }
+        }
+    }
+
+    function processUri() {
+        if (EvernoteConnection.isConnected && commands) {
+            switch(commands[0].toLower()) {
+                case "note":
+                    if (commands[1]) {
+                        displayNote(NotesStore.note(commands[1]));
+                    }
+                    commands = undefined;
+                break;
+
+                case "notebooks":
+                    if (commands[1]) {
+                        notebooksPage.openNotebook(commands[1]);
+                    }
+                    commands = undefined;
+                break;
+
+                case "tags":
+                    if (commands[1]) {
+                        tagsPage.openTaggedNotes(commands[1]);
+                    }
+                    commands = undefined;
+                break;
+
+                case "newnote":
+                    if (commands[1]) {
+                        NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
+                    }
+                    else {
+                        NotesStore.createNote(i18n.tr("Untitled"));
+                    }
+                    commands = undefined;
+                break;
+
+                case "editnote":
+                    if (commands[1]) {
+                        switchToEditMode(commands[1]);
+                    }
+                    commands = undefined;
+                break;
             }
         }
     }
