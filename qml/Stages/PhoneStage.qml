@@ -477,10 +477,13 @@ Rectangle {
 
     ManageFeeds {
         id: manageFeeds
+
+        property bool focusedAppIsFeed: priv.focusedAppId.indexOf("feed") > -1 || priv.focusedAppId == "unity8-dash" || priv.focusedAppId == "store-feed"
         anchors.fill: parent
         anchors.topMargin: maximizedAppTopMargin
         feedManager: fakeFeedManager
-        opacity: spreadView.active ? 0 : 1
+        opacity: spreadView.active || !focusedAppIsFeed ? 0 : 1
+        enabled: opacity > 0.9999
         Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
         onFeedSelected: spreadView.focusDashToFeed(feedName)
         onFeedUninstalled: stopApplication(feedName)
