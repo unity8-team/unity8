@@ -3,7 +3,7 @@ import QtQuick 2.0
 ListModel {
     id: allFeedsModel
     ListElement {
-        feedName_m: "Home"
+        feedName_m: "Today"
         feedId_m: "home-feed"
         installed_m: true
         favourite_m: true
@@ -19,12 +19,12 @@ ListModel {
         feed_screenshot_m: "apps-feed.jpg"
     }
     ListElement {
-        feedName_m: "Video"
-        feedId_m: "video-feed"
+        feedName_m: "Nearby"
+        feedId_m: "nearby-feed"
         installed_m: true
         favourite_m: true
         persistent_m: false
-        feed_screenshot_m: "video-feed.jpg"
+        feed_screenshot_m: "nearby-feed.jpg"
     }
     ListElement {
         feedName_m: "News"
@@ -38,9 +38,33 @@ ListModel {
         feedName_m: "Music"
         feedId_m: "music-feed"
         installed_m: true
-        favourite_m: false
+        favourite_m: true
         persistent_m: false
         feed_screenshot_m: "music-feed.jpg"
+    }
+    ListElement {
+        feedName_m: "Photos"
+        feedId_m: "photos-feed"
+        installed_m: true
+        favourite_m: true
+        persistent_m: false
+        feed_screenshot_m: "photos-feed.jpg"
+    }
+    ListElement {
+        feedName_m: "Video"
+        feedId_m: "video-feed"
+        installed_m: true
+        favourite_m: true
+        persistent_m: false
+        feed_screenshot_m: "video-feed.jpg"
+    }
+    ListElement {
+        feedName_m: "Shopping"
+        feedId_m: "shopping-feed"
+        installed_m: true
+        favourite_m: false
+        persistent_m: false
+        feed_screenshot_m: "shopping-feed.jpg"
     }
     ListElement {
         feedName_m: "Amazon"
@@ -59,56 +83,8 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Scope 8"
-        feedId_m: "feed8-feed"
-        installed_m: false
-        favourite_m: false
-        persistent_m: false
-        feed_screenshot_m: ""
-    }
-    ListElement {
-        feedName_m: "Scope 9"
-        feedId_m: "feed9-feed"
-        installed_m: true
-        favourite_m: false
-        persistent_m: false
-        feed_screenshot_m: ""
-    }
-    ListElement {
-        feedName_m: "Scope 10"
-        feedId_m: "feed10-feed"
-        installed_m: false
-        favourite_m: false
-        persistent_m: false
-        feed_screenshot_m: ""
-    }
-    ListElement {
-        feedName_m: "Scope 11"
-        feedId_m: "feed11-feed"
-        installed_m: false
-        favourite_m: false
-        persistent_m: false
-        feed_screenshot_m: ""
-    }
-    ListElement {
-        feedName_m: "Scope 12"
-        feedId_m: "feed12-feed"
-        installed_m: false
-        favourite_m: false
-        persistent_m: false
-        feed_screenshot_m: ""
-    }
-    ListElement {
-        feedName_m: "Scope 13"
-        feedId_m: "feed13-feed"
-        installed_m: false
-        favourite_m: false
-        persistent_m: false
-        feed_screenshot_m: ""
-    }
-    ListElement {
-        feedName_m: "Scope 14"
-        feedId_m: "feed14-feed"
+        feedName_m: "Youtube"
+        feedId_m: "youtube-feed"
         installed_m: false
         favourite_m: false
         persistent_m: false

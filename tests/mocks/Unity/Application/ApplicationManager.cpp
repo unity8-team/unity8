@@ -484,42 +484,62 @@ void ApplicationManager::buildListOfAvailableApplications()
     // Vesa additions
     application = new ApplicationInfo(this);
     application->setAppId("home-feed");
-    application->setName("Home Feed");
+    application->setName("Home Scope");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("apps-feed");
-    application->setName("Apps Feed");
+    application->setName("Apps Scope");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
-    application->setAppId("video-feed");
-    application->setName("Video Feed");
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("music-feed");
-    application->setName("Music Feed");
+    application->setAppId("nearby-feed");
+    application->setName("Nearby Scope");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("news-feed");
-    application->setName("News Feed");
+    application->setName("News Scope");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("music-feed");
+    application->setName("Music Scope");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("photos-feed");
+    application->setName("Photos Scope");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("video-feed");
+    application->setName("Video Scope");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("shopping-feed");
+    application->setName("Shopping Scope");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("amazon-feed");
-    application->setName("Amazon");
+    application->setName("Amazon Scope");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("ebay-feed");
-    application->setName("Ebay");
+    application->setName("Ebay Scope");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("youtube-feed");
+    application->setName("Youtube Scope");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("store-feed");
-    application->setName("Feed Store");
+    application->setName("Store Scope");
     m_availableApplications.append(application);
 
 }
