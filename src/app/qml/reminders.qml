@@ -150,21 +150,18 @@ MainView {
                     if (commands[1]) {
                         displayNote(NotesStore.note(commands[1]));
                     }
-                    commands = undefined;
                 break;
 
                 case "notebooks":
                     if (commands[1]) {
                         notebooksPage.openNotebook(commands[1]);
                     }
-                    commands = undefined;
                 break;
 
                 case "tags":
                     if (commands[1]) {
                         tagsPage.openTaggedNotes(commands[1]);
                     }
-                    commands = undefined;
                 break;
 
                 case "newnote":
@@ -174,16 +171,17 @@ MainView {
                     else {
                         NotesStore.createNote(i18n.tr("Untitled"));
                     }
-                    commands = undefined;
                 break;
 
                 case "editnote":
                     if (commands[1]) {
                         switchToEditMode(commands[1]);
                     }
-                    commands = undefined;
                 break;
+
+                default: console.warning('WARNING: Unmanaged URI: ' + commands);
             }
+            commands = undefined;
         }
     }
 
