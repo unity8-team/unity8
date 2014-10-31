@@ -60,7 +60,6 @@ Item {
     FeedHeader {
         id: header
         text: dashFeedDelegate.feedName
-        showFavIcon: !isPersistent
         isFavourite: dashFeedDelegate.isFavourite
         onToggleFavourite: dashFeedDelegate.toggleFavourite(feedName)
     }

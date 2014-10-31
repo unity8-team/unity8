@@ -6,7 +6,7 @@ Item {
 
     property alias text: label.text
     property bool showBack: false
-    property bool showFavIcon: false
+    property bool showFavIcon: true
     property bool isFavourite: false
 
     signal back()

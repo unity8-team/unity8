@@ -12,7 +12,7 @@ Item {
     property string feedName: feedName_m //from model
     property bool isFavourite: favourite_m //from model
     property bool isPersistent: persistent_m //from model
-    property bool isChecked: false
+    property alias isChecked: checkbox.checked
     property real mouseY: handle.mouseY
 
     signal pressAndHold()
@@ -157,7 +157,7 @@ Item {
                 verticalCenter: parent.verticalCenter
             }
             height: parent.height
-            width: editModeOn ? units.gu(4) : 0
+            width: editModeOn ? units.gu(5) : 0
             Behavior on width {NumberAnimation{duration: UbuntuAnimation.FastDuration; easing: UbuntuAnimation.StandardEasing}}
             visible: opacity > 000.1 && !isPersistent
             opacity: editModeOn ? 1 : 0
@@ -165,18 +165,10 @@ Item {
 
             clip: true
 
-            Image {
+            CheckBox {
                 id: checkbox
+                checked: false
                 anchors.centerIn: parent
-                height: units.gu(3)
-                width: height
-                source: isChecked ? "graphics/select.svg": "graphics/select-nonselected.svg"
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                anchors.margins: -units.gu(1.5)
-                onClicked: isChecked ? isChecked = false : isChecked = true
             }
         }
 
@@ -231,7 +223,7 @@ Item {
             height: units.gu(2.5)
             width: sourceSize.width / sourceSize.height * height
             source: isFavourite ? "graphics/starred.svg" : "graphics/non-starred.svg"
-            visible: opacity > 000.1 && !isPersistent
+            visible: opacity > 000.1
             opacity: !editModeOn ? 1 : 0
             Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
             scale: !editModeOn ? 1 : 0.5

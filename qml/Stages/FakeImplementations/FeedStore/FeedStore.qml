@@ -47,7 +47,6 @@ Item {
         text: "Feed Store"
         showFavIcon: false
         isFavourite: false
-        showBack: true
     }
 
     state: "hidden"

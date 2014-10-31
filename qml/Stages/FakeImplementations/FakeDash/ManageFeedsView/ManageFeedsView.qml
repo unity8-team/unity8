@@ -88,13 +88,37 @@ Showable {
             }
         }
 
-        function checkAll() {
+        // todo: make more effective
+        function handleCheckAll() {
+            var checkedCount = 0
+            var persistentCount = 0
+
+            // mark all delegates checked
+            var i = listView.model.count - 1
+            for (i; i >= 0; i--) {
+                listView.currentIndex = i
+                if(!listView.currentItem.isPersistent && listView.currentItem.isChecked) {
+                    checkedCount++
+                } else if (listView.currentItem.isPersistent) {
+                    persistentCount++
+                }
+            }
+
+            if (checkedCount < listView.model.count - persistentCount) {
+                checkOrUncheckAll(true)
+            } else {
+                checkOrUncheckAll(false)
+            }
+
+        }
+
+        function checkOrUncheckAll(toBeChecked) {
             // mark all delegates checked
             var i = listView.model.count - 1
             for (i; i >= 0; i--) {
                 listView.currentIndex = i
                 if(!listView.currentItem.isPersistent) {
-                    listView.currentItem.isChecked = true
+                    listView.currentItem.isChecked = toBeChecked
                 }
             }
         }
@@ -323,7 +347,7 @@ Showable {
             listView.resetDelegates()
         }
         onCheckAll: {
-            listView.checkAll()
+            listView.handleCheckAll()
         }
         onRemove: {
             PopupUtils.open(dialog)

@@ -33,6 +33,17 @@ Item {
         }
     }
 
+    Label {
+        id: emptyStateText
+        text: "You need to have at least one item in 'Home'! Swipe up from the bottom to add one now."
+        width: 3/4 * parent.width
+        wrapMode: Text.WordWrap
+        fontSize: "large"
+        anchors.centerIn: parent
+        color: "white"
+        visible: listView.model.count == 0
+    }
+
     ListView {
         id: listView
 
