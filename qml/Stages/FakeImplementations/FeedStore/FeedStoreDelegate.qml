@@ -117,6 +117,13 @@ Item {
     SubscribingActivity {
         id: activity
         anchors.fill: parent
-        onFinished: installed_m ? feedManager.unsubscribeFromFeed(feedName_m) : feedManager.subscribeToFeed(feedName_m)
+        onFinished: {
+            if (installed_m) {
+                feedManager.unsubscribeFromFeed(feedName_m)
+                feedStore.unsubscribedFromFeed(feedName_m)
+            } else {
+                feedManager.subscribeToFeed(feedName_m)
+            }
+        }
     }
 }

@@ -35,7 +35,10 @@ Item {
     readonly property bool dragged: dragArea.moving
     signal clicked()
     signal closed()
-    signal feedNeedsDashFocusing(string feedName)
+
+    signal feedFavourited(string feedName)
+    signal feedUnfavourited(string feedName)
+    signal feedUnsubscribed(string feedName)
 
     // to be set from outside
     property bool interactive: true
@@ -46,6 +49,9 @@ Item {
 
     property var application: null
     property var feedManager: null
+
+    property bool isDash: application.appId == "unity8-dash"
+    property var dashItem: isDash ? appWindowLoader.item : null
 
     Loader {
         id: appWindowLoader
@@ -89,26 +95,6 @@ Item {
         }
     }
 
-    function handleFeedFavourited(feedName, focusToFeed) {
-        if (focusToFeed) {
-            root.feedNeedsDashFocusing(feedName)
-        }
-
-        var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
-        if (foundModelIndex != -1) {
-            ApplicationManager.stopApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
-        }
-
-        // Focus to dash
-        ApplicationManager.requestFocusApplication("unity8-dash")
-
-
-    }
-    function handleFeedUnfavourited(feedName) {
-        // Find a way to launch an application to app stack position 1. meaning next from the currently running.
-        console.log("feedUnfavourited", feedName, "-> do nothing now. Should possibly start a standalone feed instance.")
-    }
-
     Component {
         id: fakeDashComponent
 
@@ -121,17 +107,7 @@ Item {
                     shell.activateApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
                 }
             }
-            onFeedUninstalled: {
-                var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.allFeedsModel, feedName)
-                if (foundModelIndex != -1) {
-                    ApplicationManager.stopApplication(feedManager.allFeedsModel.get(foundModelIndex).feedId_m)
-                }
-            }
             onFeedUnfavourited: handleFeedUnfavourited(feedName)
-            onFeedFavourited: handleFeedFavourited(feedName, false)
-            onStoreLaunched: {
-                shell.activateApplication("store-feed")
-            }
         }
     }
 
@@ -146,6 +122,7 @@ Item {
             feedManager: root.feedManager
             state: "shown"
             showBack: false
+            onUnsubscribedFromFeed: root.feedUnsubscribed(feedName)
         }
     }
 
@@ -172,14 +149,14 @@ Item {
             }
 
             onToggleFavourite: {
-                // duplicate code. can be found from fake dash as well. handle somehow better!!
-                var originalFavouriteState = isFavourite
+                if (isFavourite) {
+                    feedManager.unfavouriteFeed(feedName)
+                    root.feedUnfavourited(feedName)
+                } else {
+                    feedManager.favouriteFeed(feedName)
+                    root.feedFavourited(feedName)
+                }
 
-                // let feedManager handle toggling in model. It will propagate to the model and delegates here.
-                isFavourite ? feedManager.unfavouriteFeed(feedName) : feedManager.favouriteFeed(feedName)
-
-                // handle action
-                originalFavouriteState ? handleFeedUnfavourited(feedName) : handleFeedFavourited(feedName, true)
             }
         }
     }

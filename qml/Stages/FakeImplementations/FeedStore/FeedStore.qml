@@ -8,6 +8,8 @@ Item {
     property alias showBack: header.showBack //whether to show back button in header or not
     property color bgColor: "black"
 
+    signal unsubscribedFromFeed(string feedName)
+
     function show() {
         feedStore.state = "shown"
     }
@@ -44,7 +46,7 @@ Item {
         id: header
         anchors.left: listView.left
         onBack: feedStore.hide()
-        text: "Feed Store"
+        text: "Scope Store"
         showFavIcon: false
         isFavourite: false
     }

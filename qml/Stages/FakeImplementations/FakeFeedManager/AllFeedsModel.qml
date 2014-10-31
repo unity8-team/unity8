@@ -59,7 +59,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed8"
+        feedName_m: "Scope 8"
         feedId_m: "feed8-feed"
         installed_m: false
         favourite_m: false
@@ -67,7 +67,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed9"
+        feedName_m: "Scope 9"
         feedId_m: "feed9-feed"
         installed_m: true
         favourite_m: false
@@ -75,7 +75,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed10"
+        feedName_m: "Scope 10"
         feedId_m: "feed10-feed"
         installed_m: false
         favourite_m: false
@@ -83,7 +83,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed11"
+        feedName_m: "Scope 11"
         feedId_m: "feed11-feed"
         installed_m: false
         favourite_m: false
@@ -91,7 +91,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed12"
+        feedName_m: "Scope 12"
         feedId_m: "feed12-feed"
         installed_m: false
         favourite_m: false
@@ -99,7 +99,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed13"
+        feedName_m: "Scope 13"
         feedId_m: "feed13-feed"
         installed_m: false
         favourite_m: false
@@ -107,7 +107,7 @@ ListModel {
         feed_screenshot_m: ""
     }
     ListElement {
-        feedName_m: "Feed14"
+        feedName_m: "Scope 14"
         feedId_m: "feed14-feed"
         installed_m: false
         favourite_m: false

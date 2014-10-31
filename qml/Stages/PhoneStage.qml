@@ -22,6 +22,7 @@ import Unity.Session 0.1
 import Utils 0.1
 import "../Components"
 import "FakeImplementations/FakeFeedManager"
+import "FakeImplementations/ManageFeeds"
 
 Rectangle {
     id: root
@@ -197,6 +198,16 @@ Rectangle {
             }
         }
 
+        /*function askDashToFocusToAnItem(feedName) {
+            for (var i = 0; spreadRow.children.length; i++) {
+                if (spreadRow.children[i].isDash) {
+                    //activate feed via dash to first check if it's enough to focus on it in dash
+                    spreadRow.children[i].activateDashFeed(feedName)
+                    break;
+                }
+            }
+        }*/
+
         function snap() {
             if (shiftedContentX < positionMarker1 * width) {
                 snapAnimation.targetContentX = -shift;
@@ -298,7 +309,7 @@ Rectangle {
                     dropShadow: spreadView.active ||
                                 (priv.focusedAppDelegate && priv.focusedAppDelegate.x !== 0)
 
-                    readonly property bool isDash: model.appId == "unity8-dash"
+                    //isDash: model.appId == "unity8-dash"
 
                     z: isDash && !spreadView.active ? -1 : behavioredIndex
 
@@ -424,7 +435,13 @@ Rectangle {
                         spreadView.closingIndex = index;
                         ApplicationManager.stopApplication(ApplicationManager.get(index).appId);
                     }
-                    onFeedNeedsDashFocusing: spreadView.focusDashToFeed(feedName)
+                    onFeedFavourited: handleFeedFavourited(feedName, true)
+                    onFeedUnfavourited: handleFeedUnfavourited(feedName)
+                    onFeedUnsubscribed:  {
+                        console.log("Hello")
+                        console.log(feedName)
+                        stopApplication(feedName)
+                    }
                 }
             }
         }
@@ -432,6 +449,50 @@ Rectangle {
 
     FakeFeedManager {
         id: fakeFeedManager
+    }
+
+    function stopApplication(feedName) {
+        var foundModelIndex = fakeFeedManager.findFirstModelIndexByName(fakeFeedManager.allFeedsModel,feedName)
+        if (foundModelIndex != -1) {
+            ApplicationManager.stopApplication(fakeFeedManager.allFeedsModel.get(foundModelIndex).feedId_m)
+        } else {
+            console.log("PhoneStage::stopApplication feed", feedName, "not found.")
+        }
+    }
+
+    function handleFeedFavourited(feedName, focusToFeed) {
+        if (focusToFeed) {
+            spreadView.focusDashToFeed(feedName)
+        }
+
+        stopApplication(feedName)
+
+        // Focus to dash
+        ApplicationManager.requestFocusApplication("unity8-dash")
+    }
+    function handleFeedUnfavourited(feedName) {
+        // Find a way to launch an application to app stack position 1. meaning next from the currently running.
+        console.log("feedUnfavourited", feedName, "-> do nothing now. Should possibly start a standalone feed instance.")
+    }
+
+    ManageFeeds {
+        id: manageFeeds
+        anchors.fill: parent
+        anchors.topMargin: maximizedAppTopMargin
+        feedManager: fakeFeedManager
+        opacity: spreadView.active ? 0 : 1
+        Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
+        onFeedSelected: spreadView.focusDashToFeed(feedName)
+        onFeedUninstalled: stopApplication(feedName)
+        onFeedUnfavourited: {
+            handleFeedUnfavourited(feedName)
+        }
+        onFeedFavourited: {
+            handleFeedFavourited(feedName, false)
+        }
+        onStoreLaunched: {
+            shell.activateApplication("store-feed")
+        }
     }
 
     EdgeDragArea {
@@ -475,6 +536,7 @@ Rectangle {
 
         onDraggingChanged: {
             if (dragging) {
+                manageFeeds.hide()
                 // Gesture recognized. Start recording this gesture
                 gesturePoints = [];
                 return;
@@ -504,4 +566,5 @@ Rectangle {
             }
         }
     }
+
 }

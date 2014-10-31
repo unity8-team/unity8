@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import Ubuntu.Components 1.1
 import Ubuntu.Components.Popups 1.0
-import "../../Components/Math.js" as MathLocal
-import "../../Components"
+import "../Components/Math.js" as MathLocal
+import "../Components"
 
 Showable {
     id: manageFeedsView
@@ -13,11 +13,6 @@ Showable {
     readonly property real __feedHeight: units.gu(7)
 
     signal close()
-    signal feedSelected(string feedName)
-    signal feedUninstalled(string feedName)
-    signal feedUnfavourited(string feedName)
-    signal feedFavourited(string feedName)
-    signal storeLaunched()
 
     // Timer to allow displacement animation to finish before calculating need for
     // reorganizing next time
@@ -49,6 +44,16 @@ Showable {
 
         property FeedDelegate movingItem: null
 
+        parent: clipper
+        anchors.fill: parent
+        orientation: Qt.Vertical
+        model: feedsModel
+        moveDisplaced: Transition {
+                id: displacedTransition
+                property real displaceDuration: listView.movingItem ? waitTimer.interval : 0
+                NumberAnimation {id: moveTransition; properties: "y"; duration: displacedTransition.displaceDuration; easing.type: Easing.InOutCubic }
+        }
+
         function reorganizeIfNeeded() {
             var itemUnderMouse = listView.itemAt(0, dragDetector.mouseY + listView.contentY)
             if (itemUnderMouse && movingItem && itemUnderMouse != movingItem && !waitTimer.running && !moveTransition.running && itemUnderMouse.isFavourite) {
@@ -56,7 +61,7 @@ Showable {
                 // let's not do any direct model manipulations here.
                 // ask app manager to move feed. As it updates the model it will be reflected here as well. Application manager
                 // keeps then other models up to date as well.
-                fakeDash.feedManager.moveFavouriteFeed(movingItem.feedName, itemUnderMouse.ownIndex)
+                manageFeeds.feedManager.moveFavouriteFeed(movingItem.feedName, itemUnderMouse.ownIndex)
             }
         }
 
@@ -82,8 +87,8 @@ Showable {
             for (i; i >= 0; i--) {
                 listView.currentIndex = i
                 if(listView.currentItem.isChecked) {
-                    manageFeedsView.feedUninstalled(listView.currentItem.feedName)
-                    fakeDash.feedManager.unsubscribeFromFeed(listView.currentItem.feedName)
+                    manageFeeds.feedUninstalled(listView.currentItem.feedName)
+                    manageFeeds.feedManager.unsubscribeFromFeed(listView.currentItem.feedName)
                 }
             }
         }
@@ -123,16 +128,6 @@ Showable {
             }
         }
 
-        parent: clipper
-        anchors.fill: parent
-        orientation: Qt.Vertical
-        model: feedsModel
-
-        moveDisplaced: Transition {
-                id: displacedTransition
-                property real displaceDuration: listView.movingItem ? waitTimer.interval : 0
-                NumberAnimation {id: moveTransition; properties: "y"; duration: displacedTransition.displaceDuration; easing.type: Easing.InOutCubic }
-        }
         delegate: FeedDelegate {
             id: feedDelegate
             ownIndex: index
@@ -141,20 +136,20 @@ Showable {
             editModeOn: manageFeedsView.editModeOn
             onPressAndHold: manageFeedsView.editModeOn ? manageFeedsView.editModeOn = false : manageFeedsView.editModeOn = true
             onToggleFavourite: {
-                var originalFavouriteState = isFavourite
-
-                // let feedManager handle toggling in model. It will propagate to the model and delegates here.
-                isFavourite ? fakeDash.feedManager.unfavouriteFeed(feedName) : fakeDash.feedManager.favouriteFeed(feedName)
-
-                // signal
-                originalFavouriteState ? manageFeedsView.feedUnfavourited(feedName) : manageFeedsView.feedFavourited(feedName)
+                if (isFavourite) {
+                    manageFeeds.feedManager.unfavouriteFeed(feedName)
+                    manageFeeds.feedUnfavourited(feedName)
+                } else {
+                    manageFeeds.feedManager.favouriteFeed(feedName)
+                    manageFeeds.feedFavourited(feedName)
+                }
             }
             onRemove: {
-                fakeDash.feedManager.unsubscribeFromFeed(feedName)
-                manageFeedsView.feedUninstalled(feedName)
+                manageFeeds.feedManager.unsubscribeFromFeed(feedName)
+                manageFeeds.feedUninstalled(feedName)
             }
             onClicked: {
-                manageFeedsView.feedSelected(feedName)
+                manageFeeds.feedSelected(feedName)
                 listView.resetDelegates()
                 manageFeedsView.editModeOn = false
                 manageFeedsView.close()
@@ -337,7 +332,7 @@ Showable {
             manageFeedsView.editModeOn = false
             listView.resetDelegates()
             manageFeedsView.close()
-            manageFeedsView.storeLaunched()
+            manageFeeds.storeLaunched()
         }
         onSearch: {
             console.log("search")
