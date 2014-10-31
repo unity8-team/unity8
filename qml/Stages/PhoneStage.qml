@@ -34,7 +34,7 @@ Rectangle {
     property bool spreadEnabled: true // If false, animations and right edge will be disabled
     property real inverseProgress: 0 // This is the progress for left edge drags, in pixels.
     property int orientation: Qt.PortraitOrientation
-
+    property string unfavouritedFeedId: ""
     color: "black"
 
     function select(appId) {
@@ -77,7 +77,13 @@ Rectangle {
             } else {
                 spreadView.phase = 0;
                 spreadView.contentX = -spreadView.shift;
-                ApplicationManager.focusApplication(appId);
+                // if feed has been unfavourited it should be launcher as standalone app but not focused
+                // right away. It should be though next item in recency stack.
+                if (appId == root.unfavouritedFeedId) {
+                    ApplicationManager.move(ApplicationManager.count-1, 1, 1)
+                } else {
+                    ApplicationManager.focusApplication(appId);
+                }
             }
         }
 
@@ -470,9 +476,19 @@ Rectangle {
         // Focus to dash
         ApplicationManager.requestFocusApplication("unity8-dash")
     }
+
     function handleFeedUnfavourited(feedName) {
         // Find a way to launch an application to app stack position 1. meaning next from the currently running.
         console.log("feedUnfavourited", feedName, "-> do nothing now. Should possibly start a standalone feed instance.")
+        var foundModelIndex = fakeFeedManager.findFirstModelIndexByName(fakeFeedManager.allFeedsModel,feedName)
+        var feedId = ""
+        if (foundModelIndex != -1) {
+            feedId = fakeFeedManager.allFeedsModel.get(foundModelIndex).feedId_m
+        } else {
+            console.log("PhoneStage::handleFeedUnfavourited", feedName, "not found.")
+        }
+        root.unfavouritedFeedId = feedId
+        spreadView.focusDashToFeed(feedName)
     }
 
     ManageFeeds {
