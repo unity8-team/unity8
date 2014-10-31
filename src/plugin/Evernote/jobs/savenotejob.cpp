@@ -62,7 +62,7 @@ void SaveNoteJob::startJob()
     note.__isset.notebookGuid = true;
 
     note.updated = m_note->updated().toMSecsSinceEpoch();
-    note.__isset.updated= true;
+    note.__isset.updated = true;
 
     std::vector<evernote::edam::Guid> tags;
     foreach (const QString &tag, m_note->tagGuids()) {
