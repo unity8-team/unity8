@@ -145,7 +145,7 @@ MainView {
 
     function processUri() {
         if (EvernoteConnection.isConnected && commands) {
-            switch(commands[0].toLower()) {
+            switch(commands[0].toLowerCase()) {
                 case "note":
                     if (commands[1]) {
                         displayNote(NotesStore.note(commands[1]));
