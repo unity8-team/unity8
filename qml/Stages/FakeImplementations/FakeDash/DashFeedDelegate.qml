@@ -5,13 +5,16 @@ import "../Components"
 Item {
     id: dashFeedDelegate
 
+    property var feedManager: null
     property string feedName: feedName_m
     property string feedScreenshot: feed_screenshot_m
+    property string customSourceFile: custom_qml_file_m
     property bool isFavourite: favourite_m
     property bool isPersistent: persistent_m
 
 
     signal toggleFavourite(string feedName)
+    signal applicationLaunched(string appId)
 
     width: dash.width
     height: dash.height
@@ -27,7 +30,7 @@ Item {
         id: bg
         color: "gray"
         anchors.fill: parent
-        visible: !flickable.visible
+        visible: customSourceFile == "" && feedScreenshot == ""
 
         Label {
             anchors.centerIn: parent
@@ -37,23 +40,48 @@ Item {
         }
     }
 
-    Flickable {
-        id: flickable
+    Loader {
+        id: contentLoader
+        source: customSourceFile != "" ? "CustomFeeds/" + customSourceFile : ""
+        sourceComponent: defaultFlickableComponent
+        asynchronous: true
         anchors {
             left: parent.left
             right: parent.right
             top: header.bottom
             bottom: parent.bottom
         }
-        contentHeight: screenshotImage.height
-        flickableDirection: Qt.Vertical
-        visible: screenshotImage.source != ""
 
-        Image {
-            id: screenshotImage
-            width: parent.width
-            height: width * sourceSize.height / sourceSize.width
-            source: dashFeedDelegate.feedScreenshot != "" ? "graphics/feedScreenshots/" + dashFeedDelegate.feedScreenshot : ""
+        Binding {
+            target: contentLoader.item
+            property: "feedManager"
+            value: dashFeedDelegate.feedManager
+        }
+
+        Connections {
+            target: contentLoader.item
+            onApplicationLaunched: dashFeedDelegate.applicationLaunched(appId)
+            ignoreUnknownSignals: true
+        }
+
+    }
+
+    Component {
+        id: defaultFlickableComponent
+
+        Flickable {
+            id: flickable
+            anchors.fill: parent
+            contentHeight: screenshotImage.height
+            flickableDirection: Qt.Vertical
+            visible: screenshotImage.source != ""
+
+            Image {
+                id: screenshotImage
+                width: parent.width
+                height: width * sourceSize.height / sourceSize.width
+                source: dashFeedDelegate.feedScreenshot != "" ? "graphics/feedScreenshots/" + dashFeedDelegate.feedScreenshot : ""
+            }
         }
     }
 

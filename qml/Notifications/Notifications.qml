@@ -16,7 +16,7 @@
 
 import QtQuick 2.0
 import Ubuntu.Components 0.1
-import Unity.Notifications 1.0 as UnityNotifications
+//import Unity.Notifications 1.0 as UnityNotifications
 import Utils 0.1
 import "../Components"
 
@@ -29,7 +29,7 @@ ListView {
     property real margin
     property bool useModal: snapDecisionProxyModel.count > 0
 
-    SortFilterProxyModel {
+/*    SortFilterProxyModel {
         id: snapDecisionProxyModel
         objectName: "snapDecisionProxyModel"
 
@@ -37,13 +37,13 @@ ListView {
         filterRole: UnityNotifications.ModelInterface != undefined ? UnityNotifications.ModelInterface.RoleType : 0
         filterRegExp: RegExp(UnityNotifications.Notification.SnapDecision)
     }
-
+*/
     property bool topmostIsFullscreen: false
     spacing: topmostIsFullscreen ? 0 : units.gu(.5)
 
     // FIXME: This doesn't make any sense and results in a binding loop
     currentIndex: (currentIndex < 1 && count > 1) ? 1 : -1
-
+/*
     delegate: Notification {
         objectName: "notification" + index
         anchors {
@@ -80,7 +80,7 @@ ListView {
                 notificationList.topmostIsFullscreen = fullscreen
             }
         }
-    }
+    }*/
 
     // FIXME: disabled all transitions because of LP: #1354406 workaround
     /*populate: Transition {

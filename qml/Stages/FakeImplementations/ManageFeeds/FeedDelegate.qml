@@ -231,9 +231,10 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                anchors.margins: -units.gu(1.5)
+                anchors.margins: -(topLayer.height - parent.height) / 2
                 onClicked: feedDelegate.toggleFavourite()
             }
+
         }
     }
 

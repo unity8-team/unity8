@@ -8,6 +8,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: true
+        custom_qml_file_m: ""
         feed_screenshot_m: "home-feed.jpg"
     }
     ListElement {
@@ -16,6 +17,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: true
+        custom_qml_file_m: "Apps/AppsFeed.qml"
         feed_screenshot_m: "apps-feed.jpg"
     }
     ListElement {
@@ -24,6 +26,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: "nearby-feed.jpg"
     }
     ListElement {
@@ -32,6 +35,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: "news-feed.jpg"
     }
     ListElement {
@@ -40,6 +44,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: "music-feed.jpg"
     }
     ListElement {
@@ -48,6 +53,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: "photos-feed.jpg"
     }
     ListElement {
@@ -56,6 +62,7 @@ ListModel {
         installed_m: true
         favourite_m: true
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: "video-feed.jpg"
     }
     ListElement {
@@ -64,6 +71,7 @@ ListModel {
         installed_m: true
         favourite_m: false
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: "shopping-feed.jpg"
     }
     ListElement {
@@ -72,6 +80,7 @@ ListModel {
         installed_m: true
         favourite_m: false
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: ""
     }
     ListElement {
@@ -80,6 +89,7 @@ ListModel {
         installed_m: true
         favourite_m: false
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: ""
     }
     ListElement {
@@ -88,6 +98,7 @@ ListModel {
         installed_m: false
         favourite_m: false
         persistent_m: false
+        custom_qml_file_m: ""
         feed_screenshot_m: ""
     }
 }

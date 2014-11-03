@@ -11,6 +11,7 @@ Item {
     property alias dashModel: dashModel
     property alias manageDashModel: manageDashModel
     property alias allFeedsModel: allFeedsModel
+    property alias dashFakeAppsModel: dashFakeAppsModel
 
     Component.onCompleted: {
         __initialize()
@@ -201,8 +202,8 @@ Item {
         id: dashModel
     }
 
-    ListModel {
-        id: spreadModel
+    DashFakeAppsModel {
+        id: dashFakeAppsModel
     }
 
     ListModel {

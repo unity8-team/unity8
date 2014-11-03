@@ -10,6 +10,7 @@ Item {
     property bool clipFeed: true
 
     signal feedLaunched(string feedName)
+    signal applicationLaunched(string appId)
     signal feedUnfavourited(string feedName)
 
     function activateFeed(feedName) {
@@ -52,15 +53,19 @@ Item {
         highlightMoveDuration: 300
         boundsBehavior: ListView.DragOverBounds
         clip: clipDash
+        cacheBuffer: 1000
         delegate: DashFeedDelegate {
             width: fakeDash.width
             height: fakeDash.height
+            feedManager: fakeDash.feedManager
             onToggleFavourite: {
                 // if in dash should always be initially favourite. There for no need to check if needs to be
                 // favourited or unfavourited
                 fakeDash.feedManager.unfavouriteFeed(feedName)
                 fakeDash.feedUnfavourited(feedName)
             }
+
+            onApplicationLaunched: fakeDash.applicationLaunched(appId)
         }
     }
 }

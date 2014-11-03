@@ -108,6 +108,7 @@ Item {
                 }
             }
             onFeedUnfavourited: handleFeedUnfavourited(feedName)
+            onApplicationLaunched: shell.activateApplication(appId)
         }
     }
 
@@ -132,18 +133,20 @@ Item {
             id: dashFeedDelegate
             anchors.fill: parent
             anchors.topMargin: maximizedAppTopMargin
-            Component.onCompleted: setDelegateData()
+            Component.onCompleted: {
+                setDelegateData()
+            }
 
             function setDelegateData() {
-                var foundModelIndex = feedManager.findFirstModelIndexById(feedManager.manageDashModel, application.appId)
+                var foundModelIndex = root.feedManager.findFirstModelIndexById(root.feedManager.manageDashModel, application.appId)
                 if (foundModelIndex == -1) {
-                    console.log("Error. corresponding feed not found. id:", application.appId)
                     return false
                 } else {
-                    dashFeedDelegate.feedName = feedManager.manageDashModel.get(foundModelIndex).feedName_m
-                    dashFeedDelegate.feedScreenshot = feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m
-                    dashFeedDelegate.isFavourite = feedManager.manageDashModel.get(foundModelIndex).favourite_m
-                    dashFeedDelegate.isPersistent = feedManager.manageDashModel.get(foundModelIndex).persistent_m
+                    dashFeedDelegate.feedName = root.feedManager.manageDashModel.get(foundModelIndex).feedName_m
+                    dashFeedDelegate.feedScreenshot = root.feedManager.manageDashModel.get(foundModelIndex).feed_screenshot_m
+                    dashFeedDelegate.isFavourite = root.feedManager.manageDashModel.get(foundModelIndex).favourite_m
+                    dashFeedDelegate.isPersistent = root.feedManager.manageDashModel.get(foundModelIndex).persistent_m
+                    dashFeedDelegate.customSourceFile = root.feedManager.manageDashModel.get(foundModelIndex).custom_qml_file_m
                     return true
                 }
             }
@@ -156,8 +159,9 @@ Item {
                     feedManager.favouriteFeed(feedName)
                     root.feedFavourited(feedName)
                 }
-
             }
+
+            onApplicationLaunched: shell.activateApplication(appId)
         }
     }
 
