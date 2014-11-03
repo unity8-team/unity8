@@ -45,6 +45,7 @@ Rectangle {
         }
 
         Rectangle {
+            objectName: "buttonShowDashHome"
             width: parent.width
             height: units.gu(7)
             color: UbuntuColors.orange
@@ -149,7 +150,6 @@ Rectangle {
                         count: model.count
                         countVisible: model.countVisible
                         progress: model.progress
-                        pinned: model.pinned
                         itemFocused: model.focused
                         inverted: root.inverted
                         z: -Math.abs(offset)
@@ -460,10 +460,6 @@ Rectangle {
                 width: itemWidth
                 rotation: root.rotation
                 itemOpacity: 0.9
-                pinned: dndArea.draggedIndex > -1 &&
-                        LauncherModel.get(dndArea.draggedIndex).pinned &&
-                        !dndArea.preDragging &&
-                        !dndArea.dragging
 
                 function flatten() {
                     fakeDragItemAnimation.start();

@@ -178,7 +178,8 @@ Item {
             var startX = phoneStage.width - 2;
             var startY = phoneStage.height / 2;
             var endY = startY;
-            var endX = spreadView.width - (spreadView.width * spreadView[data.positionMarker]) - data.offset;
+            var endX = spreadView.width - (spreadView.width * spreadView[data.positionMarker]) - data.offset
+                - phoneStage.dragAreaWidth;
 
             var oldFocusedApp = ApplicationManager.get(0);
             var newFocusedApp = ApplicationManager.get(data.newFocusedIndex);
@@ -311,6 +312,23 @@ Item {
 
             phoneStage.select(app.application.appId);
             tryCompare(app, "orientation", Qt.LandscapeOrientation);
+        }
+
+        function test_backgroundClickCancelsSpread() {
+            addApps(3);
+
+            var focusedAppId = ApplicationManager.focusedApplicationId;
+
+            goToSpread();
+
+            mouseClick(phoneStage, units.gu(1), units.gu(1));
+
+            // Make sure the spread is in the idle position
+            var spreadView = findChild(phoneStage, "spreadView");
+            tryCompare(spreadView, "contentX", -spreadView.shift);
+
+            // Make sure the same app is still focused
+            compare(focusedAppId, ApplicationManager.focusedApplicationId);
         }
 
         function cleanup() {
