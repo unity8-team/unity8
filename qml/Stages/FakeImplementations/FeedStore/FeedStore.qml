@@ -31,6 +31,7 @@ Item {
             top: header.bottom
             bottom: parent.bottom
         }
+        clip: true
         x: feedStore.state == "shown" ? 0 : listView.width
         Behavior on x {NumberAnimation{duration: UbuntuAnimation.BriskDuration; easing: UbuntuAnimation.StandardEasing}}
         visible: Math.abs(listView.x - listView.width) > 0.0001 //perf fix
