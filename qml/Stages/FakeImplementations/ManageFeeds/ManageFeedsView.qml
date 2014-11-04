@@ -275,6 +275,7 @@ Showable {
         feedName: listView.movingItem ? listView.movingItem.feedName : ""
         isFavourite: true
         isPersistent: listView.movingItem ? listView.movingItem.isPersistent : false
+        feedIconSource: listView.movingItem ? listView.movingItem.feedIconSource : ""
         visible: false
         y: initialY + yChange
         isChecked: listView.movingItem ? listView.movingItem.isChecked : false

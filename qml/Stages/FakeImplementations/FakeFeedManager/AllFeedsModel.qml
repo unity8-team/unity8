@@ -10,6 +10,8 @@ ListModel {
         persistent_m: true
         custom_qml_file_m: ""
         feed_screenshot_m: "home-feed.jpg"
+        feed_icon_m: ""
+        feed_promo_icon_m: ""
     }
     ListElement {
         feedName_m: "Apps"
@@ -19,6 +21,8 @@ ListModel {
         persistent_m: true
         custom_qml_file_m: "Apps/AppsFeed.qml"
         feed_screenshot_m: "apps-feed.jpg"
+        feed_icon_m: "apps-feed-icon.jpg"
+        feed_promo_icon_m: "apps-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "Nearby"
@@ -28,6 +32,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "nearby-feed.jpg"
+        feed_icon_m: "nearby-feed-icon.jpg"
+        feed_promo_icon_m: "nearby-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "News"
@@ -37,6 +43,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "news-feed.jpg"
+        feed_icon_m: "news-feed-icon.jpg"
+        feed_promo_icon_m: "news-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "Music"
@@ -46,6 +54,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "music-feed.jpg"
+        feed_icon_m: "music-feed-icon.jpg"
+        feed_promo_icon_m: "music-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "Photos"
@@ -55,6 +65,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "photos-feed.jpg"
+        feed_icon_m: "photos-feed-icon.jpg"
+        feed_promo_icon_m: "photos-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "Video"
@@ -64,6 +76,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "video-feed.jpg"
+        feed_icon_m: "video-feed-icon.jpg"
+        feed_promo_icon_m: "video-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "Shopping"
@@ -73,6 +87,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "shopping-feed.jpg"
+        feed_icon_m: "shopping-feed-icon.jpg"
+        feed_promo_icon_m: "shopping-feed-promo.jpg"
     }
     ListElement {
         feedName_m: "Amazon"
@@ -82,6 +98,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: ""
+        feed_icon_m: ""
+        feed_promo_icon_m: ""
     }
     ListElement {
         feedName_m: "Ebay"
@@ -91,6 +109,8 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: ""
+        feed_icon_m: ""
+        feed_promo_icon_m: ""
     }
     ListElement {
         feedName_m: "Youtube"
@@ -100,5 +120,7 @@ ListModel {
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: ""
+        feed_icon_m: ""
+        feed_promo_icon_m: ""
     }
 }

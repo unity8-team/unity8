@@ -12,6 +12,7 @@ Item {
     property string feedName: feedName_m //from model
     property bool isFavourite: favourite_m //from model
     property bool isPersistent: persistent_m //from model
+    property string feedIconSource: feed_icon_m //from model
     property alias isChecked: checkbox.checked
     property real mouseY: handle.mouseY
 
@@ -172,7 +173,7 @@ Item {
             }
         }
 
-        Rectangle {
+        UbuntuShape {
             id: feedIcon
             anchors {
                 left: checkboxContainer.right
@@ -181,9 +182,13 @@ Item {
             }
             height: units.gu(5)
             width: height
-            opacity: 0.1
-            color: "black"
-            radius: units.gu(1)
+            color: "white"
+            radius: "medium"
+            image: Image {
+                sourceSize.width: feedIcon.width
+                sourceSize.height: feedIcon.height
+                source: feedIconSource != "" ? "graphics/feedArtwork/" + feedIconSource : ""
+            }
         }
 
         Label {

@@ -7,6 +7,7 @@ Item {
     property color bgColor: "#f5f5f5"
     property color bgColor_subscribed: "#e5e5e5"
     property color fontColor: "#303030"
+    property string feedPromoIconSource: feed_promo_icon_m //from model
 
     width: 100
     height: 62
@@ -17,10 +18,8 @@ Item {
         anchors.fill: parent
     }
 
-    Rectangle {
+    UbuntuShape {
         id: feedIcon
-        color: "white"
-        radius: units.gu(1.5)
         anchors {
             top: parent.top
             bottom: parent.bottom
@@ -28,7 +27,13 @@ Item {
             margins: units.gu(1.5)
         }
         width: units.gu(18)
-        opacity: 0.8
+        color: "white"
+        radius: "medium"
+        image: Image {
+            sourceSize.width: feedIcon.width
+            sourceSize.height: feedIcon.height
+            source: feedPromoIconSource != "" ? "graphics/feedArtwork/" + feedPromoIconSource : ""
+        }
     }
 
     Item {
