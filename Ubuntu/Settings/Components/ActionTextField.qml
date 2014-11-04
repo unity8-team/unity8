@@ -62,10 +62,11 @@ Item {
             id: sendButton
             objectName: "sendButton"
             Layout.preferredWidth: units.gu(9)
-            enabled: replyField.text !== "" && textField.activateEnabled
+            enabled: (replyField.text !== "" || replyField.inputMethodComposing) && textField.activateEnabled
             color: UbuntuColors.green
 
             onClicked: {
+                Qt.inputMethod.commit();
                 textField.activated(replyField.text);
             }
         }
