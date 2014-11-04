@@ -14,32 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
+ *      Mirco Mueller <mirco.mueller@canonical.com>
  */
 
-#include "gsettings.h"
+#ifndef MOCK_NOTIFICATION_TYPES_H
+#define MOCK_NOTIFICATION_TYPES_H
 
-// This is a mock implementation to not touch GSettings for real during tests
+#include <QObject>
 
-GSettings::GSettings(QObject *parent):
-    QObject(parent)
-{
+class MockNotification : public QObject {
+    Q_OBJECT
+    Q_ENUMS(Type)
 
-}
+public:
+    MockNotification(QObject *parent=nullptr);
+    virtual ~MockNotification();
 
-QStringList GSettings::storedApplications() const
-{
-    return m_entries;
-}
+    enum Type { PlaceHolder, Confirmation, Ephemeral, Interactive, SnapDecision };
+};
 
-void GSettings::setStoredApplications(const QStringList &storedApplications)
-{
-    m_entries = storedApplications;
-}
-
-void GSettings::simulateDConfChanged(const QStringList &storedApplications)
-{
-    m_entries = storedApplications;
-    setStoredApplications(storedApplications);
-    Q_EMIT changed();
-}
+#endif // MOCK_NOTIFICATION_TYPES_H
