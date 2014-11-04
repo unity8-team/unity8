@@ -14,32 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
+ *      Mirco Mueller <mirco.mueller@canonical.com>
  */
 
-#include "gsettings.h"
 
-// This is a mock implementation to not touch GSettings for real during tests
+#ifndef TESTNOTIFICATION_PLUGIN_H
+#define TESTNOTIFICATION_PLUGIN_H
 
-GSettings::GSettings(QObject *parent):
-    QObject(parent)
+#include <QtQml/QQmlExtensionPlugin>
+
+class TestNotificationPlugin : public QQmlExtensionPlugin
 {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
 
-}
+public:
+    void registerTypes(const char* uri);
+};
 
-QStringList GSettings::storedApplications() const
-{
-    return m_entries;
-}
-
-void GSettings::setStoredApplications(const QStringList &storedApplications)
-{
-    m_entries = storedApplications;
-}
-
-void GSettings::simulateDConfChanged(const QStringList &storedApplications)
-{
-    m_entries = storedApplications;
-    setStoredApplications(storedApplications);
-    Q_EMIT changed();
-}
+#endif // TESTNOTIFICATION_PLUGIN_H
