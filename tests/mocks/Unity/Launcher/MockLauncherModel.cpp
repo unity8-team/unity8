@@ -23,25 +23,28 @@
 MockLauncherModel::MockLauncherModel(QObject* parent): LauncherModelInterface(parent)
 {
     MockLauncherItem *item = new MockLauncherItem("dialer-app", "/usr/share/applications/dialer-app.desktop", "Dialer", "dialer-app", this);
-    item->setProgress(0);
+    //item->setProgress(0);
     item->setPinned(true);
-    item->setFocused(true);
+    //item->setFocused(true);
     m_list.append(item);
     item = new MockLauncherItem("camera-app", "/usr/share/applications/camera-app.desktop", "Camera", "camera", this);
-    item->setProgress(10);
+    //item->setProgress(10);
     item->setPinned(true);
     m_list.append(item);
     item = new MockLauncherItem("gallery-app", "/usr/share/applications/gallery-app.desktop", "Gallery", "gallery", this);
-    item->setProgress(50);
-    item->setCountVisible(true);
+    //item->setProgress(50);
+    //item->setCountVisible(true);
+    item->setPinned(true);
     m_list.append(item);
     item = new MockLauncherItem("facebook-webapp", "/usr/share/applications/facebook-webapp.desktop", "Facebook", "facebook", this);
-    item->setProgress(150);
+    //item->setProgress(150);
     m_list.append(item);
     item = new MockLauncherItem("webbrowser-app", "/usr/share/applications/webbrowser-app.desktop", "Browser", "browser", this);
-    item->setCount(1);
-    item->setCountVisible(true);
+    item->setPinned(true);
+    //item->setCount(1);
+    //item->setCountVisible(true);
     m_list.append(item);
+    /*
     item = new MockLauncherItem("twitter-webapp", "/usr/share/applications/twitter-webapp.desktop", "Twitter", "twitter", this);
     item->setCount(12);
     item->setCountVisible(true);
@@ -66,6 +69,7 @@ MockLauncherModel::MockLauncherModel(QObject* parent): LauncherModelInterface(pa
     item = new MockLauncherItem("calendar-app", "/usr/share/applications/calendar-app.desktop","Calendar", "calendar", this);
     item->setPinned(true);
     m_list.append(item);
+    */
 }
 
 MockLauncherModel::~MockLauncherModel()

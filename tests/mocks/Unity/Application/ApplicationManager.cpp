@@ -1,4 +1,4 @@
-/*
+    /*
  * Copyright (C) 2013-2014 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -371,11 +371,53 @@ void ApplicationManager::buildListOfAvailableApplications()
 
     application = new ApplicationInfo(this);
     application->setAppId("dialer-app");
-    application->setName("Dialer");
+    application->setName("Phone");
     application->setScreenshotId("dialer");
     application->setIconId("dialer-app");
     application->setStage(ApplicationInfo::SideStage);
     m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("messaging-app");
+    application->setName("Messaging");
+    application->setScreenshotId("messages");
+    application->setIconId("messages-app");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("facebook-webapp");
+    application->setName("Facebook");
+    application->setScreenshotId("facebook");
+    application->setIconId("facebook");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("calendar-app");
+    application->setName("Calendar");
+    application->setIconId("calendar");
+    application->setScreenshotId("calendar");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("contacts-app");
+    application->setName("Contacts");
+    application->setIconId("contacts");
+    application->setScreenshotId("contacts");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("calculator-app");
+    application->setName("Calculator");
+    application->setIconId("calculator");
+    application->setScreenshotId("calculator");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    //--------------------------------------------------
 
     application = new ApplicationInfo(this);
     application->setAppId("camera-app");
@@ -394,14 +436,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
-    application->setAppId("facebook-webapp");
-    application->setName("Facebook");
-    application->setScreenshotId("facebook");
-    application->setIconId("facebook");
-    application->setStage(ApplicationInfo::SideStage);
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
     application->setAppId("webbrowser-app");
     application->setFullscreen(true);
     application->setName("Browser");
@@ -409,7 +443,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setIconId("browser");
     m_availableApplications.append(application);
 
-    application = new ApplicationInfo(this);
+    /*application = new ApplicationInfo(this);
     application->setAppId("twitter-webapp");
     application->setName("Twitter");
     application->setScreenshotId("twitter");
@@ -443,14 +477,9 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setIconId("notepad");
     application->setStage(ApplicationInfo::SideStage);
     m_availableApplications.append(application);
+*/
 
-    application = new ApplicationInfo(this);
-    application->setAppId("calendar-app");
-    application->setName("Calendar");
-    application->setIconId("calendar");
-    application->setStage(ApplicationInfo::SideStage);
-    m_availableApplications.append(application);
-
+/*
     application = new ApplicationInfo(this);
     application->setAppId("evernote");
     application->setName("Evernote");
@@ -480,7 +509,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("YouTube");
     application->setIconId("youtube");
     m_availableApplications.append(application);
-
+*/
     // Vesa additions
     application = new ApplicationInfo(this);
     application->setAppId("home-feed");

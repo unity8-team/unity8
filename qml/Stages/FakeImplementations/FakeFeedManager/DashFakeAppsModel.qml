@@ -3,7 +3,7 @@ import QtQuick 2.0
 ListModel {
     id: dashFakeAppsModel
     ListElement {
-        appName_m: "Telephony"
+        appName_m: "Phone"
         appId_m: "dialer-app"
         appIcon_m: "dialer-app.svg"
     }
