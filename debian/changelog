@@ -1,3 +1,40 @@
+unity8 (8.01.1-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ Albert Astals ]
+  * Fix i18n (LP: #1389165)
+
+  [ Michael Zanetti ]
+  * Fix DBusVariant conversion for launcher emblems (LP: #1387261)
+  * Fix desktop file encoding in launcher (LP: #1387083)
+
+  [ Alberto Aguirre ]
+  * Add audioRole to QtMultimedia mock
+  * Add a plugin to take screenshots on vol up + vol down
+
+  [ Nick Dedekind ]
+  * Reset current item selection on deleted. (LP: #1378462)
+  * Added timer to re-assert server value after indicator menu item
+    activation. (LP: #1336715)
+
+  [ Mirco Müller ]
+  * Added dedicated swipe-to-act button for snap-decisions, which avoids
+    accidental taps/button-presses. (LP: #1358343)
+
+  [ Michael Terry ]
+  * Don't lock phone if user tries to switch back to an active call.
+    (LP: #1388156)
+
+  [ Daniel d'Andrada ]
+  * TouchDispatcher: synthesize MouseButtonDblClick events (LP:
+    #1388359)
+
+  [ Michał Sawicz ]
+  * Bump the version above the version synced from vivid, otherwise
+    train will generate a lower-than-archive version number.
+  * fix positive/negative answer order on the new swipe notification
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 05 Nov 2014 02:37:24 +0100
+
 unity8 (8.01+15.04.20141030-0ubuntu1) vivid; urgency=medium
 
   [ Michael Terry ]
