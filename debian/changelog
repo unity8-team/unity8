@@ -1,4 +1,4 @@
-unity8 (8.01.1-0ubuntu1) UNRELEASED; urgency=medium
+unity8 (8.01.1+14.10.20141105.2~rtm-0ubuntu1) 14.09; urgency=medium
 
   [ Albert Astals ]
   * Fix i18n (LP: #1389165)
@@ -33,7 +33,10 @@ unity8 (8.01.1-0ubuntu1) UNRELEASED; urgency=medium
     train will generate a lower-than-archive version number.
   * fix positive/negative answer order on the new swipe notification
 
- -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 05 Nov 2014 02:37:24 +0100
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 05 Nov 2014 14:39:41 +0000
 
 unity8 (8.01+15.04.20141030-0ubuntu1) vivid; urgency=medium
 
