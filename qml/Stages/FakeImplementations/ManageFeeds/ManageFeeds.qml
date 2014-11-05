@@ -13,6 +13,7 @@ Item {
     signal feedUnfavourited(string feedName)
     signal feedFavourited(string feedName)
     signal storeLaunched()
+    signal resetPrototypeSelected()
 
     function hide() {
         manageFeedsView.hide()
@@ -30,7 +31,10 @@ Item {
         shown: false
 
         onClose: hide()
-
+        onResetPrototypeSelected: {
+            hide()
+            manageFeeds.resetPrototypeSelected()
+        }
         visible: Math.abs(manageFeedsView.y - manageFeedsRevealer.closedValue) > 0.0001 //perf fix
 
     }

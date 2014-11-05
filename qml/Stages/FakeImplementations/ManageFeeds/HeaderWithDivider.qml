@@ -18,6 +18,7 @@ Item {
     signal cancel()
     signal checkAll()
     signal remove()
+    signal resetPrototypeSelected()
 
 
     Item {
@@ -88,6 +89,12 @@ Item {
             font.weight: Font.Light
             fontSize: "x-large"
             elide: Text.ElideRight
+
+            MouseArea {
+                id: resetArea
+                anchors.fill: parent
+                onPressAndHold: header.resetPrototypeSelected()
+            }
         }
 
         Image {

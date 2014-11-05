@@ -13,6 +13,7 @@ Showable {
     readonly property real __feedHeight: units.gu(7)
 
     signal close()
+    signal resetPrototypeSelected()
 
     // Timer to allow displacement animation to finish before calculating need for
     // reorganizing next time
@@ -324,6 +325,7 @@ Showable {
         onRemove: {
             PopupUtils.open(dialog)
         }
+        onResetPrototypeSelected: PopupUtils.open(resetConfirmationDialog)
     }
 
     Component {
@@ -337,6 +339,28 @@ Showable {
                  onClicked: {
                     listView.deleteCheckedDelegates()
                      PopupUtils.close(dialogue)
+                 }
+             }
+             Button {
+                 text: "No"
+                 onClicked: PopupUtils.close(dialogue)
+             }
+         }
+    }
+
+    Component {
+         id: resetConfirmationDialog
+         Dialog {
+             id: dialogue
+             title: "Reset prototype"
+             text: "Are you sure that you want to reset the prototype?"
+             Button {
+                 text: "Yes"
+                 onClicked: {
+                    manageFeedsView.editModeOn = false
+                    manageFeeds.feedManager.resetModels()
+                    manageFeedsView.resetPrototypeSelected()
+                    PopupUtils.close(dialogue)
                  }
              }
              Button {

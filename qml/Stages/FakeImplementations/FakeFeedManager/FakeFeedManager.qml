@@ -1,6 +1,4 @@
-import QtQuick 2.2
-import QtQuick.Controls 1.1
-import QtQuick.Window 2.0
+import QtQuick 2.0
 
 Item {
     id: feedManager
@@ -14,6 +12,10 @@ Item {
     property alias dashFakeAppsModel: dashFakeAppsModel
 
     Component.onCompleted: {
+        __initialize()
+    }
+
+    function resetModels() {
         __initialize()
     }
 
@@ -39,8 +41,16 @@ Item {
 
 
     function __initialize() {
+        __initializeAllFeedsModel()
         __initializeManageDashModel()
         __initializeDashModel()
+    }
+
+    function __initializeAllFeedsModel() {
+        allFeedsModel.clear()
+        for (var i = 0; i < defaultFeedsModel.count; i++) {
+            allFeedsModel.append(defaultFeedsModel.get(i))
+        }
     }
 
     function __initializeManageDashModel() {
@@ -194,8 +204,12 @@ Item {
         }
     }
 
-    AllFeedsModel {
+    ListModel {
         id: allFeedsModel
+    }
+
+    AllFeedsModel {
+        id: defaultFeedsModel
     }
 
     ListModel {

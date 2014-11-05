@@ -41,6 +41,18 @@ Rectangle {
         spreadView.snapTo(priv.indexOf(appId));
     }
 
+    function closeAllAppsButDash() {
+        var openAppCount = ApplicationManager.count
+        var appId
+        for (var i = openAppCount-1; i >= 0; i--) {
+            appId = ApplicationManager.get(i).appId
+            if (appId != "unity8-dash") {
+                ApplicationManager.stopApplication(appId)
+            }
+        }
+        ApplicationManager.requestFocusApplication("unity8-dash")
+    }
+
     onWidthChanged: {
         spreadView.selectedIndex = -1;
         spreadView.phase = 0;
@@ -516,6 +528,9 @@ Rectangle {
         }
         onStoreLaunched: {
             shell.activateApplication("store-feed")
+        }
+        onResetPrototypeSelected: {
+            closeAllAppsButDash()
         }
     }
 
