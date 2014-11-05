@@ -44,7 +44,10 @@ Item {
             id: replyField
             objectName: "replyText"
 
-            placeholderText: i18n.tr("Reply")
+            /* Get the string translation from telephony-service, that's a
+               workaround but ubuntu-settings-components is not currently
+               setup for translations, see bug #1389234 */
+            placeholderText: i18n.dtr("telephony-service", "Reply")
             hasClearButton: false
 
             Layout.fillWidth: true
