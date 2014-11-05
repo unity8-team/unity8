@@ -31,6 +31,7 @@ unity8 (8.01.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Michał Sawicz ]
   * Bump the version above the version synced from vivid, otherwise
     train will generate a lower-than-archive version number.
+  * fix positive/negative answer order on the new swipe notification
 
  -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 05 Nov 2014 02:37:24 +0100
 
