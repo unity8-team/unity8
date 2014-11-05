@@ -1,3 +1,10 @@
+unity8 (8.01.1-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Bump the version above the version synced from vivid, otherwise
+    train will generate a lower-than-archive version number.
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 05 Nov 2014 02:37:24 +0100
+
 unity8 (8.01+15.04.20141030-0ubuntu1) vivid; urgency=medium
 
   [ Michael Terry ]
