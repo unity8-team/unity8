@@ -1,3 +1,12 @@
+ubuntu-settings-components (0.4+15.04.20141105-0ubuntu1) vivid; urgency=low
+
+  [ Sebastien Bacher ]
+  * Get the string translation from telephony-service, that's a
+    workaround but ubuntu-settings-components is not currently setup for
+    translations (LP: #1389234)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 05 Nov 2014 08:45:40 +0000
+
 ubuntu-settings-components (0.4+15.04.20141104-0ubuntu1) vivid; urgency=low
 
   [ Nick Dedekind ]
