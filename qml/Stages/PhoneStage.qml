@@ -577,13 +577,13 @@ Rectangle {
             currentStatus = status;
 
             if (status == DirectionalDragArea.Recognized) {
+                manageFeeds.hide()
                 attachedToView = true;
             }
         }
 
         onDraggingChanged: {
             if (dragging) {
-                manageFeeds.hide()
                 // A potential edge-drag gesture has started. Start recording it
                 gesturePoints = [];
                 return;
