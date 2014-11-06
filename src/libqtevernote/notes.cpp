@@ -163,3 +163,15 @@ bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) con
     }
     return true;
 }
+
+bool Notes::lessThan(const QModelIndex &left, const QModelIndex &right) const
+{
+    QVariant leftValue = sourceModel()->data(left, sortRole()).toString();
+    QVariant rightValue = sourceModel()->data(right, sortRole()).toString();
+
+    if (leftValue == rightValue) {
+        return sourceModel()->data(left, NotesStore::RoleTitle).toString() < sourceModel()->data(right, NotesStore::RoleTitle).toString();
+    }
+
+    return leftValue < rightValue;
+}
