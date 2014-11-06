@@ -32,13 +32,13 @@ ListView {
     }
 
     Label {
-        width: root.width
+        anchors { left: parent.left; right: parent.right; bottom: parent.top }
+        anchors.bottomMargin: root.contentY - root.originY
         height: units.gu(3)
-        anchors.bottom: root.contentItem.top;
         fontSize: 'medium'
         horizontalAlignment: Text.AlignHCenter
         text: priv.toBeReloaded ? i18n.tr("Release to refresh") : i18n.tr("Pull down to refresh")
-        color: "#b3b3b3" 
+        color: "#b3b3b3"
     }
 
     onMovementStarted: {
@@ -48,7 +48,7 @@ ListView {
 
     onContentYChanged: {
         if (dragging) {
-            if (priv.wasAtYBeginning && priv.initialContentY - contentY > units.gu(5)) {
+            if (priv.wasAtYBeginning && priv.initialContentY - contentY > units.gu(10)) {
                 priv.toBeReloaded = true
             }
             else {
