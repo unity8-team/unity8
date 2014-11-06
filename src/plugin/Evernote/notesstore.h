@@ -165,6 +165,8 @@ private slots:
     void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
     void emitDataChanged();
+    void clear();
+
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;

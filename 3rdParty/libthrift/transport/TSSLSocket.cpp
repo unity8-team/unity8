@@ -143,9 +143,11 @@ void TSSLSocket::open() {
 void TSSLSocket::close() {
   if (ssl_ != NULL) {
     int rc = SSL_shutdown(ssl_);
-    if (rc == 0) {
-      rc = SSL_shutdown(ssl_);
-    }
+    // FIXME: this freezes the app when switching account, check if it's needed
+    // when upgrade evernote sdk
+//    if (rc == 0) {
+//      rc = SSL_shutdown(ssl_);
+//    }
     if (rc < 0) {
       int errno_copy = errno;
       string errors;
