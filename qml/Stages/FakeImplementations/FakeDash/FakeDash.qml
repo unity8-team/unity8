@@ -32,10 +32,10 @@ Item {
 
     Label {
         id: emptyStateText
-        text: "You need to have at least one item in 'Home'! Swipe up from the bottom to add one now."
+        text: "OOPS! You need to have at least one item favourited to 'Home'!"
         width: 3/4 * parent.width
         wrapMode: Text.WordWrap
-        fontSize: "large"
+        fontSize: "x-large"
         anchors.centerIn: parent
         color: "white"
         visible: listView.model.count == 0
@@ -53,7 +53,7 @@ Item {
         highlightMoveDuration: 300
         boundsBehavior: ListView.DragOverBounds
         clip: clipDash
-        cacheBuffer: 1000
+        cacheBuffer: 10000
         delegate: DashFeedDelegate {
             width: fakeDash.width
             height: fakeDash.height
@@ -67,5 +67,13 @@ Item {
 
             onApplicationLaunched: fakeDash.applicationLaunched(appId)
         }
+    }
+
+    PaginationElement {
+        id: pagination
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: units.gu(7.5)
+        paginationCount: listView.model.count
+        paginationIndex: listView.currentIndex
     }
 }

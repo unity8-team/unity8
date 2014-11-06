@@ -96,14 +96,14 @@ Item {
 
             Label {
                 anchors.centerIn: parent
-                text: installed_m ? "Unsubscribe" : "Subscribe"
+                text: installed_m ? "Uninstall" : "Install"
                 color: fontColor
                 fontSize: "small"
             }
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: activity.start() //installed_m ? feedManager.unsubscribeFromFeed(feedName_m) : feedManager.subscribeToFeed(feedName_m)
+                onClicked: activity.start()
             }
         }
     }

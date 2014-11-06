@@ -19,6 +19,10 @@ Item {
         manageFeedsView.hide()
     }
 
+    function show() {
+        manageFeedsView.show()
+    }
+
     ManageFeedsView {
         id: manageFeedsView
         width: parent.width

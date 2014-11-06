@@ -19,7 +19,7 @@ Item {
             leftMargin: units.gu(1)
             verticalCenter: parent.verticalCenter
         }
-        text: section == "true" ? "Home" : "Others"
+        text: section == "true" ? "Home" : "Others installed"
         fontSize: "small"
         color: "black"
         opacity: 1

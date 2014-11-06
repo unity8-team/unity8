@@ -235,11 +235,11 @@ Item {
             Behavior on scale {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
 
             MouseArea {
+                id: ma
                 anchors.fill: parent
                 anchors.margins: -(topLayer.height - parent.height) / 2
                 onClicked: feedDelegate.toggleFavourite()
             }
-
         }
     }
 

@@ -402,7 +402,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
-    application->setAppId("contacts-app");
+    application->setAppId("address-book-app");
     application->setName("Contacts");
     application->setIconId("contacts");
     application->setScreenshotId("contacts");
@@ -420,7 +420,15 @@ void ApplicationManager::buildListOfAvailableApplications()
     //--------------------------------------------------
 
     application = new ApplicationInfo(this);
-    application->setAppId("camera-app");
+    application->setAppId("ubuntu-system-settings");
+    application->setName("Settings");
+    application->setScreenshotId("systemsettings");
+    application->setIconId("system-settings");
+    application->setFullscreen(false);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("com.ubuntu.camera_camera");
     application->setName("Camera");
     application->setScreenshotId("camera");
     application->setIconId("camera");
@@ -428,7 +436,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
-    application->setAppId("gallery-app");
+    application->setAppId("com.ubuntu.gallery_gallery");
     application->setName("Gallery");
     application->setScreenshotId("gallery");
     application->setIconId("gallery");

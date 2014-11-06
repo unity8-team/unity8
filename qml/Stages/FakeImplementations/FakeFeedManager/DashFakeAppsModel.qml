@@ -24,7 +24,7 @@ ListModel {
     }
     ListElement {
         appName_m: "Contacts"
-        appId_m: "contacts-app"
+        appId_m: "address-book-app"
         appIcon_m: "contacts-app.svg"
     }
     ListElement {

@@ -61,7 +61,7 @@ ListModel {
         feedName_m: "Photos"
         feedId_m: "photos-feed"
         installed_m: true
-        favourite_m: true
+        favourite_m: false
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "photos-feed.jpg"
@@ -72,7 +72,7 @@ ListModel {
         feedName_m: "Video"
         feedId_m: "video-feed"
         installed_m: true
-        favourite_m: true
+        favourite_m: false
         persistent_m: false
         custom_qml_file_m: ""
         feed_screenshot_m: "video-feed.jpg"
@@ -82,7 +82,7 @@ ListModel {
     ListElement {
         feedName_m: "Shopping"
         feedId_m: "shopping-feed"
-        installed_m: true
+        installed_m: false
         favourite_m: false
         persistent_m: false
         custom_qml_file_m: ""
@@ -93,7 +93,7 @@ ListModel {
     ListElement {
         feedName_m: "Amazon"
         feedId_m: "amazon-feed"
-        installed_m: true
+        installed_m: false
         favourite_m: false
         persistent_m: false
         custom_qml_file_m: ""
@@ -104,7 +104,7 @@ ListModel {
     ListElement {
         feedName_m: "Ebay"
         feedId_m: "ebay-feed"
-        installed_m: true
+        installed_m: false
         favourite_m: false
         persistent_m: false
         custom_qml_file_m: ""

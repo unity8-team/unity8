@@ -82,7 +82,7 @@ Item {
                 verticalCenter: parent.verticalCenter
             }
 
-            text: "Manage"
+            text: editModeOn ? "Edit" : "Manage"
             color: "#5b5b5b"
             opacity: 1
             font.family: "Ubuntu"
@@ -97,22 +97,29 @@ Item {
             }
         }
 
-        Image {
+        UbuntuShape {
             id: storeIcon
             anchors {
                 right: searchIcon.left
                 rightMargin: units.gu(2.5)
                 verticalCenter: parent.verticalCenter
             }
-            height: units.gu(2.5)
-            width: height * sourceSize.width / sourceSize.height
-            source: "graphics/stock_application.svg"
-
+            height: units.gu(4)
+            width: height
+            color: "white"
+            //radius: "medium"
+            borderSource: "none"
             visible: opacity > 000.1
             opacity: !editModeOn ? 1 : 0
             Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
             scale: !editModeOn ? 1 : 0.5
             Behavior on scale {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
+
+            image: Image {
+                sourceSize.width: storeIcon.width
+                sourceSize.height: storeIcon.height
+                source: "graphics/ubuntu-store.svg"
+            }
 
             MouseArea {
                 anchors.fill: parent

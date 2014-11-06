@@ -88,6 +88,11 @@ Item {
     FeedHeader {
         id: header
         text: dashFeedDelegate.feedName
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
+        useUbuntuGraphicInsteadOfText: customSourceFile != "" // Not really generic this way but works since apps feed is the only custom one.
         isFavourite: dashFeedDelegate.isFavourite
         onToggleFavourite: dashFeedDelegate.toggleFavourite(feedName)
     }

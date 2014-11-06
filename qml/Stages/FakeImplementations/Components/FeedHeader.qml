@@ -6,7 +6,8 @@ Item {
 
     property alias text: label.text
     property bool showBack: false
-    property bool showFavIcon: true
+    property bool useUbuntuGraphicInsteadOfText: false
+    property bool showFavIcon: false
     property bool isFavourite: false
 
     signal back()
@@ -61,11 +62,24 @@ Item {
 
             text: ""
             color: "#5b5b5b"
-            opacity: 1
+            visible: !useUbuntuGraphicInsteadOfText
             font.family: "Ubuntu"
             font.weight: Font.Light
             fontSize: "x-large"
             elide: Text.ElideRight
+        }
+
+        Image {
+            id: ubuntuGraphic
+            anchors {
+                left: backButton.right
+                leftMargin: units.gu(2)
+                verticalCenter: parent.verticalCenter
+            }
+            height: units.gu(3.5)
+            width: height * sourceSize.width/sourceSize.height
+            visible: useUbuntuGraphicInsteadOfText
+            source: "graphics/home-feed-logo.jpg"
         }
 
         Image {

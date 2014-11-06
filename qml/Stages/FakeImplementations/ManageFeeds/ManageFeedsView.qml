@@ -333,7 +333,7 @@ Showable {
          Dialog {
              id: dialogue
              title: "Multiple feeds"
-             text: "Are you sure that you want to remove and unsubscribe from all selected feeds?"
+             text: "Are you sure that you want to uninstall all selected feeds?"
              Button {
                  text: "Yes"
                  onClicked: {

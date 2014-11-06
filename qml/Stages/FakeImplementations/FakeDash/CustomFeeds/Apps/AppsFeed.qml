@@ -8,9 +8,9 @@ Item {
 
     signal applicationLaunched(string appId)
 
-    Rectangle {
+    Image {
         anchors.fill: parent
-        color: "#eeeeee"
+        source: "graphics/paper_portrait.png"
     }
 
     Item {
