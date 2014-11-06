@@ -1,3 +1,5 @@
+pkg_search_module(SSL openssl REQUIRED)
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -37,4 +39,5 @@ SET(libthrift_SRCS
     concurrency/Util.cpp
 )
 
-add_library(libthrift ${libthrift_SRCS})
+add_library(libthrift STATIC ${libthrift_SRCS})
+target_link_libraries(libthrift ${SSL_LDFLAGS})
