@@ -50,6 +50,7 @@ Item {
         }
         width: mouseArea.maxDrag
         color: isPersistent ? "#050505" : "red"
+        visible: topLayer.x != 0
 
         Image {
             id: trashbin

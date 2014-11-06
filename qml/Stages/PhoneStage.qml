@@ -205,6 +205,20 @@ Rectangle {
             }
         }
 
+        function focusToFeed(feedName) {
+            var foundModelIndex
+
+            if (fakeFeedManager.findFirstModelIndexByName(fakeFeedManager.dashModel, feedName) != -1) {
+                ApplicationManager.requestFocusApplication("unity8-dash")
+                focusDashToFeed(feedName)
+            } else {
+                foundModelIndex = fakeFeedManager.findFirstModelIndexByName(fakeFeedManager.allFeedsModel,feedName)
+                if (foundModelIndex != -1) {
+                    shell.activateApplication(fakeFeedManager.allFeedsModel.get(foundModelIndex).feedId_m)
+                }
+            }
+        }
+
         function focusDashToFeed(feedName) {
             // find Dash
             for (var i = 0; spreadRow.children.length; i++) {
@@ -215,16 +229,6 @@ Rectangle {
                 }
             }
         }
-
-        /*function askDashToFocusToAnItem(feedName) {
-            for (var i = 0; spreadRow.children.length; i++) {
-                if (spreadRow.children[i].isDash) {
-                    //activate feed via dash to first check if it's enough to focus on it in dash
-                    spreadRow.children[i].activateDashFeed(feedName)
-                    break;
-                }
-            }
-        }*/
 
         function snap() {
             if (shiftedContentX < positionMarker1 * width) {
@@ -504,8 +508,13 @@ Rectangle {
         } else {
             console.log("PhoneStage::handleFeedUnfavourited", feedName, "not found.")
         }
-        root.unfavouritedFeedId = feedId
-        spreadView.focusDashToFeed(feedName)
+
+        // Uncomment lines below if we want to start a feed as standalone after unfavourited.
+        // first line ensures that feed is launched to second pos in the stack when ready
+        // second line launches the feed
+
+        //root.unfavouritedFeedId = feedId
+        //spreadView.focusToFeed(feedName)
     }
 
     ManageFeeds {
@@ -518,7 +527,7 @@ Rectangle {
         opacity: spreadView.active || !focusedAppIsFeed ? 0 : 1
         enabled: opacity > 0.9999
         Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
-        onFeedSelected: spreadView.focusDashToFeed(feedName)
+        onFeedSelected: spreadView.focusToFeed(feedName)
         onFeedUninstalled: stopApplication(feedName)
         onFeedUnfavourited: {
             handleFeedUnfavourited(feedName)

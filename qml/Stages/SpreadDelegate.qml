@@ -101,12 +101,6 @@ Item {
         FakeDash {
             anchors.fill: parent
             anchors.topMargin: maximizedAppTopMargin
-            onFeedLaunched: {
-                var foundModelIndex = feedManager.findFirstModelIndexByName(feedManager.manageDashModel,feedName)
-                if (foundModelIndex != -1) {
-                    shell.activateApplication(feedManager.manageDashModel.get(foundModelIndex).feedId_m)
-                }
-            }
             onFeedUnfavourited: handleFeedUnfavourited(feedName)
             onApplicationLaunched: shell.activateApplication(appId)
         }

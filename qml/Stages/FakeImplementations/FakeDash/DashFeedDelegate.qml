@@ -63,7 +63,12 @@ Item {
             onApplicationLaunched: dashFeedDelegate.applicationLaunched(appId)
             ignoreUnknownSignals: true
         }
-
+        onStatusChanged: {
+            if (contentLoader.status == Loader.Ready) console.log(feedName, 'Loaded')
+            else if (contentLoader.status == Loader.Null) console.log(feedName, 'Null')
+            else if (contentLoader.status == Loader.Loading) console.log(feedName, 'Loading')
+            else if (contentLoader.status == Loader.Error) console.log(feedName, 'Error')
+        }
     }
 
     Component {
@@ -81,6 +86,7 @@ Item {
                 width: parent.width
                 height: width * sourceSize.height / sourceSize.width
                 source: dashFeedDelegate.feedScreenshot != "" ? "graphics/feedScreenshots/" + dashFeedDelegate.feedScreenshot : ""
+                asynchronous: true
             }
         }
     }

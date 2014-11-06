@@ -9,7 +9,6 @@ Item {
     property bool clipDash: true
     property bool clipFeed: true
 
-    signal feedLaunched(string feedName)
     signal applicationLaunched(string appId)
     signal feedUnfavourited(string feedName)
 
@@ -25,8 +24,6 @@ Item {
         if (feedModelIndex != -1) {
             // focus to correct feed
             listView.currentIndex = feedModelIndex
-        } else {
-            fakeDash.feedLaunched(feedName)
         }
     }
 

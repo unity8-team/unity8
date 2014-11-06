@@ -137,13 +137,7 @@ Showable {
             editModeOn: manageFeedsView.editModeOn
             onPressAndHold: manageFeedsView.editModeOn ? manageFeedsView.editModeOn = false : manageFeedsView.editModeOn = true
             onToggleFavourite: {
-                if (isFavourite) {
-                    manageFeeds.feedManager.unfavouriteFeed(feedName)
-                    manageFeeds.feedUnfavourited(feedName)
-                } else {
-                    manageFeeds.feedManager.favouriteFeed(feedName)
-                    manageFeeds.feedFavourited(feedName)
-                }
+                toggleFavouriteAnimation.restart()
             }
             onRemove: {
                 manageFeeds.feedManager.unsubscribeFromFeed(feedName)
@@ -154,6 +148,53 @@ Showable {
                 listView.resetDelegates()
                 manageFeedsView.editModeOn = false
                 manageFeedsView.close()
+            }
+
+            SequentialAnimation {
+                id: toggleFavouriteAnimation
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: feedDelegate
+                        property: "scale"
+                        to: 0.8
+                        duration: 200
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+                    NumberAnimation {
+                        target: feedDelegate
+                        property: "opacity"
+                        to: 0
+                        duration: 200
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+                }
+                ScriptAction {
+                    script: {
+                        if (feedDelegate.isFavourite) {
+                            manageFeeds.feedManager.unfavouriteFeed(feedName)
+                            manageFeeds.feedUnfavourited(feedName)
+                        } else {
+                            manageFeeds.feedManager.favouriteFeed(feedName)
+                            manageFeeds.feedFavourited(feedName)
+                        }
+                    }
+                }
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: feedDelegate
+                        property: "scale"
+                        to: 1//manageFeedsView.__feedHeight
+                        duration: 200
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+                    NumberAnimation {
+                        target: feedDelegate
+                        property: "opacity"
+                        to: 1
+                        duration: 200
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+                }
             }
         }
 
