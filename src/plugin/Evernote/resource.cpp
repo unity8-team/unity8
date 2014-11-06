@@ -77,6 +77,8 @@ Resource::Resource(const QString &path, QObject *parent):
         m_type = "image/png";
     } else if (m_fileName.endsWith(".jpg") || m_fileName.endsWith(".jpeg")) {
         m_type = "image/jpeg";
+    } else if (m_fileName.endsWith(".gif")) {
+        m_type = "image/gif";
     } else {
         qWarning() << "cannot determine mime type of file" << m_fileName;
     }
@@ -113,7 +115,7 @@ QByteArray Resource::imageData(const QSize &size)
 
     QString finalFilePath = m_filePath;
     if (size.isValid() && !size.isNull()) {
-        finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + "_" + m_fileName;
+        finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + "_.jpg";
         QFileInfo fi(finalFilePath);
         if (!fi.exists()) {
             QImage image(m_filePath);
