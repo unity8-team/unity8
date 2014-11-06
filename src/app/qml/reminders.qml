@@ -41,7 +41,7 @@ MainView {
      This property enables the application to change orientation
      when the device is rotated. The default is false.
     */
-    //automaticOrientation: true
+    automaticOrientation: true
 
     property bool narrowMode: root.width < units.gu(80)
 
@@ -57,11 +57,12 @@ MainView {
     property var accountPage;
 
     function openAccountPage(isChangingAccount) {
+        var unauthorizedAccounts = allAccounts.count - accounts.count > 0 ? true : false
         if (accountPage) {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, {accounts: accounts, isChangingAccount: isChangingAccount});
+        accountPage = component.createObject(root, { accounts: allAccounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
         accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
@@ -132,6 +133,12 @@ MainView {
     AccountServiceModel {
         id: accounts
         applicationId: "com.ubuntu.reminders_reminders"
+    }
+
+    AccountServiceModel {
+        id: allAccounts
+        service: useSandbox ? "evernote-sandbox" : "evernote"
+        includeDisabled: true
     }
 
     AccountService {

@@ -53,6 +53,7 @@ NotesStore::NotesStore(QObject *parent) :
     connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshNotebooks);
     connect(EvernoteConnection::instance(), SIGNAL(isConnectedChanged()), this, SLOT(refreshNotes()));
     connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshTags);
+    connect(EvernoteConnection::instance(), &EvernoteConnection::tokenChanged, this, &NotesStore::clear);
 
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
@@ -340,13 +341,7 @@ void NotesStore::untagNote(const QString &noteGuid, const QString &tagGuid)
 void NotesStore::refreshNotes(const QString &filterNotebookGuid)
 {
     if (EvernoteConnection::instance()->token().isEmpty()) {
-        beginResetModel();
-        foreach (Note *note, m_notes) {
-            emit noteRemoved(note->guid(), note->notebookGuid());
-            note->deleteLater();
-        }
-        m_notes.clear();
-        endResetModel();
+        clear();
         emit countChanged();
     } else {
         m_loading = true;
@@ -793,4 +788,16 @@ void NotesStore::emitDataChanged()
     }
     int idx = m_notes.indexOf(note);
     emit dataChanged(index(idx), index(idx));
+}
+
+void NotesStore::clear()
+{
+    beginResetModel();
+    foreach (Note *note, m_notes) {
+        emit noteRemoved(note->guid(), note->notebookGuid());
+        note->deleteLater();
+    }
+    m_notes.clear();
+    m_notesHash.clear();
+    endResetModel();
 }

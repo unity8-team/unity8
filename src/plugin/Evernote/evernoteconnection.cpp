@@ -169,6 +169,9 @@ void EvernoteConnection::setToken(const QString &token)
         m_token = token;
         emit tokenChanged();
 
+        qDeleteAll(m_jobQueue);
+        m_jobQueue.clear();
+
         connectToEvernote();
     }
 }

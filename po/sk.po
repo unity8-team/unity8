@@ -1,4 +1,4 @@
-# Russian translation for reminders-app
+# Slovak translation for reminders-app
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the reminders-app package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,271 +8,266 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-30 07:50+0000\n"
-"Last-Translator: ☠Jay ZDLin☠ <Unknown>\n"
-"Language-Team: Russian <ru@li.org>\n"
+"PO-Revision-Date: 2014-10-27 23:01+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Slovak <sk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-31 06:44+0000\n"
-"X-Generator: Launchpad (build 17211)\n"
+"X-Launchpad-Export-Date: 2014-10-28 07:14+0000\n"
+"X-Generator: Launchpad (build 17203)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
-msgstr "Напоминания"
+msgstr ""
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr "Ubuntu Reminders от Evernote"
+msgstr ""
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
 msgid "Last edited %1"
-msgstr "Последний раз редактировалось %1"
+msgstr ""
 
 #: src/app/qml/components/NotebooksDelegate.qml:105
 msgid "Shared"
-msgstr "Общие"
+msgstr ""
 
 #: src/app/qml/components/NotebooksDelegate.qml:105
 msgid "Private"
-msgstr "Личные"
+msgstr ""
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr "Отпустите, чтобы обновить"
+msgstr ""
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr "Потяните вниз для обновления"
+msgstr ""
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 #: src/app/qml/ui/SetReminderView.qml:55
 msgid "Clear reminder"
-msgstr "Убрать напоминание"
+msgstr ""
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
-msgstr "Отметить как выполненное"
+msgstr ""
 
 #: src/app/qml/reminders.qml:207
 msgid "Notes"
-msgstr "Заметки"
+msgstr ""
 
 #: src/app/qml/reminders.qml:238
 msgid "Notebooks"
-msgstr "Блокноты"
+msgstr ""
 
 #: src/app/qml/reminders.qml:282
 msgid "Tags"
-msgstr "Метки"
+msgstr ""
 
 #: src/app/qml/reminders.qml:322
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
-"Заметки не выбраны.\n"
-"Выберите заметку для её просмотра."
 
 #: src/app/qml/reminders.qml:359
 msgid "No account available"
-msgstr "Нет доступных учётных записей"
+msgstr ""
 
 #: src/app/qml/reminders.qml:360
 msgid "Please configure and authorize an Evernote account in System Settings"
-msgstr "Настройте и авторизуйте учётную запись Evernote в настройках системы"
+msgstr ""
 
 #: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
 msgid "Add account"
-msgstr "Добавить учётную запись"
+msgstr ""
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
-msgstr "Выбор учётной записи Evernote"
+msgstr ""
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
-msgstr "Безымянный"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
-msgstr "Правка"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
-msgstr "Редактировать напоминание"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:66
 msgid "Set reminder"
-msgstr "Установить напоминание"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
-msgstr "Удалить"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:43
 msgid "Add notebook"
-msgstr "Добавить блокнот"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
 #: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
-msgstr "Поиск"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
-msgstr "Обновить"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
 #: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
-msgstr "Учётные записи"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
-msgstr "Отмена"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
-msgstr "Сохранить"
+msgstr ""
 
 #: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
-msgstr "Добавить заметку"
+msgstr ""
 
 #: src/app/qml/ui/NotesPage.qml:214
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
-"Нет заметок. Вы можете добавить примечания с помощью кнопки «Добавить "
-"заметку»."
 
 #: src/app/qml/ui/RemindersPage.qml:108
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
-"Напоминания отсутствуют. Напоминания можно установить при просмотре заметки."
 
 #: src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
-msgstr "Поиск заметок"
+msgstr ""
 
 #: src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr "Выберите дату и время для напоминания:"
+msgstr ""
 
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
-msgstr "Нет меток. Добавить метку можно при просмотре заметки."
+msgstr ""
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
-msgstr "Срок аутентификации истёк."
+msgstr ""
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:95
 msgid "Limit exceeded."
-msgstr "Лимит превышен."
+msgstr ""
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:99
 msgid "Rate limit exceeded."
-msgstr "Превышен доступный лимит."
+msgstr ""
 
 #: src/plugin/Evernote/jobs/evernotejob.cpp:103
 msgid "Quota exceeded."
-msgstr "Квота превышена."
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
 msgid "Today"
-msgstr "Сегодня"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:85
 msgid "Yesterday"
-msgstr "Вчера"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:88
 msgid "Last week"
-msgstr "Прошлая неделя"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:91
 msgid "Two weeks ago"
-msgstr "Две недели назад"
+msgstr ""
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
 #: src/plugin/Evernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
-msgstr "%1 %2"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:248
 msgid "Done"
-msgstr "Выполнено"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:254
 msgid "No date"
-msgstr "Нет даты"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:257
 msgid "Overdue"
-msgstr "Просрочено"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:263
 msgid "Tomorrow"
-msgstr "Завтра"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:266
 msgid "Next week"
-msgstr "На следующей неделе"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:269
 msgid "In two weeks"
-msgstr "В течение двух недель"
+msgstr ""
 
 #: src/plugin/Evernote/note.cpp:271
 msgid "Later"
-msgstr "Позже"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: src/plugin/Evernote/notebook.cpp:100
 msgid "today"
-msgstr "сегодня"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: src/plugin/Evernote/notebook.cpp:104
 msgid "yesterday"
-msgstr "вчера"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: src/plugin/Evernote/notebook.cpp:108
 msgid "last week"
-msgstr "на прошлой неделе"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: src/plugin/Evernote/notebook.cpp:112
 msgid "two weeks ago"
-msgstr "две недели назад"
+msgstr ""
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: src/plugin/Evernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr "в %1 %2"
+msgstr ""
 
 #: src/plugin/Evernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "Ошибка при обновлении заметок: %1"
+msgstr ""
 
 #: src/plugin/Evernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr "Ошибка при обновлении блокнотов: %1"
+msgstr ""
 
 #: src/plugin/Evernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr "Ошибка при обновлении меток: %1"
+msgstr ""
