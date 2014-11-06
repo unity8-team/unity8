@@ -338,7 +338,7 @@ void NotesStore::untagNote(const QString &noteGuid, const QString &tagGuid)
     saveNote(noteGuid);
 }
 
-void NotesStore::refreshNotes(const QString &filterNotebookGuid)
+void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 {
     if (EvernoteConnection::instance()->token().isEmpty()) {
         clear();
@@ -346,16 +346,20 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid)
     } else {
         m_loading = true;
         emit loadingChanged();
-        FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
+        FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid, QString(), startIndex);
         connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
         EvernoteConnection::instance()->enqueue(job);
     }
 }
 
-void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results)
+void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    m_loading = false;
-    emit loadingChanged();
+    if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
+        refreshNotes(filterNotebookGuid, results.startIndex + results.notes.size());
+    } else {
+        m_loading = false;
+        emit loadingChanged();
+    }
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
