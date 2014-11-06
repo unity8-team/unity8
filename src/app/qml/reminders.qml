@@ -389,5 +389,10 @@ MainView {
                 onClicked: setup.exec()
             }
         }
-   }
+    }
+
+    Label {
+        anchors.centerIn: parent
+        text: EvernoteConnection.error
+    }
 }
