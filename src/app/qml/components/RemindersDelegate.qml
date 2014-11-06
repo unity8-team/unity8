@@ -113,12 +113,14 @@ Base {
 
                 Label {
                     text: note.title
+                    anchors { left: parent.left; right: parent.right }
                     fontSize: "large"
                     horizontalAlignment: Text.AlignLeft
                     color: "black"
+                    elide: Text.ElideRight
                 }
                 Label {
-                    text: note.plaintextContent
+                    text: note.tagline
                     fontSize: "small"
                     horizontalAlignment: Text.AlignLeft
                     maximumLineCount: 2
