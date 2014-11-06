@@ -62,6 +62,7 @@ Page {
             id: remindersListView
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y
+            clip: true
 
             delegate: RemindersDelegate {
                 width: remindersListView.width
