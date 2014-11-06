@@ -115,7 +115,7 @@ QByteArray Resource::imageData(const QSize &size)
 
     QString finalFilePath = m_filePath;
     if (size.isValid() && !size.isNull()) {
-        finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + "_.jpg";
+        finalFilePath = m_filePath + "_" + QString::number(size.width()) + "x" + QString::number(size.height()) + ".jpg";
         QFileInfo fi(finalFilePath);
         if (!fi.exists()) {
             QImage image(m_filePath);
