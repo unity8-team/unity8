@@ -27,13 +27,18 @@ class FetchNoteJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit FetchNoteJob(const QString &guid, bool withResources, QObject *parent = 0);
+    enum LoadWhat {
+        LoadContent,
+        LoadResources
+    };
+
+    explicit FetchNoteJob(const QString &guid, LoadWhat what, QObject *parent = 0);
 
     virtual bool operator==(const EvernoteJob *other) const override;
     virtual void attachToDuplicate(const EvernoteJob *other) override;
 
 signals:
-    void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note, bool withResourceContent);
+    void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note, LoadWhat what);
 
 protected:
     void startJob();
@@ -43,7 +48,7 @@ private:
     evernote::edam::NoteStoreClient *m_client;
     QString m_token;
     QString m_guid;
-    bool m_withResources;
+    LoadWhat m_what;
 
     evernote::edam::Note m_result;
 

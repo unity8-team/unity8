@@ -23,6 +23,8 @@
 
 #include "notesstorejob.h"
 
+class Note;
+
 class SaveNoteJob : public NotesStoreJob
 {
     Q_OBJECT
