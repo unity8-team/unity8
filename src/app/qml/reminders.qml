@@ -314,6 +314,13 @@ MainView {
         }
     }
 
+    Label {
+        anchors { left: pagestack.left; right: pagestack.right; verticalCenter: pagestack.verticalCenter }
+        wrapMode: Text.WordWrap
+        horizontalAlignment: Text.AlignHCenter
+        text: EvernoteConnection.error
+    }
+
     ActivityIndicator {
         anchors.centerIn: parent
         anchors.verticalCenterOffset: units.gu(4.5)
@@ -389,5 +396,5 @@ MainView {
                 onClicked: setup.exec()
             }
         }
-   }
+    }
 }
