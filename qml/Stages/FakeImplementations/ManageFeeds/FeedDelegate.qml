@@ -174,6 +174,7 @@ Item {
         id: topLayer
         width: parent.width
         height: parent.height
+        //anchors.verticalCenter: parent.verticalCenter
         // to smoothen out the horizontal dragging
         Behavior on x {enabled: !horizontalDragEndAnimation.running; SmoothedAnimation{duration: 50; velocity: 150; easing.type: Easing.OutQuart}}
         Rectangle {
@@ -237,11 +238,11 @@ Item {
             id: handle
             anchors {
                 right: parent.right
-                rightMargin: units.gu(2)
+                rightMargin: units.gu(2.5)
                 verticalCenter: parent.verticalCenter
             }
 
-            height: units.gu(3)
+            height: units.gu(3.5)
             width: height
             opacity: editModeOn && isFavourite ? 1 : 0
             Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
@@ -253,7 +254,7 @@ Item {
             id: favIcon
             anchors {
                 right: parent.right
-                rightMargin: units.gu(2)
+                rightMargin: units.gu(2.5)
                 verticalCenter: parent.verticalCenter
             }
             height: units.gu(2.5)

@@ -143,10 +143,12 @@ Showable {
                 manageFeeds.feedUninstalled(feedName)
             }
             onClicked: {
-                manageFeeds.feedSelected(feedName)
-                listView.resetDelegates()
-                manageFeedsView.editModeOn = false
-                manageFeedsView.close()
+                if (!manageFeedsView.editModeOn) {
+                    manageFeeds.feedSelected(feedName)
+                    listView.resetDelegates()
+                    manageFeedsView.editModeOn = false
+                    manageFeedsView.close()
+                }
             }
 
             SequentialAnimation {

@@ -26,7 +26,7 @@ Rectangle {
             GradientStop { position: 0.8; color: "black" }
             GradientStop { position: 1.0; color: "black" }
         }
-        opacity: 0.3
+        opacity: 0.15
     }
 
     UbuntuShape {
