@@ -40,7 +40,7 @@ Note::Note(const QString &guid, const QDateTime &created, quint32 updateSequence
     m_updateSequenceNumber(updateSequenceNumber),
     m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + guid + "_" + QString::number(updateSequenceNumber) + ".info", QSettings::IniFormat),
     m_loading(false),
-    m_isLoaded(false)
+    m_loaded(false)
 {
     m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + guid + "_" + QString::number(updateSequenceNumber) + ".enml");
 
@@ -176,9 +176,7 @@ void Note::setTagGuids(const QStringList &tagGuids)
 
 QString Note::enmlContent() const
 {
-    if (!m_isLoaded && isCached()) {
-        loadFromCacheFile();
-    }
+    load();
     return m_content.enml();
 }
 
@@ -194,17 +192,13 @@ void Note::setEnmlContent(const QString &enmlContent)
 
 QString Note::htmlContent() const
 {
-    if (!m_isLoaded && isCached()) {
-        loadFromCacheFile();
-    }
+    load();
     return m_content.toHtml(m_guid);
 }
 
 QString Note::richTextContent() const
 {
-    if (!m_isLoaded && isCached()) {
-        loadFromCacheFile();
-    }
+    load();
     return m_content.toRichText(m_guid);
 }
 
@@ -220,17 +214,13 @@ void Note::setRichTextContent(const QString &richTextContent)
 
 QString Note::plaintextContent() const
 {
-    if (!m_isLoaded && isCached()) {
-        loadFromCacheFile();
-    }
+    load();
     return m_content.toPlaintext().trimmed();
 }
 
 QString Note::tagline() const
 {
-    if (!m_isLoaded && isCached()) {
-        loadFromCacheFile();
-    }
+    load();
     return m_tagline;
 }
 
@@ -522,7 +512,17 @@ void Note::syncToCacheFile()
         m_cacheFile.write(m_content.enml().toUtf8());
         m_cacheFile.close();
     }
-    m_isLoaded = true;
+    m_loaded = true;
+}
+
+void Note::load() const
+{
+    if (!m_loaded && isCached()) {
+        loadFromCacheFile();
+    }
+    if (!m_loaded && !m_loading) {
+        NotesStore::instance()->refreshNoteContent(m_guid);
+    }
 }
 
 void Note::loadFromCacheFile() const
@@ -532,5 +532,5 @@ void Note::loadFromCacheFile() const
         m_tagline = m_content.toPlaintext().left(100);
         m_cacheFile.close();
     }
-    m_isLoaded = true;
+    m_loaded = true;
 }

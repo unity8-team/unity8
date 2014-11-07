@@ -467,8 +467,8 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             emit noteChanged(note->guid(), note->notebookGuid());
         }
 
-        if (!note->isCached() || note->updateSequenceNumber() < result.updateSequenceNum) {
-            qDebug() << "refreshing note!!! isCached:" << note->isCached() << "note->sequence" << note->updateSequenceNumber() << "server->sequence" << result.updateSequenceNum << "new note" << newNote;
+        if (note->updateSequenceNumber() < result.updateSequenceNum) {
+            qDebug() << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
             refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
         }
     }

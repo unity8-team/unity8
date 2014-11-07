@@ -59,6 +59,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
+    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
     // Don't forget to update clone() if you add properties!
 
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
@@ -67,8 +68,7 @@ class Note : public QObject
 public:
     explicit Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Note();
-
-    bool loading() const;
+    Note* clone();
 
     QString guid() const;
 
@@ -133,6 +133,10 @@ public:
     quint32 updateSequenceNumber() const;
     void setUpdateSequenceNumber(quint32 updateSequenceNumber);
 
+    bool isCached() const;
+    bool loaded() const;
+    bool loading() const;
+
     QStringList resourceUrls() const;
     Resource* resource(const QString &hash);
     QList<Resource*> resources() const;
@@ -143,9 +147,6 @@ public:
     Q_INVOKABLE void format(int startPos, int endPos, TextFormat::Format format);
     Q_INVOKABLE void addTag(const QString &tagGuid);
     Q_INVOKABLE void removeTag(const QString &tagGuid);
-
-    Note* clone();
-    bool isCached() const;
 
 public slots:
     void save();
@@ -163,6 +164,7 @@ signals:
     void reminderDoneChanged();
     void isSearchResultChanged();
     void updateSequenceNumberChanged();
+    void loadedChanged();
 
     void loadingChanged();
 
@@ -170,6 +172,9 @@ private:
     void setLoading(bool loading);
 
     void syncToCacheFile();
+
+    // const because we want to load on demand in getters. Keep this private!
+    void load() const;
     void loadFromCacheFile() const;
 
 private:
@@ -191,7 +196,7 @@ private:
     QSettings m_infoFile;
 
     bool m_loading;
-    mutable bool m_isLoaded;
+    mutable bool m_loaded;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;
