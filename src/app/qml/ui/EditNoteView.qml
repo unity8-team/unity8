@@ -175,6 +175,26 @@ Item {
                     }
                 }
             }
+            Rectangle {
+                id: addNewTag
+                radius: units.gu(1)
+                color: preferences.colorForNotebook(root.note.notebookGuid)
+                Text {
+                    text: "+"
+                    color: "white"
+                    Component.onCompleted: {
+                        addNewTag.width = width + units.gu(2)
+                        addNewTag.height = height + units.gu(1)
+                        anchors.centerIn = parent
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log('Create new tag')
+                    }
+                }
+            }
         }
     }
 
