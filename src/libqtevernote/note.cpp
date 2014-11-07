@@ -32,7 +32,7 @@
 #include <QCryptographicHash>
 #include <QFile>
 
-Note::Note(const QString &guid, const QDateTime &created, quint64 updateSequenceNumber, QObject *parent) :
+Note::Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
     m_guid(guid),
     m_created(created),

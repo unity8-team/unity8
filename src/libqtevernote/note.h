@@ -65,7 +65,7 @@ class Note : public QObject
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
 
 public:
-    explicit Note(const QString &guid, const QDateTime &created, quint64 updateSequenceNumber, QObject *parent = 0);
+    explicit Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Note();
 
     bool loading() const;
