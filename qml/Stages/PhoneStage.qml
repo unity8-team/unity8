@@ -463,11 +463,8 @@ Rectangle {
                     }
                     onFeedFavourited: handleFeedFavourited(feedName, true)
                     onFeedUnfavourited: handleFeedUnfavourited(feedName)
-                    onFeedUnsubscribed:  {
-                        console.log("Hello")
-                        console.log(feedName)
-                        stopApplication(feedName)
-                    }
+                    onFeedUnsubscribed: stopApplication(feedName)
+                    onFeedOpened: spreadView.focusToFeed(feedName)
                 }
             }
         }

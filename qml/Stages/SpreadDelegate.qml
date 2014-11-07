@@ -26,8 +26,6 @@ import "FakeImplementations/FeedStore"
 // to launch apps
 import Unity.Application 0.1
 
-
-
 Item {
     id: root
 
@@ -39,6 +37,7 @@ Item {
     signal feedFavourited(string feedName)
     signal feedUnfavourited(string feedName)
     signal feedUnsubscribed(string feedName)
+    signal feedOpened(string feedName)
 
     // to be set from outside
     property bool interactive: true
@@ -127,7 +126,7 @@ Item {
             state: "shown"
             showBack: false
             onUnsubscribedFromFeed: root.feedUnsubscribed(feedName)
-            onFeedOpened:
+            onFeedOpened: root.feedOpened(feedName)
             IconOverlay {
                 width: parent.width
                 height: units.gu(8)
