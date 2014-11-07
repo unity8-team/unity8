@@ -122,7 +122,7 @@ public:
     Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
 
 public slots:
-    void refreshNotes(const QString &filterNotebookGuid = QString());
+    void refreshNotes(const QString &filterNotebookGuid = QString(), int startIndex = 0);
     void refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what = FetchNoteJob::LoadContent);
     void refreshNotebooks();
     void refreshTags();
@@ -152,7 +152,7 @@ signals:
     void tagRemoved(const QString &guid);
 
 private slots:
-    void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
+    void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);
     void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
     void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what);
     void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);

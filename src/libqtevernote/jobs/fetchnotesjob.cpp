@@ -27,10 +27,12 @@
 
 #include <QDebug>
 
-FetchNotesJob::FetchNotesJob(const QString &filterNotebookGuid, const QString &searchWords, QObject *parent) :
+FetchNotesJob::FetchNotesJob(const QString &filterNotebookGuid, const QString &searchWords, int startIndex, int chunkSize, QObject *parent) :
     NotesStoreJob(parent),
     m_filterNotebookGuid(filterNotebookGuid),
-    m_searchWords(searchWords)
+    m_searchWords(searchWords),
+    m_startIndex(startIndex),
+    m_chunkSize(chunkSize)
 {
 }
 
@@ -52,10 +54,8 @@ void FetchNotesJob::attachToDuplicate(const EvernoteJob *other)
 
 void FetchNotesJob::startJob()
 {
-    // TODO: fix start/end (use smaller chunks and continue fetching if there are more notes available)
-    int32_t start = 0;
-    evernote::limits::LimitsConstants limits;
-    int32_t end = limits.EDAM_USER_NOTES_MAX;
+    int32_t start = m_startIndex;
+    int32_t max = m_chunkSize;
 
     // Prepare filter
     evernote::edam::NoteFilter filter;
@@ -86,10 +86,10 @@ void FetchNotesJob::startJob()
     resultSpec.includeTagGuids = true;
     resultSpec.__isset.includeTagGuids = true;
 
-    client()->findNotesMetadata(m_results, token().toStdString(), filter, start, end, resultSpec);
+    client()->findNotesMetadata(m_results, token().toStdString(), filter, start, max, resultSpec);
 }
 
 void FetchNotesJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage, m_results);
+    emit jobDone(errorCode, errorMessage, m_results, m_filterNotebookGuid);
 }
