@@ -20,12 +20,16 @@ Item {
     signal moveStarted()
     signal moveEnded()
     signal toggleFavourite()
-    signal remove()
+    signal removed()
     signal clicked()
 
     width: 100
     height: 62
 
+
+    function remove() {
+        removeAnimation.restart()
+    }
 
     function reset() {
         isChecked = false
@@ -67,6 +71,32 @@ Item {
             enabled: visible
             anchors.fill: parent
             onClicked: feedDelegate.remove()
+        }
+    }
+
+    SequentialAnimation {
+        id: removeAnimation
+        ScriptAction {
+            script: feedDelegate.clip = true
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: feedDelegate
+                property: "opacity"
+                to: 0
+                duration: UbuntuAnimation.BriskDuration
+                easing: UbuntuAnimation.StandardEasing
+            }
+            NumberAnimation {
+                target: feedDelegate
+                property: "height"
+                to: 0
+                duration: UbuntuAnimation.BriskDuration
+                easing: UbuntuAnimation.StandardEasing
+            }
+        }
+        ScriptAction {
+            script: feedDelegate.removed()
         }
     }
 

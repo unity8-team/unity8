@@ -36,8 +36,8 @@ Item {
                         color: "white"
                         radius: "medium"
                         image: Image {
-                            sourceSize.width: units.gu(8)
-                            sourceSize.height: units.gu(7.5)
+                            sourceSize.width: appIcon.width
+                            sourceSize.height: appIcon.height
                             source: "graphics/" + appIcon_m
                         }
                     }

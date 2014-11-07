@@ -148,7 +148,6 @@ Rectangle {
                      && draggedDelegateCount === 0
         contentWidth: spreadRow.width - shift
         contentX: -shift
-
         // This indicates when the spreadView is active. That means, all the animations
         // are activated and tiles need to line up for the spread.
         readonly property bool active: shiftedContentX > 0 || spreadDragArea.status === DirectionalDragArea.Recognized

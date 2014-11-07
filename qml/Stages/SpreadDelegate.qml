@@ -103,6 +103,15 @@ Item {
             anchors.topMargin: maximizedAppTopMargin
             onFeedUnfavourited: handleFeedUnfavourited(feedName)
             onApplicationLaunched: shell.activateApplication(appId)
+
+            IconOverlay {
+                width: parent.width
+                height: units.gu(8)
+                anchors.bottom: parent.bottom
+                icon: application.icon
+                opacity: spreadView.phase == 2 // could be done better. doesn't feel right like this
+                Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
+            }
         }
     }
 
@@ -118,7 +127,17 @@ Item {
             state: "shown"
             showBack: false
             onUnsubscribedFromFeed: root.feedUnsubscribed(feedName)
+
+            IconOverlay {
+                width: parent.width
+                height: units.gu(8)
+                anchors.bottom: parent.bottom
+                icon: application.icon
+                opacity: spreadView.phase == 2
+                Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
+            }
         }
+
     }
 
     Component {
@@ -129,7 +148,11 @@ Item {
             anchors.topMargin: maximizedAppTopMargin
             Component.onCompleted: {
                 setDelegateData()
+                console.log("appIcon************", application.icon)
             }
+
+            property string appIcon: application.icon
+            onAppIconChanged: console.log("appIcon************",appIcon)
 
             function setDelegateData() {
                 var foundModelIndex = root.feedManager.findFirstModelIndexById(root.feedManager.manageDashModel, application.appId)
@@ -156,6 +179,15 @@ Item {
             }
 
             onApplicationLaunched: shell.activateApplication(appId)
+
+            IconOverlay {
+                width: parent.width
+                height: units.gu(8)
+                anchors.bottom: parent.bottom
+                icon: application.icon
+                opacity: spreadView.phase == 2
+                Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
+            }
         }
     }
 
@@ -188,6 +220,15 @@ Item {
                 }
 
                 interactive: root.interactive
+            }
+
+            IconOverlay {
+                width: parent.width
+                height: units.gu(8)
+                anchors.bottom: parent.bottom
+                icon: application.icon
+                opacity: spreadView.phase == 2
+                Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
             }
         }
     }

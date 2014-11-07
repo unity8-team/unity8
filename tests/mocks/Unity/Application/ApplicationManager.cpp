@@ -366,6 +366,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setAppId("unity8-dash");
     application->setName("Unity 8 Mock Dash");
     application->setScreenshotId("unity8-dash");
+    application->setIconId("unity8-dash");
     application->setStage(ApplicationInfo::MainStage);
     m_availableApplications.append(application);
 
@@ -527,36 +528,43 @@ void ApplicationManager::buildListOfAvailableApplications()
     application = new ApplicationInfo(this);
     application->setAppId("apps-feed");
     application->setName("Apps Scope");
+    application->setIconId("apps-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("nearby-feed");
     application->setName("Nearby Scope");
+    application->setIconId("nearby-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("news-feed");
     application->setName("News Scope");
+    application->setIconId("news-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("music-feed");
     application->setName("Music Scope");
+    application->setIconId("music-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("photos-feed");
     application->setName("Photos Scope");
+    application->setIconId("photos-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("video-feed");
     application->setName("Video Scope");
+    application->setIconId("video-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("shopping-feed");
     application->setName("Shopping Scope");
+    application->setIconId("shopping-feed-icon");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
@@ -577,6 +585,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application = new ApplicationInfo(this);
     application->setAppId("store-feed");
     application->setName("Store Scope");
+    application->setIconId("store-feed-icon");
     m_availableApplications.append(application);
 
 }

@@ -88,8 +88,7 @@ Showable {
             for (i; i >= 0; i--) {
                 listView.currentIndex = i
                 if(listView.currentItem.isChecked) {
-                    manageFeeds.feedUninstalled(listView.currentItem.feedName)
-                    manageFeeds.feedManager.unsubscribeFromFeed(listView.currentItem.feedName)
+                    listView.currentItem.remove()
                 }
             }
         }
@@ -139,7 +138,7 @@ Showable {
             onToggleFavourite: {
                 toggleFavouriteAnimation.restart()
             }
-            onRemove: {
+            onRemoved: {
                 manageFeeds.feedManager.unsubscribeFromFeed(feedName)
                 manageFeeds.feedUninstalled(feedName)
             }
@@ -183,7 +182,7 @@ Showable {
                     NumberAnimation {
                         target: feedDelegate
                         property: "scale"
-                        to: 1//manageFeedsView.__feedHeight
+                        to: 1
                         duration: 200
                         easing: UbuntuAnimation.StandardEasing
                     }
