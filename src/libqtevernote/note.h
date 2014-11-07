@@ -29,6 +29,8 @@
 #include <QDateTime>
 #include <QStringList>
 #include <QImage>
+#include <QFile>
+#include <QSettings>
 
 class Note : public QObject
 {
@@ -56,13 +58,14 @@ class Note : public QObject
     Q_PROPERTY(bool reminderDone READ reminderDone WRITE setReminderDone NOTIFY reminderDoneChanged)
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
+    Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
     // Don't forget to update clone() if you add properties!
 
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
 
 public:
-    explicit Note(const QString &guid, const QDateTime &created, QObject *parent = 0);
+    explicit Note(const QString &guid, const QDateTime &created, quint64 updateSequenceNumber, QObject *parent = 0);
     ~Note();
 
     bool loading() const;
@@ -127,11 +130,13 @@ public:
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
+    quint32 updateSequenceNumber() const;
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+
     QStringList resourceUrls() const;
     Resource* resource(const QString &hash);
     QList<Resource*> resources() const;
     Resource *addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type);
-    Resource *addResource(const QString &fileName);
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
@@ -140,6 +145,7 @@ public:
     Q_INVOKABLE void removeTag(const QString &tagGuid);
 
     Note* clone();
+    bool isCached() const;
 
 public slots:
     void save();
@@ -156,11 +162,15 @@ signals:
     void reminderTimeChanged();
     void reminderDoneChanged();
     void isSearchResultChanged();
+    void updateSequenceNumberChanged();
 
     void loadingChanged();
 
 private:
     void setLoading(bool loading);
+
+    void syncToCacheFile();
+    void loadFromCacheFile() const;
 
 private:
     QString m_guid;
@@ -169,15 +179,19 @@ private:
     QDateTime m_updated;
     QString m_title;
     QStringList m_tagGuids;
-    EnmlDocument m_content;
-    QString m_tagline;
+    mutable EnmlDocument m_content; // loaded from cache on demand in const methods
+    mutable QString m_tagline; // loaded from cache on demand in const methods
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
+    quint32 m_updateSequenceNumber;
+    mutable QFile m_cacheFile;
+    QSettings m_infoFile;
 
     bool m_loading;
+    mutable bool m_isLoaded;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;

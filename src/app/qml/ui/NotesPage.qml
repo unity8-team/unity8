@@ -174,12 +174,6 @@ PageWithBottomEdge {
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
-            Component.onCompleted: {
-                if (!model.tagline) {
-                    NotesStore.refreshNoteContent(model.guid);
-                }
-            }
-
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
             }

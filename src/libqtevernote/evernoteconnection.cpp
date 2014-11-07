@@ -337,18 +337,24 @@ EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
     return nullptr;
 }
 
-void EvernoteConnection::enqueue(EvernoteJob *job)
+void EvernoteConnection::enqueue(EvernoteJob *job, JobPriority priority)
 {
     EvernoteJob *duplicate = findDuplicate(job);
     if (duplicate) {
         job->attachToDuplicate(duplicate);
         connect(duplicate, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         // reprioritze the repeated request
-        m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
+        if (priority == JobPriorityHigh) {
+            m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
+        }
     } else {
         connect(job, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
-        m_jobQueue.prepend(job);
+        if (priority == JobPriorityHigh) {
+            m_jobQueue.prepend(job);
+        } else {
+            m_jobQueue.append(job);
+        }
         startJobQueue();
     }
 }
