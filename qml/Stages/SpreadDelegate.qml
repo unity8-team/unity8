@@ -127,7 +127,7 @@ Item {
             state: "shown"
             showBack: false
             onUnsubscribedFromFeed: root.feedUnsubscribed(feedName)
-
+            onFeedOpened:
             IconOverlay {
                 width: parent.width
                 height: units.gu(8)
@@ -148,11 +148,9 @@ Item {
             anchors.topMargin: maximizedAppTopMargin
             Component.onCompleted: {
                 setDelegateData()
-                console.log("appIcon************", application.icon)
             }
 
             property string appIcon: application.icon
-            onAppIconChanged: console.log("appIcon************",appIcon)
 
             function setDelegateData() {
                 var foundModelIndex = root.feedManager.findFirstModelIndexById(root.feedManager.manageDashModel, application.appId)

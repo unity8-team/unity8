@@ -5,9 +5,11 @@ Item {
     id: feedStoreDelegate
 
     property color bgColor: "#f5f5f5"
-    property color bgColor_subscribed: "#e5e5e5"
+    property color bgColor_subscribed: "#d5d5d5"
     property color fontColor: "#303030"
     property string feedPromoIconSource: feed_promo_icon_m //from model
+
+    signal opened(string feedName)
 
     width: 100
     height: 62
@@ -84,15 +86,12 @@ Item {
                 topMargin: units.gu(0.5)
             }
             height: units.gu(3)
-            width: units.gu(12)
+            width: units.gu(8.5)
             border.width: units.dp(1)
             border.color: fontColor
             color: "transparent"
             radius: units.gu(0.5)
             visible: !persistent_m
-            Rectangle {
-                anchors.fill: parent
-            }
 
             Label {
                 anchors.centerIn: parent
@@ -103,7 +102,38 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
+                anchors.margins: -units.gu(0.5)
                 onClicked: activity.start()
+            }
+        }
+
+        Rectangle {
+            id: previewAndLaunchButton
+            anchors {
+                top: feedDescription.bottom
+                left: subscribeButton.right
+                leftMargin: units.gu(1)
+                topMargin: units.gu(0.5)
+            }
+            height: units.gu(3)
+            width: units.gu(8.5)
+            border.width: units.dp(1)
+            border.color: installed_m ? color : fontColor
+            color: installed_m ? "#dd4814" : "transparent"
+            Behavior on color {ColorAnimation {duration: 200}}
+            radius: units.gu(0.5)
+            opacity: installed_m ? 1 : 0.5
+            Label {
+                anchors.centerIn: parent
+                text: installed_m ? "Open" : "Preview"
+                color: installed_m ? "white" : fontColor
+                fontSize: "small"
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -units.gu(0.5)
+                onClicked: if (installed_m) feedStoreDelegate.opened(feedName_m)
             }
         }
     }

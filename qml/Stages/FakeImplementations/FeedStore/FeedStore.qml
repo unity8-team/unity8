@@ -9,6 +9,7 @@ Item {
     property color bgColor: "black"
 
     signal unsubscribedFromFeed(string feedName)
+    signal feedOpened(string feedName)
 
     function show() {
         feedStore.state = "shown"
@@ -40,6 +41,7 @@ Item {
             id: feedStoreDelegate
             width: parent.width
             height: units.gu(15)
+            onOpened: feedStore.feedOpened(feedName)
         }
     }
 
