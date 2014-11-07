@@ -513,32 +513,6 @@ Rectangle {
         //spreadView.focusToFeed(feedName)
     }
 
-    ManageFeeds {
-        id: manageFeeds
-
-        property bool focusedAppIsFeed: priv.focusedAppId.indexOf("feed") > -1 || priv.focusedAppId == "unity8-dash" || priv.focusedAppId == "store-feed"
-        anchors.fill: parent
-        anchors.topMargin: maximizedAppTopMargin
-        feedManager: fakeFeedManager
-        opacity: spreadView.active || !focusedAppIsFeed ? 0 : 1
-        enabled: opacity > 0.9999
-        Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
-        onFeedSelected: spreadView.focusToFeed(feedName)
-        onFeedUninstalled: stopApplication(feedName)
-        onFeedUnfavourited: {
-            handleFeedUnfavourited(feedName)
-        }
-        onFeedFavourited: {
-            handleFeedFavourited(feedName, false)
-        }
-        onStoreLaunched: {
-            shell.activateApplication("store-feed")
-        }
-        onResetPrototypeSelected: {
-            closeAllAppsButDash()
-        }
-    }
-
     EdgeDragArea {
         id: spreadDragArea
         objectName: "spreadDragArea"
@@ -617,6 +591,32 @@ Rectangle {
                 // (might be back to start, to app 1 or to spread)
                 spreadView.snap();
             }
+        }
+    }
+
+    ManageFeeds {
+        id: manageFeeds
+
+        property bool focusedAppIsFeed: priv.focusedAppId.indexOf("feed") > -1 || priv.focusedAppId == "unity8-dash" || priv.focusedAppId == "store-feed"
+        anchors.fill: parent
+        anchors.topMargin: maximizedAppTopMargin
+        feedManager: fakeFeedManager
+        opacity: spreadView.active || !focusedAppIsFeed ? 0 : 1
+        enabled: opacity > 0.9999
+        Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.SnapDuration}}
+        onFeedSelected: spreadView.focusToFeed(feedName)
+        onFeedUninstalled: stopApplication(feedName)
+        onFeedUnfavourited: {
+            handleFeedUnfavourited(feedName)
+        }
+        onFeedFavourited: {
+            handleFeedFavourited(feedName, false)
+        }
+        onStoreLaunched: {
+            shell.activateApplication("store-feed")
+        }
+        onResetPrototypeSelected: {
+            closeAllAppsButDash()
         }
     }
 
