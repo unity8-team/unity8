@@ -35,7 +35,7 @@ Showable {
             left: parent.left
             right: parent.right
             top: header.bottom
-            bottom: parent.bottom
+            bottom: staticStoreButton.top
         }
         clip: true
     }
@@ -408,5 +408,16 @@ Showable {
                  onClicked: PopupUtils.close(dialogue)
              }
          }
+    }
+
+    StoreButton {
+        id: staticStoreButton
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        height: units.gu(6)
+
     }
 }

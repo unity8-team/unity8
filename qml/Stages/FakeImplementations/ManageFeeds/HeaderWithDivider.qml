@@ -109,7 +109,7 @@ Item {
             color: "white"
             //radius: "medium"
             borderSource: "none"
-            visible: opacity > 000.1
+            visible: false //opacity > 000.1
             opacity: !editModeOn ? 1 : 0
             Behavior on opacity {NumberAnimation{duration: UbuntuAnimation.FastDuration}}
             scale: !editModeOn ? 1 : 0.5
