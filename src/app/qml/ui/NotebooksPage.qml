@@ -156,6 +156,9 @@ Page {
                 text: notebooks.error
             }
 
+            Scrollbar {
+                flickableItem: parent
+            }
         }
 
         Item {
