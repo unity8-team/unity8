@@ -314,11 +314,36 @@ MainView {
         }
     }
 
+    Column {
+        anchors { left: pagestack.left; right: pagestack.right; margins: units.gu(2); verticalCenter: pagestack.verticalCenter }
+        spacing: units.gu(2)
+
+        Label {
+            anchors { left: parent.left; right: parent.right }
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: EvernoteConnection.error
+        }
+
+        Button {
+            anchors { left: parent.left; right: parent.right }
+            text: i18n.tr("Reconnect")
+            visible: EvernoteConnection.error
+            color: UbuntuColors.orange
+            onClicked: {
+                var token = EvernoteConnection.token
+                EvernoteConnection.token = ""
+                EvernoteConnection.token = token
+            }
+        }
+    }
+
+
     ActivityIndicator {
         anchors.centerIn: parent
         anchors.verticalCenterOffset: units.gu(4.5)
         running: visible
-        visible: !EvernoteConnection.isConnected && root.accountPage == null
+        visible: !EvernoteConnection.isConnected && root.accountPage == null && !EvernoteConnection.error
     }
 
 
@@ -389,5 +414,5 @@ MainView {
                 onClicked: setup.exec()
             }
         }
-   }
+    }
 }
