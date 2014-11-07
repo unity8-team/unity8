@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 21:11+0200\n"
+"POT-Creation-Date: 2014-10-23 23:05+0200\n"
 "PO-Revision-Date: 2014-10-07 14:48+0000\n"
 "Last-Translator: Josef Andersson <Unknown>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-12 06:56+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2014-11-07 06:53+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 "Language: sv\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
@@ -48,7 +48,7 @@ msgid "Pull down to refresh"
 msgstr "Dra nedåt för att uppdatera"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
-#: src/app/qml/ui/SetReminderView.qml:55
+#: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
 msgstr "Rensa påminnelse"
 
@@ -106,7 +106,7 @@ msgid "Edit reminder"
 msgstr "Ändra påminnelse"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
-#: src/app/qml/ui/SetReminderView.qml:66
+#: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
 msgstr "Ställ in påminnelse"
 
@@ -151,7 +151,7 @@ msgstr ""
 "Inga anteckningar tillgängliga. Du kan skapa nya anteckningar med knappen "
 "”Lägg till anteckning”."
 
-#: src/app/qml/ui/RemindersPage.qml:108
+#: src/app/qml/ui/RemindersPage.qml:111
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -171,110 +171,110 @@ msgstr "Välj tid och datum för påminnelsen:"
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr "Autentiseringen har förfallit."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:95
 msgid "Limit exceeded."
 msgstr "Överskridet gränsvärde."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:99
 msgid "Rate limit exceeded."
 msgstr "Överskriden hastighet."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:103
 msgid "Quota exceeded."
 msgstr "Överskriden kvot."
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
 msgid "Today"
 msgstr "Idag"
 
-#: src/plugin/Evernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85
 msgid "Yesterday"
 msgstr "Igår"
 
-#: src/plugin/Evernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88
 msgid "Last week"
 msgstr "Förra veckan"
 
-#: src/plugin/Evernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91
 msgid "Two weeks ago"
 msgstr "Två veckor sedan"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/plugin/Evernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/note.cpp:248
+#: src/libqtevernote/note.cpp:248
 msgid "Done"
 msgstr "Klar"
 
-#: src/plugin/Evernote/note.cpp:254
+#: src/libqtevernote/note.cpp:254
 msgid "No date"
 msgstr "Inget datum"
 
-#: src/plugin/Evernote/note.cpp:257
+#: src/libqtevernote/note.cpp:257
 msgid "Overdue"
 msgstr "Försenad"
 
-#: src/plugin/Evernote/note.cpp:263
+#: src/libqtevernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "Imorgon"
 
-#: src/plugin/Evernote/note.cpp:266
+#: src/libqtevernote/note.cpp:266
 msgid "Next week"
 msgstr "Nästa vecka"
 
-#: src/plugin/Evernote/note.cpp:269
+#: src/libqtevernote/note.cpp:269
 msgid "In two weeks"
 msgstr "Om två veckor"
 
-#: src/plugin/Evernote/note.cpp:271
+#: src/libqtevernote/note.cpp:271
 msgid "Later"
 msgstr "Senare"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: src/plugin/Evernote/notebook.cpp:100
+#: src/libqtevernote/notebook.cpp:100
 msgid "today"
 msgstr "idag"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: src/plugin/Evernote/notebook.cpp:104
+#: src/libqtevernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "igår"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: src/plugin/Evernote/notebook.cpp:108
+#: src/libqtevernote/notebook.cpp:108
 msgid "last week"
 msgstr "förra veckan"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: src/plugin/Evernote/notebook.cpp:112
+#: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "två veckor sedan"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: src/plugin/Evernote/notebook.cpp:116
+#: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "den %1 %2"
 
-#: src/plugin/Evernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Fel när anteckningar uppdaterades: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Fel när anteckningsböcker uppdaterades: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr ""
