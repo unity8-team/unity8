@@ -28,6 +28,9 @@
 #include <transport/TSSLSocket.h>
 #include <Thrift.h>
 
+// Evernote SDK
+#include <Errors_types.h>
+
 #include <libintl.h>
 
 #include <QDebug>

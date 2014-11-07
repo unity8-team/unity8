@@ -448,19 +448,19 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
     }
 }
 
-void NotesStore::refreshNoteContent(const QString &guid, bool withResourceContent)
+void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what)
 {
     Note *note = m_notesHash.value(guid);
     if (note) {
         note->setLoading(true);
     }
 
-    FetchNoteJob *job = new FetchNoteJob(guid, withResourceContent, this);
+    FetchNoteJob *job = new FetchNoteJob(guid, what, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
 
-void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, bool withResourceContent)
+void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error fetching note:" << errorMessage;
@@ -490,7 +490,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString fileName = QString::fromStdString(resource.attributes.fileName);
         QString mime = QString::fromStdString(resource.mime);
 
-        if (withResourceContent) {
+        if (what == FetchNoteJob::LoadResources) {
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
             note->addResource(resourceData, hash, fileName, mime);
         } else if (Resource::isCached(hash)) {
@@ -500,7 +500,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         }
     }
 
-    note->setEnmlContent(QString::fromStdString(result.content));
+    if (what == FetchNoteJob::LoadContent) {
+        note->setEnmlContent(QString::fromStdString(result.content));
+    }
     note->setReminderOrder(result.attributes.reminderOrder);
     QDateTime reminderTime;
     if (result.attributes.reminderTime > 0) {
@@ -518,7 +520,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     emit dataChanged(noteIndex, noteIndex);
 
     if (refreshWithResourceData) {
-        refreshNoteContent(note->guid(), true);
+        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources);
     }
 }
 

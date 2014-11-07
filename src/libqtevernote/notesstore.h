@@ -23,6 +23,7 @@
 
 #include "evernoteconnection.h"
 #include "utils/enmldocument.h"
+#include "jobs/fetchnotejob.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -122,7 +123,7 @@ public:
 
 public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString(), int startIndex = 0);
-    void refreshNoteContent(const QString &guid, bool withResourceContent = false);
+    void refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what = FetchNoteJob::LoadContent);
     void refreshNotebooks();
     void refreshTags();
 
@@ -153,7 +154,7 @@ signals:
 private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);
     void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
-    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, bool withResourceContent);
+    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what);
     void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);

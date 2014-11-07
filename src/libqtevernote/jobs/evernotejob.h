@@ -21,7 +21,6 @@
 #ifndef EVERNOTEJOB_H
 #define EVERNOTEJOB_H
 
-#include "notesstore.h"
 #include "evernoteconnection.h"
 
 #include <QThread>
