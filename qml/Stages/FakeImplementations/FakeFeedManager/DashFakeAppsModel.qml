@@ -105,4 +105,3 @@ ListModel {
        appIcon_m: "spotify.png"
    }
 }
-
