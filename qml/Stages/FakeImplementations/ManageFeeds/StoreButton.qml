@@ -37,14 +37,14 @@ Rectangle {
             verticalCenter: parent.verticalCenter
         }
         radius: "medium"
-        height: units.gu(5)
+        height: units.gu(4.5)
         width: height
         borderSource: "none"
 
         image: Image {
             sourceSize.width: storeIcon.width
             sourceSize.height: storeIcon.height
-            source: "graphics/ubuntu-store.svg"
+            source: "graphics/store-feed-icon.png"
         }
     }
 
