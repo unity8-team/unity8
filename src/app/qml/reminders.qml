@@ -73,7 +73,7 @@ MainView {
             var page = component.createObject(root);
             page.note = note;
             page.editNote.connect(function(note) {root.switchToEditMode(note)})
-            page.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, true)})
+            page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
             pagestack.push(page)
         } else {
             var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
