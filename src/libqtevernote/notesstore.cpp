@@ -53,6 +53,7 @@ NotesStore::NotesStore(QObject *parent) :
     connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshNotebooks);
     connect(EvernoteConnection::instance(), SIGNAL(isConnectedChanged()), this, SLOT(refreshNotes()));
     connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshTags);
+    connect(EvernoteConnection::instance(), &EvernoteConnection::tokenChanged, this, &NotesStore::clear);
 
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
@@ -123,6 +124,10 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->created();
     case RoleCreatedString:
         return m_notes.at(index.row())->createdString();
+    case RoleUpdated:
+        return m_notes.at(index.row())->updated();
+    case RoleUpdatedString:
+        return m_notes.at(index.row())->updatedString();
     case RoleTitle:
         return m_notes.at(index.row())->title();
     case RoleReminder:
@@ -164,6 +169,8 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleNotebookGuid, "notebookGuid");
     roles.insert(RoleCreated, "created");
     roles.insert(RoleCreatedString, "createdString");
+    roles.insert(RoleUpdated, "updated");
+    roles.insert(RoleUpdatedString, "updatedString");
     roles.insert(RoleTitle, "title");
     roles.insert(RoleReminder, "reminder");
     roles.insert(RoleReminderTime, "reminderTime");
@@ -331,30 +338,28 @@ void NotesStore::untagNote(const QString &noteGuid, const QString &tagGuid)
     saveNote(noteGuid);
 }
 
-void NotesStore::refreshNotes(const QString &filterNotebookGuid)
+void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 {
     if (EvernoteConnection::instance()->token().isEmpty()) {
-        beginResetModel();
-        foreach (Note *note, m_notes) {
-            emit noteRemoved(note->guid(), note->notebookGuid());
-            note->deleteLater();
-        }
-        m_notes.clear();
-        endResetModel();
+        clear();
         emit countChanged();
     } else {
         m_loading = true;
         emit loadingChanged();
-        FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid);
+        FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid, QString(), startIndex);
         connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
         EvernoteConnection::instance()->enqueue(job);
     }
 }
 
-void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results)
+void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    m_loading = false;
-    emit loadingChanged();
+    if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
+        refreshNotes(filterNotebookGuid, results.startIndex + results.notes.size());
+    } else {
+        m_loading = false;
+        emit loadingChanged();
+    }
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
@@ -379,6 +384,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
         }
 
+        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
         note->setReminderOrder(result.attributes.reminderOrder);
@@ -442,19 +448,19 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
     }
 }
 
-void NotesStore::refreshNoteContent(const QString &guid, bool withResourceContent)
+void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what)
 {
     Note *note = m_notesHash.value(guid);
     if (note) {
         note->setLoading(true);
     }
 
-    FetchNoteJob *job = new FetchNoteJob(guid, withResourceContent, this);
+    FetchNoteJob *job = new FetchNoteJob(guid, what, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
 }
 
-void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, bool withResourceContent)
+void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error fetching note:" << errorMessage;
@@ -469,6 +475,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     note->setLoading(false);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
+    note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
 
     // Notes are fetched without resources by default. if we discover one or more resources where we don't have
     // data in the cache, just refresh the note again with resource data.
@@ -483,7 +490,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString fileName = QString::fromStdString(resource.attributes.fileName);
         QString mime = QString::fromStdString(resource.mime);
 
-        if (withResourceContent) {
+        if (what == FetchNoteJob::LoadResources) {
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
             note->addResource(resourceData, hash, fileName, mime);
         } else if (Resource::isCached(hash)) {
@@ -493,7 +500,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         }
     }
 
-    note->setEnmlContent(QString::fromStdString(result.content));
+    if (what == FetchNoteJob::LoadContent) {
+        note->setEnmlContent(QString::fromStdString(result.content));
+    }
     note->setReminderOrder(result.attributes.reminderOrder);
     QDateTime reminderTime;
     if (result.attributes.reminderTime > 0) {
@@ -511,7 +520,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     emit dataChanged(noteIndex, noteIndex);
 
     if (refreshWithResourceData) {
-        refreshNoteContent(note->guid(), true);
+        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources);
     }
 }
 
@@ -650,6 +659,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
     note->setTitle(QString::fromStdString(result.title));
     note->setEnmlContent(QString::fromStdString(result.content));
+    note->setUpdated(created);
 
     beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
     m_notesHash.insert(note->guid(), note);
@@ -684,6 +694,7 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
     if (note) {
         note->setTitle(QString::fromStdString(result.title));
         note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
 
         emit noteChanged(note->guid(), note->notebookGuid());
 
@@ -781,4 +792,16 @@ void NotesStore::emitDataChanged()
     }
     int idx = m_notes.indexOf(note);
     emit dataChanged(index(idx), index(idx));
+}
+
+void NotesStore::clear()
+{
+    beginResetModel();
+    foreach (Note *note, m_notes) {
+        emit noteRemoved(note->guid(), note->notebookGuid());
+        note->deleteLater();
+    }
+    m_notes.clear();
+    m_notesHash.clear();
+    endResetModel();
 }

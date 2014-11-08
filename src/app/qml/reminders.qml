@@ -41,7 +41,7 @@ MainView {
      This property enables the application to change orientation
      when the device is rotated. The default is false.
     */
-    //automaticOrientation: true
+    automaticOrientation: true
 
     property bool narrowMode: root.width < units.gu(80)
 
@@ -57,11 +57,12 @@ MainView {
     property var accountPage;
 
     function openAccountPage(isChangingAccount) {
+        var unauthorizedAccounts = allAccounts.count - accounts.count > 0 ? true : false
         if (accountPage) {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, {accounts: accounts, isChangingAccount: isChangingAccount});
+        accountPage = component.createObject(root, { accounts: allAccounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
         accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
@@ -153,6 +154,12 @@ MainView {
     AccountServiceModel {
         id: accounts
         applicationId: "com.ubuntu.reminders_reminders"
+    }
+
+    AccountServiceModel {
+        id: allAccounts
+        service: useSandbox ? "evernote-sandbox" : "evernote"
+        includeDisabled: true
     }
 
     AccountService {
@@ -312,11 +319,36 @@ MainView {
         }
     }
 
+    Column {
+        anchors { left: pagestack.left; right: pagestack.right; margins: units.gu(2); verticalCenter: pagestack.verticalCenter }
+        spacing: units.gu(2)
+
+        Label {
+            anchors { left: parent.left; right: parent.right }
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            text: EvernoteConnection.error
+        }
+
+        Button {
+            anchors { left: parent.left; right: parent.right }
+            text: i18n.tr("Reconnect")
+            visible: EvernoteConnection.error
+            color: UbuntuColors.orange
+            onClicked: {
+                var token = EvernoteConnection.token
+                EvernoteConnection.token = ""
+                EvernoteConnection.token = token
+            }
+        }
+    }
+
+
     ActivityIndicator {
         anchors.centerIn: parent
         anchors.verticalCenterOffset: units.gu(4.5)
         running: visible
-        visible: !EvernoteConnection.isConnected && root.accountPage == null
+        visible: !EvernoteConnection.isConnected && root.accountPage == null && !EvernoteConnection.error
     }
 
 
@@ -387,5 +419,5 @@ MainView {
                 onClicked: setup.exec()
             }
         }
-   }
+    }
 }

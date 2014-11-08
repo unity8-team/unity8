@@ -23,6 +23,7 @@
 
 #include "evernoteconnection.h"
 #include "utils/enmldocument.h"
+#include "jobs/fetchnotejob.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -60,6 +61,8 @@ public:
         RoleNotebookGuid,
         RoleCreated,
         RoleCreatedString,
+        RoleUpdated,
+        RoleUpdatedString,
         RoleTitle,
         RoleReminder,
         RoleReminderTime,
@@ -119,8 +122,8 @@ public:
     Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
 
 public slots:
-    void refreshNotes(const QString &filterNotebookGuid = QString());
-    void refreshNoteContent(const QString &guid, bool withResourceContent = false);
+    void refreshNotes(const QString &filterNotebookGuid = QString(), int startIndex = 0);
+    void refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what = FetchNoteJob::LoadContent);
     void refreshNotebooks();
     void refreshTags();
 
@@ -135,6 +138,7 @@ signals:
     void countChanged();
 
     void noteCreated(const QString &guid, const QString &notebookGuid);
+    void noteUpdated(const QString &guid, const QString &notebookGuid);
     void noteAdded(const QString &guid, const QString &notebookGuid);
     void noteChanged(const QString &guid, const QString &notebookGuid);
     void noteRemoved(const QString &guid, const QString &notebookGuid);
@@ -148,9 +152,9 @@ signals:
     void tagRemoved(const QString &guid);
 
 private slots:
-    void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
+    void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);
     void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
-    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, bool withResourceContent);
+    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what);
     void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
@@ -162,6 +166,8 @@ private slots:
     void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
     void emitDataChanged();
+    void clear();
+
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;

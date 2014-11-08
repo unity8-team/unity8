@@ -1,5 +1,5 @@
 /*
- * Copyright: 2014 Canonical, Ltd
+ * Copyright: 2013 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -18,29 +18,32 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#ifndef SAVENOTEBOOKJOB_H
-#define SAVENOTEBOOKJOB_H
+#ifndef SAVENOTEJOB_H
+#define SAVENOTEJOB_H
 
 #include "notesstorejob.h"
 
-class SaveNotebookJob : public NotesStoreJob
+class Note;
+
+class SaveNoteJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit SaveNotebookJob(Notebook *notebook, QObject *parent = 0);
+    explicit SaveNoteJob(Note *note, QObject *parent = 0);
 
     virtual bool operator==(const EvernoteJob *other) const override;
     virtual void attachToDuplicate(const EvernoteJob *other) override;
 
 signals:
-    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &note);
 
 protected:
     void startJob();
     void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
-    Notebook* m_notebook;
+    Note* m_note;
+    evernote::edam::Note m_resultNote;
 };
 
-#endif // SAVENOTEBOOKJOB_H
+#endif // SAVENOTEJOB_H

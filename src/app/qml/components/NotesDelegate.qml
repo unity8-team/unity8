@@ -27,6 +27,7 @@ Empty {
 
     property string title
     property date creationDate
+    property date changedDate
     property string content
     property string resource
     property string tags
@@ -78,7 +79,7 @@ Empty {
                                 font.weight: Font.Light
                                 elide: Text.ElideRight
                                 color: root.notebookColor
-                            } 
+                            }
 
                             Label {
                                 Layout.fillWidth: true
@@ -101,8 +102,9 @@ Empty {
 
                                 }
                                 Label {
-//                                    Layout.minimumWidth: parent.width + units.gu(2)
-                                    text: Qt.formatDateTime(root.creationDate, "dddd, hh:mm")
+                                    // TRANSLATORS: the argument is a modification date that follows this format:
+                                    // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+                                    text: Qt.formatDateTime(root.creationDate, i18n.tr("dddd, d hh:mm"))
                                     color: "#b3b3b3"
                                     fontSize: "small"
                                     horizontalAlignment: Text.AlignRight
@@ -119,25 +121,25 @@ Empty {
                     Layout.maximumWidth: parent.width / 2
 
                     Rectangle {
-                        height: parent.width / 4 
+                        height: parent.width / 4
                         width: parent.height
 
                         anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: parent.width/2 - height/2 }
                         rotation: 90
-                        
+
                         gradient: Gradient {
                             GradientStop{ position: 0; color: "#383838" }
                             GradientStop{ position: 1; color: "transparent" }
                         }
                     }
-                
+
                     Rectangle {
-                        height: parent.width / 4 
+                        height: parent.width / 4
                         width: parent.height
 
                         anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: -parent.width/2 + height/2 }
                         rotation: 270
-                        
+
                         gradient: Gradient {
                             GradientStop{ position: 0; color: "#383838" }
                             GradientStop{ position: 1; color: "transparent" }

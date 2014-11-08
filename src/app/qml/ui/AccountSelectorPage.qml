@@ -28,8 +28,9 @@ Page {
     objectName: "Accountselectorpage"
     title: i18n.tr("Select Evernote account")
 
-    property alias accounts: listView.model
+    property alias accounts: optionSelector.model
     property bool isChangingAccount
+    property bool unauthorizedAccounts
 
     signal accountSelected(var handle)
 
@@ -41,33 +42,54 @@ Page {
 
     Column {
         anchors { fill: parent; margins: units.gu(2) }
-        spacing: units.gu(1)
+        spacing: units.gu(2)
 
-        ListView {
-            id: listView
+        OptionSelector {
+            id: optionSelector
             width: parent.width
-            height: units.gu(10)
-            model: accounts
-            currentIndex: -1
+            expanded: true
 
             delegate: Standard {
                 objectName: "EvernoteAccount"
                 text: displayName
+                showDivider: index + 1 !== accounts.count
+
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: root.accountSelected(accountServiceHandle)
+                    onClicked: {
+                        if (model.enabled) {
+                            root.accountSelected(accountServiceHandle)
+                        }
+                        else {
+                            console.log('authorize')
+                        }
+                    }
+                }
+
+                Component.onCompleted: {
+                    if (isChangingAccount && displayName == preferences.accountName) {
+                        optionSelector.selectedIndex = index;
+                    }
+                    if (!model.enabled) {
+                        text = i18n.tr("%1 - Tap to authorize").arg(text)
+                    }
                 }
             }
-
-            footer: Button {
-                text: i18n.tr("Add account")
-                onClicked: setup.exec()
-            }
         }
-    }
 
-    tools: ToolbarItems {
-        locked: !isChangingAccount
-        opened: isChangingAccount
-    }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - units.gu(2)
+            text: i18n.tr("Add new account")
+            color: UbuntuColors.orange
+            onClicked: setup.exec()
+        }
+     }
+
+     head.backAction: Action {
+         visible: isChangingAccount
+         iconName: "back"
+         text: i18n.tr("Back")
+         onTriggered: { pagestack.pop(); }
+     }
 }

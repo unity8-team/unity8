@@ -18,4 +18,5 @@ SET(evernote-sdk-cpp_SRCS
     src/UserStore_types.cpp
 )
 
-add_library(evernote-sdk-cpp ${evernote-sdk-cpp_SRCS})
+add_library(evernote-sdk-cpp STATIC ${evernote-sdk-cpp_SRCS})
+

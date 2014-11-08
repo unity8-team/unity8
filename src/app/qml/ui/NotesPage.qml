@@ -97,7 +97,7 @@ PageWithBottomEdge {
             action: Action {
                 text: i18n.tr("Accounts")
                 iconName: "contacts-app-symbolic"
-                visible: accounts.count > 1
+                visible: allAccounts.count > 1
                 onTriggered: {
                     openAccountPage(true);
                 }
@@ -162,6 +162,7 @@ PageWithBottomEdge {
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
+            changedDate: model.updated
             content: model.tagline
             tags: {
                 var tags = new Array();

@@ -72,7 +72,7 @@ Page {
             action: Action {
                 text: i18n.tr("Accounts")
                 iconName: "contacts-app-symbolic"
-                visible: accounts.count > 1
+                visible: allAccounts.count > 1
                 onTriggered: {
                     openAccountPage(true);
                 }

@@ -39,6 +39,8 @@
 #include <QDebug>
 #include <QUrl>
 
+#include <libintl.h>
+
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
@@ -169,6 +171,9 @@ void EvernoteConnection::setToken(const QString &token)
         m_token = token;
         emit tokenChanged();
 
+        qDeleteAll(m_jobQueue);
+        m_jobQueue.clear();
+
         connectToEvernote();
     }
 }
@@ -182,6 +187,9 @@ void EvernoteConnection::clearToken()
 
 void EvernoteConnection::connectToEvernote()
 {
+    m_errorMessage.clear();
+    emit errorChanged();
+
     if (m_token.isEmpty()) {
         qWarning() << "Can't connect to Evernote. No token set.";
         return;
@@ -191,7 +199,7 @@ void EvernoteConnection::connectToEvernote()
     }
     qDebug() << "******* Connecting *******";
     qDebug() << "hostname:" << m_hostname;
-    qDebug() << "token:" << m_token;
+//    qDebug() << "token:" << m_token;
 
     setupUserStore();
     bool ok = connectUserStore();
@@ -223,9 +231,13 @@ bool EvernoteConnection::connectUserStore()
         qDebug() << "UserStoreClient socket opened.";
     } catch (const TTransportException & e) {
         qWarning() << "Failed to open connection:" <<  e.what();
+        m_errorMessage = gettext("Error connecting to Evernote: Please check network connection.");
+        emit errorChanged();
         return false;
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when opening the connection:" << e.what();
+        m_errorMessage = gettext("Unknown error connecting to Evernote.");
+        emit errorChanged();
         return false;
     }
 
@@ -237,17 +249,29 @@ bool EvernoteConnection::connectUserStore()
 
         if (!versionOk) {
             qWarning() << "Server version mismatch! This application should be updated!";
+            m_errorMessage = QString(gettext("Error connecting to Evernote: Server version does not match app version. Please update the application."));
+            emit errorChanged();
             return false;
         }
     } catch (const evernote::edam::EDAMUserException e) {
         qWarning() << "Error fetching notestore url (EDAMUserException):" << e.what() << e.errorCode;
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Error code %1")).arg(e.errorCode);
+        emit errorChanged();
+        return false;
     } catch (const evernote::edam::EDAMSystemException e) {
         qWarning() << "Error fetching notestore url (EDAMSystemException):" << e.what() << e.errorCode;
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Error code %1")).arg(e.errorCode);
+        emit errorChanged();
+        return false;
     } catch (const TTransportException & e) {
         qWarning() << "Failed to fetch server version:" <<  e.what();
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot download version information from server."));
+        emit errorChanged();
         return false;
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when fetching server version:" << e.what();
+        m_errorMessage = QString(gettext("Unknown error connecting to Evernote"));
+        emit errorChanged();
         return false;
     }
 
@@ -260,13 +284,19 @@ bool EvernoteConnection::connectUserStore()
 
         if (m_notesStorePath.isEmpty()) {
             qWarning() << "Failed to fetch notesstore path from server. Fetching notes will not work.";
+            m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot download server information."));
+            emit errorChanged();
             return false;
         }
     } catch (const TTransportException & e) {
         qWarning() << "Failed to fetch notestore path:" <<  e.what();
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure when downloading server information."));
+        emit errorChanged();
         return false;
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when fetching notestore path:" << e.what();
+        m_errorMessage = gettext("Unknown error connecting to Evernote");
+        emit errorChanged();
         return false;
     }
 
@@ -286,8 +316,12 @@ bool EvernoteConnection::connectNotesStore()
 
     } catch (const TTransportException & e) {
         qWarning() << "Failed to open connection:" <<  e.what();
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure"));
+        emit errorChanged();
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when opening the NotesStore connection:" << e.what();
+        m_errorMessage = QString(gettext("Unknown Error connecting to Evernote"));
+        emit errorChanged();
     }
     return false;
 }
@@ -327,6 +361,11 @@ bool EvernoteConnection::isConnected() const
 // The notesstoreHttpClient wont stay open for some reason, but still seems to work... ignore it...
 //            m_notesStoreHttpClient->isOpen() &&
             !m_token.isEmpty();
+}
+
+QString EvernoteConnection::error() const
+{
+    return m_errorMessage;
 }
 
 void EvernoteConnection::startJobQueue()

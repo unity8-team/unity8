@@ -46,6 +46,7 @@ class EvernoteConnection : public QObject
     Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged)
     Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
+    Q_PROPERTY(QString error READ error NOTIFY errorChanged)
 
     friend class NotesStoreJob;
     friend class UserStoreJob;
@@ -76,6 +77,8 @@ public:
 
     bool isConnected() const;
 
+    QString error() const;
+
 public slots:
     void clearToken();
 
@@ -83,6 +86,7 @@ signals:
     void hostnameChanged();
     void tokenChanged();
     void isConnectedChanged();
+    void errorChanged();
 
 private slots:
     void connectToEvernote();
@@ -107,6 +111,7 @@ private:
     QString m_notesStorePath;
     QString m_hostname;
     QString m_token;
+    QString m_errorMessage;
 
     // There must be only one job running at a time
     // Do not start jobs other than with startJobQueue()

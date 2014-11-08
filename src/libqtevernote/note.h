@@ -39,6 +39,8 @@ class Note : public QObject
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
     Q_PROPERTY(QDateTime created READ created CONSTANT)
     Q_PROPERTY(QString createdString READ createdString CONSTANT)
+    Q_PROPERTY(QDateTime updated READ updated WRITE setUpdated NOTIFY updatedChanged)
+    Q_PROPERTY(QString updatedString READ updatedString)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QStringList tagGuids READ tagGuids WRITE setTagGuids NOTIFY tagGuidsChanged)
     Q_PROPERTY(QString htmlContent READ htmlContent NOTIFY contentChanged)
@@ -72,6 +74,10 @@ public:
 
     QDateTime created() const;
     QString createdString() const;
+
+    QDateTime updated() const;
+    void setUpdated(const QDateTime &updated);
+    QString updatedString() const;
 
     QString title() const;
     void setTitle(const QString &title);
@@ -141,6 +147,7 @@ public slots:
 
 signals:
     void titleChanged();
+    void updatedChanged();
     void notebookGuidChanged();
     void tagGuidsChanged();
     void contentChanged();
@@ -159,6 +166,7 @@ private:
     QString m_guid;
     QString m_notebookGuid;
     QDateTime m_created;
+    QDateTime m_updated;
     QString m_title;
     QStringList m_tagGuids;
     EnmlDocument m_content;

@@ -1,4 +1,4 @@
-# English (United Kingdom) translation for reminders-app
+# Slovak translation for reminders-app
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the reminders-app package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-07 20:51+0100\n"
-"PO-Revision-Date: 2014-10-12 22:31+0000\n"
-"Last-Translator: Andi Chandler <Unknown>\n"
-"Language-Team: English (United Kingdom) <en_GB@li.org>\n"
+"PO-Revision-Date: 2014-10-27 23:01+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Slovak <sk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,24 +19,24 @@ msgstr ""
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
-msgstr "Reminders"
+msgstr ""
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr "Ubuntu Reminders app, powered by Evernote"
+msgstr ""
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
 msgid "Last edited %1"
-msgstr "Last edited %1"
+msgstr ""
 
 #: src/app/qml/components/NotebooksDelegate.qml:105
 msgid "Shared"
-msgstr "Shared"
+msgstr ""
 
 #: src/app/qml/components/NotebooksDelegate.qml:105
 msgid "Private"
-msgstr "Private"
+msgstr ""
 
 #. TRANSLATORS: the argument is a modification date that follows this format:
 #. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
@@ -46,57 +46,54 @@ msgstr ""
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr "Release to refresh"
+msgstr ""
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr "Pull down to refresh"
+msgstr ""
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 #: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
-msgstr "Clear reminder"
+msgstr ""
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
-msgstr "Mark as done"
+msgstr ""
 
 #: src/app/qml/reminders.qml:214
 msgid "Notes"
-msgstr "Notes"
+msgstr ""
 
 #: src/app/qml/reminders.qml:245
 msgid "Notebooks"
-msgstr "Notebooks"
+msgstr ""
 
 #: src/app/qml/reminders.qml:289
 msgid "Tags"
-msgstr "Tags"
+msgstr ""
 
 #: src/app/qml/reminders.qml:329
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
-"No note selected.\n"
-"Select a note to see it in detail."
 
 #: src/app/qml/reminders.qml:366
 msgid "No account available"
-msgstr "No account available"
+msgstr ""
 
 #: src/app/qml/reminders.qml:367
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
-"Please configure and authorise an Evernote account in System Settings"
 
 #: src/app/qml/reminders.qml:387
 msgid "Add account"
-msgstr "Add account"
+msgstr ""
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
-msgstr "Select Evernote account"
+msgstr ""
 
 #: src/app/qml/ui/AccountSelectorPage.qml:74
 #, qt-format
@@ -114,186 +111,183 @@ msgstr ""
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
-msgstr "Untitled"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
-msgstr "Edit"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
-msgstr "Edit reminder"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
-msgstr "Set reminder"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
-msgstr "Delete"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:43
 msgid "Add notebook"
-msgstr "Add notebook"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
 #: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
-msgstr "Search"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
-msgstr "Refresh"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
 #: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
-msgstr "Accounts"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
-msgstr "Cancel"
+msgstr ""
 
 #: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
-msgstr "Save"
+msgstr ""
 
 #: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
-msgstr "Add note"
+msgstr ""
 
 #: src/app/qml/ui/NotesPage.qml:215
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
-"No notes available. You can create new notes using the \"Add note\" button."
 
 #: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
-"No reminders available. You can create new reminders by setting a reminder "
-"when viewing a note."
 
 #: src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
-msgstr "Search notes"
+msgstr ""
 
 #: src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr "Select date and time for the reminder:"
+msgstr ""
 
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
-msgstr "No tags available. You can tag notes while viewing them."
+msgstr ""
 
 #: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
-msgstr "Authentication expired."
+msgstr ""
 
 #: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
-msgstr "Limit exceeded."
+msgstr ""
 
 #: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
-msgstr "Rate limit exceeded."
+msgstr ""
 
 #: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
-msgstr "Quota exceeded."
+msgstr ""
 
 #: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
 #: src/libqtevernote/note.cpp:294
 msgid "Today"
-msgstr "Today"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:85 src/libqtevernote/note.cpp:119
 msgid "Yesterday"
-msgstr "Yesterday"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:88 src/libqtevernote/note.cpp:122
 msgid "Last week"
-msgstr "Last week"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:91 src/libqtevernote/note.cpp:125
 msgid "Two weeks ago"
-msgstr "Two weeks ago"
+msgstr ""
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
 #: src/libqtevernote/note.cpp:95 src/libqtevernote/note.cpp:129
 #, qt-format
 msgid "%1 %2"
-msgstr "%1 %2"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:282
 msgid "Done"
-msgstr "Done"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:288
 msgid "No date"
-msgstr "No date"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:291
 msgid "Overdue"
-msgstr "Overdue"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:297
 msgid "Tomorrow"
-msgstr "Tomorrow"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:300
 msgid "Next week"
-msgstr "Next week"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:303
 msgid "In two weeks"
-msgstr "In two weeks"
+msgstr ""
 
 #: src/libqtevernote/note.cpp:305
 msgid "Later"
-msgstr "Later"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
 #: src/libqtevernote/notebook.cpp:100
 msgid "today"
-msgstr "today"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
 #: src/libqtevernote/notebook.cpp:104
 msgid "yesterday"
-msgstr "yesterday"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
 #: src/libqtevernote/notebook.cpp:108
 msgid "last week"
-msgstr "last week"
+msgstr ""
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
-msgstr "two weeks ago"
+msgstr ""
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr "on %1 %2"
+msgstr ""
 
 #: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "Error refreshing notes: %1"
+msgstr ""
 
 #: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr "Error refreshing notebooks: %1"
+msgstr ""
 
 #: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr "Error refreshing tags: %1"
+msgstr ""

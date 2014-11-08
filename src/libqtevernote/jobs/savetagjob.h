@@ -1,5 +1,5 @@
 /*
- * Copyright: 2013 Canonical, Ltd
+ * Copyright: 2014 Canonical, Ltd
  *
  * This file is part of reminders
  *
@@ -18,31 +18,31 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-#ifndef FETCHNOTESJOB_H
-#define FETCHNOTESJOB_H
+#ifndef SAVETAGJOB_H
+#define SAVETAGJOB_H
 
 #include "notesstorejob.h"
 
-class FetchNotesJob : public NotesStoreJob
+class Tag;
+
+class SaveTagJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit FetchNotesJob(const QString &filterNotebookGuid = QString(), const QString &searchWords = QString(), QObject *parent = 0);
+    explicit SaveTagJob(Tag *tag, QObject *parent = 0);
 
     virtual bool operator==(const EvernoteJob *other) const override;
     virtual void attachToDuplicate(const EvernoteJob *other) override;
 
 signals:
-    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 protected:
     void startJob();
     void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
-    QString m_filterNotebookGuid;
-    QString m_searchWords;
-    evernote::edam::NotesMetadataList m_results;
+    Tag* m_tag;
 };
 
-#endif // FETCHNOTESJOB_H
+#endif
