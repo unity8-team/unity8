@@ -118,7 +118,7 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         root.openTaggedNotes(NotesStore.tag(root.note.tagGuids[index]).name, NotesStore.tag(root.note.tagGuids[index]).guid)
-                }
+                    }
                 }
             }
         }

@@ -191,7 +191,8 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log('Create new tag')
+                        // TODO: check narrowMode
+                        pagestack.push(Qt.resolvedUrl("EditTags.qml"), { note: root.note });
                     }
                 }
             }
