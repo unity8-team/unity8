@@ -231,12 +231,12 @@ bool EvernoteConnection::connectUserStore()
         qDebug() << "UserStoreClient socket opened.";
     } catch (const TTransportException & e) {
         qWarning() << "Failed to open connection:" <<  e.what();
-        m_errorMessage = gettext("Failed to open transport connection to Evernote");
+        m_errorMessage = gettext("Error connecting to Evernote: Please check network connection.");
         emit errorChanged();
         return false;
     } catch (const TException & e) {
         qWarning() << "Generic Thrift exception when opening the connection:" << e.what();
-        m_errorMessage = gettext("Unknown error connecting to Evernote");
+        m_errorMessage = gettext("Unknown error connecting to Evernote.");
         emit errorChanged();
         return false;
     }
@@ -249,7 +249,7 @@ bool EvernoteConnection::connectUserStore()
 
         if (!versionOk) {
             qWarning() << "Server version mismatch! This application should be updated!";
-            m_errorMessage = QString(gettext("Error connecting to Evernote: Server version does not match client version. Please update the application."));
+            m_errorMessage = QString(gettext("Error connecting to Evernote: Server version does not match app version. Please update the application."));
             emit errorChanged();
             return false;
         }
@@ -265,7 +265,7 @@ bool EvernoteConnection::connectUserStore()
         return false;
     } catch (const TTransportException & e) {
         qWarning() << "Failed to fetch server version:" <<  e.what();
-        m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot read server version"));
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot download version information from server."));
         emit errorChanged();
         return false;
     } catch (const TException & e) {
@@ -284,13 +284,13 @@ bool EvernoteConnection::connectUserStore()
 
         if (m_notesStorePath.isEmpty()) {
             qWarning() << "Failed to fetch notesstore path from server. Fetching notes will not work.";
-            m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot read notesstore path"));
+            m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot download server information."));
             emit errorChanged();
             return false;
         }
     } catch (const TTransportException & e) {
         qWarning() << "Failed to fetch notestore path:" <<  e.what();
-        m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure when reading notesstore path"));
+        m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure when downloading server information."));
         emit errorChanged();
         return false;
     } catch (const TException & e) {
