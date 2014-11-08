@@ -27,7 +27,7 @@ class CreateTagJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit CreateTagJob(const QString &name, QObject *parent = 0);
+    explicit CreateTagJob(const QString &name, const QString &tagGuid, QObject *parent = 0);
 
     virtual void startJob() override;
 
@@ -42,6 +42,7 @@ private slots:
 
 private:
     QString m_name;
+    QString m_tagGuid;
 
     evernote::edam::Tag m_result;
 };

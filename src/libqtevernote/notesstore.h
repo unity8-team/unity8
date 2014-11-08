@@ -116,7 +116,10 @@ public:
 
     QList<Tag*> tags() const;
     Q_INVOKABLE Tag* tag(const QString &guid);
-    Q_INVOKABLE void createTag(const QString &name);
+    /**
+      * Creates a tag and returns a new tagGuid
+      */
+    Q_INVOKABLE QString createTag(const QString &name);
     Q_INVOKABLE void saveTag(const QString &guid);
     Q_INVOKABLE void tagNote(const QString &noteGuid, const QString &tagGuid);
     Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
