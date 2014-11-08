@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-23 23:05+0200\n"
+"POT-Creation-Date: 2014-11-07 20:51+0100\n"
 "PO-Revision-Date: 2014-09-30 10:56+0000\n"
 "Last-Translator: Claudio Arseni <claudio.arseni@gmail.com>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-11-07 06:53+0000\n"
+"X-Launchpad-Export-Date: 2014-11-08 06:17+0000\n"
 "X-Generator: Launchpad (build 17231)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
 msgstr "Promemoria"
 
@@ -38,6 +38,12 @@ msgstr "Condivisa"
 msgid "Private"
 msgstr "Privata"
 
+#. TRANSLATORS: the argument is a modification date that follows this format:
+#. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+#: src/app/qml/components/NotesDelegate.qml:107
+msgid "dddd, d hh:mm"
+msgstr ""
+
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
 msgstr "Rilasciare per aggiornare"
@@ -55,19 +61,19 @@ msgstr "Cancella promemoria"
 msgid "Mark as done"
 msgstr "Completata"
 
-#: src/app/qml/reminders.qml:207
+#: src/app/qml/reminders.qml:214
 msgid "Notes"
 msgstr "Note"
 
-#: src/app/qml/reminders.qml:238
+#: src/app/qml/reminders.qml:245
 msgid "Notebooks"
 msgstr "Appunti"
 
-#: src/app/qml/reminders.qml:282
+#: src/app/qml/reminders.qml:289
 msgid "Tags"
 msgstr ""
 
-#: src/app/qml/reminders.qml:322
+#: src/app/qml/reminders.qml:329
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -75,22 +81,35 @@ msgstr ""
 "Nessuna nota selezionata.\n"
 "Selezionare una nota per vedere i dettagli."
 
-#: src/app/qml/reminders.qml:359
+#: src/app/qml/reminders.qml:366
 msgid "No account available"
 msgstr "Nessun account disponibile"
 
-#: src/app/qml/reminders.qml:360
+#: src/app/qml/reminders.qml:367
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 "Configurare e autorizzare un account Evernote nell impostazioni di sistema"
 
-#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:387
 msgid "Add account"
 msgstr "Aggiungi account"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
 msgstr "Seleziona account Evernote"
+
+#: src/app/qml/ui/AccountSelectorPage.qml:74
+#, qt-format
+msgid "%1 - Tap to authorize"
+msgstr ""
+
+#: src/app/qml/ui/AccountSelectorPage.qml:83
+msgid "Add new account"
+msgstr ""
+
+#: src/app/qml/ui/AccountSelectorPage.qml:92
+msgid "Back"
+msgstr ""
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
@@ -144,14 +163,14 @@ msgstr "Salva"
 msgid "Add note"
 msgstr "Aggiungi nota"
 
-#: src/app/qml/ui/NotesPage.qml:214
+#: src/app/qml/ui/NotesPage.qml:215
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
 "Nessuna nota disponibile. È possibile creare una nuova nota usando il "
 "pulsante «Aggiungi nota»."
 
-#: src/app/qml/ui/RemindersPage.qml:111
+#: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -171,69 +190,70 @@ msgstr "Seleziona data e ora per il promemoria:"
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
 
-#: src/libqtevernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
 msgstr "Autenticazione scaduta."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
 msgstr "Limite superato."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
 msgstr "Limite di rate superato."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
 msgstr "Limite di quota superato."
 
-#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
+#: src/libqtevernote/note.cpp:294
 msgid "Today"
 msgstr "Oggi"
 
-#: src/libqtevernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85 src/libqtevernote/note.cpp:119
 msgid "Yesterday"
 msgstr "Ieri"
 
-#: src/libqtevernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88 src/libqtevernote/note.cpp:122
 msgid "Last week"
 msgstr "Ultima settimana"
 
-#: src/libqtevernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91 src/libqtevernote/note.cpp:125
 msgid "Two weeks ago"
 msgstr "Due settimane fa"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/libqtevernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95 src/libqtevernote/note.cpp:129
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/libqtevernote/note.cpp:248
+#: src/libqtevernote/note.cpp:282
 msgid "Done"
 msgstr "Completata"
 
-#: src/libqtevernote/note.cpp:254
+#: src/libqtevernote/note.cpp:288
 msgid "No date"
 msgstr "Nessuna data"
 
-#: src/libqtevernote/note.cpp:257
+#: src/libqtevernote/note.cpp:291
 msgid "Overdue"
 msgstr "Scaduta"
 
-#: src/libqtevernote/note.cpp:263
+#: src/libqtevernote/note.cpp:297
 msgid "Tomorrow"
 msgstr "Domani"
 
-#: src/libqtevernote/note.cpp:266
+#: src/libqtevernote/note.cpp:300
 msgid "Next week"
 msgstr "Prossima settimana"
 
-#: src/libqtevernote/note.cpp:269
+#: src/libqtevernote/note.cpp:303
 msgid "In two weeks"
 msgstr "Tra due settimane"
 
-#: src/libqtevernote/note.cpp:271
+#: src/libqtevernote/note.cpp:305
 msgid "Later"
 msgstr "Più tardi"
 
@@ -264,17 +284,17 @@ msgstr "due settimane fa"
 msgid "on %1 %2"
 msgstr "nel %1 %2"
 
-#: src/libqtevernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Errore aggiornando le note: %1"
 
-#: src/libqtevernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Errore aggiornando gli appunti: %1"
 
-#: src/libqtevernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr ""

@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-23 23:05+0200\n"
+"POT-Creation-Date: 2014-11-07 20:51+0100\n"
 "PO-Revision-Date: 2014-10-13 06:07+0000\n"
 "Last-Translator: Fohanno Thierry <thierry.fohanno@ofis-bzh.org>\n"
 "Language-Team: Breton <br@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-11-07 06:53+0000\n"
+"X-Launchpad-Export-Date: 2014-11-08 06:17+0000\n"
 "X-Generator: Launchpad (build 17231)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
 msgstr "Degas-soñj"
 
@@ -38,6 +38,12 @@ msgstr "Rannet"
 msgid "Private"
 msgstr "Prevez"
 
+#. TRANSLATORS: the argument is a modification date that follows this format:
+#. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+#: src/app/qml/components/NotesDelegate.qml:107
+msgid "dddd, d hh:mm"
+msgstr ""
+
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
 msgstr "Leuskel evit freskaat"
@@ -55,19 +61,19 @@ msgstr "Diverkañ an degas-soñj"
 msgid "Mark as done"
 msgstr "Merkañ ez eo graet"
 
-#: src/app/qml/reminders.qml:207
+#: src/app/qml/reminders.qml:214
 msgid "Notes"
 msgstr "Notennoù"
 
-#: src/app/qml/reminders.qml:238
+#: src/app/qml/reminders.qml:245
 msgid "Notebooks"
 msgstr "Karnedoù"
 
-#: src/app/qml/reminders.qml:282
+#: src/app/qml/reminders.qml:289
 msgid "Tags"
 msgstr "Balizennoù"
 
-#: src/app/qml/reminders.qml:322
+#: src/app/qml/reminders.qml:329
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -75,22 +81,35 @@ msgstr ""
 "N'eus bet diuzet notenn ebet.\n"
 "Diuzit un notenn da welet anezhi en he hed."
 
-#: src/app/qml/reminders.qml:359
+#: src/app/qml/reminders.qml:366
 msgid "No account available"
 msgstr "N'eus kont ebet"
 
-#: src/app/qml/reminders.qml:360
+#: src/app/qml/reminders.qml:367
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 "Kefluniit hag aotreit ur gont Evernote en Arventennoù ar reizhiad, mar plij"
 
-#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:387
 msgid "Add account"
 msgstr "Ouzhpennañ ur gont"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
 msgstr "Diuzañ ur gont Evernote"
+
+#: src/app/qml/ui/AccountSelectorPage.qml:74
+#, qt-format
+msgid "%1 - Tap to authorize"
+msgstr ""
+
+#: src/app/qml/ui/AccountSelectorPage.qml:83
+msgid "Add new account"
+msgstr ""
+
+#: src/app/qml/ui/AccountSelectorPage.qml:92
+msgid "Back"
+msgstr ""
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
@@ -144,14 +163,14 @@ msgstr "Enrollañ"
 msgid "Add note"
 msgstr "Ouzhpennañ un notenn"
 
-#: src/app/qml/ui/NotesPage.qml:214
+#: src/app/qml/ui/NotesPage.qml:215
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
 "N'eus ket notenn ebet. Gallout a rit krouiñ notennoù nevez oc'h implijout ar "
 "bouton \"Ouzhpennañ un notenn\"."
 
-#: src/app/qml/ui/RemindersPage.qml:111
+#: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -173,69 +192,70 @@ msgstr ""
 "N'eus balizenn ebet da gaout. Gallout a rit lakaat balizennoù ouzh an "
 "notennoù pa sellit outo."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
 msgstr "Dilesadur aet d'e dermen."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
 msgstr "Emeur en tu all d'ar vevenn."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
 msgstr "Emeur en tu all d'ar feur."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
 msgstr "Emeur en tu all d'ar c'hota."
 
-#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
+#: src/libqtevernote/note.cpp:294
 msgid "Today"
 msgstr "Hiziv"
 
-#: src/libqtevernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85 src/libqtevernote/note.cpp:119
 msgid "Yesterday"
 msgstr "Dec'h"
 
-#: src/libqtevernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88 src/libqtevernote/note.cpp:122
 msgid "Last week"
 msgstr "Er sizhun dremen"
 
-#: src/libqtevernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91 src/libqtevernote/note.cpp:125
 msgid "Two weeks ago"
 msgstr "Div sizhun zo"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/libqtevernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95 src/libqtevernote/note.cpp:129
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/libqtevernote/note.cpp:248
+#: src/libqtevernote/note.cpp:282
 msgid "Done"
 msgstr "Graet eo"
 
-#: src/libqtevernote/note.cpp:254
+#: src/libqtevernote/note.cpp:288
 msgid "No date"
 msgstr "Deiziad ebet"
 
-#: src/libqtevernote/note.cpp:257
+#: src/libqtevernote/note.cpp:291
 msgid "Overdue"
 msgstr "Diwezhat"
 
-#: src/libqtevernote/note.cpp:263
+#: src/libqtevernote/note.cpp:297
 msgid "Tomorrow"
 msgstr "Warc'hoazh"
 
-#: src/libqtevernote/note.cpp:266
+#: src/libqtevernote/note.cpp:300
 msgid "Next week"
 msgstr "Er sizhun a zeu"
 
-#: src/libqtevernote/note.cpp:269
+#: src/libqtevernote/note.cpp:303
 msgid "In two weeks"
 msgstr "A-benn div sizhun"
 
-#: src/libqtevernote/note.cpp:271
+#: src/libqtevernote/note.cpp:305
 msgid "Later"
 msgstr "Diwezhatoc'h"
 
@@ -266,17 +286,17 @@ msgstr "div sizhun zo"
 msgid "on %1 %2"
 msgstr "e %1 %2"
 
-#: src/libqtevernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Fazi o freskaat an notennoù : %1"
 
-#: src/libqtevernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Fazi o freskaat ar c'harnedoù : %1"
 
-#: src/libqtevernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr "Fazi o freskaat ar balizennoù : %1"

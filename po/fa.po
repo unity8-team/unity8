@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-23 23:05+0200\n"
+"POT-Creation-Date: 2014-11-07 20:51+0100\n"
 "PO-Revision-Date: 2014-10-11 23:39+0000\n"
 "Last-Translator: Danial Behzadi <dani.behzi@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-11-07 06:53+0000\n"
+"X-Launchpad-Export-Date: 2014-11-08 06:17+0000\n"
 "X-Generator: Launchpad (build 17231)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
 msgstr "یادآورها"
 
@@ -38,6 +38,12 @@ msgstr "به اشتراک گذاشته شده"
 msgid "Private"
 msgstr "خصوصی"
 
+#. TRANSLATORS: the argument is a modification date that follows this format:
+#. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+#: src/app/qml/components/NotesDelegate.qml:107
+msgid "dddd, d hh:mm"
+msgstr ""
+
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
 msgstr "برای تازه‌سازی رها کنید"
@@ -55,19 +61,19 @@ msgstr "پاک کردن یادآدور"
 msgid "Mark as done"
 msgstr "علامت گذاری به عنوان انجام شده"
 
-#: src/app/qml/reminders.qml:207
+#: src/app/qml/reminders.qml:214
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
-#: src/app/qml/reminders.qml:238
+#: src/app/qml/reminders.qml:245
 msgid "Notebooks"
 msgstr "دفترچه‌های یادداشت"
 
-#: src/app/qml/reminders.qml:282
+#: src/app/qml/reminders.qml:289
 msgid "Tags"
 msgstr "برچسب‌ها"
 
-#: src/app/qml/reminders.qml:322
+#: src/app/qml/reminders.qml:329
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -75,22 +81,35 @@ msgstr ""
 "هیچ یادداشتی انتخاب نشده.\n"
 "یادداشتی را برای دیدن جزئیاتش انتخاب کنید."
 
-#: src/app/qml/reminders.qml:359
+#: src/app/qml/reminders.qml:366
 msgid "No account available"
 msgstr "هیچ حساب کاربری‌ای موجود نیست"
 
-#: src/app/qml/reminders.qml:360
+#: src/app/qml/reminders.qml:367
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 "لطفاً یک حساب کاربری اورنوت را در تنظیمات سامانه پیکربندی و تأیید کنید."
 
-#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:387
 msgid "Add account"
 msgstr "افزودن حساب کاربری"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
 msgstr "انتخاب حساب کاربری اورنوت"
+
+#: src/app/qml/ui/AccountSelectorPage.qml:74
+#, qt-format
+msgid "%1 - Tap to authorize"
+msgstr ""
+
+#: src/app/qml/ui/AccountSelectorPage.qml:83
+msgid "Add new account"
+msgstr ""
+
+#: src/app/qml/ui/AccountSelectorPage.qml:92
+msgid "Back"
+msgstr ""
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
@@ -144,14 +163,14 @@ msgstr "ذخیره"
 msgid "Add note"
 msgstr "افزودن يادداشت"
 
-#: src/app/qml/ui/NotesPage.qml:214
+#: src/app/qml/ui/NotesPage.qml:215
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
 "هیچ یادداشتی موجود نیست. می‌توانید با استفاده از دکمه‌ی «افزودن یادداشت» "
 "یادداشت‌های جدیدی ایجاد کنید."
 
-#: src/app/qml/ui/RemindersPage.qml:111
+#: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -173,69 +192,70 @@ msgstr ""
 "هیچ برچسبی موجود نیست. می‌توانید هنگام مشاهده‌ی یادداشت‌ها، آن‌ها را برچسب "
 "بزنید."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
 msgstr "تأییدیه منقضی شده است."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
 msgstr "از محدودیت تجاوز شده است."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
 msgstr "از محدودیت رتبه‌بندی  تجاوز شده است."
 
-#: src/libqtevernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
 msgstr "از حد سهمیه  تجاوز شده است."
 
-#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
+#: src/libqtevernote/note.cpp:294
 msgid "Today"
 msgstr "امروز"
 
-#: src/libqtevernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85 src/libqtevernote/note.cpp:119
 msgid "Yesterday"
 msgstr "دیروز"
 
-#: src/libqtevernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88 src/libqtevernote/note.cpp:122
 msgid "Last week"
 msgstr "هفته‌ی پیش"
 
-#: src/libqtevernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91 src/libqtevernote/note.cpp:125
 msgid "Two weeks ago"
 msgstr "دو هفته پیش"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/libqtevernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95 src/libqtevernote/note.cpp:129
 #, qt-format
 msgid "%1 %2"
 msgstr "‫%1 %2"
 
-#: src/libqtevernote/note.cpp:248
+#: src/libqtevernote/note.cpp:282
 msgid "Done"
 msgstr "انجام شد"
 
-#: src/libqtevernote/note.cpp:254
+#: src/libqtevernote/note.cpp:288
 msgid "No date"
 msgstr "بدون تاریخ"
 
-#: src/libqtevernote/note.cpp:257
+#: src/libqtevernote/note.cpp:291
 msgid "Overdue"
 msgstr "معوقه"
 
-#: src/libqtevernote/note.cpp:263
+#: src/libqtevernote/note.cpp:297
 msgid "Tomorrow"
 msgstr "فردا"
 
-#: src/libqtevernote/note.cpp:266
+#: src/libqtevernote/note.cpp:300
 msgid "Next week"
 msgstr "هفته‌ی آینده"
 
-#: src/libqtevernote/note.cpp:269
+#: src/libqtevernote/note.cpp:303
 msgid "In two weeks"
 msgstr "در دو هفته"
 
-#: src/libqtevernote/note.cpp:271
+#: src/libqtevernote/note.cpp:305
 msgid "Later"
 msgstr "بعداً"
 
@@ -266,17 +286,17 @@ msgstr "دو هفته پیش"
 msgid "on %1 %2"
 msgstr "در %1 %2"
 
-#: src/libqtevernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "خطا در تازه‌سازی یادداشت‌ها: %1"
 
-#: src/libqtevernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "خطا در تازه‌سازی دفترچه یادداشت‌ها: %1"
 
-#: src/libqtevernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr "خطا در تازه‌سازی برچسب‌ها: %1"
