@@ -23,28 +23,18 @@ import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 import "../components"
 
-Page {
+Item {
     id: root
 
-    property bool narrowMode
     property var note
-    property variant tagGuids: note.tagGuids
-
-    signal newTagSelected(var guid);
-
-    title: i18n.tr("Modify tags")
-
-    head.backAction: Action {
-        iconName: "back"
-        text: i18n.tr("Back")
-        onTriggered: {
-            note.tagGuids = tagGuids;
-            pagestack.pop();
-        }
-    }
+    property variant tagGuids: note ? note.tagGuids : undefined
 
     Tags {
         id: tags
+    }
+
+    Rectangle {
+        anchors.fill: parent
     }
 
     ColumnLayout {
@@ -86,7 +76,7 @@ Page {
 
             delegate: OptionSelectorDelegate {
                 text: model.name
-                selected: root.note.tagGuids.indexOf(model.guid) !== -1
+                selected: root.note ? root.note.tagGuids.indexOf(model.guid) !== -1 : false
 
                 MouseArea {
                     anchors.fill: parent

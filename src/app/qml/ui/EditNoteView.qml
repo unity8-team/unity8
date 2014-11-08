@@ -39,6 +39,21 @@ Item {
     signal exitEditMode(var note)
     signal attachFromCamera(int position, var note)
 
+    function saveNote() {
+        var title = titleTextField.text ? titleTextField.text : i18n.tr("Untitled");
+        var notebookGuid = notebookSelector.selectedGuid;
+        var text = noteTextArea.text;
+
+        if (note) {
+            note.title = titleTextField.text
+            note.notebookGuid = notebookSelector.selectedGuid
+            note.richTextContent = noteTextArea.text
+            NotesStore.saveNote(note.guid);
+        } else {
+            NotesStore.createNote(title, notebookGuid, text);
+        }
+    }
+
     QtObject {
         id: priv
         property int insertPosition
@@ -109,18 +124,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        var title = titleTextField.text ? titleTextField.text : i18n.tr("Untitled");
-                        var notebookGuid = notebookSelector.selectedGuid;
-                        var text = noteTextArea.text;
-
-                        if (note) {
-                            note.title = titleTextField.text
-                            note.notebookGuid = notebookSelector.selectedGuid
-                            note.richTextContent = noteTextArea.text
-                            NotesStore.saveNote(note.guid);
-                        } else {
-                            NotesStore.createNote(title, notebookGuid, text);
-                        }
+                        saveNote();
                         root.exitEditMode(root.note);
                     }
                 }
@@ -191,8 +195,14 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        // TODO: check narrowMode
-                        pagestack.push(Qt.resolvedUrl("EditTags.qml"), { note: root.note });
+                        if (narrowMode) {
+                            pagestack.push(Qt.resolvedUrl("EditTagsPage.qml"), { note: root.note });
+                        }
+                        else {
+                            saveNote();
+                            var view = sideViewLoader.embed(Qt.resolvedUrl("EditTagsView.qml"));
+                            view.note = root.note;
+                        }
                     }
                 }
             }
