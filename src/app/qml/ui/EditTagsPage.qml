@@ -28,15 +28,6 @@ Page {
 
     title: i18n.tr("Edit tags")
 
-    head.backAction: Action {
-        iconName: "back"
-        text: i18n.tr("Back")
-        onTriggered: {
-            note.tagGuids = editTagsView.tagGuids;
-            pagestack.pop();
-        }
-    }
-
     EditTagsView {
         id: editTagsView
         anchors.fill: parent

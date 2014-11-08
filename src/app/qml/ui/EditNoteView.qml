@@ -45,9 +45,9 @@ Item {
         var text = noteTextArea.text;
 
         if (note) {
-            note.title = titleTextField.text
-            note.notebookGuid = notebookSelector.selectedGuid
-            note.richTextContent = noteTextArea.text
+            note.title = titleTextField.text;
+            note.notebookGuid = notebookSelector.selectedGuid;
+            note.richTextContent = noteTextArea.text;
             NotesStore.saveNote(note.guid);
         } else {
             NotesStore.createNote(title, notebookGuid, text);
@@ -195,11 +195,11 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
+                        saveNote();
                         if (narrowMode) {
                             pagestack.push(Qt.resolvedUrl("EditTagsPage.qml"), { note: root.note });
                         }
                         else {
-                            saveNote();
                             var view = sideViewLoader.embed(Qt.resolvedUrl("EditTagsView.qml"));
                             view.note = root.note;
                         }

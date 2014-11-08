@@ -27,7 +27,6 @@ Item {
     id: root
 
     property var note
-    property variant tagGuids: note ? note.tagGuids : undefined
 
     Tags {
         id: tags
@@ -52,8 +51,7 @@ Item {
                         // The tag exists, check if is already selected: if it is,
                         // do nothing, otherwise add to tags of the note
                         if (note.tagGuids.indexOf(tag.guid) === -1) {
-                            tagGuids.push(tag.guid);
-                            // TODO: select in optionSelector
+                            note.tagGuids.push(tag.guid);
                         }
                         return;
                     }
@@ -83,13 +81,12 @@ Item {
 
                     onClicked: {
                         if (selected) {
-                            var index = root.tagGuids.indexOf(model.guid);
-                            root.tagGuids.splice(index, 1);
+                            var index = root.note.tagGuids.indexOf(model.guid);
+                            root.note.tagGuids.splice(index, 1);
                         }
                         else {
-                            root.tagGuids.push(model.guid);
+                            root.note.tagGuids.push(model.guid);
                         }
-                        selected = !selected;
                     }
                 }
             }
