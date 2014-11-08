@@ -57,6 +57,8 @@ Item {
                     }
                 }
 
+                var newTagGuide = NotesStore.createTag(text)
+                note.tagGuids.push(newTagGuide);
                 // TODO: create a tag and add it to the list
             }
         }
