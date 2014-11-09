@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-08 23:47+0100\n"
+"POT-Creation-Date: 2014-11-09 21:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,19 @@ msgstr ""
 #: builddir/po/com.ubuntu.reminders.desktop.in.in.h:2
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
+msgstr ""
+
+#: builddir/src/app/qml/components/EditTagsDialog.qml:43
+#: builddir/src/app/qml/ui/EditTagsView.qml:51
+#: src/app/qml/components/EditTagsDialog.qml:39
+msgid "Create a new tag"
+msgstr ""
+
+#: builddir/src/app/qml/components/EditTagsDialog.qml:107
+#: builddir/src/app/qml/ui/EditTagsView.qml:114
+#: src/app/qml/components/EditTagsDialog.qml:103
+#: src/libqtevernote/note.cpp:282
+msgid "Done"
 msgstr ""
 
 #: builddir/src/app/qml/components/NotebooksDelegate.qml:98
@@ -129,10 +142,10 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: builddir/src/app/qml/ui/EditNoteView.qml:43
-#: builddir/src/app/qml/ui/EditNoteView.qml:115
-#: builddir/src/app/qml/ui/NotesPage.qml:71 src/app/qml/ui/EditNoteView.qml:43
-#: src/app/qml/ui/EditNoteView.qml:115 src/app/qml/ui/NotesPage.qml:71
+#: builddir/src/app/qml/ui/EditNoteView.qml:44
+#: builddir/src/app/qml/ui/EditNoteView.qml:116
+#: builddir/src/app/qml/ui/NotesPage.qml:71 src/app/qml/ui/EditNoteView.qml:44
+#: src/app/qml/ui/EditNoteView.qml:116 src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr ""
 
@@ -141,7 +154,6 @@ msgid "Modify tags"
 msgstr ""
 
 #: builddir/src/app/qml/ui/EditTagsPage.qml:29
-#: src/app/qml/ui/EditTagsPage.qml:29
 msgid "Edit tags"
 msgstr ""
 
@@ -332,10 +344,6 @@ msgstr ""
 msgid "%1 %2"
 msgstr ""
 
-#: src/libqtevernote/note.cpp:282
-msgid "Done"
-msgstr ""
-
 #: src/libqtevernote/note.cpp:288
 msgid "No date"
 msgstr ""
@@ -387,17 +395,17 @@ msgstr ""
 msgid "on %1 %2"
 msgstr ""
 
-#: src/libqtevernote/notesstore.cpp:366
+#: src/libqtevernote/notesstore.cpp:369
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr ""
 
-#: src/libqtevernote/notesstore.cpp:551
+#: src/libqtevernote/notesstore.cpp:554
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr ""
 
-#: src/libqtevernote/notesstore.cpp:605
+#: src/libqtevernote/notesstore.cpp:608
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr ""
