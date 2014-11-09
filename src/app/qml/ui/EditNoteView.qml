@@ -18,6 +18,7 @@
 
 import QtQuick 2.3
 import Ubuntu.Components 1.1
+import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0
 import Ubuntu.Content 0.1
 import Evernote 0.1
@@ -194,19 +195,16 @@ Item {
                 }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {
-                        saveNote();
-                        if (narrowMode) {
-                            pagestack.push(Qt.resolvedUrl("EditTagsPage.qml"), { note: root.note });
-                        }
-                        else {
-                            var view = sideViewLoader.embed(Qt.resolvedUrl("EditTagsView.qml"));
-                            view.note = root.note;
-                        }
-                    }
+                    onClicked: PopupUtils.open(tagsDialog)
                 }
             }
         }
+    }
+
+    Component {
+        id: tagsDialog
+
+        EditTagsDialog { note: root.note }
     }
 
     Rectangle {
