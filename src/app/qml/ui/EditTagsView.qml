@@ -34,20 +34,27 @@ Item {
 
     Rectangle {
         anchors.fill: parent
+        color: "#dddddd"
     }
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: units.gu(2)
 
         TextField {
-            width: parent.width - units.gu(2)
+            Layout.preferredWidth: parent.width - units.gu(2)
             Layout.alignment: Qt.AlignHCenter
 
+            placeholderText: i18n.tr("Create a new tag")
+
             Keys.onReturnPressed: {
+                var tagName = text;
+                text = '';
+
                 // Check if the tag exists
                 for (var i=0; i < tags.count; i++) {
                     var tag = tags.tag(i);
-                    if (tag.name == text) {
+                    if (tag.name == tagName) {
                         // The tag exists, check if is already selected: if it is,
                         // do nothing, otherwise add to tags of the note
                         if (note.tagGuids.indexOf(tag.guid) === -1) {
@@ -57,20 +64,20 @@ Item {
                     }
                 }
 
-                var newTagGuide = NotesStore.createTag(text)
+                var newTagGuide = NotesStore.createTag(tagName)
                 note.tagGuids.push(newTagGuide);
-                // TODO: create a tag and add it to the list
             }
         }
 
         OptionSelector {
             id: optionSelector
+
             Layout.fillHeight: true
+            Layout.preferredWidth: parent.width - units.gu(2)
+            Layout.alignment: Qt.AlignHCenter
+
             currentlyExpanded: true
             multiSelection: true
-
-            width: parent.width - units.gu(2)
-            Layout.alignment: Qt.AlignHCenter
 
             model: tags
 
@@ -92,6 +99,16 @@ Item {
                     }
                 }
             }
+        }
+
+        Button {
+            Layout.preferredWidth: parent.width - units.gu(2)
+            Layout.alignment: Qt.AlignHCenter
+
+            visible: !narrowMode
+            color: UbuntuColors.orange
+
+            text: i18n.tr("Done")
         }
     }
 }
