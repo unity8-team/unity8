@@ -144,6 +144,15 @@ Item {
             height: parent.height - y
             color: "white"
 
+//            TextArea {
+//                id: noteTextArea
+//                anchors.fill: parent
+//                focus: true
+//                wrapMode: TextEdit.Wrap
+//                textFormat: TextEdit.RichText
+//                text: root.note ? root.note.richTextContent : ""
+//            }
+
             Flickable {
                  id: flick
                  anchors.fill: parent
@@ -173,16 +182,21 @@ Item {
                     textFormat: TextEdit.RichText
                     text: root.note ? root.note.richTextContent : ""
                     onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+                    selectByMouse: true
+
+                    onSelectionStartChanged: print("selection start:", selectionStart)
+                    onSelectionEndChanged: print("selection end:", selectionEnd)
                 }
             }
         }
-
     }
 
     FormattingHelper {
         id: formattingHelper
         textDocument: noteTextArea.textDocument
         cursorPosition: noteTextArea.cursorPosition
+        selectionStart: noteTextArea.selectionStart
+        selectionEnd: noteTextArea.selectionEnd
     }
 
     Component {
@@ -190,9 +204,8 @@ Item {
         Popover {
             id: fontPopover
 
-            Component.onDestruction: {
-                noteTextArea.forceActiveFocus();
-            }
+            property int selectionStart: -1
+            property int selectionEnd: -1
 
             ListView {
                 width: parent.width - units.gu(2)
@@ -200,6 +213,8 @@ Item {
                 model: formattingHelper.allFontFamilies
                 clip: true
                 delegate: Empty {
+                    height: units.gu(6)
+                    width: parent.width
                     Label {
                         anchors.fill: parent
                         anchors.margins: units.gu(1)
@@ -208,7 +223,9 @@ Item {
                         font.family: modelData
                     }
                     onClicked: {
-                        formattingHelper.fontFamily = modelData
+                        noteTextArea.cursorPosition = fontPopover.selectionStart;
+                        noteTextArea.moveCursorSelection(fontPopover.selectionEnd);
+                        formattingHelper.fontFamily = modelData;
                         PopupUtils.close(fontPopover)
                     }
                 }
@@ -220,9 +237,8 @@ Item {
         Popover {
             id: fontSizePopover
 
-            Component.onDestruction: {
-                noteTextArea.forceActiveFocus();
-            }
+            property int selectionStart: -1
+            property int selectionEnd: -1
 
             ListView {
                 anchors { left: parent.left; right: parent.right; top: parent.top }
@@ -247,6 +263,8 @@ Item {
                         font.family: modelData
                     }
                     onClicked: {
+                        noteTextArea.cursorPosition = fontSizePopover.selectionStart;
+                        noteTextArea.moveCursorSelection(fontSizePopover.selectionEnd);
                         formattingHelper.fontSize = modelData;
                         PopupUtils.close(fontSizePopover)
                     }
@@ -260,9 +278,8 @@ Item {
         Popover {
             id: colorPopover
 
-            Component.onDestruction: {
-                noteTextArea.forceActiveFocus();
-            }
+            property int selectionStart: -1
+            property int selectionEnd: -1
 
             GridView {
                 id: colorsGrid
@@ -329,6 +346,8 @@ Item {
                         radius: "small"
                     }
                     onClicked: {
+                        noteTextArea.cursorPosition = colorPopover.selectionStart;
+                        noteTextArea.moveCursorSelection(colorPopover.selectionEnd);
                         formattingHelper.color = color
                         PopupUtils.close(colorPopover)
                     }
@@ -389,7 +408,7 @@ Item {
                 horizontalAlignment: Text.AlignLeft
                 Layout.fillWidth: true
                 onClicked: {
-                    PopupUtils.open(fontPopoverComponent, fontButton)
+                    PopupUtils.open(fontPopoverComponent, fontButton, {selectionStart: noteTextArea.selectionStart, selectionEnd: noteTextArea.selectionEnd})
                 }
             }
 
@@ -399,7 +418,7 @@ Item {
                 height: parent.height
                 width: height
                 onClicked: {
-                    PopupUtils.open(fontSizePopoverComponent, fontSizeButton)
+                    PopupUtils.open(fontSizePopoverComponent, fontSizeButton, {selectionStart: noteTextArea.selectionStart, selectionEnd: noteTextArea.selectionEnd})
                 }
             }
             RtfButton {
@@ -408,7 +427,7 @@ Item {
                 width: height
                 color: formattingHelper.color
                 onClicked: {
-                    PopupUtils.open(colorPopoverComponent, colorButton)
+                    PopupUtils.open(colorPopoverComponent, colorButton, {selectionStart: noteTextArea.selectionStart, selectionEnd: noteTextArea.selectionEnd})
                 }
             }
 

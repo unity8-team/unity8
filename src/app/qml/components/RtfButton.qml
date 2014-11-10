@@ -35,13 +35,9 @@ Item {
 
     opacity: enabled ? 1 : 0.5
 
-    AbstractButton {
+    MouseArea {
         anchors.fill: parent
         onClicked: root.clicked()
-
-        onPressedChanged: {
-            noteTextArea.forceActiveFocus();
-        }
     }
 
     Rectangle {

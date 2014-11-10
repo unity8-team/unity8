@@ -53,6 +53,7 @@ void FormattingHelper::setTextDocument(QQuickTextDocument *textDocument)
         connect(m_textDoc->textDocument(), &QTextDocument::undoAvailable, this, &FormattingHelper::canUndoChanged);
         connect(m_textDoc->textDocument(), &QTextDocument::redoAvailable, this, &FormattingHelper::canRedoChanged);
         m_textCursor = textDocument->textDocument()->rootFrame()->firstCursorPosition();
+        m_selectionCursor = textDocument->textDocument()->rootFrame()->firstCursorPosition();
     } else {
         m_textCursor.setPosition(0);
     }
@@ -83,108 +84,198 @@ void FormattingHelper::setCursorPosition(int position)
     emit formatChanged();
 }
 
+int FormattingHelper::selectionStart() const
+{
+    return m_selectionCursor.selectionStart();
+}
+
+void FormattingHelper::setSelectionStart(int selectionStart)
+{
+    m_selectionCursor.setPosition(selectionStart, QTextCursor::MoveAnchor);
+}
+
+int FormattingHelper::selectionEnd() const
+{
+    return m_selectionCursor.selectionEnd();
+}
+
+void FormattingHelper::setSelectionEnd(int selectionEnd)
+{
+    m_selectionCursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
+}
+
 QString FormattingHelper::fontFamily() const
 {
-    if (m_formatPosition != -2) {
-        return m_nextFormat.font().family();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != -2) {
+            return m_nextFormat.font().family();
+        }
+        return m_textCursor.charFormat().font().family();
+    } else {
+        return m_selectionCursor.charFormat().font().family();
     }
-    return m_textCursor.charFormat().font().family();
 }
 
 void FormattingHelper::setFontFamily(const QString &fontFamily)
 {
-    m_nextFormat.setFontFamily(fontFamily);
-    m_formatPosition = m_textCursor.position();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setFontFamily(fontFamily);
+        m_formatPosition = m_textCursor.position();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setFontFamily(fontFamily);
+        m_selectionCursor.setCharFormat(f);
+    }
     emit formatChanged();
 }
 
 int FormattingHelper::fontSize() const
 {
-    if (m_formatPosition != 2) {
-        return m_nextFormat.fontPointSize();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != 2) {
+            return m_nextFormat.fontPointSize();
+        }
+        return m_textCursor.charFormat().fontPointSize();
+    } else {
+        return m_selectionCursor.charFormat().fontPointSize();
     }
-    return m_textCursor.charFormat().fontPointSize();
 }
 
 void FormattingHelper::setFontSize(qreal fontSize)
 {
-    m_nextFormat.setFontPointSize(fontSize);
-    m_formatPosition = m_textCursor.position();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setFontPointSize(fontSize);
+        m_formatPosition = m_textCursor.position();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setFontPointSize(fontSize);
+        m_selectionCursor.setCharFormat(f);
+    }
     emit formatChanged();
 }
 
 bool FormattingHelper::italic() const
 {
-    if (m_formatPosition != -2) {
-        return m_nextFormat.fontItalic();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != -2) {
+            return m_nextFormat.fontItalic();
+        }
+        return m_textCursor.charFormat().fontItalic();
+    } else {
+        return m_selectionCursor.charFormat().fontItalic();
     }
-    return m_textCursor.charFormat().fontItalic();
 }
 
 void FormattingHelper::setItalic(bool italic)
 {
-    m_nextFormat.setFontItalic(italic);
-    m_formatPosition = m_textCursor.position();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setFontItalic(italic);
+        m_formatPosition = m_textCursor.position();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setFontItalic(italic);
+        m_selectionCursor.setCharFormat(f);
+    }
     emit formatChanged();
 }
 
 bool FormattingHelper::bold() const
 {
-    if (m_formatPosition != -2) {
-        return m_nextFormat.fontWeight() >= QFont::Bold;
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != -2) {
+            return m_nextFormat.fontWeight() >= QFont::Bold;
+        }
+        return m_textCursor.charFormat().fontWeight() >= QFont::Bold;
+    } else {
+        return m_selectionCursor.charFormat().fontWeight() >= QFont::Bold;
     }
-    return m_textCursor.charFormat().fontWeight() >= QFont::Bold;
 }
 
 void FormattingHelper::setBold(bool bold)
 {
-    m_nextFormat.setFontWeight(bold ? QFont::Bold : QFont::Normal);
-    m_formatPosition = m_textCursor.position();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setFontWeight(bold ? QFont::Bold : QFont::Normal);
+        m_formatPosition = m_textCursor.position();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setFontWeight(bold ? QFont::Bold : QFont::Normal);
+        m_selectionCursor.setCharFormat(f);
+    }
     emit formatChanged();
 }
 
 bool FormattingHelper::underline() const
 {
-    if (m_formatPosition != -2) {
-        return m_nextFormat.fontUnderline();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != -2) {
+            return m_nextFormat.fontUnderline();
+        }
+        return m_textCursor.charFormat().fontUnderline();
+    } else {
+        return m_selectionCursor.charFormat().fontUnderline();
     }
-    return m_textCursor.charFormat().fontUnderline();
 }
 
 void FormattingHelper::setUnderline(bool underline)
 {
-    m_nextFormat.setFontUnderline(underline);
-    m_formatPosition = m_textCursor.position();
-    emit formatChanged();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setFontUnderline(underline);
+        m_formatPosition = m_textCursor.position();
+        emit formatChanged();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setFontUnderline(underline);
+        m_selectionCursor.setCharFormat(f);
+    }
 }
 
 bool FormattingHelper::strikeout() const
 {
-    if (m_formatPosition != -2) {
-        return m_nextFormat.fontStrikeOut();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != -2) {
+            return m_nextFormat.fontStrikeOut();
+        }
+        return m_textCursor.charFormat().fontStrikeOut();
+    } else {
+        return m_selectionCursor.charFormat().fontStrikeOut();
     }
-    return m_textCursor.charFormat().fontStrikeOut();
 }
 
 void FormattingHelper::setStrikeout(bool strikeout)
 {
-    m_nextFormat.setFontStrikeOut(strikeout);
-    m_formatPosition = m_textCursor.position();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setFontStrikeOut(strikeout);
+        m_formatPosition = m_textCursor.position();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setFontStrikeOut(strikeout);
+        m_selectionCursor.setCharFormat(f);
+    }
     emit formatChanged();
 }
 
 QColor FormattingHelper::color() const
 {
-    if (m_formatPosition != -2) {
-        return m_nextFormat.foreground().color();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        if (m_formatPosition != -2) {
+            return m_nextFormat.foreground().color();
+        }
+        return m_textCursor.charFormat().foreground().color();
+    } else {
+        return m_selectionCursor.charFormat().foreground().color();
     }
-    return m_textCursor.charFormat().foreground().color();
 }
 
 void FormattingHelper::setColor(const QColor &color)
 {
-    m_nextFormat.setForeground(QBrush(color));
-    m_formatPosition = m_textCursor.position();
+    if (m_selectionCursor.selectedText().isEmpty()) {
+        m_nextFormat.setForeground(QBrush(color));
+        m_formatPosition = m_textCursor.position();
+    } else {
+        QTextCharFormat f = m_selectionCursor.charFormat();
+        f.setForeground(QBrush(color));
+        m_selectionCursor.setCharFormat(f);
+    }
     emit formatChanged();
 }
 

@@ -34,6 +34,8 @@ class FormattingHelper: public QObject
     Q_PROPERTY(QQuickTextDocument* textDocument READ textDocument WRITE setTextDocument NOTIFY textDocumentChanged)
 
     Q_PROPERTY(int cursorPosition READ cursorPosition WRITE setCursorPosition NOTIFY cursorPositionChanged)
+    Q_PROPERTY(int selectionStart READ selectionStart WRITE setSelectionStart NOTIFY cursorPositionChanged)
+    Q_PROPERTY(int selectionEnd READ selectionEnd WRITE setSelectionEnd NOTIFY cursorPositionChanged)
 
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY formatChanged)
     Q_PROPERTY(qreal fontSize READ fontSize WRITE setFontSize NOTIFY formatChanged)
@@ -58,6 +60,12 @@ public:
 
     int cursorPosition() const;
     void setCursorPosition(int position);
+
+    int selectionStart() const;
+    void setSelectionStart(int selectionStart);
+
+    int selectionEnd() const;
+    void setSelectionEnd(int selectionEnd);
 
     QString fontFamily() const;
     void setFontFamily(const QString &fontFamily);
@@ -107,6 +115,7 @@ signals:
 private:
     QQuickTextDocument *m_textDoc;
     QTextCursor m_textCursor;
+    QTextCursor m_selectionCursor;
 
     QTextCharFormat m_nextFormat;
     int m_formatPosition;
