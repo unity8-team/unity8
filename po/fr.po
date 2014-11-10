@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-07 20:51+0100\n"
-"PO-Revision-Date: 2014-10-12 20:19+0000\n"
-"Last-Translator: Anne <anneonyme017@gmail.com>\n"
+"PO-Revision-Date: 2014-11-09 21:38+0000\n"
+"Last-Translator: Jean Marc <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-11-08 06:17+0000\n"
+"X-Launchpad-Export-Date: 2014-11-10 06:09+0000\n"
 "X-Generator: Launchpad (build 17231)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
@@ -42,7 +42,7 @@ msgstr "Privé"
 #. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
 #: src/app/qml/components/NotesDelegate.qml:107
 msgid "dddd, d hh:mm"
-msgstr ""
+msgstr "dddd, d hh:mm"
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
@@ -102,15 +102,15 @@ msgstr "Sélectionner un compte Evernote"
 #: src/app/qml/ui/AccountSelectorPage.qml:74
 #, qt-format
 msgid "%1 - Tap to authorize"
-msgstr ""
+msgstr "%1 - Appuyez pour autoriser"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:83
 msgid "Add new account"
-msgstr ""
+msgstr "Ajouter un nouveau compte"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:92
 msgid "Back"
-msgstr ""
+msgstr "Précédent"
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
