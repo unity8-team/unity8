@@ -167,7 +167,7 @@ Item {
                 TextEdit {
                     id: noteTextArea
                     width: flick.width
-                    height: flick.height
+                    height: paintedHeight
                     focus: true
                     wrapMode: TextEdit.Wrap
                     textFormat: TextEdit.RichText
