@@ -182,7 +182,7 @@ Item {
                     textFormat: TextEdit.RichText
                     text: root.note ? root.note.richTextContent : ""
                     onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
-                    selectByMouse: true
+                    selectByMouse: toolbox.charFormatExpanded
 
                     onSelectionStartChanged: print("selection start:", selectionStart)
                     onSelectionEndChanged: print("selection end:", selectionEnd)
