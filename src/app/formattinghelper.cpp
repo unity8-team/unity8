@@ -72,10 +72,7 @@ int FormattingHelper::cursorPosition() const
 
 void FormattingHelper::setCursorPosition(int position)
 {
-    qDebug() << "cursor pos changed" << position << m_formatPosition << m_textCursor.position();
-
     if (m_textCursor.position() == m_formatPosition + 1) {
-        qDebug() << "should format something";
         m_textCursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
         m_textCursor.setCharFormat(m_nextFormat);
     }
@@ -126,7 +123,6 @@ bool FormattingHelper::italic() const
 
 void FormattingHelper::setItalic(bool italic)
 {
-    qDebug() << "setting italic" << italic << m_formatPosition;
     m_nextFormat.setFontItalic(italic);
     m_formatPosition = m_textCursor.position();
     emit formatChanged();
@@ -259,7 +255,8 @@ void FormattingHelper::redo()
 
 void FormattingHelper::addHorizontalLine()
 {
-    m_textCursor.insertBlock();
+    m_textCursor.beginEditBlock();
     m_textCursor.insertHtml("____________________");
-    m_textDoc->textDocument()->setHtml(m_textDoc->textDocument()->toHtml().replace(QRegExp("____________________"), "<hr/>"));
+    m_textDoc->textDocument()->setHtml(m_textDoc->textDocument()->toHtml().replace(QRegExp("____________________"), "<hr/><p></p>"));
+    m_textCursor.endEditBlock();
 }

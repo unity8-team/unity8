@@ -573,6 +573,10 @@ Item {
 
             RtfSeparator {}
 
+            Item {
+                Layout.fillWidth: true
+            }
+
             RtfButton {
                 iconName: "select"
                 height: parent.height
@@ -586,14 +590,15 @@ Item {
 
 
 // TextEdit can't display horizontal lines yet :/
-            RtfButton {
-                text: "__"
-                height: parent.height
-                width: height
-                onClicked: {
-                    formattingHelper.addHorizontalLine();
-                }
-            }
+// https://bugreports.qt-project.org/browse/QTBUG-42545
+//            RtfButton {
+//                text: "__"
+//                height: parent.height
+//                width: height
+//                onClicked: {
+//                    formattingHelper.addHorizontalLine();
+//                }
+//            }
 
             RtfButton {
                 iconName: "attachment"
