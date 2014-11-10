@@ -80,10 +80,13 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
     // output
     QString html;
     QXmlStreamWriter writer(&html);
-    writer.writeStartDocument();
+    writer.writeDTD("<!DOCTYPE html>");
+    writer.writeStartElement("html");
+    writer.writeStartElement("head");
     writer.writeStartElement("meta");
     writer.writeAttribute("name", "viewport");
-    writer.writeAttribute("content", QString("width=%1px").arg(QString::number(EnmlDocument::s_richtextContentWidth)));
+    writer.writeAttribute("content", QString("width=device-width, initial-scale=1.0"));
+    writer.writeEndElement();
     writer.writeEndElement();
 
     // input
@@ -114,18 +117,35 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
             if (s_commonTags.contains(reader.name().toString())) {
                 writer.writeStartElement(reader.name().toString());
 
-                writer.writeAttributes(reader.attributes());
-
-                // Fix paragraph alignment (text-align -> align)
                 if (reader.name() == "p") {
                     foreach (const QXmlStreamAttribute &attribute, reader.attributes()) {
-                        if (attribute.name() == "style" && attribute.value().contains("text-align")) {
-                            QString style = attribute.value().toString();
-                            QString textAlign = style.split("text-align: ").at(1).split(';').first();
-                            writer.writeAttribute("align", textAlign);
-                            break;
+                        if (attribute.name() == "style") {
+                            // Fix paragraph alignment (text-align -> align)
+                            if (attribute.value().contains("text-align")) {
+                                QString style = attribute.value().toString();
+                                QString textAlign = style.split("text-align: ").at(1).split(';').first();
+                                writer.writeAttribute("align", textAlign);
+                                break;
+                            }
+                            if (type == TypeRichText) {
+                                if (attribute.value().contains("padding-left")) {
+                                    QString style = attribute.value().toString();
+                                    int padding = style.split("padding-left:").at(1).split("px").first().toInt();
+                                    int indent = padding / 30 * 4;
+                                    style.replace(QRegExp("padding-left:[ 0-9]*px;"), "-qt-block-indent:" + QString::number(indent) + ";");
+                                    writer.writeAttribute("style", style);
+                                } else {
+                                    writer.writeAttribute(attribute);
+                                }
+                            } else {
+                                writer.writeAttribute(attribute);
+                            }
+                        } else {
+                            writer.writeAttribute(attribute);
                         }
                     }
+                } else {
+                    writer.writeAttributes(reader.attributes());
                 }
             }
 
@@ -201,7 +221,8 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
 
                 if (type == TypeRichText) {
                     writer.writeStartElement("img");
-                    writer.writeAttribute("src", checked ? "image://theme/select" : "image://theme/help");
+                    writer.writeAttribute("src", checked ? "image://theme/select" : "../images/unchecked.svg");
+                    writer.writeAttribute("height", QString::number(gu(2)));
                 } else if (type == TypeHtml){
                     writer.writeStartElement("input");
                     writer.writeAttribute("id", "en-todo" + QString::number(todoIndex++));
@@ -246,8 +267,16 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
         }
     }
 
+    writer.writeEndElement();
     writer.writeEndDocument();
+    qDebug() << "converted to html" << html;
     return html;
+}
+
+qreal EnmlDocument::gu(qreal px) const
+{
+    QByteArray ppgu = qgetenv("GRID_UNIT_PX");
+    return px * ppgu.toInt();
 }
 
 void EnmlDocument::setRichText(const QString &richText)
@@ -282,7 +311,6 @@ void EnmlDocument::setRichText(const QString &richText)
             if (!isBody) {
                 if (reader.name() == "body") {
                     writer.writeStartElement("en-note");
-                    writer.writeAttributes(reader.attributes());
                     isBody = true;
                 }
                 continue;
@@ -292,9 +320,27 @@ void EnmlDocument::setRichText(const QString &richText)
             if (s_commonTags.contains(reader.name().toString())) {
                 writer.writeStartElement(reader.name().toString());
                 if (!s_argumentBlackListTags.contains(reader.name().toString())) {
-                    writer.writeAttributes(reader.attributes());
-                }
 
+                    if (reader.name() == "p") {
+                        foreach (const QXmlStreamAttribute &attribute, reader.attributes()) {
+                            if (attribute.name() == "style") {
+                                if (attribute.value().contains("-qt-block-indent")) {
+                                    QString style = attribute.value().toString();
+                                    int indent = style.split("-qt-block-indent:").at(1).split(";").first().toInt();
+                                    int padding = indent / 4 * 30;
+                                    style.replace(QRegExp("-qt-block-indent:[0-9]*;"), "padding-left:" + QString::number(padding) + "px;");
+                                    writer.writeAttribute("style", style);
+                                } else {
+                                    writer.writeAttribute(attribute);
+                                }
+                            } else {
+                                writer.writeAttribute(attribute);
+                            }
+                        }
+                    } else {
+                        writer.writeAttributes(reader.attributes());
+                    }
+                }
             }
 
             if (reader.name() == "img") {
@@ -308,7 +354,7 @@ void EnmlDocument::setRichText(const QString &richText)
                     writer.writeStartElement("en-media");
                     writer.writeAttribute("hash", hash);
                     writer.writeAttribute("type", type);
-                } else if (imageUrl.authority() == "theme") {
+                } else if (imageUrl.authority() == "theme" || imageUrl.path() == "../images/unchecked.svg") {
                     writer.writeStartElement("en-todo");
                     writer.writeAttribute("checked", imageUrl.path() == "/select" ? "true" : "false");
                 } else {

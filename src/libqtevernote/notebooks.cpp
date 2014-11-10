@@ -58,6 +58,7 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
     switch(role) {
     case RoleGuid:
         return notebook->guid();
+    case Qt::UserRole:
     case RoleName:
         return notebook->name();
     case RoleNoteCount:
@@ -81,6 +82,7 @@ int Notebooks::rowCount(const QModelIndex &parent) const
 QHash<int, QByteArray> Notebooks::roleNames() const
 {
     QHash<int, QByteArray> roles;
+    roles.insert(Qt::UserRole, "modelData");
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleName, "name");
     roles.insert(RoleNoteCount, "noteCount");

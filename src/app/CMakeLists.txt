@@ -2,7 +2,7 @@ file(GLOB_RECURSE QML_SRCS *.qml *.js)
 
 set(reminders_SRCS
     main.cpp
-    camerahelper.cpp
+    formattinghelper.cpp
     preferences.cpp
     ${QML_SRCS}
 )

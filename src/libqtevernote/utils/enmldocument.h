@@ -50,13 +50,15 @@ private:
     };
 
     QString convert(const QString &noteGuid, Type type) const;
+
+    qreal gu(qreal px) const;
+
 private:
     QString m_enml;
 
     static QStringList s_commonTags;
     static QStringList s_argumentBlackListTags;
     static int s_richtextContentWidth;
-
 };
 
 #endif // ENMLDOCUMENT_H
