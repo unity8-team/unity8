@@ -144,7 +144,7 @@ MainView {
     }
 
     function processUri() {
-        if (EvernoteConnection.isConnected && commands) {
+        if (EvernoteConnection.isConnected && commands && NotesStore) {
             switch(commands[0].toLowerCase()) {
                 case "note":
                     if (commands[1]) {
@@ -247,6 +247,7 @@ MainView {
                 view.exitEditMode.connect(function(note) {root.displayNote(note)});
             }
         }
+        Component.onCompleted: processUri();
     }
 
     PageStack {
