@@ -105,6 +105,10 @@ Page {
                 text: notes.error ? notes.error :
                 i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
             }
+
+            Scrollbar {
+                flickableItem: parent
+            }
         }
     }
 }

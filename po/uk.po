@@ -6,16 +6,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-13 07:14+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-10-23 23:05+0200\n"
+"PO-Revision-Date: 2014-11-08 19:19+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-14 07:13+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2014-11-09 06:55+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
@@ -47,7 +48,7 @@ msgid "Pull down to refresh"
 msgstr "Потягніть вниз для оновлення"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
-#: src/app/qml/ui/SetReminderView.qml:55
+#: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
 msgstr "Спорожнити нагадування"
 
@@ -107,7 +108,7 @@ msgid "Edit reminder"
 msgstr "Змінити нагадування"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
-#: src/app/qml/ui/SetReminderView.qml:66
+#: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
 msgstr "Встановити нагадування"
 
@@ -152,7 +153,7 @@ msgstr ""
 "Записів нотаток ще не створено. Створити нотатку можна за допомогою "
 "натискання кнопки «Додати нотатку»."
 
-#: src/app/qml/ui/RemindersPage.qml:108
+#: src/app/qml/ui/RemindersPage.qml:111
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -172,110 +173,122 @@ msgstr "Виберіть дату і час нагадування:"
 msgid "No tags available. You can tag notes while viewing them."
 msgstr "Немає міток. Додати до нотатки мітку можна під час її перегляду."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr "Строк дії уповноваження вичерпано."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:95
 msgid "Limit exceeded."
 msgstr "Перевищено обмеження."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:99
 msgid "Rate limit exceeded."
 msgstr "Перевищено обмеження швидкості."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:103
 msgid "Quota exceeded."
 msgstr "Перевищено квоту."
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
 msgid "Today"
 msgstr "Сьогодні"
 
-#: src/plugin/Evernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85
 msgid "Yesterday"
 msgstr "Вчора"
 
-#: src/plugin/Evernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88
 msgid "Last week"
 msgstr "Минулого тижня"
 
-#: src/plugin/Evernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91
 msgid "Two weeks ago"
 msgstr "Два тижні тому"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/plugin/Evernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/note.cpp:248
+#: src/libqtevernote/note.cpp:248
 msgid "Done"
 msgstr "Виконано"
 
-#: src/plugin/Evernote/note.cpp:254
+#: src/libqtevernote/note.cpp:254
 msgid "No date"
 msgstr "Без дати"
 
-#: src/plugin/Evernote/note.cpp:257
+#: src/libqtevernote/note.cpp:257
 msgid "Overdue"
 msgstr "Прострочено"
 
-#: src/plugin/Evernote/note.cpp:263
+#: src/libqtevernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "Завтра"
 
-#: src/plugin/Evernote/note.cpp:266
+#: src/libqtevernote/note.cpp:266
 msgid "Next week"
 msgstr "Наступного тижня"
 
-#: src/plugin/Evernote/note.cpp:269
+#: src/libqtevernote/note.cpp:269
 msgid "In two weeks"
 msgstr "За два тижні"
 
-#: src/plugin/Evernote/note.cpp:271
+#: src/libqtevernote/note.cpp:271
 msgid "Later"
 msgstr "Пізніше"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: src/plugin/Evernote/notebook.cpp:100
+#: src/libqtevernote/notebook.cpp:100
 msgid "today"
 msgstr "сьогодні"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: src/plugin/Evernote/notebook.cpp:104
+#: src/libqtevernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "вчора"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: src/plugin/Evernote/notebook.cpp:108
+#: src/libqtevernote/notebook.cpp:108
 msgid "last week"
 msgstr "минулого тижня"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: src/plugin/Evernote/notebook.cpp:112
+#: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "два тижні тому"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: src/plugin/Evernote/notebook.cpp:116
+#: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Помилка під час оновлення нотаток: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Помилка під час оновлення нотатників: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr "Помилка під час спроби оновлення міток: %1"
+
+#~ msgid "dddd, d hh:mm"
+#~ msgstr "dddd, d, hh:mm"
+
+#~ msgid "%1 - Tap to authorize"
+#~ msgstr "%1 — торкніться, щоб уповноважити"
+
+#~ msgid "Add new account"
+#~ msgstr "Додати обліковий запис"
+
+#~ msgid "Back"
+#~ msgstr "Назад"

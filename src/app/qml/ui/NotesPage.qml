@@ -208,5 +208,9 @@ PageWithBottomEdge {
             horizontalAlignment: Text.AlignHCenter
             text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
         }
+
+        Scrollbar {
+            flickableItem: parent
+        }
     }
 }

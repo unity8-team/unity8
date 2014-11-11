@@ -6,16 +6,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-12 16:13+0000\n"
-"Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-10-23 23:05+0200\n"
+"PO-Revision-Date: 2014-11-08 18:21+0000\n"
+"Last-Translator: ivarela <ivarela@ubuntu.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
+"Language: ast\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-13 06:15+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2014-11-09 06:55+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
@@ -47,7 +48,7 @@ msgid "Pull down to refresh"
 msgstr "Estira p'anovar"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
-#: src/app/qml/ui/SetReminderView.qml:55
+#: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
 msgstr "Llimpiar recordatoriu"
 
@@ -105,7 +106,7 @@ msgid "Edit reminder"
 msgstr "Editar recordatoriu"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
-#: src/app/qml/ui/SetReminderView.qml:66
+#: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
 msgstr "Definir recordatoriu"
 
@@ -146,10 +147,9 @@ msgstr "Amestar nota"
 #: src/app/qml/ui/NotesPage.qml:214
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
-msgstr ""
-"Nun hai notes. Pues crear notes nueves usando'l botón «Amestar nota»."
+msgstr "Nun hai notes. Pues crear notes nueves usando'l botón «Amestar nota»."
 
-#: src/app/qml/ui/RemindersPage.qml:108
+#: src/app/qml/ui/RemindersPage.qml:111
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -170,110 +170,122 @@ msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
 "Nun hai nenguna etiqueta disponible. Puedes etiquetar les notes al veles."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr "Caducó l'autenticación"
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:95
 msgid "Limit exceeded."
 msgstr "Perpasóse la llende"
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:99
 msgid "Rate limit exceeded."
 msgstr "Perpasóse la llende de tasa."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:103
 msgid "Quota exceeded."
 msgstr "Perpasóse la cuota"
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
 msgid "Today"
 msgstr "Güei"
 
-#: src/plugin/Evernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85
 msgid "Yesterday"
 msgstr "Ayeri"
 
-#: src/plugin/Evernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88
 msgid "Last week"
 msgstr "Cabera selmana"
 
-#: src/plugin/Evernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91
 msgid "Two weeks ago"
 msgstr "Hai dos selmanes"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/plugin/Evernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/note.cpp:248
+#: src/libqtevernote/note.cpp:248
 msgid "Done"
 msgstr "Fecho"
 
-#: src/plugin/Evernote/note.cpp:254
+#: src/libqtevernote/note.cpp:254
 msgid "No date"
 msgstr "Ensin data"
 
-#: src/plugin/Evernote/note.cpp:257
+#: src/libqtevernote/note.cpp:257
 msgid "Overdue"
 msgstr "Vencíu"
 
-#: src/plugin/Evernote/note.cpp:263
+#: src/libqtevernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "Mañana"
 
-#: src/plugin/Evernote/note.cpp:266
+#: src/libqtevernote/note.cpp:266
 msgid "Next week"
 msgstr "Siguiente selmana"
 
-#: src/plugin/Evernote/note.cpp:269
+#: src/libqtevernote/note.cpp:269
 msgid "In two weeks"
 msgstr "En dos selmanes"
 
-#: src/plugin/Evernote/note.cpp:271
+#: src/libqtevernote/note.cpp:271
 msgid "Later"
 msgstr "Más tarde"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: src/plugin/Evernote/notebook.cpp:100
+#: src/libqtevernote/notebook.cpp:100
 msgid "today"
 msgstr "güei"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: src/plugin/Evernote/notebook.cpp:104
+#: src/libqtevernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "ayeri"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: src/plugin/Evernote/notebook.cpp:108
+#: src/libqtevernote/notebook.cpp:108
 msgid "last week"
 msgstr "selmana pasada"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: src/plugin/Evernote/notebook.cpp:112
+#: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "hai dos selmanes"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: src/plugin/Evernote/notebook.cpp:116
+#: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "en %1 de %2"
 
-#: src/plugin/Evernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Fallu al anovar les notes: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Fallu al anovar les notes: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr "Error al refrescar les etiquetes: %1"
+
+#~ msgid "dddd, d hh:mm"
+#~ msgstr "dddd, d hh:mm"
+
+#~ msgid "%1 - Tap to authorize"
+#~ msgstr "%1 - Toca p'autorizar"
+
+#~ msgid "Add new account"
+#~ msgstr "Amestar cuenta nueva"
+
+#~ msgid "Back"
+#~ msgstr "Atrás"

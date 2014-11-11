@@ -6,17 +6,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-13 09:12+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-10-23 23:05+0200\n"
+"PO-Revision-Date: 2014-11-09 08:25+0000\n"
 "Last-Translator: GunChleoc <Unknown>\n"
 "Language-Team: Fòram na Gàidhlig\n"
+"Language: gd\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-14 07:13+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
-"Language: gd\n"
+"X-Launchpad-Export-Date: 2014-11-10 06:09+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
 msgid "Reminders"
@@ -48,7 +48,7 @@ msgid "Pull down to refresh"
 msgstr "Tarraing a-nuas airson ath-nuadhachadh"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
-#: src/app/qml/ui/SetReminderView.qml:55
+#: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
 msgstr "Falamhaich an cuimhneachan"
 
@@ -107,7 +107,7 @@ msgid "Edit reminder"
 msgstr "Deasaich an cuimhneachan"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
-#: src/app/qml/ui/SetReminderView.qml:66
+#: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
 msgstr "Suidhich cuimhneachan"
 
@@ -152,7 +152,7 @@ msgstr ""
 "Chan eil nòta sam bith ann. 'S urrainn dhut nòtaichean ùra a chruthachadh "
 "leis a' phutan \"Cuir nòta ris\"."
 
-#: src/app/qml/ui/RemindersPage.qml:108
+#: src/app/qml/ui/RemindersPage.qml:111
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -175,110 +175,122 @@ msgstr ""
 "Chan eil taga ann. 'S urrainn dhut tagaichean a chur ri nòta fhad 's a "
 "sheallas tu air."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:91
 msgid "Authentication expired."
 msgstr "Dh'fhalbh an ùine air an dearbhadh"
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:95
 msgid "Limit exceeded."
 msgstr "Thairis air a' chrìoch."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:99
 msgid "Rate limit exceeded."
 msgstr "Thairis air crìoch an reat."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:103
 msgid "Quota exceeded."
 msgstr "Thairis air a' chuota."
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:260
 msgid "Today"
 msgstr "An-diugh"
 
-#: src/plugin/Evernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85
 msgid "Yesterday"
 msgstr "An-dè"
 
-#: src/plugin/Evernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88
 msgid "Last week"
 msgstr "An t-seachdain seo chaidh"
 
-#: src/plugin/Evernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91
 msgid "Two weeks ago"
 msgstr "Dà sheachdain air ais"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/plugin/Evernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95
 #, qt-format
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/note.cpp:248
+#: src/libqtevernote/note.cpp:248
 msgid "Done"
 msgstr "Deiseil"
 
-#: src/plugin/Evernote/note.cpp:254
+#: src/libqtevernote/note.cpp:254
 msgid "No date"
 msgstr "Gun cheann-là"
 
-#: src/plugin/Evernote/note.cpp:257
+#: src/libqtevernote/note.cpp:257
 msgid "Overdue"
 msgstr "Fadalach"
 
-#: src/plugin/Evernote/note.cpp:263
+#: src/libqtevernote/note.cpp:263
 msgid "Tomorrow"
 msgstr "A-màireach"
 
-#: src/plugin/Evernote/note.cpp:266
+#: src/libqtevernote/note.cpp:266
 msgid "Next week"
 msgstr "An ath-sheachdain"
 
-#: src/plugin/Evernote/note.cpp:269
+#: src/libqtevernote/note.cpp:269
 msgid "In two weeks"
 msgstr "Ann an dà sheachdain"
 
-#: src/plugin/Evernote/note.cpp:271
+#: src/libqtevernote/note.cpp:271
 msgid "Later"
 msgstr "Às a dhèidh seo"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: src/plugin/Evernote/notebook.cpp:100
+#: src/libqtevernote/notebook.cpp:100
 msgid "today"
 msgstr "an-diugh"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: src/plugin/Evernote/notebook.cpp:104
+#: src/libqtevernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "an-dè"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: src/plugin/Evernote/notebook.cpp:108
+#: src/libqtevernote/notebook.cpp:108
 msgid "last week"
 msgstr "an t-seachdain seo chaidh"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: src/plugin/Evernote/notebook.cpp:112
+#: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "dà sheachdain air ais"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: src/plugin/Evernote/notebook.cpp:116
+#: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "%1 %2"
 
-#: src/plugin/Evernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:361
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Mearachd le ath-nuadhachadh nan nòtaichean: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:542
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Mearachd le ath-nuadhachadh nan leabhraichean-nòtaichean: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:596
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr "Mearachd le ath-nuadhachadh nan tagaichean: %1"
+
+#~ msgid "dddd, d hh:mm"
+#~ msgstr "dddd d hh:mm"
+
+#~ msgid "%1 - Tap to authorize"
+#~ msgstr "%1 - Gnog gus cead a thoirt dha"
+
+#~ msgid "Add new account"
+#~ msgstr "Cuir cunntas ùr ris"
+
+#~ msgid "Back"
+#~ msgstr "Air ais"

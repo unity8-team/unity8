@@ -475,6 +475,7 @@ Note *Note::clone()
     note->setReminderTime(m_reminderTime);
     note->setReminderDoneTime(m_reminderDoneTime);
     note->setIsSearchResult(m_isSearchResult);
+    note->setTagGuids(m_tagGuids);
     note->setUpdateSequenceNumber(m_updateSequenceNumber);
     foreach (Resource *resource, m_resources) {
         note->addResource(resource->data(), resource->hash(), resource->fileName(), resource->type());
