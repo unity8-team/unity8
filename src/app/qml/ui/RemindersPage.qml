@@ -68,12 +68,6 @@ Page {
                 width: remindersListView.width
                 note: notes.note(guid)
 
-                Component.onCompleted: {
-                    if (!model.plaintextContent) {
-                        NotesStore.refreshNoteContent(model.guid)
-                    }
-                }
-
                 onClicked: {
                     root.selectedNote = NotesStore.note(guid);
                 }

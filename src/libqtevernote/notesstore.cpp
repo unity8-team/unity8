@@ -375,19 +375,32 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
     for (unsigned int i = 0; i < results.notes.size(); ++i) {
         evernote::edam::NoteMetadata result = results.notes.at(i);
         Note *note = m_notesHash.value(QString::fromStdString(result.guid));
+        QVector<int> changedRoles;
         bool newNote = note == 0;
         if (newNote) {
             QString guid = QString::fromStdString(result.guid);
             QDateTime created = QDateTime::fromMSecsSinceEpoch(result.created);
-            note = new Note(guid, created, this);
+            note = new Note(guid, created, result.updateSequenceNum, this);
             connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
             connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
         }
 
-        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
-        note->setTitle(QString::fromStdString(result.title));
-        note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
-        note->setReminderOrder(result.attributes.reminderOrder);
+        if (note->updated() != QDateTime::fromMSecsSinceEpoch(result.updated)) {
+            note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
+            changedRoles << RoleUpdated;
+        }
+        if (note->title() != QString::fromStdString(result.title)) {
+            note->setTitle(QString::fromStdString(result.title));
+            changedRoles << RoleTitle;
+        }
+        if (note->notebookGuid() != QString::fromStdString(result.notebookGuid)) {
+            note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+            changedRoles << RoleNotebookGuid;
+        }
+        if (note->reminderOrder() != result.attributes.reminderOrder) {
+            note->setReminderOrder(result.attributes.reminderOrder);
+            changedRoles << RoleReminder;
+        }
         QStringList tagGuids;
         for (quint32 i = 0; i < result.tagGuids.size(); i++) {
             tagGuids << QString::fromStdString(result.tagGuids.at(i));
@@ -415,23 +428,31 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                     }
                 }
             }
+            note->setTagGuids(tagGuids);
+            changedRoles << RoleTagGuids;
         }
-        note->setTagGuids(tagGuids);
 
         if (!results.searchedWords.empty()) {
             note->setIsSearchResult(true);
+            changedRoles << RoleIsSearchResult;
         }
 
         QDateTime reminderTime;
         if (result.attributes.reminderTime > 0) {
             reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
         }
-        note->setReminderTime(reminderTime);
+        if (note->reminderTime() != reminderTime) {
+            note->setReminderTime(reminderTime);
+            changedRoles << RoleReminderTime;
+        }
         QDateTime reminderDoneTime;
         if (result.attributes.reminderDoneTime > 0) {
             reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
         }
-        note->setReminderDoneTime(reminderDoneTime);
+        if (note->reminderDoneTime() != reminderDoneTime) {
+            note->setReminderDoneTime(reminderDoneTime);
+            changedRoles << RoleReminderDoneTime;
+        }
 
         if (newNote) {
             beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
@@ -440,16 +461,22 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             endInsertRows();
             emit noteAdded(note->guid(), note->notebookGuid());
             emit countChanged();
-        } else {
+        } else if (changedRoles.count() > 0) {
             QModelIndex noteIndex = index(m_notes.indexOf(note));
-            emit dataChanged(noteIndex, noteIndex);
+            emit dataChanged(noteIndex, noteIndex, changedRoles);
             emit noteChanged(note->guid(), note->notebookGuid());
+        }
+
+        if (note->updateSequenceNumber() < result.updateSequenceNum) {
+            qDebug() << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
+            refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
         }
     }
 }
 
-void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what)
+void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what, EvernoteConnection::JobPriority priority)
 {
+    qDebug() << "fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
     Note *note = m_notesHash.value(guid);
     if (note) {
         note->setLoading(true);
@@ -457,7 +484,7 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
 
     FetchNoteJob *job = new FetchNoteJob(guid, what, this);
     connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    EvernoteConnection::instance()->enqueue(job, priority);
 }
 
 void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what)
@@ -481,6 +508,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     // data in the cache, just refresh the note again with resource data.
     bool refreshWithResourceData = false;
 
+    qDebug() << "got note content" << note->guid() << (what == FetchNoteJob::LoadContent ? "content" : "image") << result.resources.size();
     // Resources need to be set before the content because otherwise the image provider won't find them when the content is updated in the ui
     for (unsigned int i = 0; i < result.resources.size(); ++i) {
 
@@ -494,14 +522,17 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
             note->addResource(resourceData, hash, fileName, mime);
         } else if (Resource::isCached(hash)) {
+            qDebug() << "have resource cached";
             note->addResource(QByteArray(), hash, fileName, mime);
         } else {
+            qDebug() << "refetching for image";
             refreshWithResourceData = true;
         }
     }
 
     if (what == FetchNoteJob::LoadContent) {
         note->setEnmlContent(QString::fromStdString(result.content));
+        note->setUpdateSequenceNumber(result.updateSequenceNum);
     }
     note->setReminderOrder(result.attributes.reminderOrder);
     QDateTime reminderTime;
@@ -653,7 +684,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
     QString guid = QString::fromStdString(result.guid);
     QDateTime created = QDateTime::fromMSecsSinceEpoch(result.created);
-    Note *note = new Note(guid, created, this);
+    Note *note = new Note(guid, created, result.updateSequenceNum, this);
     connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
     connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
     note->setNotebookGuid(QString::fromStdString(result.notebookGuid));

@@ -32,13 +32,32 @@
 #include <QCryptographicHash>
 #include <QFile>
 
-Note::Note(const QString &guid, const QDateTime &created, QObject *parent) :
+Note::Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
     m_guid(guid),
     m_created(created),
     m_isSearchResult(false),
-    m_loading(false)
+    m_updateSequenceNumber(updateSequenceNumber),
+    m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + guid + "_" + QString::number(updateSequenceNumber) + ".info", QSettings::IniFormat),
+    m_loading(false),
+    m_loaded(false)
 {
+    m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + guid + "_" + QString::number(updateSequenceNumber) + ".enml");
+
+    m_infoFile.beginGroup("resources");
+    foreach (const QString &hash, m_infoFile.childGroups()) {
+        if (Resource::isCached(hash)) {
+            m_infoFile.beginGroup(hash);
+            // Assuming the resource is already cached...
+            addResource(QByteArray(), hash, m_infoFile.value("fileName").toString(), m_infoFile.value("type").toString());
+            m_infoFile.endGroup();
+        } else {
+            // uh oh... have a resource description without file... reset sequence number to indicate we need a sync
+            qWarning() << "Have a resource description but no resource file for it";
+            m_updateSequenceNumber = 0;
+        }
+    }
+    m_infoFile.endGroup();
 }
 
 Note::~Note()
@@ -157,6 +176,7 @@ void Note::setTagGuids(const QStringList &tagGuids)
 
 QString Note::enmlContent() const
 {
+    load();
     return m_content.enml();
 }
 
@@ -166,16 +186,19 @@ void Note::setEnmlContent(const QString &enmlContent)
         m_content.setEnml(enmlContent);
         m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
+        syncToCacheFile();
     }
 }
 
 QString Note::htmlContent() const
 {
+    load();
     return m_content.toHtml(m_guid);
 }
 
 QString Note::richTextContent() const
 {
+    load();
     return m_content.toRichText(m_guid);
 }
 
@@ -185,16 +208,19 @@ void Note::setRichTextContent(const QString &richTextContent)
         m_content.setRichText(richTextContent);
         m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
+        syncToCacheFile();
     }
 }
 
 QString Note::plaintextContent() const
 {
+    load();
     return m_content.toPlaintext().trimmed();
 }
 
 QString Note::tagline() const
 {
+    load();
     return m_tagline;
 }
 
@@ -331,6 +357,27 @@ void Note::setIsSearchResult(bool isSearchResult)
     }
 }
 
+quint32 Note::updateSequenceNumber() const
+{
+    return m_updateSequenceNumber;
+}
+
+void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+{
+    if (m_updateSequenceNumber != updateSequenceNumber) {
+        m_updateSequenceNumber = updateSequenceNumber;
+
+        // If there is an old cache file, drop it
+        if (m_cacheFile.exists()) {
+            m_cacheFile.remove();
+        }
+
+        // Write new cache file
+        m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + m_guid + "_" + QString::number(updateSequenceNumber) + ".enml");
+        syncToCacheFile();
+    }
+}
+
 QList<Resource*> Note::resources() const
 {
     return m_resources.values();
@@ -358,17 +405,21 @@ Resource* Note::resource(const QString &hash)
 
 Resource* Note::addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type)
 {
+    if (m_resources.contains(hash)) {
+        return m_resources.value(hash);
+    }
+
     Resource *resource = new Resource(data, hash, fileName, type, this);
     m_resources.insert(hash, resource);
     emit resourcesChanged();
-    return resource;
-}
 
-Resource *Note::addResource(const QString &fileName)
-{
-    Resource *resource = new Resource(fileName);
-    m_resources.insert(resource->hash(), resource);
-    emit resourcesChanged();
+    m_infoFile.beginGroup("resources");
+    m_infoFile.beginGroup(hash);
+    m_infoFile.setValue("fileName", fileName);
+    m_infoFile.setValue("type", type);
+    m_infoFile.endGroup();
+    m_infoFile.endGroup();
+
     return resource;
 }
 
@@ -385,10 +436,12 @@ void Note::attachFile(int position, const QUrl &fileName)
         return;
     }
 
-    Resource *resource = addResource(fileName.path());
+    Resource *resource = new Resource(fileName.path());
+    m_resources.insert(resource->hash(), resource);
     m_content.attachFile(position, resource->hash(), resource->type());
     emit resourcesChanged();
     emit contentChanged();
+    syncToCacheFile();
 
     // Cleanup imported file.
     // TODO: If the app should be extended to allow attaching other files, and we somehow
@@ -413,7 +466,7 @@ void Note::removeTag(const QString &tagGuid)
 
 Note *Note::clone()
 {
-    Note *note = new Note(m_guid, m_created);
+    Note *note = new Note(m_guid, m_created, m_updateSequenceNumber);
     note->setNotebookGuid(m_notebookGuid);
     note->setTitle(m_title);
     note->setUpdated(m_updated);
@@ -423,11 +476,17 @@ Note *Note::clone()
     note->setReminderDoneTime(m_reminderDoneTime);
     note->setIsSearchResult(m_isSearchResult);
     note->setTagGuids(m_tagGuids);
+    note->setUpdateSequenceNumber(m_updateSequenceNumber);
     foreach (Resource *resource, m_resources) {
         note->addResource(resource->data(), resource->hash(), resource->fileName(), resource->type());
     }
 
     return note;
+}
+
+bool Note::isCached() const
+{
+    return m_cacheFile.exists();
 }
 
 void Note::save()
@@ -446,4 +505,33 @@ void Note::setLoading(bool loading)
         m_loading = loading;
         emit loadingChanged();
     }
+}
+
+void Note::syncToCacheFile()
+{
+    if (m_cacheFile.open(QFile::WriteOnly | QFile::Truncate)) {
+        m_cacheFile.write(m_content.enml().toUtf8());
+        m_cacheFile.close();
+    }
+    m_loaded = true;
+}
+
+void Note::load() const
+{
+    if (!m_loaded && isCached()) {
+        loadFromCacheFile();
+    }
+    if (!m_loaded && !m_loading) {
+        NotesStore::instance()->refreshNoteContent(m_guid);
+    }
+}
+
+void Note::loadFromCacheFile() const
+{
+    if (m_cacheFile.exists() && m_cacheFile.open(QFile::ReadOnly)) {
+        m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()));
+        m_tagline = m_content.toPlaintext().left(100);
+        m_cacheFile.close();
+    }
+    m_loaded = true;
 }
