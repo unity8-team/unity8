@@ -28,7 +28,7 @@ Page {
 
     property bool narrowMode
 
-    signal openTaggedNotes(string title, string tagGuid, bool narrowMode)
+    signal openTaggedNotes(string tagGuid)
 
     onActiveChanged: {
         if (active) {
@@ -145,7 +145,7 @@ Page {
             delegate: TagsDelegate {
                 onClicked: {
                     print("selected tag:", model.guid)
-                    root.openTaggedNotes(name, model.guid, narrowMode)
+                    root.openTaggedNotes(model.guid)
                 }
             }
 
