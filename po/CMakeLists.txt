@@ -5,7 +5,7 @@ set(DOMAIN ${PROJECT_NAME})
 set(POT_FILE ${DOMAIN}.pot)
 file(GLOB PO_FILES *.po)
 
-add_custom_target(${POT_FILE} ALL
+add_custom_target(pot
     COMMENT "Generating translation template"
     COMMAND ${INTLTOOL_EXTRACT} --update --type=gettext/ini
         --srcdir=${CMAKE_SOURCE_DIR} ${DESKTOP_FILE}.in.in
