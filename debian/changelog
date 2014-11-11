@@ -1,3 +1,16 @@
+unity8 (8.01.1+14.10.20141111~rtm-0ubuntu0) UNRELEASED; urgency=medium
+
+  [ Michael Terry ]
+  * Skip second SIM unlock dialog if user presses Emergency Call on
+    first one (LP: #1387925)
+
+  [ Mirco Müller ]
+  * Replace ComboButton in snap-decision notifications, used for
+    additional actions (> 3 actions), with custom widget immune to
+    accidental taps. (LP: #1384730)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Mon, 10 Nov 2014 10:18:43 +0100
+
 unity8 (8.01.1+14.10.20141105.2~rtm-0ubuntu1) 14.09; urgency=medium
 
   [ Albert Astals ]
