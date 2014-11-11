@@ -1,3 +1,1170 @@
+unity8 (8.01+15.04.20141107.2-0ubuntu1) vivid; urgency=low
+
+  [ Michael Terry ]
+  * Skip second SIM unlock dialog if user presses Emergency Call on
+    first one (LP: #1387925)
+
+  [ Michael Zanetti ]
+  * fix positive/negative answer order on the new swipe notification
+    (LP: #1358343)
+  * Update PageHeader to use new SDK api
+  * antialias surfaces when in spread (LP: #1351559)
+
+  [ Albert Astals ]
+  * Remove Hud
+
+  [ Mirco Müller ]
+  * Replace ComboButton in snap-decision notifications, used for
+    additional actions (> 3 actions), with custom widget immune to
+    accidental taps. (LP: #1384730)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 07 Nov 2014 14:33:02 +0000
+
+unity8 (8.01+15.04.20141104-0ubuntu1) vivid; urgency=low
+
+  [ Sebastien Bacher ]
+  * Drop workaround, it's not needed and create issues for desktop-next
+    (LP: #1387671)
+
+  [ Albert Astals ]
+  * Do not append integer to char *
+  * Remove unused end() function
+  * Update build.sh
+  * Fix i18n
+
+  [ Michael Zanetti ]
+  * rework launcher quicklist visuals to fit new design (LP: #1368660)
+  * Fix DBusVariant conversion for launcher emblems (LP: #1387261)
+  * Fix desktop file encoding in launcher (LP: #1387083)
+  * Add a hinting animation to indicate changes in the backend (LP:
+    #1376707)
+
+  [ Alberto Aguirre ]
+  * Add audioRole to QtMultimedia mock
+  * Add a plugin to take screenshots on vol up + vol down
+
+  [ CI bot ]
+  * Fix relative time formatter when using non-UTC timezone. (LP:
+    #1378821)
+
+  [ Leo Arias ]
+  * Removed the tests for the alternate paths of the autopilot helpers.
+
+  [ Nick Dedekind ]
+  * Fix relative time formatter when using non-UTC timezone. (LP:
+    #1378821)
+  * Reset current item selection on deleted. (LP: #1378462)
+  * Added timer to re-assert server value after indicator menu item
+    activation. (LP: #1336715)
+
+  [ Mirco Müller ]
+  * Added dedicated swipe-to-act button for snap-decisions, which avoids
+    accidental taps/button-presses. (LP: #1358343)
+
+  [ Chris Gagnon ]
+  * add missing unity-scope-click dependancy to unity8-autopilot package
+    (LP: #1336276)
+
+  [ Michael Terry ]
+  * Don't lock phone if user tries to switch back to an active call.
+    (LP: #1388156)
+
+  [ Daniel d'Andrada ]
+  * DirectionalDragArea: Update TODO comment in light of new events
+  * TouchDispatcher: synthesize MouseButtonDblClick events
+
+  [ Leonardo Arias Fonseca ]
+  * Removed the tests for the alternate paths of the autopilot helpers.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 04 Nov 2014 12:56:08 +0000
+
+unity8 (8.01+15.04.20141030-0ubuntu1) vivid; urgency=medium
+
+  [ Michael Terry ]
+  * Provide 'passphrase' as a field of Components.Lockscreen
+  * Fix a race between Qml loading and DBus registration that caused
+    problems when jenkins tried to unlock the phone.
+  * Set domain explicitly for the Dialogs component because the welcome
+    wizard wants to import it. (LP: #1381731)
+  * When greeter or lockscreen has focus, show active call panel. (LP:
+    #1378872)
+
+  [ Ted Gould ]
+  * Set the default OOM score for the dash (LP: #1379786)
+
+  [ Michał Sawicz ]
+  * Revert lp:~unity-team/unity8/flickables-speed-workaround to avoid
+    risk in RTM.
+  * Updated behaviour for zoomable image, workaround for sourcesize (LP:
+    #1333187)
+
+  [ Michael Frey ]
+  * Added a check for Proximity to determine if we show the lock screen.
+    (LP: #1378012)
+
+  [ Ying-Chun Liu ]
+  * Add non-interactive code into GenericScopeView. (LP: #1384441)
+
+  [ Mirco Müller ]
+  * Also use modal nature of snap-decision notifications when
+    greeter/lockscreen is shown. This fixes LP: #1378827. (LP: #1378827)
+
+  [ Michael Zanetti ]
+  * Make the launcher update on dconf changes (LP: #1376707)
+  * exit spread on background tap (LP: #1368261)
+  * Use an index instead of a scope id in DashCommunicator (LP:
+    #1376044)
+
+  [ Andrea Cimitan ]
+  * Updated behaviour for zoomable image, workaround for sourcesize (LP:
+    #1333187)
+
+  [ Daniel d'Andrada ]
+  * Make TouchGate synthesize QMouseEvents for mouse-based target items
+  * Don't specify a distanceThreshold as it conflicts with
+    hintDisplacment
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 30 Oct 2014 21:43:42 +0000
+
+unity8 (8.00+15.04.20141030-0ubuntu1) vivid; urgency=low
+
+  [ josharenson ]
+  * Fix lp:1370240 by making stages interactive when a snap decision is
+    dismissed. (LP: #1370240)
+
+  [ Nick Dedekind ]
+  * remove qml ownership confusion for caching unitymenumodels (LP:
+    #1368856)
+  * Implementation of expandable panel design (LP: #1368856)
+
+  [ Albert Astals ]
+  * CardAttributes: Specify column and row since the gridlayout gets
+    confused sometimes (LP: #1381092)
+  * Reset VerticalJournal until the cardTool settles (LP: #1381255)
+
+  [ Mirco Müller ]
+  * Added synchronous/confirmation notification support to unity8. (LP:
+    #1232633)
+
+  [ Michael Zanetti ]
+  * Fix lp:1370240 by making stages interactive when a snap decision is
+    dismissed. (LP: #1370240)
+  * Drop all visual indication of "pinning" (LP: #1381054)
+
+  [ Antti Kaijanmäki ]
+  * Unlock all modems on boot. (LP: #1333121)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 30 Oct 2014 10:51:17 +0000
+
+unity8 (8.00+14.10.20141013.2-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Don't show initial lockscreen during the edge demo. The user just
+    set up their phone with a password, it's pointless to ask them
+    again. (LP: #1358283)
+  * Distinguish between incoming calls and other dialer-app opens. (LP:
+    #1378218) (LP: #1378218)
+
+  [ Andrea Cimitan ]
+  * Fix flickable speed to be resolution independent, by subclassing
+    components (LP: #1348557)
+
+  [ Michał Sawicz ]
+  * Fix the ShellWithPin test and some functionality.
+
+  [ Albert Astals ]
+  * Move Base.qml to DashCategoryBase
+  * Fix first item positioning when m_clipItem->y() is not 0 (LP:
+    #1251597)
+  * Fix some small qml warnings
+
+  [ Daniel d'Andrada ]
+  * Add touch ownership logic on top of qt input handling
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 13 Oct 2014 15:43:03 +0000
+
+unity8 (8.00+14.10.20141009.4-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Rename datetime indicator in test
+
+  [ Albert Astals ]
+  * Close overview temp scope on show dash (LP: #1373819)
+  * Enable QT_STRICT_ITERATORS
+  * Make Base not clickable, since we don't use it in anywhere clickable
+    (we only use it for Category delegates in the LVWPH) (LP: #1300709)
+  * Hide preview if it was visible when going to a scope (LP: #1374548)
+  * Remove contentScale variable
+
+  [ Andrea Cimitan ]
+  * Fix card implicitHeight when summary is declared, but its text is
+    empty. Also fixes vertical journal height and clipping (LP:
+    #1362160)
+  * Redesign for pinned apps. Remove thindivider on top of ubuntu dash
+    button (not needed anymore) (LP: #1377100)
+
+  [ Ying-Chun Liu ]
+  * Fix run_on_device.sh to let it run again.
+
+  [ Nick Dedekind ]
+  * Fixed indicator menu bindings to server toggle value broken by user
+    interaction. (LP: #1336715)
+  * Force rendering so we don't get stuck in "waitForRendering" loop in
+    tests.
+
+  [ Daniel d'Andrada ]
+  * PhoneStage: focus the new topmost app after the current one closes
+    itself (LP: #1375267)
+
+  [ Michael Terry ]
+  * Fix some security issues with the tablet greeter, which allowed the
+    lockscreen to be bypassed. (LP: #1367715) (LP: #1367715)
+
+  [ Michael Zanetti ]
+  * scale down errorText label if necessary (LP: #1378848)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 09 Oct 2014 14:05:54 +0000
+
+unity8 (8.00+14.10.20141008-0ubuntu1) utopic; urgency=low
+
+  [ Michael Zanetti ]
+  * Dual SIM pin unlocking. Hook up the UI to the backend. (LP:
+    #1267135)
+
+  [ Antti Kaijanmäki ]
+  * Dual SIM pin unlocking. Hook up the UI to the backend. (LP:
+    #1267135)
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 08 Oct 2014 09:41:32 +0000
+
+unity8 (8.00+14.10.20141006-0ubuntu1) utopic; urgency=low
+
+  [ Andrea Cimitan ]
+  * Tweak card header to match the spec
+  * Add preview image slideshow (LP: #1351537)
+
+  [ Michał Sawicz ]
+  * Cache more things in memory, so flicking scopes should be faster
+    (LP: #1336724)
+  * Tweak card header to match the spec
+  * Save texture memory by limiting sourceSize (LP: #1338430)
+
+  [ Ying-Chun Liu ]
+  * Add attributes to Preview. (LP: #1282460)
+
+  [ Albert Astals ]
+  * Update pot
+  * Cache more things in memory, so flicking scopes should be faster
+    (LP: #1336724)
+  * Save texture memory by limiting sourceSize (LP: #1338430)
+  * Clip the settings list
+  * Fix unlocking from the left again
+  * Add wait_ makes tests more reliable
+
+  [ Michael Zanetti ]
+  * fix fading out the launcher instead of sliding it out on left-edge
+    minimizing an app.
+  * Make the DashCommunicator async and more flexible to handle a
+    lifecycle-suspended dash (LP: #1339883)
+
+  [ Michael Terry ]
+  * Retry unlock-device script if it fails, as there is always a risk of
+    a small race with boot-up. (LP: #1370644)
+  * Add pull-to-refresh functionality to scopes. (LP: #1368336)
+
+  [ CI bot ]
+  * Resync trunk
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 06 Oct 2014 08:03:23 +0000
+
+unity8 (8.00+14.10.20140930.2-0ubuntu1) utopic; urgency=low
+
+  [ Alexandros Frantzis ]
+  * Remove stale trusted socket before starting unity8 from upstart (LP:
+    #1371597) (LP: #1371597)
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Andrea Cimitan ]
+  * Move activity indicator on top of keyboard (LP: #1354519)
+
+  [ Gerry Boland ]
+  * Cleanup: Remove unused member and fix small syntax error in
+    OrientationLock
+
+  [ josharenson ]
+  * Fix lp:1367894 by correcting how the minute value is calculated in
+    the panel. (LP: #1367894)
+
+  [ Nick Dedekind ]
+  * Fixed DefaultIndicatorPage test. Fixed warnings from test.
+
+  [ Ying-Chun Liu ]
+  * Remove maxLineCount in preview. (LP: 1328513) (LP: #1328513)
+
+  [ Michael Terry ]
+  * Fix some code that accidentally landed in trunk before it got
+    cleaned up. The current code just has some duplication to it that
+    should be unified.
+  * Implement latest visual designs for passphrase lockscreen.
+  * Make it easier to use the Lockscreen component from the welcome
+    wizard.
+  * Limit how much memory we reserve for the greeter background image,
+    allowing giant images to appear correctly.
+
+  [ Daniel d'Andrada ]
+  * Add gdbTestComponentName build targets
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 30 Sep 2014 16:57:28 +0000
+
+unity8 (8.00+14.10.20140926-0ubuntu1) utopic; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Nick Dedekind ]
+  * Visual changes for indicator RTM polishing (LP: #1329289)
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 26 Sep 2014 19:12:39 +0000
+
+unity8 (8.00+14.10.20140923-0ubuntu1) utopic; urgency=low
+
+  [ Michael Zanetti ]
+  * fix swiping away the launcher from the left edge
+  * fix indicators AP test
+
+  [ Florian Boucault ]
+  * New Splash screen implementation that fakes real app
+
+  [ Albert Astals ]
+  * We need this in build-depends so that qmluitests pass in CI
+
+  [ Daniel d'Andrada ]
+  * New Splash screen implementation that fakes real app
+
+  [ Michael Terry ]
+  * Fix LC_ALL and test harder by making both manual runs of
+    timeformattertest and the whole test suite use the same locale
+    settings.
+
+  [ CI bot ]
+  * Resync trunk
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 23 Sep 2014 09:26:18 +0000
+
+unity8 (8.00+14.10.20140918.3-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Add -windowgeometry option to the Dash and drop any user-visible
+    mentions of Dash
+  * Dash: Fix issue when expanding a category and collapsing another one
+    at the same time.
+
+  [ Albert Astals ]
+  * Dash: Fix issue when expanding a category and collapsing another one
+    at the same time.
+  * Make the categoryView invisible when we are in the preview mode (LP:
+    #1341205)
+  * Pixel pushing in the dash header (LP: #1365929)
+
+  [ Ying-Chun Liu ]
+  * Re-add restart button for power menu. (LP: 1358197) (LP: #1358197)
+
+  [ Marcus Tomlinson ]
+  * Don't show a preview if a null response is returned from
+    scope.preview(result)
+
+  [ Mirco Müller ]
+  * Don't limit the number of text-lines for body-text. (LP: #1369438)
+
+  [ Michael Zanetti ]
+  * Don't hide launcher when nothing happens on long left edge swipes
+    (LP: #1357333)
+  * Rework LauncherBackend
+
+  [ Michael Terry ]
+  * When running qmluitests, make sure that they use LANGUAGE=C, fixing
+    a test failure when running locally in the US.
+
+  [ Daniel d'Andrada ]
+  * Some ApplicationWindow test improvements
+
+  [ Rodney Dawes ]
+  * Check purchase state to determine if purchase was cancelled and hide
+    progress. (LP: #1362622)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 18 Sep 2014 21:26:42 +0000
+
+unity8 (8.00+14.10.20140918-0ubuntu1) utopic; urgency=low
+
+  [ Michael Zanetti ]
+  * Focus first app if there are already some running when we're
+    starting up (LP: #1339883)
+
+  [ Michał Sawicz ]
+  * Don't play empty urls in Notification.qml
+
+  [ Daniel d'Andrada ]
+  * Improve tst_Shell
+  * Build without any warnings
+  * Make tst_Card work from outside the source tree (LP:1359201) (LP:
+    #1359201)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 18 Sep 2014 09:44:06 +0000
+
+unity8 (8.00+14.10.20140910.1-0ubuntu1) utopic; urgency=low
+
+  [ Pete Woods ]
+  * Disable OEM and Click scopes when system scopes are disabled
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Pawel Stolowski ]
+  * Set UNITY_SCOPES_NO_FAVORITES environment variable to make scopes
+    plugin ignore favorite scopes and fix basic functionality of unity-
+    scope-tool.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 10 Sep 2014 08:53:57 +0000
+
+unity8 (8.00+14.10.20140908.1-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Use a single white pixel instead of the heavier checkers image.
+  * Add support to unlock-device for the new adbd coming down the
+    pipeline. Also fix autopilot tests and run scripts for that.
+  * Make LVWPH non interactive while on header animation
+  * Improve references to scope/scopeStyle in PreviewListView and
+    PageHeader, add tests.
+
+  [ Nick Dedekind ]
+  * Support for nested prompt session. (LP: #1358388)
+
+  [ Albert Astals ]
+  * Remove unused hasAttributes variable
+  * Disable dash overview if in temp scope preview
+  * Block mouse events under scope overview bottombar (LP: #1362206)
+  * Fix regression in focus handling due to SDK change
+  * Fix warning 'Background.qml:81:21: Unable to assign bool to QUrl'
+  * Fix launcher internationalization
+  * Make swipe and home button press in the launcher dismiss the
+    overview
+  * GSV: Use proper variable since altnav renames
+  * Fix some "Cannot read property 'luminance' of null" warnings
+  * Make LVWPH non interactive while on header animation
+
+  [ Mirco Müller ]
+  * Implemented the needed visual updates on notifications requested by
+    Design for RTM. (LP: #1348092)
+
+  [ Michael Terry ]
+  * Don't show greeter when screen turns off during a call, even if
+    proximity sensor isn't active. (LP: #1347001)
+  * Add support to unlock-device for the new adbd coming down the
+    pipeline. Also fix autopilot tests and run scripts for that.
+
+  [ Michael Zanetti ]
+  * open the application when clicking on the title entry in the
+    quicklist (LP: #1336380)
+  * Don't animate x while dragging apps from the left edge (LP:
+    #1360105)
+
+  [ Diego Sarmentero ]
+  * Reset button state on cancel (LP: #1362622)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 08 Sep 2014 14:16:42 +0000
+
+unity8 (8.00+14.10.20140903.1-0ubuntu1) utopic; urgency=low
+
+  [ Nick Dedekind ]
+  * Support for nested prompt session. (LP: #1358388)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 03 Sep 2014 07:58:49 +0000
+
+unity8 (8.00+14.10.20140828.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Reverse default for the user option "allow launcher/panel in greeter
+    when locked." And allow that property to be controlled by an
+    AccountsService property. (LP: #1358340) (LP: #1358340)
+  * With recent password support, we want to be able to unlock the
+    device even with a password set. And we need to be able to do this
+    once the new adbd lands. So I've added a DBus command to hide the
+    greeter. This should be secure because all apps are constrained and
+    if you're on the local session bus unconstrained, you already have
+    access to anything you want.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 28 Aug 2014 20:06:41 +0000
+
+unity8 (8.00+14.10.20140827.2-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Implement scope header customization options
+  * Don't ignore empty attributes in CardAttributes.qml and improve its
+    encapsulation (LP: #1355901)
+  * Add support for preview button color customization. Deprecate
+    support for action icons.
+  * Add table preview widget
+  * Make "See Less" get stuck at the bottom of the view
+  * Support alternative navigation in the dash.
+  * Add scope settings UI
+  * Add scope favoriting support
+  * Passcode, not PIN (LP: #1361114)
+
+  [ Jussi Pakkanen ]
+  * Use nullptr instead of NULL.
+
+  [ Albert Astals ]
+  * Add table preview widget
+  * Make "See Less" get stuck at the bottom of the view
+  * Support alternative navigation in the dash.
+  * Make the PageHeaderLabelTest pass under valgrind
+
+  [ Benjamin Zeller ]
+  * Add support for scope:// url in the dash (LP: #1361349)
+
+  [ Marcus Tomlinson ]
+  * Handle the openScope signal in "tempScopeItem" (ScopesOverview.qml)
+    as is done with "scopeItem" (Dash.qml) (LP: #1356410)
+
+  [ Daniel d'Andrada ]
+  * Make "See Less" get stuck at the bottom of the view
+
+  [ Andrea Cimitan ]
+  * Fix right padding on overlay card
+  * Add scope settings UI
+
+  [ Michael Zanetti ]
+  * use a smaller asset for the app's dropshadow (LP: #1359157)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 27 Aug 2014 15:37:05 +0000
+
+unity8 (8.00+14.10.20140825.3-0ubuntu1) utopic; urgency=low
+
+  [ Daniel d'Andrada ]
+  * SpreadDelegate - properly transition between splash screen, surface
+    and screenshot
+
+  [ Michał Sawicz ]
+  * Rename Ubuntu.Connectivity to Unity.Connectivity to avoid name clash
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 25 Aug 2014 13:10:57 +0000
+
+unity8 (8.00+14.10.20140822-0ubuntu1) utopic; urgency=low
+
+  [ Albert Astals ]
+  * More stable dash overview tests
+  * PreviewExpandable: "widgets" is a model, not an array
+
+  [ Alberto Aguirre ]
+  * Proxy inactivity timeout values from gsettings into Unity.Screen
+    (LP: #1230345)
+
+  [ Gerry Boland ]
+  * Cancel open PAM interactions on shutdown - fixes hang on logout on
+    desktop (LP: #1353041)
+
+  [ Diego Sarmentero ]
+  * Show progress bar on payment button click The payment process has a
+    small delay before the UI comes up which might cause confusion. Show
+    a progress bar with unknown value to indicate activity. (LP:
+    #1354139)
+
+  [ Mirco Müller ]
+  * Made notification qml-test pass again by using Component.onCompleted
+    instead of onOpacityChanged for the time being.
+
+  [ Michael Zanetti ]
+  * Implement new lockscreen designs
+
+  [ Michael Terry ]
+  * Show the SIM unlock dialog immediately after booting, and enable its
+    emergency call button.
+  * Always keep indicator/launcher locked state in sync with whether the
+    user is authenticated. (LP:# 1357230) (LP: #1357230)
+  * Allow logging into a desktop or tablet session again, by properly
+    dismissing old PAM conversations. (LP: #1350878) In a desktop or
+    tablet, we were accidentally starting two PAM conversations in
+    sequence on startup. Which is a small bug; it shouldn't normally be
+    a problem, since each new PAM conversation should kill the old
+    one.But the way we were killing the old one was subject to a thread
+    race condition. See, a PAM conversation thread won't exit until all
+    its prompts are answered. And what we do when we kill a PAM
+    conversation is to answer all prompts with empty strings.But it's
+    possible that when we want to kill a PAM conversation that it hasn't
+    actually gotten to the point of prompting us yet. And when those
+    prompts do come through, we were treating them as prompts for the
+    new PAM conversation.So I've changed the PAM conversation logic to
+    include a pam_handle and compare the handle with the current handle
+    when being prompted. If it's an old handle, we just dismiss the
+    prompt with an empty string response.Oh, and I fixed the bug that
+    caused two prompts on startup in the first place. (But we still need
+    the above logic anyway, for when you switch users quickly.) (LP:
+    #1350878)
+
+  [ Martin Pitt ]
+  * Mark for using language packs.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 22 Aug 2014 09:29:41 +0000
+
+unity8 (8.00+14.10.20140820-0ubuntu1) utopic; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Nick Dedekind ]
+  * Fixed CachedUnityMenuModel destruction unhinging indicators. (LP:
+    #1328646)
+
+  [ Mirco Müller ]
+  * Temporarily disable any opacity-animation for notifications to
+    unblock the train due to LP: 1354406. (LP: #1354406)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 20 Aug 2014 20:03:55 +0000
+
+unity8 (8.00+14.10.20140817-0ubuntu1) utopic; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Michał Sawicz ]
+  * Fix dash overview test and prevent crash in mock ApplicationInfo's
+    d'tor. tryCompareFunction didn't work because .item threw.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Sun, 17 Aug 2014 00:37:35 +0000
+
+unity8 (8.00+14.10.20140815.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Bring dialer to front on incoming call even when device is locked
+    (LP: #1354532)
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Michał Sawicz ]
+  * Use palette's baseText for text colour in dash.
+  * Update qmltypes definitions
+  * Move PageHeader out of qml/Components into qml/Dash
+  * Reshuffle and update dependencies
+  * Fix cardtool test and make card creator output debugging info on
+    errors.
+  * Support previews for scopes in overview and hook up preview
+    processing to activity indicator.
+  * Fix notifications indicator title
+  * Fix horizontal list activation and add test for it.
+
+  [ Ying-Chun Liu ]
+  * Add button colors and i18n for power off dialog. (LP: #1354506)
+
+  [ Mirco Müller ]
+  * Force plain-text rendering for summary- and body-text. (LP:
+    #1335787)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 15 Aug 2014 17:38:07 +0000
+
+unity8 (8.00+14.10.20140814.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Add --lightdm= argument to ./run.sh that lets developers choose
+    which lightdm backend to use. Stop letting a user that is
+    immediately denied via PAM into the shell by fixing some assumptions
+    that a user which was not prompted was successfully authenticated.
+    This is not a common situation, you'd have to manually change your
+    PAM config. Fix a small console warning .
+  * Make wrong-password handling much nicer by showing a pretty spinner
+    while we wait for PAM, by improving the prompt text to match
+    designs, by forcing the user to wait five seconds after every five
+    failed attemps, and by supporting (but not yet enabling) an opt-in
+    "factory-reset your phone after X failed attemps" feature.
+
+  [ Michael Zanetti ]
+  * bring back network caching in dash (LP: #1355729)
+
+  [ Michał Sawicz ]
+  * Add --lightdm= argument to ./run.sh that lets developers choose
+    which lightdm backend to use. Stop letting a user that is
+    immediately denied via PAM into the shell by fixing some assumptions
+    that a user which was not prompted was successfully authenticated.
+    This is not a common situation, you'd have to manually change your
+    PAM config. Fix a small console warning .
+  * Fix anchor in PreviewListView.qml.
+  * Make wrong-password handling much nicer by showing a pretty spinner
+    while we wait for PAM, by improving the prompt text to match
+    designs, by forcing the user to wait five seconds after every five
+    failed attemps, and by supporting (but not yet enabling) an opt-in
+    "factory-reset your phone after X failed attemps" feature.
+  * Add new horizontal list category layout. (LP: #1352226)
+  * Fix qml tests - loader around PageHeader, more retries for selecting
+    a scope and undefined attributes in mock overview scope.
+
+  [ Leo Arias ]
+  * Added autopilot helpers and tests for the launcher and dash icon.
+  * Added an autopilot helper to click a scope item.
+  * Added an autopilot test for focusing an app clicking the icon on the
+    launcher.
+
+  [ Mirco Müller ]
+  * Allow ENTER/RETURN in a TextField to accept a snap-decision
+    notification. (LP: #1305885)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 14 Aug 2014 01:29:55 +0000
+
+unity8 (8.00+14.10.20140811-0ubuntu1) utopic; urgency=low
+
+  [ Andrea Cimitan ]
+  * Add emblem support in dash cards.
+
+  [ Michael Terry ]
+  * Fix a variety of design nits with the current lockscreen: * disable
+    indicators and launcher when locked * when reversing the direction
+    of a greeter flick, treat it as a cancel * don't animate dots when
+    changing the infographic data source * make cancelling a login
+    nicer: * reduce the delay before greeter starts animating * show the
+    greeter from the same side of the screen that it hid to * don't re-
+    animate the infographic (LP: #1351027)
+
+  [ Stephen M. Webb ]
+  * enables the unity8 upstart job for desktop sessions (LP: #1353041)
+
+  [ Albert Astals ]
+  * Dash Overview (LP: #1317683)
+  * GenericScopeView: On click only activate scope:// uris and
+    clickscope items The rest of clicks result in a preview, also
+    scope:// uris don't get a preview
+  * Pass the scope search hint up to the search line
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 11 Aug 2014 19:03:41 +0000
+
+unity8 (8.00+14.10.20140808-0ubuntu1) utopic; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Nick Dedekind ]
+  * Added application prompt surfaces to allow prompting application
+    which have not yet created a surface.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 08 Aug 2014 12:15:05 +0000
+
+unity8 (8.00+14.10.20140806.1-0ubuntu1) utopic; urgency=low
+
+  [ Michal Hruby ]
+  * Work with the scopes-v4 branch + departments->navigation renaming
+
+  [ Michał Sawicz ]
+  * Hardcode art shape size for click scope local and predefined
+    categories While at it, drop the fillmode of cards
+  * Use the correct API in PageHeader. (LP: #1353048)
+  * Refactor dash activity indicator. (LP: #1351539)
+
+  [ Albert Astals ]
+  * Dash Departments fixes Update maxHeight manually since it depends on
+    the position of the item and its parents and it can't know when the
+    binding has to be updated Make parent stuff non interactive when the
+    department list is shown
+  * PageHeader: when on search clip y-coordinates otherwise the
+    background spills out when on search (LP: #1350398)
+  * Dash: Implement OverlayColor support in Cards
+  * Hardcode art shape size for click scope local and predefined
+    categories While at it, drop the fillmode of cards
+  * Make test_departments test more stable There's various
+    DashDepartments on the dash, make sure we're working over the one
+    that is on screen, otherwise clicks don't end up where they should
+  * Work with the scopes-v4 branch + departments->navigation renaming
+  * Fixes for dash as app Load i18n catalog Process command line options
+    Add the posibility to have a mouse touch adaptor (LP: #1353351)
+  * Implement the Expandable Preview Widget Now TextSummary is not
+    expandable by itself anymore, you have to use it inside an
+    Expandable to get the behaviour
+  * Add test prefix to xml output, seems CI needs it
+
+  [ Antti Kaijanmäki ]
+  * Indicators: Adds new ModemInfoItem to be used with indicator-network
+    (LP: #1329204)
+
+  [ Michael Terry ]
+  * When the edge demo is running, don't show the greeter if the screen
+    is turned off. This avoids an odd interaction where parts of the
+    greeter are disabled but the edge demo isn't visible until you slide
+    the greeter away. (LP: #1283425)
+  * Don't hardcode the phablet password in our testing script.
+
+  [ Ying-Chun Liu ]
+  * Add divider dots.
+
+  [ Mirco Müller ]
+  * Make sure the TextField of a snap-decision notification has the
+    active focus upon creation, thus the osk shows up right away. (LP:
+    #1346867)
+
+  [ Andrea Cimitan ]
+  * Add touchdown effect to dash cards.
+  * Import Ubuntu.Components for preview image gallery to pick up
+    default flicking speeds.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 06 Aug 2014 19:40:05 +0000
+
+unity8 (8.00+14.10.20140805-0ubuntu1) utopic; urgency=low
+
+  [ Michael Zanetti ]
+  * Split the dash from the shell into a separate app (LP: #1232687)
+
+  [ Leo Arias ]
+  * Update the autopilot tests to work with the new dash app.
+
+  [ Daniel d'Andrada ]
+  * Split the dash from the shell into a separate app (LP: #1232687)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 05 Aug 2014 12:06:31 +0000
+
+unity8 (8.00+14.10.20140731.1-0ubuntu1) utopic; urgency=low
+
+  [ Gerry Boland ]
+  * Fix the run.sh script - pretend to be running with qtmir and emit
+    SIGSTOP at the right time
+
+  [ Ying-Chun Liu ]
+  * Implement Attribute UI. (LP: #1282460)
+
+  [ Albert Astals ]
+  * Hide search history popup as soon as you start typing As discussed
+    with Mike and Saviq
+  * Compile with for scopes-v3 unity-api
+  * PageHeader: Unfocus search field when search entry is selected
+  * Show search field if the search query changes
+  * Test: Add a condition for art.height being > 0 means stuff has
+    already been layouted a bit without it it can happen that we get 0
+    for everything at startup and tests still pass
+  * Remove leftover in test of an old headerless implementation
+
+  [ Michael Zanetti ]
+  * Drop Recent apps category from Dash (LP: #1281092)
+  * update launcher count emblems to match new spec (LP: #1338984)
+
+  [ Bill Filler ]
+  * disable predictive text for dash search field (LP: #1340409)
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Antti Kaijanmäki ]
+  * DefaultIndicatorPage: use Loader status to determine the visible
+    property. (LP: #1350555)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 31 Jul 2014 16:51:01 +0000
+
+unity8 (8.00+14.10.20140729.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Check user's pin/password using PAM, instead of a plaintext keyfile.
+    New build dependency: libpam0g-dev for phone unlock with PAM (LP:
+    #1234983)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 29 Jul 2014 23:36:30 +0000
+
+unity8 (8.00+14.10.20140729-0ubuntu1) utopic; urgency=medium
+
+  [ Gerry Boland ]
+  [ Daniel d'Andrada ]
+  * Re-architecture unity8 to use the QtMirCompositor library so that
+    the Qt scenegraph renderer is used as the Mir compositor, and
+    application surfaces are added to the QML scene as items.
+    
+  [ Michael Zanetti ]
+  * Port phone right-edge spread code to use QtCompositor
+  * Add right-edge spread animation for tablet
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 29 Jul 2014 15:07:32 +0000
+
+unity8 (7.90+14.10.20140725-0ubuntu1) utopic; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Michał Sawicz ]
+  * Fix the ap test for applications.
+
+  [ Albert Astals ]
+  * Use deleteLater instead of a direct delete We are seeing a crash in
+    QQuickWindowPrivate::polishItems because LVWPH is deleting items to
+    polish from it's updatePolish which means the set in
+    QQuickWindowPrivate::polishItems may end up with some yet-to-
+    process-but-now-deleted items. Switching to deleteLater fixes this
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 25 Jul 2014 10:47:34 +0000
+
+unity8 (7.90+14.10.20140724.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Zanetti ]
+  * properly parent launcher items (LP: #1347902)
+
+  [ Michał Sawicz ]
+  * Move the PyDev project files to the root, supporting .py scripts
+    outside of tests/autopilot. Add Autopilot Run and List launch
+    configurations to easily support debugging in Eclipse. Use
+    add_unity8_mock macro in the Telephony plugin.
+  * Drop FilterGrid and refactor height animations in GenericScopeView.
+    Also implement forced category expansion. (LP: #1326470)
+  * Move expansion button from section header to category footer. (LP:
+    #1261300)
+  * Fix expect-sigstop enviroment variable name. (LP: #1346819)
+  * Make headerless categories easier Instead of having no header
+    category (which is a bit confusing since the LVWPH code was designed
+    so that when a category has no header it is because it shares the
+    category with the previous one) what we have for headerless
+    categories is a header of height 0, this way everything works as it
+    should and results in cleaner code in the LVWPH and in
+    GenericScopeView
+  * Add support for header links.
+  * Add dash PageHeader styling.
+
+  [ Albert Astals ]
+  * Make headerless categories easier Instead of having no header
+    category (which is a bit confusing since the LVWPH code was designed
+    so that when a category has no header it is because it shares the
+    category with the previous one) what we have for headerless
+    categories is a header of height 0, this way everything works as it
+    should and results in cleaner code in the LVWPH and in
+    GenericScopeView
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 24 Jul 2014 20:41:29 +0000
+
+unity8 (7.90+14.10.20140723.4-0ubuntu1) utopic; urgency=low
+
+  [ thomas-voss ]
+  * Explicitly select gcc version.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 23 Jul 2014 15:32:41 +0000
+
+unity8 (7.90+14.10.20140721.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Allow running the dialer-app in emergency mode when the screen is
+    locked.
+
+  [ Michał Sawicz ]
+  * Add missing nameOwner property to mock UnityMenuModel.
+
+  [ Albert Astals ]
+  * Fix name, There's nothing called pageHeader in this file
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 21 Jul 2014 14:57:08 +0000
+
+unity8 (7.90+14.10.20140717.3-0ubuntu1) utopic; urgency=low
+
+  [ Nick Dedekind ]
+  * Added environment variable to upstart conf for mir trusted socket
+  * Removed indicator menu dismissal on menu activation (LP: #1337771)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 17 Jul 2014 16:35:52 +0000
+
+unity8 (7.90+14.10.20140717.1-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Only generate .qmltypes files manually, no need to do it build-time.
+    It didn't work when cross-compiling either, and required builders to
+    have otherwise unnecessary environment.
+  * Fix CardCreator test. It got broken with a merge that got landed
+    along side of it.
+
+  [ Ying-Chun Liu ]
+  * Add reboot/shutdown (LP: #1234062)
+
+  [ Albert Astals ]
+  * Make the departments test more stable
+
+  [ Mirco Müller ]
+  * Fixes gap at top of sim-unlock/fullscreen notification (point 1.),
+    fixes blocking overlay if underlying UnityMenuModel vanishes from
+    DBus (point 2.). The third bullet-point of the bug-report, lockup of
+    shell-UI, could not be reproduced. (LP: #1308011)
+
+  [ Michael Terry ]
+  * Expose a new greeter DBus property, IsActive, which tells apps and
+    indicators when the integrated-greeter screen is active. Useful for
+    switching UI modes when the screen is locked.
+  * Allow the session to bring up the greeter/lockscreen over DBus. The
+    emergency dialer will need this support in order to cancel bringing
+    it up.
+
+  [ Michael Zanetti ]
+  * Fixes gap at top of sim-unlock/fullscreen notification (point 1.),
+    fixes blocking overlay if underlying UnityMenuModel vanishes from
+    DBus (point 2.). The third bullet-point of the bug-report, lockup of
+    shell-UI, could not be reproduced. (LP: #1308011)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 17 Jul 2014 09:38:20 +0000
+
+unity8 (7.90+14.10.20140714-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Activate all results in click scope by default. (LP: #1341262)
+
+  [ Mirco Müller ]
+  * Added support for utilization of the ComboButton SDK-element for
+    snap-decision notifications with many actions.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 14 Jul 2014 18:20:25 +0000
+
+unity8 (7.90+14.10.20140709.2-0ubuntu1) utopic; urgency=low
+
+  [ Michal Hruby ]
+  * Fix FTBFS when using latest unity-api.
+
+  [ Michał Sawicz ]
+  * Refactor carousel item activation.
+  * Refactor ScopeItem into GenericScopeView.
+  * Add initial support for scope customizations.
+  * Make rating stars in PreviewReviewDisplay.qml non-interactive. (LP:
+    #1337508)
+
+  [ Nick Dedekind ]
+  * Added active call hint A hint is displayed in the indicator panel
+    when an call is active on the Telephony Serivce
+
+  [ Albert Astals ]
+  * We need to boostrap height also when we have 1 item ^_^ (LP:
+    #1337408)
+  * Add initial support for scope customizations.
+  * CardCreator: Give a correct implicitHeight if we only have art The
+    hasSubtitle change is really unrelated and not needed here, just
+    sneaking it in to not create yet another review. (LP: #1330899)
+  * Fake Scopes Plugin: Register PreviewModelInterface
+
+  [ Michael Zanetti ]
+  * make the launcher's drag'n'drop indicator more prominent (LP:
+    #1332042)
+  * make launcher items live having them non-live is not really required
+    and reveals an issue in combination with UbuntuShape (LP: #1302761)
+  * Fade out launcher in place instead of moving it to the left on long
+    left edge swipes. (LP: #1332096)
+  * update launcher icon glow as requested by design (LP: #1336725)
+  * update header in dash to use the new header from the SDK (LP:
+    #1335491)
+  * fix testPreview with larger GRID_UNIT_PX values
+  * clip the corner of pinned icons in the launcher as per new design
+  * update launcher background according to latest design (LP: #1336314)
+  * Update Launcher's home button design according to new spec. (LP:
+    #1329331)
+
+  [ CI bot ]
+  * make launcher items live having them non-live is not really required
+    and reveals an issue in combination with UbuntuShape (LP: #1302761)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 09 Jul 2014 19:46:11 +0000
+
+unity8 (7.90+14.10.20140707-0ubuntu1) utopic; urgency=low
+
+  [ Nick Dedekind ]
+  * Added support for TransferMenu
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 07 Jul 2014 11:40:59 +0000
+
+unity8 (7.90+14.10.20140703.1-0ubuntu1) utopic; urgency=low
+
+  [ Michał Sawicz ]
+  * Initial code for a payment button widget, to handle purchasing apps
+    from the click scope.
+
+  [ Nick Dedekind ]
+  * Moved [Message]MenuItemFacotory from Unity.Indicators plugin to qml
+    folder.
+
+  [ Albert Astals ]
+  * EasingCurve: Initialize members
+  * Fix valgrind warning by not emitting reset on model destructor That
+    won't be supported until Qt 5.4 More info at https://bugreports.qt-
+    project.org/browse/QTBUG-39780 Warning was ==16693== Invalid read of
+    size 8 ==16693== at 0x72B19A0: QQmlContext::isValid() const
+    (qqmlcontext.cpp:231) ==16693== by 0x736C82B:
+    QQmlDelegateModelPrivate::emitChanges() (qqmldelegatemodel.cpp:1412)
+    ==16693== by 0x7372AE6: QQmlDelegateModel::_q_modelReset()
+    (qqmldelegatemodel.cpp:1463) ==16693== by 0x7397224:
+    QQmlDelegateModel::qt_static_metacall(QObject*, QMetaObject::Call,
+    int, void**) (moc_qqmldelegatemodel_p.cpp:196) ==16693== by
+    0x739769E: QQmlDelegateModel::qt_metacall(QMetaObject::Call, int,
+    void**) (moc_qqmldelegatemodel_p.cpp:292) ==16693== by 0x66379CC:
+    QMetaObject::activate(QObject*, int, int, void**) (in
+    /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.3.0) ==16693== by
+    0x65AEEFD: QAbstractItemModel::endResetModel() (in /usr/lib/x86_64-
+    linux-gnu/libQt5Core.so.5.3.0) ==16693== by 0x23461EFD:
+    FakeIndicatorsModel::unload() (fakeindicatorsmodel.cpp:53) ==16693==
+    by 0x23461E13: FakeIndicatorsModel::~FakeIndicatorsModel()
+    (fakeindicatorsmodel.cpp:34) ==16693== by 0x2345C073:
+    QQmlPrivate::QQmlElement<FakeIndicatorsModel>::~QQmlElement() (in
+    /home/tsdgeos_work/phablet/unity8/investigate_test_shell_crash/build
+    dir/tests/mocks/Unity/Indicators/libIndicatorsFakeQml.so) ==16693==
+    by 0x2345C0A3:
+    QQmlPrivate::QQmlElement<FakeIndicatorsModel>::~QQmlElement()
+    (qqmlprivate.h:106) ==16693== by 0x663636B:
+    QObjectPrivate::deleteChildren() (in /usr/lib/x86_64-linux-
+    gnu/libQt5Core.so.5.3.0) ==16693== Address 0x1862d448 is 8 bytes
+    inside a block of size 16 free'd ==16693== at 0x4C2C2BC: operator
+    delete(void*) (vg_replace_malloc.c:503) ==16693== by 0x72B21B8:
+    QQmlContextData::destroy() (qqmlcontext.cpp:647) ==16693== by
+    0x7293458: QQmlPrivate::qdeclarativeelement_destructor(QObject*)
+    (qqmlengine.cpp:612) ==16693== by 0x6C0CADD:
+    QQmlPrivate::QQmlElement<QQuickItem>::~QQmlElement()
+    (qqmlprivate.h:105) ==16693== by 0x663636B:
+    QObjectPrivate::deleteChildren() (in /usr/lib/x86_64-linux-
+    gnu/libQt5Core.so.5.3.0) ==16693== by 0x663F0EB: QObject::~QObject()
+    (in /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.3.0) ==16693== by
+    0x6BF64B5: QQuickItem::~QQuickItem() (qquickitem.cpp:2064) ==16693==
+    by 0x6C0CAE5: QQmlPrivate::QQmlElement<QQuickItem>::~QQmlElement()
+    (qqmlprivate.h:106) ==16693== by 0x663636B:
+    QObjectPrivate::deleteChildren() (in /usr/lib/x86_64-linux-
+    gnu/libQt5Core.so.5.3.0) ==16693== by 0x663F0EB: QObject::~QObject()
+    (in /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.3.0) ==16693== by
+    0x6BF64B5: QQuickItem::~QQuickItem() (qquickitem.cpp:2064) ==16693==
+    by 0x6C0CAE5: QQmlPrivate::QQmlElement<QQuickItem>::~QQmlElement()
+    (qqmlprivate.h:106) (LP: #1332598)
+
+  [ Michael Zanetti ]
+  * drop launcher item spacing (LP: #1332022)
+  * change wording in launcher quicklist (LP: #1332035)
+
+  [ Alejandro J. Cura ]
+  * Initial code for a payment button widget, to handle purchasing apps
+    from the click scope.
+
+  [ Rodney Dawes ]
+  * Initial code for a payment button widget, to handle purchasing apps
+    from the click scope.
+
+  [ Renato Araujo Oliveira Filho ]
+  * Create IndicatorsLight.qml component used to control indicator led.
+    A blue led will pulse if the message indicator is blue and screen is
+    off.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 03 Jul 2014 14:47:46 +0000
+
+unity8 (7.90+14.10.20140701.2-0ubuntu2) utopic; urgency=medium
+
+  * debian/control: 
+    list qtdeclarative5-ubuntu-ui-toolkit-plugin-gles as an alternative 
+    choice, since provides are not versionned, should restore installability
+    on amd64 and i386
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Thu, 03 Jul 2014 13:26:38 +0200
+
+unity8 (7.90+14.10.20140701.2-0ubuntu1) utopic; urgency=medium
+
+  [ Michał Sawicz ]
+  * Adapt to suru theme.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 01 Jul 2014 15:10:35 +0000
+
 unity8 (7.89+14.10.20140627-0ubuntu1) utopic; urgency=low
 
   [ Michael Terry ]

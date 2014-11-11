@@ -18,15 +18,16 @@ import QtQuick 2.0
 import QtTest 1.0
 import Unity.Test 0.1 as UT
 import QMenuModel 0.1
-import Unity.Indicators 0.1 as Indicators
 import Utils 0.1 as Utils
+import "../../../../qml/Panel/Indicators"
+
 
 Item {
     id: testView
     width: units.gu(40)
     height: units.gu(70)
 
-    Indicators.MenuItemFactory {
+    MenuItemFactory {
         id: factory
         menuModel: UnityMenuModel {}
     }
@@ -35,6 +36,11 @@ Item {
         id: loader
         property int modelIndex: 0
         property var data
+
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
 
         onLoaded: {
             if (item.hasOwnProperty("menuData")) {
@@ -97,6 +103,8 @@ Item {
                 { tag: 'switch2', type: "com.canonical.indicator.switch", objectName: "switchMenu" },
                 { tag: 'alarm', type: "com.canonical.indicator.alarm", objectName: "alarmMenu" },
                 { tag: 'appointment', type: "com.canonical.indicator.appointment", objectName: "appointmentMenu" },
+                { tag: 'transfer', type: "com.canonical.indicator.transfer", objectName: "transferMenu" },
+                { tag: 'buttonSection', type: "com.canonical.indicator.button-section", objectName: "buttonSectionMenu" },
 
                 { tag: 'messageItem', type: "com.canonical.indicator.messages.messageitem", objectName: "messageItem" },
                 { tag: 'sourceItem', type: "com.canonical.indicator.messages.sourceitem", objectName: "groupedMessage" },
@@ -109,6 +117,7 @@ Item {
 
                 { tag: 'wifisection', type: "unity.widgets.systemsettings.tablet.wifisection", objectName: "wifiSection" },
                 { tag: 'accesspoint', type: "unity.widgets.systemsettings.tablet.accesspoint", objectName: "accessPoint" },
+                { tag: 'modeminfoitem', type: "com.canonical.indicator.network.modeminfoitem", objectName: "modemInfoItem" },
 
                 { tag: 'unknown', type: "", objectName: "standardMenu"}
             ];
@@ -364,9 +373,9 @@ Item {
         function test_create_alarmMenu_data() {
             return [
                 {label: "testLabel1", enabled: true, icon: "file:///testIcon1", color: Qt.rgba(0, 0, 0, 0),
-                            time: new Date(2014, 04, 14).getTime()*1000, timeFormat: "%a %d %b %l:%M %p"},
+                            time: new Date(2014, 04, 14), timeFormat: "%a %d %b %l:%M %p"},
                 {label: "testLabel2", enabled: false, icon: "file:///testIcon2", color: Qt.rgba(1, 0, 0, 0),
-                            time: new Date(2015, 12, 31).getTime()*1000, timeFormat: "%A" },
+                            time: new Date(2015, 11, 31), timeFormat: "%A" },
             ];
         }
 
@@ -376,11 +385,11 @@ Item {
             menuData.sensitive = data.enabled;
             menuData.icon = data.icon;
             menuData.ext = {
-                'xCanonicalTime': data.time,
+                'xCanonicalTime': data.time.getTime() / 1000,
                 'xCanonicalTimeFormat': data.timeFormat
             };
             timeFormatter.format = data.timeFormat;
-            timeFormatter.time = data.time;
+            timeFormatter.time = data.time.getTime() / 1000;
 
             loader.data = menuData;
             loader.sourceComponent = factory.load(menuData);
@@ -396,9 +405,9 @@ Item {
         function test_create_appointmentMenu_data() {
             return [
                 {label: "testLabel1", enabled: true, icon: "file:///testIcon1", color: Qt.rgba(0, 0, 0, 0),
-                            time: new Date(2014, 04, 14).getTime()*1000, timeFormat: "%a %d %b %l:%M %p"},
+                            time: new Date(2014, 04, 14), timeFormat: "%a %d %b %l:%M %p"},
                 {label: "testLabel2", enabled: false, icon: "file:///testIcon2", color: Qt.rgba(1, 0, 0, 0),
-                            time: new Date(2015, 12, 31).getTime()*1000, timeFormat: "%A" },
+                            time: new Date(2015, 11, 31), timeFormat: "%A" },
             ];
         }
 
@@ -409,11 +418,11 @@ Item {
             menuData.icon = data.icon;
             menuData.ext = {
                 'xCanonicalColor': data.colour,
-                'xCanonicalTime': data.time,
+                'xCanonicalTime': data.time.getTime() / 1000,
                 'xCanonicalTimeFormat': data.timeFormat
             };
             timeFormatter.format = data.timeFormat;
-            timeFormatter.time = data.time;
+            timeFormatter.time = data.time.getTime() / 1000;
 
             loader.data = menuData;
             loader.sourceComponent = factory.load(menuData);
@@ -425,6 +434,69 @@ Item {
             compare(loader.item.time, timeFormatter.timeString, "Time does not match data");
             compare(loader.item.eventColor, data.color, "Colour does not match data");
             compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+        }
+
+        function test_create_transferMenu_data() {
+            return [
+                {tag: "queued", label: "testLabel1", enabled: true, active: true, icon: "file:///testIcon1", progress: 0, stateText: "In queue…" },
+                {tag: "running", label: "testLabel2", enabled: true, active: true, icon: "file:///testIcon2", progress: 0.1, stateText: "1 minute, 40 seconds remaining" },
+                {tag: "paused", label: "testLabel3", enabled: true, active: true, icon: "file:///testIcon3", progress: 0.5, stateText: "Paused, tap to resume" },
+                {tag: "cancelled", label: "testLabel4", enabled: true, active: true, icon: "file:///testIcon4", progress: 0.4, stateText: "Canceled" },
+                {tag: "finished", label: "testLabel5", enabled: false, active: false, icon: "file:///testIcon5", progress: 1.0, stateText: "Finished" },
+                {tag: "error", label: "testLabel6", enabled: false, active: true, icon: "file:///testIcon6", progress: 0, stateText: "Failed, tap to retry" },
+            ];
+        }
+
+        function test_create_transferMenu(data) {
+            menuData.type = "com.canonical.indicator.transfer";
+            menuData.label = data.label;
+            menuData.sensitive = data.enabled;
+            menuData.icon = data.icon;
+            menuData.ext = {
+                'xCanonicalUid': data.tag
+            };
+
+            loader.data = menuData;
+            loader.sourceComponent = factory.load(menuData);
+            tryCompareFunction(function() { return loader.item != undefined; }, true);
+            compare(loader.item.objectName, "transferMenu", "Should have created a transfer menu");
+
+            compare(loader.item.text, data.label, "Label does not match data");
+            compare(loader.item.iconSource, data.icon, "Icon does not match data");
+            compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+            compare(loader.item.progress, data.progress, "Icon does not match data");
+            compare(loader.item.active, data.active, "Active does not match data");
+            compare(loader.item.stateText, data.stateText, "State text does not match data");
+        }
+
+        function test_create_buttonSectionMenu_data() {
+            return [
+                {label: "testLabel1", enabled: true, buttonText: "buttonLabel1", icon: "file:///testIcon1" },
+                {label: "testLabel2", enabled: false, buttonText: "buttonLabel1", icon: "file:///testIcon2" },
+            ];
+        }
+
+        function test_create_buttonSectionMenu(data) {
+            menuData.type = "com.canonical.indicator.button-section";
+            menuData.label = data.label;
+            menuData.sensitive = data.enabled;
+            menuData.icon = data.icon;
+            menuData.ext = {
+                'xCanonicalExtraLabel': data.buttonText
+            };
+
+            loader.data = menuData;
+            loader.sourceComponent = factory.load(menuData);
+            tryCompareFunction(function() { return loader.item != undefined; }, true);
+            compare(loader.item.objectName, "buttonSectionMenu", "Should have created a transfer menu");
+
+            compare(loader.item.text, data.label, "Label does not match data");
+            compare(loader.item.iconSource, data.icon, "Icon does not match data");
+            compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+
+            var button = findChild(loader.item, "buttonSectionMenuControl");
+            verify(button !== null);
+            compare(button.text, data.buttonText, "Button text does not match data");
         }
 
         function test_create_wifiSection_data() {
@@ -450,8 +522,8 @@ Item {
 
         function test_create_accessPoint_data() {
             return [
-                {label: "testLabel1", enabled: true, checked: false, secure: true, adHoc: false },
-                {label: "testLabel2", enabled: false, checked: true, secure: false, adHoc: true },
+                {label: "testLabel1", enabled: true, active: false, secure: true, adHoc: false },
+                {label: "testLabel2", enabled: false, active: true, secure: false, adHoc: true },
             ];
         }
 
@@ -459,7 +531,7 @@ Item {
             menuData.type = "unity.widgets.systemsettings.tablet.accesspoint";
             menuData.label = data.label;
             menuData.sensitive = data.enabled;
-            menuData.isToggled = data.checked;
+            menuData.isToggled = data.active;
             menuData.ext = {
                 'xCanonicalWifiApStrengthAction': "action::strength",
                 'xCanonicalWifiApIsSecure': data.secure,
@@ -475,7 +547,53 @@ Item {
             compare(loader.item.strengthAction.name, "action::strength", "Strength action incorrect");
             compare(loader.item.secure, data.secure, "Secure does not match data");
             compare(loader.item.adHoc, data.adHoc, "AdHoc does not match data");
-            compare(loader.item.checked, data.checked, "Checked does not match data");
+            compare(loader.item.active, data.active, "Checked does not match data");
+            compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+        }
+
+        function test_create_modemInfoItem_data() {
+            // ModemInfoItem gets all it's data through the actions.
+            return [
+                        {
+                            label: "",
+                            enabled: true,
+                            checked: false,
+                            statusLabelAction: "action::statusLabel",
+                            statusIconAction: "action::statusIcon",
+                            connectivityIconAction: "action::connectivityIcon",
+                            simIdentifierLabelAction: "action::simIdentifierLabel",
+                            roamingAction: "action::roaming",
+                            unlockAction: "action::unlock"
+                        }
+                    ];
+        }
+
+        function test_create_modemInfoItem(data) {
+            menuData.type = "com.canonical.indicator.network.modeminfoitem";
+            menuData.label = data.label;
+            menuData.sensitive = data.enabled;
+            menuData.isToggled = data.checked;
+            menuData.ext = {
+                'xCanonicalModemStatusLabelAction': data.statusLabelAction,
+                'xCanonicalModemStatusIconAction': data.statusIconAction,
+                'xCanonicalModemConnectivityIconAction': data.connectivityIconAction,
+                'xCanonicalModemSimIdentifierLabelAction': data.simIdentifierLabelAction,
+                'xCanonicalModemRoamingAction': data.roamingAction,
+                'xCanonicalModemLockedAction': data.unlockAction,
+            };
+
+            loader.data = menuData;
+            loader.sourceComponent = factory.load(menuData);
+            tryCompareFunction(function() { return loader.item != undefined; }, true);
+            compare(loader.item.objectName, "modemInfoItem", "Should have created a modem info item.");
+            compare(loader.item.text, data.label, "Label does not match data");
+
+            compare(loader.item.statusLabelAction.name, data.statusLabelAction, "StatusLabel action incorrect");
+            compare(loader.item.statusIconAction.name, data.statusIconAction, "StatusIcon action incorrect");
+            compare(loader.item.connectivityIconAction.name, data.connectivityIconAction, "ConnectivityIcon action incorrect");
+            compare(loader.item.simIdentifierLabelAction.name, data.simIdentifierLabelAction, " action incorrect");
+            compare(loader.item.roamingAction.name,  data.roamingAction, "Roaming action incorrect");
+            compare(loader.item.unlockAction.name, data.unlockAction, "Unlock action incorrect");
             compare(loader.item.enabled, data.enabled, "Enabled does not match data");
         }
 
@@ -525,7 +643,8 @@ Item {
                     album: "album1",
                     running: true,
                     state: "Playing",
-                    enabled: true
+                    enabled: true,
+                    showTrack: true
                 },{
                     label: "player2",
                     icon: "file:://icon2",
@@ -535,7 +654,19 @@ Item {
                     album: "album2",
                     running: false,
                     state: "Paused",
-                    enabled: false
+                    enabled: false,
+                    showTrack: false
+                },{
+                    label: "player3",
+                    icon: "file:://icon3",
+                    albumArt: "file:://art3",
+                    song: "song3",
+                    artist: "artist3",
+                    album: "album3",
+                    running: true,
+                    state: "Stopped",
+                    enabled: true,
+                    showTrack: false
                 }
             ];
         }
@@ -565,7 +696,7 @@ Item {
             compare(loader.item.song, data.song, "Song does not match data");
             compare(loader.item.artist, data.artist, "Artist does not match data");
             compare(loader.item.album, data.album, "Album does not match data");
-            compare(loader.item.running, data.running, "Running does not match data");
+            compare(loader.item.showTrack, data.showTrack, "Show track does not match data");
             compare(loader.item.state, data.state, "State does not match data");
             compare(loader.item.enabled, data.enabled, "Enabled does not match data");
         }
@@ -607,6 +738,41 @@ Item {
             compare(loader.item.canGoNext, false, "CanGoNext should be false");
             compare(loader.item.canGoPrevious, false, "CanGoPrevious should be false");
             compare(loader.item.enabled, data.enabled, "Enabled does not match data");
+        }
+
+        function test_lp1336715_broken_switch_bindings() {
+            menuData.type = "com.canonical.indicator.switch";
+            menuData.sensitive = true;
+            menuData.isToggled = false;
+
+            loader.data = menuData;
+            loader.sourceComponent = factory.load(menuData);
+
+            compare(loader.item.checked, false, "Loader did not load check state");
+            mouseClick(loader.item,
+                       loader.item.width / 2, loader.item.height / 2);
+            compare(loader.item.checked, true, "Clicking switch menu should toggle check");
+
+            menuData.isToggled = true; // toggled will not update in mock
+            menuData.isToggled = false;
+
+            compare(loader.item.checked, false, "Server updates no longer working");
+        }
+
+        // test that the server value is re-aserted if it is not confirmed.
+        function test_lp1336715_switch_server_value_reassertion() {
+            menuData.type = "com.canonical.indicator.switch";
+            menuData.sensitive = true;
+            menuData.isToggled = false;
+
+            loader.data = menuData;
+            loader.sourceComponent = factory.load(menuData);
+
+            compare(loader.item.checked, false, "Loader did not load check state");
+            mouseClick(loader.item,
+                       loader.item.width / 2, loader.item.height / 2);
+            compare(loader.item.checked, true, "Clicking switch menu should toggle check");
+            tryCompare(loader.item, "checked", false);
         }
     }
 }

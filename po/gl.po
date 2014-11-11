@@ -7,66 +7,148 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-06-13 09:55+0200\n"
-"PO-Revision-Date: 2014-06-07 13:26+0000\n"
+"POT-Creation-Date: 2014-11-07 10:59+0100\n"
+"PO-Revision-Date: 2014-11-06 13:30+0000\n"
 "Last-Translator: Marcos Lans <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-17 06:51+0000\n"
-"X-Generator: Launchpad (build 17045)\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2014-11-09 06:54+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:43
-#: plugins/Unity/Launcher/launcheritem.cpp:73
-msgid "Lock to Launcher"
-msgstr "Manter no Iniciador"
+#: plugins/LightDM/Greeter.cpp:130
+msgid "Password: "
+msgstr "Contrasinal : "
 
-#: plugins/Unity/Launcher/launcheritem.cpp:73
-msgid "Unlock from Launcher"
-msgstr "Non manter no Iniciador"
+#: plugins/Unity/Launcher/launcheritem.cpp:45
+#: plugins/Unity/Launcher/launcheritem.cpp:91
+msgid "Pin shortcut"
+msgstr "Fixar o atallo"
+
+#: plugins/Unity/Launcher/launcheritem.cpp:91
+msgid "Unpin shortcut"
+msgstr "Eliminar o atallo"
+
+#: qml/Components/DelayedLockscreen.qml:47
+msgid "Device Locked"
+msgstr "Dispositivo bloqueado"
+
+#: qml/Components/DelayedLockscreen.qml:62
+msgid "You have been locked out due to too many failed passphrase attempts."
+msgstr "Bloqueouse o dispositivo polos intentos fallidos da frase secreta."
+
+#: qml/Components/DelayedLockscreen.qml:63
+msgid "You have been locked out due to too many failed passcode attempts."
+msgstr "Bloqueouse o dispositivo polos intentos fallidos da clave."
+
+#: qml/Components/DelayedLockscreen.qml:72
+#, qt-format
+msgid "Please wait %1 minute and then try again…"
+msgid_plural "Please wait %1 minutes and then try again…"
+msgstr[0] "Agarde %1 minuto e ténteo de novo…"
+msgstr[1] "Agarde %1 minutos e ténteo de novo…"
+
+#: qml/Components/Dialogs.qml:74
+msgid "Log out"
+msgstr "Saír da sesión"
+
+#: qml/Components/Dialogs.qml:75
+msgid "Are you sure you want to log out?"
+msgstr "Está seguro de querer pechar a sesión?"
+
+#: qml/Components/Dialogs.qml:77 qml/Components/Dialogs.qml:101
+#: qml/Components/Dialogs.qml:126
+msgid "No"
+msgstr "Non"
+
+#: qml/Components/Dialogs.qml:84 qml/Components/Dialogs.qml:108
+#: qml/Components/Dialogs.qml:133
+msgid "Yes"
+msgstr "Si"
+
+#: qml/Components/Dialogs.qml:98
+msgid "Shut down"
+msgstr "Apagar"
+
+#: qml/Components/Dialogs.qml:99
+msgid "Are you sure you want to shut down?"
+msgstr "Está seguro de querer apagar?"
+
+#: qml/Components/Dialogs.qml:123
+msgid "Reboot"
+msgstr "Reiniciar"
+
+#: qml/Components/Dialogs.qml:124
+msgid "Are you sure you want to reboot?"
+msgstr "Está seguro de querer reiniciar?"
+
+#: qml/Components/Dialogs.qml:148
+msgid "Power"
+msgstr "Enerxía"
+
+#: qml/Components/Dialogs.qml:149
+msgid ""
+"Are you sure you would like\n"
+"to power off?"
+msgstr "Está seguro de querer apagar?"
+
+#: qml/Components/Dialogs.qml:151
+msgid "Power off"
+msgstr "Apagar"
+
+#: qml/Components/Dialogs.qml:161
+msgid "Restart"
+msgstr "Reiniciar"
+
+#: qml/Components/Dialogs.qml:171
+msgid "Cancel"
+msgstr "Cancelar"
 
 #: qml/Components/EdgeDemoOverlay.qml:151
 msgid "Skip intro"
 msgstr "Saltar introdución"
 
-#: qml/Components/EdgeDemo.qml:113
+#: qml/Components/EdgeDemo.qml:112
 msgid "Right edge"
 msgstr "Bordo dereito"
 
-#: qml/Components/EdgeDemo.qml:114
+#: qml/Components/EdgeDemo.qml:113
 msgid "Try swiping from the right edge to unlock the phone"
-msgstr "Probe a esvarar desde o bordo dereito para desbloquear o teléfono"
+msgstr "Esvare o dedo desde o bordo dereito para desbloquear o teléfono"
 
-#: qml/Components/EdgeDemo.qml:145
+#: qml/Components/EdgeDemo.qml:144
 msgid "Top edge"
 msgstr "Bordo superior"
 
-#: qml/Components/EdgeDemo.qml:146
+#: qml/Components/EdgeDemo.qml:145
 msgid "Try swiping from the top edge to access the indicators"
-msgstr "Esvare desde o bordo superior para acceder aos indicadores."
+msgstr "Esvare o dedo desde o bordo superior para acceder aos indicadores."
 
-#: qml/Components/EdgeDemo.qml:171
+#: qml/Components/EdgeDemo.qml:170
 msgid "Close"
 msgstr "Pechar"
 
-#: qml/Components/EdgeDemo.qml:172
+#: qml/Components/EdgeDemo.qml:171
 msgid "Swipe up again to close the settings screen"
-msgstr "Esvare cara a arriba para pechar os axustes"
+msgstr "Esvare o dedo de novo cara a arriba para pechar os axustes"
 
-#: qml/Components/EdgeDemo.qml:199
+#: qml/Components/EdgeDemo.qml:201
 msgid "Left edge"
 msgstr "Bordo esquerdo"
 
-#: qml/Components/EdgeDemo.qml:200
+#: qml/Components/EdgeDemo.qml:202
 msgid "Swipe from the left to reveal the launcher for quick access to apps"
-msgstr "Esvare desde a esquerda para mostrar o iniciador de acceso rápido"
+msgstr ""
+"Esvare o dedo desde a esquerda para mostrar o iniciador rápido dos "
+"aplicativos"
 
-#: qml/Components/EdgeDemo.qml:227
+#: qml/Components/EdgeDemo.qml:229
 msgid "Well done"
-msgstr "Ben feito"
+msgstr "Ben feito!"
 
-#: qml/Components/EdgeDemo.qml:228
+#: qml/Components/EdgeDemo.qml:230
 msgid ""
 "You have now mastered the edge gestures and can start using the "
 "phone<br><br>Tap on the screen to start"
@@ -74,104 +156,212 @@ msgstr ""
 "Agora xa domina os xestos dos bordos e pode comezar a usar o "
 "teléfono<br><br>Toque na pantalla para comezar"
 
-#: qml/Components/Lockscreen.qml:214
+#: qml/Components/Lockscreen.qml:223
+msgid "Return to Call"
+msgstr "Volver á chamada"
+
+#: qml/Components/Lockscreen.qml:223
 msgid "Emergency Call"
 msgstr "Chamada de emerxencia"
 
-#: qml/Components/Lockscreen.qml:231
+#: qml/Components/Lockscreen.qml:255
 msgid "OK"
 msgstr "Aceptar"
 
-#: qml/Components/PageHeader.qml:365
-msgid "Recent searches"
-msgstr "Buscas recentes"
-
-#: qml/Components/PassphraseLockscreen.qml:60
-#, qt-format
-msgid "Hello %1"
-msgstr "Ola %1"
-
-#: qml/Components/PassphraseLockscreen.qml:60
-msgid "Hello"
-msgstr "Ola"
-
-#: qml/Components/PinLockscreen.qml:198
-msgid "CANCEL"
-msgstr "CANCELAR"
-
-#: qml/Components/PinLockscreen.qml:216
-msgid "DONE"
-msgstr "FEITO"
-
-#: qml/Components/SeeMore.qml:35
-msgid "See more"
-msgstr "Ver máis"
-
-#: qml/Components/SeeMore.qml:58
+#: qml/Dash/GenericScopeView.qml:434 qml/Dash/GenericScopeView.qml:591
 msgid "See less"
 msgstr "Ver menos"
 
-#: qml/Dash/DashApps.qml:37
-msgid "Recent"
-msgstr "Recentes"
+#: qml/Dash/GenericScopeView.qml:434
+msgid "See all"
+msgstr "Ver todo"
 
-#: qml/Dash/Previews/PreviewActionCombo.qml:34
-msgid "More..."
-msgstr "Máis…"
-
-#: qml/Dash/Previews/PreviewActionCombo.qml:34
-msgid "Less..."
-msgstr "Menos..."
-
-#: qml/Dash/Previews/PreviewRatingInput.qml:82
-msgid "Rate this"
-msgstr "Valore isto"
-
-#: qml/Dash/Previews/PreviewRatingInput.qml:128
-msgid "Add a review"
-msgstr "Engadir unha opinión"
-
-#: qml/Dash/Previews/PreviewRatingInput.qml:168
-msgid "Send"
-msgstr "Enviar"
-
-#: qml/Greeter/Greeter.qml:157
-msgid "Swipe to unlock"
-msgstr "Esvare para desbloquear"
-
-#: qml/Hud/HudParametrizedActionsPage.qml:132
-msgid "Confirm"
-msgstr "Confirmar"
-
-#: qml/Hud/Hud.qml:61 qml/Hud/Hud.qml:99 qml/Hud/Hud.qml:372
-msgid "Type or say a command"
-msgstr "Escriba ou diga unha orde"
-
-#: qml/Hud/Hud.qml:84
-msgid "Loading. Please Wait..."
-msgstr "Cargando, agarde…"
-
-#: qml/Hud/Hud.qml:89
-msgid "Speak Now..."
-msgstr "Fale agora…"
-
-#: qml/Hud/Hud.qml:94
-msgid "Speaking..."
-msgstr "Falando…"
-
-#: qml/Notifications/NotificationMenuItemFactory.qml:91
-msgid "Show password"
-msgstr "Mostrar contrasinal"
-
-#: qml/Notifications/NotificationMenuItemFactory.qml:103
-msgid "Please enter SIM PIN"
-msgstr "Introduza o PIN da SIM"
-
+#: qml/Dash/GenericScopeView.qml:496 qml/Dash/PageHeader.qml:258
 #: qml/Panel/SearchIndicator.qml:27
 msgid "Search"
 msgstr "Buscar"
 
-#: qml/Shell.qml:334
+#: qml/Dash/PageHeader.qml:268
+msgid "Settings"
+msgstr "Axustes"
+
+#: qml/Dash/PageHeader.qml:275
+msgid "Remove from Favorites"
+msgstr "Eliminar dos favoritos"
+
+#: qml/Dash/PageHeader.qml:275
+msgid "Add to Favorites"
+msgstr "Engadir aos favoritos"
+
+#: qml/Dash/Previews/PreviewActionCombo.qml:35
+msgid "More..."
+msgstr "Máis…"
+
+#: qml/Dash/Previews/PreviewActionCombo.qml:35
+msgid "Less..."
+msgstr "Menos..."
+
+#: qml/Dash/Previews/PreviewRatingInput.qml:81
+msgid "Rate this"
+msgstr "Valore isto"
+
+#: qml/Dash/Previews/PreviewRatingInput.qml:126
+msgid "Add a review"
+msgstr "Engadir unha opinión"
+
+#: qml/Dash/Previews/PreviewRatingInput.qml:166
+msgid "Send"
+msgstr "Enviar"
+
+#: qml/Dash/PullToRefreshScopeStyle.qml:55
+msgid "Pull to refresh…"
+msgstr "Tirar para actualizar..."
+
+#: qml/Dash/PullToRefreshScopeStyle.qml:60
+msgid "Release to refresh…"
+msgstr "Soltar para actualizar"
+
+#: qml/Dash/ScopesOverview.qml:215
+msgid "Manage Scopes"
+msgstr "Xestionar os Ámbitos"
+
+#: qml/Dash/ScopesOverview.qml:437
+msgid "Done"
+msgstr "Feito"
+
+#: qml/Dash/ScopesOverview.qml:463
+msgid "Store"
+msgstr "Tenda"
+
+#: qml/Dash/ScopesOverviewTab.qml:36
+msgid "Favorites"
+msgstr "Favoritos"
+
+#: qml/Dash/ScopesOverviewTab.qml:54
+msgid "All"
+msgstr "Todos"
+
+#: qml/Greeter/Greeter.qml:174
+msgid "Unlock"
+msgstr "Desbloquear"
+
+#: qml/Notifications/NotificationMenuItemFactory.qml:116
+msgid "Show password"
+msgstr "Mostrar contrasinal"
+
+#: qml/Panel/ActiveCallHint.qml:79
+msgid "Tap to return to call..."
+msgstr "Toque para volver a chamar..."
+
+#: qml/Panel/ActiveCallHint.qml:92
+msgid "Conference"
+msgstr "Conferencia"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:643
+msgid "Nothing is playing"
+msgstr "Non hai nada en reprodución"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:791
+msgid "In queue…"
+msgstr "Na cola..."
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:795
+msgid "Downloading"
+msgstr "Descargando"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:797
+msgid "Paused, tap to resume"
+msgstr "Detido, toque para continuar"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:799
+msgid "Canceled"
+msgstr "Cancelado"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:801
+msgid "Finished"
+msgstr "Rematado"
+
+#: qml/Panel/Indicators/MenuItemFactory.qml:803
+msgid "Failed, tap to retry"
+msgstr "Fallou, toque para reintentar"
+
+#: qml/Panel/Indicators/ModemInfoItem.qml:105
+msgid "Unlock SIM"
+msgstr "Desbloquear a SIM"
+
+#: qml/Panel/Indicators/RoamingIndication.qml:27
+msgid "Roaming"
+msgstr "Itinerancia"
+
+#: qml/Shell.qml:391
+msgid "Enter passphrase"
+msgstr "Introduza a frase secreta"
+
+#: qml/Shell.qml:392
+msgid "Sorry, incorrect passphrase"
+msgstr "Sentímolo a frase é incorrecta"
+
+#: qml/Shell.qml:393
+msgid "Please re-enter"
+msgstr "Introducir de novo"
+
+#: qml/Shell.qml:395
+msgid "Enter passcode"
+msgstr "Introduza a clave"
+
+#: qml/Shell.qml:396
+msgid "Sorry, incorrect passcode"
+msgstr "Sentímolo, a clave é incorrecta"
+
+#: qml/Shell.qml:399
 #, qt-format
-msgid "Please enter %1"
-msgstr "Introduza %1"
+msgid "Enter %1"
+msgstr "Introducir %1"
+
+#: qml/Shell.qml:400
+#, qt-format
+msgid "Sorry, incorrect %1"
+msgstr "Sentímolo, %1 non coincide"
+
+#: qml/Shell.qml:441
+msgid "Sorry, incorrect passphrase."
+msgstr "Sentímolo a frase é incorrecta."
+
+#: qml/Shell.qml:442
+msgid "Sorry, incorrect passcode."
+msgstr "Sentímolo, a clave é incorrecta."
+
+#: qml/Shell.qml:443
+msgid "This will be your last attempt."
+msgstr "Este será o seu último intento."
+
+#: qml/Shell.qml:445
+msgid ""
+"If passphrase is entered incorrectly, your phone will conduct a factory "
+"reset and all personal data will be deleted."
+msgstr ""
+"Se a frase de paso introducida é incorrecta, o teléfono restabelecerá os "
+"valores de fábrica e perderá todos os datos persoais."
+
+#: qml/Shell.qml:446
+msgid ""
+"If passcode is entered incorrectly, your phone will conduct a factory reset "
+"and all personal data will be deleted."
+msgstr ""
+"Se a clave introducida é incorrecta, o teléfono restabelecerá os valores de "
+"fábrica e perderá todos os datos persoais."
+
+#~ msgid "Confirm"
+#~ msgstr "Confirmar"
+
+#~ msgid "Type or say a command"
+#~ msgstr "Escriba ou diga unha orde"
+
+#~ msgid "Speak Now..."
+#~ msgstr "Fale agora…"
+
+#~ msgid "Speaking..."
+#~ msgstr "Falando…"
+
+#~ msgid "Loading. Please Wait..."
+#~ msgstr "Cargando, agarde…"

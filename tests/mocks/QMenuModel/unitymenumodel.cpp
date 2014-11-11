@@ -17,7 +17,6 @@
  */
 
 #include "unitymenumodel.h"
-#include <QDebug>
 
 enum MenuRoles {
     LabelRole  = Qt::DisplayRole + 1,
@@ -38,6 +37,10 @@ UnityMenuModel::UnityMenuModel(QObject *parent)
 {
 }
 
+UnityMenuModel::~UnityMenuModel()
+{
+}
+
 QVariant UnityMenuModel::modelData() const
 {
     return m_modelData;
@@ -47,12 +50,11 @@ void UnityMenuModel::setModelData(const QVariant& data)
 {
     beginResetModel();
 
-    m_modelData.clear();
     m_modelData = data.toList();
+    Q_EMIT modelDataChanged();
 
     endResetModel();
 }
-
 
 void UnityMenuModel::insertRow(int row, const QVariant& data)
 {
@@ -81,10 +83,6 @@ void UnityMenuModel::removeRow(int row)
     m_modelData.removeAt(row);
 
     endRemoveRows();
-}
-
-UnityMenuModel::~UnityMenuModel()
-{
 }
 
 QByteArray UnityMenuModel::busName() const
@@ -119,11 +117,16 @@ void UnityMenuModel::setMenuObjectPath(const QByteArray &path)
 
 ActionStateParser* UnityMenuModel::actionStateParser() const
 {
-    return NULL;
+    return nullptr;
 }
 
 void UnityMenuModel::setActionStateParser(ActionStateParser*)
 {
+}
+
+QString UnityMenuModel::nameOwner() const
+{
+    return QString("");
 }
 
 int UnityMenuModel::rowCount(const QModelIndex&) const
@@ -186,11 +189,11 @@ QHash<int, QByteArray> UnityMenuModel::roleNames() const
 QObject * UnityMenuModel::submenu(int position, QQmlComponent*)
 {
     if (position < 0 || m_modelData.count() < position) {
-        return NULL;
+        return nullptr;
     }
 
     while (submenus.count() <= position) {
-        submenus.append(NULL);
+        submenus.append(nullptr);
     }
 
     QVariant submenuData = subMenuData(position);
@@ -205,7 +208,7 @@ QObject * UnityMenuModel::submenu(int position, QQmlComponent*)
         return model;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool UnityMenuModel::loadExtendedAttributes(int, const QVariantMap &)

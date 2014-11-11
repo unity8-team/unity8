@@ -21,9 +21,9 @@ Item {
     id: root
 
     property string iconName
-    property int count: -1
+    property int count: 0
+    property bool countVisible: false
     property int progress: -1
-    property bool highlighted: false
     property bool itemFocused: false
     property real maxAngle: 0
     property bool inverted: false
@@ -39,12 +39,6 @@ Item {
     property real offset: 0
     property real itemOpacity: 1
     property real brightness: 0
-
-    onIconNameChanged: shaderEffectSource.scheduleUpdate();
-    onCountChanged: shaderEffectSource.scheduleUpdate();
-    onProgressChanged: shaderEffectSource.scheduleUpdate();
-    onHighlightedChanged: shaderEffectSource.scheduleUpdate();
-    onItemFocusedChanged: shaderEffectSource.scheduleUpdate();
 
     Item {
         id: iconItem
@@ -63,41 +57,46 @@ Item {
                 id: iconImage
                 sourceSize.width: iconShape.width
                 sourceSize.height: iconShape.height
+                fillMode: Image.PreserveAspectCrop
                 source: root.iconName
             }
         }
 
         BorderImage {
-            id: overlayHighlight
+            id: itemGlow
             anchors.centerIn: iconItem
-            rotation: inverted ? 180 : 0
-            source: root.highlighted ? "graphics/selected.sci" : "graphics/non-selected.sci"
-            width: root.itemWidth + units.gu(0.5)
-            height: root.itemHeight + units.gu(0.5)
+            source: "graphics/icon-top-highlight.png"
+            width: root.itemWidth - units.gu(1)
+            height: root.itemHeight - units.gu(1)
         }
 
-        BorderImage {
+        UbuntuShape {
+            id: countEmblem
             objectName: "countEmblem"
             anchors {
                 right: parent.right
                 top: parent.top
                 margins: units.dp(3)
             }
-            width: Math.min(root.itemWidth, Math.max(units.gu(3), countLabel.implicitWidth + units.gu(2.5)))
-            height: units.gu(3)
-            source: "graphics/notification.sci"
-            visible: root.count > 0
+            width: Math.min(root.itemWidth, Math.max(units.gu(2), countLabel.implicitWidth + units.gu(1)))
+            height: units.gu(2)
+            color: UbuntuColors.orange
+            visible: root.countVisible
+            borderSource: "none"
 
             Label {
                 id: countLabel
+                objectName: "countLabel"
                 text: root.count
                 anchors.centerIn: parent
+                // FIXME: verticalCenter seems to be off wee bit and QML doesn't have a centerLine
+                // property for Text: https://bugreports.qt-project.org/browse/QTBUG-40479
+                anchors.verticalCenterOffset: -units.dp(.5)
                 width: root.itemWidth - units.gu(1)
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 color: "white"
-                fontSize: "small"
-                font.bold: true
+                fontSize: "x-small"
             }
         }
 
@@ -165,7 +164,6 @@ Item {
             id: shaderEffectSource
             sourceItem: iconItem
             hideSource: true
-            live: false
         }
 
         transform: [

@@ -20,23 +20,49 @@
 #include "unitymenumodelcache.h"
 #include <unitymenumodel.h>
 
+#include <QQmlEngine>
+
+QPointer<UnityMenuModelCache> UnityMenuModelCache::theCache = nullptr;
+
+UnityMenuModelCache* UnityMenuModelCache::singleton()
+{
+    if (theCache.isNull()) {
+        theCache = new UnityMenuModelCache();
+    }
+    return theCache.data();
+}
+
 UnityMenuModelCache::UnityMenuModelCache(QObject* parent)
     : QObject(parent)
 {
 }
 
-UnityMenuModelCache::~UnityMenuModelCache()
+QSharedPointer<UnityMenuModel> UnityMenuModelCache::model(const QByteArray& path)
 {
+    if (m_registry.contains(path))
+        return m_registry[path];
+
+    UnityMenuModel* model = new UnityMenuModel;
+    QQmlEngine::setObjectOwnership(model, QQmlEngine::CppOwnership);
+
+    QSharedPointer<UnityMenuModel> menuModel(model);
+    connect(model, &QObject::destroyed, this, [this] {
+        QMutableHashIterator<QByteArray, QWeakPointer<UnityMenuModel>> iter(m_registry);
+        while(iter.hasNext()) {
+            auto keyVal = iter.next();
+            if (keyVal.value().isNull()) {
+                iter.remove();
+                break;
+            }
+        }
+    });
+    m_registry[path] = menuModel.toWeakRef();
+
+    menuModel->setMenuObjectPath(path);
+    return menuModel;
 }
 
-
-UnityMenuModel* UnityMenuModelCache::model(const QString& path) const
+bool UnityMenuModelCache::contains(const QByteArray& path)
 {
-    return m_menuModels.value(path, NULL);
-}
-
-void UnityMenuModelCache::registerModel(const QString& path, UnityMenuModel* menuModel)
-{
-    menuModel->setParent(this);
-    m_menuModels[path] = menuModel;
+    return m_registry.contains(path);
 }

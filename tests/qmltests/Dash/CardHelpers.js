@@ -16,7 +16,7 @@
 
 .pragma library
 
-var components = ["title", "art", "subtitle", "mascot", "emblem", "old-price", "price", "alt-price", "rating", "alt-rating", "summary"]
+var components = ["title", "art", "subtitle", "mascot", "emblem", "summary", "attributes", "overlayColor"]
 
 var defaultLayout = ' \
 { \
@@ -31,24 +31,14 @@ var defaultLayout = ' \
   "components": { \
     "title": null, \
     "art": { \
-        "aspect-ratio": 1.0, \
-        "fill-mode": "crop" \
+        "aspect-ratio": 1.0 \
     }, \
     "subtitle": null, \
+    "overlayColor": null, \
     "mascot": null, \
     "emblem": null, \
-    "old-price": null, \
-    "price": null, \
-    "alt-price": null, \
-    "rating": { \
-      "type": "stars", \
-      "range": [0, 5], \
-      "full": "image://theme/rating-star-full", \
-      "half": "image://theme/rating-star-half", \
-      "empty": "image://theme/rating-star-empty" \
-    }, \
-    "alt-rating": null, \
-    "summary": null \
+    "summary": null, \
+    "attributes": { "max-count": 2 } \
   }, \
   "resources": {} \
 }'
@@ -59,7 +49,10 @@ var fullMapping = ' \
   "art": "art", \
   "subtitle": "subtitle", \
   "mascot": "mascot", \
-  "summary": "summary" \
+  "emblem": "emblem", \
+  "overlayColor": "overlayColor", \
+  "summary": "summary", \
+  "attributes": "attributes" \
 }'
 
 

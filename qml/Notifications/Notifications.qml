@@ -31,13 +31,17 @@ ListView {
 
     SortFilterProxyModel {
         id: snapDecisionProxyModel
+        objectName: "snapDecisionProxyModel"
 
         model: notificationList.model
-        filterRole: UnityNotifications.ModelInterface.RoleType
+        filterRole: UnityNotifications.ModelInterface != undefined ? UnityNotifications.ModelInterface.RoleType : 0
         filterRegExp: RegExp(UnityNotifications.Notification.SnapDecision)
     }
-    spacing: delegate.fullscreen ? 0 : units.gu(.5)
 
+    property bool topmostIsFullscreen: false
+    spacing: topmostIsFullscreen ? 0 : units.gu(.5)
+
+    // FIXME: This doesn't make any sense and results in a binding loop
     currentIndex: (currentIndex < 1 && count > 1) ? 1 : -1
 
     delegate: Notification {
@@ -52,6 +56,7 @@ ListView {
         secondaryIconSource: model.secondaryIcon
         summary: model.summary
         body: model.body
+        value: model.value
         actions: model.actions
         notificationId: model.id
         notification: notificationList.model.getRaw(notificationId)
@@ -60,10 +65,25 @@ ListView {
 
         // make sure there's no opacity-difference between the several
         // elements in a notification
-        layer.enabled: add.running || remove.running || populate.running
+        // FIXME: disabled all transitions because of LP: #1354406 workaround
+        //layer.enabled: add.running || remove.running || populate.running
+
+        Component.onCompleted: {
+            if (index == 1) {
+                notificationList.topmostIsFullscreen = fullscreen
+            }
+        }
+
+        onFullscreenChanged: {
+            // index 1 because 0 is the PlaceHolder...
+            if (index == 1) {
+                notificationList.topmostIsFullscreen = fullscreen
+            }
+        }
     }
 
-    populate: Transition {
+    // FIXME: disabled all transitions because of LP: #1354406 workaround
+    /*populate: Transition {
         UbuntuNumberAnimation {
             property: "opacity"
             to: 1
@@ -91,5 +111,5 @@ ListView {
             properties: "x,y"
             duration: UbuntuAnimation.SnapDuration
         }
-    }
+    }*/
 }

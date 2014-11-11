@@ -58,18 +58,19 @@ find_package(Qt5DBus 5.2 REQUIRED)
 include(GNUInstallDirs)
 
 set(SHELL_APP_DIR ${CMAKE_INSTALL_DATADIR}/unity8)
+set(SHELL_PRIVATE_LIBDIR ${CMAKE_INSTALL_LIBDIR}/unity8)
 
 execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=plugindir_suffix unity-shell-api OUTPUT_VARIABLE SHELL_INSTALL_QML OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(SHELL_INSTALL_QML STREQUAL "")
     message(FATAL_ERROR "Could not determine plugin installation dir.")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+
 execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=plugindir unity-shell-api OUTPUT_VARIABLE SHELL_PLUGINDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(SHELL_PLUGINDIR STREQUAL "")
     message(FATAL_ERROR "Could not determine plugin import dir.")
 endif()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wall -Wextra")
 
@@ -87,6 +88,9 @@ endif()
 # "signals" and "slots"
 add_definitions(-DQT_NO_KEYWORDS)
 
+# Save a few container detach and conversions
+add_definitions(-DQT_STRICT_ITERATORS)
+
 # Tests
 include(CTest)
 enable_testing()
@@ -96,6 +100,7 @@ include(autopilot)
 declare_autopilot_test(shell unity8.shell ${CMAKE_SOURCE_DIR}/tests/autopilot/)
 
 set(SHELL_APP unity8)
+set(DASH_APP unity8-dash)
 set(SCOPE_TOOL unity-scope-tool)
 
 include_directories(
@@ -105,6 +110,7 @@ include_directories(
 
 # add subdirectories to build
 add_subdirectory(include)
+add_subdirectory(libs)
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(qml)

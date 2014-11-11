@@ -77,12 +77,14 @@ Rectangle {
             return [
                 { tag: "Actions", type: "actions", source: "PreviewActions.qml" },
                 { tag: "Audio", type: "audio", source: "PreviewAudioPlayback.qml" },
+                { tag: "Expandable", type: "expandable", source: "PreviewExpandable.qml" },
                 { tag: "Gallery", type: "gallery", source: "PreviewImageGallery.qml" },
                 { tag: "Header", type: "header", source: "PreviewHeader.qml" },
                 { tag: "Image", type: "image", source: "PreviewZoomableImage.qml" },
                 { tag: "Progress", type: "progress", source: "PreviewProgress.qml" },
                 { tag: "Rating Input", type: "rating-input", source: "PreviewRatingInput.qml" },
                 { tag: "Rating Display", type: "reviews", source: "PreviewRatingDisplay.qml" },
+                { tag: "Table", type: "table", source: "PreviewTable.qml" },
                 { tag: "Text", type: "text", source: "PreviewTextSummary.qml" },
                 { tag: "Video", type: "video", source: "PreviewVideoPlayback.qml" },
             ];
@@ -92,7 +94,7 @@ Rectangle {
             factory.widgetData = { type: data.type };
             factory.widgetType = data.type;
 
-            verify(("" + factory.source).indexOf(data.source) != -1);
+            verify((String(factory.source)).indexOf(data.source) != -1);
         }
     }
 }

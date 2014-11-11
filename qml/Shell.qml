@@ -15,26 +15,34 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Window 2.0
 import AccountsService 0.1
 import GSettings 1.0
 import Unity.Application 0.1
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Popups 1.0
 import Ubuntu.Gestures 0.1
+import Ubuntu.SystemImage 0.1
+import Ubuntu.Telephony 0.1 as Telephony
+import Unity.Connectivity 0.1
 import Unity.Launcher 0.1
+import Utils 0.1
 import LightDM 0.1 as LightDM
 import Powerd 0.1
 import SessionBroadcast 0.1
-import "Dash"
 import "Greeter"
 import "Launcher"
 import "Panel"
 import "Components"
 import "Notifications"
+import "Stages"
+import "Panel/Indicators"
 import Unity.Notifications 1.0 as NotificationBackend
 import Unity.Session 0.1
 import Ubuntu.PerformanceMetrics 0.1
+import Unity.DashCommunicator 0.1
 
-FocusScope {
+Item {
     id: shell
 
     // this is only here to select the width / height of the window if not running fullscreen
@@ -47,23 +55,48 @@ FocusScope {
     property url background
     readonly property real panelHeight: panel.panelHeight
 
-    property bool dashShown: dash.shown
+    readonly property bool locked: LightDM.Greeter.active && !LightDM.Greeter.authenticated && !forcedUnlock
+    readonly property alias hasLockedApp: greeter.hasLockedApp
+    readonly property bool forcedUnlock: edgeDemo.running
+    onForcedUnlockChanged: if (forcedUnlock) lockscreen.hide()
 
     property bool sideStageEnabled: shell.width >= units.gu(100)
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
 
+    property int maxFailedLogins: -1 // disabled by default for now, will enable via settings in future
+    property int failedLoginsDelayAttempts: 7 // number of failed logins
+    property int failedLoginsDelayMinutes: 5 // minutes of forced waiting
+
+    property int orientation
+    readonly property int deviceOrientationAngle: Screen.angleBetween(Screen.primaryOrientation, Screen.orientation)
+    onDeviceOrientationAngleChanged: {
+        if (!OrientationLock.enabled) {
+            orientation = Screen.orientation;
+        }
+    }
+    readonly property bool orientationLockEnabled: OrientationLock.enabled
+    onOrientationLockEnabledChanged: {
+        if (orientationLockEnabled) {
+            OrientationLock.savedOrientation = Screen.orientation;
+        } else {
+            orientation = Screen.orientation;
+        }
+    }
+
     function activateApplication(appId) {
         if (ApplicationManager.findApplication(appId)) {
             ApplicationManager.requestFocusApplication(appId);
-            stages.show(true);
-            if (stages.locked && ApplicationManager.focusedApplicationId == appId) {
-                applicationsDisplayLoader.item.select(appId);
-            }
         } else {
             var execFlags = shell.sideStageEnabled ? ApplicationManager.NoFlag : ApplicationManager.ForceMainStage;
             ApplicationManager.startApplication(appId, execFlags);
-            stages.show(false);
         }
+    }
+
+    function startLockedApp(app) {
+        if (shell.locked) {
+            greeter.lockedApp = app;
+        }
+        shell.activateApplication(app);
     }
 
     Binding {
@@ -74,6 +107,12 @@ FocusScope {
 
     Component.onCompleted: {
         Theme.name = "Ubuntu.Components.Themes.SuruGradient"
+        if (ApplicationManager.count > 0) {
+            ApplicationManager.focusApplication(ApplicationManager.get(0).appId);
+        }
+        if (orientationLockEnabled) {
+            orientation = OrientationLock.savedOrientation;
+        }
     }
 
     GSettings {
@@ -89,105 +128,48 @@ FocusScope {
         id: volumeControl
     }
 
-    Keys.onVolumeUpPressed: volumeControl.volumeUp()
-    Keys.onVolumeDownPressed: volumeControl.volumeDown()
-
-    Item {
-        id: underlayClipper
-        anchors.fill: parent
-        anchors.rightMargin: stages.overlayWidth
-        clip: stages.overlayMode && !stages.painting
-
-        InputFilterArea {
-            anchors.fill: parent
-            blockInput: parent.clip
-        }
-
-        Item {
-            id: underlay
-            objectName: "underlay"
-            anchors.fill: parent
-            anchors.rightMargin: -parent.anchors.rightMargin
-
-            // Whether the underlay is fully covered by opaque UI elements.
-            property bool fullyCovered: panel.indicators.fullyOpened && shell.width <= panel.indicatorsMenuWidth
-
-            // Whether the user should see the topmost application surface (if there's one at all).
-            readonly property bool applicationSurfaceShouldBeSeen: stages.shown && !stages.painting && !stages.overlayMode
-
-            // NB! Application surfaces are stacked behind the shell one. So they can only be seen by the user
-            // through the translucent parts of the shell surface.
-            visible: !fullyCovered && !applicationSurfaceShouldBeSeen
-
-            Rectangle {
-                anchors.fill: parent
-                color: "black"
-                opacity: dash.disappearingAnimationProgress
-            }
-
-            Image {
-                anchors.fill: dash
-                source: shell.width > shell.height ? "Dash/graphics/paper_landscape.png" : "Dash/graphics/paper_portrait.png"
-                fillMode: Image.PreserveAspectCrop
-                horizontalAlignment: Image.AlignRight
-                verticalAlignment: Image.AlignTop
-            }
-
-            Dash {
-                id: dash
-                objectName: "dash"
-
-                available: !greeter.shown && !lockscreen.shown
-                hides: [stages, launcher, panel.indicators]
-                shown: disappearingAnimationProgress !== 1.0 && greeterWrapper.showProgress !== 1.0
-                enabled: disappearingAnimationProgress === 0.0 && greeterWrapper.showProgress === 0.0 && edgeDemo.dashEnabled
-
-                anchors {
-                    fill: parent
-                    topMargin: panel.panelHeight
-                }
-
-                contentScale: 1.0 - 0.2 * disappearingAnimationProgress
-                opacity: 1.0 - disappearingAnimationProgress
-                property real disappearingAnimationProgress: {
-                    if (stages.overlayMode) {
-                        return 0;
-                    } else {
-                        return stages.showProgress
-                    }
-                }
-
-                // FIXME: only necessary because stages.showProgress is not animated
-                Behavior on disappearingAnimationProgress { SmoothedAnimation { velocity: 5 }}
-            }
-        }
+    DashCommunicator {
+        id: dash
+        objectName: "dashCommunicator"
     }
 
-    EdgeDragArea {
-        id: stagesDragHandle
-        direction: Direction.Leftwards
+    ScreenGrabber {
+        id: screenGrabber
+        z: edgeDemo.z + 10
+        enabled: Powerd.status === Powerd.On
+    }
 
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-        width: shell.edgeSize
+    Binding {
+        target: ApplicationManager
+        property: "forceDashActive"
+        value: launcher.shown || launcher.dashSwipe
+    }
 
-        property real progress: stages.width
+    VolumeKeyFilter {
+        id: volumeKeyFilter
+        onVolumeDownPressed: volumeControl.volumeDown()
+        onVolumeUpPressed: volumeControl.volumeUp()
+        onBothVolumeKeysPressed: screenGrabber.capture()
+    }
 
-        onTouchXChanged: {
-            if (status == DirectionalDragArea.Recognized) {
-                if (ApplicationManager.count == 0) {
-                    progress = Math.max(stages.width - stagesDragHandle.width + touchX, stages.width * .3)
-                } else {
-                    progress = stages.width - stagesDragHandle.width + touchX
-                }
+    WindowKeysFilter {
+        Keys.onPressed: {
+            if (event.key == Qt.Key_PowerOff || event.key == Qt.Key_PowerDown) {
+                dialogs.onPowerKeyPressed();
+                event.accepted = true;
+            } else {
+                volumeKeyFilter.onKeyPressed(event.key);
+                event.accepted = false;
             }
         }
 
-        onDraggingChanged: {
-            if (!dragging) {
-                if (ApplicationManager.count > 0 && progress < stages.width - units.gu(10)) {
-                    stages.show(true)
-                }
-                stagesDragHandle.progress = stages.width;
+        Keys.onReleased: {
+            if (event.key == Qt.Key_PowerOff || event.key == Qt.Key_PowerDown) {
+                dialogs.onPowerKeyReleased();
+                event.accepted = true;
+            } else {
+                volumeKeyFilter.onKeyReleased(event.key);
+                event.accepted = false;
             }
         }
     }
@@ -197,122 +179,138 @@ FocusScope {
         objectName: "stages"
         width: parent.width
         height: parent.height
-
-        x: {
-            if (shown) {
-                if (overlayMode || locked) {
-                    return 0;
-                }
-                return launcher.progress
-            } else {
-                return stagesDragHandle.progress
-            }
-        }
-
-        Behavior on x { SmoothedAnimation { velocity: 600; duration: UbuntuAnimation.FastDuration } }
-
-        property bool shown: false
-
-        property real showProgress: overlayMode ? 0 : MathUtils.clamp(1 - x / shell.width, 0, 1)
-
-        property bool fullyShown: x == 0
-        property bool fullyHidden: x == width
-
-        property bool painting: applicationsDisplayLoader.item ? applicationsDisplayLoader.item.painting : false
-        property bool fullscreen: applicationsDisplayLoader.item ? applicationsDisplayLoader.item.fullscreen : false
-        property bool overlayMode: applicationsDisplayLoader.item ? applicationsDisplayLoader.item.overlayMode : false
-        property int overlayWidth: applicationsDisplayLoader.item ? applicationsDisplayLoader.item.overlayWidth : false
-        property bool locked: applicationsDisplayLoader.item ? applicationsDisplayLoader.item.locked : false
-
-        function show(focusApp) {
-            shown = true;
-            panel.indicators.hide();
-            edgeDemo.stopDemo();
-            greeter.hide();
-            if (!ApplicationManager.focusedApplicationId && ApplicationManager.count > 0 && focusApp) {
-                ApplicationManager.focusApplication(ApplicationManager.get(0).appId);
-            }
-        }
-
-        function hide() {
-            shown = false;
-            if (ApplicationManager.focusedApplicationId) {
-                ApplicationManager.unfocusCurrentApplication();
-            }
-        }
+        visible: !ApplicationManager.empty
 
         Connections {
             target: ApplicationManager
-
             onFocusRequested: {
-                stages.show(true);
+                if (greeter.narrowMode) {
+                    if (appId === "dialer-app" && callManager.hasCalls && shell.locked) {
+                        // If we are in the middle of a call, make dialer lockedApp and show it.
+                        // This can happen if user backs out of dialer back to greeter, then
+                        // launches dialer again.
+                        greeter.lockedApp = appId;
+                    }
+                    if (greeter.hasLockedApp) {
+                        if (appId === greeter.lockedApp) {
+                            lockscreen.hide() // show locked app
+                        } else {
+                            greeter.startUnlock() // show lockscreen if necessary
+                        }
+                    }
+                    greeter.hide();
+                } else {
+                    if (LightDM.Greeter.active) {
+                        greeter.startUnlock()
+                    }
+                }
             }
 
             onFocusedApplicationIdChanged: {
-                if (ApplicationManager.focusedApplicationId.length > 0) {
-                    stages.show(false);
-                } else {
-                    if (!stages.overlayMode) {
-                        stages.hide();
-                    }
+                if (greeter.hasLockedApp && greeter.lockedApp !== ApplicationManager.focusedApplicationId) {
+                    greeter.startUnlock()
                 }
+                panel.indicators.hide();
             }
 
             onApplicationAdded: {
-                stages.show(false);
-            }
-
-            onApplicationRemoved: {
-                if (ApplicationManager.focusedApplicationId.length == 0) {
-                    stages.hide();
+                if (greeter.shown && appId != "unity8-dash") {
+                    greeter.startUnlock()
                 }
-            }
-        }
-
-        Connections {
-            target: DBusUnitySessionService
-
-            function closeAllApps() {
-                while (true) {
-                    var app = ApplicationManager.get(0);
-                    if (app === null) {
-                        break;
-                    }
-                    ApplicationManager.stopApplication(app.appId);
+                if (greeter.narrowMode && greeter.hasLockedApp && appId === greeter.lockedApp) {
+                    lockscreen.hide() // show locked app
                 }
-            }
-
-            onLogoutRequested: {
-                // TODO: Display a dialog to ask the user to confirm.
-                DBusUnitySessionService.Logout();
-            }
-
-            onLogoutReady: {
-                closeAllApps();
-                Qt.quit();
+                launcher.hide();
             }
         }
 
         Loader {
             id: applicationsDisplayLoader
+            objectName: "applicationsDisplayLoader"
             anchors.fill: parent
 
-            source: shell.sideStageEnabled ? "Stages/StageWithSideStage.qml" : "Stages/PhoneStage.qml"
+            // When we have a locked app, we only want to show that one app.
+            // FIXME: do this in a less traumatic way.  We currently only allow
+            // locked apps in phone mode (see FIXME in Lockscreen component in
+            // this same file).  When that changes, we need to do something
+            // nicer here.  But this code is currently just to prevent a
+            // theoretical attack where user enters lockedApp mode, then makes
+            // the screen larger (maybe connects to monitor) and tries to enter
+            // tablet mode.
+            property bool tabletMode: shell.sideStageEnabled && !greeter.hasLockedApp
+            source: tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
 
             Binding {
                 target: applicationsDisplayLoader.item
-                property: "moving"
-                value: !stages.fullyShown
-            }
-            Binding {
-                target: applicationsDisplayLoader.item
-                property: "shown"
-                value: stages.shown
+                property: "objectName"
+                value: "stage"
             }
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "dragAreaWidth"
                 value: shell.edgeSize
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "maximizedAppTopMargin"
+                // Not just using panel.panelHeight as that changes depending on the focused app.
+                value: panel.indicators.minimizedPanelHeight + units.dp(2) // dp(2) for orange line
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "interactive"
+                value: edgeDemo.stagesEnabled && !greeter.shown && !lockscreen.shown && panel.indicators.fullyClosed && launcher.progress == 0 && !notifications.useModal
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "spreadEnabled"
+                value: edgeDemo.stagesEnabled && !greeter.hasLockedApp
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "inverseProgress"
+                value: launcher.progress
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "orientation"
+                value: shell.orientation
+            }
+        }
+    }
+
+    InputMethod {
+        id: inputMethod
+        objectName: "inputMethod"
+        anchors { fill: parent; topMargin: panel.panelHeight }
+        z: notifications.useModal || panel.indicators.shown ? overlay.z + 1 : overlay.z - 1
+    }
+
+    Connections {
+        target: SurfaceManager
+        onSurfaceCreated: {
+            if (surface.type == MirSurfaceItem.InputMethod) {
+                inputMethod.surface = surface;
+            }
+        }
+
+        onSurfaceDestroyed: {
+            if (inputMethod.surface == surface) {
+                inputMethod.surface = null;
+                surface.parent = null;
+            }
+            if (!surface.parent) {
+                // there's no one displaying it. delete it right away
+                surface.release();
+            }
+        }
+    }
+    Connections {
+        target: SessionManager
+        onSessionStopping: {
+            if (!session.parentSession && !session.application) {
+                // nothing is using it. delete it right away
+                session.release();
             }
         }
     }
@@ -321,26 +319,56 @@ FocusScope {
         id: lockscreen
         objectName: "lockscreen"
 
-        readonly property int backgroundTopMargin: -panel.panelHeight
-
         hides: [launcher, panel.indicators]
         shown: false
         enabled: true
         showAnimation: StandardAnimation { property: "opacity"; to: 1 }
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
         y: panel.panelHeight
-        x: required ? 0 : - width
+        visible: required
         width: parent.width
         height: parent.height - panel.panelHeight
         background: shell.background
+        alphaNumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
         minPinLength: 4
         maxPinLength: 4
 
+        // FIXME: We *should* show emergency dialer if there is a SIM present,
+        // regardless of whether the side stage is enabled.  But right now,
+        // the assumption is that narrow screens are phones which have SIMs
+        // and wider screens are tablets which don't.  When we do allow this
+        // on devices with a side stage and a SIM, work should be done to
+        // ensure that the main stage is disabled while the dialer is present
+        // in the side stage.  See the FIXME in the stage loader in this file.
+        showEmergencyCallButton: !shell.sideStageEnabled
+
         onEntered: LightDM.Greeter.respond(passphrase);
         onCancel: greeter.show()
+        onEmergencyCall: startLockedApp("dialer-app")
+
+        onShownChanged: if (shown) greeter.lockedApp = ""
+
+        function maybeShow() {
+            if (!shell.forcedUnlock) {
+                show()
+            }
+        }
+
+        Timer {
+            id: forcedDelayTimer
+            interval: 1000 * 60
+            onTriggered: {
+                if (lockscreen.delayMinutes > 0) {
+                    lockscreen.delayMinutes -= 1
+                    if (lockscreen.delayMinutes > 0) {
+                        start() // go again
+                    }
+                }
+            }
+        }
 
         Component.onCompleted: {
-            if (LightDM.Users.count == 1) {
+            if (greeter.narrowMode) {
                 LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole))
             }
         }
@@ -349,29 +377,95 @@ FocusScope {
     Connections {
         target: LightDM.Greeter
 
+        onShowGreeter: greeter.show()
+        onHideGreeter: greeter.login()
+
         onShowPrompt: {
-            if (LightDM.Users.count == 1) {
-                // TODO: There's no better way for now to determine if its a PIN or a passphrase.
-                if (text == "PIN") {
-                    lockscreen.alphaNumeric = false
+            shell.enabled = true;
+            if (!LightDM.Greeter.active) {
+                return; // could happen if hideGreeter() comes in before we prompt
+            }
+            if (greeter.narrowMode) {
+                if (isDefaultPrompt) {
+                    if (lockscreen.alphaNumeric) {
+                        lockscreen.infoText = i18n.tr("Enter passphrase")
+                        lockscreen.errorText = i18n.tr("Sorry, incorrect passphrase") + "\n" +
+                                               i18n.tr("Please re-enter")
+                    } else {
+                        lockscreen.infoText = i18n.tr("Enter passcode")
+                        lockscreen.errorText = i18n.tr("Sorry, incorrect passcode")
+                    }
                 } else {
-                    lockscreen.alphaNumeric = true
+                    lockscreen.infoText = i18n.tr("Enter %1").arg(text.toLowerCase())
+                    lockscreen.errorText = i18n.tr("Sorry, incorrect %1").arg(text.toLowerCase())
                 }
-                lockscreen.placeholderText = i18n.tr("Please enter %1").arg(text);
-                lockscreen.show();
+
+                lockscreen.maybeShow();
+            }
+        }
+
+        onPromptlessChanged: {
+            if (!LightDM.Greeter.active) {
+                return; // could happen if hideGreeter() comes in before we prompt
+            }
+            if (greeter.narrowMode) {
+                if (LightDM.Greeter.promptless && LightDM.Greeter.authenticated) {
+                    lockscreen.hide()
+                } else {
+                    lockscreen.reset();
+                    lockscreen.maybeShow();
+                }
             }
         }
 
         onAuthenticationComplete: {
+            shell.enabled = true;
+            if (LightDM.Greeter.authenticated) {
+                AccountsService.failedLogins = 0
+            }
+            // Else only penalize user for a failed login if they actually were
+            // prompted for a password.  We do this below after the promptless
+            // early exit.
+
             if (LightDM.Greeter.promptless) {
                 return;
             }
+
             if (LightDM.Greeter.authenticated) {
-                lockscreen.hide();
+                greeter.login();
             } else {
+                AccountsService.failedLogins++
+                if (maxFailedLogins >= 2) { // require at least a warning
+                    if (AccountsService.failedLogins === maxFailedLogins - 1) {
+                        var title = lockscreen.alphaNumeric ?
+                                    i18n.tr("Sorry, incorrect passphrase.") :
+                                    i18n.tr("Sorry, incorrect passcode.")
+                        var text = i18n.tr("This will be your last attempt.") + " " +
+                                   (lockscreen.alphaNumeric ?
+                                    i18n.tr("If passphrase is entered incorrectly, your phone will conduct a factory reset and all personal data will be deleted.") :
+                                    i18n.tr("If passcode is entered incorrectly, your phone will conduct a factory reset and all personal data will be deleted."))
+                        lockscreen.showInfoPopup(title, text)
+                    } else if (AccountsService.failedLogins >= maxFailedLogins) {
+                        SystemImage.factoryReset() // Ouch!
+                    }
+                }
+                if (failedLoginsDelayAttempts > 0 && AccountsService.failedLogins % failedLoginsDelayAttempts == 0) {
+                    lockscreen.delayMinutes = failedLoginsDelayMinutes
+                    forcedDelayTimer.start()
+                }
+
                 lockscreen.clear(true);
+                if (greeter.narrowMode) {
+                    LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole))
+                }
             }
         }
+    }
+
+    Binding {
+        target: LightDM.Greeter
+        property: "active"
+        value: greeter.shown || lockscreen.shown || greeter.hasLockedApp
     }
 
     Rectangle {
@@ -383,7 +477,8 @@ FocusScope {
     Item {
         // Just a tiny wrapper to adjust greeter's x without messing with its own dragging
         id: greeterWrapper
-        x: launcher.progress
+        objectName: "greeterWrapper"
+        x: greeter.narrowMode ? launcher.progress : 0
         y: panel.panelHeight
         width: parent.width
         height: parent.height - panel.panelHeight
@@ -393,15 +488,41 @@ FocusScope {
             StandardAnimation {}
         }
 
+        property bool fullyShown: showProgress === 1.0
+        onFullyShownChanged: {
+            // Wait until the greeter is completely covering lockscreen before resetting it.
+            if (greeter.narrowMode && fullyShown && !LightDM.Greeter.authenticated) {
+                lockscreen.reset();
+                lockscreen.maybeShow();
+            }
+        }
+
         readonly property real showProgress: MathUtils.clamp((1 - x/width) + greeter.showProgress - 1, 0, 1)
+        onShowProgressChanged: {
+            if (showProgress === 0) {
+                if ((LightDM.Greeter.promptless && LightDM.Greeter.authenticated) || shell.forcedUnlock) {
+                    greeter.login()
+                } else if (greeter.narrowMode) {
+                    lockscreen.clear(false) // to reset focus if necessary
+                }
+            }
+        }
 
         Greeter {
             id: greeter
             objectName: "greeter"
 
+            signal sessionStarted() // helpful for tests
+
+            property string lockedApp: ""
+            property bool hasLockedApp: lockedApp !== ""
+
             available: true
             hides: [launcher, panel.indicators]
             shown: true
+            loadContent: required || lockscreen.required // keeps content in memory for quick show()
+
+            locked: shell.locked
 
             defaultBackground: shell.background
 
@@ -410,16 +531,48 @@ FocusScope {
 
             dragHandleWidth: shell.edgeSize
 
+            function startUnlock() {
+                if (narrowMode) {
+                    if (!LightDM.Greeter.authenticated) {
+                        lockscreen.maybeShow()
+                    }
+                    hide()
+                } else {
+                    show()
+                    tryToUnlock()
+                }
+            }
+
+            function login() {
+                enabled = false;
+                if (LightDM.Greeter.startSessionSync()) {
+                    sessionStarted();
+                    greeter.hide();
+                    lockscreen.hide();
+                    launcher.hide();
+                }
+                enabled = true;
+            }
+
             onShownChanged: {
                 if (shown) {
-                    lockscreen.reset();
-                    // If there is only one user, we start authenticating with that one here.
-                    // If there are more users, the Greeter will handle that
-                    if (LightDM.Users.count == 1) {
+                    // Disable everything so that user can't swipe greeter or
+                    // launcher until we get first prompt/authenticate, which
+                    // will re-enable the shell.
+                    shell.enabled = false;
+
+                    if (greeter.narrowMode) {
                         LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole));
+                    } else {
+                        reset()
                     }
+                    greeter.lockedApp = "";
                     greeter.forceActiveFocus();
                 }
+            }
+
+            Component.onCompleted: {
+                Connectivity.unlockAllModems()
             }
 
             onUnlocked: greeter.hide()
@@ -440,85 +593,110 @@ FocusScope {
         }
     }
 
-    InputFilterArea {
-        anchors.fill: parent
-        blockInput: ApplicationManager.focusedApplicationId.length === 0 || greeter.shown || lockscreen.shown || launcher.shown
-                    || panel.indicators.shown
+    Connections {
+        id: callConnection
+        target: callManager
+
+        onHasCallsChanged: {
+            if (shell.locked && callManager.hasCalls) {
+                // We just received an incoming call while locked.  The
+                // indicator will have already launched dialer-app for us, but
+                // there is a race between "hasCalls" changing and the dialer
+                // starting up.  So in case we lose that race, we'll start/
+                // focus the dialer ourselves here too.  Even if the indicator
+                // didn't launch the dialer for some reason (or maybe a call
+                // started via some other means), if an active call is
+                // happening, we want to be in the dialer.
+                startLockedApp("dialer-app")
+            }
+        }
     }
 
     Connections {
         id: powerConnection
         target: Powerd
 
-        onDisplayPowerStateChange: {
-            // We ignore any display-off signals when the proximity sensor
-            // is active.  This usually indicates something like a phone call.
-            if (status == Powerd.Off && reason != Powerd.Proximity) {
-                greeter.showNow();
-            }
-
-            // No reason to chew demo CPU when user isn't watching
-            if (status == Powerd.Off) {
-                edgeDemo.paused = true;
-            } else if (status == Powerd.On) {
-                edgeDemo.paused = false;
+        onStatusChanged: {
+            if (Powerd.status === Powerd.Off && reason !== Powerd.Proximity &&
+                    !callManager.hasCalls && !edgeDemo.running) {
+                greeter.showNow()
             }
         }
     }
 
     function showHome() {
-        var animate = !greeter.shown && !stages.shown
-        greeter.hide()
-        dash.setCurrentScope("clickscope", animate, false)
-        stages.hide()
+        if (edgeDemo.running) {
+            return
+        }
+
+        if (LightDM.Greeter.active) {
+            greeter.startUnlock()
+        }
+
+        var animate = !LightDM.Greeter.active && !stages.shown
+        dash.setCurrentScope(0, animate, false)
+        ApplicationManager.requestFocusApplication("unity8-dash")
     }
 
-    function hideIndicatorMenu(delay) {
-        panel.hideIndicatorMenu(delay);
+    function showDash() {
+        if (greeter.hasLockedApp || // just in case user gets here
+            (!greeter.narrowMode && shell.locked)) {
+            return
+        }
+
+        if (greeter.shown) {
+            greeter.hideRight();
+            launcher.fadeOut();
+        }
+
+        if (ApplicationManager.focusedApplicationId != "unity8-dash") {
+            ApplicationManager.requestFocusApplication("unity8-dash")
+            launcher.fadeOut();
+        }
     }
 
     Item {
         id: overlay
+        z: 10
 
         anchors.fill: parent
 
         Panel {
             id: panel
+            objectName: "panel"
             anchors.fill: parent //because this draws indicator menus
-            indicatorsMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
             indicators {
                 hides: [launcher]
-                available: edgeDemo.panelEnabled
+                available: edgeDemo.panelEnabled && (!shell.locked || AccountsService.enableIndicatorsWhileLocked) && !greeter.hasLockedApp
                 contentEnabled: edgeDemo.panelContentEnabled
-            }
-            property string focusedAppId: ApplicationManager.focusedApplicationId
-            property var focusedApplication: ApplicationManager.findApplication(focusedAppId)
-            fullscreenMode: focusedApplication && stages.fullscreen && !greeter.shown && !lockscreen.shown
-            searchVisible: !greeter.shown && !lockscreen.shown && dash.shown && dash.searchable
+                width: parent.width > units.gu(60) ? units.gu(40) : parent.width
 
-            InputFilterArea {
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                    right: parent.right
-                }
-                height: (panel.fullscreenMode) ? shell.edgeSize : panel.panelHeight
-                blockInput: true
-            }
-        }
+                minimizedPanelHeight: units.gu(3)
+                expandedPanelHeight: units.gu(7)
 
-        InputFilterArea {
-            blockInput: launcher.shown
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-                left: parent.left
+                indicatorsModel: visibleIndicators.model
             }
-            width: launcher.width
+
+            VisibleIndicators {
+                id: visibleIndicators
+                // TODO: This should be sourced by device type (eg "desktop", "tablet", "phone"...)
+                Component.onCompleted: initialise(indicatorProfile)
+            }
+            callHint {
+                greeterShown: greeter.shown || lockscreen.shown
+            }
+
+            property bool topmostApplicationIsFullscreen:
+                ApplicationManager.focusedApplicationId &&
+                    ApplicationManager.findApplication(ApplicationManager.focusedApplicationId).fullscreen
+
+            fullscreenMode: (topmostApplicationIsFullscreen && !LightDM.Greeter.active && launcher.progress == 0)
+                            || greeter.hasLockedApp
         }
 
         Launcher {
             id: launcher
+            objectName: "launcher"
 
             readonly property bool dashSwipe: progress > 0
 
@@ -526,28 +704,19 @@ FocusScope {
             anchors.bottom: parent.bottom
             width: parent.width
             dragAreaWidth: shell.edgeSize
-            available: edgeDemo.launcherEnabled
+            available: edgeDemo.launcherEnabled && (!shell.locked || AccountsService.enableLauncherWhileLocked) && !greeter.hasLockedApp
 
-            onShowDashHome: {
-                if (edgeDemo.running)
-                    return;
-
-                showHome()
-            }
-            onDash: {
-                if (stages.shown && !stages.overlayMode) {
-                    if (!stages.locked) {
-                        stages.hide();
-                        launcher.hide();
-                    }
-                }
-                if (greeter.shown) {
-                    greeter.hideRight();
-                    launcher.hide();
+            onShowDashHome: showHome()
+            onDash: showDash()
+            onDashSwipeChanged: {
+                if (dashSwipe) {
+                    dash.setCurrentScope(0, false, true)
                 }
             }
-            onDashSwipeChanged: if (dashSwipe && stages.shown) dash.setCurrentScope("clickscope", false, true)
             onLauncherApplicationSelected: {
+                if (greeter.hasLockedApp) {
+                    greeter.startUnlock()
+                }
                 if (!edgeDemo.running)
                     shell.activateApplication(appId)
             }
@@ -561,18 +730,13 @@ FocusScope {
         Rectangle {
             id: modalNotificationBackground
 
-            visible: notifications.useModal && !greeter.shown && (notifications.state == "narrow")
+            visible: notifications.useModal && (notifications.state == "narrow")
             color: "#000000"
             anchors.fill: parent
-            opacity: 0.5
+            opacity: 0.9
 
             MouseArea {
                 anchors.fill: parent
-            }
-
-            InputFilterArea {
-                anchors.fill: parent
-                blockInput: modalNotificationBackground.visible
             }
         }
 
@@ -582,12 +746,10 @@ FocusScope {
             model: NotificationBackend.Model
             margin: units.gu(1)
 
-            anchors {
-                top: parent.top
-                right: parent.right
-                bottom: parent.bottom
-                topMargin: panel.panelHeight
-            }
+            y: topmostIsFullscreen ? 0 : panel.panelHeight
+            width: parent.width
+            height: parent.height - (topmostIsFullscreen ? 0 : panel.panelHeight)
+
             states: [
                 State {
                     name: "narrow"
@@ -601,62 +763,25 @@ FocusScope {
                     PropertyChanges { target: notifications; width: units.gu(38) }
                 }
             ]
-
-            InputFilterArea {
-                anchors { left: parent.left; right: parent.right }
-                height: parent.contentHeight
-                blockInput: height > 0
-            }
         }
     }
 
-    focus: true
-    onFocusChanged: if (!focus) forceActiveFocus();
-
-    InputFilterArea {
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: parent.left
+    Dialogs {
+        id: dialogs
+        anchors.fill: parent
+        z: overlay.z + 10
+        onPowerOffClicked: {
+            shutdownFadeOutRectangle.enabled = true;
+            shutdownFadeOutRectangle.visible = true;
+            shutdownFadeOut.start();
         }
-        width: shell.edgeSize
-        blockInput: true
-    }
-
-    InputFilterArea {
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            right: parent.right
-        }
-        width: shell.edgeSize
-        blockInput: true
-    }
-
-    Binding {
-        target: i18n
-        property: "domain"
-        value: "unity8"
-    }
-
-    OSKController {
-        anchors.topMargin: panel.panelHeight
-        anchors.fill: parent // as needs to know the geometry of the shell
-    }
-
-    //FIXME: This should be handled in the input stack, keyboard shouldnt propagate
-    MouseArea {
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: ApplicationManager.keyboardVisible ? ApplicationManager.keyboardHeight : 0
-
-        enabled: ApplicationManager.keyboardVisible
     }
 
     Label {
+        id: alphaDisclaimerLabel
         anchors.centerIn: parent
         visible: ApplicationManager.fake ? ApplicationManager.fake : false
+        z: dialogs.z + 10
         text: "EARLY ALPHA\nNOT READY FOR USE"
         color: "lightgrey"
         opacity: 0.2
@@ -670,16 +795,38 @@ FocusScope {
 
     EdgeDemo {
         id: edgeDemo
+        objectName: "edgeDemo"
+        z: alphaDisclaimerLabel.z + 10
+        paused: Powerd.status === Powerd.Off // Saves power
         greeter: greeter
         launcher: launcher
-        dash: dash
-        indicators: panel.indicators
-        underlay: underlay
+        panel: panel
+        stages: stages
     }
 
     Connections {
         target: SessionBroadcast
         onShowHome: showHome()
+    }
+
+    Rectangle {
+        id: shutdownFadeOutRectangle
+        z: edgeDemo.z + 10
+        enabled: false
+        visible: false
+        color: "black"
+        anchors.fill: parent
+        opacity: 0.0
+        NumberAnimation on opacity {
+            id: shutdownFadeOut
+            from: 0.0
+            to: 1.0
+            onStopped: {
+                if (shutdownFadeOutRectangle.enabled && shutdownFadeOutRectangle.visible) {
+                    DBusUnitySessionService.Shutdown();
+                }
+            }
+        }
     }
 
     PerformanceOverlay {

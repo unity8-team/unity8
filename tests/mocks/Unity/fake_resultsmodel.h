@@ -29,6 +29,7 @@ class ResultsModel : public unity::shell::scopes::ResultsModelInterface
 
 public:
     explicit ResultsModel(int result_count, int categoryId, QObject* parent = 0);
+    explicit ResultsModel(QObject* parent = 0);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -39,6 +40,9 @@ public:
 
     /* setters */
     void setCategoryId(QString const& id) override;
+
+    // For testing purposes
+    Q_INVOKABLE void setResultCount(int result_count);
 
 private:
     int m_result_count;

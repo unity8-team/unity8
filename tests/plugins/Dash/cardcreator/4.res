@@ -5,13 +5,16 @@ AbstractButton {
                 property var cardData; 
                 property var artShapeBorderSource: undefined; 
                 property real fontScale: 1.0; 
-                property int headerAlignment: Text.AlignLeft; 
+                property var scopeStyle: null;
+                property int titleAlignment: Text.AlignLeft;
                 property int fixedHeaderHeight: -1; 
                 property size fixedArtShapeSize: Qt.size(-1, -1); 
                 readonly property string title: cardData && cardData["title"] || ""; 
                 property bool asynchronous: true; 
                 property bool showHeader: true; 
                 implicitWidth: childrenRect.width; 
+                enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true);
+
 readonly property size artShapeSize: Qt.size(-1, -1);
 readonly property int headerHeight: row.height;
 Row { 
@@ -26,7 +29,9 @@ Row {
 }
                     anchors.right: parent.right; 
                     anchors.margins: margins;
-data: [ Loader { 
+                    anchors.rightMargin: 0;
+data: [ 
+Loader { 
                         id: mascotShapeLoader; 
                         objectName: "mascotShapeLoader"; 
                         asynchronous: root.asynchronous; 
@@ -38,60 +43,71 @@ data: [ Loader {
                         anchors { verticalCenter: parent.verticalCenter; }
                     }
 
-,
-Image { 
+,CroppedImageMinimumSourceSize {
                     id: mascotImage; 
                     objectName: "mascotImage"; 
                     anchors { verticalCenter: parent.verticalCenter; }
-                    readonly property int maxSize: Math.max(width, height) * 4; 
-                    source: cardData && cardData["mascot"]; 
-                    width: units.gu(6); 
+                    property bool doLoadSource: !NetworkingStatus.limitedBandwith;
+                    source: { if (root.visible) doLoadSource = true; return doLoadSource && cardData && cardData["mascot"] || ""; }
+                    width: units.gu(6);
                     height: units.gu(5.625); 
-                    sourceSize { width: maxSize; height: maxSize } 
-                    fillMode: Image.PreserveAspectCrop; 
                     horizontalAlignment: Image.AlignHCenter; 
                     verticalAlignment: Image.AlignVCenter; 
                     visible: false; 
                 }
 
-,
-Column { 
-                        anchors.verticalCenter: parent.verticalCenter; 
-                        spacing: units.dp(2); 
-                        width: parent.width - x;
-data: [ Label { 
+,Item { 
+                            id: headerTitleContainer; 
+                            anchors { verticalCenter: parent.verticalCenter;  } 
+                            width: parent.width - x; 
+                            implicitHeight: titleLabel.height + subtitleLabel.height; 
+                            data: [ 
+Label { 
                     id: titleLabel; 
                     objectName: "titleLabel"; 
-                    anchors { left: parent.left; right: parent.right }
+                    anchors { right: parent.right;
+                    rightMargin: units.gu(1); 
+                    left: parent.left; 
+                    top: parent.top; }
                     elide: Text.ElideRight; 
                     fontSize: "small"; 
                     wrapMode: Text.Wrap; 
                     maximumLineCount: 2; 
                     font.pixelSize: Math.round(FontUtils.sizeToPixels(fontSize) * fontScale); 
-                    color: "grey"; 
+                    color: root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText;
                     visible: showHeader ; 
                     text: root.title; 
-                    font.weight: components && components["subtitle"] ? Font.DemiBold : Font.Normal; 
-                    horizontalAlignment: root.headerAlignment; 
+                    font.weight: cardData && cardData["subtitle"] ? Font.DemiBold : Font.Normal; 
+                    horizontalAlignment: root.titleAlignment; 
                 }
-,
-Label { 
+,Label { 
                         id: subtitleLabel; 
                         objectName: "subtitleLabel"; 
-                        anchors { left: parent.left; right: parent.right }
-
+                        anchors { right: parent.right; 
+                        left: parent.left; 
+                        rightMargin: units.gu(1); 
+                        top: titleLabel.bottom; 
+                        }
+                        anchors.topMargin: units.dp(2);
                         elide: Text.ElideRight; 
-                        fontSize: "small"; 
+                        fontSize: "x-small"; 
                         font.pixelSize: Math.round(FontUtils.sizeToPixels(fontSize) * fontScale); 
-                        color: "grey"; 
+                        color: root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText;
                         visible: titleLabel.visible && titleLabel.text; 
                         text: cardData && cardData["subtitle"] || ""; 
                         font.weight: Font.Light; 
-                        horizontalAlignment: root.headerAlignment; 
                     }
 ]
 }
 ]
+}
+UbuntuShape {
+    id: touchdown;
+    objectName: "touchdown";
+    anchors { fill: root }
+    visible: root.pressed;
+    radius: "medium";
+    borderSource: "radius_pressed.sci"
 }
 implicitHeight: row.y + row.height + units.gu(1);
 }

@@ -1,8 +1,6 @@
-pkg_check_modules(UNITY-MIR REQUIRED unity-mir)
-
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${UNITY-MIR_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/libs/UbuntuGestures
 )
 
 file(GLOB_RECURSE QML_FILES
@@ -19,6 +17,7 @@ add_executable(${SHELL_APP}
     ApplicationArguments.h
     main.cpp
     MouseTouchAdaptor.cpp
+    CachingNetworkManagerFactory.cpp
     ${QML_FILES} # This is to make qml and image files appear in the IDE's project tree
 )
 
@@ -31,9 +30,16 @@ if (NOT "${XCB_INCLUDE_DIRS}" STREQUAL "")
     target_link_libraries(${SHELL_APP} ${XCB_LDFLAGS})
 endif()
 
+target_link_libraries(${SHELL_APP} UbuntuGestures)
+
+# For it to find libUbuntuGestures.so
+set_target_properties(${SHELL_APP} PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${SHELL_PRIVATE_LIBDIR}")
+
 # install binaries
 install(TARGETS ${SHELL_APP}
      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
      )
 
 add_subdirectory(Panel)
+add_subdirectory(Dash)
+add_subdirectory(libunity8-private)

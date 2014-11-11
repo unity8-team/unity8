@@ -27,6 +27,7 @@ class AccountsServiceDBusAdaptor;
 class AccountsService: public QObject
 {
     Q_OBJECT
+    Q_ENUMS(PasswordDisplayHint)
     Q_PROPERTY (QString user
                 READ user
                 WRITE setUser
@@ -35,28 +36,55 @@ class AccountsService: public QObject
                 READ demoEdges
                 WRITE setDemoEdges
                 NOTIFY demoEdgesChanged)
+    Q_PROPERTY (bool enableLauncherWhileLocked
+                READ enableLauncherWhileLocked
+                NOTIFY enableLauncherWhileLockedChanged)
+    Q_PROPERTY (bool enableIndicatorsWhileLocked
+                READ enableIndicatorsWhileLocked
+                NOTIFY enableIndicatorsWhileLockedChanged)
     Q_PROPERTY (QString backgroundFile
                 READ backgroundFile
                 NOTIFY backgroundFileChanged)
     Q_PROPERTY (bool statsWelcomeScreen
                 READ statsWelcomeScreen
                 NOTIFY statsWelcomeScreenChanged)
+    Q_PROPERTY (PasswordDisplayHint passwordDisplayHint
+                READ passwordDisplayHint
+                NOTIFY passwordDisplayHintChanged)
+    Q_PROPERTY (uint failedLogins
+                READ failedLogins
+                WRITE setFailedLogins
+                NOTIFY failedLoginsChanged)
 
 public:
+    enum PasswordDisplayHint {
+        Keyboard,
+        Numeric,
+    };
+
     explicit AccountsService(QObject *parent = 0);
 
     QString user() const;
     void setUser(const QString &user);
     bool demoEdges() const;
     void setDemoEdges(bool demoEdges);
+    bool enableLauncherWhileLocked() const;
+    bool enableIndicatorsWhileLocked() const;
     QString backgroundFile() const;
     bool statsWelcomeScreen() const;
+    PasswordDisplayHint passwordDisplayHint() const;
+    uint failedLogins() const;
+    void setFailedLogins(uint failedLogins);
 
 Q_SIGNALS:
     void userChanged();
     void demoEdgesChanged();
+    void enableLauncherWhileLockedChanged();
+    void enableIndicatorsWhileLockedChanged();
     void backgroundFileChanged();
     void statsWelcomeScreenChanged();
+    void passwordDisplayHintChanged();
+    void failedLoginsChanged();
 
 private Q_SLOTS:
     void propertiesChanged(const QString &user, const QString &interface, const QStringList &changed);
@@ -64,14 +92,22 @@ private Q_SLOTS:
 
 private:
     void updateDemoEdges();
+    void updateEnableLauncherWhileLocked();
+    void updateEnableIndicatorsWhileLocked();
     void updateBackgroundFile();
     void updateStatsWelcomeScreen();
+    void updatePasswordDisplayHint();
+    void updateFailedLogins();
 
     AccountsServiceDBusAdaptor *m_service;
     QString m_user;
     bool m_demoEdges;
+    bool m_enableLauncherWhileLocked;
+    bool m_enableIndicatorsWhileLocked;
     QString m_backgroundFile;
     bool m_statsWelcomeScreen;
+    PasswordDisplayHint m_passwordDisplayHint;
+    uint m_failedLogins;
 };
 
 #endif

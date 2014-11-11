@@ -26,15 +26,13 @@ Item {
     width: units.gu(70)
     height: units.gu(70)
 
-    Rectangle {
-
-    }
-
     PhoneStage {
         id: phoneStage
         anchors { fill: parent; rightMargin: units.gu(30) }
-        shown: true
         dragAreaWidth: units.gu(2)
+        maximizedAppTopMargin: units.gu(3) + units.dp(2)
+        interactive: true
+        orientation: Qt.PortraitOrientation
     }
 
     Binding {
@@ -45,9 +43,9 @@ Item {
 
     Rectangle {
         anchors { fill: parent; leftMargin: phoneStage.width }
-//        color: "blue"
 
         Column {
+            id: buttons
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
             spacing: units.gu(1)
             Button {
@@ -59,7 +57,49 @@ Item {
             }
             Button {
                 anchors { left: parent.left; right: parent.right }
-                text: "Add App"
+                text: "Remove Selected"
+                onClicked: {
+                    ApplicationManager.stopApplication(ApplicationManager.get(appList.selectedAppIndex).appId);
+                }
+            }
+            Button {
+                anchors { left: parent.left; right: parent.right }
+                text: "Stop Selected"
+                onClicked: {
+                    ApplicationManager.get(appList.selectedAppIndex).setState(ApplicationInfoInterface.Stopped);
+                }
+            }
+            Button {
+                anchors { left: parent.left; right: parent.right }
+                text: "Rotate device \u27F3"
+                onClicked: {
+                    if (phoneStage.orientation == Qt.PortraitOrientation) {
+                        phoneStage.orientation = Qt.LandscapeOrientation;
+                    } else if (phoneStage.orientation == Qt.LandscapeOrientation) {
+                        phoneStage.orientation = Qt.InvertedPortraitOrientation;
+                    } else if (phoneStage.orientation == Qt.InvertedPortraitOrientation) {
+                        phoneStage.orientation = Qt.InvertedLandscapeOrientation;
+                    } else {
+                        phoneStage.orientation = Qt.PortraitOrientation;
+                    }
+                }
+            }
+        }
+        ListView {
+            id: appList
+            property int selectedAppIndex
+            anchors { left: parent.left; right: parent.right; top: buttons.bottom; bottom: parent.bottom }
+            boundsBehavior: Flickable.StopAtBounds
+            model: ApplicationManager
+            delegate: Rectangle {
+                anchors { left: parent.left; right: parent.right }
+                height: units.gu(2)
+                color: appList.selectedAppIndex === model.index ? "red" : "white"
+                Text { anchors.fill: parent; text: model.appId }
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: { appList.selectedAppIndex = model.index; }
+                }
             }
         }
     }
@@ -74,11 +114,8 @@ Item {
             for (var i = 0; i < count; i++) {
                 var app = ApplicationManager.startApplication(ApplicationManager.availableApplications()[ApplicationManager.count])
                 tryCompare(app, "state", ApplicationInfoInterface.Running)
-                // Fixme: Right now there is a timeout in the PhoneStage that displays a white splash
-                // screen rectangle when an app starts. This is because we don't yet have a way of
-                // knowing when an app has finished launching. That workaround and this wait() should
-                // go away at some point and the app's state only changing to Running when ready for real.
-//                wait(1000)
+                var spreadView = findChild(phoneStage, "spreadView");
+                tryCompare(spreadView, "contentX", -spreadView.shift);
                 waitForRendering(phoneStage)
             }
         }
@@ -86,7 +123,9 @@ Item {
         function goToSpread() {
             var spreadView = findChild(phoneStage, "spreadView");
 
-            var startX = phoneStage.width;
+            // Keep it inside the PhoneStage otherwise the controls on the right side will
+            // capture the press thus the "- 2"  on startX.
+            var startX = phoneStage.width - 2;
             var startY = phoneStage.height / 2;
             var endY = startY;
             var endX = units.gu(2);
@@ -114,8 +153,6 @@ Item {
                        true /* beginTouch */, true /* endTouch */, units.gu(10), 50);
 
             tryCompare(ApplicationManager, "focusedApplicationId", activeApp.appId)
-
-            tryCompare(phoneStage, "painting", false);
         }
 
         function test_enterSpread_data() {
@@ -136,10 +173,13 @@ Item {
 
             var spreadView = findChild(phoneStage, "spreadView");
 
-            var startX = phoneStage.width;
+            // Keep it inside the PhoneStage otherwise the controls on the right side will
+            // capture the press thus the "- 2"  on startX.
+            var startX = phoneStage.width - 2;
             var startY = phoneStage.height / 2;
             var endY = startY;
-            var endX = spreadView.width - (spreadView.width * spreadView[data.positionMarker]) - data.offset - phoneStage.dragAreaWidth;
+            var endX = spreadView.width - (spreadView.width * spreadView[data.positionMarker]) - data.offset
+                - phoneStage.dragAreaWidth;
 
             var oldFocusedApp = ApplicationManager.get(0);
             var newFocusedApp = ApplicationManager.get(data.newFocusedIndex);
@@ -165,7 +205,6 @@ Item {
                 mouseClick(app2, units.gu(1), units.gu(1));
             }
 
-            tryCompare(phoneStage, "painting", false);
             tryCompare(ApplicationManager, "focusedApplicationId", newFocusedApp.appId);
         }
 
@@ -212,16 +251,6 @@ Item {
             tryCompare(spreadView, "phase", 0);
         }
 
-        function test_animateAppStartup() {
-            compare(phoneStage.painting, false);
-            addApps(2);
-            tryCompare(phoneStage, "painting", true);
-            tryCompare(phoneStage, "painting", false);
-            addApps(1);
-            tryCompare(phoneStage, "painting", true);
-            tryCompare(phoneStage, "painting", false);
-        }
-
         function test_select_data() {
             return [
                 { tag: "0", index: 0 },
@@ -240,49 +269,93 @@ Item {
 
             phoneStage.select(selectedApp.appId);
 
-            tryCompare(phoneStage, "painting", false);
+            tryCompare(spreadView, "contentX", -spreadView.shift);
+
             compare(ApplicationManager.focusedApplicationId, selectedApp.appId);
         }
 
-        function test_fullscreenMode() {
-            var fullscreenApp = null;
-            var normalApp = null;
+        function test_orientation_change_sent_to_focused_app() {
+            phoneStage.orientation = Qt.PortraitOrientation;
+            addApps(1);
 
-            for (var i = 0; i < 5; i++) {
-                addApps(1);
-                var newApp = ApplicationManager.get(0);
-                tryCompare(phoneStage, "fullscreen", newApp.fullscreen);
-                if (newApp.fullscreen && fullscreenApp == null) {
-                    fullscreenApp = newApp;
-                } else if (!newApp.fullscreen && normalApp == null){
-                    normalApp = newApp;
-                }
-            }
-            verify(fullscreenApp != null); // Can't continue the test without having a fullscreen app
-            verify(normalApp != null); // Can't continue the test without having a non-fullscreen app
+            var spreadView = findChild(phoneStage, "spreadView");
+            var app = findChild(spreadView, "appDelegate0");
+            tryCompare(app, "orientation", Qt.PortraitOrientation);
 
-            // Select a normal app
+            phoneStage.orientation = Qt.LandscapeOrientation;
+            tryCompare(app, "orientation", Qt.LandscapeOrientation);
+        }
+
+        function test_orientation_change_not_sent_to_apps_while_spread_open() {
+            phoneStage.orientation = Qt.PortraitOrientation;
+            addApps(1);
+
+            var spreadView = findChild(phoneStage, "spreadView");
+            var app = findChild(spreadView, "appDelegate0");
+            tryCompare(app, "orientation", Qt.PortraitOrientation);
+
             goToSpread();
-            phoneStage.select(normalApp.appId);
-            tryCompare(phoneStage, "fullscreen", false);
+            phoneStage.orientation = Qt.LandscapeOrientation;
+            tryCompare(app, "orientation", Qt.PortraitOrientation);
+        }
 
-            // Select a fullscreen app
-            goToSpread();
-            phoneStage.select(fullscreenApp.appId);
-            tryCompare(phoneStage, "fullscreen", true);
+        function test_orientation_change_not_sent_to_unfocused_app_until_it_focused() {
+            phoneStage.orientation = Qt.PortraitOrientation;
+            addApps(1);
 
-            // Select a normal app
+            var spreadView = findChild(phoneStage, "spreadView");
+            var app = findChild(spreadView, "appDelegate0");
+
             goToSpread();
-            phoneStage.select(normalApp.appId);
-            tryCompare(phoneStage, "fullscreen", false);
+            phoneStage.orientation = Qt.LandscapeOrientation;
+            tryCompare(app, "orientation", Qt.PortraitOrientation);
+
+            phoneStage.select(app.application.appId);
+            tryCompare(app, "orientation", Qt.LandscapeOrientation);
+        }
+
+        function test_backgroundClickCancelsSpread() {
+            addApps(3);
+
+            var focusedAppId = ApplicationManager.focusedApplicationId;
+
+            goToSpread();
+
+            mouseClick(phoneStage, units.gu(1), units.gu(1));
+
+            // Make sure the spread is in the idle position
+            var spreadView = findChild(phoneStage, "spreadView");
+            tryCompare(spreadView, "contentX", -spreadView.shift);
+
+            // Make sure the same app is still focused
+            compare(focusedAppId, ApplicationManager.focusedApplicationId);
         }
 
         function cleanup() {
-            while (ApplicationManager.count > 0) {
+            while (ApplicationManager.count > 1) {
                 var oldCount = ApplicationManager.count;
-                ApplicationManager.stopApplication(ApplicationManager.get(0).appId)
+                var closingIndex = ApplicationManager.focusedApplicationId == "unity8-dash" ? 1 : 0
+                ApplicationManager.stopApplication(ApplicationManager.get(closingIndex).appId)
                 tryCompare(ApplicationManager, "count", oldCount - 1)
             }
+            phoneStage.orientation = Qt.PortraitOrientation;
+        }
+
+        function test_focusNewTopMostAppAfterFocusedOneClosesItself() {
+            addApps(2);
+
+            var secondApp = ApplicationManager.get(0);
+            tryCompare(secondApp, "state", ApplicationInfoInterface.Running);
+            tryCompare(secondApp, "focused", true);
+
+            var firstApp = ApplicationManager.get(1);
+            tryCompare(firstApp, "state", ApplicationInfoInterface.Suspended);
+            tryCompare(firstApp, "focused", false);
+
+            ApplicationManager.stopApplication(secondApp.appId);
+
+            tryCompare(firstApp, "state", ApplicationInfoInterface.Running);
+            tryCompare(firstApp, "focused", true);
         }
     }
 }

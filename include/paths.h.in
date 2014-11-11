@@ -80,10 +80,18 @@ inline QStringList fallbackImportPaths() {
     return paths;
 }
 
+inline QString mockPluginsDir() {
+    if (isRunningInstalled()) {
+        return QString("@CMAKE_INSTALL_PREFIX@/@SHELL_INSTALL_QML@/mocks");
+    } else {
+        return QString("@CMAKE_BINARY_DIR@/tests/mocks");
+    }
+}
+
 inline QStringList shellDataDirs() {
     QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
     if (!isRunningInstalled()) {
-        if (getenv("UNITY_TEST_ENV")==NULL) {
+        if (getenv("UNITY_TEST_ENV")==nullptr) {
             dirs.prepend("@CMAKE_BINARY_DIR@/share");
         }
     }
@@ -125,14 +133,6 @@ inline void appendImportPaths(QQmlEngine *engine, const QStringList &paths)
         }
     }
     engine->setImportPathList(importPathList);
-}
-
-inline void resolveIconTheme() {
-    const char *ubuntuIconTheme = getenv("UBUNTU_ICON_THEME");
-    if (ubuntuIconTheme == NULL) {
-        ubuntuIconTheme = "ubuntu-mobile";
-    }
-    QIcon::setThemeName(ubuntuIconTheme);
 }
 
 #endif

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Scopes
+Comment=An interface for using the Scopes system
+Exec=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_BINDIR@/unity8-dash
+Terminal=false
+Icon=
+NoDisplay=true
+X-Ubuntu-Touch=true

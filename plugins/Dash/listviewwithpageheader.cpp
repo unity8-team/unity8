@@ -104,8 +104,6 @@
 #pragma GCC diagnostic pop
 // #include <private/qquickrectangle_p.h>
 
-static const qreal bufferRatio = 0.5;
-
 qreal ListViewWithPageHeader::ListItem::height() const
 {
     return m_item->height() + (m_sectionItem ? m_sectionItem->height() : 0);
@@ -141,8 +139,6 @@ void ListViewWithPageHeader::ListItem::setCulled(bool culled)
 void ListViewWithPageHeader::ListItem::setSectionItem(QQuickItem *sectionItem)
 {
     m_sectionItem = sectionItem;
-    QQmlContext *context = QQmlEngine::contextForObject(m_item)->parentContext();
-    context->setContextProperty(QLatin1String("hasSectionHeader"), QVariant::fromValue<bool>(sectionItem != nullptr));
 }
 
 ListViewWithPageHeader::ListViewWithPageHeader()
@@ -160,6 +156,7 @@ ListViewWithPageHeader::ListViewWithPageHeader()
  , m_forceNoClip(false)
  , m_inLayout(false)
  , m_inContentHeightKeepHeaderShown(false)
+ , m_cacheBuffer(0)
 {
     m_clipItem = new QQuickItem(contentItem());
 //     m_clipItem = new QQuickRectangle(contentItem());
@@ -174,7 +171,7 @@ ListViewWithPageHeader::ListViewWithPageHeader()
     connect(this, SIGNAL(contentWidthChanged()), this, SLOT(onContentWidthChanged()));
     connect(this, SIGNAL(contentHeightChanged()), this, SLOT(onContentHeightChanged()));
     connect(this, SIGNAL(heightChanged()), this, SLOT(onHeightChanged()));
-    connect(m_contentYAnimation, SIGNAL(stopped()), this, SLOT(onShowHeaderAnimationFinished()));
+    connect(m_contentYAnimation, SIGNAL(runningChanged(bool)), this, SLOT(contentYAnimationRunningChanged(bool)));
 
     setFlickableDirection(VerticalFlick);
 }
@@ -332,6 +329,25 @@ int ListViewWithPageHeader::stickyHeaderHeight() const
     return m_topSectionItem ? m_topSectionItem->height() : 0;
 }
 
+qreal ListViewWithPageHeader::headerItemShownHeight() const
+{
+    return m_headerItemShownHeight;
+}
+
+qreal ListViewWithPageHeader::cacheBuffer() const
+{
+    return m_cacheBuffer;
+}
+
+void ListViewWithPageHeader::setCacheBuffer(qreal cacheBuffer)
+{
+    if (cacheBuffer != m_cacheBuffer) {
+        m_cacheBuffer = cacheBuffer;
+        Q_EMIT cacheBufferChanged();
+        polish();
+    }
+}
+
 void ListViewWithPageHeader::positionAtBeginning()
 {
     if (m_delegateModel->count() <= 0)
@@ -353,8 +369,7 @@ void ListViewWithPageHeader::positionAtBeginning()
         // Create the subsequent items
         int modelIndex = 1;
         qreal pos = item->y() + item->height();
-        const qreal buffer = height() * bufferRatio;
-        const qreal bufferTo = height() + buffer;
+        const qreal bufferTo = height() + m_cacheBuffer;
         while (modelIndex < m_delegateModel->count() && pos <= bufferTo) {
             if (!(item = createItem(modelIndex, false)))
                 break;
@@ -398,11 +413,22 @@ void ListViewWithPageHeader::showHeader()
                 firstItem->setY(firstItem->y() - m_headerItemShownHeight);
                 layout();
             }
+            Q_EMIT headerItemShownHeightChanged();
         }
         m_contentYAnimation->setTo(to);
         contentYAnimationType = ContentYAnimationShowHeader;
         m_contentYAnimation->start();
     }
+}
+
+int ListViewWithPageHeader::firstCreatedIndex() const
+{
+    return m_firstVisibleIndex;
+}
+
+int ListViewWithPageHeader::createdItemCount() const
+{
+    return m_visibleItems.count();
 }
 
 QQuickItem *ListViewWithPageHeader::item(int modelIndex) const
@@ -516,7 +542,7 @@ void ListViewWithPageHeader::adjustHeader(qreal diff)
             // (but the header was not shown by it's own position)
             // or the header is partially shown and we are not doing a maximizeVisibleArea either
             const bool scrolledUp = m_previousContentY > contentY();
-            const bool notRebounding = contentY() + height() < contentHeight();
+            const bool notRebounding = qRound(contentY() + height()) < qRound(contentHeight());
             const bool notShownByItsOwn = contentY() + diff >= m_headerItem->y() + m_headerItem->height();
             const bool maximizeVisibleAreaRunning = m_contentYAnimation->isRunning() && contentYAnimationType == ContentYAnimationMaximizeVisibleArea;
 
@@ -546,6 +572,7 @@ void ListViewWithPageHeader::adjustHeader(qreal diff)
                     m_headerItem->setY(-m_minYExtent);
                 }
             }
+            Q_EMIT headerItemShownHeightChanged();
         } else {
             // Stick the header item to the top when dragging down
             m_headerItem->setY(contentY());
@@ -588,11 +615,10 @@ void ListViewWithPageHeader::refill()
         return;
     }
 
-    const qreal buffer = height() * bufferRatio;
     const qreal from = contentY();
     const qreal to = from + height();
-    const qreal bufferFrom = from - buffer;
-    const qreal bufferTo = to + buffer;
+    const qreal bufferFrom = from - m_cacheBuffer;
+    const qreal bufferTo = to + m_cacheBuffer;
 
     bool added = addVisibleItems(from, to, false);
     bool removed = removeNonVisibleItems(bufferFrom, bufferTo);
@@ -658,7 +684,7 @@ void ListViewWithPageHeader::reallyReleaseItem(ListItem *listItem)
     if (flags & QQmlDelegateModel::Destroyed) {
         item->setParentItem(nullptr);
     }
-    delete listItem->sectionItem();
+    listItem->sectionItem()->deleteLater();
     delete listItem;
 }
 
@@ -685,8 +711,6 @@ QQuickItem *ListViewWithPageHeader::getSectionItem(int modelIndex, bool alreadyI
         return nullptr;
 
     const QString section = m_delegateModel->stringValue(modelIndex, m_sectionProperty);
-    if (section.isEmpty())
-        return nullptr;
 
     if (modelIndex > 0) {
         const QString prevSection = m_delegateModel->stringValue(modelIndex - 1, m_sectionProperty);
@@ -826,8 +850,8 @@ ListViewWithPageHeader::ListItem *ListViewWithPageHeader::createItem(int modelIn
                 ListItem *nextItem = itemAtIndex(modelIndex + 1);
                 if (nextItem) {
                     listItem->setY(nextItem->y() - listItem->height());
-                } else if (modelIndex == 0 && m_headerItem) {
-                    listItem->setY(m_headerItem->height());
+                } else if (modelIndex == 0) {
+                    listItem->setY(-m_clipItem->y() + (m_headerItem ? m_headerItem->height() : 0));
                 } else if (!m_visibleItems.isEmpty()) {
                     lostItem = true;
                 }
@@ -877,7 +901,6 @@ void ListViewWithPageHeader::itemCreated(int modelIndex, QObject *object)
     QQmlContext *context = QQmlEngine::contextForObject(item)->parentContext();
     context->setContextProperty(QLatin1String("ListViewWithPageHeader"), this);
     context->setContextProperty(QLatin1String("heightToClip"), QVariant::fromValue<int>(0));
-    context->setContextProperty(QLatin1String("hasSectionHeader"), QVariant::fromValue<bool>(false));
     if (modelIndex == m_asyncRequestedIndex) {
         createItem(modelIndex, false);
         refill();
@@ -1054,10 +1077,13 @@ void ListViewWithPageHeader::onModelUpdated(const QQmlChangeSet &changeSet, bool
     m_contentHeightDirty = true;
 }
 
-void ListViewWithPageHeader::onShowHeaderAnimationFinished()
+void ListViewWithPageHeader::contentYAnimationRunningChanged(bool running)
 {
-    m_contentHeightDirty = true;
-    polish();
+    setInteractive(!running);
+    if (!running) {
+        m_contentHeightDirty = true;
+        polish();
+    }
 }
 
 void ListViewWithPageHeader::itemGeometryChanged(QQuickItem * /*item*/, const QRectF &newGeometry, const QRectF &oldGeometry)
@@ -1101,6 +1127,7 @@ void ListViewWithPageHeader::headerHeightChanged(qreal newHeaderHeight, qreal ol
         m_headerItemShownHeight = qBound(static_cast<qreal>(0.), m_headerItemShownHeight, newHeaderHeight);
         updateClipItem();
         adjustMinYExtent();
+        Q_EMIT headerItemShownHeightChanged();
     } else {
         if (oldHeaderY + oldHeaderHeight > contentY()) {
             // If the header is shown because its position

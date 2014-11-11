@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1 as ListItems
+import QtQuick 2.3
+import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItems
 import Unity.Launcher 0.1
 import Ubuntu.Components.Popups 0.1
 import "../Components/ListItems"
 import "../Components/"
 
-Item {
+Rectangle {
     id: root
+    color: "#B2000000"
 
     rotation: inverted ? 180 : 0
 
@@ -37,27 +38,19 @@ Item {
     signal applicationSelected(string appId)
     signal showDashHome()
 
-    BorderImage {
-        id: background
-        source: "graphics/launcher_bg.sci"
-        anchors.fill: parent
-        anchors.rightMargin: root.inverted ? 0 : -units.gu(1)
-        anchors.leftMargin: root.inverted ? -units.gu(1) : 0
-        rotation: root.rotation
-    }
-
     Column {
         id: mainColumn
         anchors {
             fill: parent
         }
 
-        MouseArea {
-            id: dashItem
+        Rectangle {
+            objectName: "buttonShowDashHome"
             width: parent.width
             height: units.gu(7)
-            onClicked: root.showDashHome()
+            color: UbuntuColors.orange
             z: 1
+
             Image {
                 objectName: "dashItem"
                 width: units.gu(5)
@@ -66,14 +59,11 @@ Item {
                 source: "graphics/home.png"
                 rotation: root.rotation
             }
-        }
-        ThinDivider {
-            anchors {
-                left: parent.left
-                right: parent.right
-                margins: -mainColumn.anchors.leftMargin
+            MouseArea {
+                id: dashItem
+                anchors.fill: parent
+                onClicked: root.showDashHome()
             }
-            rotation: root.rotation
         }
 
         Item {
@@ -104,7 +94,6 @@ Item {
                     highlightRangeMode: ListView.ApplyRange
                     preferredHighlightBegin: (height - itemHeight) / 2
                     preferredHighlightEnd: (height + itemHeight) / 2
-                    spacing: units.gu(0.5)
 
                     // The size of the area the ListView is extended to make sure items are not
                     // destroyed when dragging them outside the list. This needs to be at least
@@ -149,12 +138,17 @@ Item {
                     delegate: FoldingLauncherDelegate {
                         id: launcherDelegate
                         objectName: "launcherDelegate" + index
+                        // We need the appId in the delegate in order to find
+                        // the right app when running autopilot tests for
+                        // multiple apps.
+                        readonly property string appId: model.appId
                         itemHeight: launcherListView.itemHeight
                         itemWidth: launcherListView.itemWidth
                         width: itemWidth
                         height: itemHeight
                         iconName: model.icon
                         count: model.count
+                        countVisible: model.countVisible
                         progress: model.progress
                         itemFocused: model.focused
                         inverted: root.inverted
@@ -168,6 +162,7 @@ Item {
                             anchors.centerIn: parent
                             width: parent.width + mainColumn.anchors.leftMargin + mainColumn.anchors.rightMargin
                             opacity: 0
+                            source: "graphics/divider-line.png"
                         }
 
                         states: [
@@ -247,7 +242,7 @@ Item {
                             Transition {
                                 from: "dragging"
                                 to: "*"
-                                NumberAnimation { target: dropIndicator; properties: "opacity"; duration: UbuntuAnimation.FastDuration }
+                                NumberAnimation { target: dropIndicator; properties: "opacity"; duration: UbuntuAnimation.SnapDuration }
                                 NumberAnimation { properties: "itemOpacity"; duration: UbuntuAnimation.BriskDuration }
                                 SequentialAnimation {
                                     ScriptAction { script: if (index == launcherListView.count-1) launcherListView.flick(0, -launcherListView.clickFlickSpeed); }
@@ -484,7 +479,7 @@ Item {
         id: quickListShape
         objectName: "quickListShape"
         anchors.fill: quickList
-        opacity: quickList.state === "open" ? 0.8 : 0
+        opacity: quickList.state === "open" ? 0.96 : 0
         visible: opacity > 0
         rotation: root.rotation
 
@@ -496,15 +491,15 @@ Item {
 
         Image {
             anchors {
-                right: parent.left
-                rightMargin: -units.dp(4)
+                left: parent.left
+                leftMargin: (quickList.item.width - units.gu(1)) / 2 - width / 2
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: -quickList.offset
+                verticalCenterOffset: (parent.height / 2 + units.dp(3)) * (quickList.offset > 0 ? 1 : -1)
             }
             height: units.gu(1)
             width: units.gu(2)
             source: "graphics/quicklist_tooltip.png"
-            rotation: 90
+            rotation: quickList.offset > 0 ? 0 : 180
         }
 
         InverseMouseArea {
@@ -520,16 +515,16 @@ Item {
     Rectangle {
         id: quickList
         objectName: "quickList"
-        color: "#221e1c"
+        color: "#f5f5f5"
         width: units.gu(30)
         height: quickListColumn.height
+        visible: quickListShape.visible
         anchors {
-            left: root.inverted ? undefined : parent.right
-            right: root.inverted ? parent.left : undefined
+            left: root.inverted ? undefined : parent.left
+            right: root.inverted ? parent.right : undefined
             margins: units.gu(1)
-
         }
-        y: itemCenter - (height / 2) + offset
+        y: itemCenter + offset
         rotation: root.rotation
 
         property var model
@@ -538,8 +533,9 @@ Item {
 
         // internal
         property int itemCenter: item ? root.mapFromItem(quickList.item).y + (item.height / 2) : units.gu(1)
-        property int offset: itemCenter + (height/2) + units.gu(1) > parent.height ? -itemCenter - (height/2) - units.gu(1) + parent.height :
-                             itemCenter - (height/2) < units.gu(1) ? (height/2) - itemCenter + units.gu(1) : 0
+        property int offset: itemCenter + (item.height/2) + height + units.gu(1) > parent.height ?
+                                 -(item.height/2) - height - units.gu(.5) :
+                                 (item.height/2) + units.gu(.5)
 
         Column {
             id: quickListColumn
@@ -558,7 +554,7 @@ Item {
                     // FIXME: This is a workaround for the theme not being context sensitive. I.e. the
                     // ListItems don't know that they are sitting in a themed Popover where the color
                     // needs to be inverted.
-                    __foregroundColor: Theme.palette.selected.backgroundText
+                    __foregroundColor: "black"
 
                     onClicked: {
                         if (!model.clickable) {

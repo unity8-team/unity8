@@ -24,22 +24,14 @@ set(IndicatorsQML_SOURCES
     modelprinter.cpp
     plugin.cpp
     rootactionstate.cpp
+    sharedunitymenumodel.cpp
     unitymenumodelcache.cpp
     unitymenumodelstack.cpp
     visibleindicatorsmodel.cpp
 )
 add_definitions(-DUNITYINDICATORS_LIBRARY)
 
-set(IndicatorsQML_RESOURCES
-    resources/indicators.qrc
-)
-
-qt5_add_resources(IndicatorsQML_RESOURCES_RCC
-    ${IndicatorsQML_RESOURCES}
-)
-
 add_library(IndicatorsQml SHARED
-    ${IndicatorsQML_RESOURCES_RCC}
     ${IndicatorsQML_SOURCES}
 )
 
@@ -51,7 +43,4 @@ target_link_libraries(IndicatorsQml
 
 qt5_use_modules(IndicatorsQml Core Qml Quick)
 
-add_unity8_plugin(Unity.Indicators 0.1 Unity/Indicators
-    SEARCH_PATH qml
-    TARGETS IndicatorsQml
-)
+add_unity8_plugin(Unity.Indicators 0.1 Unity/Indicators TARGETS IndicatorsQml)

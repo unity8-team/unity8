@@ -19,16 +19,11 @@
 
 // Qt
 #include <QDBusConnection>
+#include <QDBusInterface>
 
-DBusUnitySessionService::DBusUnitySessionService() : QObject()
+DBusUnitySessionService::DBusUnitySessionService()
+    : UnityDBusObject("/com/canonical/Unity/Session", "com.canonical.Unity")
 {
-    QDBusConnection connection = QDBusConnection::sessionBus();
-
-    connection.registerService("com.canonical.Unity");
-    connection.registerObject("/com/canonical/Unity/Session", this,
-                              QDBusConnection::ExportScriptableSignals
-                              | QDBusConnection::ExportScriptableSlots
-                              | QDBusConnection::ExportScriptableInvokables);
 }
 
 DBusUnitySessionService::~DBusUnitySessionService()
@@ -43,4 +38,36 @@ void DBusUnitySessionService::Logout()
 void DBusUnitySessionService::RequestLogout()
 {
   Q_EMIT logoutRequested(false);
+}
+
+void DBusUnitySessionService::Reboot()
+{
+  QDBusConnection connection = QDBusConnection::systemBus();
+  QDBusInterface iface1 ("org.freedesktop.login1",
+                         "/org/freedesktop/login1",
+                         "org.freedesktop.login1.Manager",
+                         connection);
+
+  iface1.call("Reboot", false);
+}
+
+void DBusUnitySessionService::RequestReboot()
+{
+  Q_EMIT rebootRequested(false);
+}
+
+void DBusUnitySessionService::Shutdown()
+{
+  QDBusConnection connection = QDBusConnection::systemBus();
+  QDBusInterface iface1 ("org.freedesktop.login1",
+                         "/org/freedesktop/login1",
+                         "org.freedesktop.login1.Manager",
+                         connection);
+
+  iface1.call("PowerOff", false);
+}
+
+void DBusUnitySessionService::RequestShutdown()
+{
+  Q_EMIT shutdownRequested(false);
 }

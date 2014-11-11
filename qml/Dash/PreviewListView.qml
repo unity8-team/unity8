@@ -23,8 +23,11 @@ import "Previews" as Previews
 Item {
     id: root
 
+    property int initialIndex: -1
     property var scope: null
-    property var pageHeader: null
+    property var scopeStyle: null
+
+    property alias showSignatureLine: header.showSignatureLine
 
     property alias open: previewListView.open
     property alias model: previewListView.model
@@ -32,36 +35,26 @@ Item {
     property alias currentItem: previewListView.currentItem
     property alias count: previewListView.count
 
+    readonly property bool processing: currentItem && (!currentItem.previewModel.loaded
+                                                       || currentItem.previewModel.processingAction)
+
+    signal backClicked()
+
     PageHeader {
         id: header
-        objectName: root.objectName + "_pageHeader"
+        objectName: "pageHeader"
         width: parent.width
-        searchEntryEnabled: false
-        scope: root.scope
-        height: units.gu(8.5)
+        title: root.scope ? root.scope.name : ""
         showBackButton: true
-        onBackClicked: root.open = false
+        searchEntryEnabled: false
+        scopeStyle: root.scopeStyle
 
-        childItem: Label {
-            id: label
-            anchors {
-                left: parent.left
-                right: parent.right
-                verticalCenter: parent.verticalCenter
-            }
-            text: scope ? scope.name : ""
-            // TODO Saviq: These should come from updated Ubuntu Palette.
-            color: "#888888"
-            font.family: "Ubuntu"
-            font.weight: Font.Light
-            fontSize: "x-large"
-            elide: Text.ElideRight
-        }
+        onBackClicked: root.backClicked()
     }
 
     ListView  {
         id: previewListView
-        objectName: root.objectName + "_listView"
+        objectName: "listView"
         anchors {
             top: header.bottom
             bottom: parent.bottom
@@ -77,61 +70,52 @@ Item {
         maximumFlickVelocity: width * 5
         cacheBuffer: 0
 
-        // To be set before opening the preview
-        property string categoryId: ""
-
-        // because the ListView is built asynchronous, setting the
-        // currentIndex directly won't work. We need to refresh it
-        // when the first preview is ready to be displayed.
-        property bool init: true
-
         property bool open: false
 
         onOpenChanged: {
-            if (open) {
-                pageHeader.unfocus();
-            } else {
+            if (!open) {
                 // Cancel any pending preview requests or actions
                 if (previewListView.currentItem && previewListView.currentItem.previewData !== undefined) {
                     previewListView.currentItem.previewData.cancelAction();
                 }
-                scope.cancelActivation();
+                root.scope.cancelActivation();
                 model = undefined;
             }
         }
 
-        delegate: Item {
-            objectName: "previewItem" + index
+        onCountChanged: {
+            if (count > 0 && initialIndex >= 0) {
+                currentIndex = initialIndex;
+                initialIndex = -1;
+            }
+        }
+
+        delegate: Previews.Preview {
+            id: preview
+            objectName: "preview" + index
             height: previewListView.height
             width: previewListView.width
 
-            readonly property bool ready: preview.previewModel.loaded
+            isCurrent: ListView.isCurrentItem
 
-            Previews.Preview {
-                id: preview
-                objectName: "preview" + index
-                anchors.fill: parent
-
-                isCurrent: parent.ListView.isCurrentItem
-
-                previewModel: {
-                    var previewStack = root.scope.preview(result);
-                    return previewStack.getPreviewModel(0);
-                }
+            previewModel: {
+                var previewStack = root.scope.preview(result);
+                return previewStack.getPreviewModel(0);
             }
-
-            MouseArea {
-                id: processingMouseArea
-                objectName: "processingMouseArea"
-                anchors.fill: parent
-                enabled: !preview.previewModel.loaded || preview.previewModel.processingAction
-
-                ActivityIndicator {
-                    anchors.centerIn: parent
-                    visible: root.open && parent.enabled
-                    running: visible
-                }
-            }
+            scopeStyle: root.scopeStyle
         }
+    }
+
+    MouseArea {
+        id: processingMouseArea
+        objectName: "processingMouseArea"
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: header.bottom
+            bottom: parent.bottom
+        }
+
+        enabled: root.processing
     }
 }

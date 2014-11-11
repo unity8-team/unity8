@@ -26,7 +26,11 @@ AccountsService::AccountsService(QObject* parent)
     m_service(new AccountsServiceDBusAdaptor(this)),
     m_user(qgetenv("USER")),
     m_demoEdges(false),
-    m_statsWelcomeScreen(false)
+    m_enableLauncherWhileLocked(false),
+    m_enableIndicatorsWhileLocked(false),
+    m_statsWelcomeScreen(false),
+    m_passwordDisplayHint(Keyboard),
+    m_failedLogins(0)
 {
     connect(m_service, SIGNAL(propertiesChanged(const QString &, const QString &, const QStringList &)),
             this, SLOT(propertiesChanged(const QString &, const QString &, const QStringList &)));
@@ -45,8 +49,12 @@ void AccountsService::setUser(const QString &user)
     Q_EMIT userChanged();
 
     updateDemoEdges();
+    updateEnableLauncherWhileLocked();
+    updateEnableIndicatorsWhileLocked();
     updateBackgroundFile();
     updateStatsWelcomeScreen();
+    updatePasswordDisplayHint();
+    updateFailedLogins();
 }
 
 bool AccountsService::demoEdges() const
@@ -60,6 +68,16 @@ void AccountsService::setDemoEdges(bool demoEdges)
     m_service->setUserProperty(m_user, "com.canonical.unity.AccountsService", "demo-edges", demoEdges);
 }
 
+bool AccountsService::enableLauncherWhileLocked() const
+{
+    return m_enableLauncherWhileLocked;
+}
+
+bool AccountsService::enableIndicatorsWhileLocked() const
+{
+    return m_enableIndicatorsWhileLocked;
+}
+
 QString AccountsService::backgroundFile() const
 {
     return m_backgroundFile;
@@ -70,12 +88,35 @@ bool AccountsService::statsWelcomeScreen() const
     return m_statsWelcomeScreen;
 }
 
+AccountsService::PasswordDisplayHint AccountsService::passwordDisplayHint() const
+{
+    return m_passwordDisplayHint;
+}
+
 void AccountsService::updateDemoEdges()
 {
     auto demoEdges = m_service->getUserProperty(m_user, "com.canonical.unity.AccountsService", "demo-edges").toBool();
     if (m_demoEdges != demoEdges) {
         m_demoEdges = demoEdges;
         Q_EMIT demoEdgesChanged();
+    }
+}
+
+void AccountsService::updateEnableLauncherWhileLocked()
+{
+    auto enableLauncherWhileLocked = m_service->getUserProperty(m_user, "com.ubuntu.AccountsService.SecurityPrivacy", "EnableLauncherWhileLocked").toBool();
+    if (m_enableLauncherWhileLocked != enableLauncherWhileLocked) {
+        m_enableLauncherWhileLocked = enableLauncherWhileLocked;
+        Q_EMIT enableLauncherWhileLockedChanged();
+    }
+}
+
+void AccountsService::updateEnableIndicatorsWhileLocked()
+{
+    auto enableIndicatorsWhileLocked = m_service->getUserProperty(m_user, "com.ubuntu.AccountsService.SecurityPrivacy", "EnableIndicatorsWhileLocked").toBool();
+    if (m_enableIndicatorsWhileLocked != enableIndicatorsWhileLocked) {
+        m_enableIndicatorsWhileLocked = enableIndicatorsWhileLocked;
+        Q_EMIT enableIndicatorsWhileLockedChanged();
     }
 }
 
@@ -97,6 +138,35 @@ void AccountsService::updateStatsWelcomeScreen()
     }
 }
 
+void AccountsService::updatePasswordDisplayHint()
+{
+    PasswordDisplayHint passwordDisplayHint = (PasswordDisplayHint)m_service->getUserProperty(m_user, "com.ubuntu.AccountsService.SecurityPrivacy", "PasswordDisplayHint").toInt();
+    if (m_passwordDisplayHint != passwordDisplayHint) {
+        m_passwordDisplayHint = passwordDisplayHint;
+        Q_EMIT passwordDisplayHintChanged();
+    }
+}
+
+void AccountsService::updateFailedLogins()
+{
+    uint failedLogins = m_service->getUserProperty(m_user, "com.canonical.unity.AccountsService.Private", "FailedLogins").toUInt();
+    if (m_failedLogins != failedLogins) {
+        m_failedLogins = failedLogins;
+        Q_EMIT failedLoginsChanged();
+    }
+}
+
+uint AccountsService::failedLogins() const
+{
+    return m_failedLogins;
+}
+
+void AccountsService::setFailedLogins(uint failedLogins)
+{
+    m_failedLogins = failedLogins;
+    m_service->setUserProperty(m_user, "com.canonical.unity.AccountsService.Private", "FailedLogins", failedLogins);
+}
+
 void AccountsService::propertiesChanged(const QString &user, const QString &interface, const QStringList &changed)
 {
     if (m_user != user) {
@@ -107,9 +177,23 @@ void AccountsService::propertiesChanged(const QString &user, const QString &inte
         if (changed.contains("demo-edges")) {
             updateDemoEdges();
         }
+    } else if (interface == "com.canonical.unity.AccountsService.Private") {
+        if (changed.contains("FailedLogins")) {
+            updateFailedLogins();
+        }
     } else if (interface == "com.ubuntu.touch.AccountsService.SecurityPrivacy") {
         if (changed.contains("StatsWelcomeScreen")) {
             updateStatsWelcomeScreen();
+        }
+    } else if (interface == "com.ubuntu.AccountsService.SecurityPrivacy") {
+        if (changed.contains("PasswordDisplayHint")) {
+            updatePasswordDisplayHint();
+        }
+        if (changed.contains("EnableLauncherWhileLocked")) {
+            updateEnableLauncherWhileLocked();
+        }
+        if (changed.contains("EnableIndicatorsWhileLocked")) {
+            updateEnableIndicatorsWhileLocked();
         }
     }
 }

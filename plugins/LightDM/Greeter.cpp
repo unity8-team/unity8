@@ -17,6 +17,7 @@
  */
 
 #include "Greeter.h"
+#include <libintl.h>
 #include <QLightDM/Greeter>
 
 class GreeterPrivate
@@ -25,6 +26,7 @@ public:
     explicit GreeterPrivate(Greeter *parent);
 
     QLightDM::Greeter *m_greeter;
+    bool m_active;
     bool wasPrompted;
     bool promptless;
 
@@ -38,6 +40,7 @@ private:
 
 GreeterPrivate::GreeterPrivate(Greeter* parent)
   : m_greeter(new QLightDM::Greeter(parent)),
+    m_active(false),
     wasPrompted(false),
     promptless(false),
     q_ptr(parent)
@@ -58,6 +61,21 @@ Greeter::Greeter(QObject* parent)
             this, SLOT(authenticationCompleteFilter()));
 
     d->m_greeter->connectSync();
+}
+
+bool Greeter::isActive() const
+{
+    Q_D(const Greeter);
+    return d->m_active;
+}
+
+void Greeter::setIsActive(bool active)
+{
+    Q_D(Greeter);
+    if (d->m_active != active) {
+        d->m_active = active;
+        Q_EMIT isActiveChanged();
+    }
 }
 
 bool Greeter::isAuthenticated() const
@@ -88,6 +106,7 @@ void Greeter::authenticate(const QString &username)
     }
 
     d->m_greeter->authenticate(username);
+    Q_EMIT isAuthenticatedChanged();
     Q_EMIT authenticationUserChanged(username);
 }
 
@@ -108,13 +127,15 @@ void Greeter::showPromptFilter(const QString &text, QLightDM::Greeter::PromptTyp
     Q_D(Greeter);
     d->wasPrompted = true;
 
+    bool isDefaultPrompt = (text == dgettext("Linux-PAM", "Password: "));
+
     // Strip prompt of any colons at the end
     QString trimmedText = text.trimmed();
     if (trimmedText.endsWith(":") || trimmedText.endsWith("：")) {
         trimmedText.chop(1);
     }
 
-    Q_EMIT showPrompt(trimmedText, type == QLightDM::Greeter::PromptTypeSecret);
+    Q_EMIT showPrompt(trimmedText, type == QLightDM::Greeter::PromptTypeSecret, isDefaultPrompt);
 }
 
 void Greeter::showMessageFilter(const QString &text, QLightDM::Greeter::MessageType type)
@@ -130,5 +151,6 @@ void Greeter::authenticationCompleteFilter()
         Q_EMIT promptlessChanged();
     }
 
+    Q_EMIT isAuthenticatedChanged();
     Q_EMIT authenticationComplete();
 }

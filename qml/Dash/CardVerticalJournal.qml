@@ -23,32 +23,31 @@ DashRenderer {
 
     readonly property double collapseLimit: units.gu(35)
 
-    uncollapsedHeight: cardVerticalJournal.implicitHeight
-    collapsedHeight: Math.min(collapseLimit, cardVerticalJournal.implicitHeight)
-    expandable: uncollapsedHeight > collapseLimit
+    expandedHeight: Math.max(cardVerticalJournal.implicitHeight, minHeight)
+    collapsedHeight: Math.max(Math.min(collapseLimit, cardVerticalJournal.implicitHeight), minHeight)
+    // TODO: implement collapsedItemCount
 
     // This minHeight is used as bootstrapper for the height. Vertical Journal
     // is special by the fact that it doesn't know how to calculate its implicit height unless we give it
     // enough height that it can start creating its children so we make sure it has enough height for that
     // in case the model is non empty
-    readonly property double minHeight: root.model.count > 1 ? cardVerticalJournal.rowSpacing + 1 : 0
-    height: filtered ? Math.max(collapsedHeight, minHeight) : uncollapsedHeight
+    readonly property double minHeight: root.model.count >= 1 ? cardVerticalJournal.rowSpacing + 1 : 0
 
-    Behavior on height {
-        id: heightBehaviour
-        enabled: false
-        animation: UbuntuNumberAnimation {
-            onRunningChanged: {
-                if (!running) {
-                    heightBehaviour.enabled = false
-                }
-            }
-        }
+    function clearView() {
+        cardVerticalJournal.model = null;
+        cardVerticalJournal.model = root.model;
     }
 
-    function setFilter(filter, animate) {
-        heightBehaviour.enabled = animate;
-        filtered = filter;
+    // Clear the view if the cardTool changes its sizes
+    // means it is still settling. This is
+    // necessary because the VerticalJournal does
+    // not support its elements changing height so
+    // we need to construct all the items with the settled
+    // size of the cardTool
+    Connections {
+        target: cardTool
+        onArtShapeSizeChanged: root.clearView();
+        onHeaderHeightChanged: root.clearView();
     }
 
     ResponsiveVerticalJournal {
@@ -67,6 +66,7 @@ DashRenderer {
             id: loader
             sourceComponent: cardTool.cardComponent
             width: cardTool.cardWidth
+            visible: y + height >= root.visibleRangeBegin && y <= root.visibleRangeEnd
             onLoaded: {
                 item.objectName = "delegate" + index;
                 item.fixedArtShapeSize = Qt.binding(function() { return cardTool.artShapeSize; });
@@ -74,12 +74,13 @@ DashRenderer {
                 item.cardData = Qt.binding(function() { return model; });
                 item.template = Qt.binding(function() { return cardTool.template; });
                 item.components = Qt.binding(function() { return cardTool.components; });
-                item.headerAlignment = Qt.binding(function() { return cardTool.headerAlignment; });
+                item.titleAlignment = Qt.binding(function() { return cardTool.titleAlignment; });
+                item.scopeStyle = root.scopeStyle;
             }
             Connections {
                 target: loader.item
-                onClicked: root.clicked(index, result)
-                onPressAndHold: root.pressAndHold(index)
+                onClicked: root.clicked(index, result, loader.item, model)
+                onPressAndHold: root.pressAndHold(index, result, model)
             }
         }
     }

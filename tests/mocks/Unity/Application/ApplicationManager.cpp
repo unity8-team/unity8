@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013-2014 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 
 #include "ApplicationManager.h"
 #include "ApplicationInfo.h"
+#include "Session.h"
+#include "ApplicationTestInterface.h"
 
 #include <paths.h>
 
@@ -26,21 +28,52 @@
 #include <QQmlComponent>
 #include <QTimer>
 #include <QDateTime>
+#include <QtDBus/QtDBus>
+
+ApplicationManager *ApplicationManager::the_application_manager = nullptr;
+
+ApplicationManager *ApplicationManager::singleton()
+{
+    if (!the_application_manager) {
+        the_application_manager = new ApplicationManager();
+    }
+    return the_application_manager;
+}
 
 ApplicationManager::ApplicationManager(QObject *parent)
     : ApplicationManagerInterface(parent)
     , m_suspended(false)
-    , m_mainStageComponent(0)
-    , m_mainStage(0)
-    , m_sideStageComponent(0)
-    , m_sideStage(0)
-    , m_rightMargin(0)
+    , m_forceDashActive(false)
 {
+    m_roleNames.insert(RoleSession, "session");
+    m_roleNames.insert(RoleFullscreen, "fullscreen");
+
     buildListOfAvailableApplications();
+
+    // polling to find out when the toplevel window has been created as there's
+    // no signal telling us that
+    connect(&m_windowCreatedTimer, &QTimer::timeout,
+            this, &ApplicationManager::onWindowCreatedTimerTimeout);
+    m_windowCreatedTimer.setSingleShot(false);
+    m_windowCreatedTimer.start(200);
 }
 
 ApplicationManager::~ApplicationManager()
 {
+}
+
+void ApplicationManager::onWindowCreatedTimerTimeout()
+{
+    if (QGuiApplication::topLevelWindows().count() > 0) {
+        m_windowCreatedTimer.stop();
+        onWindowCreated();
+    }
+}
+
+void ApplicationManager::onWindowCreated()
+{
+    startApplication("unity8-dash");
+    focusApplication("unity8-dash");
 }
 
 int ApplicationManager::rowCount(const QModelIndex& parent) const {
@@ -67,8 +100,10 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
         return app->state();
     case RoleFocused:
         return app->focused();
-    case RoleScreenshot:
-        return app->screenshot();
+    case RoleSession:
+        return QVariant::fromValue(app->session());
+    case RoleFullscreen:
+        return app->fullscreen();
     default:
         return QVariant();
     }
@@ -89,6 +124,17 @@ ApplicationInfo *ApplicationManager::findApplication(const QString &appId) const
     return nullptr;
 }
 
+QModelIndex ApplicationManager::findIndex(ApplicationInfo* application)
+{
+    for (int i = 0; i < m_runningApplications.size(); ++i) {
+        if (m_runningApplications.at(i) == application) {
+            return index(i);
+        }
+    }
+
+    return QModelIndex();
+}
+
 void ApplicationManager::add(ApplicationInfo *application) {
     if (!application) {
         return;
@@ -99,7 +145,23 @@ void ApplicationManager::add(ApplicationInfo *application) {
     endInsertRows();
     Q_EMIT applicationAdded(application->appId());
     Q_EMIT countChanged();
-    Q_EMIT focusRequested(application->appId());
+    if (count() == 1) Q_EMIT emptyChanged(isEmpty()); // was empty but not anymore
+
+    connect(application, &ApplicationInfo::sessionChanged, this, [application, this]() {
+        QModelIndex appIndex = findIndex(application);
+        if (!appIndex.isValid()) return;
+        Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleSession);
+    });
+    connect(application, &ApplicationInfo::focusedChanged, this, [application, this]() {
+        QModelIndex appIndex = findIndex(application);
+        if (!appIndex.isValid()) return;
+        Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleFocused);
+    });
+    connect(application, &ApplicationInfo::stateChanged, this, [application, this]() {
+        QModelIndex appIndex = findIndex(application);
+        if (!appIndex.isValid()) return;
+        Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleState);
+    });
 }
 
 void ApplicationManager::remove(ApplicationInfo *application) {
@@ -110,7 +172,9 @@ void ApplicationManager::remove(ApplicationInfo *application) {
         endRemoveRows();
         Q_EMIT applicationRemoved(application->appId());
         Q_EMIT countChanged();
+        if (isEmpty()) Q_EMIT emptyChanged(isEmpty());
     }
+    application->disconnect(this);
 }
 
 void ApplicationManager::move(int from, int to) {
@@ -125,16 +189,6 @@ void ApplicationManager::move(int from, int to) {
         m_runningApplications.move(from, to);
         endMoveRows();
     }
-}
-
-int ApplicationManager::keyboardHeight() const
-{
-    return 0;
-}
-
-bool ApplicationManager::keyboardVisible() const
-{
-    return false;
 }
 
 int ApplicationManager::sideStageWidth() const
@@ -163,6 +217,21 @@ ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
                                               const QStringList &arguments)
 {
     Q_UNUSED(arguments)
+    ApplicationInfo *application = add(appId);
+    if (!application)
+        return 0;
+
+    if (flags.testFlag(ApplicationManager::ForceMainStage)
+            && application->stage() == ApplicationInfo::SideStage) {
+        application->setStage(ApplicationInfo::MainStage);
+    }
+    application->setState(ApplicationInfo::Running);
+
+    return application;
+}
+
+ApplicationInfo* ApplicationManager::add(QString appId)
+{
     ApplicationInfo *application = 0;
 
     for (ApplicationInfo *availableApp : m_availableApplications) {
@@ -172,22 +241,18 @@ ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
         }
     }
 
-    if (!application)
-        return 0;
-
-    if (flags.testFlag(ApplicationManager::ForceMainStage)
-            && application->stage() == ApplicationInfo::SideStage) {
-        application->setStage(ApplicationInfo::MainStage);
-    }
-    add(application);
-
-    QMetaObject::invokeMethod(this, "focusApplication", Qt::QueuedConnection, Q_ARG(QString, appId));
+    if (application)
+        add(application);
 
     return application;
 }
 
 bool ApplicationManager::stopApplication(const QString &appId)
 {
+    if (appId == "unity8-dash") {
+        return false;
+    }
+
     ApplicationInfo *application = findApplication(appId);
     if (application == nullptr)
         return false;
@@ -195,29 +260,8 @@ bool ApplicationManager::stopApplication(const QString &appId)
     if (application->appId() == focusedApplicationId()) {
         unfocusCurrentApplication();
     }
+    application->setState(ApplicationInfo::Stopped);
     remove(application);
-    return true;
-}
-
-bool ApplicationManager::updateScreenshot(const QString &appId)
-{
-    int idx = -1;
-    ApplicationInfo *application = nullptr;
-    for (int i = 0; i < m_availableApplications.count(); ++i) {
-        application = m_availableApplications.at(i);
-        if (application->appId() == appId) {
-            idx = i;
-            break;
-        }
-    }
-
-    if (idx == -1) {
-        return false;
-    }
-
-    application->setScreenshot(QString("image://application/%1/%2").arg(appId).arg(QDateTime::currentMSecsSinceEpoch()));
-    QModelIndex appIndex = index(idx);
-    Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << RoleScreenshot);
     return true;
 }
 
@@ -249,47 +293,48 @@ void ApplicationManager::setSuspended(bool suspended)
     Q_EMIT suspendedChanged();
 }
 
+bool ApplicationManager::forceDashActive() const
+{
+    return m_forceDashActive;
+}
+
+void ApplicationManager::setForceDashActive(bool forceDashActive)
+{
+    if (m_forceDashActive == forceDashActive) {
+        return;
+    }
+
+    ApplicationInfo *dash = findApplication("unity8-dash");
+    if (dash) {
+        if (forceDashActive) {
+            dash->setState(ApplicationInfo::Running);
+        } else {
+            if (!dash->focused()) {
+                dash->setState(ApplicationInfo::Suspended);
+            }
+        }
+    }
+    m_forceDashActive = forceDashActive;
+    Q_EMIT forceDashActiveChanged();
+}
+
 bool ApplicationManager::focusApplication(const QString &appId)
 {
     ApplicationInfo *application = findApplication(appId);
     if (application == nullptr)
         return false;
 
-    if (application->stage() == ApplicationInfo::MainStage) {
-        // unfocus currently focused mainstage app
-        for (ApplicationInfo *app : m_runningApplications) {
-            if (app->focused() && app->stage() == ApplicationInfo::MainStage) {
-                app->setFocused(false);
-                app->hideWindow();
-            }
+    // unfocus currently focused app
+    for (ApplicationInfo *app : m_runningApplications) {
+        if (app->focused()) {
+            app->setFocused(false);
+            app->setState(ApplicationInfo::Suspended);
         }
-
-        // focus this app
-        application->setFocused(true);
-        if (!m_mainStage)
-            createMainStage();
-        application->showWindow(m_mainStage);
-        m_mainStage->setZ(-1000);
-        if (m_sideStage)
-            m_sideStage->setZ(-2000);
-    } else if (application->stage() == ApplicationInfo::SideStage) {
-        // unfocus currently focused sidestage app
-        for (ApplicationInfo *app : m_runningApplications) {
-            if (app->focused() && app->stage() == ApplicationInfo::SideStage) {
-                app->setFocused(false);
-                app->hideWindow();
-            }
-        }
-
-        // focus this app
-        application->setFocused(true);
-        if (!m_sideStage)
-            createSideStage();
-        application->showWindow(m_sideStage);
-        m_sideStage->setZ(-1000);
-        if (m_mainStage)
-            m_mainStage->setZ(-2000);
     }
+
+    // focus this app
+    application->setFocused(true);
+    application->setState(ApplicationInfo::Running);
 
     // move app to top of stack
     move(m_runningApplications.indexOf(application), 0);
@@ -299,61 +344,18 @@ bool ApplicationManager::focusApplication(const QString &appId)
 
 bool ApplicationManager::requestFocusApplication(const QString &appId)
 {
-    if (appId != focusedApplicationId()) {
-        QMetaObject::invokeMethod(this, "focusRequested", Qt::QueuedConnection, Q_ARG(QString, appId));
-        return true;
-    }
-    return false;
+    QMetaObject::invokeMethod(this, "focusRequested", Qt::QueuedConnection, Q_ARG(QString, appId));
+    return true;
 }
 
 void ApplicationManager::unfocusCurrentApplication()
 {
     for (ApplicationInfo *app : m_runningApplications) {
         if (app->focused()) {
-            app->hideWindow();
             app->setFocused(false);
         }
     }
     Q_EMIT focusedApplicationIdChanged();
-}
-
-void ApplicationManager::generateQmlStrings(ApplicationInfo *application)
-{
-    // TODO: Is there a better way of solving this fullscreen vs. regular
-    //       application height?
-    QString topMargin;
-    if (application->fullscreen()) {
-        topMargin.append("0");
-    } else {
-        // Taken from Panel.panelHeight
-        topMargin.append("units.gu(3) + units.dp(2)");
-    }
-
-    QString windowQml = QString(
-        "import QtQuick 2.0\n"
-        "Image {\n"
-        "   anchors.fill: parent\n"
-        "   anchors.topMargin: %1\n"
-        "   anchors.rightMargin: %2\n"
-        "   source: \"file://%3/Dash/graphics/phone/screenshots/%4.png\"\n"
-        "   smooth: true\n"
-        "   fillMode: Image.PreserveAspectCrop\n"
-        "}").arg(topMargin)
-            .arg(m_rightMargin)
-            .arg(qmlDirectory())
-            .arg(application->icon().toString());
-    application->setWindowQml(windowQml);
-
-    QString imageQml = QString(
-        "import QtQuick 2.0\n"
-        "Image {\n"
-        "   anchors.fill: parent\n"
-        "   source: \"file://%1/Dash/graphics/phone/screenshots/%2.png\"\n"
-        "   smooth: true\n"
-        "   fillMode: Image.PreserveAspectCrop\n"
-        "}").arg(qmlDirectory())
-            .arg(application->icon().toString());
-    application->setImageQml(imageQml);
 }
 
 void ApplicationManager::buildListOfAvailableApplications()
@@ -361,213 +363,125 @@ void ApplicationManager::buildListOfAvailableApplications()
     ApplicationInfo *application;
 
     application = new ApplicationInfo(this);
-    application->setAppId("phone-app");
-    application->setName("Phone");
-    application->setIcon(QUrl("phone"));
+    application->setAppId("unity8-dash");
+    application->setName("Unity 8 Mock Dash");
+    application->setScreenshotId("unity8-dash");
+    application->setStage(ApplicationInfo::MainStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("dialer-app");
+    application->setName("Dialer");
+    application->setScreenshotId("dialer");
+    application->setIconId("dialer-app");
     application->setStage(ApplicationInfo::SideStage);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("camera-app");
     application->setName("Camera");
-    application->setIcon(QUrl("camera"));
+    application->setScreenshotId("camera");
+    application->setIconId("camera");
     application->setFullscreen(true);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("gallery-app");
     application->setName("Gallery");
-    application->setIcon(QUrl("gallery"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
+    application->setScreenshotId("gallery");
+    application->setIconId("gallery");
+    application->setFullscreen(true);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("facebook-webapp");
     application->setName("Facebook");
-    application->setIcon(QUrl("facebook"));
+    application->setScreenshotId("facebook");
+    application->setIconId("facebook");
     application->setStage(ApplicationInfo::SideStage);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("webbrowser-app");
     application->setFullscreen(true);
     application->setName("Browser");
-    application->setIcon(QUrl("browser"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
+    application->setScreenshotId("browser");
+    application->setIconId("browser");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("twitter-webapp");
     application->setName("Twitter");
-    application->setIcon(QUrl("twitter"));
+    application->setScreenshotId("twitter");
+    application->setIconId("twitter");
     application->setStage(ApplicationInfo::SideStage);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("gmail-webapp");
-    application->setName("GMail");
-    application->setIcon(QUrl("gmail"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("ubuntu-weather-app");
-    application->setName("Weather");
-    application->setIcon(QUrl("weather"));
-    application->setStage(ApplicationInfo::SideStage);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("notes-app");
-    application->setName("Notepad");
-    application->setIcon(QUrl("notepad"));
-    application->setStage(ApplicationInfo::SideStage);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("calendar-app");
-    application->setName("Calendar");
-    application->setIcon(QUrl("calendar"));
-    application->setStage(ApplicationInfo::SideStage);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("mediaplayer-app");
-    application->setName("Media Player");
-    application->setIcon(QUrl("mediaplayer-app"));
-    application->setFullscreen(true);
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    m_availableApplications.append(application);
-
-    application = new ApplicationInfo(this);
-    application->setAppId("evernote");
-    application->setName("Evernote");
-    application->setIcon(QUrl("evernote"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("map");
     application->setName("Map");
-    application->setIcon(QUrl("map"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
-    generateQmlStrings(application);
+    application->setIconId("map");
+    application->setScreenshotId("map");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("gmail-webapp");
+    application->setName("GMail");
+    application->setIconId("gmail");
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("ubuntu-weather-app");
+    application->setName("Weather");
+    application->setIconId("weather");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("notes-app");
+    application->setName("Notepad");
+    application->setIconId("notepad");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("calendar-app");
+    application->setName("Calendar");
+    application->setIconId("calendar");
+    application->setStage(ApplicationInfo::SideStage);
+    m_availableApplications.append(application);
+
+    application = new ApplicationInfo(this);
+    application->setAppId("evernote");
+    application->setName("Evernote");
+    application->setIconId("evernote");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("pinterest");
     application->setName("Pinterest");
-    application->setIcon(QUrl("pinterest"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
+    application->setIconId("pinterest");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("soundcloud");
     application->setName("SoundCloud");
-    application->setIcon(QUrl("soundcloud"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
+    application->setIconId("soundcloud");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("wikipedia");
     application->setName("Wikipedia");
-    application->setIcon(QUrl("wikipedia"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
+    application->setIconId("wikipedia");
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("youtube");
     application->setName("YouTube");
-    application->setIcon(QUrl("youtube"));
-    application->setScreenshot(QString("image://application/%1/%2").arg(application->appId()).arg(QDateTime::currentMSecsSinceEpoch()));
+    application->setIconId("youtube");
     m_availableApplications.append(application);
 }
 
-void ApplicationManager::createMainStageComponent()
-{
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQmlEngine *engine = quickView->engine();
-
-    m_mainStageComponent = new QQmlComponent(engine, this);
-    QString mainStageQml =
-        "import QtQuick 2.0\n"
-        "Rectangle {\n"
-        "   anchors.fill: parent\n"
-        "   color: 'black'\n"
-        "   z: -2000\n"
-        "}\n";
-    m_mainStageComponent->setData(mainStageQml.toLatin1(), QUrl());
-}
-
-void ApplicationManager::createMainStage()
-{
-    if (!m_mainStageComponent)
-        createMainStageComponent();
-
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQuickItem *shell = quickView->rootObject();
-
-    m_mainStage = qobject_cast<QQuickItem *>(m_mainStageComponent->create());
-    m_mainStage->setParentItem(shell);
-}
-
-void ApplicationManager::createSideStageComponent()
-{
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQmlEngine *engine = quickView->engine();
-
-    m_sideStageComponent = new QQmlComponent(engine, this);
-    QString sideStageQml =
-        "import QtQuick 2.0\n"
-        "import Ubuntu.Components 0.1\n"
-        "Item {\n"
-        "   width: units.gu(40)\n" // from SideStage in Shell.qml
-        "   anchors.top: parent.top\n"
-        "   anchors.bottom: parent.bottom\n"
-        "   anchors.right: parent.right\n"
-        "   z: -1000\n"
-        "}\n";
-    m_sideStageComponent->setData(sideStageQml.toLatin1(), QUrl());
-}
-
-void ApplicationManager::createSideStage()
-{
-    if (!m_sideStageComponent)
-        createSideStageComponent();
-
-    // The assumptions I make here really should hold.
-    QQuickView *quickView =
-        qobject_cast<QQuickView*>(QGuiApplication::topLevelWindows()[0]);
-
-    QQuickItem *shell = quickView->rootObject();
-
-    m_sideStage = qobject_cast<QQuickItem *>(m_sideStageComponent->create());
-    m_sideStage->setParentItem(shell);
-    m_sideStage->setFlag(QQuickItem::ItemHasContents, false);
-}
 
 QStringList ApplicationManager::availableApplications()
 {
@@ -578,15 +492,7 @@ QStringList ApplicationManager::availableApplications()
     return appIds;
 }
 
-int ApplicationManager::rightMargin() const
+bool ApplicationManager::isEmpty() const
 {
-    return m_rightMargin;
-}
-
-void ApplicationManager::setRightMargin(int rightMargin)
-{
-    m_rightMargin = rightMargin;
-    Q_FOREACH(ApplicationInfo *app, m_availableApplications) {
-        generateQmlStrings(app);
-    }
+    return m_runningApplications.isEmpty();
 }

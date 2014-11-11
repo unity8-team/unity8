@@ -23,16 +23,22 @@ import "../Components"
 Item {
     id: dashContent
 
-    property var model: null
-    property var scopes: null
+    property bool forceNonInteractive: false
+    property alias scopes: dashContentList.model
     readonly property alias currentIndex: dashContentList.currentIndex
-    property alias previewOpen: previewListView.open
-
-    property ListModel searchHistory
+    readonly property string currentScopeId: dashContentList.currentItem ? dashContentList.currentItem.scopeId : ""
+    readonly property var currentScope: dashContentList.currentItem ? dashContentList.currentItem.theScope : null
+    readonly property bool subPageShown: dashContentList.currentItem && dashContentList.currentItem.item ?
+                                            dashContentList.currentItem.item.subPageShown : false
+    readonly property bool processing: dashContentList.currentItem && dashContentList.currentItem.item
+                                       && dashContentList.currentItem.item.processing || false
+    readonly property bool pageHeaderTotallyVisible: dashContentList.currentItem && dashContentList.currentItem.item
+                                       && dashContentList.currentItem.item.pageHeaderTotallyVisible || false
 
     signal scopeLoaded(string scopeId)
     signal gotoScope(string scopeId)
     signal openScope(var scope)
+    signal closePreview()
 
     // If we set the current scope index before the scopes have been added,
     // then we need to wait until the loaded signals gets emitted from the scopes
@@ -45,6 +51,11 @@ Item {
                 set_current_index = undefined;
             }
         }
+    }
+
+    Connections {
+        target: UriHandler
+        onOpened: dashContentList.currentItem.theScope.performQuery(uris[0])
     }
 
     function setCurrentScopeAtIndex(index, animate, reset) {
@@ -78,30 +89,22 @@ Item {
         }
     }
 
-    function closeScope(scope) {
-        dashContentList.currentItem.theScope.closeScope(scope)
-    }
-
-    function closePreview() {
-        previewListView.open = false;
-    }
-
     Item {
         id: dashContentListHolder
 
-        x: previewListView.open ? -width : 0
-        Behavior on x { UbuntuNumberAnimation { } }
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
+
+        DashBackground {
+            anchors.fill: parent
+        }
 
         ListView {
             id: dashContentList
             objectName: "dashContentList"
 
-            interactive: dashContent.scopes.loaded && !previewListView.open && currentItem && !currentItem.moving
-
+            interactive: !dashContent.forceNonInteractive && dashContent.scopes.loaded && currentItem
+                      && !currentItem.moving && !currentItem.navigationShown && !currentItem.subPageShown
             anchors.fill: parent
-            model: dashContent.model
             orientation: ListView.Horizontal
             boundsBehavior: Flickable.DragAndOvershootBounds
             flickDeceleration: units.gu(625)
@@ -110,9 +113,31 @@ Item {
             highlightMoveDuration: 250
             highlightRangeMode: ListView.StrictlyEnforceRange
             // TODO Investigate if we can switch to a smaller cache buffer when/if UbuntuShape gets more performant
+            // 1073741823 is s^30 -1. A quite big number so that you have "infinite" cache, but not so
+            // big so that if you add if with itself you're outside the 2^31 int range
             cacheBuffer: 1073741823
             onMovementStarted: currentItem.item.showHeader();
             clip: parent.x != 0
+
+            // TODO QTBUG-40846 and QTBUG-40848
+            // The remove transition doesn't happen when removing the last item
+            // And can't work around it because index is reset to -1 regardless of
+            // ListView.delayRemove
+
+            remove: Transition {
+                SequentialAnimation {
+                    PropertyAction { property: "layer.enabled"; value: true }
+                    PropertyAction { property: "ListView.delayRemove"; value: true }
+                    ParallelAnimation {
+                        PropertyAnimation { properties: "scale"; to: 0.25; duration: UbuntuAnimation.SnapDuration }
+                        PropertyAnimation { properties: "y"; to: dashContent.height; duration: UbuntuAnimation.SnapDuration }
+                    }
+                    PropertyAction { property: "ListView.delayRemove"; value: false }
+                }
+            }
+            removeDisplaced: Transition {
+                PropertyAnimation { property: "x"; duration: UbuntuAnimation.SnapDecision }
+            }
 
             // If the number of items is less than the current index, then need to reset to another item.
             onCountChanged: {
@@ -130,13 +155,17 @@ Item {
                 Loader {
                     width: ListView.view.width
                     height: ListView.view.height
+                    opacity: { // hide delegate if offscreen
+                        var xPositionRelativetoView = ListView.view.contentX - x
+                        return (xPositionRelativetoView > -width && xPositionRelativetoView < width) ? 1 : 0
+                    }
                     asynchronous: true
-                    // TODO This if will eventually go away since we're killing DashApps.qml
-                    // once we move app closing to the spread
-                    source: (scope.id == "clickscope") ? "DashApps.qml" : "GenericScopeView.qml"
-                    objectName: scope.id + " loader"
+                    source: "GenericScopeView.qml"
+                    objectName: "scopeLoader" + index
 
                     readonly property bool moving: item ? item.moving : false
+                    readonly property bool navigationShown: item ? item.navigationShown : false
+                    readonly property bool subPageShown: item ? item.subPageShown : false
                     readonly property var categoryView: item ? item.categoryView : null
                     readonly property var theScope: scope
 
@@ -147,12 +176,13 @@ Item {
 
                     onLoaded: {
                         item.objectName = scope.id
-                        item.pageHeader = dashPageHeader;
-                        item.previewListView = previewListView;
                         item.scope = Qt.binding(function() { return scope })
                         item.isCurrent = Qt.binding(function() { return visible && ListView.isCurrentItem })
-                        item.tabBarHeight = Qt.binding(function() { return dashPageHeader.implicitHeight; })
                         dashContent.scopeLoaded(item.scope.id)
+                        item.paginationCount = Qt.binding(function() { return dashContentList.count } )
+                        item.paginationIndex = Qt.binding(function() { return dashContentList.currentIndex } )
+                        item.holdingList = dashContentList;
+                        item.forceNonInteractive = Qt.binding(function() { return dashContent.forceNonInteractive } )
                     }
                     Connections {
                         target: isCurrent ? scope : null
@@ -164,78 +194,13 @@ Item {
                             dashContent.openScope(scope);
                         }
                     }
+                    Connections {
+                        target: dashContent
+                        onClosePreview: if (item) item.closePreview()
+                    }
 
                     Component.onDestruction: active = false
                 }
         }
-
-        PageHeader {
-            id: dashPageHeader
-            objectName: "pageHeader"
-            width: parent.width
-            searchEntryEnabled: true
-            searchHistory: dashContent.searchHistory
-            scope: dashContentList.currentItem && dashContentList.currentItem.theScope
-
-            childItem: TabBar {
-                id: tabBar
-                objectName: "tabbar"
-                height: units.gu(6.5)
-                width: parent.width
-                style: DashContentTabBarStyle {}
-
-                SortFilterProxyModel {
-                    id: tabBarModel
-
-                    model: dashContentList.model
-
-                    property int selectedIndex: -1
-                    onSelectedIndexChanged: {
-                        if (dashContentList.currentIndex == -1 && tabBar.selectedIndex != -1) {
-                            // TODO This together with the Timer below
-                            // are a workaround for the first tab sometimes not showing the text.
-                            // But Tabs are going away in the future so not sure if makes
-                            // sense invetigating what's the problem at this stage
-                            selectionModeTimer.restart();
-                        }
-                        dashContentList.currentIndex = selectedIndex;
-                    }
-                }
-
-                model: tabBarModel.count > 0 ? tabBarModel : null
-
-                Connections {
-                    target: dashContentList
-                    onCurrentIndexChanged: {
-                        tabBarModel.selectedIndex = dashContentList.currentIndex
-                    }
-                }
-
-                Timer {
-                    id: selectionModeTimer
-                    interval: 1
-                    onTriggered: tabBar.selectionMode = false
-                }
-            }
-
-            bottomItem: DashDepartments {
-                scope: dashContentList.currentItem ? dashContentList.currentItem.theScope : null
-                width: parent.width <= units.gu(60) ? parent.width : units.gu(40)
-                anchors.right: parent.right
-                windowHeight: dashContent.height
-                windowWidth: dashContent.width
-            }
-        }
-    }
-
-    PreviewListView {
-        id: previewListView
-        objectName: "dashContentPreviewList"
-        visible: x != width
-        scope: dashContentList.currentItem ? dashContentList.currentItem.theScope : null
-        pageHeader: dashPageHeader
-        width: parent.width
-        height: parent.height
-        anchors.left: dashContentListHolder.right
     }
 }

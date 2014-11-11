@@ -18,6 +18,7 @@
  */
 
 #include "plugin.h"
+#include "DBusGreeter.h"
 #include "DBusGreeterList.h"
 #include "Greeter.h"
 #include "UsersModel.h"
@@ -29,19 +30,14 @@
 #include <QDBusConnection>
 #include <QtQml/qqml.h>
 
-static const char* GREETER_LIST_DBUS_PATH = "/list";
-static const char* GREETER_DBUS_SERVICE = "com.canonical.UnityGreeter";
-
 static QObject *greeter_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
     Greeter *greeter = new Greeter();
-    QDBusConnection connection = QDBusConnection::sessionBus();
-    DBusGreeterList *list = new DBusGreeterList(greeter, connection, GREETER_LIST_DBUS_PATH);
-    connection.registerObject(GREETER_LIST_DBUS_PATH, list, QDBusConnection::ExportScriptableContents);
-    connection.registerService(GREETER_DBUS_SERVICE);
+    new DBusGreeter(greeter, "/");
+    new DBusGreeterList(greeter, "/list");
 
     return greeter;
 }
@@ -66,6 +62,8 @@ void LightDMPlugin::registerTypes(const char *uri)
     qmlRegisterType<UserMetricsOutput::ColorTheme>();
 
     Q_ASSERT(uri == QLatin1String("LightDM"));
+    qRegisterMetaType<QLightDM::Greeter::MessageType>("QLightDM::Greeter::MessageType");
+    qRegisterMetaType<QLightDM::Greeter::PromptType>("QLightDM::Greeter::PromptType");
     qmlRegisterSingletonType<Greeter>(uri, 0, 1, "Greeter", greeter_provider);
     qmlRegisterSingletonType<UsersModel>(uri, 0, 1, "Users", users_provider);
     qmlRegisterUncreatableType<QLightDM::UsersModel>(uri, 0, 1, "UserRoles", "Type is not instantiable");

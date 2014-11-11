@@ -16,10 +16,12 @@
 
 import QtQuick 2.0
 import QtMultimedia 5.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.1
 import Unity.Notifications 1.0
 import QMenuModel 0.1
 import Utils 0.1
+
+import Ubuntu.Components.ListItems 0.1 as ListItem
 
 Item {
     id: notification
@@ -28,22 +30,29 @@ Item {
     property alias secondaryIconSource: secondaryIcon.source
     property alias summary: summaryLabel.text
     property alias body: bodyLabel.text
+    property alias value: valueIndicator.value
     property var actions
     property var notificationId
     property var type
     property var hints
     property var notification
     property color color
-    property bool fullscreen
+    property bool fullscreen: false
     property int maxHeight
     property int margins
+    readonly property bool darkOnBright: panel.indicators.shown || type === Notification.SnapDecision
+    readonly property color red: "#fc4949"
+    readonly property color green: "#3fb24f"
+    readonly property color sdLightGrey: "#eaeaea"
+    readonly property color sdDarkGrey: "#dddddd"
+    readonly property color sdFontColor: "#5d5d5d"
+    readonly property real contentSpacing: units.gu(2)
 
-    fullscreen: false
     objectName: "background"
-    implicitHeight: type !== Notification.PlaceHolder ? (fullscreen ? maxHeight : contentColumn.height + contentColumn.spacing * 2) : 0
+    implicitHeight: type !== Notification.PlaceHolder ? (fullscreen ? maxHeight : outterColumn.height - shapedBack.anchors.topMargin + contentSpacing * 2) : 0
 
-    color: Qt.rgba(0.132, 0.117, 0.109, 0.97)
-    opacity: 0
+    color: (type === Notification.Confirmation && notificationList.useModal && !greeter.shown) || darkOnBright ? sdLightGrey : Qt.rgba(0.132, 0.117, 0.109, 0.97)
+    opacity: 1 // FIXME: 1 because of LP: #1354406 workaround, has to be 0 really
 
     state: {
         var result = "";
@@ -70,11 +79,19 @@ Item {
     Audio {
         id: sound
         objectName: "sound"
-        source: hints["suppress-sound"] != "" ? hints["sound-file"] : undefined
+        audioRole: MediaPlayer.alert
+        source: hints["suppress-sound"] != "true" && hints["sound-file"] != undefined ? hints["sound-file"] : ""
     }
 
-    onOpacityChanged: {
-        if (opacity == 1.0 && hints["suppress-sound"] != "true" && sound.source) {
+    // FIXME: using onCompleted because of LP: #1354406 workaround, has to be onOpacityChanged really
+    Component.onCompleted: {
+        if (opacity == 1.0 && hints["suppress-sound"] != "true" && sound.source != "") {
+            sound.play();
+        }
+    }
+
+    onHintsChanged: {
+        if (type === Notification.Confirmation && opacity == 1.0 && hints["suppress-sound"] != "true" && sound.source != "") {
             sound.play();
         }
     }
@@ -84,20 +101,15 @@ Item {
 
         //enabled: menuItemFactory.progress == 1
         enabled: true
-        SequentialAnimation {
-            PauseAnimation {
-                duration: UbuntuAnimation.SnapDuration
-            }
-            UbuntuNumberAnimation {
-                duration: UbuntuAnimation.SnapDuration
-            }
+        UbuntuNumberAnimation {
+            duration: UbuntuAnimation.SnapDuration
         }
     }
 
     states:[
         State {
             name: "contracted"
-            PropertyChanges {target: notification; height: units.gu(8)}
+            PropertyChanges {target: notification; height: units.gu(10)}
         },
         State {
             name: "expanded"
@@ -117,10 +129,12 @@ Item {
             fill: parent
             leftMargin: notification.margins
             rightMargin: notification.margins
+            topMargin: type === Notification.Confirmation ? units.gu(.5) : 0
         }
         color: parent.color
         opacity: parent.opacity
         radius: "medium"
+        borderSource: "none"
     }
 
     Rectangle {
@@ -149,22 +163,18 @@ Item {
         UnityMenuModel {
             id: unityMenuModel
 
+            property string lastNameOwner: ""
+
             busName: paths.busName
             actions: paths.actions
             menuObjectPath: paths.menuObjectPath
-        }
-
-        Behavior on implicitHeight {
-            id: heightBehavior
-
-            enabled: false
-            UbuntuNumberAnimation {
-                duration: UbuntuAnimation.SnapDuration
+            onNameOwnerChanged: {
+                if (lastNameOwner != "" && nameOwner == "" && notification.notification != undefined) {
+                    notification.notification.close()
+                }
+                lastNameOwner = nameOwner
             }
         }
-
-        // delay enabling height behavior until the add transition is complete
-        onOpacityChanged: if (opacity == 1) heightBehavior.enabled = true
 
         MouseArea {
             id: interactiveArea
@@ -181,50 +191,41 @@ Item {
         }
 
         Column {
-            id: contentColumn
-            objectName: "contentColumn"
+            id: outterColumn
 
             anchors {
                 left: parent.left
                 right: parent.right
                 top: parent.top
-                margins: fullscreen ? 0 : spacing
+                margins: 0
+                topMargin: fullscreen ? 0 : type === Notification.Confirmation ? units.gu(1) : units.gu(2)
             }
 
-            spacing: units.gu(1)
+            spacing: type === Notification.Confirmation ? units.gu(1) : units.gu(2)
 
             Row {
                 id: topRow
 
-                spacing: contentColumn.spacing
+                spacing: contentSpacing
                 anchors {
                     left: parent.left
                     right: parent.right
+                    margins: contentSpacing
                 }
 
                 ShapedIcon {
                     id: icon
 
                     objectName: "icon"
-                    width: units.gu(6)
-                    height: units.gu(6)
+                    width: type == Notification.Ephemeral && !bodyLabel.visible ? units.gu(3) : units.gu(6)
+                    height: width
                     shaped: notification.hints["x-canonical-non-shaped-icon"] == "true" ? false : true
-                    visible: iconSource !== undefined && iconSource != ""
-               }
-
-               Image {
-                   id: secondaryIcon
-
-                   objectName: "secondaryIcon"
-                   width: units.gu(2)
-                   height: units.gu(2)
-                   visible: source !== undefined && source != ""
-                   fillMode: Image.PreserveAspectCrop
-               }
+                    visible: iconSource !== undefined && iconSource !== "" && type !== Notification.Confirmation
+                }
 
                 Column {
                     id: labelColumn
-                    width: parent.width - x
+                    width: secondaryIcon.visible ? parent.width - x - units.gu(4.5) : parent.width - x
 
                     anchors.verticalCenter: (icon.visible && !bodyLabel.visible) ? icon.verticalCenter : undefined
 
@@ -236,10 +237,11 @@ Item {
                             left: parent.left
                             right: parent.right
                         }
+                        visible: type !== Notification.Confirmation
                         fontSize: "medium"
-                        font.bold: true
-                        color: Theme.palette.selected.backgroundText
+                        color: darkOnBright ? sdFontColor : Theme.palette.selected.backgroundText
                         elide: Text.ElideRight
+                        textFormat: Text.PlainText
                     }
 
                     Label {
@@ -250,26 +252,97 @@ Item {
                             left: parent.left
                             right: parent.right
                         }
-                        visible: body != ""
+                        visible: body != "" && type !== Notification.Confirmation
                         fontSize: "small"
-                        color: Theme.palette.selected.backgroundText
-                        opacity: 0.6
+                        color: darkOnBright ? sdFontColor : Theme.palette.selected.backgroundText
                         wrapMode: Text.WordWrap
-                        maximumLineCount: 10
+                        maximumLineCount: type == Notification.SnapDecision ? 12 : 2
                         elide: Text.ElideRight
+                        textFormat: Text.PlainText
                     }
+                }
+
+                Image {
+                    id: secondaryIcon
+
+                    objectName: "secondaryIcon"
+                    width: units.gu(3)
+                    height: units.gu(3)
+                    visible: status === Image.Ready
+                    fillMode: Image.PreserveAspectCrop
+                }
+            }
+
+            ListItem.ThinDivider {
+                visible: type == Notification.SnapDecision
+            }
+
+            ShapedIcon {
+                id: centeredIcon
+                objectName: "centeredIcon"
+                width: units.gu(5)
+                height: width
+                shaped: notification.hints["x-canonical-non-shaped-icon"] == "true" ? false : true
+                fileSource: icon.fileSource
+                visible: fileSource !== undefined && fileSource !== "" && type === Notification.Confirmation
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            Label {
+                id: valueLabel
+                objectName: "valueLabel"
+                text: body
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: type === Notification.Confirmation && body !== ""
+                fontSize: "medium"
+                color: darkOnBright ? sdFontColor : Theme.palette.selected.backgroundText
+                wrapMode: Text.WordWrap
+                maximumLineCount: 1
+                elide: Text.ElideRight
+                textFormat: Text.PlainText
+            }
+
+            UbuntuShape {
+                id: valueIndicator
+                objectName: "valueIndicator"
+                visible: type === Notification.Confirmation
+                property double value
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    margins: contentSpacing
+                }
+
+                height: units.gu(1)
+                color: darkOnBright ? UbuntuColors.darkGrey : UbuntuColors.lightGrey
+                borderSource: "none"
+                radius: "small"
+
+                UbuntuShape {
+                    id: innerBar
+                    objectName: "innerBar"
+                    width: valueIndicator.width * valueIndicator.value / 100
+                    height: units.gu(1)
+                    color: notification.hints["x-canonical-value-bar-tint"] === "true" ? UbuntuColors.orange : darkOnBright ? UbuntuColors.lightGrey : "white"
+                    borderSource: "none"
+                    radius: "small"
                 }
             }
 
             Column {
+                id: dialogColumn
                 objectName: "dialogListView"
                 spacing: units.gu(2)
 
                 visible: count > 0
 
-                anchors.left: parent.left; anchors.right: parent.right
-                anchors.top: fullscreen ? parent.top : undefined
-                anchors.bottom: fullscreen ? parent.bottom : undefined
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: fullscreen ? parent.top : undefined
+                    bottom: fullscreen ? parent.bottom : undefined
+                }
 
                 Repeater {
                     model: unityMenuModel
@@ -277,7 +350,10 @@ Item {
                     NotificationMenuItemFactory {
                         id: menuItemFactory
 
-                        anchors.left: parent.left; anchors.right: parent.right
+                        anchors {
+                            left: dialogColumn.left
+                            right: dialogColumn.right
+                        }
 
                         menuModel: unityMenuModel
                         menuData: model
@@ -287,117 +363,164 @@ Item {
                         onLoaded: {
                             notification.fullscreen = Qt.binding(function() { return fullscreen; });
                         }
+                        onAccepted: {
+                            notification.notification.invokeAction(actionRepeater.itemAt(0).actionId)
+                        }
                     }
                 }
             }
 
-            Item {
+            Column {
+                id: oneOverTwoCase
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    margins: contentSpacing
+                }
+
+                spacing: contentSpacing
+
+                visible: notification.type === Notification.SnapDecision && oneOverTwoRepeaterTop.count === 3
+
+                Repeater {
+                    id: oneOverTwoRepeaterTop
+
+                    model: notification.actions
+                    delegate: Loader {
+                        id: oneOverTwoLoaderTop
+
+                        property string actionId: id
+                        property string actionLabel: label
+
+                        Component {
+                            id: oneOverTwoButtonTop
+
+                            Button {
+                                objectName: "notify_oot_button" + index
+                                width: oneOverTwoCase.width
+                                text: oneOverTwoLoaderTop.actionLabel
+                                color: notification.hints["x-canonical-private-affirmative-tint"] == "true" ? green : sdDarkGrey
+                                onClicked: notification.notification.invokeAction(oneOverTwoLoaderTop.actionId)
+                            }
+                        }
+                        sourceComponent: index == 0 ? oneOverTwoButtonTop : undefined
+                    }
+                }
+
+                Row {
+                    spacing: contentSpacing
+
+                    Repeater {
+                        id: oneOverTwoRepeaterBottom
+
+                        model: notification.actions
+                        delegate: Loader {
+                            id: oneOverTwoLoaderBottom
+
+                            property string actionId: id
+                            property string actionLabel: label
+
+                            Component {
+                                id: oneOverTwoButtonBottom
+
+                                Button {
+                                    objectName: "notify_oot_button" + index
+                                    width: oneOverTwoCase.width / 2 - spacing * 2
+                                    text: oneOverTwoLoaderBottom.actionLabel
+                                    color: index == 1 && notification.hints["x-canonical-private-rejection-tint"] == "true" ? red : sdDarkGrey
+                                    onClicked: notification.notification.invokeAction(oneOverTwoLoaderBottom.actionId)
+                                }
+                            }
+                            sourceComponent:  (index == 1 || index == 2) ? oneOverTwoButtonBottom : undefined
+                        }
+                    }
+                }
+            }
+
+            Row {
                 id: buttonRow
 
                 objectName: "buttonRow"
                 anchors {
                     left: parent.left
                     right: parent.right
+                    margins: contentSpacing
                 }
-                visible: notification.type == Notification.SnapDecision && actionRepeater.count > 0
-                height: units.gu(5)
+                visible: notification.type == Notification.SnapDecision && actionRepeater.count > 0 && !oneOverTwoCase.visible
+                spacing: units.gu(2)
+                layoutDirection: Qt.RightToLeft
 
-                property real buttonWidth: (width - contentColumn.spacing) / 2
-                property bool expanded
+                Loader {
+                    id: notifySwipeButtonLoader
+                    active: notification.hints["x-canonical-snap-decisions-swipe"] === "true"
 
-                Button {
-                    id: leftButton
-
-                    objectName: "button1"
-                    width: parent.expanded ? parent.width : parent.buttonWidth
-                    anchors {
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
-                    text: notification.type == Notification.SnapDecision && actionRepeater.count >= 2 ? actionRepeater.itemAt(1).actionLabel : ""
-                    gradient: UbuntuColors.greyGradient
-                    onClicked: {
-                        if (actionRepeater.count > 2) {
-                            buttonRow.expanded = !buttonRow.expanded
-                        } else {
-                            notification.notification.invokeAction(actionRepeater.itemAt(1).actionId)
+                    sourceComponent: SwipeToAct  {
+                        objectName: "notify_swipe_button"
+                        width: buttonRow.width
+                        leftIconName: "call-end"
+                        rightIconName: "call-start"
+                        onRightTriggered: {
+                            notification.notification.invokeAction(notification.actions.data(0, ActionModel.RoleActionId))
                         }
-                    }
 
-                    Behavior on width {
-                        UbuntuNumberAnimation {
-                            duration: UbuntuAnimation.SnapDuration
+                        onLeftTriggered: {
+                            notification.notification.invokeAction(notification.actions.data(1, ActionModel.RoleActionId))
                         }
                     }
                 }
-
-                Button {
-                    id: rightButton
-
-                    objectName: "button0"
-                    anchors {
-                        left: leftButton.right
-                        leftMargin: contentColumn.spacing
-                        right: parent.right
-                    }
-                    text: notification.type == Notification.SnapDecision && actionRepeater.count >= 1 ? actionRepeater.itemAt(0).actionLabel : ""
-                    anchors {
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
-                    gradient: notification.hints["x-canonical-private-button-tint"] == "true" ? UbuntuColors.orangeGradient : UbuntuColors.greyGradient
-                    visible: width > 0
-                    onClicked: notification.notification.invokeAction(actionRepeater.itemAt(0).actionId)
-                }
-            }
-
-            Column {
-                objectName: "buttonColumn"
-                spacing: contentColumn.spacing
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
-
-                // calculate initial position before Column takes over
-                y: buttonRow.y + buttonRow.height + contentColumn.spacing
-
-                visible: notification.type == Notification.SnapDecision && buttonRow.expanded
-                height: buttonRow.expanded ? implicitHeight : 0
 
                 Repeater {
                     id: actionRepeater
-
                     model: notification.actions
                     delegate: Loader {
                         id: loader
 
                         property string actionId: id
                         property string actionLabel: label
-
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                        }
+                        active: !notifySwipeButtonLoader.active
 
                         Component {
                             id: actionButton
 
                             Button {
-                                objectName: "button" + index
-                                anchors {
-                                    left: parent.left
-                                    right: parent.right
-                                }
-
+                                objectName: "notify_button" + index
+                                width: buttonRow.width / 2 - spacing * 2
                                 text: loader.actionLabel
-                                height: units.gu(5)
-                                gradient: UbuntuColors.greyGradient
+                                color: {
+                                    var result = sdDarkGrey;
+                                    if (index == 0 && notification.hints["x-canonical-private-affirmative-tint"] == "true") {
+                                        result = green;
+                                    }
+                                    if (index == 1 && notification.hints["x-canonical-private-rejection-tint"] == "true") {
+                                        result = red;
+                                    }
+                                    return result;
+                                }
                                 onClicked: notification.notification.invokeAction(loader.actionId)
                             }
                         }
-                        sourceComponent: (index == 0 || index == 1) ? undefined : actionButton
+                        sourceComponent: (index == 0 || index == 1) ? actionButton : undefined
                     }
+                }
+            }
+
+            OptionToggle {
+                id: optionToggle
+                objectName: "notify_button2"
+                width: parent.width
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    margins: contentSpacing
+                }
+
+                visible: notification.type == Notification.SnapDecision && actionRepeater.count > 3 && !oneOverTwoCase.visible
+                model: notification.actions
+                expanded: false
+                startIndex: 2
+                onTriggered: {
+                    notification.notification.invokeAction(id)
                 }
             }
         }

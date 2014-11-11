@@ -18,17 +18,8 @@
  */
 
 import QtQuick 2.0
-import Unity.Indicators 0.1 as Indicators
 
-Indicators.IndicatorBase {
-    enabled: false
-
-    onRootActionStateChanged: {
-        if (rootActionState == undefined) {
-            enabled = false;
-            return;
-        }
-
-        enabled = rootActionState.visible;
-    }
+IndicatorBase {
+    readonly property bool indicatorVisible: rootActionState.indicatorVisible
+    readonly property string title: rootActionState.title
 }

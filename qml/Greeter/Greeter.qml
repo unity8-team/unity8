@@ -26,16 +26,17 @@ Showable {
     created: greeterContentLoader.status == Loader.Ready && greeterContentLoader.item.ready
 
     property url defaultBackground
+    property bool loadContent: required
 
     // 1 when fully shown and 0 when fully hidden
     property real showProgress: MathUtils.clamp((width - Math.abs(x)) / width, 0, 1)
 
-    showAnimation: StandardAnimation { property: "x"; to: 0 }
+    showAnimation: StandardAnimation { property: "x"; to: 0; duration: UbuntuAnimation.FastDuration }
     hideAnimation: __leftHideAnimation
 
     property alias dragHandleWidth: dragHandle.width
     property alias model: greeterContentLoader.model
-    property bool locked: shown && !LightDM.Greeter.promptless
+    property bool locked: true
 
     readonly property bool narrowMode: !multiUser && height > width
     readonly property bool multiUser: LightDM.Users.count > 1
@@ -56,12 +57,22 @@ Showable {
         }
     }
 
+    function tryToUnlock() {
+        if (created) {
+            greeterContentLoader.item.tryToUnlock()
+        }
+    }
+
+    function reset() {
+        if (created) {
+            greeterContentLoader.item.reset()
+        }
+    }
+
     onRequiredChanged: {
         // Reset hide animation to default once we're finished with it
-        if (!required) {
-            // Put back on left for reliable show direction and so that
-            // if normal hide() is called, we don't animate from right.
-            x = -width
+        if (required) {
+            // Reset hide animation so that a hide() call is reliably left
             hideAnimation = __leftHideAnimation
         }
     }
@@ -70,7 +81,7 @@ Showable {
     DraggingArea {
         id: dragHandle
         anchors.fill: parent
-        enabled: greeter.narrowMode || !greeter.locked
+        enabled: (greeter.narrowMode || !greeter.locked) && greeter.enabled && greeter.shown
         orientation: Qt.Horizontal
         propagateComposedEvents: true
 
@@ -90,12 +101,13 @@ Showable {
         onPressAndHold: {} // eat event, but no need to tease, as drag will cover it
 
         onDragEnd: {
-            if (rightEvaluator.shouldAutoComplete())
+            if (greeter.x > 0 && rightEvaluator.shouldAutoComplete()) {
                 greeter.hideRight()
-            else if (leftEvaluator.shouldAutoComplete())
+            } else if (greeter.x < 0 && leftEvaluator.shouldAutoComplete()) {
                 greeter.hide();
-            else
+            } else {
                 greeter.show(); // undo drag
+            }
         }
 
         onDragValueChanged: {
@@ -117,6 +129,11 @@ Showable {
             direction: Direction.Leftwards
         }
     }
+    TouchGate {
+        targetItem: dragHandle
+        anchors.fill: targetItem
+        enabled: targetItem.enabled
+    }
 
     Loader {
         id: greeterContentLoader
@@ -127,7 +144,7 @@ Showable {
         property var infographicModel: LightDM.Infographic
         readonly property int backgroundTopMargin: -greeter.y
 
-        source: required ? "GreeterContent.qml" : ""
+        source: loadContent ? "GreeterContent.qml" : ""
 
         onLoaded: {
             selected(currentIndex);
@@ -154,7 +171,7 @@ Showable {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: units.gu(5)
-        text: i18n.tr("Swipe to unlock")
+        text: "《    " + i18n.tr("Unlock") + "    》"
         color: "white"
         font.weight: Font.Light
 

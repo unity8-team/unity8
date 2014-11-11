@@ -31,6 +31,12 @@ Loader {
     //! Widget data, forwarded to the widget as is.
     property var widgetData: null
 
+    //! The ScopeStyle component.
+    property var scopeStyle: null
+
+    //! Should the widget show in expanded mode (For those that support it)
+    property bool expanded: true
+
     //! Set to true if the parent preview is displayed.
     property bool isCurrentPreview: false
 
@@ -44,12 +50,15 @@ Loader {
         switch (widgetType) {
             case "actions": return "PreviewActions.qml";
             case "audio": return "PreviewAudioPlayback.qml";
+            case "expandable": return "PreviewExpandable.qml";
             case "gallery": return "PreviewImageGallery.qml";
             case "header": return "PreviewHeader.qml";
             case "image": return "PreviewZoomableImage.qml";
             case "progress": return "PreviewProgress.qml";
+            case "payments": return "PreviewPayments.qml";
             case "rating-input": return "PreviewRatingInput.qml";
             case "reviews": return "PreviewRatingDisplay.qml";
+            case "table": return "PreviewTable.qml";
             case "text": return "PreviewTextSummary.qml";
             case "video": return "PreviewVideoPlayback.qml";
             default: return "";
@@ -61,6 +70,8 @@ Loader {
         item.widgetId = Qt.binding(function() { return root.widgetId } )
         item.widgetData = Qt.binding(function() { return root.widgetData } )
         item.isCurrentPreview = Qt.binding(function() { return root.isCurrentPreview } )
+        item.expanded = Qt.binding(function() { return root.expanded } )
+        item.scopeStyle = Qt.binding(function() { return root.scopeStyle } )
     }
 
     Connections {

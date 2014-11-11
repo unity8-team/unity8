@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013-2014 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,7 @@ Item {
     property int dragAreaWidth: units.gu(1)
     property int minimizeDistance: units.gu(26)
     property real progress: dragArea.dragging && dragArea.touchX > panelWidth ?
-                                (width * (dragArea.touchX-panelWidth) / (width - panelWidth)) :
-                                (dragArea.dragging ? 0.001 : 0)
+                                (width * (dragArea.touchX-panelWidth) / (width - panelWidth)) : 0
 
     readonly property bool shown: panel.x > -panel.width
 
@@ -55,24 +54,38 @@ Item {
         switchToNextState("")
     }
 
+    function fadeOut() {
+        fadeOutAnimation.start();
+    }
+
     function switchToNextState(state) {
         animateTimer.nextState = state
         animateTimer.start();
     }
 
     function tease() {
-        if (available) {
+        if (available && !dragArea.dragging) {
+            teaseTimer.mode = "teasing"
+            teaseTimer.start();
+        }
+    }
+
+    function hint() {
+        if (available && root.state == "") {
+            teaseTimer.mode = "hinting"
             teaseTimer.start();
         }
     }
 
     Timer {
         id: teaseTimer
-        interval: 200
+        interval: mode == "teasing" ? 200 : 300
+        property string mode: "teasing"
     }
 
     Timer {
         id: dismissTimer
+        objectName: "dismissTimer"
         interval: 5000
         onTriggered: {
             if (!panel.preventHiding) {
@@ -89,6 +102,7 @@ Item {
     // machine and switch to the final state in the next event loop run
     Timer {
         id: animateTimer
+        objectName: "animateTimer"
         interval: 1
         property string nextState: ""
         onTriggered: {
@@ -96,6 +110,36 @@ Item {
             // values are restored, even if we were already in the target state
             root.state = "tmp"
             root.state = nextState
+        }
+    }
+
+    Connections {
+        target: LauncherModel
+        onHint: hint();
+    }
+
+    SequentialAnimation {
+        id: fadeOutAnimation
+        ScriptAction {
+            script: {
+                panel.layer.enabled = true
+            }
+        }
+        UbuntuNumberAnimation {
+            target: panel
+            property: "opacity"
+            easing.type: Easing.InQuad
+            to: 0
+        }
+        ScriptAction {
+            script: {
+                panel.layer.enabled = false
+                panel.animate = false;
+                root.state = "";
+                panel.x = -panel.width
+                panel.opacity = 1;
+                panel.animate = true;
+            }
         }
     }
 
@@ -152,7 +196,7 @@ Item {
             bottom: parent.bottom
         }
         x: -width
-        opacity: (x == -width && dragArea.status === DirectionalDragArea.WaitingForTouch) ? 0 : 1
+        visible: x > -width || dragArea.status === DirectionalDragArea.Undecided
         model: LauncherModel
 
         property bool animate: true
@@ -173,9 +217,9 @@ Item {
         }
 
         Behavior on x {
+            enabled: !dragArea.dragging && !launcherDragArea.drag.active && panel.animate;
             NumberAnimation {
-                // Disabling animation when dragging
-                duration: dragArea.dragging || launcherDragArea.drag.active ?  0 : 300;
+                duration: 300
                 easing.type: Easing.OutCubic
             }
         }
@@ -189,6 +233,7 @@ Item {
 
     EdgeDragArea {
         id: dragArea
+        objectName: "launcherDragArea"
 
         direction: Direction.Rightwards
 
@@ -217,7 +262,7 @@ Item {
                 if (distance > panel.width / 2) {
                     root.switchToNextState("visible")
                     if (distance > minimizeDistance) {
-                        root.dash()
+                        root.dash();
                     }
                 } else {
                     root.switchToNextState("")
@@ -243,10 +288,18 @@ Item {
         },
         State {
             name: "teasing"
-            when: teaseTimer.running
+            when: teaseTimer.running && teaseTimer.mode == "teasing"
             PropertyChanges {
                 target: panel
                 x: -root.panelWidth + units.gu(2)
+            }
+        },
+        State {
+            name: "hinting"
+            when: teaseTimer.running && teaseTimer.mode == "hinting"
+            PropertyChanges {
+                target: panel
+                x: 0
             }
         }
     ]

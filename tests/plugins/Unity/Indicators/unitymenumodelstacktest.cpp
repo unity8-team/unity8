@@ -24,6 +24,9 @@
 #include <QDebug>
 #include <unitymenumodel.h>
 
+#include <functional>
+#include <chrono>
+
 class UnityMenuModelStackTest : public QObject
 {
     Q_OBJECT
@@ -39,7 +42,7 @@ private Q_SLOTS:
     void cleanup()
     {
         delete m_model;
-        m_model = NULL;
+        m_model = nullptr;
     }
 
     void testHeadOnSetHead()

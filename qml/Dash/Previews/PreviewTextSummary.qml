@@ -23,7 +23,7 @@ import "../../Components"
     This widget shows text contained in widgetData["text"]
     along with a title that comes from widgetData["title"].
 
-    In case the text does not fit in 7 lines a See More / Less widget is also shown.
+    In case the widget is collapsed it only shows 3 lines of text.
  */
 
 PreviewWidget {
@@ -39,8 +39,7 @@ PreviewWidget {
         }
         height: visible ? implicitHeight : 0
         fontSize: "large"
-        // TODO karni: Yet another fix requiring Palette update.
-        color: "grey" //Theme.palette.selected.backgroundText
+        color: root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText
         visible: text !== ""
         opacity: .8
         text: widgetData["title"] || ""
@@ -51,38 +50,24 @@ PreviewWidget {
         id: textLabel
         objectName: "textLabel"
 
-        readonly property int maximumCollapsedLineCount: 7
+        readonly property int maximumCollapsedLineCount: 3
 
         anchors {
             left: parent.left
             right: parent.right
             top: titleLabel.visible ? titleLabel.bottom : parent.top
         }
-        height: (!seeMore.visible || seeMore.more) ? contentHeight : contentHeight / lineCount * (maximumCollapsedLineCount - 2)
+        height: (lineCount <= maximumCollapsedLineCount || root.expanded) ? contentHeight : contentHeight / lineCount * maximumCollapsedLineCount
         clip: true
         fontSize: "small"
         lineHeight: 1.2
-        // TODO karni: Yet another fix requiring Palette update.
-        color: "grey" //Theme.palette.selected.backgroundText
+        color: root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText
         opacity: .8
-        text: widgetData["text"]
+        text: widgetData["text"] || ""
         wrapMode: Text.Wrap
 
         Behavior on height {
             UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration }
         }
-    }
-
-    SeeMore {
-        id: seeMore
-        objectName: "seeMore"
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: textLabel.bottom
-            topMargin: visible ? units.gu(1) : 0
-        }
-        height: visible ? implicitHeight : 0
-        visible: textLabel.lineCount > textLabel.maximumCollapsedLineCount
     }
 }

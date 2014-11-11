@@ -91,6 +91,7 @@ Item {
                 }
                 return units.gu(18.5);
             case "carousel":
+            case "horizontal-list":
                 return carouselTool.minimumTileWidth;
             case undefined:
             case "organic-grid":
@@ -111,6 +112,7 @@ Item {
                 if (template["card-size"] >= 12 && template["card-size"] <= 38) return units.gu(template["card-size"]);
                 return units.gu(18.5);
             case "grid":
+            case "horizontal-list":
                 return cardLoader.item ? cardLoader.item.implicitHeight : 0
             case "carousel":
                 return cardWidth / (components ? components["art"]["aspect-ratio"] : 1)
@@ -126,24 +128,29 @@ Item {
      type:real \brief Height of the card's header.
     */
     readonly property int headerHeight: cardLoader.item ? cardLoader.item.headerHeight : 0
-    readonly property size artShapeSize: cardLoader.item ? cardLoader.item.artShapeSize : 0
+    property size artShapeSize: cardLoader.item ? cardLoader.item.artShapeSize : 0
 
     /*!
-     \brief Desired alignment of header components.
+     \brief Desired alignment of title
      */
-    readonly property int headerAlignment: {
-        var subtitle = components["subtitle"];
-        var price = components["price"];
-        var summary = components["summary"];
+    readonly property int titleAlignment: {
+        if (template["card-layout"] === "horizontal"
+            || (typeof components["title"] !== "object" &&
+                components["title"]["align"] !== "center")) return Text.AlignLeft;
 
-        var hasSubtitle = subtitle && (typeof subtitle === "string" || subtitle["field"])
-        var hasPrice = price && (typeof price === "string" || subtitle["field"]);
-        var hasSummary = summary && (typeof summary === "string" || summary["field"])
+        var keys = ["mascot", "emblem", "subtitle", "attributes", "summary"];
 
-        var isOnlyTextComponent = !hasSubtitle && !hasPrice && !hasSummary;
-        if (!isOnlyTextComponent) return Text.AlignLeft;
+        for (var key in keys) {
+            key = keys[key];
+            try {
+                if (typeof components[key] === "string"
+                    || typeof components[key]["field"] === "string") return Text.AlignLeft;
+            } catch (e) {
+                continue;
+            }
+        }
 
-        return (template["card-layout"] === "horizontal") ? Text.AlignLeft : Text.AlignHCenter;
+        return Text.AlignHCenter;
     }
 
     QtObject {
@@ -165,15 +172,40 @@ Item {
         }
     }
 
+    Item {
+        id: attributesModel
+        property int numOfAttributes: 0
+        property var model: []
+        property bool hasAttributes: {
+            var attributes = components["attributes"];
+            var hasAttributesFlag = (attributes != undefined) && attributes["field"];
+
+            if (hasAttributesFlag) {
+                if (attributes["max-count"]) {
+                    numOfAttributes = attributes["max-count"];
+                }
+            }
+            return hasAttributesFlag
+        }
+
+        onNumOfAttributesChanged: {
+            model = []
+            for (var i = 0; i < numOfAttributes; i++) {
+                model.push( {"value":"text"+(i+1), "icon":"image://theme/ok" } );
+            }
+        }
+    }
+
     Loader {
         id: cardLoader
-        property var fields: ["art", "mascot", "title", "subtitle", "summary"]
+        property var fields: ["art", "mascot", "title", "subtitle", "summary", "attributes"]
         property var maxData: {
-            "art": Qt.resolvedUrl("graphics/checkers.png"),
-            "mascot": Qt.resolvedUrl("graphics/checkers.png"),
+            "art": Qt.resolvedUrl("graphics/pixel.png"),
+            "mascot": Qt.resolvedUrl("graphics/pixel.png"),
             "title": "—\n—",
             "subtitle": "—",
-            "summary": "—\n—\n—\n—\n—"
+            "summary": "—\n—\n—\n—\n—",
+            "attributes": attributesModel.model
         }
         sourceComponent: cardTool.cardComponent
         onLoaded: {

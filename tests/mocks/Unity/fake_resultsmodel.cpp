@@ -29,6 +29,11 @@ ResultsModel::ResultsModel(int result_count, int categoryId, QObject* parent)
 {
 }
 
+ResultsModel::ResultsModel(QObject *parent)
+    : ResultsModel::ResultsModel(10, 1, parent)
+{
+}
+
 QString ResultsModel::categoryId() const
 {
     return QString::number(m_categoryId);
@@ -37,6 +42,15 @@ QString ResultsModel::categoryId() const
 void ResultsModel::setCategoryId(QString const& /*id*/)
 {
     qFatal("Calling un-implemented ResultsModel::setCategoryId");
+}
+
+void ResultsModel::setResultCount(int result_count)
+{
+    if (m_result_count != result_count) {
+        beginResetModel(); // This is just for test setup so we can be lazy and reset
+        m_result_count = result_count;
+        endResetModel();
+    }
 }
 
 int ResultsModel::rowCount(const QModelIndex& parent) const
@@ -58,8 +72,9 @@ ResultsModel::data(const QModelIndex& index, int role) const
         case RoleUri:
         case RoleCategoryId:
         case RoleDndUri:
-        case RoleResult:
             return QString();
+        case RoleResult:
+            return QString("Result.%1.%2").arg(m_categoryId).arg(index.row());
         case RoleTitle:
             return QString("Title.%1.%2").arg(m_categoryId).arg(index.row());
         case RoleArt:

@@ -27,14 +27,17 @@ class ActionStateParser;
 class Q_DECL_EXPORT UnityMenuModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QVariant modelData READ modelData WRITE setModelData NOTIFY modelDataChanged)
     Q_PROPERTY(QByteArray busName READ busName WRITE setBusName NOTIFY busNameChanged)
     Q_PROPERTY(QVariantMap actions READ actions WRITE setActions NOTIFY actionsChanged)
     Q_PROPERTY(QByteArray menuObjectPath READ menuObjectPath WRITE setMenuObjectPath NOTIFY menuObjectPathChanged)
     Q_PROPERTY(ActionStateParser* actionStateParser READ actionStateParser WRITE setActionStateParser NOTIFY actionStateParserChanged)
+    Q_PROPERTY(QString nameOwner READ nameOwner NOTIFY nameOwnerChanged)
+
+    // internal mock properties
+    Q_PROPERTY(QVariant modelData READ modelData WRITE setModelData NOTIFY modelDataChanged)
 
 public:
-    UnityMenuModel(QObject *parent = NULL);
+    UnityMenuModel(QObject *parent = nullptr);
     virtual ~UnityMenuModel();
 
     Q_INVOKABLE void insertRow(int row, const QVariant& data);
@@ -56,6 +59,8 @@ public:
     ActionStateParser* actionStateParser() const;
     void setActionStateParser(ActionStateParser* actionStateParser);
 
+    QString nameOwner() const;
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -63,7 +68,7 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     QHash<int, QByteArray> roleNames() const;
 
-    Q_INVOKABLE QObject * submenu(int position, QQmlComponent* actionStateParser = NULL);
+    Q_INVOKABLE QObject * submenu(int position, QQmlComponent* actionStateParser = nullptr);
     Q_INVOKABLE bool loadExtendedAttributes(int position, const QVariantMap &schema);
     Q_INVOKABLE QVariant get(int row, const QByteArray &role);
 
@@ -78,6 +83,9 @@ Q_SIGNALS:
     void actionsChanged();
     void menuObjectPathChanged();
     void actionStateParserChanged();
+    void nameOwnerChanged();
+
+    // Internal mock usage
     void modelDataChanged();
 
 private:

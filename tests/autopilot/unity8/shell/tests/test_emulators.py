@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from unity8.shell.emulators.dash import ListViewWithPageHeader
 
 """Tests for the Dash autopilot emulators.
 
@@ -27,15 +28,8 @@ don't break them for those external projects.
 
 """
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
-
-from testtools.matchers import Contains, HasLength
-
 from unity8 import process_helpers
-from unity8.shell import emulators, fixture_setup, tests
+from unity8.shell import fixture_setup, tests
 from unity8.shell.emulators import dash as dash_emulators
 
 
@@ -48,54 +42,13 @@ class MainWindowTestCase(tests.UnityTestCase):
         unity_proxy = self.launch_unity()
         process_helpers.unlock_unity(unity_proxy)
 
+
+class DashEmulatorTestCase(tests.DashBaseTestCase):
+
     def test_search(self):
-        self.main_window.search('Test')
-        text_field = self.main_window.get_dash()._get_search_text_field()
+        self.dash.enter_search_query('Test')
+        text_field = self.dash._get_search_text_field()
         self.assertEqual(text_field.text, 'Test')
-        self.assertEqual(text_field.state, 'idle')
-
-
-class DashBaseTestCase(tests.UnityTestCase):
-
-    scenarios = tests._get_device_emulation_scenarios()
-
-    def setUp(self):
-        super(DashBaseTestCase, self).setUp()
-        unity_proxy = self.launch_unity()
-        process_helpers.unlock_unity(unity_proxy)
-        self.dash = self.main_window.get_dash()
-
-
-class DashEmulatorTestCase(DashBaseTestCase):
-
-    def test_open_unexisting_scope(self):
-        scope_name = 'unexisting'
-        with mock.patch.object(self.dash, 'pointing_device') as mock_pointer:
-            exception = self.assertRaises(
-                emulators.UnityEmulatorException,
-                self.dash.open_scope, scope_name)
-
-        self.assertEqual(
-            'No scope found with id unexisting', str(exception))
-        self.assertFalse(mock_pointer.called)
-
-    def test_open_already_opened_scope(self):
-        scope_id = self._get_current_scope_id()
-        with mock.patch.object(self.dash, 'pointing_device') as mock_pointer:
-            scope = self.dash.open_scope(scope_id)
-
-        self.assertFalse(mock_pointer.called)
-        self._assert_scope_is_opened(scope, scope_id)
-
-    def _assert_scope_is_opened(self, scope, scope_id):
-        self.assertTrue(scope.isCurrent)
-        scope_loader = scope.get_parent()
-        self.assertEqual(scope_loader.scopeId, scope_id)
-
-    def _get_current_scope_id(self):
-        scope = self.dash.dash_content_list.select_single(
-            'QQuickLoader', isCurrent=True)
-        return scope.scopeId
 
     def test_open_scope_to_the_right(self):
         leftmost_scope = self._get_leftmost_scope_id()
@@ -104,6 +57,11 @@ class DashEmulatorTestCase(DashBaseTestCase):
         scope_id = self._get_rightmost_scope_id()
         scope = self.dash.open_scope(scope_id)
         self._assert_scope_is_opened(scope, scope_id)
+
+    def _assert_scope_is_opened(self, scope, scope_id):
+        self.assertTrue(scope.isCurrent)
+        scope_loader = scope.get_parent()
+        self.assertEqual(scope_loader.scopeId, scope_id)
 
     def _get_leftmost_scope_id(self):
         scope_loaders = self._get_scope_loaders()
@@ -135,7 +93,7 @@ class DashEmulatorTestCase(DashBaseTestCase):
         self._assert_scope_is_opened(scope, scope_id)
 
     def test_open_generic_scope(self):
-        scope_id = 'scopes'
+        scope_id = 'musicaggregator'
         scope = self.dash.open_scope(scope_id)
         self._assert_scope_is_opened(scope, scope_id)
         self.assertIsInstance(scope, dash_emulators.GenericScopeView)
@@ -144,10 +102,10 @@ class DashEmulatorTestCase(DashBaseTestCase):
         scope_id = 'clickscope'
         scope = self.dash.open_scope(scope_id)
         self._assert_scope_is_opened(scope, scope_id)
-        self.assertIsInstance(scope, dash_emulators.DashApps)
+        self.assertIsInstance(scope, dash_emulators.GenericScopeView)
 
 
-class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
+class GenericScopeViewEmulatorTestCase(tests.DashBaseTestCase):
 
     def setUp(self):
         # Set up the fake scopes before launching unity.
@@ -161,7 +119,7 @@ class GenericScopeViewEmulatorTestCase(DashBaseTestCase):
         self.assertTrue(preview.isCurrent)
 
 
-class DashAppsEmulatorTestCase(DashBaseTestCase):
+class DashAppsEmulatorTestCase(tests.DashBaseTestCase):
 
     available_applications = [
         'Title.2.0', 'Title.2.1', 'Title.2.2',  'Title.2.3', 'Title.2.4',
@@ -174,29 +132,30 @@ class DashAppsEmulatorTestCase(DashBaseTestCase):
         super(DashAppsEmulatorTestCase, self).setUp()
         self.applications_scope = self.dash.open_scope('clickscope')
 
-    def test_get_applications_with_unexisting_category(self):
-        exception = self.assertRaises(
-            emulators.UnityEmulatorException,
-            self.applications_scope.get_applications,
-            'unexisting category')
-
-        self.assertEqual(
-            'No category found with name unexisting category', str(exception))
-
     def test_get_applications_should_return_correct_applications(self):
         category = '2'
+        category_element = self.applications_scope._get_category_element(
+            category)
+        list_view = self.dash.get_scope('clickscope')\
+            .select_single(ListViewWithPageHeader)
         expected_apps_count = self._get_number_of_application_slots(category)
         expected_applications = self.available_applications[
             :expected_apps_count]
+        x_center = list_view.globalRect.x + list_view.width / 2
+        y_center = list_view.globalRect.y + list_view.height / 2
+        y_diff = (
+            category_element.y - list_view.height + category_element.height
+        )
+        list_view._slow_drag(x_center, x_center, y_center, y_center - y_diff)
         applications = self.applications_scope.get_applications(category)
         self.assertEqual(expected_applications, applications)
 
     def _get_number_of_application_slots(self, category):
         category_element = self.applications_scope._get_category_element(
             category)
-        grid = category_element.select_single('CardFilterGrid')
-        filtergrid = grid.select_single('FilterGrid')
-        if (grid.filtered):
-            return filtergrid.collapsedRowCount * filtergrid.columns
+        cardgrid = category_element.select_single('CardGrid')
+        if (category_element.expanded):
+            return cardgrid.select_single('QQuickGridView').count
         else:
-            return filtergrid.uncollapsedRowCount * filtergrid.columns
+            return cardgrid.collapsedRows \
+                * cardgrid.select_single('ResponsiveGridView').columns

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013-2014 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QList>
 #include <QStringList>
+#include <QTimer>
 #include "ApplicationInfo.h"
 
 // unity-api
@@ -36,8 +37,7 @@ class ApplicationManager : public ApplicationManagerInterface {
     Q_ENUMS(FavoriteApplication)
     Q_FLAGS(ExecFlags)
 
-    Q_PROPERTY(int keyboardHeight READ keyboardHeight NOTIFY keyboardHeightChanged)
-    Q_PROPERTY(bool keyboardVisible READ keyboardVisible NOTIFY keyboardVisibleChanged)
+    Q_PROPERTY(bool empty READ isEmpty NOTIFY emptyChanged)
 
     Q_PROPERTY(int sideStageWidth READ sideStageWidth)
     Q_PROPERTY(StageHint stageHint READ stageHint)
@@ -45,14 +45,16 @@ class ApplicationManager : public ApplicationManagerInterface {
 
     Q_PROPERTY(bool fake READ fake CONSTANT)
 
-    // Only for testing
-    // This can be used to place some controls to right, like make tryPhoneStage for example
-    Q_PROPERTY(int rightMargin READ rightMargin WRITE setRightMargin)
-
  public:
-    ApplicationManager(QObject *parent = NULL);
+    ApplicationManager(QObject *parent = nullptr);
     virtual ~ApplicationManager();
 
+    static ApplicationManager *singleton();
+
+    enum MoreRoles {
+        RoleSession = RoleFocused+1,
+        RoleFullscreen,
+    };
     enum Role {
         Dash, Default, Indicators, Notifications, Greeter, Launcher, OnScreenKeyboard,
         ShutdownDialog
@@ -74,8 +76,6 @@ class ApplicationManager : public ApplicationManagerInterface {
     };
     Q_DECLARE_FLAGS(ExecFlags, Flag)
 
-    int keyboardHeight() const;
-    bool keyboardVisible() const;
     int sideStageWidth() const;
     StageHint stageHint() const;
     FormFactorHint formFactorHint() const;
@@ -97,44 +97,42 @@ class ApplicationManager : public ApplicationManagerInterface {
     Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, const QStringList &arguments = QStringList()) override;
     Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, ExecFlags flags, const QStringList &arguments = QStringList());
     Q_INVOKABLE bool stopApplication(const QString &appId) override;
-    Q_INVOKABLE bool updateScreenshot(const QString &appId) override;
 
     QString focusedApplicationId() const override;
-    bool suspended() const;
-    void setSuspended(bool suspended);
+    bool suspended() const override;
+    void setSuspended(bool suspended) override;
+
+    bool forceDashActive() const override;
+    void setForceDashActive(bool forceDashActive) override;
 
     // Only for testing
     Q_INVOKABLE QStringList availableApplications();
-    int rightMargin() const;
-    void setRightMargin(int rightMargin);
+    Q_INVOKABLE ApplicationInfo* add(QString appId);
+
+    QModelIndex findIndex(ApplicationInfo* application);
+
+    bool isEmpty() const;
 
  Q_SIGNALS:
-    void keyboardHeightChanged();
-    void keyboardVisibleChanged();
     void focusRequested(FavoriteApplication favoriteApplication);
     void focusRequested(const QString &appId);
+    void emptyChanged(bool empty);
+
+ private Q_SLOTS:
+    void onWindowCreatedTimerTimeout();
 
  private:
     void add(ApplicationInfo *application);
     void remove(ApplicationInfo* application);
-    void showApplicationWindow(ApplicationInfo *application);
     void buildListOfAvailableApplications();
-    void generateQmlStrings(ApplicationInfo *application);
-    void createMainStageComponent();
-    void createMainStage();
-    void createSideStageComponent();
-    void createSideStage();
-    int m_keyboardHeight;
-    bool m_keyboardVisible;
+    void onWindowCreated();
     bool m_suspended;
+    bool m_forceDashActive;
     QList<ApplicationInfo*> m_runningApplications;
     QList<ApplicationInfo*> m_availableApplications;
-    QQmlComponent *m_mainStageComponent;
-    QQuickItem *m_mainStage;
-    QQmlComponent *m_sideStageComponent;
-    QQuickItem *m_sideStage;
+    QTimer m_windowCreatedTimer;
 
-    int m_rightMargin;
+    static ApplicationManager *the_application_manager;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ApplicationManager::ExecFlags)
