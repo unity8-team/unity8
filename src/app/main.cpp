@@ -20,8 +20,8 @@
  *          Riccardo Padovani <rpadovani@ubuntu.com>
  */
 
-#include "camerahelper.h"
 #include "preferences.h"
+#include "formattinghelper.h"
 
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickView>
@@ -123,13 +123,12 @@ int main(int argc, char *argv[])
 
     view.engine()->rootContext()->setContextProperty("uriArgs", cmdLineParser.positionalArguments());
 
-    // Set up camera helper
-    CameraHelper helper;
-    view.engine()->rootContext()->setContextProperty("cameraHelper", &helper);
-
     // Set up account preferences
     Preferences preferences;
     view.engine()->rootContext()->setContextProperty("preferences", &preferences);
+
+    // Register FormattingHelper
+    qmlRegisterType<FormattingHelper>("reminders", 1, 0, "FormattingHelper");
 
     QString qmlfile;
     const QString filePath = QLatin1String("qml/reminders.qml");

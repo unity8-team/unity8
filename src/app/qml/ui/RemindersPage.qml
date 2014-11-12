@@ -43,7 +43,7 @@ Page {
             action: Action {
                 text: i18n.tr("Accounts")
                 iconName: "contacts-app-symbolic"
-                visible: accounts.count > 1
+                visible: allAccounts.count > 1
                 onTriggered: {
                     openAccountPage(true);
                 }
@@ -62,16 +62,11 @@ Page {
             id: remindersListView
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y
+            clip: true
 
             delegate: RemindersDelegate {
                 width: remindersListView.width
                 note: notes.note(guid)
-
-                Component.onCompleted: {
-                    if (!model.plaintextContent) {
-                        NotesStore.refreshNoteContent(model.guid)
-                    }
-                }
 
                 onClicked: {
                     root.selectedNote = NotesStore.note(guid);
@@ -109,6 +104,10 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 text: notes.error ? notes.error :
                 i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
+            }
+
+            Scrollbar {
+                flickableItem: parent
             }
         }
     }

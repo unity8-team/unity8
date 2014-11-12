@@ -164,6 +164,9 @@ Page {
                 text: tags.error
             }
 
+            Scrollbar {
+                flickableItem: parent
+            }
         }
 
         Label {

@@ -97,7 +97,7 @@ PageWithBottomEdge {
             action: Action {
                 text: i18n.tr("Accounts")
                 iconName: "contacts-app-symbolic"
-                visible: accounts.count > 1
+                visible: allAccounts.count > 1
                 onTriggered: {
                     openAccountPage(true);
                 }
@@ -162,6 +162,7 @@ PageWithBottomEdge {
         delegate: NotesDelegate {
             title: model.title
             creationDate: model.created
+            changedDate: model.updated
             content: model.tagline
             tags: {
                 var tags = new Array();
@@ -172,12 +173,6 @@ PageWithBottomEdge {
             }
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
-
-            Component.onCompleted: {
-                if (!model.tagline) {
-                    NotesStore.refreshNoteContent(model.guid);
-                }
-            }
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
@@ -212,6 +207,10 @@ PageWithBottomEdge {
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
             text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
+        }
+
+        Scrollbar {
+            flickableItem: parent
         }
     }
 }

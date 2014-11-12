@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-10 21:11+0200\n"
-"PO-Revision-Date: 2014-10-12 08:59+0000\n"
+"POT-Creation-Date: 2014-11-07 20:51+0100\n"
+"PO-Revision-Date: 2014-11-08 09:45+0000\n"
 "Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-13 06:16+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2014-11-09 06:55+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:267
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
 msgstr "Emlékeztetők"
 
@@ -38,6 +38,12 @@ msgstr "Megosztott"
 msgid "Private"
 msgstr "Privát"
 
+#. TRANSLATORS: the argument is a modification date that follows this format:
+#. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+#: src/app/qml/components/NotesDelegate.qml:107
+msgid "dddd, d hh:mm"
+msgstr "d., dddd hh.mm"
+
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
 msgstr "Engedje el a frissítéshez"
@@ -47,7 +53,7 @@ msgid "Pull down to refresh"
 msgstr "Frissítéshez húzza lefelé"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
-#: src/app/qml/ui/SetReminderView.qml:55
+#: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
 msgstr "Emlékeztető törlése"
 
@@ -55,19 +61,19 @@ msgstr "Emlékeztető törlése"
 msgid "Mark as done"
 msgstr "Elvégzettnek jelölés"
 
-#: src/app/qml/reminders.qml:207
+#: src/app/qml/reminders.qml:214
 msgid "Notes"
 msgstr "Jegyzetek"
 
-#: src/app/qml/reminders.qml:238
+#: src/app/qml/reminders.qml:245
 msgid "Notebooks"
 msgstr "Jegyzetfüzetek"
 
-#: src/app/qml/reminders.qml:282
+#: src/app/qml/reminders.qml:289
 msgid "Tags"
 msgstr "Címkék"
 
-#: src/app/qml/reminders.qml:322
+#: src/app/qml/reminders.qml:329
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -75,23 +81,36 @@ msgstr ""
 "Nincs kijelölve jegyzet.\n"
 "Válasszon ki egyet a részletek megtekintéséhez."
 
-#: src/app/qml/reminders.qml:359
+#: src/app/qml/reminders.qml:366
 msgid "No account available"
 msgstr "Nincs elérhető fiók"
 
-#: src/app/qml/reminders.qml:360
+#: src/app/qml/reminders.qml:367
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 "Kérjük állítsa be és engedélyezze az Evernote fiókját a "
 "Rendszerbeállításokban"
 
-#: src/app/qml/reminders.qml:380 src/app/qml/ui/AccountSelectorPage.qml:63
+#: src/app/qml/reminders.qml:387
 msgid "Add account"
 msgstr "Fiók hozzáadása"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
 msgstr "Evernote fiók kiválasztása"
+
+#: src/app/qml/ui/AccountSelectorPage.qml:74
+#, qt-format
+msgid "%1 - Tap to authorize"
+msgstr "%1 - Koppintson a engedélyezéshez"
+
+#: src/app/qml/ui/AccountSelectorPage.qml:83
+msgid "Add new account"
+msgstr "Új fiók hozzáadása"
+
+#: src/app/qml/ui/AccountSelectorPage.qml:92
+msgid "Back"
+msgstr "Vissza"
 
 #: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
 #: src/app/qml/ui/NotesPage.qml:71
@@ -107,7 +126,7 @@ msgid "Edit reminder"
 msgstr "Emlékeztető szerkesztése"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
-#: src/app/qml/ui/SetReminderView.qml:66
+#: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
 msgstr "Emlékeztető beállítása"
 
@@ -145,14 +164,14 @@ msgstr "Mentés"
 msgid "Add note"
 msgstr "Jegyzet hozzáadása"
 
-#: src/app/qml/ui/NotesPage.qml:214
+#: src/app/qml/ui/NotesPage.qml:215
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
 "Nincsenek jegyzetek. Új jegyzeteket a „Jegyzet hozzáadása” gombbal hozhat "
 "létre."
 
-#: src/app/qml/ui/RemindersPage.qml:108
+#: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
@@ -172,110 +191,111 @@ msgstr "Válasszon dátumot és időt az emlékeztetőhöz:"
 msgid "No tags available. You can tag notes while viewing them."
 msgstr "Nincsenek címkék. A megtekintésükkor címkézheti fel a jegyzeteket."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:91
+#: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
 msgstr "A hitelesítés lejárt."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:95
+#: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
 msgstr "A limit meghaladva."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:99
+#: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
 msgstr "Sebességkorlát túllépve."
 
-#: src/plugin/Evernote/jobs/evernotejob.cpp:103
+#: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
 msgstr "Kvóta túllépve."
 
-#: src/plugin/Evernote/note.cpp:82 src/plugin/Evernote/note.cpp:260
+#: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
+#: src/libqtevernote/note.cpp:294
 msgid "Today"
 msgstr "Ma"
 
-#: src/plugin/Evernote/note.cpp:85
+#: src/libqtevernote/note.cpp:85 src/libqtevernote/note.cpp:119
 msgid "Yesterday"
 msgstr "Tegnap"
 
-#: src/plugin/Evernote/note.cpp:88
+#: src/libqtevernote/note.cpp:88 src/libqtevernote/note.cpp:122
 msgid "Last week"
 msgstr "Múlt héten"
 
-#: src/plugin/Evernote/note.cpp:91
+#: src/libqtevernote/note.cpp:91 src/libqtevernote/note.cpp:125
 msgid "Two weeks ago"
 msgstr "Két héttel ezelőtt"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
-#: src/plugin/Evernote/note.cpp:95
+#: src/libqtevernote/note.cpp:95 src/libqtevernote/note.cpp:129
 #, qt-format
 msgid "%1 %2"
 msgstr "%2 %1"
 
-#: src/plugin/Evernote/note.cpp:248
+#: src/libqtevernote/note.cpp:282
 msgid "Done"
 msgstr "Elvégezve"
 
-#: src/plugin/Evernote/note.cpp:254
+#: src/libqtevernote/note.cpp:288
 msgid "No date"
 msgstr "Nincs dátum"
 
-#: src/plugin/Evernote/note.cpp:257
+#: src/libqtevernote/note.cpp:291
 msgid "Overdue"
 msgstr "Lejárt"
 
-#: src/plugin/Evernote/note.cpp:263
+#: src/libqtevernote/note.cpp:297
 msgid "Tomorrow"
 msgstr "Holnap"
 
-#: src/plugin/Evernote/note.cpp:266
+#: src/libqtevernote/note.cpp:300
 msgid "Next week"
 msgstr "Jövő hét"
 
-#: src/plugin/Evernote/note.cpp:269
+#: src/libqtevernote/note.cpp:303
 msgid "In two weeks"
 msgstr "Két héten belül"
 
-#: src/plugin/Evernote/note.cpp:271
+#: src/libqtevernote/note.cpp:305
 msgid "Later"
 msgstr "Később"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: today"
-#: src/plugin/Evernote/notebook.cpp:100
+#: src/libqtevernote/notebook.cpp:100
 msgid "today"
 msgstr "ma"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: yesterday"
-#: src/plugin/Evernote/notebook.cpp:104
+#: src/libqtevernote/notebook.cpp:104
 msgid "yesterday"
 msgstr "tegnap"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: last week"
-#: src/plugin/Evernote/notebook.cpp:108
+#: src/libqtevernote/notebook.cpp:108
 msgid "last week"
 msgstr "múlt héten"
 
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
-#: src/plugin/Evernote/notebook.cpp:112
+#: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
 msgstr "két héttel ezelőtt"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
-#: src/plugin/Evernote/notebook.cpp:116
+#: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
 msgstr "%2 %1"
 
-#: src/plugin/Evernote/notesstore.cpp:361
+#: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr "Hiba a jegyzetek frissítésekor: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:542
+#: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr "Hiba a jegyzetfüzetek frissítésekor: %1"
 
-#: src/plugin/Evernote/notesstore.cpp:596
+#: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr "Nem sikerült a címkéket frissíteni: %1"

@@ -8,6 +8,7 @@ Build-Depends: cmake,
                intltool,
                libboost-dev,
                libssl-dev,
+               pkg-config,
                python3-all,
                qt5-default,
                qtdeclarative5-dev
