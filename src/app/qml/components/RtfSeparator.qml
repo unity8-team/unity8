@@ -1,11 +1,13 @@
 /*
- * Copyright 2012 Canonical Ltd.
+ * Copyright: 2013-2014 Canonical, Ltd
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of reminders
+ *
+ * reminders is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
  *
- * This program is distributed in the hope that it will be useful,
+ * reminders is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -14,6 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.pragma library
+import QtQuick 2.3
+import Ubuntu.Components.ListItems 1.0
 
-var iconFadeDuration = 300;
+Item {
+    width: units.dp(1)
+    height: parent.height
+    ThinDivider {
+        width: parent.height
+        rotation: 90
+        anchors.centerIn: parent
+    }
+}
