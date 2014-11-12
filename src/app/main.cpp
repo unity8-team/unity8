@@ -57,12 +57,19 @@ int main(int argc, char *argv[])
     cmdLineParser.addPositionalArgument("uri", "Uri to start the application in a specific mode. E.g. evernote://newnote to directly create and edit a new note.");
     cmdLineParser.addHelpOption();
 
+    // Those arguments are handled by the platform. We don't want to handle them ourselves or fail parsing on them.
+    QStringList ignoredArguments = QStringList() << "--desktop_file_hint" << "-testability";
+
+    // Drop ignored args from the list.
     QStringList cleanedArguments;
     foreach (const QString &arg, a.arguments()) {
-        if (!arg.startsWith("--desktop_file_hint") && !arg.startsWith("-testability")) {
-            cleanedArguments << arg;
+        bool ignored = false;
+        foreach (const QString ignoredArg, ignoredArguments) {
+            if (arg.startsWith(ignoredArg)) ignored = true;
         }
+        if (!ignored) cleanedArguments << arg;
     }
+
     cmdLineParser.process(cleanedArguments);
 
     foreach (QString addedPath, cmdLineParser.values(importPathOption)) {
