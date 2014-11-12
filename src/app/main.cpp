@@ -28,7 +28,8 @@
 #include <QtQml/QtQml>
 #include <QLibrary>
 #include <QDir>
-
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 #include <QDebug>
 
 int main(int argc, char *argv[])
@@ -44,45 +45,28 @@ int main(int argc, char *argv[])
     // in the sistem if there is one
     importPathList.prepend(QCoreApplication::applicationDirPath() + "/../plugin/");
 
-    QStringList args = a.arguments();
-    if (args.contains("-h") || args.contains("--help")) {
-        qDebug() << "usage: " + args.at(0) + " [-p|--phone] [-t|--tablet] [-h|--help] [-I <path>]";
-        qDebug() << "    -p|--phone    If running on Desktop, start in a phone sized window.";
-        qDebug() << "    -t|--tablet   If running on Desktop, start in a tablet sized window.";
-        qDebug() << "    -h|--help     Print this help.";
-        qDebug() << "    -I <path>     Give a path for an additional QML import directory. May be used multiple times.";
-        qDebug() << "    -s|--sandbox  Connect to sandbox.evernote.com instead of evernote.com.";
-        return 0;
-    }
+    QCommandLineParser cmdLineParser;
+    QCommandLineOption phoneFactorOption(QStringList() << "p" << "phone", "If running on Desktop, start in a phone sized window.");
+    cmdLineParser.addOption(phoneFactorOption);
+    QCommandLineOption tabletFactorOption(QStringList() << "t" << "tablet", "If running on Desktop, start in a phone sized window.");
+    cmdLineParser.addOption(tabletFactorOption);
+    QCommandLineOption importPathOption("I", "Give a path for an additional QML import directory. May be used multiple times.", "paths");
+    cmdLineParser.addOption(importPathOption);
+    QCommandLineOption sandboxOption(QStringList() << "s" << "sandbox", "Use sandbox.evernote.com instead of www.evernote.com.");
+    cmdLineParser.addOption(sandboxOption);
+    cmdLineParser.addPositionalArgument("uri", "Uri to start the application in a specific mode. E.g. evernote://newnote to directly create and edit a new note.");
+    cmdLineParser.addHelpOption();
+    cmdLineParser.process(a);
 
-
-    for (int i = 0; i < args.count(); i++) {
-        if (args.at(i) == "-I" && args.count() > i + 1) {
-            QString addedPath = args.at(i+1);
-            if (addedPath.startsWith('.')) {
-                addedPath = addedPath.right(addedPath.length() - 1);
-                addedPath.prepend(QDir::currentPath());
-            }
-            importPathList.append(addedPath);
+    foreach (QString addedPath, cmdLineParser.values(importPathOption)) {
+        if (addedPath == "." || addedPath.startsWith("./")) {
+            addedPath = addedPath.right(addedPath.length() - 1);
+            addedPath.prepend(QDir::currentPath());
         }
+        importPathList.append(addedPath);
     }
 
-    if (args.contains(QLatin1String("-testability")) || getenv("QT_LOAD_TESTABILITY")) {
-        QLibrary testLib(QLatin1String("qttestability"));
-        if (testLib.load()) {
-            typedef void (*TasInitialize)(void);
-            TasInitialize initFunction = (TasInitialize)testLib.resolve("qt_testability_init");
-            if (initFunction) {
-                initFunction();
-            } else {
-                qCritical("Library qttestability resolve failed!");
-            }
-        } else {
-            qCritical("Library qttestability load failed!");
-        }
-    }
-
-    if (args.contains(QLatin1String("-s")) || args.contains("--sandbox")) {
+    if (cmdLineParser.isSet(sandboxOption)) {
         view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(true));
         qDebug() << "Running against the sandbox server";
     } else {
@@ -92,10 +76,11 @@ int main(int argc, char *argv[])
 
     view.engine()->rootContext()->setContextProperty("tablet", QVariant(false));
     view.engine()->rootContext()->setContextProperty("phone", QVariant(false));
-    if (args.contains("-t") || args.contains("--tablet")) {
+
+    if (cmdLineParser.isSet(tabletFactorOption)) {
         qDebug() << "running in tablet mode";
         view.engine()->rootContext()->setContextProperty("tablet", QVariant(true));
-    } else if (args.contains("-p") || args.contains("--phone")){
+    } else if (cmdLineParser.isSet(phoneFactorOption)){
         qDebug() << "running in phone mode";
         view.engine()->rootContext()->setContextProperty("phone", QVariant(true));
     } else if (qgetenv("QT_QPA_PLATFORM") != "ubuntumirclient") {
@@ -104,6 +89,8 @@ int main(int argc, char *argv[])
     }
 
     view.engine()->setImportPathList(importPathList);
+
+    view.engine()->rootContext()->setContextProperty("uriArgs", cmdLineParser.positionalArguments());
 
     // Set up camera helper
     CameraHelper helper;

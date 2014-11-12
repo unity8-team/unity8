@@ -44,7 +44,7 @@ MainView {
     //automaticOrientation: true
 
     property bool narrowMode: root.width < units.gu(80)
-    property var commands: undefined
+    property var uri: undefined
 
     onNarrowModeChanged: {
         if (narrowMode) {
@@ -56,14 +56,18 @@ MainView {
     Connections {
         target: UriHandler
         onOpened: {
-            commands = uris[0].split("://")[1].split("/");
+            root.uri = uris[0];
             processUri();
         }
     }
 
     Connections {
         target: EvernoteConnection
-        onIsConnectedChanged: processUri();
+        onIsConnectedChanged: {
+            if (EvernoteConnection.isConnected) {
+                processUri();
+            }
+        }
     }
 
     backgroundColor: "#dddddd"
@@ -145,6 +149,7 @@ MainView {
     }
 
     function processUri() {
+        var commands = root.uri.split("://")[1].split("/");
         if (EvernoteConnection.isConnected && commands && NotesStore) {
             switch(commands[0].toLowerCase()) {
                 case "notes": // evernote://notes
@@ -251,6 +256,10 @@ MainView {
 
         pagestack.push(rootTabs);
         doLogin();
+
+        if (uriArgs) {
+            root.uri = uriArgs[0];
+        }
     }
 
     Connections {
@@ -278,7 +287,6 @@ MainView {
                 view.exitEditMode.connect(function(note) {root.displayNote(note)});
             }
         }
-        Component.onCompleted: processUri();
     }
 
     PageStack {
