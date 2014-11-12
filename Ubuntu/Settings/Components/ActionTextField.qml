@@ -27,6 +27,7 @@ Item {
     property alias text: replyField.text
     property alias buttonText: sendButton.text
     property bool activateEnabled: false
+    property alias textHint: replyField.placeholderText
 
     signal activated(var value)
 
@@ -44,10 +45,6 @@ Item {
             id: replyField
             objectName: "replyText"
 
-            /* Get the string translation from telephony-service, that's a
-               workaround but ubuntu-settings-components is not currently
-               setup for translations, see bug #1389234 */
-            placeholderText: i18n.dtr("telephony-service", "Reply")
             hasClearButton: false
 
             Layout.fillWidth: true
