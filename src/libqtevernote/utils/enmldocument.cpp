@@ -275,8 +275,12 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
 
 qreal EnmlDocument::gu(qreal px) const
 {
-    QByteArray ppgu = qgetenv("GRID_UNIT_PX");
-    return px * ppgu.toInt();
+    QByteArray ppguString = qgetenv("GRID_UNIT_PX");
+    int ppgu = ppguString.toInt();
+    if (ppgu == 0) {
+        ppgu = 8;
+    }
+    return px * ppgu;
 }
 
 void EnmlDocument::setRichText(const QString &richText)
