@@ -184,8 +184,19 @@ Item {
                     onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
                     selectByMouse: toolbox.charFormatExpanded
 
-                    onSelectionStartChanged: print("selection start:", selectionStart)
-                    onSelectionEndChanged: print("selection end:", selectionEnd)
+                    // Due to various things updating when creating the view,
+                    // we need to set the focus in the next event loop pass
+                    // in order to have any effect.
+                    Timer {
+                        id: setFocusTimer
+                        interval: 1
+                        running: true
+                        repeat: false
+                        onTriggered: {
+                            noteTextArea.cursorPosition = noteTextArea.length;
+                            noteTextArea.forceActiveFocus();
+                        }
+                    }
                 }
             }
         }
@@ -502,8 +513,9 @@ Item {
                 iconSource: "../images/bullet-list.svg"
                 height: parent.height
                 width: height
+                active: formattingHelper.bulletList
                 onClicked: {
-                    formattingHelper.addBulletList();
+                    formattingHelper.bulletList = !formattingHelper.bulletList;
                 }
             }
 
@@ -511,8 +523,9 @@ Item {
                 iconSource: "../images/numbered-list.svg"
                 height: parent.height
                 width: height
+                active: formattingHelper.numberedList
                 onClicked: {
-                    formattingHelper.addNumberedList()
+                    formattingHelper.numberedList = !formattingHelper.numberedList;
                 }
             }
 

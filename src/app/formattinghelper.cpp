@@ -306,31 +306,57 @@ void FormattingHelper::setAlignment(Qt::Alignment alignment)
     emit formatChanged();
 }
 
-void FormattingHelper::addBulletList()
+bool FormattingHelper::bulletList() const
 {
-    QTextListFormat f;
-    f.setStyle(QTextListFormat::ListDisc);
-    m_textCursor.insertList(f);
+    return m_textCursor.currentList() && m_textCursor.currentList()->format().style() == QTextListFormat::ListDisc;
 }
 
-void FormattingHelper::addNumberedList()
+void FormattingHelper::setBulletList(bool bulletList)
 {
-    QTextListFormat f;
-    f.setStyle(QTextListFormat::ListDecimal);
-    m_textCursor.insertList(f);
+    if (this->bulletList() && !bulletList) {
+        m_textCursor.beginEditBlock();
+        m_textCursor.currentList()->remove(m_textCursor.block());
+        unindentBlock();
+        m_textCursor.endEditBlock();
+    } else if (!this->bulletList() && bulletList) {
+        QTextListFormat f;
+        f.setStyle(QTextListFormat::ListDisc);
+        m_textCursor.createList(f);
+    }
+    emit formatChanged();
+}
+
+bool FormattingHelper::numberedList() const
+{
+    return m_textCursor.currentList() && m_textCursor.currentList()->format().style() == QTextListFormat::ListDecimal;
+}
+
+void FormattingHelper::setNumberedList(bool numberedList)
+{
+    if (this->numberedList() && !numberedList) {
+        m_textCursor.beginEditBlock();
+        m_textCursor.currentList()->remove(m_textCursor.block());
+        unindentBlock();
+        m_textCursor.endEditBlock();
+    } else if (!this->numberedList() && numberedList) {
+        QTextListFormat f;
+        f.setStyle(QTextListFormat::ListDecimal);
+        m_textCursor.createList(f);
+    }
+    emit formatChanged();
 }
 
 void FormattingHelper::indentBlock()
 {
     QTextBlockFormat f = m_textCursor.blockFormat();
-    f.setIndent(f.indent() + 4);
+    f.setIndent(f.indent() + 1);
     m_textCursor.setBlockFormat(f);
 }
 
 void FormattingHelper::unindentBlock()
 {
     QTextBlockFormat f = m_textCursor.blockFormat();
-    f.setIndent(f.indent() - 4);
+    f.setIndent(f.indent() - 1);
     m_textCursor.setBlockFormat(f);
 }
 

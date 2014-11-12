@@ -45,6 +45,8 @@ class FormattingHelper: public QObject
     Q_PROPERTY(bool strikeout READ strikeout WRITE setStrikeout NOTIFY formatChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY formatChanged)
     Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment NOTIFY formatChanged)
+    Q_PROPERTY(bool bulletList READ bulletList WRITE setBulletList NOTIFY formatChanged)
+    Q_PROPERTY(bool numberedList READ numberedList WRITE setNumberedList NOTIFY formatChanged)
 
     Q_PROPERTY(bool canUndo READ canUndo NOTIFY canUndoChanged)
     Q_PROPERTY(bool canRedo READ canRedo NOTIFY canRedoChanged)
@@ -94,10 +96,14 @@ public:
     Qt::Alignment alignment() const;
     void setAlignment(Qt::Alignment alignment);
 
+    bool bulletList() const;
+    void setBulletList(bool bulletList);
+
+    bool numberedList() const;
+    void setNumberedList(bool numberedList);
+
 public slots:
     void addHorizontalLine();
-    void addBulletList();
-    void addNumberedList();
     void indentBlock();
     void unindentBlock();
 
