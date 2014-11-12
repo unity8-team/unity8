@@ -91,7 +91,9 @@ int FormattingHelper::selectionStart() const
 
 void FormattingHelper::setSelectionStart(int selectionStart)
 {
-    m_selectionCursor.setPosition(selectionStart, QTextCursor::MoveAnchor);
+    m_selectionStart = selectionStart;
+    m_selectionCursor.setPosition(m_selectionStart, QTextCursor::MoveAnchor);
+    m_selectionCursor.setPosition(m_selectionEnd, QTextCursor::KeepAnchor);
 }
 
 int FormattingHelper::selectionEnd() const
@@ -101,7 +103,9 @@ int FormattingHelper::selectionEnd() const
 
 void FormattingHelper::setSelectionEnd(int selectionEnd)
 {
-    m_selectionCursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
+    m_selectionEnd = selectionEnd;
+    m_selectionCursor.setPosition(m_selectionStart, QTextCursor::MoveAnchor);
+    m_selectionCursor.setPosition(m_selectionEnd, QTextCursor::KeepAnchor);
 }
 
 QString FormattingHelper::fontFamily() const

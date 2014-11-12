@@ -119,6 +119,8 @@ private:
 
     QTextCharFormat m_nextFormat;
     int m_formatPosition;
+    int m_selectionStart;
+    int m_selectionEnd;
 };
 
 #endif
