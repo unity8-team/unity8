@@ -54,11 +54,16 @@ int main(int argc, char *argv[])
     cmdLineParser.addOption(importPathOption);
     QCommandLineOption sandboxOption(QStringList() << "s" << "sandbox", "Use sandbox.evernote.com instead of www.evernote.com.");
     cmdLineParser.addOption(sandboxOption);
-    QCommandLineOption testabilityOption("testability", "Load the testability driver.");
-    cmdLineParser.addOption(testabilityOption);
     cmdLineParser.addPositionalArgument("uri", "Uri to start the application in a specific mode. E.g. evernote://newnote to directly create and edit a new note.");
     cmdLineParser.addHelpOption();
-    cmdLineParser.process(a);
+
+    QStringList cleanedArguments;
+    foreach (const QString &arg, a.arguments()) {
+        if (!arg.startsWith("--desktop_file_hint") && !arg.startsWith("-testability")) {
+            cleanedArguments << arg;
+        }
+    }
+    cmdLineParser.process(cleanedArguments);
 
     foreach (QString addedPath, cmdLineParser.values(importPathOption)) {
         if (addedPath == "." || addedPath.startsWith("./")) {

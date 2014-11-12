@@ -90,6 +90,8 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
         return self.launch_test_application(
             self.installed_location_binary,
             '-s',
+            '--desktop_file_hint=/usr/share/applications/'
+            'com.ubuntu.reminders.desktop',
             app_type='qt',
             emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
 
