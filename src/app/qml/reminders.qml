@@ -172,7 +172,7 @@ MainView {
                         if (NotesStore.notebook(commands[1])) {
                             NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
                         } else {
-                            console.wan("No such notebook.");
+                            console.warn("No such notebook.");
                         }
                     } else {
                         NotesStore.createNote(i18n.tr("Untitled"));
