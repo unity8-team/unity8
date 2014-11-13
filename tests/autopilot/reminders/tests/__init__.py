@@ -81,7 +81,6 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
             newvalue=os.path.join(self.local_location, 'src/plugin')))
         return self.launch_test_application(
             self.local_location_binary,
-            '-q', self.local_location_qml,
             '-s',
             app_type='qt',
             emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase)
@@ -90,8 +89,8 @@ class BaseTestCaseWithTempHome(AutopilotTestCase):
     def launch_test_installed(self):
         return self.launch_test_application(
             self.installed_location_binary,
-            '-q ' + self.installed_location_qml,
             '-s',
+            '--',
             '--desktop_file_hint=/usr/share/applications/'
             'com.ubuntu.reminders.desktop',
             app_type='qt',

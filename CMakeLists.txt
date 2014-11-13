@@ -20,7 +20,7 @@ set(ICON ${APP_NAME}.png)
 set(AUTOPILOT_DIR reminders)
 set(APP_HARDCODE reminders)
 set(MAIN_QML ${APP_HARDCODE}.qml)
-set(EXEC "reminders")
+set(EXEC "reminders %u")
 set(UBUNTU_MANIFEST_PATH "manifest.json.in" CACHE INTERNAL "Relative path to the manifest file")
 
 set(ACCOUNT_ICON_DIR ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
@@ -69,7 +69,7 @@ if(CLICK_MODE)
 
     add_custom_target(com_ubuntu_reminders_CLICKFiles ALL SOURCES ${CLICK_FILES})
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json reminders.apparmor
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json reminders.apparmor reminders.url-dispatcher
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES COPYING DESTINATION ${CMAKE_INSTALL_PREFIX})
 else(CLICK_MODE)
