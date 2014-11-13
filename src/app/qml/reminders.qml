@@ -235,6 +235,7 @@ MainView {
                 if (root.narrowMode) {
                     page.selectedNote = null;
                 }
+            }
         })
         page.editNote.connect(function(note) {
             root.switchToEditMode(note)
