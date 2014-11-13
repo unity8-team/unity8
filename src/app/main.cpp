@@ -54,13 +54,11 @@ int main(int argc, char *argv[])
     cmdLineParser.addOption(importPathOption);
     QCommandLineOption sandboxOption(QStringList() << "s" << "sandbox", "Use sandbox.evernote.com instead of www.evernote.com.");
     cmdLineParser.addOption(sandboxOption);
-    QCommandLineOption testabilityOption("testability", "Load the testability driver.");
-    cmdLineParser.addOption(testabilityOption);
     cmdLineParser.addPositionalArgument("uri", "Uri to start the application in a specific mode. E.g. evernote://newnote to directly create and edit a new note.");
     cmdLineParser.addHelpOption();
 
     // Those arguments are handled by the platform. We don't want to handle them ourselves or fail parsing on them.
-    QStringList ignoredArguments = QStringList() << "--desktop_file_hint";
+    QStringList ignoredArguments = QStringList() << "--desktop_file_hint" << "-testability";
 
     // Drop ignored args from the list.
     QStringList cleanedArguments;
@@ -74,7 +72,15 @@ int main(int argc, char *argv[])
 
     cmdLineParser.process(cleanedArguments);
 
-    if (cmdLineParser.isSet(testabilityOption) || getenv("QT_LOAD_TESTABILITY")) {
+    foreach (QString addedPath, cmdLineParser.values(importPathOption)) {
+        if (addedPath == "." || addedPath.startsWith("./")) {
+            addedPath = addedPath.right(addedPath.length() - 1);
+            addedPath.prepend(QDir::currentPath());
+        }
+        importPathList.append(addedPath);
+    }
+
+    if (a.arguments().contains("-testability") || getenv("QT_LOAD_TESTABILITY")) {
         QLibrary testLib(QLatin1String("qttestability"));
         if (testLib.load()) {
             typedef void (*TasInitialize)(void);
@@ -87,14 +93,6 @@ int main(int argc, char *argv[])
         } else {
             qCritical("Library qttestability load failed!");
         }
-    }
-
-    foreach (QString addedPath, cmdLineParser.values(importPathOption)) {
-        if (addedPath == "." || addedPath.startsWith("./")) {
-            addedPath = addedPath.right(addedPath.length() - 1);
-            addedPath.prepend(QDir::currentPath());
-        }
-        importPathList.append(addedPath);
     }
 
     if (cmdLineParser.isSet(sandboxOption)) {
