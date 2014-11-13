@@ -64,6 +64,11 @@ public:
         ErrorCodeQutaExceeded
     };
 
+    enum JobPriority {
+        JobPriorityHigh,
+        JobPriorityLow
+    };
+
     static EvernoteConnection* instance();
     ~EvernoteConnection();
 
@@ -73,7 +78,7 @@ public:
     QString token() const;
     void setToken(const QString &token);
 
-    void enqueue(EvernoteJob *job);
+    void enqueue(EvernoteJob *job, JobPriority priority = JobPriorityHigh);
 
     bool isConnected() const;
 

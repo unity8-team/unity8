@@ -68,12 +68,6 @@ Page {
                 width: remindersListView.width
                 note: notes.note(guid)
 
-                Component.onCompleted: {
-                    if (!model.plaintextContent) {
-                        NotesStore.refreshNoteContent(model.guid)
-                    }
-                }
-
                 onClicked: {
                     root.selectedNote = NotesStore.note(guid);
                 }
@@ -110,6 +104,10 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 text: notes.error ? notes.error :
                 i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
+            }
+
+            Scrollbar {
+                flickableItem: parent
             }
         }
     }

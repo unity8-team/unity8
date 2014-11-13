@@ -86,6 +86,9 @@ void FetchNotesJob::startJob()
     resultSpec.includeTagGuids = true;
     resultSpec.__isset.includeTagGuids = true;
 
+    resultSpec.includeUpdateSequenceNum = true;
+    resultSpec.__isset.includeUpdateSequenceNum = true;
+
     client()->findNotesMetadata(m_results, token().toStdString(), filter, start, max, resultSpec);
 }
 

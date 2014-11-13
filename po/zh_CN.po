@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-11-07 20:51+0100\n"
+"POT-Creation-Date: 2014-11-11 00:31+0100\n"
 "PO-Revision-Date: 2014-07-31 15:20+0000\n"
 "Last-Translator: Anthony Wong <anthony.wong@ubuntu.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-11-08 06:18+0000\n"
-"X-Generator: Launchpad (build 17231)\n"
+"X-Launchpad-Export-Date: 2014-11-13 06:38+0000\n"
+"X-Generator: Launchpad (build 17241)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
@@ -73,7 +73,11 @@ msgstr "记事本"
 msgid "Tags"
 msgstr ""
 
-#: src/app/qml/reminders.qml:329
+#: src/app/qml/reminders.qml:330
+msgid "Reconnect"
+msgstr ""
+
+#: src/app/qml/reminders.qml:354
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
@@ -81,15 +85,15 @@ msgstr ""
 "没有选择记事。\n"
 "请选择要查看的记事。"
 
-#: src/app/qml/reminders.qml:366
+#: src/app/qml/reminders.qml:391
 msgid "No account available"
 msgstr "没有有效账户"
 
-#: src/app/qml/reminders.qml:367
+#: src/app/qml/reminders.qml:392
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: src/app/qml/reminders.qml:387
+#: src/app/qml/reminders.qml:412
 msgid "Add account"
 msgstr "添加帐户"
 
@@ -110,10 +114,38 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: src/app/qml/ui/EditNoteView.qml:100 src/app/qml/ui/EditNoteView.qml:112
+#: src/app/qml/ui/EditNoteView.qml:95 src/app/qml/ui/EditNoteView.qml:108
 #: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr "未命名"
+
+#: src/app/qml/ui/EditNoteView.qml:406
+msgid "Font"
+msgstr ""
+
+#: src/app/qml/ui/EditNoteView.qml:417
+msgid "Size"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Bold"
+#: src/app/qml/ui/EditNoteView.qml:438
+msgid "B"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Italic"
+#: src/app/qml/ui/EditNoteView.qml:451
+msgid "I"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Underline"
+#: src/app/qml/ui/EditNoteView.qml:465
+msgid "U"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Strikeout"
+#: src/app/qml/ui/EditNoteView.qml:479
+msgid "T"
+msgstr ""
 
 #: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
@@ -183,6 +215,55 @@ msgstr "为一个提醒选择日期和时间："
 
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:234
+msgid "Error connecting to Evernote: Please check network connection."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:239
+msgid "Unknown error connecting to Evernote."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:252
+msgid ""
+"Error connecting to Evernote: Server version does not match app version. "
+"Please update the application."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:258
+#: src/libqtevernote/evernoteconnection.cpp:263
+#, qt-format
+msgid "Error connecting to Evernote: Error code %1"
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:268
+msgid ""
+"Error connecting to Evernote: Cannot download version information from "
+"server."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:273
+#: src/libqtevernote/evernoteconnection.cpp:298
+msgid "Unknown error connecting to Evernote"
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:287
+msgid "Error connecting to Evernote: Cannot download server information."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:293
+msgid ""
+"Error connecting to Evernote: Connection failure when downloading server "
+"information."
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:319
+msgid "Error connecting to Evernote: Connection failure"
+msgstr ""
+
+#: src/libqtevernote/evernoteconnection.cpp:323
+msgid "Unknown Error connecting to Evernote"
 msgstr ""
 
 #: src/libqtevernote/jobs/evernotejob.cpp:94

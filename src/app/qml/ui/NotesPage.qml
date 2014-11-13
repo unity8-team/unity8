@@ -174,12 +174,6 @@ PageWithBottomEdge {
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
 
-            Component.onCompleted: {
-                if (!model.tagline) {
-                    NotesStore.refreshNoteContent(model.guid);
-                }
-            }
-
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);
             }
@@ -213,6 +207,10 @@ PageWithBottomEdge {
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
             text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
+        }
+
+        Scrollbar {
+            flickableItem: parent
         }
     }
 }

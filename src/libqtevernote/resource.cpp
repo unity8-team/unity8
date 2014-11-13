@@ -71,7 +71,7 @@ Resource::Resource(const QString &path, QObject *parent):
     QByteArray fileContent = file.readAll();
     file.close();
 
-    m_hash = QCryptographicHash::hash(fileContent, QCryptographicHash::Md5).toHex();    
+    m_hash = QCryptographicHash::hash(fileContent, QCryptographicHash::Md5).toHex();
     m_fileName = path.split('/').last();
     if (m_fileName.endsWith(".png")) {
         m_type = "image/png";
