@@ -32,30 +32,43 @@ Dialog {
         id: tags
     }
 
-    TextField {
+    RowLayout {
         Layout.preferredWidth: parent.width - units.gu(2)
         Layout.alignment: Qt.AlignHCenter
 
-        placeholderText: i18n.tr("Create a new tag")
+        TextField {
+            id: textField
+            Layout.fillWidth: true
+            placeholderText: i18n.tr("Create a new tag")
 
-        Keys.onReturnPressed: {
-            var tagName = text;
-            text = '';
+            onAccepted: accept();
 
-            // Check if the tag exists
-            for (var i=0; i < tags.count; i++) {
-                var tag = tags.tag(i);
-                if (tag.name == tagName) {
-                    // The tag exists, check if is already selected: if it is,
-                    // do nothing, otherwise add to tags of the note
-                    if (note.tagGuids.indexOf(tag.guid) === -1) {
-                        note.tagGuids.push(tag.guid);
+            function accept() {
+                var tagName = text;
+                text = '';
+
+                // Check if the tag exists
+                for (var i=0; i < tags.count; i++) {
+                    var tag = tags.tag(i);
+                    if (tag.name == tagName) {
+                        // The tag exists, check if is already selected: if it is,
+                        // do nothing, otherwise add to tags of the note
+                        if (note.tagGuids.indexOf(tag.guid) === -1) {
+                            note.tagGuids.push(tag.guid);
+                        }
+                        return;
                     }
-                    return;
                 }
-            }
 
-            NotesStore.createTag(tagName)
+                NotesStore.createTag(tagName)
+            }
+        }
+
+        Button {
+            text: i18n.tr("Create tag")
+            color: UbuntuColors.orange
+            enabled: textField.text.replace(/\s+/g, '') !== ''; // Not only whitespaces!
+            onClicked: textField.accept()
         }
     }
 
@@ -103,7 +116,6 @@ Dialog {
         Layout.preferredWidth: parent.width - units.gu(2)
         Layout.alignment: Qt.AlignHCenter
 
-        visible: !narrowMode
         color: UbuntuColors.orange
 
         text: i18n.tr("Done")

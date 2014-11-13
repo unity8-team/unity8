@@ -705,6 +705,18 @@ Item {
             RtfSeparator {}
 
             RtfButton {
+                iconSource: "../images/tags.svg"
+                height: parent.height
+                width: height
+                active: toolbox.tagsRowExpanded
+                onClicked: {
+                    toolbox.tagsRowExpanded = !toolbox.tagsRowExpanded
+                }
+            }
+
+            RtfSeparator {}
+
+            RtfButton {
                 iconName: "navigation-menu"
                 height: parent.height
                 width: height
@@ -723,18 +735,6 @@ Item {
                 active: toolbox.charFormatExpanded
                 onClicked: {
                     toolbox.charFormatExpanded = !toolbox.charFormatExpanded
-                }
-            }
-
-            RtfSeparator {}
-
-            RtfButton {
-                iconName: "bookmark-new"
-                height: parent.height
-                width: height
-                active: toolbox.tagsRowExpanded
-                onClicked: {
-                    toolbox.tagsRowExpanded = !toolbox.tagsRowExpanded
                 }
             }
         }
