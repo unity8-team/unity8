@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     cmdLineParser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
     QCommandLineOption phoneFactorOption(QStringList() << "p" << "phone", "If running on Desktop, start in a phone sized window.");
     cmdLineParser.addOption(phoneFactorOption);
-    QCommandLineOption tabletFactorOption(QStringList() << "t" << "tablet", "If running on Desktop, start in a phone sized window.");
+    QCommandLineOption tabletFactorOption(QStringList() << "t" << "tablet", "If running on Desktop, start in a tablet sized window.");
     cmdLineParser.addOption(tabletFactorOption);
     QCommandLineOption importPathOption("I", "Give a path for an additional QML import directory. May be used multiple times.", "paths");
     cmdLineParser.addOption(importPathOption);
