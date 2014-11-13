@@ -184,6 +184,7 @@ Item {
                     onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
                     selectByMouse: toolbox.charFormatExpanded
                     textMargin: units.gu(1)
+                    selectionColor: UbuntuColors.blue
 
                     // Due to various things updating when creating the view,
                     // we need to set the focus in the next event loop pass
