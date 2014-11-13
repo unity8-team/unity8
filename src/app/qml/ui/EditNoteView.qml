@@ -183,6 +183,7 @@ Item {
                     text: root.note ? root.note.richTextContent : ""
                     onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
                     selectByMouse: toolbox.charFormatExpanded
+                    textMargin: units.gu(1)
 
                     // Due to various things updating when creating the view,
                     // we need to set the focus in the next event loop pass
@@ -190,7 +191,7 @@ Item {
                     Timer {
                         id: setFocusTimer
                         interval: 1
-                        running: true
+                        running: !root.isBottomEdge
                         repeat: false
                         onTriggered: {
                             noteTextArea.cursorPosition = noteTextArea.length;
