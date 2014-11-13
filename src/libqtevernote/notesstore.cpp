@@ -41,7 +41,6 @@
 
 #include <QImage>
 #include <QDebug>
-#include <QUuid>
 
 NotesStore* NotesStore::s_instance = 0;
 
@@ -260,13 +259,11 @@ Tag *NotesStore::tag(const QString &guid)
     return m_tagsHash.value(guid);
 }
 
-QString NotesStore::createTag(const QString &name)
+void NotesStore::createTag(const QString &name)
 {
-    QString tagGuid = QUuid::createUuid().toString();
-    CreateTagJob *job = new CreateTagJob(name, tagGuid);
+    CreateTagJob *job = new CreateTagJob(name);
     connect(job, &CreateTagJob::jobDone, this, &NotesStore::createTagJobDone);
     EvernoteConnection::instance()->enqueue(job);
-    return tagGuid;
 }
 
 void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result)

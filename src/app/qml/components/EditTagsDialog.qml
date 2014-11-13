@@ -55,8 +55,14 @@ Dialog {
                 }
             }
 
-            var newTagGuide = NotesStore.createTag(tagName)
-            note.tagGuids.push(newTagGuide);
+            NotesStore.createTag(tagName)
+        }
+    }
+
+    Connections {
+        target: NotesStore
+        onTagAdded: {
+            note.tagGuids.push(guid);
         }
     }
 

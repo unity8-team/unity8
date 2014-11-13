@@ -22,18 +22,14 @@
 
 #include <QDebug>
 
-CreateTagJob::CreateTagJob(const QString &name, const QString &tagGuid, QObject *parent) :
+CreateTagJob::CreateTagJob(const QString &name, QObject *parent) :
     NotesStoreJob(parent),
-    m_name(name),
-    m_tagGuid(tagGuid)
+    m_name(name)
 {
 }
 
 void CreateTagJob::startJob()
 {
-    m_result.guid = m_tagGuid.toStdString();
-    m_result.__isset.guid = true;
-
     m_result.name = m_name.toStdString();
     m_result.__isset.name = true;
     client()->createTag(m_result, token().toStdString(), m_result);
