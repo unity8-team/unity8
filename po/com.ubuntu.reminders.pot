@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-09 21:56+0100\n"
+"POT-Creation-Date: 2014-11-11 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,242 +17,201 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: builddir/po/com.ubuntu.reminders.desktop.in.in.h:1
-#: builddir/src/app/qml/reminders.qml:295
-#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:295
+#: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
 msgstr ""
 
-#: builddir/po/com.ubuntu.reminders.desktop.in.in.h:2
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
 msgstr ""
 
-#: builddir/src/app/qml/components/EditTagsDialog.qml:43
-#: builddir/src/app/qml/ui/EditTagsView.qml:51
-#: src/app/qml/components/EditTagsDialog.qml:39
-msgid "Create a new tag"
-msgstr ""
-
-#: builddir/src/app/qml/components/EditTagsDialog.qml:107
-#: builddir/src/app/qml/ui/EditTagsView.qml:114
-#: src/app/qml/components/EditTagsDialog.qml:103
-#: src/libqtevernote/note.cpp:282
-msgid "Done"
-msgstr ""
-
-#: builddir/src/app/qml/components/NotebooksDelegate.qml:98
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
 msgid "Last edited %1"
 msgstr ""
 
-#: builddir/src/app/qml/components/NotebooksDelegate.qml:105
 #: src/app/qml/components/NotebooksDelegate.qml:105
 msgid "Shared"
 msgstr ""
 
-#: builddir/src/app/qml/components/NotebooksDelegate.qml:105
 #: src/app/qml/components/NotebooksDelegate.qml:105
 msgid "Private"
 msgstr ""
 
 #. TRANSLATORS: the argument is a modification date that follows this format:
 #. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
-#: builddir/src/app/qml/components/NotesDelegate.qml:107
 #: src/app/qml/components/NotesDelegate.qml:107
 msgid "dddd, d hh:mm"
 msgstr ""
 
-#: builddir/src/app/qml/components/PulldownListView.qml:40
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
 msgstr ""
 
-#: builddir/src/app/qml/components/PulldownListView.qml:40
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
 msgstr ""
 
-#: builddir/src/app/qml/components/RemindersDelegate.qml:50
-#: builddir/src/app/qml/ui/SetReminderView.qml:69
 #: src/app/qml/components/RemindersDelegate.qml:50
 #: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
 msgstr ""
 
-#: builddir/src/app/qml/components/RemindersDelegate.qml:50
 #: src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:235 src/app/qml/reminders.qml:235
+#: src/app/qml/reminders.qml:214
 msgid "Notes"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:266 src/app/qml/reminders.qml:266
+#: src/app/qml/reminders.qml:245
 msgid "Notebooks"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:310 src/app/qml/reminders.qml:310
+#: src/app/qml/reminders.qml:289
 msgid "Tags"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:335 src/app/qml/reminders.qml:335
+#: src/app/qml/reminders.qml:330
 msgid "Reconnect"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:359 src/app/qml/reminders.qml:359
+#: src/app/qml/reminders.qml:354
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:396 src/app/qml/reminders.qml:396
+#: src/app/qml/reminders.qml:391
 msgid "No account available"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:397 src/app/qml/reminders.qml:397
+#: src/app/qml/reminders.qml:392
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
 
-#: builddir/src/app/qml/reminders.qml:417 src/app/qml/reminders.qml:417
+#: src/app/qml/reminders.qml:412
 msgid "Add account"
 msgstr ""
 
-#: builddir/src/app/qml/ui/AccountSelectorPage.qml:29
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
 msgstr ""
 
-#: builddir/src/app/qml/ui/AccountSelectorPage.qml:74
 #: src/app/qml/ui/AccountSelectorPage.qml:74
 #, qt-format
 msgid "%1 - Tap to authorize"
 msgstr ""
 
-#: builddir/src/app/qml/ui/AccountSelectorPage.qml:83
 #: src/app/qml/ui/AccountSelectorPage.qml:83
 msgid "Add new account"
 msgstr ""
 
-#: builddir/src/app/qml/ui/AccountSelectorPage.qml:92
-#: builddir/src/app/qml/ui/EditTags.qml:38
 #: src/app/qml/ui/AccountSelectorPage.qml:92
 msgid "Back"
 msgstr ""
 
-#: builddir/src/app/qml/ui/EditNoteView.qml:44
-#: builddir/src/app/qml/ui/EditNoteView.qml:116
-#: builddir/src/app/qml/ui/NotesPage.qml:71 src/app/qml/ui/EditNoteView.qml:44
-#: src/app/qml/ui/EditNoteView.qml:116 src/app/qml/ui/NotesPage.qml:71
+#: src/app/qml/ui/EditNoteView.qml:95 src/app/qml/ui/EditNoteView.qml:108
+#: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
 msgstr ""
 
-#: builddir/src/app/qml/ui/EditTags.qml:34
-msgid "Modify tags"
+#: src/app/qml/ui/EditNoteView.qml:406
+msgid "Font"
 msgstr ""
 
-#: builddir/src/app/qml/ui/EditTagsPage.qml:29
-msgid "Edit tags"
+#: src/app/qml/ui/EditNoteView.qml:417
+msgid "Size"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotePage.qml:35
-#: builddir/src/app/qml/ui/NotesPage.qml:135 src/app/qml/ui/NotePage.qml:35
-#: src/app/qml/ui/NotesPage.qml:135
+#. TRANSLATORS: Toolbar button for "Bold"
+#: src/app/qml/ui/EditNoteView.qml:438
+msgid "B"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Italic"
+#: src/app/qml/ui/EditNoteView.qml:451
+msgid "I"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Underline"
+#: src/app/qml/ui/EditNoteView.qml:465
+msgid "U"
+msgstr ""
+
+#. TRANSLATORS: Toolbar button for "Strikeout"
+#: src/app/qml/ui/EditNoteView.qml:479
+msgid "T"
+msgstr ""
+
+#: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotePage.qml:44
-#: builddir/src/app/qml/ui/NotesPage.qml:119 src/app/qml/ui/NotePage.qml:44
-#: src/app/qml/ui/NotesPage.qml:119
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotePage.qml:44
-#: builddir/src/app/qml/ui/NotesPage.qml:119
-#: builddir/src/app/qml/ui/SetReminderView.qml:53
-#: src/app/qml/ui/NotePage.qml:44 src/app/qml/ui/NotesPage.qml:119
+#: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotePage.qml:58
-#: builddir/src/app/qml/ui/NotesPage.qml:109 src/app/qml/ui/NotePage.qml:58
-#: src/app/qml/ui/NotesPage.qml:109
+#: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotebooksPage.qml:43
 #: src/app/qml/ui/NotebooksPage.qml:43
 msgid "Add notebook"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotebooksPage.qml:53
-#: builddir/src/app/qml/ui/NotesPage.qml:78
-#: builddir/src/app/qml/ui/RemindersPage.qml:34
-#: builddir/src/app/qml/ui/SearchNotesPage.qml:58
-#: builddir/src/app/qml/ui/TagsPage.qml:50 src/app/qml/ui/NotebooksPage.qml:53
-#: src/app/qml/ui/NotesPage.qml:78 src/app/qml/ui/RemindersPage.qml:34
-#: src/app/qml/ui/SearchNotesPage.qml:58 src/app/qml/ui/TagsPage.qml:50
+#: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
+#: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
 msgid "Search"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotebooksPage.qml:63
-#: builddir/src/app/qml/ui/NotesPage.qml:88
-#: builddir/src/app/qml/ui/TagsPage.qml:60 src/app/qml/ui/NotebooksPage.qml:63
-#: src/app/qml/ui/NotesPage.qml:88 src/app/qml/ui/TagsPage.qml:60
+#: src/app/qml/ui/NotebooksPage.qml:63 src/app/qml/ui/NotesPage.qml:88
 msgid "Refresh"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotebooksPage.qml:73
-#: builddir/src/app/qml/ui/NotesPage.qml:98
-#: builddir/src/app/qml/ui/RemindersPage.qml:44
-#: builddir/src/app/qml/ui/TagsPage.qml:71 src/app/qml/ui/NotebooksPage.qml:73
-#: src/app/qml/ui/NotesPage.qml:98 src/app/qml/ui/RemindersPage.qml:44
-#: src/app/qml/ui/TagsPage.qml:71
+#: src/app/qml/ui/NotebooksPage.qml:73 src/app/qml/ui/NotesPage.qml:98
+#: src/app/qml/ui/RemindersPage.qml:44
 msgid "Accounts"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotebooksPage.qml:175
-#: src/app/qml/ui/NotebooksPage.qml:175
+#: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotebooksPage.qml:184
-#: src/app/qml/ui/NotebooksPage.qml:184
+#: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotesPage.qml:40
-#: builddir/src/app/qml/ui/NotesPage.qml:68 src/app/qml/ui/NotesPage.qml:40
-#: src/app/qml/ui/NotesPage.qml:68
+#: src/app/qml/ui/NotesPage.qml:40 src/app/qml/ui/NotesPage.qml:68
 msgid "Add note"
 msgstr ""
 
-#: builddir/src/app/qml/ui/NotesPage.qml:215 src/app/qml/ui/NotesPage.qml:215
+#: src/app/qml/ui/NotesPage.qml:215
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
 
-#: builddir/src/app/qml/ui/RemindersPage.qml:112
 #: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
 
-#: builddir/src/app/qml/ui/SearchNotesPage.qml:30
 #: src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
 msgstr ""
 
-#: builddir/src/app/qml/ui/SetReminderView.qml:36
 #: src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
 msgstr ""
 
-#: builddir/src/app/qml/ui/TagsPage.qml:132 src/app/qml/ui/TagsPage.qml:132
+#: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
 
@@ -344,6 +303,10 @@ msgstr ""
 msgid "%1 %2"
 msgstr ""
 
+#: src/libqtevernote/note.cpp:282
+msgid "Done"
+msgstr ""
+
 #: src/libqtevernote/note.cpp:288
 msgid "No date"
 msgstr ""
@@ -395,17 +358,17 @@ msgstr ""
 msgid "on %1 %2"
 msgstr ""
 
-#: src/libqtevernote/notesstore.cpp:369
+#: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
 msgstr ""
 
-#: src/libqtevernote/notesstore.cpp:554
+#: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
 msgstr ""
 
-#: src/libqtevernote/notesstore.cpp:608
+#: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
 msgstr ""
