@@ -126,19 +126,19 @@ Page {
             }
         }
 
-        Label {
-            anchors.centerIn: parent
-            visible: !tags.loading && (tags.error || tagsListView.count == 0)
-            width: parent.width - units.gu(4)
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-            text: tags.error ? tags.error : i18n.tr("No tags available. You can tag notes while viewing them.")
-        }
-
         Item {
             id: keyboardRect
             anchors { left: parent.left; right: parent.right }
             height: Qt.inputMethod.keyboardRectangle.height
         }
+    }
+
+    Label {
+        anchors.centerIn: parent
+        visible: !tags.loading && (tags.error || tagsListView.count == 0)
+        width: parent.width - units.gu(4)
+        wrapMode: Text.WordWrap
+        horizontalAlignment: Text.AlignHCenter
+        text: tags.error ? tags.error : i18n.tr("No tags available. You can tag notes while viewing them.")
     }
 }
