@@ -44,11 +44,29 @@ MainView {
     automaticOrientation: true
 
     property bool narrowMode: root.width < units.gu(80)
+    property var uri: undefined
 
     onNarrowModeChanged: {
         if (narrowMode) {
             // Clean the toolbar
             notesPage.selectedNote = null;
+        }
+    }
+
+    Connections {
+        target: UriHandler
+        onOpened: {
+            root.uri = uris[0];
+            processUri();
+        }
+    }
+
+    Connections {
+        target: EvernoteConnection
+        onIsConnectedChanged: {
+            if (EvernoteConnection.isConnected) {
+                processUri();
+            }
         }
     }
 
@@ -68,6 +86,7 @@ MainView {
     }
 
     function displayNote(note) {
+        print("displayNote:", note.guid)
         if (root.narrowMode) {
             print("creating noteview");
             var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
@@ -130,6 +149,79 @@ MainView {
         }
     }
 
+    function processUri() {
+        var commands = root.uri.split("://")[1].split("/");
+        if (EvernoteConnection.isConnected && commands && NotesStore) {
+            switch(commands[0].toLowerCase()) {
+                case "notes": // evernote://notes
+                    rootTabs.selectedTabIndex = 0;
+                    break;
+
+                case "note": // evernote://note/<noteguid>
+                    if (commands[1]) {
+                        var note = NotesStore.note(commands[1])
+                        if (note) {
+                            displayNote(note);
+                        } else {
+                            console.warn("No such note:", commands[1])
+                        }
+                    }
+                    break;
+
+                case "newnote": // evernote://newnote  or  evernote://newnote/<notebookguid>
+                    if (commands[1]) {
+                        if (NotesStore.notebook(commands[1])) {
+                            NotesStore.createNote(i18n.tr("Untitled"), commands[1]);
+                        } else {
+                            console.warn("No such notebook.");
+                        }
+                    } else {
+                        NotesStore.createNote(i18n.tr("Untitled"));
+                    }
+                    break;
+
+                case "editnote": // evernote://editnote/<noteguid>
+                    if (commands[1]) {
+                        var note = NotesStore.note(commands[1]);
+                        displayNote(note);
+                        switchToEditMode(note);
+                    }
+                    break;
+
+                case "notebooks": // evernote://notebooks
+                    rootTabs.selectedTabIndex = 1;
+                    break;
+
+                case "notebook": // evernote://notebook/<notebookguid>
+                    if (commands[1]) {
+                        if (NotesStore.notebook(commands[1])) {
+                            notebooksPage.openNotebook(commands[1]);
+                        } else {
+                            console.warn("No such notebook:", commands[1]);
+                        }
+                    }
+                    break;
+
+                case "reminders": // evernote://reminders
+                    rootTabs.selectedTabIndex = 2;
+                    break;
+
+                case "tags": // evernote://tags
+                    rootTabs.selectedTabIndex = 3;
+                    break;
+
+                case "tag": // evernote://tag/<tagguid>
+                    if (commands[1]) {
+                        tagsPage.openTaggedNotes(commands[1]);
+                    }
+                    break;
+
+                default: console.warn('WARNING: Unmanaged URI: ' + commands);
+            }
+            commands = undefined;
+        }
+    }
+
     AccountServiceModel {
         id: accounts
         applicationId: "com.ubuntu.reminders_reminders"
@@ -171,6 +263,10 @@ MainView {
 
         pagestack.push(rootTabs);
         doLogin();
+
+        if (uriArgs) {
+            root.uri = uriArgs[0];
+        }
     }
 
     Connections {
@@ -250,10 +346,12 @@ MainView {
                     narrowMode: root.narrowMode
 
                     onOpenNotebook: {
+                        var notebook = NotesStore.notebook(notebookGuid)
+                        print("have notebook:", notebook, notebook.name)
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for notebook", notebookGuid)
-                        pagestack.push(page, {title: title, filterNotebookGuid: notebookGuid, narrowMode: narrowMode});
+                        pagestack.push(page, {title: notebook.name, filterNotebookGuid: notebookGuid, narrowMode: root.narrowMode});
                         page.selectedNoteChanged.connect(function() {
                             if (page.selectedNote) {
                                 root.displayNote(page.selectedNote);
@@ -291,10 +389,11 @@ MainView {
                     id: tagsPage
 
                     onOpenTaggedNotes: {
+                        var tag = NotesStore.tag(tagGuid);
                         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
                         var page = component.createObject();
                         print("opening note page for tag", tagGuid)
-                        pagestack.push(page, {title: title, filterTagGuid: tagGuid, narrowMode: narrowMode});
+                        pagestack.push(page, {title: tag.name, filterTagGuid: tagGuid, narrowMode: root.narrowMode});
                         page.selectedNoteChanged.connect(function() {
                             if (page.selectedNote) {
                                 root.displayNote(page.selectedNote);
@@ -308,7 +407,6 @@ MainView {
                         })
                         NotesStore.refreshNotes();
                     }
-
                 }
             }
         }
