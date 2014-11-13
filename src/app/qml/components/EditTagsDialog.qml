@@ -60,7 +60,7 @@ Dialog {
                     }
                 }
 
-                NotesStore.createTag(tagName)
+                NotesStore.createTag(tagName);
             }
         }
 
