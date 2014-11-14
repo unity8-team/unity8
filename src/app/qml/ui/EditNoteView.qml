@@ -375,7 +375,7 @@ Item {
 
     Component {
         id: tagsDialog
-        EditTagsDialog { note: root.note }
+        EditTagsDialog { note: root.note; pageHeight: parent.height }
     }
 
     Rectangle {
@@ -602,24 +602,7 @@ Item {
             height: units.gu(4)
             visible: toolbox.tagsRowExpanded
             spacing: units.gu(1)
-            Repeater {
-                model: root.note ? root.note.tagGuids.length : undefined
-                Rectangle {
-                    id: rectangle
-                    radius: units.gu(1)
-                    color: "white"
-                    border.color: preferences.colorForNotebook(root.note.notebookGuid)
-                    Text {
-                        text: NotesStore.tag(root.note.tagGuids[index]).name
-                        color: preferences.colorForNotebook(root.note.notebookGuid)
-                        Component.onCompleted: {
-                            rectangle.width = width + units.gu(2)
-                            rectangle.height = height + units.gu(1)
-                            anchors.centerIn = parent
-                        }
-                    }
-                }
-            }
+
             Rectangle {
                 id: addNewTag
                 radius: units.gu(1)
@@ -636,6 +619,25 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: PopupUtils.open(tagsDialog)
+                }
+            }
+
+            Repeater {
+                model: root.note ? root.note.tagGuids.length : undefined
+                Rectangle {
+                    id: rectangle
+                    radius: units.gu(1)
+                    color: "white"
+                    border.color: preferences.colorForNotebook(root.note.notebookGuid)
+                    Text {
+                        text: NotesStore.tag(root.note.tagGuids[index]).name
+                        color: preferences.colorForNotebook(root.note.notebookGuid)
+                        Component.onCompleted: {
+                            rectangle.width = width + units.gu(2)
+                            rectangle.height = height + units.gu(1)
+                            anchors.centerIn = parent
+                        }
+                    }
                 }
             }
         }

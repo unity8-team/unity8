@@ -27,6 +27,7 @@ Dialog {
     id: root
 
     property var note
+    property int pageHeight
 
     Tags {
         id: tags
@@ -88,7 +89,7 @@ Dialog {
         currentlyExpanded: true
         multiSelection: true
 
-        containerHeight: itemHeight * 4.5
+        containerHeight: Math.min(root.pageHeight - textField.height - closeButton.height - units.gu(12), tags.count * itemHeight)
 
         model: tags
 
@@ -113,6 +114,7 @@ Dialog {
     }
 
     Button {
+        id: closeButton
         Layout.preferredWidth: parent.width - units.gu(2)
         Layout.alignment: Qt.AlignHCenter
 
