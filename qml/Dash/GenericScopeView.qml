@@ -141,7 +141,23 @@ FocusScope {
         onHideDash: subPageLoader.closeSubPage()
     }
 
+    Flickable {
+        id: backgroundFlickable
+        anchors.fill: parent
+        contentWidth: categoryView.contentWidth
+        contentHeight: categoryView.contentHeight
+        contentY: categoryView.contentY
+        visible: !colorBackground.visible
+        interactive: false
+
+        DashBackground {
+            anchors.fill: parent
+            fillMode: Image.TileVertically
+        }
+    }
+
     Rectangle {
+        id: colorBackground
         anchors.fill: parent
         color: scopeView.scopeStyle ? scopeView.scopeStyle.background : "transparent"
         visible: color != "transparent"
