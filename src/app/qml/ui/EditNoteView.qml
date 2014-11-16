@@ -592,43 +592,43 @@ Item {
         }
 
         Row {
-            id: tagsRow
-            anchors {
-                left: parent.left
-                right: parent.right
-                leftMargin: units.gu(1)
-                rightMargin: units.gu(1)
-            }
+            anchors { left: parent.left; right: parent.right; rightMargin: units.gu(1) }
             height: units.gu(4)
             visible: toolbox.tagsRowExpanded
             spacing: units.gu(1)
 
             Rectangle {
-                id: addNewTag
-                radius: units.gu(1)
-                color: preferences.colorForNotebook(root.note.notebookGuid)
-                Text {
-                    text: "+"
-                    color: "white"
-                    Component.onCompleted: {
-                        addNewTag.width = width + units.gu(2)
-                        addNewTag.height = height + units.gu(1)
-                        anchors.centerIn = parent
+                z: 100
+                color: "#efefef"
+                height: parent.height
+                width: height + units.gu(1)
+                RtfButton {
+                    id: editTagsButton
+                    iconName: "edit"
+                    height: parent.height
+                    width: height
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    onClicked: {
+                        PopupUtils.open(tagsDialog)
                     }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: PopupUtils.open(tagsDialog)
                 }
             }
 
-            Repeater {
+            ListView {
+                width: parent.width - editTagsButton.width - units.gu(1)
+                height: units.gu(4)
+
                 model: root.note ? root.note.tagGuids.length : undefined
-                Rectangle {
+                orientation: ListView.Horizontal
+                spacing: units.gu(1)
+
+
+                delegate: Rectangle {
                     id: rectangle
                     radius: units.gu(1)
                     color: "white"
                     border.color: preferences.colorForNotebook(root.note.notebookGuid)
+                    anchors.verticalCenter: parent.verticalCenter
                     Text {
                         text: NotesStore.tag(root.note.tagGuids[index]).name
                         color: preferences.colorForNotebook(root.note.notebookGuid)

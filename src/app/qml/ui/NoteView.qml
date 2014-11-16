@@ -92,36 +92,37 @@ Item {
         ]
     }
 
-    Row {
+    ListView {
         id: tagsRow
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom; margins: units.gu(1) }
+        model: root.note ? root.note.tagGuids.length : undefined
+        orientation: ListView.Horizontal
         spacing: units.gu(1)
-        Repeater {
-            model: root.note ? root.note.tagGuids.length : undefined
-            Rectangle {
-                id: rectangle
-                radius: units.gu(1)
-                color: "white"
-                border.color: preferences.colorForNotebook(root.note.notebookGuid)
+        height: units.gu(3)
 
-                Text {
-                    text: NotesStore.tag(root.note.tagGuids[index]).name
-                    color: preferences.colorForNotebook(root.note.notebookGuid)
-                    Component.onCompleted: {
-                        rectangle.width = width + units.gu(2)
-                        rectangle.height = height + units.gu(1)
-                        anchors.centerIn = parent
-                    }
+        delegate: Rectangle {
+            id: rectangle
+            radius: units.gu(1)
+            color: "white"
+            border.color: preferences.colorForNotebook(root.note.notebookGuid)
+
+            Text {
+                text: NotesStore.tag(root.note.tagGuids[index]).name
+                color: preferences.colorForNotebook(root.note.notebookGuid)
+                Component.onCompleted: {
+                    rectangle.width = width + units.gu(2)
+                    rectangle.height = height + units.gu(1)
+                    anchors.centerIn = parent
                 }
+            }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        if (!narrowMode) {
-                            sideViewLoader.clear();
-                        }
-                        root.openTaggedNotes(NotesStore.tag(root.note.tagGuids[index]).name, NotesStore.tag(root.note.tagGuids[index]).guid)
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (!narrowMode) {
+                        sideViewLoader.clear();
                     }
+                    root.openTaggedNotes(NotesStore.tag(root.note.tagGuids[index]).name, NotesStore.tag(root.note.tagGuids[index]).guid)
                 }
             }
         }
