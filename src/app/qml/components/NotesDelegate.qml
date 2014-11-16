@@ -84,7 +84,11 @@ Empty {
                             Label {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                text: root.content
+                                // TRANSLATORS: the argument is a modification date that follows this format:
+                                // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+                                text: "<font color=\"" + root.notebookColor + "\">" +
+                                    Qt.formatDateTime(root.creationDate, i18n.tr("ddd, d hh:mm")) +
+                                    " </font>" + root.content
                                 wrapMode: Text.WordWrap
                                 textFormat: Text.StyledText
                                 maximumLineCount: 2
@@ -92,23 +96,13 @@ Empty {
                                 color: "black"
                             }
 
-                            RowLayout {
+                            Label {
                                 Layout.fillWidth: true
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: root.tags
-                                    fontSize: "small"
-                                    color: "#b3b3b3"
-
-                                }
-                                Label {
-                                    // TRANSLATORS: the argument is a modification date that follows this format:
-                                    // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
-                                    text: Qt.formatDateTime(root.creationDate, i18n.tr("dddd, d hh:mm"))
-                                    color: "#b3b3b3"
-                                    fontSize: "small"
-                                    horizontalAlignment: Text.AlignRight
-                                }
+                                text: root.tags
+                                wrapMode: Text.WordWrap
+                                maximumLineCount: 1
+                                fontSize: "small"
+                                color: "#b3b3b3"
                             }
                         }
                     }
