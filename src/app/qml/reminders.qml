@@ -25,6 +25,7 @@ import "ui"
 import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
 import Ubuntu.OnlineAccounts.Client 0.1
+import Ubuntu.PushNotifications 0.1
 
 MainView {
     id: root
@@ -222,6 +223,49 @@ MainView {
         }
     }
 
+    function registerPushClient() {
+        console.log("registering push client");
+        var req = new XMLHttpRequest();
+        req.open("post", "http://162.213.34.150:7778/register", true);
+//        req.open("post", "http://localhost:8080/register", true);
+        req.setRequestHeader("content-type", "application/json");
+        req.onreadystatechange = function() {//Call a function when the state changes.
+            if(req.readyState == 4) {
+                if (req.status == 200) {
+                    print("************************push client registered")
+                } else {
+                    print("*************************error registering push client:", req.status, req.responseText, req.statusText);
+                }
+            }
+        }
+        print("registering:", JSON.stringify({
+                                                 "userId" : "testuser",
+                                                 "appId": root.applicationName + "_reminders",
+                                                 "token": pushClient.token
+                                             }))
+        req.send(JSON.stringify({
+            "userId" : "testuser",
+            "appId": root.applicationName,
+            "token": pushClient.token
+        }))
+    }
+
+    PushClient {
+        id: pushClient
+        Component.onCompleted: {
+            //notificationsChanged.connect(messageList.handle_notifications)
+            error.connect(handlePushError)
+        }
+        onNotificationsChanged: {
+            print("************************************************* notifications changed")
+        }
+
+        appId: root.applicationName + "_reminders"
+    }
+    function handlePushError(error) {
+        print("************************************************** pushclient error", error)
+    }
+
     AccountServiceModel {
         id: accounts
         applicationId: "com.ubuntu.reminders_reminders"
@@ -267,7 +311,10 @@ MainView {
         if (uriArgs) {
             root.uri = uriArgs[0];
         }
+
+        registerPushClient();
     }
+
 
     Connections {
         target: UserStore
