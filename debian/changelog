@@ -1,3 +1,129 @@
+reminders-app (0.4+15.04.20141118-0ubuntu1) vivid; urgency=low
+
+  [ Akiva Avraham ]
+  * Updated library imports to qtquick-2.3.
+  * Upgraded ubuntu.components to 1.1 Upgraded ubuntu.components.xxxx to
+    1.0.
+
+  [ Paolo Rotolo ]
+  * Added Tags icon.
+
+  [ Alan Pope ]
+  * Fix incorrect email address.
+
+  [ Michael Zanetti ]
+  * Add count properties to models.
+  * add API to save notebooks.
+  * correctly update the model when a notebook changes.
+  * Some performance optimizations when having many, big notes
+  * improve startup sequence
+  * suppress some warnings. (LP: #1316800)
+  * Add support for tags. (LP: #1379747)
+  * Fixed bug 1378014 - Notes should be sorted by modification date by
+    default Fixed bug 1380255 - Add day of the month to the notes
+    preview. (LP: #1378014, #1380255)
+  * Fixed change accounts page. (LP: #1379751)
+  * Split the actual evernote code out from the QML plugin into a
+    libqtevernote. (LP: #1385994)
+  * Improve reminders delegate. (LP: #1318054)
+  * fix pulldown positioning. (LP: #1368548)
+  * split loading of notes into chunks
+  * Don't reload the note's content when reloading a note for its
+    resources. (LP: #1380987)
+  * improve sorting by falling back on title if the first sortrole is
+    equal. (LP: #1380987)
+  * add gif support
+  * Improve handling of connection errors.
+  * include tags when cloning a note.
+  * add scrollbars to listviews.
+  * Don't always build translations
+  * implement full note caching
+  * improve note edit view. (LP: #1391410, #1316947)
+  * small fixes in the new edit mode
+  * Created URI handlers to load the app from the scope. (LP: #1391689,
+    #1385995)
+
+  [ Víctor R. Ruiz ]
+  * "Search notes" unstranslated. Update to the code and template. (LP:
+    #1356944)
+  * Another batch of untranslated strings. Updated template. (LP:
+    #1356944)
+
+  [ Riccardo Padovani ]
+  * Fixed #1340644 - Notes go in default notebook when edited. (LP:
+    #1340644)
+  * Upgraded the WebView to Oxide. (LP: #1317580)
+  * Fixed #1340686 - Selecting a notebook then add a note doesn't
+    default the note to the notebook. (LP: #1340686)
+  * Added a couple of new i18n.tr, updated the translations template.
+  * Updated the camera confirm page to have buttons again Added a check
+    to be sure to delete previous temp picture. (LP: #1342249)
+  * Update string for no account advice, removed reference to add
+    reminder button. (LP: #1340635)
+  * Fixed pull down to refresh behavior.
+  * Implemented fronted to change notebooks name. (LP: #1340640)
+  * Implemented bottomEdge.
+  * Added a bouncing ProgressBar. (LP: #1372420)
+  * Fix #1379886 - First time reminders tab is shown, the list is offset
+    from the top. (LP: #1379886)
+  * Fixed #1382730 - Unable to create new notes. (LP: #1382730)
+  * Enabled automatic orientation. (LP: #1385429)
+  * Fixed bug 1378014 - Notes should be sorted by modification date by
+    default Fixed bug 1380255 - Add day of the month to the notes
+    preview. (LP: #1378014, #1380255)
+  * Fixed change accounts page. (LP: #1379751)
+  * Created URI handlers to load the app from the scope. (LP: #1391689,
+    #1385995)
+
+  [ David Planella ]
+  * Make the autofocus "just work". (LP: #1342252)
+  * Workaround for bug 1351041, in which we fetch the hostname somewhere
+    else in the code to get valid results. (LP: #1351041)
+  * Added .desktop file internationalization. (LP: #1318008)
+  * Move the account plugin to the click package. (LP: #1367235)
+  * Fixes layout for long translations of the buttons in the Set
+    Reminder page. (LP: #1379888)
+
+  [ Penk Chen ]
+  * Created URI handlers to load the app from the scope. (LP: #1391689,
+    #1385995)
+
+  [ CI bot ]
+  * Release current trunk to the Ubuntu archive.
+
+  [ Nicholas Skaggs ]
+  * Fix tests never finishing because of a failure to setup an account.
+    (LP: #1381828)
+
+  [ Leo Arias ]
+  * Start the preinstalled click package using the sandbox. This
+    requires a test desktop file. (LP: #1363599)
+
+  [ nskaggs ]
+  * Switch to custom proxy object emulator, instead of calling via old
+    emulators module. (LP: #1341681)
+  * Add autopkgtest runner support. (LP: #1338790)
+  * Skip tests affected by bug 1347905. (LP: #1347905)
+  * Re-enable tests for running on device. (LP: #1347905)
+  * Added a sleep on the delete account test helper to workaround bug
+    1363604 (LP: #1363604)
+
+  [ Benjamin Zeller ]
+  * Make Reminders app cmake project useable out of the Box with
+    QtCreator (after dependencies are installed) Enable click mode by
+    default. Disable click mode in debian rules file. Add variable
+    UBUNTU_MANIFEST_PATH variable so QtC knows where to look. for the
+    manifest file Rename apparmor.json to reminders.apparmor (editor
+    support). Rename manifest.json => manifest.json.in so insource
+    builds won't. override it.
+
+  [ Pawel Stolowski ]
+  * Added X-Ubuntu-Default-Department-ID key to the desktop file. This
+    is required by click scope to support departments for preinstalled
+    applications.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 18 Nov 2014 17:46:55 +0000
+
 reminders-app (0.4+14.10.20140704-0ubuntu1) utopic; urgency=medium
 
   [ David Planella ]
