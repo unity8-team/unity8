@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-11 00:31+0100\n"
-"PO-Revision-Date: 2014-11-12 19:56+0000\n"
+"PO-Revision-Date: 2014-11-17 13:11+0000\n"
 "Last-Translator: Åka Sikrom <Unknown>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-11-13 06:38+0000\n"
+"X-Launchpad-Export-Date: 2014-11-18 06:58+0000\n"
 "X-Generator: Launchpad (build 17241)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
@@ -75,7 +75,7 @@ msgstr "Tagger"
 
 #: src/app/qml/reminders.qml:330
 msgid "Reconnect"
-msgstr ""
+msgstr "Koble til på nytt"
 
 #: src/app/qml/reminders.qml:354
 msgid ""
@@ -122,31 +122,31 @@ msgstr "Uten navn"
 
 #: src/app/qml/ui/EditNoteView.qml:406
 msgid "Font"
-msgstr ""
+msgstr "Skrifttype"
 
 #: src/app/qml/ui/EditNoteView.qml:417
 msgid "Size"
-msgstr ""
+msgstr "Størrelse"
 
 #. TRANSLATORS: Toolbar button for "Bold"
 #: src/app/qml/ui/EditNoteView.qml:438
 msgid "B"
-msgstr ""
+msgstr "F"
 
 #. TRANSLATORS: Toolbar button for "Italic"
 #: src/app/qml/ui/EditNoteView.qml:451
 msgid "I"
-msgstr ""
+msgstr "K"
 
 #. TRANSLATORS: Toolbar button for "Underline"
 #: src/app/qml/ui/EditNoteView.qml:465
 msgid "U"
-msgstr ""
+msgstr "U"
 
 #. TRANSLATORS: Toolbar button for "Strikeout"
 #: src/app/qml/ui/EditNoteView.qml:479
 msgid "T"
-msgstr ""
+msgstr "T"
 
 #: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
@@ -222,52 +222,60 @@ msgstr "Ingen tagger tilgjengelig. Du kan tagge notater når du viser dem."
 
 #: src/libqtevernote/evernoteconnection.cpp:234
 msgid "Error connecting to Evernote: Please check network connection."
-msgstr ""
+msgstr "Feil ved tilkobling til Evernote. Sjekk nettverkstilkoblinga."
 
 #: src/libqtevernote/evernoteconnection.cpp:239
 msgid "Unknown error connecting to Evernote."
-msgstr ""
+msgstr "Ukjent feil ved tilkobling til Evernote."
 
 #: src/libqtevernote/evernoteconnection.cpp:252
 msgid ""
 "Error connecting to Evernote: Server version does not match app version. "
 "Please update the application."
 msgstr ""
+"Feil ved tilkobling til Evernote: tjenerens versjon samsvarer ikke med "
+"klientens versjon. Oppdater programmet og prøv igjen."
 
 #: src/libqtevernote/evernoteconnection.cpp:258
 #: src/libqtevernote/evernoteconnection.cpp:263
 #, qt-format
 msgid "Error connecting to Evernote: Error code %1"
-msgstr ""
+msgstr "Feil ved tilkobling til Evernote: feilkode %1"
 
 #: src/libqtevernote/evernoteconnection.cpp:268
 msgid ""
 "Error connecting to Evernote: Cannot download version information from "
 "server."
 msgstr ""
+"Feil ved tilkobling til Evernote: klarte ikke å laste ned "
+"versjonsinformasjon fra tjener."
 
 #: src/libqtevernote/evernoteconnection.cpp:273
 #: src/libqtevernote/evernoteconnection.cpp:298
 msgid "Unknown error connecting to Evernote"
-msgstr ""
+msgstr "Ukjent feil ved tilkobling til Evernote"
 
 #: src/libqtevernote/evernoteconnection.cpp:287
 msgid "Error connecting to Evernote: Cannot download server information."
 msgstr ""
+"Feil ved tilkobling til Evernote: klarte ikke å laste ned informasjon om "
+"tjeneren."
 
 #: src/libqtevernote/evernoteconnection.cpp:293
 msgid ""
 "Error connecting to Evernote: Connection failure when downloading server "
 "information."
 msgstr ""
+"Feil ved tilkobling til Evernote: tilkoblingsfeil ved nedlasting av "
+"tjenerinformasjon."
 
 #: src/libqtevernote/evernoteconnection.cpp:319
 msgid "Error connecting to Evernote: Connection failure"
-msgstr ""
+msgstr "Feil ved tilkobling til Evernote: tilkoblingsfeil"
 
 #: src/libqtevernote/evernoteconnection.cpp:323
 msgid "Unknown Error connecting to Evernote"
-msgstr ""
+msgstr "Ukjent feil ved tilkobling til Evernote"
 
 #: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
