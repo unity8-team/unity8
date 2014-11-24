@@ -145,11 +145,11 @@ Rectangle {
 
         // Those markers mark the various positions in the spread (ratio to screen width from right to left):
         // 0 - 1: following finger, snap back to the beginning on release
-        property real positionMarker1: 0.3
+        property real positionMarker1: 0.2
         // 1 - 2: curved snapping movement, snap to app 1 on release
-        property real positionMarker2: 0.45
+        property real positionMarker2: 0.35
         // 2 - 3: movement follows finger, snaps back to app 1 on release
-        property real positionMarker3: 0.6
+        property real positionMarker3: 0.45
         // passing 3, we detach movement from the finger and snap to 4
         property real positionMarker4: 0.9
 
@@ -364,13 +364,12 @@ Rectangle {
 
                     // This mostly is the same as progress, just adds the snapping to phase 1 for tiles 0 and 1
                     animatedProgress: {
+                        return progress;
                         if (spreadView.phase == 0 && index < 2) {
                             if (progress < spreadView.positionMarker1) {
                                 return progress;
-                            } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
-                                return spreadView.positionMarker1 + snappingCurve.value * 3;
                             } else {
-                                return spreadView.positionMarker2;
+                                return spreadView.positionMarker1 + snappingCurve.value;
                             }
                         }
                         return progress;
@@ -383,7 +382,7 @@ Rectangle {
                     EasingCurve {
                         id: snappingCurve
                         type: EasingCurve.Linear
-                        period: 0.05
+                        period: spreadView.positionMarker2 - spreadView.positionMarker1
                         progress: appDelegate.progress - spreadView.positionMarker1
                     }
 
