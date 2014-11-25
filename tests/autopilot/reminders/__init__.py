@@ -144,6 +144,12 @@ class NotebooksPage(_Page):
         save_button = self.select_single('Button', objectName='saveButton')
         self.pointing_device.click_object(save_button)
 
+    def swipe_to_bottom(self):
+        """
+        Swipe to the bottom of the list of Notebooks
+        """
+        self._get_notebooks_listview().swipe_to_bottom()
+
     def get_notebooks(self):
         """Return the list of Notebooks.
 
