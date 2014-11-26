@@ -94,6 +94,7 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
         notebooks_page = self.app.open_notebooks()
         notebooks_page.add_notebook(test_notebook_title)
 
+        notebooks_page.swipe_to_bottom()
         last_notebook = notebooks_page.get_notebooks()[-1]
         self.assertEqual(
             last_notebook,
