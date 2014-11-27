@@ -141,21 +141,6 @@ FocusScope {
         onHideDash: subPageLoader.closeSubPage()
     }
 
-    Flickable {
-        id: backgroundFlickable
-        anchors.fill: parent
-        contentWidth: categoryView.contentWidth
-        contentHeight: categoryView.contentHeight
-        contentY: categoryView.contentY
-        visible: !colorBackground.visible
-        interactive: false
-
-        DashBackground {
-            anchors.fill: parent
-            fillMode: Image.TileVertically
-        }
-    }
-
     Rectangle {
         id: colorBackground
         anchors.fill: parent
@@ -482,6 +467,13 @@ FocusScope {
                 source: "graphics/dash_divider_top_darkgrad.png"
                 z: -1
             }
+        }
+
+        DashBackground {
+            anchors.fill: parent
+            fillMode: Image.TileVertically
+            visible: !colorBackground.visible
+            z: -1
         }
 
         sectionProperty: "name"
