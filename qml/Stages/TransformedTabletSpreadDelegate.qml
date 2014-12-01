@@ -354,7 +354,7 @@ SpreadDelegate {
 
     transform: [
         Rotation {
-            origin { x: 0; y: spreadView.height / 2 }
+            origin { x: 0; y: spreadView.height / 2 + draggedDistance }
             axis { x: 0; y: 1; z: 0 }
             angle: priv.angle
         },

@@ -26,6 +26,8 @@ Item {
 
     // to be read from outside
     readonly property bool dragged: dragArea.moving
+    readonly property alias draggedDistance: appWindowWithShadow.y
+
     signal clicked()
     signal closed()
 
@@ -39,6 +41,7 @@ Item {
     property int orientation
 
     Item {
+        id: appWindowWithShadow
         objectName: "appWindowWithShadow"
 
         y: dragArea.distance
