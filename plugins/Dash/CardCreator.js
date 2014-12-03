@@ -313,7 +313,9 @@ function cardString(template, components) {
                 readonly property string title: cardData && cardData["title"] || ""; \n\
                 property bool asynchronous: true; \n\
                 property bool showHeader: true; \n\
-                implicitWidth: childrenRect.width; \n';
+                implicitWidth: childrenRect.width; \n\
+                enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true); \n\
+                \n';
 
     var hasArt = components["art"] && components["art"]["field"] || false;
     var hasSummary = components["summary"] || false;
@@ -624,7 +626,7 @@ function cardString(template, components) {
 
     var implicitHeight = 'implicitHeight: ';
     if (hasSummary) {
-        implicitHeight += 'summary.y + summary.height + (summary.text ? units.gu(1) : 0);\n';
+        implicitHeight += 'summary.y + summary.height + units.gu(1);\n';
     } else if (hasHeaderRow) {
         implicitHeight += 'row.y + row.height + units.gu(1);\n';
     } else if (hasMascot) {

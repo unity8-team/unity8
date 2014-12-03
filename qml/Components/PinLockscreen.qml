@@ -35,6 +35,8 @@ Column {
     property int maxPinLength: -1
     property bool showCancelButton: true
 
+    readonly property string passphrase: pinentryField.text
+
     signal entered(string passphrase)
     signal cancel()
 
@@ -114,6 +116,7 @@ Column {
                 horizontalAlignment: Text.AlignHCenter
                 text: root.errorText
                 visible: pinentryField.incorrectOverride
+                scale: Math.min(1, parent.width / width)
             }
 
             AbstractButton {

@@ -69,6 +69,10 @@ class Dash(emulators.UnityEmulatorBase):
         return self.dash_content_list.wait_select_single(
             'QQuickLoader', scopeId=scope_name)
 
+    def get_scope_by_index(self, scope_index=0):
+        return self.dash_content_list.wait_select_single(
+            'QQuickLoader', objectName=("scopeLoader%i" % scope_index))
+
     @autopilot_logging.log_action(logger.info)
     def open_scope(self, scope_id):
         """Open a dash scope.
@@ -206,7 +210,7 @@ class GenericScopeView(emulators.UnityEmulatorBase):
     def _get_category_element(self, category):
         try:
             return self.wait_select_single(
-                'Base', objectName='dashCategory{}'.format(category))
+                'DashCategoryBase', objectName='dashCategory{}'.format(category))
         except dbus.StateNotFoundError:
             raise emulators.UnityEmulatorException(
                 'No category found with name {}'.format(category))

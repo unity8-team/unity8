@@ -36,6 +36,7 @@ import "Panel"
 import "Components"
 import "Notifications"
 import "Stages"
+import "Panel/Indicators"
 import Unity.Notifications 1.0 as NotificationBackend
 import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
@@ -53,7 +54,10 @@ Item {
     property url background
     readonly property real panelHeight: panel.panelHeight
 
-    readonly property bool locked: LightDM.Greeter.active && !LightDM.Greeter.authenticated
+    readonly property bool locked: LightDM.Greeter.active && !LightDM.Greeter.authenticated && !forcedUnlock
+    readonly property alias hasLockedApp: greeter.hasLockedApp
+    readonly property bool forcedUnlock: edgeDemo.running
+    onForcedUnlockChanged: if (forcedUnlock) lockscreen.hide()
 
     property bool sideStageEnabled: shell.width >= units.gu(100)
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
@@ -87,11 +91,11 @@ Item {
         }
     }
 
-    function setFakeActiveForApp(app) {
+    function startLockedApp(app) {
         if (shell.locked) {
-            greeter.fakeActiveForApp = app
-            lockscreen.hide()
+            greeter.lockedApp = app;
         }
+        shell.activateApplication(app);
     }
 
     Binding {
@@ -128,23 +132,32 @@ Item {
         objectName: "dashCommunicator"
     }
 
+    ScreenGrabber {
+        id: screenGrabber
+        z: edgeDemo.z + 10
+        enabled: Powerd.status === Powerd.On
+    }
+
     Binding {
         target: ApplicationManager
         property: "forceDashActive"
         value: launcher.shown || launcher.dashSwipe
     }
 
+    VolumeKeyFilter {
+        id: volumeKeyFilter
+        onVolumeDownPressed: volumeControl.volumeDown()
+        onVolumeUpPressed: volumeControl.volumeUp()
+        onBothVolumeKeysPressed: screenGrabber.capture()
+    }
 
     WindowKeysFilter {
-        // Handle but do not filter out volume keys
-        Keys.onVolumeUpPressed: { volumeControl.volumeUp(); event.accepted = false; }
-        Keys.onVolumeDownPressed: { volumeControl.volumeDown(); event.accepted = false; }
-
         Keys.onPressed: {
             if (event.key == Qt.Key_PowerOff || event.key == Qt.Key_PowerDown) {
                 dialogs.onPowerKeyPressed();
                 event.accepted = true;
             } else {
+                volumeKeyFilter.onKeyPressed(event.key);
                 event.accepted = false;
             }
         }
@@ -154,6 +167,7 @@ Item {
                 dialogs.onPowerKeyReleased();
                 event.accepted = true;
             } else {
+                volumeKeyFilter.onKeyReleased(event.key);
                 event.accepted = false;
             }
         }
@@ -169,31 +183,41 @@ Item {
         Connections {
             target: ApplicationManager
             onFocusRequested: {
-                if (appId === "dialer-app") {
-                    // Always let the dialer-app through.  Either user asked
-                    // for an emergency call or accepted an incoming call.
-                    setFakeActiveForApp(appId)
-                } else if (greeter.fakeActiveForApp !== "" && greeter.fakeActiveForApp !== appId) {
-                    lockscreen.show();
+                if (greeter.narrowMode) {
+                    if (appId === "dialer-app" && callManager.hasCalls && shell.locked) {
+                        // If we are in the middle of a call, make dialer lockedApp and show it.
+                        // This can happen if user backs out of dialer back to greeter, then
+                        // launches dialer again.
+                        greeter.lockedApp = appId;
+                    }
+                    if (greeter.hasLockedApp) {
+                        if (appId === greeter.lockedApp) {
+                            lockscreen.hide() // show locked app
+                        } else {
+                            greeter.startUnlock() // show lockscreen if necessary
+                        }
+                    }
+                    greeter.hide();
+                } else {
+                    if (LightDM.Greeter.active) {
+                        greeter.startUnlock()
+                    }
                 }
-                greeter.hide();
             }
 
             onFocusedApplicationIdChanged: {
-                if (greeter.fakeActiveForApp !== "" && greeter.fakeActiveForApp !== ApplicationManager.focusedApplicationId) {
-                    lockscreen.show();
+                if (greeter.hasLockedApp && greeter.lockedApp !== ApplicationManager.focusedApplicationId) {
+                    greeter.startUnlock()
                 }
                 panel.indicators.hide();
             }
 
             onApplicationAdded: {
                 if (greeter.shown && appId != "unity8-dash") {
-                    greeter.hide();
+                    greeter.startUnlock()
                 }
-                if (appId === "dialer-app") {
-                    // Always let the dialer-app through.  Either user asked
-                    // for an emergency call or accepted an incoming call.
-                    setFakeActiveForApp(appId)
+                if (greeter.narrowMode && greeter.hasLockedApp && appId === greeter.lockedApp) {
+                    lockscreen.hide() // show locked app
                 }
                 launcher.hide();
             }
@@ -201,9 +225,19 @@ Item {
 
         Loader {
             id: applicationsDisplayLoader
+            objectName: "applicationsDisplayLoader"
             anchors.fill: parent
 
-            source: shell.sideStageEnabled ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
+            // When we have a locked app, we only want to show that one app.
+            // FIXME: do this in a less traumatic way.  We currently only allow
+            // locked apps in phone mode (see FIXME in Lockscreen component in
+            // this same file).  When that changes, we need to do something
+            // nicer here.  But this code is currently just to prevent a
+            // theoretical attack where user enters lockedApp mode, then makes
+            // the screen larger (maybe connects to monitor) and tries to enter
+            // tablet mode.
+            property bool tabletMode: shell.sideStageEnabled && !greeter.hasLockedApp
+            source: tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
 
             Binding {
                 target: applicationsDisplayLoader.item
@@ -218,17 +252,17 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "maximizedAppTopMargin"
-                value: panel.panelHeight
+                value: panel.defaultPanelHeight
             }
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "interactive"
-                value: edgeDemo.stagesEnabled && !greeter.shown && !lockscreen.shown && panel.indicators.fullyClosed && launcher.progress == 0
+                value: edgeDemo.stagesEnabled && !greeter.shown && !lockscreen.shown && panel.indicators.fullyClosed && launcher.progress == 0 && !notifications.useModal
             }
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "spreadEnabled"
-                value: edgeDemo.stagesEnabled && greeter.fakeActiveForApp === "" // to support emergency dialer hack
+                value: edgeDemo.stagesEnabled && !greeter.hasLockedApp
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -305,14 +339,20 @@ Item {
         // and wider screens are tablets which don't.  When we do allow this
         // on devices with a side stage and a SIM, work should be done to
         // ensure that the main stage is disabled while the dialer is present
-        // in the side stage.
+        // in the side stage.  See the FIXME in the stage loader in this file.
         showEmergencyCallButton: !shell.sideStageEnabled
 
         onEntered: LightDM.Greeter.respond(passphrase);
         onCancel: greeter.show()
-        onEmergencyCall: shell.activateApplication("dialer-app") // will automatically enter fake-active mode
+        onEmergencyCall: startLockedApp("dialer-app")
 
-        onShownChanged: if (shown) greeter.fakeActiveForApp = ""
+        onShownChanged: if (shown) greeter.lockedApp = ""
+
+        function maybeShow() {
+            if (!shell.forcedUnlock) {
+                show()
+            }
+        }
 
         Timer {
             id: forcedDelayTimer
@@ -341,6 +381,10 @@ Item {
         onHideGreeter: greeter.login()
 
         onShowPrompt: {
+            shell.enabled = true;
+            if (!LightDM.Greeter.active) {
+                return; // could happen if hideGreeter() comes in before we prompt
+            }
             if (greeter.narrowMode) {
                 if (isDefaultPrompt) {
                     if (lockscreen.alphaNumeric) {
@@ -356,20 +400,26 @@ Item {
                     lockscreen.errorText = i18n.tr("Sorry, incorrect %1").arg(text.toLowerCase())
                 }
 
-                lockscreen.show();
+                lockscreen.maybeShow();
             }
         }
 
         onPromptlessChanged: {
-            if (LightDM.Greeter.promptless && LightDM.Greeter.authenticated) {
-                lockscreen.hide()
-            } else {
-                lockscreen.reset();
-                lockscreen.show();
+            if (!LightDM.Greeter.active) {
+                return; // could happen if hideGreeter() comes in before we prompt
+            }
+            if (greeter.narrowMode) {
+                if (LightDM.Greeter.promptless && LightDM.Greeter.authenticated) {
+                    lockscreen.hide()
+                } else {
+                    lockscreen.reset();
+                    lockscreen.maybeShow();
+                }
             }
         }
 
         onAuthenticationComplete: {
+            shell.enabled = true;
             if (LightDM.Greeter.authenticated) {
                 AccountsService.failedLogins = 0
             }
@@ -415,7 +465,7 @@ Item {
     Binding {
         target: LightDM.Greeter
         property: "active"
-        value: greeter.shown || lockscreen.shown || greeter.fakeActiveForApp != ""
+        value: greeter.shown || lockscreen.shown || greeter.hasLockedApp
     }
 
     Rectangle {
@@ -427,8 +477,9 @@ Item {
     Item {
         // Just a tiny wrapper to adjust greeter's x without messing with its own dragging
         id: greeterWrapper
-        x: launcher.progress
-        y: panel.panelBottomY
+        objectName: "greeterWrapper"
+        x: greeter.narrowMode ? launcher.progress : 0
+        y: panel.panelHeight
         width: parent.width
         height: parent.height - panel.panelBottomY
 
@@ -440,16 +491,16 @@ Item {
         property bool fullyShown: showProgress === 1.0
         onFullyShownChanged: {
             // Wait until the greeter is completely covering lockscreen before resetting it.
-            if (fullyShown && !LightDM.Greeter.authenticated) {
+            if (greeter.narrowMode && fullyShown && !LightDM.Greeter.authenticated) {
                 lockscreen.reset();
-                lockscreen.show();
+                lockscreen.maybeShow();
             }
         }
 
         readonly property real showProgress: MathUtils.clamp((1 - x/width) + greeter.showProgress - 1, 0, 1)
         onShowProgressChanged: {
             if (showProgress === 0) {
-                if (LightDM.Greeter.authenticated) {
+                if ((LightDM.Greeter.promptless && LightDM.Greeter.authenticated) || shell.forcedUnlock) {
                     greeter.login()
                 } else if (greeter.narrowMode) {
                     lockscreen.clear(false) // to reset focus if necessary
@@ -463,12 +514,15 @@ Item {
 
             signal sessionStarted() // helpful for tests
 
-            property string fakeActiveForApp: ""
+            property string lockedApp: ""
+            property bool hasLockedApp: lockedApp !== ""
 
             available: true
             hides: [launcher, panel.indicators]
             shown: true
             loadContent: required || lockscreen.required // keeps content in memory for quick show()
+
+            locked: shell.locked
 
             defaultBackground: shell.background
 
@@ -476,6 +530,18 @@ Item {
             height: parent.height
 
             dragHandleWidth: shell.edgeSize
+
+            function startUnlock() {
+                if (narrowMode) {
+                    if (!LightDM.Greeter.authenticated) {
+                        lockscreen.maybeShow()
+                    }
+                    hide()
+                } else {
+                    show()
+                    tryToUnlock()
+                }
+            }
 
             function login() {
                 enabled = false;
@@ -490,18 +556,24 @@ Item {
 
             onShownChanged: {
                 if (shown) {
+                    // Disable everything so that user can't swipe greeter or
+                    // launcher until we get first prompt/authenticate, which
+                    // will re-enable the shell.
+                    shell.enabled = false;
+
                     if (greeter.narrowMode) {
                         LightDM.Greeter.authenticate(LightDM.Users.data(0, LightDM.UserRoles.NameRole));
+                    } else {
+                        reset()
                     }
-                    greeter.fakeActiveForApp = "";
+                    greeter.lockedApp = "";
                     greeter.forceActiveFocus();
                 }
             }
 
-            /* TODO re-enable when the corresponding changes in the service land (LP: #1361074)
             Component.onCompleted: {
                 Connectivity.unlockAllModems()
-            } */
+            }
 
             onUnlocked: greeter.hide()
             onSelected: {
@@ -522,11 +594,31 @@ Item {
     }
 
     Connections {
+        id: callConnection
+        target: callManager
+
+        onHasCallsChanged: {
+            if (shell.locked && callManager.hasCalls) {
+                // We just received an incoming call while locked.  The
+                // indicator will have already launched dialer-app for us, but
+                // there is a race between "hasCalls" changing and the dialer
+                // starting up.  So in case we lose that race, we'll start/
+                // focus the dialer ourselves here too.  Even if the indicator
+                // didn't launch the dialer for some reason (or maybe a call
+                // started via some other means), if an active call is
+                // happening, we want to be in the dialer.
+                startLockedApp("dialer-app")
+            }
+        }
+    }
+
+    Connections {
         id: powerConnection
         target: Powerd
 
         onStatusChanged: {
-            if (Powerd.status === Powerd.Off && !callManager.hasCalls && !edgeDemo.running) {
+            if (Powerd.status === Powerd.Off && reason !== Powerd.Proximity &&
+                    !callManager.hasCalls && !edgeDemo.running) {
                 greeter.showNow()
             }
         }
@@ -538,19 +630,17 @@ Item {
         }
 
         if (LightDM.Greeter.active) {
-            if (!LightDM.Greeter.authenticated) {
-                lockscreen.show()
-            }
-            greeter.hide()
+            greeter.startUnlock()
         }
 
         var animate = !LightDM.Greeter.active && !stages.shown
-        dash.setCurrentScope("clickscope", animate, false)
+        dash.setCurrentScope(0, animate, false)
         ApplicationManager.requestFocusApplication("unity8-dash")
     }
 
     function showDash() {
-        if (greeter.fakeActiveForApp !== "") { // just in case user gets here
+        if (greeter.hasLockedApp || // just in case user gets here
+            (!greeter.narrowMode && shell.locked)) {
             return
         }
 
@@ -577,10 +667,23 @@ Item {
             anchors.fill: parent //because this draws indicator menus
             indicators {
                 hides: [launcher]
-                available: edgeDemo.panelEnabled && (!shell.locked || AccountsService.enableIndicatorsWhileLocked) && greeter.fakeActiveForApp === ""
+                available: edgeDemo.panelEnabled && (!shell.locked || AccountsService.enableIndicatorsWhileLocked) && !greeter.hasLockedApp
                 contentEnabled: edgeDemo.panelContentEnabled
                 width: parent.width > units.gu(60) ? units.gu(40) : parent.width
-                panelHeight: units.gu(3)
+
+                minimizedPanelHeight: units.gu(3)
+                expandedPanelHeight: units.gu(7)
+
+                indicatorsModel: visibleIndicators.model
+            }
+
+            VisibleIndicators {
+                id: visibleIndicators
+                // TODO: This should be sourced by device type (eg "desktop", "tablet", "phone"...)
+                Component.onCompleted: initialise(indicatorProfile)
+            }
+            callHint {
+                greeterShown: greeter.shown || lockscreen.shown
             }
 
             property bool topmostApplicationIsFullscreen:
@@ -588,7 +691,7 @@ Item {
                     ApplicationManager.findApplication(ApplicationManager.focusedApplicationId).fullscreen
 
             fullscreenMode: (topmostApplicationIsFullscreen && !LightDM.Greeter.active && launcher.progress == 0)
-                            || greeter.fakeActiveForApp !== ""
+                            || greeter.hasLockedApp
         }
 
         Launcher {
@@ -601,18 +704,18 @@ Item {
             anchors.bottom: parent.bottom
             width: parent.width
             dragAreaWidth: shell.edgeSize
-            available: edgeDemo.launcherEnabled && (!shell.locked || AccountsService.enableLauncherWhileLocked) && greeter.fakeActiveForApp === ""
+            available: edgeDemo.launcherEnabled && (!shell.locked || AccountsService.enableLauncherWhileLocked) && !greeter.hasLockedApp
 
             onShowDashHome: showHome()
             onDash: showDash()
             onDashSwipeChanged: {
                 if (dashSwipe) {
-                    dash.setCurrentScope("clickscope", false, true)
+                    dash.setCurrentScope(0, false, true)
                 }
             }
             onLauncherApplicationSelected: {
-                if (greeter.fakeActiveForApp !== "") {
-                    lockscreen.show()
+                if (greeter.hasLockedApp) {
+                    greeter.startUnlock()
                 }
                 if (!edgeDemo.running)
                     shell.activateApplication(appId)
@@ -627,7 +730,7 @@ Item {
         Rectangle {
             id: modalNotificationBackground
 
-            visible: notifications.useModal && !greeter.shown && (notifications.state == "narrow")
+            visible: notifications.useModal && (notifications.state == "narrow")
             color: "#000000"
             anchors.fill: parent
             opacity: 0.9
@@ -643,9 +746,9 @@ Item {
             model: NotificationBackend.Model
             margin: units.gu(1)
 
-            y: panel.panelBottomY
+            y: topmostIsFullscreen ? 0 : panel.panelHeight
             width: parent.width
-            height: parent.height - panel.panelBottomY
+            height: parent.height - (topmostIsFullscreen ? 0 : panel.panelHeight)
 
             states: [
                 State {
@@ -692,11 +795,12 @@ Item {
 
     EdgeDemo {
         id: edgeDemo
+        objectName: "edgeDemo"
         z: alphaDisclaimerLabel.z + 10
         paused: Powerd.status === Powerd.Off // Saves power
         greeter: greeter
         launcher: launcher
-        indicators: panel.indicators
+        panel: panel
         stages: stages
     }
 

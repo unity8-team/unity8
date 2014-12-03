@@ -17,6 +17,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 1.0
 import Ubuntu.Components.Popups 1.0
+import Ubuntu.Telephony 0.1 as Telephony
 
 Showable {
     id: root
@@ -56,6 +57,8 @@ Showable {
 
     property url background: ""
 
+    readonly property string passphrase: (pinPadLoader.item && pinPadLoader.item.passphrase) ? pinPadLoader.item.passphrase : ""
+
     signal entered(string passphrase)
     signal cancel()
     signal emergencyCall()
@@ -78,7 +81,9 @@ Showable {
     }
 
     function showInfoPopup(title, text) {
-        PopupUtils.open(infoPopupComponent, root, {title: title, text: text})
+        var popup = PopupUtils.open(infoPopupComponent, root, {title: title, text: text})
+        // FIXME: SDK will do this internally soonish
+        popup.z = Number.MAX_VALUE
     }
 
     Rectangle {
@@ -215,7 +220,7 @@ Showable {
             objectName: "emergencyCallLabel"
             anchors.horizontalCenter: parent.horizontalCenter
 
-            text: i18n.tr("Emergency Call")
+            text: callManager.hasCalls ? i18n.tr("Return to Call") : i18n.tr("Emergency Call")
             color: "#f3f3e7"
         }
 

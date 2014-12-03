@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-03 08:13-0400\n"
-"PO-Revision-Date: 2014-09-23 01:24+0000\n"
+"POT-Creation-Date: 2014-11-07 10:59+0100\n"
+"PO-Revision-Date: 2014-10-12 09:41+0000\n"
 "Last-Translator: Jared Norris <jarednorris@ubuntu.com>\n"
 "Language-Team: English (Australia) <en_AU@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-10-07 06:59+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2014-11-09 06:54+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
 #: plugins/LightDM/Greeter.cpp:130
 msgid "Password: "
@@ -33,62 +33,62 @@ msgstr "Unpin shortcut"
 
 #: qml/Components/DelayedLockscreen.qml:47
 msgid "Device Locked"
-msgstr ""
+msgstr "Device Locked"
 
 #: qml/Components/DelayedLockscreen.qml:62
 msgid "You have been locked out due to too many failed passphrase attempts."
-msgstr ""
+msgstr "You have been locked out due to too many failed passphrase attempts."
 
 #: qml/Components/DelayedLockscreen.qml:63
 msgid "You have been locked out due to too many failed passcode attempts."
-msgstr ""
+msgstr "You have been locked out due to too many failed passcode attempts."
 
 #: qml/Components/DelayedLockscreen.qml:72
 #, qt-format
 msgid "Please wait %1 minute and then try again…"
 msgid_plural "Please wait %1 minutes and then try again…"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Please wait %1 minute and then try again…"
+msgstr[1] "Please wait %1 minutes and then try again…"
 
-#: qml/Components/Dialogs.qml:70
+#: qml/Components/Dialogs.qml:74
 msgid "Log out"
 msgstr "Log out"
 
-#: qml/Components/Dialogs.qml:71
+#: qml/Components/Dialogs.qml:75
 msgid "Are you sure you want to log out?"
 msgstr "Are you sure you want to log out?"
 
-#: qml/Components/Dialogs.qml:73 qml/Components/Dialogs.qml:97
-#: qml/Components/Dialogs.qml:122
+#: qml/Components/Dialogs.qml:77 qml/Components/Dialogs.qml:101
+#: qml/Components/Dialogs.qml:126
 msgid "No"
 msgstr "No"
 
-#: qml/Components/Dialogs.qml:80 qml/Components/Dialogs.qml:104
-#: qml/Components/Dialogs.qml:129
+#: qml/Components/Dialogs.qml:84 qml/Components/Dialogs.qml:108
+#: qml/Components/Dialogs.qml:133
 msgid "Yes"
 msgstr "Yes"
 
-#: qml/Components/Dialogs.qml:94
+#: qml/Components/Dialogs.qml:98
 msgid "Shut down"
 msgstr "Shut down"
 
-#: qml/Components/Dialogs.qml:95
+#: qml/Components/Dialogs.qml:99
 msgid "Are you sure you want to shut down?"
 msgstr "Are you sure you want to shut down?"
 
-#: qml/Components/Dialogs.qml:119
+#: qml/Components/Dialogs.qml:123
 msgid "Reboot"
 msgstr "Reboot"
 
-#: qml/Components/Dialogs.qml:120
+#: qml/Components/Dialogs.qml:124
 msgid "Are you sure you want to reboot?"
 msgstr "Are you sure you want to reboot?"
 
-#: qml/Components/Dialogs.qml:144
+#: qml/Components/Dialogs.qml:148
 msgid "Power"
 msgstr "Power"
 
-#: qml/Components/Dialogs.qml:145
+#: qml/Components/Dialogs.qml:149
 msgid ""
 "Are you sure you would like\n"
 "to power off?"
@@ -96,15 +96,15 @@ msgstr ""
 "Are you sure you would like\n"
 "to power off?"
 
-#: qml/Components/Dialogs.qml:147
+#: qml/Components/Dialogs.qml:151
 msgid "Power off"
 msgstr "Power off"
 
-#: qml/Components/Dialogs.qml:157
+#: qml/Components/Dialogs.qml:161
 msgid "Restart"
 msgstr "Restart"
 
-#: qml/Components/Dialogs.qml:167
+#: qml/Components/Dialogs.qml:171
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -136,19 +136,19 @@ msgstr "Close"
 msgid "Swipe up again to close the settings screen"
 msgstr "Swipe up again to close the settings screen"
 
-#: qml/Components/EdgeDemo.qml:198
+#: qml/Components/EdgeDemo.qml:201
 msgid "Left edge"
 msgstr "Left edge"
 
-#: qml/Components/EdgeDemo.qml:199
+#: qml/Components/EdgeDemo.qml:202
 msgid "Swipe from the left to reveal the launcher for quick access to apps"
 msgstr "Swipe from the left to reveal the launcher for quick access to apps"
 
-#: qml/Components/EdgeDemo.qml:226
+#: qml/Components/EdgeDemo.qml:229
 msgid "Well done"
 msgstr "Well done"
 
-#: qml/Components/EdgeDemo.qml:227
+#: qml/Components/EdgeDemo.qml:230
 msgid ""
 "You have now mastered the edge gestures and can start using the "
 "phone<br><br>Tap on the screen to start"
@@ -156,23 +156,27 @@ msgstr ""
 "You have now mastered the edge gestures and can start using the "
 "phone<br><br>Tap on the screen to start"
 
-#: qml/Components/Lockscreen.qml:218
+#: qml/Components/Lockscreen.qml:223
+msgid "Return to Call"
+msgstr ""
+
+#: qml/Components/Lockscreen.qml:223
 msgid "Emergency Call"
 msgstr "Emergency Call"
 
-#: qml/Components/Lockscreen.qml:250
+#: qml/Components/Lockscreen.qml:255
 msgid "OK"
 msgstr "OK"
 
-#: qml/Dash/GenericScopeView.qml:411 qml/Dash/GenericScopeView.qml:568
+#: qml/Dash/GenericScopeView.qml:434 qml/Dash/GenericScopeView.qml:591
 msgid "See less"
 msgstr "See less"
 
-#: qml/Dash/GenericScopeView.qml:411
+#: qml/Dash/GenericScopeView.qml:434
 msgid "See all"
 msgstr "See all"
 
-#: qml/Dash/GenericScopeView.qml:473 qml/Dash/PageHeader.qml:258
+#: qml/Dash/GenericScopeView.qml:496 qml/Dash/PageHeader.qml:258
 #: qml/Panel/SearchIndicator.qml:27
 msgid "Search"
 msgstr "Search"
@@ -211,21 +215,21 @@ msgstr "Send"
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:55
 msgid "Pull to refresh…"
-msgstr ""
+msgstr "Pull to refresh…"
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:60
 msgid "Release to refresh…"
-msgstr ""
+msgstr "Release to refresh…"
 
-#: qml/Dash/ScopesOverview.qml:206
+#: qml/Dash/ScopesOverview.qml:215
 msgid "Manage Scopes"
-msgstr ""
+msgstr "Manage Scopes"
 
-#: qml/Dash/ScopesOverview.qml:428
+#: qml/Dash/ScopesOverview.qml:437
 msgid "Done"
 msgstr "Done"
 
-#: qml/Dash/ScopesOverview.qml:454
+#: qml/Dash/ScopesOverview.qml:463
 msgid "Store"
 msgstr "Store"
 
@@ -237,75 +241,47 @@ msgstr "Favourites"
 msgid "All"
 msgstr "All"
 
-#: qml/Greeter/Greeter.qml:157
+#: qml/Greeter/Greeter.qml:174
 msgid "Unlock"
-msgstr ""
+msgstr "Unlock"
 
-#: qml/Hud/HudParametrizedActionsPage.qml:139
-msgid "Confirm"
-msgstr "Confirm"
-
-#: qml/Hud/Hud.qml:61 qml/Hud/Hud.qml:99 qml/Hud/Hud.qml:372
-msgid "Type or say a command"
-msgstr "Type or say a command"
-
-#: qml/Hud/Hud.qml:84
-msgid "Loading. Please Wait..."
-msgstr "Loading. Please Wait..."
-
-#: qml/Hud/Hud.qml:89
-msgid "Speak Now..."
-msgstr "Speak Now..."
-
-#: qml/Hud/Hud.qml:94
-msgid "Speaking..."
-msgstr "Speaking..."
-
-#: qml/Notifications/NotificationMenuItemFactory.qml:108
+#: qml/Notifications/NotificationMenuItemFactory.qml:116
 msgid "Show password"
 msgstr "Show password"
 
-#: qml/Notifications/NotificationMenuItemFactory.qml:124
-msgid "Enter SIM PIN"
-msgstr "Enter SIM PIN"
-
-#: qml/Notifications/NotificationMenuItemFactory.qml:125
-msgid "Sorry, incorrect PIN"
-msgstr "Sorry, incorrect PIN"
-
-#: qml/Panel/ActiveCallHint.qml:77
+#: qml/Panel/ActiveCallHint.qml:79
 msgid "Tap to return to call..."
 msgstr "Tap to return to call..."
 
-#: qml/Panel/ActiveCallHint.qml:90
+#: qml/Panel/ActiveCallHint.qml:92
 msgid "Conference"
 msgstr "Conference"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:600
+#: qml/Panel/Indicators/MenuItemFactory.qml:643
 msgid "Nothing is playing"
-msgstr ""
+msgstr "Nothing is playing"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:748
+#: qml/Panel/Indicators/MenuItemFactory.qml:791
 msgid "In queue…"
 msgstr "In queue…"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:752
+#: qml/Panel/Indicators/MenuItemFactory.qml:795
 msgid "Downloading"
 msgstr "Downloading"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:754
+#: qml/Panel/Indicators/MenuItemFactory.qml:797
 msgid "Paused, tap to resume"
 msgstr "Paused, tap to resume"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:756
+#: qml/Panel/Indicators/MenuItemFactory.qml:799
 msgid "Canceled"
 msgstr "Cancelled"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:758
+#: qml/Panel/Indicators/MenuItemFactory.qml:801
 msgid "Finished"
 msgstr "Finished"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:760
+#: qml/Panel/Indicators/MenuItemFactory.qml:803
 msgid "Failed, tap to retry"
 msgstr "Failed, tap to retry"
 
@@ -317,49 +293,49 @@ msgstr "Unlock SIM"
 msgid "Roaming"
 msgstr "Roaming"
 
-#: qml/Shell.qml:340
+#: qml/Shell.qml:391
 msgid "Enter passphrase"
-msgstr ""
+msgstr "Enter passphrase"
 
-#: qml/Shell.qml:341
+#: qml/Shell.qml:392
 msgid "Sorry, incorrect passphrase"
 msgstr "Sorry, incorrect passphrase"
 
-#: qml/Shell.qml:342
+#: qml/Shell.qml:393
 msgid "Please re-enter"
-msgstr ""
+msgstr "Please re-enter"
 
-#: qml/Shell.qml:344
+#: qml/Shell.qml:395
 msgid "Enter passcode"
-msgstr ""
+msgstr "Enter passcode"
 
-#: qml/Shell.qml:345
+#: qml/Shell.qml:396
 msgid "Sorry, incorrect passcode"
 msgstr "Sorry, incorrect passcode"
 
-#: qml/Shell.qml:348
+#: qml/Shell.qml:399
 #, qt-format
 msgid "Enter %1"
-msgstr ""
+msgstr "Enter %1"
 
-#: qml/Shell.qml:349
+#: qml/Shell.qml:400
 #, qt-format
 msgid "Sorry, incorrect %1"
 msgstr "Sorry, incorrect %1"
 
-#: qml/Shell.qml:384
+#: qml/Shell.qml:441
 msgid "Sorry, incorrect passphrase."
 msgstr "Sorry, incorrect passphrase."
 
-#: qml/Shell.qml:385
+#: qml/Shell.qml:442
 msgid "Sorry, incorrect passcode."
 msgstr "Sorry, incorrect passcode."
 
-#: qml/Shell.qml:386
+#: qml/Shell.qml:443
 msgid "This will be your last attempt."
 msgstr "This will be your last attempt."
 
-#: qml/Shell.qml:388
+#: qml/Shell.qml:445
 msgid ""
 "If passphrase is entered incorrectly, your phone will conduct a factory "
 "reset and all personal data will be deleted."
@@ -367,7 +343,7 @@ msgstr ""
 "If passphrase is entered incorrectly, your phone will conduct a factory "
 "reset and all personal data will be deleted."
 
-#: qml/Shell.qml:389
+#: qml/Shell.qml:446
 msgid ""
 "If passcode is entered incorrectly, your phone will conduct a factory reset "
 "and all personal data will be deleted."
@@ -375,28 +351,17 @@ msgstr ""
 "If passcode is entered incorrectly, your phone will conduct a factory reset "
 "and all personal data will be deleted."
 
-#, qt-format
-#~ msgid "Hello %1"
-#~ msgstr "Hello %1"
+#~ msgid "Confirm"
+#~ msgstr "Confirm"
 
-#~ msgid "Hello"
-#~ msgstr "Hello"
+#~ msgid "Type or say a command"
+#~ msgstr "Type or say a command"
 
-#~ msgid "Swipe to unlock"
-#~ msgstr "Swipe to unlock"
+#~ msgid "Loading. Please Wait..."
+#~ msgstr "Loading. Please Wait..."
 
-#~ msgid "Please wait"
-#~ msgstr "Please wait"
+#~ msgid "Speak Now..."
+#~ msgstr "Speak Now..."
 
-#~ msgid "Too many incorrect attempts"
-#~ msgstr "Too many incorrect attempts"
-
-#, qt-format
-#~ msgid "Enter your %1"
-#~ msgstr "Enter your %1"
-
-#~ msgid "Enter your passphrase"
-#~ msgstr "Enter your passphrase"
-
-#~ msgid "Enter your passcode"
-#~ msgstr "Enter your passcode"
+#~ msgid "Speaking..."
+#~ msgstr "Speaking..."
