@@ -27,6 +27,7 @@ Rectangle {
 
     property QtObject indicatorsModel: null
     property int currentMenuIndex: -1
+    property var indicatorsMenu: null
     color: "#221e1c" // FIXME not in palette yet
 
     width: units.gu(40)
@@ -70,6 +71,7 @@ Rectangle {
                 busName: indicatorProperties.busName
                 actionsObjectPath: indicatorProperties.actionsObjectPath
                 menuObjectPath: indicatorProperties.menuObjectPath
+                indicatorsMenu: content.indicatorsMenu
             }
 
             onVisibleChanged: {

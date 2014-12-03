@@ -26,6 +26,7 @@ IndicatorBase {
     property string title: rootActionState.title
     property alias highlightFollowsCurrentItem : mainMenu.highlightFollowsCurrentItem
     readonly property alias factory: _factory
+    property var indicatorsMenu: null
 
     Indicators.UnityMenuModelStack {
         id: menuStack
@@ -152,6 +153,12 @@ IndicatorBase {
                 }
                 if (item.hasOwnProperty("menuIndex")) {
                     item.menuIndex = Qt.binding(function() { return modelIndex; });
+                }
+                if (item.hasOwnProperty("menuCount")) {
+                    item.menuCount = Qt.binding(function() { return mainMenu.count; });
+                }
+                if (item.hasOwnProperty("indicatorsMenu")) {
+                    item.indicatorsMenu = Qt.binding(function() { return main.indicatorsMenu; });
                 }
             }
 

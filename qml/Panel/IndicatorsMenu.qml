@@ -79,6 +79,7 @@ Showable {
         visible: root.unitProgress > 0
         enabled: contentEnabled
         currentMenuIndex: bar.currentItemIndex
+        indicatorsMenu: root
     }
 
     Handle {

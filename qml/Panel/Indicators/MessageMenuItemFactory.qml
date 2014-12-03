@@ -30,6 +30,8 @@ Loader {
     property var menuModel: null
     property QtObject menuData: null
     property int menuIndex: -1
+    property int menuCount: 0
+    property bool replied: false
 
     property bool selected: false
     signal menuSelected
@@ -48,6 +50,12 @@ Loader {
     }
     onMenuIndexChanged: {
         loadAttributes();
+    }
+    onMenuCountChanged: {
+        if (replied && menuCount == 0) {
+            indicatorsMenu.hide();
+            replied = false;
+        }
     }
 
     sourceComponent: loadMessage(actionsDescription)
@@ -165,6 +173,7 @@ Loader {
             }
             onReplied: {
                 replyAction.activate(value);
+                replied = true;
             }
             onTriggered: {
                 if (selected) {
