@@ -285,7 +285,7 @@ Item {
             compare(surface.width, phoneStage.width);
             compare(surface.height, phoneStage.height - phoneStage.maximizedAppTopMargin);
         }
-        
+
         function test_orientationChangeSentToFocusedApp() {
             phoneStage.orientation = Qt.PortraitOrientation;
             addApps(1);
