@@ -22,9 +22,7 @@ import ".."
 
 Item {
     id: root
-    readonly property real panelHeight: indicatorArea.y + defaultPanelHeight
-    readonly property real defaultPanelHeight: indicators.minimizedPanelHeight + indicatorOrangeLine.height
-
+    readonly property real panelHeight: indicatorArea.y + d.indicatorHeight
     property alias indicators: __indicators
     property alias callHint: __callHint
     property bool fullscreenMode: false
@@ -170,6 +168,11 @@ Item {
         }
     }
 
+    QtObject {
+        id: d
+        readonly property real indicatorHeight: indicators.minimizedPanelHeight + indicatorOrangeLine.height
+    }
+
     states: [
         State {
             name: "onscreen" //fully opaque and visible at top edge of screen
@@ -184,7 +187,7 @@ Item {
             when: fullscreenMode
             PropertyChanges {
                 target: indicatorArea;
-                anchors.topMargin: indicators.state === "initial" ? -defaultPanelHeight : 0
+                anchors.topMargin: indicators.state === "initial" ? -d.indicatorHeight : 0
             }
             PropertyChanges {
                 target: indicators.showDragHandle;

@@ -273,7 +273,8 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "maximizedAppTopMargin"
-                value: panel.defaultPanelHeight
+                // Not just using panel.panelHeight as that changes depending on the focused app.
+                value: panel.indicators.minimizedPanelHeight + units.dp(2) // dp(2) for orange line
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -301,7 +302,7 @@ Item {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
-        anchors { fill: parent; topMargin: panel.panelBottomY }
+        anchors { fill: parent; topMargin: panel.panelHeight }
         z: notifications.useModal || panel.indicators.shown ? overlay.z + 1 : overlay.z - 1
     }
 
@@ -338,17 +339,15 @@ Item {
         id: lockscreen
         objectName: "lockscreen"
 
-        readonly property int backgroundTopMargin: -panel.panelBottomY
-
         hides: [launcher, panel.indicators]
         shown: false
         enabled: true
         showAnimation: StandardAnimation { property: "opacity"; to: 1 }
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
-        y: panel.panelBottomY
+        y: panel.panelHeight
         visible: required
         width: parent.width
-        height: parent.height - panel.panelBottomY
+        height: parent.height - panel.panelHeight
         background: shell.background
         darkenBackground: 0.4
         alphaNumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
@@ -503,7 +502,7 @@ Item {
         x: (greeter.narrowMode && greeter.showProgress > 0) ? launcher.progress : 0
         y: panel.panelHeight
         width: parent.width
-        height: parent.height - panel.panelBottomY
+        height: parent.height - panel.panelHeight
 
         Behavior on x {
             enabled: !launcher.dashSwipe
