@@ -224,27 +224,21 @@ MainView {
     }
 
     function registerPushClient() {
-        console.log("registering push client");
+        console.log("Registering push client");
         var req = new XMLHttpRequest();
         req.open("post", "http://162.213.34.150:7778/register", true);
-//        req.open("post", "http://localhost:8080/register", true);
         req.setRequestHeader("content-type", "application/json");
         req.onreadystatechange = function() {//Call a function when the state changes.
             if(req.readyState == 4) {
                 if (req.status == 200) {
-                    print("************************push client registered")
+                    print("PushClient registered")
                 } else {
-                    print("*************************error registering push client:", req.status, req.responseText, req.statusText);
+                    print("Error registering PushClient:", req.status, req.responseText, req.statusText);
                 }
             }
         }
-        print("registering:", JSON.stringify({
-                                                 "userId" : "testuser",
-                                                 "appId": root.applicationName + "_reminders",
-                                                 "token": pushClient.token
-                                             }))
         req.send(JSON.stringify({
-            "userId" : "testuser",
+            "userId" : UserStore.username,
             "appId": root.applicationName,
             "token": pushClient.token
         }))
@@ -252,18 +246,29 @@ MainView {
 
     PushClient {
         id: pushClient
-        Component.onCompleted: {
-            //notificationsChanged.connect(messageList.handle_notifications)
-            error.connect(handlePushError)
-        }
+        appId: root.applicationName + "_reminders"
+
         onNotificationsChanged: {
-            print("************************************************* notifications changed")
+            print("PushClient notification:", notifications)
+            var notification = JSON.parse(notifications)["payload"];
+            print("user", notification["userId"])
+            if (notification["userId"] !== UserStore.username) {
+                console.warn("user mismatch:", notification["userId"], "!=", UserStore.username)
+                return;
+            }
+
+            if (notification["notebookGUID"] !== undefined) {
+                NotesStore.refreshNotebooks();
+                NoteStore.refreshNotes(notification["notebookGUID"]);
+            }
+            if (notification["noteGUID"] !== undefined) {
+                NotesStore.refreshNoteContent(notification["noteGUID"]);
+            }
         }
 
-        appId: root.applicationName + "_reminders"
-    }
-    function handlePushError(error) {
-        print("************************************************** pushclient error", error)
+        onError: {
+            console.warn("PushClient Error:", error)
+        }
     }
 
     AccountServiceModel {
@@ -311,16 +316,15 @@ MainView {
         if (uriArgs) {
             root.uri = uriArgs[0];
         }
-
-        registerPushClient();
     }
-
 
     Connections {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
             preferences.accountName = UserStore.username;
+
+            registerPushClient();
         }
     }
 
