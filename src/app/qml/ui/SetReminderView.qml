@@ -29,49 +29,75 @@ Item {
     property var note
 
     ColumnLayout {
-        anchors { top: parent.top; topMargin: units.gu(1); horizontalCenter: parent.horizontalCenter }
+        anchors { left: parent.left; top: parent.top; right: parent.right; margins: units.gu(1) }
         spacing: units.gu(1)
 
         Label {
             text: i18n.tr("Select date and time for the reminder:")
             Layout.fillWidth: true
+            wrapMode: Text.WordWrap
         }
 
         DatePicker {
             id: datePicker
             date: note.hasReminderTime ? note.reminderTime : new Date()
+            anchors.horizontalCenter: parent.horizontalCenter
         }
 
         DatePicker {
             id: timePicker
             mode: "Hours|Minutes"
             date: note.hasReminderTime ? note.reminderTime : new Date()
+            anchors.horizontalCenter: parent.horizontalCenter
         }
-
-        Button {
-            Layout.fillWidth: true
-            text: i18n.tr("Set reminder")
-            color: UbuntuColors.lightGrey
-            onClicked: {
-                note.reminder = true;
-                var date = datePicker.date
-                var time = timePicker.date
-                date.setHours(time.getHours());
-                date.setMinutes(time.getMinutes());
-                note.reminderTime = date;
-                print("set reminder time to", Qt.formatDate(date))
-                NotesStore.saveNote(note.guid)
-                pageStack.pop();
+        RowLayout {
+            spacing: units.gu(1)
+            CheckBox {
+                id: reminderDoneCheckbox
+                checked: note.reminderDone
+                onCheckedChanged: {
+                    note.reminderDone = checked;
+                }
+            }
+            Label {
+                //TRANSLATORS: A checkbox with marks the reminder as done
+                text: i18n.tr("Reminder done")
+                MouseArea {
+                    achors.fill: parent
+                    onClicked: reminderDoneCheckbox.checked = !reminderDoneCheckbox.checked
+                }
             }
         }
 
-        Button {
-            text: i18n.tr("Clear reminder")
+        RowLayout {
             Layout.fillWidth: true
-            onClicked: {
-                note.reminder = false;
-                NotesStore.saveNote(note.guid);
-                pageStack.pop();
+            Button {
+                // TRANSLATORS: Button that deletes a reminder
+                text: i18n.tr("Delete")
+                Layout.fillWidth: true
+                color: UbuntuColors.red
+                onClicked: {
+                    note.reminder = false;
+                    NotesStore.saveNote(note.guid);
+                    pageStack.pop();
+                }
+            }
+            Button {
+                Layout.fillWidth: true
+                // TRANSLATORS: Button that saves a reminder
+                text: i18n.tr("Save")
+                color: UbuntuColors.green
+                onClicked: {
+                    note.reminder = true;
+                    var date = datePicker.date
+                    var time = timePicker.date
+                    date.setHours(time.getHours());
+                    date.setMinutes(time.getMinutes());
+                    note.reminderTime = date;
+                    print("set reminder time to", Qt.formatDate(date))
+                    NotesStore.saveNote(note.guid)
+                    pageStack.pop();
+                }
             }
         }
     }

@@ -13,6 +13,10 @@
         "evernote-account-plugin": {
             "account-qml-plugin": "@ACCOUNT_QML_PLUGIN_DIR@/evernote",
             "account-provider": "@ACCOUNT_PROVIDER_DIR@/com.ubuntu.reminders_evernote-account-plugin.provider"
+        },
+        "pushHelper": {
+            "apparmor": "push-helper.apparmor",
+            "push-helper": "push-helper.json"
         }
     },
     "maintainer": "Ubuntu App Cats <ubuntu-touch-coreapps@lists.launchpad.net>",

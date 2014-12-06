@@ -1,0 +1,3 @@
+{
+    "exec": "lib/arm-linux-gnueabihf/bin/push-helper"
+}

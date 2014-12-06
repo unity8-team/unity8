@@ -25,6 +25,7 @@ import "ui"
 import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
 import Ubuntu.OnlineAccounts.Client 0.1
+import Ubuntu.PushNotifications 0.1
 
 MainView {
     id: root
@@ -222,6 +223,54 @@ MainView {
         }
     }
 
+    function registerPushClient() {
+        console.log("Registering push client");
+        var req = new XMLHttpRequest();
+        req.open("post", "http://162.213.34.150:7778/register", true);
+        req.setRequestHeader("content-type", "application/json");
+        req.onreadystatechange = function() {//Call a function when the state changes.
+            if(req.readyState == 4) {
+                if (req.status == 200) {
+                    print("PushClient registered")
+                } else {
+                    print("Error registering PushClient:", req.status, req.responseText, req.statusText);
+                }
+            }
+        }
+        req.send(JSON.stringify({
+            "userId" : UserStore.username,
+            "appId": root.applicationName,
+            "token": pushClient.token
+        }))
+    }
+
+    PushClient {
+        id: pushClient
+        appId: root.applicationName + "_reminders"
+
+        onNotificationsChanged: {
+            print("PushClient notification:", notifications)
+            var notification = JSON.parse(notifications)["payload"];
+            print("user", notification["userId"])
+            if (notification["userId"] !== UserStore.username) {
+                console.warn("user mismatch:", notification["userId"], "!=", UserStore.username)
+                return;
+            }
+
+            if (notification["notebookGUID"] !== undefined) {
+                NotesStore.refreshNotebooks();
+                NoteStore.refreshNotes(notification["notebookGUID"]);
+            }
+            if (notification["noteGUID"] !== undefined) {
+                NotesStore.refreshNoteContent(notification["noteGUID"]);
+            }
+        }
+
+        onError: {
+            console.warn("PushClient Error:", error)
+        }
+    }
+
     AccountServiceModel {
         id: accounts
         applicationId: "com.ubuntu.reminders_reminders"
@@ -246,6 +295,7 @@ MainView {
                 EvernoteConnection.clearToken();
             }
             EvernoteConnection.token = reply.AccessToken;
+            print("token is:", EvernoteConnection.token)
         }
         onAuthenticationError: {
             console.log("Authentication failed, code " + error.code)
@@ -274,6 +324,8 @@ MainView {
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
             preferences.accountName = UserStore.username;
+
+            registerPushClient();
         }
     }
 
