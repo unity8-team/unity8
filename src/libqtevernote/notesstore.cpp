@@ -25,6 +25,7 @@
 #include "note.h"
 #include "tag.h"
 #include "utils/enmldocument.h"
+#include "utils/organizeradapter.h"
 
 #include "jobs/fetchnotesjob.h"
 #include "jobs/fetchnotebooksjob.h"
@@ -62,6 +63,9 @@ NotesStore::NotesStore(QObject *parent) :
     qRegisterMetaType<std::vector<evernote::edam::Tag> >("std::vector<evernote::edam::Tag>");
     qRegisterMetaType<evernote::edam::Tag>("evernote::edam::Tag");
 
+    qDebug() << "creating organizer";
+    m_organizerAdapter = new OrganizerAdapter(this);
+    qDebug() << "done";
 }
 
 NotesStore *NotesStore::instance()
@@ -340,6 +344,7 @@ void NotesStore::untagNote(const QString &noteGuid, const QString &tagGuid)
 
 void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 {
+    qDebug() << "refreshing notes";
     if (EvernoteConnection::instance()->token().isEmpty()) {
         clear();
         emit countChanged();
@@ -354,12 +359,7 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
-        refreshNotes(filterNotebookGuid, results.startIndex + results.notes.size());
-    } else {
-        m_loading = false;
-        emit loadingChanged();
-    }
+    qDebug() << "fetchnoteresult:" << results.notes.size();
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
@@ -472,6 +472,14 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
         }
     }
+
+    if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
+        refreshNotes(filterNotebookGuid, results.startIndex + results.notes.size());
+    } else {
+        m_organizerAdapter->startSync();
+        m_loading = false;
+        emit loadingChanged();
+    }
 }
 
 void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what, EvernoteConnection::JobPriority priority)
@@ -505,7 +513,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
 
     // Notes are fetched without resources by default. if we discover one or more resources where we don't have
-    // data in the cache, just refresh the note again with resource data.
+    // data in the cache, let's refresh the note again with resource data.
     bool refreshWithResourceData = false;
 
     qDebug() << "got note content" << note->guid() << (what == FetchNoteJob::LoadContent ? "content" : "image") << result.resources.size();
@@ -712,6 +720,8 @@ void NotesStore::saveNote(const QString &guid)
     SaveNoteJob *job = new SaveNoteJob(note, this);
     connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
     EvernoteConnection::instance()->enqueue(job);
+
+    m_organizerAdapter->updateReminder(guid);
 }
 
 void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)

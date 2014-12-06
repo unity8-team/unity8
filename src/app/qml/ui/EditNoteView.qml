@@ -622,6 +622,14 @@ Item {
                 }
             }
 
+            RtfButton {
+                iconName: note.reminder ? "reminder" : "reminder-new"
+                height: parent.height
+                width: height
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: root.note});
+                }
+            }
 
 // TextEdit can't display horizontal lines yet :/
 // https://bugreports.qt-project.org/browse/QTBUG-42545

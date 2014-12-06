@@ -1,7 +1,10 @@
 {
     "template": "ubuntu-push-helper",
     "policy_groups": [
-        "push-notification-client"
+        "push-notification-client",
+        "accounts",
+        "networking",
+        "calendar"
     ],
     "policy_version": 1.2
 }

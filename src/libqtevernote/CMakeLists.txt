@@ -34,6 +34,7 @@ set(qtevernote_SRCS
     resourceimageprovider.cpp
     utils/enmldocument.cpp
     utils/textformat.cpp
+    utils/organizeradapter.cpp
 )
 
 add_library(qtevernote STATIC
@@ -42,5 +43,5 @@ add_library(qtevernote STATIC
 
 target_link_libraries(qtevernote evernote-sdk-cpp libthrift)
 add_dependencies(qtevernote evernote-sdk-cpp libthrift)
-qt5_use_modules(qtevernote Gui Qml Quick)
+qt5_use_modules(qtevernote Gui Qml Quick Organizer)
 

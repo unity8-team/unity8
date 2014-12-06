@@ -59,7 +59,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
-    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
+//    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
     // Don't forget to update clone() if you add properties!
 
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
@@ -134,7 +134,6 @@ public:
     void setUpdateSequenceNumber(quint32 updateSequenceNumber);
 
     bool isCached() const;
-    bool loaded() const;
     bool loading() const;
 
     QStringList resourceUrls() const;

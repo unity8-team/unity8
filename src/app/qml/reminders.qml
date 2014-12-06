@@ -295,6 +295,7 @@ MainView {
                 EvernoteConnection.clearToken();
             }
             EvernoteConnection.token = reply.AccessToken;
+            print("token is:", EvernoteConnection.token)
         }
         onAuthenticationError: {
             console.log("Authentication failed, code " + error.code)

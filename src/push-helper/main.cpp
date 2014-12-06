@@ -1,24 +1,32 @@
-#include <QCoreApplication>
+#include "core.h"
 
+#include <QCoreApplication>
 #include <QFile>
 #include <QStandardPaths>
-
 #include <QDebug>
 
 int main(int argc, char* argv[])
 {
+    qDebug() << "Starting reminders app push helper aa";
     QCoreApplication a(argc, argv);
+    QCoreApplication::setApplicationName("com.ubuntu.reminders");
+    qDebug() << "bb";
 
-    QFile f("/home/phablet/.cache/com.ubuntu.reminders/push-helper-test-file.txt");
+    QFile inputFile(a.arguments().at(1));
+    inputFile.open(QFile::ReadOnly);
 
-    qDebug() << "writing to file:" << f.fileName();
-    f.open(QFile::WriteOnly);
+    qDebug() << "cc";
 
-    QFile f1(a.arguments().at(1));
-    f1.open(QFile::ReadOnly);
+    QByteArray data = inputFile.readAll();
 
-    QByteArray data;
-    data = QString("push-helper called with args %1\n").arg(a.arguments().join(", ")).toUtf8();
-    f.write(data);
-    f.write(f1.readAll());
+    qDebug() << "dd";
+
+    Core core;
+    QObject::connect(&core, &Core::finished, &a, &QCoreApplication::exit);
+    core.process(data);
+
+    a.exec();
+
+    qDebug() << "exiting...";
+    // Do we want to fire a notification? Here's the place, by writing to the file at args[2]
 }

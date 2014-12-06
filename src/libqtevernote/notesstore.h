@@ -43,6 +43,7 @@
 class Notebook;
 class Note;
 class Tag;
+class OrganizerAdapter;
 
 using namespace apache::thrift::transport;
 
@@ -190,6 +191,8 @@ private:
     QHash<QString, Note*> m_notesHash;
     QHash<QString, Notebook*> m_notebooksHash;
     QHash<QString, Tag*> m_tagsHash;
+
+    OrganizerAdapter *m_organizerAdapter;
 };
 
 #endif // NOTESSTORE_H

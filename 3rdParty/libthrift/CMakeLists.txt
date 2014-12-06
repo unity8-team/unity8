@@ -40,4 +40,4 @@ SET(libthrift_SRCS
 )
 
 add_library(libthrift STATIC ${libthrift_SRCS})
-target_link_libraries(libthrift ${SSL_LDFLAGS})
+target_link_libraries(libthrift pthread ${SSL_LDFLAGS})
