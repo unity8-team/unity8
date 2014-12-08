@@ -1,3 +1,17 @@
+unity8 (8.01.1+15.04.20141205~rtm-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ Michael Terry ]
+  * Make sure that there is no window of opportunity for swiping away
+    greeter before the lockscreen appears. (LP: #1395075)
+
+  [ Michael Zanetti ]
+  * Keep applications suspended while lockscreen is shown (LP: #1378126)
+
+  [ Mirco Müller ]
+  * Make sure non-square icons are not cropped. (LP: #1378417)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Fri, 05 Dec 2014 17:35:05 +0100
+
 unity8 (8.01.1+15.04.20141112.1~rtm-0ubuntu1) 14.09; urgency=medium
 
   [ Michael Zanetti ]
