@@ -65,6 +65,8 @@ protected:
 
 private:
     QString m_token;
+
+    friend class EvernoteConnection;
 };
 
 #endif // EVERNOTEJOB_H

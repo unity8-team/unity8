@@ -31,7 +31,7 @@ Empty {
     property string content
     property string resource
     property string tags
-    property string notebookColor: preferences.colorForNotebook(model.guid)
+    property string notebookColor
 
     showDivider: false;
 

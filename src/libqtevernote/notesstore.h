@@ -39,6 +39,7 @@
 
 #include <QAbstractListModel>
 #include <QHash>
+#include <QSettings>
 
 class Notebook;
 class Note;
@@ -50,6 +51,11 @@ using namespace apache::thrift::transport;
 class NotesStore : public QAbstractListModel
 {
     Q_OBJECT
+    // Setting the username will cause notes to be loaded from cache
+    // If you want to load the local cache only (not associated with an Evernote account), make sure to set this to ""
+    // Note that if you use EvernoteConnection to log in (by setting a token obtained from OA) this username
+    // will be changed to the one used to log in. Also you won't be able to change this as long as EvernoteConnection is logged in.
+    Q_PROPERTY(QString username READ username WRITE setUsername NOTIFY usernameChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(bool notebooksLoading READ notebooksLoading NOTIFY notebooksLoadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
@@ -78,11 +84,15 @@ public:
         RoleTagline,
         RoleResourceUrls,
         RoleReminderSorting,
-        RoleTagGuids
+        RoleTagGuids,
+        RoleDeleted
     };
 
     ~NotesStore();
     static NotesStore *instance();
+
+    QString username() const;
+    Q_SLOT void setUsername(const QString &username);
 
     bool loading() const;
     bool notebooksLoading() const;
@@ -102,8 +112,8 @@ public:
     QList<Note*> notes() const;
 
     Q_INVOKABLE Note* note(const QString &guid);
-    Q_INVOKABLE void createNote(const QString &title, const QString &notebookGuid = QString(), const QString &richTextContent = QString());
-    void createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content);
+    Q_INVOKABLE Note* createNote(const QString &title, const QString &notebookGuid = QString(), const QString &richTextContent = QString());
+    Note *createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content);
     Q_INVOKABLE void saveNote(const QString &guid);
     Q_INVOKABLE void deleteNote(const QString &guid);
     Q_INVOKABLE void findNotes(const QString &searchWords);
@@ -131,7 +141,7 @@ public slots:
     void refreshTags();
 
 signals:
-    void tokenChanged();
+    void usernameChanged();
     void loadingChanged();
     void notebooksLoadingChanged();
     void tagsLoadingChanged();
@@ -158,7 +168,7 @@ private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);
     void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
     void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what);
-    void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
+    void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Note &result);
     void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
     void deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
@@ -168,12 +178,18 @@ private slots:
     void createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result);
     void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
+    void syncToCacheFile(Note *note);
+    void syncToCacheFile(Notebook *notebook);
+    void loadFromCacheFile();
+
     void emitDataChanged();
     void clear();
 
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;
+
+    QString m_username;
 
     bool m_loading;
     bool m_notebooksLoading;
@@ -192,7 +208,12 @@ private:
     QHash<QString, Notebook*> m_notebooksHash;
     QHash<QString, Tag*> m_tagsHash;
 
+    // To keep track of notes that might have disappeared from the server
+    QHash<QString, Note*> m_unhandledNotes;
+
     OrganizerAdapter *m_organizerAdapter;
+
+    QString m_cacheFile;
 };
 
 #endif // NOTESSTORE_H

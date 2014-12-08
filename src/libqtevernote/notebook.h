@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QSettings>
 
 class Notebook : public QObject
 {
@@ -38,7 +39,10 @@ class Notebook : public QObject
     // Don't forget to update clone() if you add new properties
 
 public:
-    explicit Notebook(QString guid, QObject *parent = 0);
+    explicit Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent = 0);
+
+    quint32 updateSequenceNumber() const;
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
 
     QString guid() const;
 
@@ -71,11 +75,19 @@ private slots:
     void noteRemoved(const QString &noteGuid, const QString &notebookGuid);
 
 private:
+    void syncToInfoFile();
+
+private:
+    quint32 m_updateSequenceNumber;
     QString m_guid;
     QString m_name;
     int m_noteCount;
     bool m_published;
     QDateTime m_lastUpdated;
+
+    QSettings m_infoFile;
+
+    friend class NotesStore;
 };
 
 #endif // NOTEBOOK_H

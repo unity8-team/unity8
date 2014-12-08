@@ -55,12 +55,6 @@ PageWithBottomEdge {
     signal openSearch()
     signal editNote(var note)
 
-    onActiveChanged: {
-        if (active) {
-            NotesStore.refreshNotes();
-        }
-    }
-
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
@@ -79,16 +73,6 @@ PageWithBottomEdge {
                 iconName: "search"
                 onTriggered: {
                     root.openSearch();
-                }
-            }
-        }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Refresh")
-                iconName: "reload"
-                onTriggered: {
-                    NotesStore.refreshNotes();
                 }
             }
         }

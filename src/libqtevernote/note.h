@@ -37,10 +37,10 @@ class Note : public QObject
     Q_OBJECT
 
     // Don't forget to update clone() if you add properties!
-    Q_PROPERTY(QString guid READ guid CONSTANT)
+    Q_PROPERTY(QString guid READ guid NOTIFY guidChanged)
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
-    Q_PROPERTY(QDateTime created READ created CONSTANT)
-    Q_PROPERTY(QString createdString READ createdString CONSTANT)
+    Q_PROPERTY(QDateTime created READ created NOTIFY createdChanged)
+    Q_PROPERTY(QString createdString READ createdString NOTIFY createdChanged)
     Q_PROPERTY(QDateTime updated READ updated WRITE setUpdated NOTIFY updatedChanged)
     Q_PROPERTY(QString updatedString READ updatedString)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
@@ -59,6 +59,7 @@ class Note : public QObject
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
+    Q_PROPERTY(bool deleted READ deleted NOTIFY deletedChanged)
 //    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
     // Don't forget to update clone() if you add properties!
 
@@ -66,16 +67,18 @@ class Note : public QObject
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
 
 public:
-    explicit Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent = 0);
+    explicit Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Note();
     Note* clone();
 
     QString guid() const;
+    void setGuid(const QString &guid);
 
     QString notebookGuid() const;
     void setNotebookGuid(const QString &notebookGuid);
 
     QDateTime created() const;
+    void setCreated(const QDateTime &created);
     QString createdString() const;
 
     QDateTime updated() const;
@@ -127,6 +130,8 @@ public:
     QDateTime reminderDoneTime() const;
     void setReminderDoneTime(const QDateTime &reminderDoneTime);
 
+    bool deleted() const;
+
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
@@ -152,6 +157,8 @@ public slots:
     void remove();
 
 signals:
+    void guidChanged();
+    void createdChanged();
     void titleChanged();
     void updatedChanged();
     void notebookGuidChanged();
@@ -164,13 +171,17 @@ signals:
     void isSearchResultChanged();
     void updateSequenceNumberChanged();
     void loadedChanged();
+    void deletedChanged();
 
     void loadingChanged();
 
 private:
     void setLoading(bool loading);
+    void setDeleted(bool deleted);
 
     void syncToCacheFile();
+    void syncToInfoFile();
+    void deleteFromCache();
 
     // const because we want to load on demand in getters. Keep this private!
     void load() const;
@@ -188,11 +199,12 @@ private:
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
+    bool m_deleted;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
     quint32 m_updateSequenceNumber;
     mutable QFile m_cacheFile;
-    QSettings m_infoFile;
+    QString m_infoFile;
 
     bool m_loading;
     mutable bool m_loaded;

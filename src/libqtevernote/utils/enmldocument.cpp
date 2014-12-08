@@ -164,7 +164,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                         url.setQuery(arguments);
                         writer.writeAttribute("src", url.toString());
                     } else if (type  == TypeHtml) {
-                        QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + mediaType.split('/').last();
+                        QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/" + hash + "." + mediaType.split('/').last();
                         writer.writeAttribute("src", imagePath);
                     }
 

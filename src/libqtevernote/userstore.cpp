@@ -78,5 +78,5 @@ void UserStore::fetchUsernameJobDone(EvernoteConnection::ErrorCode errorCode, co
     }
 
     m_username = result;
-    emit usernameChanged();
+    emit usernameChanged(m_username);
 }

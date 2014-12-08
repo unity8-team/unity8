@@ -141,19 +141,9 @@ Page {
                 }
             }
 
-            ActivityIndicator {
-                anchors.centerIn: parent
-                running: notebooks.loading
-                visible: running
-            }
-
-            Label {
-                anchors.centerIn: parent
-                width: parent.width - units.gu(4)
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                visible: !notebooks.loading && notebooks.error
-                text: notebooks.error
+            BouncingProgressBar {
+                anchors.top: parent.top
+                visible: notebooks.loading
             }
 
             Scrollbar {

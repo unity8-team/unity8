@@ -64,7 +64,7 @@ void EvernoteJob::run()
         try {
             if (retry > 0) {
                 // If this is not the first try, reset the connection first.
-                qWarning() << "Resetting connection...";
+                qWarning() << "Resetting connection in" << metaObject()->className();
                 resetConnection();
             }
             retry++;
@@ -73,19 +73,19 @@ void EvernoteJob::run()
             emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
             done = true;
         } catch (const TTransportException & e) {
-            qWarning() << "Got a transport exception:" << e.what();
+            qWarning() << "Got a transport exception in" << metaObject()->className() << e.what();
             if (retry >= maxTries)
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
         } catch (const TApplicationException &e) {
-            qWarning() << "Cannot reestablish connection:" << e.what();
+            qWarning() << "Cannot reestablish connection in " << metaObject()->className() << e.what();
             if (retry >= maxTries)
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
         } catch (const evernote::edam::EDAMUserException &e) {
-            qWarning() << "EDAMUserException" << e.what();
+            qWarning() << "EDAMUserException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.parameter);
             if (retry >= maxTries)
                 emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
         } catch (const evernote::edam::EDAMSystemException &e) {
-            qWarning() << "EDAMSystemException" << e.what() << e.errorCode << QString::fromStdString(e.message);
+            qWarning() << "EDAMSystemException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.message);
             if (retry >= maxTries) {
                 QString message;
                 EvernoteConnection::ErrorCode errorCode;
@@ -113,7 +113,7 @@ void EvernoteJob::run()
                 emitJobDone(errorCode, message);
             }
         } catch (const evernote::edam::EDAMNotFoundException &e) {
-            qWarning() << "EDAMNotFoundException" << e.what();
+            qWarning() << "EDAMNotFoundException in" << metaObject()->className() << e.what();
             if (retry >= maxTries)
                 emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
         }

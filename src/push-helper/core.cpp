@@ -25,6 +25,7 @@ Core::Core(QObject *parent):
 
     EvernoteConnection::instance()->setToken("S=s358:U=39eb980:E=1516e9a3575:C=14a16e90690:P=185:A=canonicalis:V=2:H=737f36850d4943e61ff2fcf7b4c809e2");
     EvernoteConnection::instance()->setHostname("www.evernote.com");
+    EvernoteConnection::instance()->connectToEvernote();
 
     qDebug() << "Core created";
 }

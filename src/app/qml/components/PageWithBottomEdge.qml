@@ -111,7 +111,6 @@ Page {
         if (edgeLoader.status === Loader.Ready) {
             edgeLoader.item.active = true
 
-            NotesStore.createNote("Untitled", filterNotebookGuid);
 
             if (edgeLoader.item.flickable) {
                 edgeLoader.item.flickable.contentY = -page.header.height
@@ -119,6 +118,9 @@ Page {
             }
             if (edgeLoader.item.ready)
                 edgeLoader.item.ready()
+
+
+            NotesStore.createNote("Untitled", filterNotebookGuid);
         }
     }
 

@@ -110,6 +110,9 @@ void SaveNoteJob::startJob()
     }
     note.__isset.resources = true;
 
+    note.active = !m_note->deleted();
+    note.__isset.active = m_note->deleted();
+
     client()->updateNote(m_resultNote, token().toStdString(), note);
 }
 

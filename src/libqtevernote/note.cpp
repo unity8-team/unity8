@@ -32,32 +32,42 @@
 #include <QCryptographicHash>
 #include <QFile>
 
-Note::Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent) :
+Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
-    m_guid(guid),
-    m_created(created),
     m_isSearchResult(false),
     m_updateSequenceNumber(updateSequenceNumber),
-    m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + guid + "_" + QString::number(updateSequenceNumber) + ".info", QSettings::IniFormat),
+    m_deleted(false),
     m_loading(false),
     m_loaded(false)
 {
-    m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + guid + "_" + QString::number(updateSequenceNumber) + ".enml");
+    setGuid(guid);
+    m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml");
 
-    m_infoFile.beginGroup("resources");
-    foreach (const QString &hash, m_infoFile.childGroups()) {
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    m_created = infoFile.value("created").toDateTime();
+    m_title = infoFile.value("title").toString();
+    m_updated = infoFile.value("updated").toDateTime();
+    m_notebookGuid = infoFile.value("notebookGuid").toString();
+    m_tagGuids = infoFile.value("tagGuids").toStringList();
+    m_reminderOrder = infoFile.value("reminderOrder").toULongLong();
+    m_reminderTime = infoFile.value("reminderTime").toDateTime();
+    m_reminderDoneTime = infoFile.value("reminderDoneTime").toDateTime();
+    m_deleted = infoFile.value("deleted").toBool();
+
+    infoFile.beginGroup("resources");
+    foreach (const QString &hash, infoFile.childGroups()) {
         if (Resource::isCached(hash)) {
-            m_infoFile.beginGroup(hash);
+            infoFile.beginGroup(hash);
             // Assuming the resource is already cached...
-            addResource(QByteArray(), hash, m_infoFile.value("fileName").toString(), m_infoFile.value("type").toString());
-            m_infoFile.endGroup();
+            addResource(QByteArray(), hash, infoFile.value("fileName").toString(), infoFile.value("type").toString());
+            infoFile.endGroup();
         } else {
             // uh oh... have a resource description without file... reset sequence number to indicate we need a sync
             qWarning() << "Have a resource description but no resource file for it";
             m_updateSequenceNumber = 0;
         }
     }
-    m_infoFile.endGroup();
+    infoFile.endGroup();
 }
 
 Note::~Note()
@@ -73,6 +83,33 @@ bool Note::loading() const
 QString Note::guid() const
 {
     return m_guid;
+}
+
+void Note::setGuid(const QString &guid)
+{
+    if (m_guid != guid) {
+
+        bool syncToFile = false;
+        if (!m_infoFile.isEmpty()) {
+            QFile ifile(m_infoFile);
+            ifile.remove();
+
+            syncToFile = true;
+        }
+
+        m_guid = guid;
+        if (m_cacheFile.exists()) {
+            qDebug() << "renaming cachefile from" << m_cacheFile.fileName() << "to" << QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml";
+            m_cacheFile.rename(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml");
+        }
+        m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".info";
+
+        if (syncToFile) {
+            syncToInfoFile();
+            syncToCacheFile();
+        }
+        emit guidChanged();
+    }
 }
 
 QString Note::notebookGuid() const
@@ -91,6 +128,14 @@ void Note::setNotebookGuid(const QString &notebookGuid)
 QDateTime Note::created() const
 {
     return m_created;
+}
+
+void Note::setCreated(const QDateTime &created)
+{
+    if (m_created != created) {
+        m_created = created;
+        emit createdChanged();
+    }
 }
 
 QString Note::createdString() const
@@ -344,6 +389,21 @@ void Note::setReminderDoneTime(const QDateTime &reminderDoneTime)
     }
 }
 
+bool Note::deleted() const
+{
+    return m_deleted;
+}
+
+void Note::setDeleted(bool deleted)
+{
+    qDebug() << "note" << this << "isDelted:" << m_deleted << "setting to" << deleted;
+    if (m_deleted != deleted) {
+        qDebug() << "setting m_deleted to to" << deleted;
+        m_deleted = deleted;
+        emit deletedChanged();
+    }
+}
+
 bool Note::isSearchResult() const
 {
     return m_isSearchResult;
@@ -366,15 +426,6 @@ void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
 {
     if (m_updateSequenceNumber != updateSequenceNumber) {
         m_updateSequenceNumber = updateSequenceNumber;
-
-        // If there is an old cache file, drop it
-        if (m_cacheFile.exists()) {
-            m_cacheFile.remove();
-        }
-
-        // Write new cache file
-        m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + m_guid + "_" + QString::number(updateSequenceNumber) + ".enml");
-        syncToCacheFile();
     }
 }
 
@@ -413,12 +464,13 @@ Resource* Note::addResource(const QByteArray &data, const QString &hash, const Q
     m_resources.insert(hash, resource);
     emit resourcesChanged();
 
-    m_infoFile.beginGroup("resources");
-    m_infoFile.beginGroup(hash);
-    m_infoFile.setValue("fileName", fileName);
-    m_infoFile.setValue("type", type);
-    m_infoFile.endGroup();
-    m_infoFile.endGroup();
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    infoFile.beginGroup("resources");
+    infoFile.beginGroup(hash);
+    infoFile.setValue("fileName", fileName);
+    infoFile.setValue("type", type);
+    infoFile.endGroup();
+    infoFile.endGroup();
 
     return resource;
 }
@@ -466,7 +518,8 @@ void Note::removeTag(const QString &tagGuid)
 
 Note *Note::clone()
 {
-    Note *note = new Note(m_guid, m_created, m_updateSequenceNumber);
+    Note *note = new Note(m_guid, m_updateSequenceNumber);
+    note->setCreated(m_created);
     note->setNotebookGuid(m_notebookGuid);
     note->setTitle(m_title);
     note->setUpdated(m_updated);
@@ -477,6 +530,7 @@ Note *Note::clone()
     note->setIsSearchResult(m_isSearchResult);
     note->setTagGuids(m_tagGuids);
     note->setUpdateSequenceNumber(m_updateSequenceNumber);
+    note->setDeleted(m_deleted);
     foreach (Resource *resource, m_resources) {
         note->addResource(resource->data(), resource->hash(), resource->fileName(), resource->type());
     }
@@ -507,6 +561,23 @@ void Note::setLoading(bool loading)
     }
 }
 
+void Note::syncToInfoFile()
+{
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    infoFile.setValue("created", m_created);
+    infoFile.setValue("title", m_title);
+    infoFile.setValue("updated", m_updated);
+
+    infoFile.setValue("notebookGuid", m_notebookGuid);
+    infoFile.setValue("tagGuids", m_tagGuids);
+    infoFile.setValue("reminderOrder", m_reminderOrder);
+    infoFile.setValue("reminderTime", m_reminderTime);
+    infoFile.setValue("reminderDoneTime", m_reminderDoneTime);
+    infoFile.setValue("deleted", m_deleted);
+
+    qDebug() << "synced note to disk:" << m_guid << m_notebookGuid;
+}
+
 void Note::syncToCacheFile()
 {
     if (m_cacheFile.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -534,4 +605,15 @@ void Note::loadFromCacheFile() const
         m_cacheFile.close();
     }
     m_loaded = true;
+}
+
+void Note::deleteFromCache()
+{
+    if (m_cacheFile.exists()) {
+        m_cacheFile.remove();
+    }
+    QFile f(m_infoFile);
+    if (f.exists()) {
+        f.remove();
+    }
 }

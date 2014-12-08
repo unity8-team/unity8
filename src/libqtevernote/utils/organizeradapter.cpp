@@ -31,6 +31,7 @@ OrganizerAdapter::OrganizerAdapter(QObject *parent):
         envManager = ALARM_MANAGER_FALLBACK;
     }
     qDebug() << "creating manager" << qgetenv("UID") << QOrganizerManager::availableManagers() << envManager;
+    qDebug() << "XDGDIRS:" << qgetenv("XDG_RUNTIME_DIR");
     m_manager = new QOrganizerManager(envManager);
     qDebug() << "done creating manager";
     m_manager->setParent(this);

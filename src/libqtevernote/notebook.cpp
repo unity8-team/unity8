@@ -25,13 +25,21 @@
 #include <libintl.h>
 
 #include <QDebug>
+#include <QStandardPaths>
 
-Notebook::Notebook(QString guid, QObject *parent) :
+Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
+    m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
     m_noteCount(0),
-    m_published(false)
+    m_published(false),
+    m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/notebook-" + guid + ".info", QSettings::IniFormat)
 {
+
+    m_name = m_infoFile.value("name").toString();
+    m_published = m_infoFile.value("published").toBool();
+    m_lastUpdated = m_infoFile.value("lastUpdated").toDateTime();
+
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
             m_noteCount++;
@@ -39,6 +47,18 @@ Notebook::Notebook(QString guid, QObject *parent) :
     }
     connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Notebook::noteAdded);
     connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notebook::noteRemoved);
+}
+
+quint32 Notebook::updateSequenceNumber() const
+{
+    return m_updateSequenceNumber;
+}
+
+void Notebook::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+{
+    if (updateSequenceNumber != m_updateSequenceNumber) {
+        m_updateSequenceNumber = updateSequenceNumber;
+    }
 }
 
 QString Notebook::guid() const
@@ -118,7 +138,7 @@ QString Notebook::lastUpdatedString() const
 
 Notebook *Notebook::clone()
 {
-    Notebook *notebook = new Notebook(m_guid);
+    Notebook *notebook = new Notebook(m_guid, m_updateSequenceNumber);
     notebook->setName(m_name);
     notebook->setLastUpdated(m_lastUpdated);
     notebook->setPublished(m_published);
@@ -147,4 +167,11 @@ void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
         m_noteCount--;
         emit noteCountChanged();
     }
+}
+
+void Notebook::syncToInfoFile()
+{
+    m_infoFile.setValue("name", m_name);
+    m_infoFile.setValue("published", m_published);
+    m_infoFile.value("lastUpdated", m_lastUpdated);
 }

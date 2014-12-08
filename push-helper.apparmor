@@ -4,7 +4,8 @@
         "push-notification-client",
         "accounts",
         "networking",
-        "calendar"
+        "calendar",
+        "webview"
     ],
     "policy_version": 1.2
 }

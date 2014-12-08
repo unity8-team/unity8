@@ -145,6 +145,27 @@ EvernoteConnection::~EvernoteConnection()
     }
 }
 
+void EvernoteConnection::disconnectFromEvernote()
+{
+    if (!isConnected()) {
+        qWarning() << "Not connected. Can't disconnect.";
+        return;
+    }
+
+    foreach (EvernoteJob *job, m_jobQueue) {
+        job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, gettext("Disconnected from Evernote"));
+        job->deleteLater();
+    }
+    m_jobQueue.clear();
+
+    m_errorMessage.clear();
+    emit errorChanged();
+
+    m_notesStoreHttpClient->close();
+    m_userStoreHttpClient->close();
+    emit isConnectedChanged();
+}
+
 QString EvernoteConnection::hostname() const
 {
     return m_hostname;
@@ -155,8 +176,6 @@ void EvernoteConnection::setHostname(const QString &hostname)
     if (m_hostname != hostname) {
         m_hostname = hostname;
         emit hostnameChanged();
-
-        connectToEvernote();
     }
 }
 
@@ -167,26 +186,19 @@ QString EvernoteConnection::token() const
 
 void EvernoteConnection::setToken(const QString &token)
 {
-    if (token != m_token) {
+    if (m_token != token) {
         m_token = token;
         emit tokenChanged();
-
-        qDeleteAll(m_jobQueue);
-        m_jobQueue.clear();
-
-        connectToEvernote();
-    }
-}
-
-void EvernoteConnection::clearToken()
-{
-    if (!EvernoteConnection::instance()->token().isEmpty()) {
-        setToken(QString());
     }
 }
 
 void EvernoteConnection::connectToEvernote()
 {
+    if (isConnected()) {
+        qWarning() << "Already connected.";
+        return;
+    }
+
     m_errorMessage.clear();
     emit errorChanged();
 
@@ -230,8 +242,8 @@ bool EvernoteConnection::connectUserStore()
         m_userStoreHttpClient->open();
         qDebug() << "UserStoreClient socket opened.";
     } catch (const TTransportException & e) {
-        qWarning() << "Failed to open connection:" <<  e.what();
-        m_errorMessage = gettext("Error connecting to Evernote: Please check network connection.");
+        qWarning() << "Failed to open connection:" <<  e.what() << e.getType();
+        m_errorMessage = gettext("Offline mode");
         emit errorChanged();
         return false;
     } catch (const TException & e) {
@@ -339,6 +351,12 @@ EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
 
 void EvernoteConnection::enqueue(EvernoteJob *job, JobPriority priority)
 {
+    if (!isConnected()) {
+        qWarning() << "Not connected to evernote. Can't enqueue job.";
+        job->emitJobDone(ErrorCodeConnectionLost, gettext("Disconnected from Evernote."));
+        job->deleteLater();
+        return;
+    }
     EvernoteJob *duplicate = findDuplicate(job);
     if (duplicate) {
         job->attachToDuplicate(duplicate);

@@ -63,7 +63,7 @@ Item {
                 //TRANSLATORS: A checkbox with marks the reminder as done
                 text: i18n.tr("Reminder done")
                 MouseArea {
-                    achors.fill: parent
+                    anchors.fill: parent
                     onClicked: reminderDoneCheckbox.checked = !reminderDoneCheckbox.checked
                 }
             }

@@ -32,6 +32,7 @@ class Notes : public QSortFilterProxyModel
     Q_PROPERTY(QString filterTagGuid READ filterTagGuid WRITE setFilterTagGuid NOTIFY filterTagGuidChanged)
     Q_PROPERTY(bool onlyReminders READ onlyReminders WRITE setOnlyReminders NOTIFY onlyRemindersChanged)
     Q_PROPERTY(bool onlySearchResults READ onlySearchResults WRITE setOnlySearchResults NOTIFY onlySearchResultsChanged)
+    Q_PROPERTY(bool showDeleted READ showDeleted WRITE setShowDeleted NOTIFY showDeletedChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -51,6 +52,9 @@ public:
     bool onlySearchResults() const;
     void setOnlySearchResults(bool onlySearchResults);
 
+    bool showDeleted() const;
+    void setShowDeleted(bool showDeleted);
+
     bool loading() const;
     QString error() const;
     int count() const;
@@ -68,6 +72,7 @@ signals:
     void filterTagGuidChanged();
     void onlyRemindersChanged();
     void onlySearchResultsChanged();
+    void showDeletedChanged();
     void loadingChanged();
     void errorChanged();
     void countChanged();
@@ -77,6 +82,7 @@ private:
     QString m_filterTagGuid;
     bool m_onlyReminders;
     bool m_onlySearchResults;
+    bool m_showDeleted;
 };
 
 #endif // NOTES_H

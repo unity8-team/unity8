@@ -17,15 +17,17 @@
  */
 
 import QtQuick 2.3
+import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0
-//import "components"
-import "ui"
+import Ubuntu.Connectivity 1.0
 import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
 import Ubuntu.OnlineAccounts.Client 0.1
 import Ubuntu.PushNotifications 0.1
+import "components"
+import "ui"
 
 MainView {
     id: root
@@ -60,6 +62,27 @@ MainView {
             root.uri = uris[0];
             processUri();
         }
+    }
+
+    Connections {
+        target: NetworkingStatus
+        onStatusChanged: {
+            switch (NetworkingStatus.status) {
+            case NetworkingStatus.Offline:
+                EvernoteConnection.disconnectFromEvernote();
+                break;
+            case NetworkingStatus.Online:
+                // Seems DNS still fails most of the time when we get this signal.
+                connectDelayTimer.start();
+                break;
+            }
+        }
+    }
+
+    Timer {
+        id: connectDelayTimer
+        interval: 2000
+        onTriggered: EvernoteConnection.connectToEvernote();
     }
 
     Connections {
@@ -119,6 +142,9 @@ MainView {
 
     function doLogin() {
         var accountName = preferences.accountName;
+        // Setting username is required to load things from cache, even if just ""
+        NotesStore.username = accountName;
+
         if (accountName) {
             print("Last used account:", accountName);
             var i;
@@ -291,11 +317,11 @@ MainView {
             authenticate(null);
         }
         onAuthenticated: {
-            if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
-                EvernoteConnection.clearToken();
-            }
             EvernoteConnection.token = reply.AccessToken;
             print("token is:", EvernoteConnection.token)
+            if (NetworkingStatus.online) {
+                EvernoteConnection.connectToEvernote();
+            }
         }
         onAuthenticationError: {
             console.log("Authentication failed, code " + error.code)
@@ -348,10 +374,21 @@ MainView {
         }
     }
 
+    StatusBar {
+        id: offlineModeBar
+        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
+        color: root.backgroundColor
+        shown: EvernoteConnection.error || (EvernoteConnection.token && !EvernoteConnection.isConnected) //EvernoteConnection.error || (EvernoteConnection.token && !NetworkingStatus.connected)
+        text: EvernoteConnection.error || i18n.tr("Offline mode")
+        iconName: "sync-error"
+
+    }
+
     PageStack {
         id: pagestack
         anchors.rightMargin: root.narrowMode ? 0 : root.width - units.gu(40)
-        opacity: root.accountPage || EvernoteConnection.isConnected ? 1 : 0
+        anchors.topMargin: offlineModeBar.height
+
 
         Tabs {
             id: rootTabs
@@ -464,39 +501,6 @@ MainView {
         }
     }
 
-    Column {
-        anchors { left: pagestack.left; right: pagestack.right; margins: units.gu(2); verticalCenter: pagestack.verticalCenter }
-        spacing: units.gu(2)
-
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-            text: EvernoteConnection.error
-        }
-
-        Button {
-            anchors { left: parent.left; right: parent.right }
-            text: i18n.tr("Reconnect")
-            visible: EvernoteConnection.error
-            color: UbuntuColors.orange
-            onClicked: {
-                var token = EvernoteConnection.token
-                EvernoteConnection.token = ""
-                EvernoteConnection.token = token
-            }
-        }
-    }
-
-
-    ActivityIndicator {
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: units.gu(4.5)
-        running: visible
-        visible: !EvernoteConnection.isConnected && root.accountPage == null && !EvernoteConnection.error
-    }
-
-
     Label {
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: pagestack.width / 2
@@ -538,8 +542,10 @@ MainView {
         Dialog {
             id: noAccount
             objectName: "noAccountDialog"
-            title: i18n.tr("No account available")
-            text: i18n.tr("Please configure and authorize an Evernote account in System Settings")
+            title: i18n.tr("Setup Evernote connection?")
+            text: i18n.tr("Reminders can store your notes and reminders locally on this device. "
+                          + "In order to synchronize notes with Evernote, an account at Evernote is required. "
+                          + "Do you want to setup an account now?")
 
             Connections {
                 target: accounts
@@ -557,11 +563,21 @@ MainView {
                 providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
             }
 
-            Button {
-                objectName: "openAccountButton"
-                text: i18n.tr("Add account")
-                color: UbuntuColors.orange
-                onClicked: setup.exec()
+            RowLayout {
+                Button {
+                    objectName: "openAccountButton"
+                    text: i18n.tr("No")
+                    color: UbuntuColors.red
+                    onClicked: PopupUtils.close(noAccount)
+                    Layout.fillWidth: true
+                }
+                Button {
+                    objectName: "openAccountButton"
+                    text: i18n.tr("Yes")
+                    color: UbuntuColors.green
+                    onClicked: setup.exec()
+                    Layout.fillWidth: true
+                }
             }
         }
     }
