@@ -306,7 +306,7 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
         qWarning() << "Error creating tag:" << errorMessage;
         return;
     }
-    Tag *tag = new Tag(QString::fromStdString(result.guid));
+    Tag *tag = new Tag(QString::fromStdString(result.guid), result.updateSequenceNum);
     tag->setName(QString::fromStdString(result.name));
     m_tags.append(tag);
     m_tagsHash.insert(tag->guid(), tag);
@@ -637,19 +637,16 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
 void NotesStore::refreshNotebooks()
 {
-    if (EvernoteConnection::instance()->token().isEmpty()) {
-        foreach (Notebook *notebook, m_notebooks) {
-            emit notebookRemoved(notebook->guid());
-            notebook->deleteLater();
-        }
-        m_notebooks.clear();
-    } else {
-        m_notebooksLoading = true;
-        emit notebooksLoadingChanged();
-        FetchNotebooksJob *job = new FetchNotebooksJob();
-        connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
-        EvernoteConnection::instance()->enqueue(job);
+    if (!EvernoteConnection::instance()->isConnected()) {
+        qWarning() << "Not connected. Cannot fetch notebooks from server.";
+        return;
     }
+
+    m_notebooksLoading = true;
+    emit notebooksLoadingChanged();
+    FetchNotebooksJob *job = new FetchNotebooksJob();
+    connect(job, &FetchNotebooksJob::jobDone, this, &NotesStore::fetchNotebooksJobDone);
+    EvernoteConnection::instance()->enqueue(job);
 }
 
 void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results)
@@ -692,19 +689,15 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
 
 void NotesStore::refreshTags()
 {
-    if (EvernoteConnection::instance()->token().isEmpty()) {
-        foreach (Tag *tag, m_tags) {
-            emit tagRemoved(tag->guid());
-            tag->deleteLater();
-        }
-        m_tags.clear();
-    } else {
-        m_tagsLoading = true;
-        emit tagsLoadingChanged();
-        FetchTagsJob *job = new FetchTagsJob();
-        connect(job, &FetchTagsJob::jobDone, this, &NotesStore::fetchTagsJobDone);
-        EvernoteConnection::instance()->enqueue(job);
+    if (!EvernoteConnection::instance()->isConnected()) {
+        qWarning() << "Not connected. Cannot fetch tags from server.";
+        return;
     }
+    m_tagsLoading = true;
+    emit tagsLoadingChanged();
+    FetchTagsJob *job = new FetchTagsJob();
+    connect(job, &FetchTagsJob::jobDone, this, &NotesStore::fetchTagsJobDone);
+    EvernoteConnection::instance()->enqueue(job);
 }
 
 void NotesStore::fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Tag> &results)
@@ -728,9 +721,12 @@ void NotesStore::fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const
         Tag *tag = m_tagsHash.value(QString::fromStdString(result.guid));
         bool newTag = tag == 0;
         if (newTag) {
-            tag = new Tag(QString::fromStdString(result.guid), this);
+            tag = new Tag(QString::fromStdString(result.guid), result.updateSequenceNum, this);
         }
+        tag->setUpdateSequenceNumber(result.updateSequenceNum);
         tag->setName(QString::fromStdString(result.name));
+
+        syncToCacheFile(tag);
 
         if (newTag) {
             m_tagsHash.insert(tag->guid(), tag);
@@ -1060,6 +1056,15 @@ void NotesStore::syncToCacheFile(Notebook *notebook)
     notebook->syncToInfoFile();
 }
 
+void NotesStore::syncToCacheFile(Tag *tag)
+{
+    QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
+    cacheFile.beginGroup("tags");
+    cacheFile.setValue(tag->guid(), tag->updateSequenceNumber());
+    cacheFile.endGroup();
+    tag->syncToInfoFile();
+}
+
 void NotesStore::loadFromCacheFile()
 {
     clear();
@@ -1072,6 +1077,17 @@ void NotesStore::loadFromCacheFile()
             m_notebooksHash.insert(key, notebook);
             m_notebooks.append(notebook);
             emit notebookAdded(key);
+        }
+    }
+    cacheFile.endGroup();
+
+    cacheFile.beginGroup("tags");
+    if (cacheFile.allKeys().count() > 0) {
+        foreach (const QString &key, cacheFile.allKeys()) {
+            Tag *tag = new Tag(key, cacheFile.value(key).toUInt(), this);
+            m_tagsHash.insert(key, tag);
+            m_tags.append(tag);
+            emit tagAdded(key);
         }
     }
     cacheFile.endGroup();

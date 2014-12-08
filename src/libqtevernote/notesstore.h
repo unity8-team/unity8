@@ -180,6 +180,7 @@ private slots:
 
     void syncToCacheFile(Note *note);
     void syncToCacheFile(Notebook *notebook);
+    void syncToCacheFile(Tag *tag);
     void loadFromCacheFile();
 
     void emitDataChanged();

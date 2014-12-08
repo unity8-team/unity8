@@ -23,11 +23,16 @@
 
 #include "notesstore.h"
 
-Tag::Tag(const QString &guid, QObject *parent) :
+#include <QStandardPaths>
+
+Tag::Tag(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
+    m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
-    m_noteCount(0)
+    m_noteCount(0),
+    m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/tag-" + guid + ".info", QSettings::IniFormat)
 {
+    m_name = m_infoFile.value("name").toString();
     updateNoteCount();
 }
 
@@ -38,6 +43,16 @@ Tag::~Tag()
 QString Tag::guid() const
 {
     return m_guid;
+}
+
+quint32 Tag::updateSequenceNumber() const
+{
+    return m_updateSequenceNumber;
+}
+
+void Tag::setUpdateSequenceNumber(quint32 updateSuequenceNumber)
+{
+    m_updateSequenceNumber = updateSuequenceNumber;
 }
 
 QString Tag::name() const
@@ -60,7 +75,7 @@ int Tag::noteCount() const
 
 Tag *Tag::clone()
 {
-    Tag *tag = new Tag(m_guid);
+    Tag *tag = new Tag(m_guid, m_updateSequenceNumber);
     tag->setName(m_name);
     return tag;
 }
@@ -77,4 +92,9 @@ void Tag::updateNoteCount()
         m_noteCount = noteCount;
         emit noteCountChanged();
     }
+}
+
+void Tag::syncToInfoFile()
+{
+    m_infoFile.setValue("name", m_name);
 }

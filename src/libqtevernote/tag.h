@@ -29,6 +29,7 @@
 #include <QDateTime>
 #include <QStringList>
 #include <QImage>
+#include <QSettings>
 
 class Tag: public QObject
 {
@@ -41,10 +42,13 @@ class Tag: public QObject
     // Don't forget to update clone() if you add new properties
 
 public:
-    explicit Tag(const QString &guid, QObject *parent = 0);
+    explicit Tag(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Tag();
 
     QString guid() const;
+
+    quint32 updateSequenceNumber() const;
+    void setUpdateSequenceNumber(quint32 updateSuequenceNumber);
 
     QString name() const;
     void setName(const QString &guid);
@@ -60,10 +64,16 @@ signals:
     void noteCountChanged();
 
 private:
+    void syncToInfoFile();
+
+private:
+    quint32 m_updateSequenceNumber;
     QString m_guid;
     QString m_name;
 
     int m_noteCount;
+
+    QSettings m_infoFile;
 
     friend class NotesStore;
 };
