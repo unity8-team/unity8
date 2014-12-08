@@ -19,19 +19,23 @@
  */
 
 #include "createnotebookjob.h"
+#include "notebook.h"
 
 #include <QDebug>
 
-CreateNotebookJob::CreateNotebookJob(const QString &name, QObject *parent) :
+CreateNotebookJob::CreateNotebookJob(Notebook *notebook, QObject *parent) :
     NotesStoreJob(parent),
-    m_name(name)
+    m_notebook(notebook->clone())
 {
+    m_notebook->setParent(this);
 }
 
 void CreateNotebookJob::startJob()
 {
-    m_result.name = m_name.toStdString();
+    m_result.name = m_notebook->name().toStdString();
     m_result.__isset.name = true;
+    m_result.updateSequenceNum = m_notebook->updateSequenceNumber();
+    m_result.__isset.updateSequenceNum = true;
     client()->createNotebook(m_result, token().toStdString(), m_result);
 }
 
@@ -41,7 +45,7 @@ bool CreateNotebookJob::operator==(const EvernoteJob *other) const
     if (!otherJob) {
         return false;
     }
-    return this->m_name == otherJob->m_name;
+    return this->m_notebook == otherJob->m_notebook;
 }
 
 void CreateNotebookJob::attachToDuplicate(const EvernoteJob *other)
@@ -52,5 +56,5 @@ void CreateNotebookJob::attachToDuplicate(const EvernoteJob *other)
 
 void CreateNotebookJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage, m_result);
+    emit jobDone(errorCode, errorMessage, m_notebook->guid(), m_result);
 }

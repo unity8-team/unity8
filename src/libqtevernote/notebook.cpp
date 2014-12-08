@@ -169,6 +169,14 @@ void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
     }
 }
 
+void Notebook::setGuid(const QString &guid)
+{
+    if (m_guid != guid) {
+        m_guid = guid;
+        emit guidChanged();
+    }
+}
+
 void Notebook::syncToInfoFile()
 {
     m_infoFile.setValue("name", m_name);

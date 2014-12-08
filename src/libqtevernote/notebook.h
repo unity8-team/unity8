@@ -30,7 +30,7 @@ class Notebook : public QObject
     Q_OBJECT
 
     // Don't forget to update clone() if you add new properties
-    Q_PROPERTY(QString guid READ guid CONSTANT)
+    Q_PROPERTY(QString guid READ guid NOTIFY guidChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int noteCount READ noteCount NOTIFY noteCountChanged)
     Q_PROPERTY(bool published READ published NOTIFY publishedChanged)
@@ -65,6 +65,7 @@ public slots:
     void save();
 
 signals:
+    void guidChanged();
     void nameChanged();
     void noteCountChanged();
     void publishedChanged();
@@ -75,6 +76,7 @@ private slots:
     void noteRemoved(const QString &noteGuid, const QString &notebookGuid);
 
 private:
+    void setGuid(const QString &guid);
     void syncToInfoFile();
 
 private:

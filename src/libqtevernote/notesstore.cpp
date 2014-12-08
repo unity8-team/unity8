@@ -247,9 +247,31 @@ Notebook *NotesStore::notebook(const QString &guid)
 
 void NotesStore::createNotebook(const QString &name)
 {
-    CreateNotebookJob *job = new CreateNotebookJob(name);
-    connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    Notebook *notebook = new Notebook("tmp-" + QUuid::createUuid().toString(), 0, this);
+    notebook->setName(name);
+
+    m_notebooks.append(notebook);
+    m_notebooksHash.insert(notebook->guid(), notebook);
+    emit notebookAdded(notebook->guid());
+
+    if (EvernoteConnection::instance()->isConnected()) {
+        CreateNotebookJob *job = new CreateNotebookJob(notebook);
+        connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
+}
+
+void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Notebook &result)
+{
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error creating notebook:" << errorMessage;
+        return;
+    }
+    Notebook *notebook = m_notebooksHash.value(tmpGuid);
+    notebook->setGuid(QString::fromStdString(result.guid));
+    notebook->setUpdateSequenceNumber(result.updateSequenceNum);
+    notebook->setName(QString::fromStdString(result.name));
+    emit notebookChanged(notebook->guid());
 }
 
 void NotesStore::saveNotebook(const QString &guid)
@@ -981,19 +1003,6 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     emit countChanged();
     note->deleteFromCache();
     note->deleteLater();
-}
-
-void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result)
-{
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error creating notebook:" << errorMessage;
-        return;
-    }
-    Notebook *notebook = new Notebook(QString::fromStdString(result.guid), result.updateSequenceNum, this);
-    notebook->setName(QString::fromStdString(result.name));
-    m_notebooks.append(notebook);
-    m_notebooksHash.insert(notebook->guid(), notebook);
-    emit notebookAdded(notebook->guid());
 }
 
 void NotesStore::expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid)
