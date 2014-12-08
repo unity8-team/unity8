@@ -18,35 +18,26 @@
 #include "dashconnection.h"
 
 #include <QObject>
+#include <QScopedPointer>
 
 DashCommunicator::DashCommunicator(QObject *parent):
-    QThread(parent),
-    m_dashConnection(nullptr),
-    m_created(false)
+    QThread(parent)
 {
     start();
 }
 
 void DashCommunicator::setCurrentScope(int index, bool animate, bool isSwipe)
 {
-    m_mutex.lock();
-    if (m_created) {
-        QMetaObject::invokeMethod(m_dashConnection, "setCurrentScope",
-                                  Q_ARG(int, index),
-                                  Q_ARG(bool, animate),
-                                  Q_ARG(bool, isSwipe));
-    }
-    m_mutex.unlock();
+    Q_EMIT sendSetCurrentScope(index, animate, isSwipe);
 }
 
 void DashCommunicator::run()
 {
-    m_dashConnection = new DashConnection("com.canonical.UnityDash",
+    QScopedPointer<DashConnection> dashConnection(new DashConnection("com.canonical.UnityDash",
                                  "/com/canonical/UnityDash",
-                                 "", this);
-    m_mutex.lock();
-    m_created = true;
-    m_mutex.unlock();
+                                 "", this));
 
+    connect(this, &DashCommunicator::sendSetCurrentScope,
+            dashConnection.data(), &DashConnection::setCurrentScope);
     exec();
 }

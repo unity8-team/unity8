@@ -19,9 +19,6 @@
 
 // Qt
 #include <QThread>
-#include <QMutex>
-
-class DashConnection;
 
 class DashCommunicator: public QThread
 {
@@ -37,9 +34,7 @@ protected:
     void run() override;
 
 private:
-    DashConnection *m_dashConnection;
-    bool m_created;
-    QMutex m_mutex;
+    Q_SIGNAL void sendSetCurrentScope(int index, bool animate, bool isSwipe);
 };
 
 #endif
