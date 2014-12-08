@@ -30,6 +30,8 @@ Showable {
 
     DashCommunicatorService {
         objectName: "dashCommunicatorService"
+
+        enabled: windowReady
         onSetCurrentScopeRequested: {
             if (!isSwipe || !window.active || overviewController.progress != 0 || scopeItem.scope || dashContent.subPageShown) {
                 if (overviewController.progress != 0 && window.active) animate = false;
@@ -50,6 +52,18 @@ Showable {
                 // Close previews
                 if (dashContent.subPageShown) {
                     dashContent.closePreview();
+                }
+            }
+        }
+
+        // Only enable the DashCommunicatorService once the Window has been created, avoids race condition
+        // between Window creation and DBus interface creation.
+        property bool windowReady: false
+        Connections {
+            target: Qt.application
+            onStateChanged: {
+                if (!windowReady && Qt.application.state === Qt.ApplicationActive) {
+                    windowReady = true;
                 }
             }
         }

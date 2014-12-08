@@ -17,14 +17,26 @@
 #include "dashcommunicatorservice.h"
 
 DashCommunicatorService::DashCommunicatorService(QObject *parent):
-    QObject(parent),
-    m_dbusService(new DBusDashCommunicatorService(this))
+    QObject(parent)
 {
-    connect(m_dbusService, &DBusDashCommunicatorService::setCurrentScopeRequested, this, &DashCommunicatorService::setCurrentScopeRequested);
 }
 
-
-DashCommunicatorService::~DashCommunicatorService()
+bool DashCommunicatorService::enabled() const
 {
+    return !m_dbusService.isNull();
+}
 
+void DashCommunicatorService::setEnabled(const bool enabled)
+{
+    if (enabled == enabled())
+        return;
+
+    if (enabled) {
+        m_dbusService = new DBusDashCommunicatorService();
+        connect(m_dbusService, &DBusDashCommunicatorService::setCurrentScopeRequested,
+                this, &DashCommunicatorService::setCurrentScopeRequested);
+    } else {
+        m_dbusService.clear();
+    }
+    Q_EMIT enabledChanged();
 }

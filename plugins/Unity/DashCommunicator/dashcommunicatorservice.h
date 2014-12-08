@@ -20,19 +20,26 @@
 #include "dbusdashcommunicatorservice.h"
 
 #include <QObject>
+#include <QPointer>
 
 class DashCommunicatorService: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+
 public:
     DashCommunicatorService(QObject *parent = 0);
-    ~DashCommunicatorService();
+    ~DashCommunicatorService() = default;
+
+    bool enabled() const;
+    void setEnabled(const bool);
 
 Q_SIGNALS:
     void setCurrentScopeRequested(int index, bool animate, bool isSwipe);
+    void enabledChanged();
 
 private:
-    DBusDashCommunicatorService *m_dbusService;
+    QPointer<DBusDashCommunicatorService> m_dbusService;
 };
 
 #endif // DBUSUNITYSESSIONSERVICE_H
