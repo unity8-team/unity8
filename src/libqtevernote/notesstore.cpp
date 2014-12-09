@@ -258,6 +258,8 @@ void NotesStore::createNotebook(const QString &name)
     m_notebooksHash.insert(notebook->guid(), notebook);
     emit notebookAdded(notebook->guid());
 
+    syncToCacheFile(notebook);
+
     if (EvernoteConnection::instance()->isConnected()) {
         CreateNotebookJob *job = new CreateNotebookJob(notebook);
         connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
@@ -276,6 +278,7 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
     notebook->setUpdateSequenceNumber(result.updateSequenceNum);
     notebook->setName(QString::fromStdString(result.name));
     emit notebookChanged(notebook->guid());
+    syncToCacheFile(notebook);
 }
 
 void NotesStore::saveNotebook(const QString &guid)
