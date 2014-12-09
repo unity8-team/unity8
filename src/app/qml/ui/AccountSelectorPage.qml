@@ -26,7 +26,7 @@ import Evernote 0.1
 Page {
     id: root
     objectName: "Accountselectorpage"
-    title: i18n.tr("Select Evernote account")
+    title: i18n.tr("Select account")
 
     property alias accounts: optionSelector.model
     property bool isChangingAccount
@@ -43,6 +43,23 @@ Page {
     Column {
         anchors { fill: parent; margins: units.gu(2) }
         spacing: units.gu(2)
+
+        Button {
+            anchors { left: parent.left; right: parent.right; margins: units.gu(1) }
+            text: i18n.tr("Store notes locally only")
+            onClicked: {
+                EvernoteConnection.disconnectFromEvernote();
+                NotesStore.username = "@local";
+                preferences.accountName = "";
+                preferences.haveLocalUser = true;
+                pageStack.pop();
+            }
+        }
+
+        Label {
+            anchors { left: parent.left; right: parent.right; margins: units.gu(1) }
+            text: i18n.tr("Accounts on www.evernote.com")
+        }
 
         OptionSelector {
             id: optionSelector

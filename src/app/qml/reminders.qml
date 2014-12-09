@@ -104,8 +104,8 @@ MainView {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, { accounts: allAccounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
-        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
+        accountPage = component.createObject(root, { accounts: accounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
+        accountPage.accountSelected.connect(function(handle) { accountService.startAuthentication(handle); pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
 
@@ -141,22 +141,28 @@ MainView {
     }
 
     function doLogin() {
-        var accountName = preferences.accountName;
-        // Setting username is required to load things from cache, even if just ""
-        NotesStore.username = accountName;
+        if (preferences.haveLocalUser && !preferences.accountName) {
+            // Have a local user and no last used evernote account. Use local only
+            NotesStore.username = "@local";
+            return;
+        }
 
+        var accountName = preferences.accountName;
         if (accountName) {
             print("Last used account:", accountName);
             var i;
             for (i = 0; i < accounts.count; i++) {
                 if (accounts.get(i, "displayName") == accountName) {
                     print("Account", accountName, "still valid in Online Accounts.");
-                    accountService.objectHandle = accounts.get(i, "accountServiceHandle");
+                    accountService.startAuthentication(accounts.get(i, "accountServiceHandle"));
                 }
             }
         }
         if (accountName && !accountService.objectHandle) {
             print("Last used account doesn't seem to be valid any more");
+        } else {
+            print("Last used account still seems to be valid.");
+            NotesStore.username = accountName;
         }
 
         if (!accountService.objectHandle) {
@@ -167,7 +173,7 @@ MainView {
                 break;
             case 1:
                 print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
-                accountService.objectHandle = accounts.get(0, "accountServiceHandle");
+                accountService.startAuthentication(accounts.get(0, "accountServiceHandle"));
                 break;
             default:
                 print("There are multiple accounts. Allowing user to select one.");
@@ -304,18 +310,22 @@ MainView {
 
     AccountServiceModel {
         id: allAccounts
+        applicationId: "com.ubuntu.reminders_reminders"
         service: useSandbox ? "evernote-sandbox" : "evernote"
         includeDisabled: true
     }
 
     AccountService {
         id: accountService
-        onObjectHandleChanged: {
+        function startAuthentication(objectHandle) {
+            accountService.objectHandle = objectHandle;
             // FIXME: workaround for lp:1351041. We'd normally set the hostname
             // under onAuthenticated, but it seems that now returns empty parameters
             EvernoteConnection.hostname = accountService.authData.parameters["HostName"];
+            print("authenticating");
             authenticate(null);
         }
+
         onAuthenticated: {
             EvernoteConnection.token = reply.AccessToken;
             print("token is:", EvernoteConnection.token)
@@ -378,8 +388,8 @@ MainView {
         id: offlineModeBar
         anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
         color: root.backgroundColor
-        shown: EvernoteConnection.error || (EvernoteConnection.token && !EvernoteConnection.isConnected) //EvernoteConnection.error || (EvernoteConnection.token && !NetworkingStatus.connected)
-        text: EvernoteConnection.error || i18n.tr("Offline mode")
+        shown: EvernoteConnection.error
+        text: EvernoteConnection.error
         iconName: "sync-error"
 
     }
@@ -568,7 +578,11 @@ MainView {
                     objectName: "openAccountButton"
                     text: i18n.tr("No")
                     color: UbuntuColors.red
-                    onClicked: PopupUtils.close(noAccount)
+                    onClicked: {
+                        PopupUtils.close(noAccount)
+                        NotesStore.username = "@local";
+                        preferences.haveLocalUser = true;
+                    }
                     Layout.fillWidth: true
                 }
                 Button {

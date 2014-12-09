@@ -43,6 +43,16 @@ void Preferences::setAccountName(const QString &accountName)
     emit accountNameChanged();
 }
 
+bool Preferences::haveLocalUser() const
+{
+    return m_settings.value("haveLocalUser", false).toBool();
+}
+
+void Preferences::setHaveLocalUser(bool haveLocalUser)
+{
+    m_settings.setValue("haveLocalUser", true);
+    emit haveLocalUserChanged();
+}
 
 QString Preferences::colorForNotebook(const QString &notebookGuid)
 {
