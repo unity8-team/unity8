@@ -31,7 +31,6 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     QObject(parent),
     m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
-    m_noteCount(0),
     m_published(false),
     m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/notebook-" + guid + ".info", QSettings::IniFormat)
 {
@@ -42,11 +41,12 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
 
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
-            m_noteCount++;
+            m_notesList.append(note->guid());
         }
     }
     connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Notebook::noteAdded);
     connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notebook::noteRemoved);
+    connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Notebook::noteChanged);
 }
 
 quint32 Notebook::updateSequenceNumber() const
@@ -81,7 +81,7 @@ void Notebook::setName(const QString &name)
 
 int Notebook::noteCount() const
 {
-    return m_noteCount;
+    return m_notesList.count();
 }
 
 bool Notebook::published() const
@@ -155,7 +155,7 @@ void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
-        m_noteCount++;
+        m_notesList.append(noteGuid);
         emit noteCountChanged();
     }
 }
@@ -164,8 +164,23 @@ void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
-        m_noteCount--;
+        m_notesList.removeAll(noteGuid);
         emit noteCountChanged();
+    }
+}
+
+void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
+{
+    if (notebookGuid != m_guid) {
+        if (m_notesList.contains(noteGuid)) {
+            m_notesList.removeAll(noteGuid);
+            emit noteCountChanged();
+        }
+    } else {
+        if (!m_notesList.contains(noteGuid)) {
+            m_notesList.append(noteGuid);
+            emit noteCountChanged();
+        }
     }
 }
 

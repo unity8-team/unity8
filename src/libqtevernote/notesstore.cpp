@@ -350,6 +350,11 @@ void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const Q
     }
 }
 
+void NotesStore::noteNotebookGuidChanged()
+{
+
+}
+
 void NotesStore::tagNote(const QString &noteGuid, const QString &tagGuid)
 {
     Note *note = m_notesHash.value(noteGuid);
@@ -820,18 +825,11 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         return;
     }
 
-    int idx = -1;
-    for (int i = 0; i < m_notes.count(); i++) {
-        if (m_notes.at(i)->guid() == tmpGuid) {
-            idx = i;
-        }
-    }
-
-    if (idx == -1) {
+    Note *note = m_notesHash.value(tmpGuid);
+    if (!note) {
         qWarning() << "Cannot find temporary note after create operation!";
         return;
     }
-    Note *note = m_notes.at(idx);
 
     QString guid = QString::fromStdString(result.guid);
     m_notesHash.remove(tmpGuid);
@@ -862,6 +860,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         note->setEnmlContent(QString::fromStdString(result.content));
         roles << RoleEnmlContent << RoleRichTextContent << RoleTagline << RolePlaintextContent;
     }
+    int idx = m_notes.indexOf(note);
     emit dataChanged(index(idx), index(idx), roles);
 
     QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
@@ -881,12 +880,9 @@ void NotesStore::saveNote(const QString &guid)
     }
     note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
     syncToCacheFile(note);
-    for (int i = 0; i < m_notes.count(); i++) {
-        if (m_notes.at(i)->guid() == guid) {
-            emit dataChanged(index(i), index(i));
-            break;
-        }
-    }
+    int idx = m_notes.indexOf(note);
+    emit dataChanged(index(idx), index(idx));
+    emit noteChanged(guid, note->notebookGuid());
 
     if (EvernoteConnection::instance()->isConnected()) {
         if (note->guid().startsWith("tmp-")) {

@@ -74,6 +74,7 @@ signals:
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
     void noteRemoved(const QString &noteGuid, const QString &notebookGuid);
+    void noteChanged(const QString &noteGuid, const QString &notebookGuid);
 
 private:
     void setGuid(const QString &guid);
@@ -83,9 +84,9 @@ private:
     quint32 m_updateSequenceNumber;
     QString m_guid;
     QString m_name;
-    int m_noteCount;
     bool m_published;
     QDateTime m_lastUpdated;
+    QList<QString> m_notesList;
 
     QSettings m_infoFile;
 
