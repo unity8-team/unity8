@@ -210,7 +210,7 @@ private:
     QHash<QString, Tag*> m_tagsHash;
 
     // To keep track of notes that might have disappeared from the server
-    QHash<QString, Note*> m_unhandledNotes;
+    QHash<QString, QPointer<Note>> m_unhandledNotes;
 
     OrganizerAdapter *m_organizerAdapter;
 

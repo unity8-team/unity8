@@ -32,7 +32,7 @@ Page {
     property bool isChangingAccount
     property bool unauthorizedAccounts
 
-    signal accountSelected(var handle)
+    signal accountSelected(string username, var handle)
 
     Setup {
         id: setup
@@ -48,11 +48,7 @@ Page {
             anchors { left: parent.left; right: parent.right; margins: units.gu(1) }
             text: i18n.tr("Store notes locally only")
             onClicked: {
-                EvernoteConnection.disconnectFromEvernote();
-                NotesStore.username = "@local";
-                preferences.accountName = "";
-                preferences.haveLocalUser = true;
-                pageStack.pop();
+                root.accountSelected("@local", null)
             }
         }
 
@@ -75,7 +71,7 @@ Page {
                     anchors.fill: parent
                     onClicked: {
                         if (model.enabled) {
-                            root.accountSelected(accountServiceHandle)
+                            root.accountSelected(displayName, accountServiceHandle)
                         }
                         else {
                             console.log('authorize')

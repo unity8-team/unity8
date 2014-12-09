@@ -45,7 +45,7 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QUuid>
-
+#include <QPointer>
 
 NotesStore* NotesStore::s_instance = 0;
 
@@ -88,6 +88,10 @@ QString NotesStore::username() const
 
 void NotesStore::setUsername(const QString &username)
 {
+    if (username.isEmpty()) {
+        // We don't accept an empty username.
+        return;
+    }
     if (!UserStore::instance()->username().isEmpty() && username != UserStore::instance()->username()) {
         qWarning() << "Logged in to Evernote. Can't change account manually. User EvernoteConnection to log in to another account or log out and change this manually.";
         return;
@@ -403,7 +407,11 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
     if (EvernoteConnection::instance()->isConnected()) {
         m_loading = true;
-        m_unhandledNotes = m_notesHash;
+        foreach (Note *note, m_notesHash) {
+            QPointer<Note> notePtr = note;
+            m_unhandledNotes.insert(note->guid(), notePtr);
+        }
+
         emit loadingChanged();
         FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid, QString(), startIndex);
         connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
@@ -544,7 +552,10 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         emit loadingChanged();
 
 
-        foreach (Note *note, m_unhandledNotes) {
+        foreach (QPointer<Note> note, m_unhandledNotes) {
+            if (note.isNull()) {
+                continue;
+            }
             qDebug() << "Have a local note that's not available on server!" << note->guid();
             if (note->guid().startsWith("tmp-")) {
                 // This note hasn't been created on the server yet. Do that now.

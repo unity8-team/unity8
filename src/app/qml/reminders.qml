@@ -105,7 +105,7 @@ MainView {
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
         accountPage = component.createObject(root, { accounts: accounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
-        accountPage.accountSelected.connect(function(handle) { accountService.startAuthentication(handle); pagestack.pop(); root.accountPage = null });
+        accountPage.accountSelected.connect(function(username, handle) { accountService.startAuthentication(username, handle); pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
 
@@ -141,44 +141,36 @@ MainView {
     }
 
     function doLogin() {
-        if (preferences.haveLocalUser && !preferences.accountName) {
-            // Have a local user and no last used evernote account. Use local only
-            NotesStore.username = "@local";
+        var accountName = preferences.accountName;
+        if (accountName == "@local") {
+            accountService.startAuthentication("@local", null);
             return;
         }
 
-        var accountName = preferences.accountName;
         if (accountName) {
             print("Last used account:", accountName);
             var i;
             for (i = 0; i < accounts.count; i++) {
                 if (accounts.get(i, "displayName") == accountName) {
                     print("Account", accountName, "still valid in Online Accounts.");
-                    accountService.startAuthentication(accounts.get(i, "accountServiceHandle"));
+                    accountService.startAuthentication(accounts.get(i, "displayName"), accounts.get(i, "accountServiceHandle"));
+                    return;
                 }
             }
         }
-        if (accountName && !accountService.objectHandle) {
-            print("Last used account doesn't seem to be valid any more");
-        } else {
-            print("Last used account still seems to be valid.");
-            NotesStore.username = accountName;
-        }
 
-        if (!accountService.objectHandle) {
-            switch (accounts.count) {
-            case 0:
-                PopupUtils.open(noAccountDialog, root);
-                print("No account available! Please setup an account in the system settings");
-                break;
-            case 1:
-                print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
-                accountService.startAuthentication(accounts.get(0, "accountServiceHandle"));
-                break;
-            default:
-                print("There are multiple accounts. Allowing user to select one.");
-                openAccountPage(false);
-            }
+        switch (accounts.count) {
+        case 0:
+            PopupUtils.open(noAccountDialog, root);
+            print("No account available! Please setup an account in the system settings");
+            break;
+        case 1:
+            print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
+            accountService.startAuthentication(accounts.get(0, "displayName"), accounts.get(0, "accountServiceHandle"));
+            break;
+        default:
+            print("There are multiple accounts. Allowing user to select one.");
+            openAccountPage(false);
         }
     }
 
@@ -317,12 +309,24 @@ MainView {
 
     AccountService {
         id: accountService
-        function startAuthentication(objectHandle) {
+        function startAuthentication(username, objectHandle) {
+            //Load the cache
+            EvernoteConnection.disconnectFromEvernote();
+            EvernoteConnection.token = "";
+            NotesStore.username = username;
+            preferences.accountName = username;
+            if (username === "@local") {
+                preferences.haveLocalUser = true;
+            }
+
+            if (objectHandle === null) {
+                return;
+            }
+
             accountService.objectHandle = objectHandle;
             // FIXME: workaround for lp:1351041. We'd normally set the hostname
             // under onAuthenticated, but it seems that now returns empty parameters
             EvernoteConnection.hostname = accountService.authData.parameters["HostName"];
-            print("authenticating");
             authenticate(null);
         }
 
@@ -359,8 +363,6 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
-            preferences.accountName = UserStore.username;
-
             registerPushClient();
         }
     }
@@ -388,8 +390,8 @@ MainView {
         id: offlineModeBar
         anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
         color: root.backgroundColor
-        shown: EvernoteConnection.error
-        text: EvernoteConnection.error
+        shown: EvernoteConnection.error || (!NetworkingStatus.online && EvernoteConnection.token)
+        text: EvernoteConnection.error || i18n.tr("Offline mode")
         iconName: "sync-error"
 
     }

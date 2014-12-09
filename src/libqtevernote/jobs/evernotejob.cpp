@@ -62,12 +62,12 @@ void EvernoteJob::run()
     int maxTries = 2;
     while (!done && retry < maxTries) {
         try {
-            if (retry > 0) {
+            retry++;
+            if (retry > 1) {
                 // If this is not the first try, reset the connection first.
                 qWarning() << "Resetting connection in" << metaObject()->className();
                 resetConnection();
             }
-            retry++;
 
             startJob();
             emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
