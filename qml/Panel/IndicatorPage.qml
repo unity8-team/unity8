@@ -93,10 +93,17 @@ IndicatorBase {
 
         property int selectedIndex: -1
         property bool blockCurrentIndexChange: false
+        property bool messageReplied: false
         // for count = 0
         onCountChanged: {
             if (count == 0 && selectedIndex != -1) {
                 selectedIndex = -1;
+            }
+            if (messageReplied) {
+                messageReplied = false;
+                if (count == 0) {
+                    indicatorsMenu.hide();
+                }
             }
         }
         // for highlight following
@@ -154,11 +161,8 @@ IndicatorBase {
                 if (item.hasOwnProperty("menuIndex")) {
                     item.menuIndex = Qt.binding(function() { return modelIndex; });
                 }
-                if (item.hasOwnProperty("menuCount")) {
-                    item.menuCount = Qt.binding(function() { return mainMenu.count; });
-                }
-                if (item.hasOwnProperty("indicatorsMenu")) {
-                    item.indicatorsMenu = Qt.binding(function() { return main.indicatorsMenu; });
+                if (item.hasOwnProperty("mainMenu")) {
+                    item.mainMenu = Qt.binding(function() { return mainMenu; });
                 }
             }
 
