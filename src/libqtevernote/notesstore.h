@@ -181,6 +181,7 @@ private slots:
     void noteNotebookGuidChanged();
 
     void syncToCacheFile(Note *note);
+    void deleteFromCacheFile(Note* note);
     void syncToCacheFile(Notebook *notebook);
     void syncToCacheFile(Tag *tag);
     void loadFromCacheFile();

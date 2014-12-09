@@ -942,13 +942,7 @@ void NotesStore::deleteNote(const QString &guid)
         return;
     }
 
-    int idx = -1;
-    for (int i = 0; i < m_notes.count(); i++) {
-        if (m_notes.at(i)->guid() == guid) {
-            idx = i;
-            break;
-        }
-    }
+    int idx = m_notes.indexOf(note);
 
     if (note->guid().startsWith("tmp-")) {
         emit noteRemoved(note->guid(), note->notebookGuid());
@@ -957,7 +951,7 @@ void NotesStore::deleteNote(const QString &guid)
         m_notesHash.take(guid);
         endRemoveRows();
         emit countChanged();
-        note->deleteFromCache();
+        deleteFromCacheFile(note);
         note->deleteLater();
     } else {
 
@@ -1011,7 +1005,7 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     m_notesHash.take(guid);
     endRemoveRows();
     emit countChanged();
-    note->deleteFromCache();
+    deleteFromCacheFile(note);
     note->deleteLater();
 }
 
@@ -1064,6 +1058,15 @@ void NotesStore::syncToCacheFile(Note *note)
     cacheFile.endGroup();
     note->syncToInfoFile();
     note->syncToCacheFile();
+}
+
+void NotesStore::deleteFromCacheFile(Note *note)
+{
+    QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
+    cacheFile.beginGroup("notes");
+    cacheFile.remove(note->guid());
+    cacheFile.endGroup();
+    note->deleteFromCache();
 }
 
 void NotesStore::syncToCacheFile(Notebook *notebook)
