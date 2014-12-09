@@ -15,16 +15,19 @@
  */
 
 #include "dashcommunicatorservice.h"
+#include <QTimer>
 
 DashCommunicatorService::DashCommunicatorService(QObject *parent):
-    QObject(parent),
-    m_dbusService(new DBusDashCommunicatorService(this))
+    QObject(parent)
 {
-    connect(m_dbusService, &DBusDashCommunicatorService::setCurrentScopeRequested, this, &DashCommunicatorService::setCurrentScopeRequested);
+    // Delay creation of the DBus service. If it happens too early it can cause a shell deadlock,
+    // where two blocking events (introspecting this service, and deciding surface geometry) happen
+    // at the same time.
+    QTimer::singleShot(0, this, SLOT(create()));
 }
 
-
-DashCommunicatorService::~DashCommunicatorService()
+void DashCommunicatorService::create()
 {
-
+    m_dbusService = new DBusDashCommunicatorService(this);
+    connect(m_dbusService, &DBusDashCommunicatorService::setCurrentScopeRequested, this, &DashCommunicatorService::setCurrentScopeRequested);
 }
