@@ -36,7 +36,7 @@ class Tag: public QObject
     Q_OBJECT
 
     // Don't forget to update clone() if you add new properties
-    Q_PROPERTY(QString guid READ guid CONSTANT)
+    Q_PROPERTY(QString guid READ guid NOTIFY guidChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int noteCount READ noteCount NOTIFY noteCountChanged)
     // Don't forget to update clone() if you add new properties
@@ -46,6 +46,7 @@ public:
     ~Tag();
 
     QString guid() const;
+    void setGuid(const QString &guid);
 
     quint32 updateSequenceNumber() const;
     void setUpdateSequenceNumber(quint32 updateSuequenceNumber);
@@ -58,6 +59,7 @@ public:
     Tag *clone();
 
 signals:
+    void guidChanged();
     void nameChanged();
     void noteCountChanged();
 
@@ -76,7 +78,7 @@ private:
 
     QList<QString> m_notesList;
 
-    QSettings m_infoFile;
+    QString m_infoFile;
 
     friend class NotesStore;
 };

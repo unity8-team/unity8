@@ -328,22 +328,39 @@ Tag *NotesStore::tag(const QString &guid)
 
 void NotesStore::createTag(const QString &name)
 {
-    CreateTagJob *job = new CreateTagJob(name);
-    connect(job, &CreateTagJob::jobDone, this, &NotesStore::createTagJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    Tag *tag = new Tag("tmp-" + QUuid::createUuid().toString(), 0);
+    tag->setName(name);
+    m_tags.append(tag);
+    m_tagsHash.insert(tag->guid(), tag);
+    emit tagAdded(tag->guid());
+
+    syncToCacheFile(tag);
+
+    if (EvernoteConnection::instance()->isConnected()) {
+        CreateTagJob *job = new CreateTagJob(tag);
+        connect(job, &CreateTagJob::jobDone, this, &NotesStore::createTagJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
-void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result)
+void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Tag &result)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error creating tag:" << errorMessage;
         return;
     }
-    Tag *tag = new Tag(QString::fromStdString(result.guid), result.updateSequenceNum);
-    tag->setName(QString::fromStdString(result.name));
-    m_tags.append(tag);
-    m_tagsHash.insert(tag->guid(), tag);
-    emit tagAdded(tag->guid());
+
+    Tag *tag = m_tagsHash.value(tmpGuid);
+    if (!tag) {
+        qWarning() << "Create Tag job done but tag can't be found any more";
+        return;
+    }
+
+    tag->setGuid(QString::fromStdString(result.guid));
+    int idx = m_tags.indexOf(tag);
+    QModelIndex modelIndex = index(idx);
+    emit dataChanged(modelIndex, modelIndex, QVector<int>() << RoleGuid);
+    emit tagChanged(tag->guid());
 }
 
 void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)

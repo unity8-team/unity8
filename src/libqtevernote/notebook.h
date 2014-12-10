@@ -88,7 +88,7 @@ private:
     QDateTime m_lastUpdated;
     QList<QString> m_notesList;
 
-    QSettings m_infoFile;
+    QString m_infoFile;
 
     friend class NotesStore;
 };

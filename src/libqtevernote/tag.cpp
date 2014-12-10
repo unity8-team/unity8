@@ -28,10 +28,11 @@
 Tag::Tag(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
     m_updateSequenceNumber(updateSequenceNumber),
-    m_guid(guid),
-    m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/tag-" + guid + ".info", QSettings::IniFormat)
+    m_guid(guid)
 {
-    m_name = m_infoFile.value("name").toString();
+    setGuid(guid);
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    m_name = infoFile.value("name").toString();
 
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->tagGuids().contains(m_guid)) {
@@ -50,6 +51,25 @@ Tag::~Tag()
 QString Tag::guid() const
 {
     return m_guid;
+}
+
+void Tag::setGuid(const QString &guid)
+{
+    bool syncToFile = false;
+    if (!m_infoFile.isEmpty()) {
+        QFile ifile(m_infoFile);
+        ifile.remove();
+
+        syncToFile = true;
+    }
+
+    m_guid = guid;
+    m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/tag-" + guid + ".info";
+
+    if (syncToFile) {
+        syncToInfoFile();
+    }
+    emit guidChanged();
 }
 
 quint32 Tag::updateSequenceNumber() const
@@ -123,5 +143,6 @@ void Tag::noteChanged(const QString &noteGuid, const QString &notebookGuid)
 
 void Tag::syncToInfoFile()
 {
-    m_infoFile.setValue("name", m_name);
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    infoFile.setValue("name", m_name);
 }

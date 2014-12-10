@@ -31,13 +31,13 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     QObject(parent),
     m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
-    m_published(false),
-    m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/notebook-" + guid + ".info", QSettings::IniFormat)
+    m_published(false)
 {
-
-    m_name = m_infoFile.value("name").toString();
-    m_published = m_infoFile.value("published").toBool();
-    m_lastUpdated = m_infoFile.value("lastUpdated").toDateTime();
+    setGuid(guid);
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    m_name = infoFile.value("name").toString();
+    m_published = infoFile.value("published").toBool();
+    m_lastUpdated = infoFile.value("lastUpdated").toDateTime();
 
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
@@ -186,15 +186,27 @@ void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
 
 void Notebook::setGuid(const QString &guid)
 {
-    if (m_guid != guid) {
-        m_guid = guid;
-        emit guidChanged();
+    bool syncToFile = false;
+    if (!m_infoFile.isEmpty()) {
+        QFile ifile(m_infoFile);
+        ifile.remove();
+
+        syncToFile = true;
     }
+
+    m_guid = guid;
+    m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/notebook-" + guid + ".info";
+
+    if (syncToFile) {
+        syncToInfoFile();
+    }
+    emit guidChanged();
 }
 
 void Notebook::syncToInfoFile()
 {
-    m_infoFile.setValue("name", m_name);
-    m_infoFile.setValue("published", m_published);
-    m_infoFile.value("lastUpdated", m_lastUpdated);
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    infoFile.setValue("name", m_name);
+    infoFile.setValue("published", m_published);
+    infoFile.value("lastUpdated", m_lastUpdated);
 }
