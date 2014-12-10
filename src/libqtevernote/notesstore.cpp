@@ -56,10 +56,7 @@ NotesStore::NotesStore(QObject *parent) :
     m_notebooksLoading(false),
     m_tagsLoading(false)
 {
-    connect(UserStore::instance(), &UserStore::usernameChanged, this, &NotesStore::setUsername);
-    connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshNotebooks);
-    connect(EvernoteConnection::instance(), SIGNAL(isConnectedChanged()), this, SLOT(refreshNotes()));
-    connect(EvernoteConnection::instance(), &EvernoteConnection::isConnectedChanged, this, &NotesStore::refreshTags);
+    connect(UserStore::instance(), &UserStore::usernameChanged, this, &NotesStore::userStoreConnected);
 
     qRegisterMetaType<evernote::edam::NotesMetadataList>("evernote::edam::NotesMetadataList");
     qRegisterMetaType<evernote::edam::Note>("evernote::edam::Note");
@@ -103,6 +100,15 @@ void NotesStore::setUsername(const QString &username)
         qDebug() << "initialized cacheFile" << m_cacheFile;
         loadFromCacheFile();
     }
+}
+
+void NotesStore::userStoreConnected(const QString &username)
+{
+    setUsername(username);
+
+    refreshNotebooks();
+    refreshTags();
+    refreshNotes();
 }
 
 bool NotesStore::loading() const
@@ -440,6 +446,7 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
             QPointer<Note> notePtr = note;
             m_unhandledNotes.insert(note->guid(), notePtr);
         }
+        qDebug() << "refreshing notes" << m_unhandledNotes.count();
 
         emit loadingChanged();
         FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid, QString(), startIndex);
@@ -450,7 +457,7 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    qDebug() << "fetchnoteresult:" << results.notes.size();
+    qDebug() << "fetchnoteresult:" << results.notes.size() << m_unhandledNotes.count();
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
@@ -580,23 +587,22 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                 connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
                 EvernoteConnection::instance()->enqueue(job);
             } else {
-                for (int i = 0; i < m_notes.count(); i++) {
-                    if (m_notes.at(i)->guid() == note->guid()) {
-                        beginRemoveRows(QModelIndex(), i, i);
-                        m_notes.removeAt(i);
-                        m_notesHash.remove(note->guid());
-                        endRemoveRows();
-                        emit noteRemoved(note->guid(), note->notebookGuid());
-                        emit countChanged();
+                // This note has been deleted from the server... drop it
+                int idx = m_notes.indexOf(note);
+                if (idx > -1) {
+                    beginRemoveRows(QModelIndex(), idx, idx);
+                    m_notes.removeAt(idx);
+                    m_notesHash.remove(note->guid());
+                    endRemoveRows();
+                    emit noteRemoved(note->guid(), note->notebookGuid());
+                    emit countChanged();
 
-                        QSettings settings(m_cacheFile, QSettings::IniFormat);
-                        settings.beginGroup("notes");
-                        settings.remove(note->guid());
-                        settings.endGroup();
+                    QSettings settings(m_cacheFile, QSettings::IniFormat);
+                    settings.beginGroup("notes");
+                    settings.remove(note->guid());
+                    settings.endGroup();
 
-                        note->deleteLater();
-                        break;
-                    }
+                    note->deleteLater();
                 }
             }
         }

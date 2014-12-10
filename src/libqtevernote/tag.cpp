@@ -120,7 +120,7 @@ void Tag::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 void Tag::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(notebookGuid)
-    if (NotesStore::instance()->note(noteGuid)->tagGuids().contains(m_guid)) {
+    if (m_notesList.contains(noteGuid)) {
         m_notesList.removeAll(noteGuid);
         emit noteCountChanged();
     }

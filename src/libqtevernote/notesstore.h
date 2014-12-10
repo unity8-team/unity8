@@ -187,6 +187,7 @@ private slots:
     void syncToCacheFile(Tag *tag);
     void loadFromCacheFile();
 
+    void userStoreConnected(const QString &username);
     void emitDataChanged();
     void clear();
 
