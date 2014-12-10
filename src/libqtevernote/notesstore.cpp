@@ -353,11 +353,6 @@ void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const Q
     }
 }
 
-void NotesStore::noteNotebookGuidChanged()
-{
-
-}
-
 void NotesStore::tagNote(const QString &noteGuid, const QString &tagGuid)
 {
     Note *note = m_notesHash.value(noteGuid);
@@ -1046,6 +1041,12 @@ void NotesStore::clear()
         Notebook *notebook = m_notebooks.takeFirst();
         m_notebooksHash.remove(notebook->guid());
         emit notebookRemoved(notebook->guid());
+    }
+
+    while (!m_tags.isEmpty()) {
+        Tag *tag = m_tags.takeFirst();
+        m_tagsHash.remove(tag->guid());
+        emit tagRemoved(tag->guid());
     }
 }
 

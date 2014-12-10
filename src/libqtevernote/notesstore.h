@@ -178,8 +178,6 @@ private slots:
     void createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result);
     void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
-    void noteNotebookGuidChanged();
-
     void syncToCacheFile(Note *note);
     void deleteFromCacheFile(Note* note);
     void syncToCacheFile(Notebook *notebook);
