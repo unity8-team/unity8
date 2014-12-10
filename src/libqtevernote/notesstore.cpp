@@ -283,8 +283,9 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
         qWarning() << "Error creating notebook:" << errorMessage;
         return;
     }
-    Notebook *notebook = m_notebooksHash.value(tmpGuid);
+    Notebook *notebook = m_notebooksHash.take(tmpGuid);
     notebook->setGuid(QString::fromStdString(result.guid));
+    m_notebooksHash.insert(notebook->guid(), notebook);
     notebook->setUpdateSequenceNumber(result.updateSequenceNum);
     notebook->setName(QString::fromStdString(result.name));
     emit notebookChanged(notebook->guid());
