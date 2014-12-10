@@ -31,6 +31,8 @@ Empty {
     property string content
     property string resource
     property string tags
+    property bool loading
+    property bool synced
     property string notebookColor
 
     showDivider: false;
@@ -73,13 +75,25 @@ Empty {
                         ColumnLayout {
                             anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1); rightMargin: -units.gu(2) }
 
-                            Label {
+                            RowLayout {
                                 Layout.fillWidth: true
-                                text: root.title
-                                font.weight: Font.Light
-                                elide: Text.ElideRight
-                                color: root.notebookColor
+                                height: titleLabel.height
+                                Label {
+                                    id: titleLabel
+                                    Layout.fillWidth: true
+                                    text: root.title
+                                    font.weight: Font.Light
+                                    elide: Text.ElideRight
+                                    color: root.notebookColor
+                                }
+                                Icon {
+                                    height: titleLabel.height
+                                    width: height
+                                    name: root.loading ? "sync-updating" : root.synced ? "sync-idle" : "sync-offline"
+                                    visible: NotesStore.username !== "@local"
+                                }
                             }
+
 
                             Label {
                                 Layout.fillWidth: true

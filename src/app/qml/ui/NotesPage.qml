@@ -156,6 +156,8 @@ PageWithBottomEdge {
             }
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
+            synced: model.synced
+            loading: model.loading
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);

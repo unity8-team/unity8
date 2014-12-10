@@ -195,6 +195,10 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->tagGuids();
     case RoleDeleted:
         return m_notes.at(index.row())->deleted();
+    case RoleSynced:
+        return m_notes.at(index.row())->synced();
+    case RoleLoading:
+        return m_notes.at(index.row())->loading();
     }
     return QVariant();
 }
@@ -222,6 +226,8 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleResourceUrls, "resourceUrls");
     roles.insert(RoleTagGuids, "tagGuids");
     roles.insert(RoleDeleted, "deleted");
+    roles.insert(RoleLoading, "loading");
+    roles.insert(RoleSynced, "synced");
     return roles;
 }
 
@@ -520,6 +526,26 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             changedRoles << RoleReminderDoneTime;
         }
 
+        qDebug() << "have note with" << note->updateSequenceNumber() << note->lastSyncedSequenceNumber();
+        if (note->synced()) {
+            // Local note did not change. Check if we need to refresh from server.
+            if (note->updateSequenceNumber() < result.updateSequenceNum) {
+                qDebug() << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
+                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
+            }
+        } else {
+            // Local note changed. See if we can push our changes.
+            if (note->lastSyncedSequenceNumber() == result.updateSequenceNum) {
+                qDebug() << "Local note has changed while server note did not. Pushing changes.";
+                note->setLoading(true);
+                SaveNoteJob *job = new SaveNoteJob(note, this);
+                connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
+                EvernoteConnection::instance()->enqueue(job);
+            } else {
+                qWarning() << "CONFLICT: Note has been changed on server and locally!";
+            }
+        }
+
         if (newNote) {
             beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
             m_notesHash.insert(note->guid(), note);
@@ -535,16 +561,6 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             syncToCacheFile(note);
         }
 
-        if (note->updateSequenceNumber() < result.updateSequenceNum) {
-            qDebug() << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
-            refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
-        }
-        if (note->updateSequenceNumber() > result.updateSequenceNum) {
-            qDebug() << "Saving change to server";
-            SaveNoteJob *job = new SaveNoteJob(note, this);
-            connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
-            EvernoteConnection::instance()->enqueue(job);
-        }
     }
 
     if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
@@ -595,6 +611,8 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
     Note *note = m_notesHash.value(guid);
     if (note) {
         note->setLoading(true);
+        int idx = m_notes.indexOf(note);
+        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
     }
 
     FetchNoteJob *job = new FetchNoteJob(guid, what, this);
@@ -837,7 +855,10 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     note->setGuid(guid);
     roles << RoleGuid;
 
-    note->setUpdateSequenceNumber(result.updateSequenceNum);
+    if (note->updateSequenceNumber() != result.updateSequenceNum) {
+        note->setUpdateSequenceNumber(result.updateSequenceNum);
+        roles << RoleSynced;
+    }
     if (result.__isset.created) {
         note->setCreated(QDateTime::fromMSecsSinceEpoch(result.created));
         roles << RoleCreated;
@@ -878,11 +899,9 @@ void NotesStore::saveNote(const QString &guid)
     }
     note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
     syncToCacheFile(note);
-    int idx = m_notes.indexOf(note);
-    emit dataChanged(index(idx), index(idx));
-    emit noteChanged(guid, note->notebookGuid());
 
     if (EvernoteConnection::instance()->isConnected()) {
+        note->setLoading(true);
         if (note->guid().startsWith("tmp-")) {
             // This note hasn't been created on the server yet... try that first
             CreateNoteJob *job = new CreateNoteJob(note, this);
@@ -895,6 +914,10 @@ void NotesStore::saveNote(const QString &guid)
         }
     }
 
+    int idx = m_notes.indexOf(note);
+    emit dataChanged(index(idx), index(idx));
+    emit noteChanged(guid, note->notebookGuid());
+
     m_organizerAdapter->updateReminder(guid);
 }
 
@@ -906,16 +929,23 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
     }
 
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
-    if (note) {
-        note->setTitle(QString::fromStdString(result.title));
-        note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
-        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
-
-        emit noteChanged(note->guid(), note->notebookGuid());
-
-        QModelIndex noteIndex = index(m_notes.indexOf(note));
-        emit dataChanged(noteIndex, noteIndex);
+    if (!note) {
+        qWarning() << "Got a save note job result, but note has disappeared locally.";
+        return;
     }
+
+    note->setLoading(false);
+    note->setUpdateSequenceNumber(result.updateSequenceNum);
+    note->setLastSyncedSequenceNumber(result.updateSequenceNum);
+    note->setTitle(QString::fromStdString(result.title));
+    note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+    note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
+
+    syncToCacheFile(note);
+
+    QModelIndex noteIndex = index(m_notes.indexOf(note));
+    emit dataChanged(noteIndex, noteIndex);
+    emit noteChanged(note->guid(), note->notebookGuid());
 }
 
 void NotesStore::saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)

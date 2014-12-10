@@ -53,6 +53,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_reminderTime = infoFile.value("reminderTime").toDateTime();
     m_reminderDoneTime = infoFile.value("reminderDoneTime").toDateTime();
     m_deleted = infoFile.value("deleted").toBool();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", m_updateSequenceNumber).toUInt();
+    m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     infoFile.beginGroup("resources");
     foreach (const QString &hash, infoFile.childGroups()) {
@@ -64,7 +66,6 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
         } else {
             // uh oh... have a resource description without file... reset sequence number to indicate we need a sync
             qWarning() << "Have a resource description but no resource file for it";
-            m_updateSequenceNumber = 0;
         }
     }
     infoFile.endGroup();
@@ -78,6 +79,11 @@ Note::~Note()
 bool Note::loading() const
 {
     return m_loading;
+}
+
+bool Note::synced() const
+{
+    return m_synced;
 }
 
 QString Note::guid() const
@@ -426,6 +432,24 @@ void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
 {
     if (m_updateSequenceNumber != updateSequenceNumber) {
         m_updateSequenceNumber = updateSequenceNumber;
+
+        m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        emit syncedChanged();
+    }
+}
+
+quint32 Note::lastSyncedSequenceNumber() const
+{
+    return m_lastSyncedSequenceNumber;
+}
+
+void Note::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+{
+    if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
+        m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;
+
+        m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        emit syncedChanged();
     }
 }
 

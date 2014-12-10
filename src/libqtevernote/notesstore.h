@@ -85,7 +85,9 @@ public:
         RoleResourceUrls,
         RoleReminderSorting,
         RoleTagGuids,
-        RoleDeleted
+        RoleDeleted,
+        RoleLoading,
+        RoleSynced
     };
 
     ~NotesStore();

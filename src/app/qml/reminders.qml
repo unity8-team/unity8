@@ -387,11 +387,11 @@ MainView {
     }
 
     StatusBar {
-        id: offlineModeBar
+        id: statusBar
         anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
         color: root.backgroundColor
-        shown: EvernoteConnection.error || (!NetworkingStatus.online && EvernoteConnection.token)
-        text: EvernoteConnection.error || i18n.tr("Offline mode")
+        shown: EvernoteConnection.error
+        text: EvernoteConnection.error
         iconName: "sync-error"
 
     }
@@ -399,7 +399,7 @@ MainView {
     PageStack {
         id: pagestack
         anchors.rightMargin: root.narrowMode ? 0 : root.width - units.gu(40)
-        anchors.topMargin: offlineModeBar.height
+        anchors.topMargin: statusBar.height
 
 
         Tabs {

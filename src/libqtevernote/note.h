@@ -65,6 +65,7 @@ class Note : public QObject
 
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
 
 public:
     explicit Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
@@ -136,10 +137,11 @@ public:
     void setIsSearchResult(bool isSearchResult);
 
     quint32 updateSequenceNumber() const;
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    quint32 lastSyncedSequenceNumber() const;
 
     bool isCached() const;
     bool loading() const;
+    bool synced() const;
 
     QStringList resourceUrls() const;
     Resource* resource(const QString &hash);
@@ -174,14 +176,17 @@ signals:
     void deletedChanged();
 
     void loadingChanged();
+    void syncedChanged();
 
 private:
+    // Those should only be called from NotesStore, which is a friend
     void setLoading(bool loading);
     void setDeleted(bool deleted);
-
     void syncToCacheFile();
     void syncToInfoFile();
     void deleteFromCache();
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
 
     // const because we want to load on demand in getters. Keep this private!
     void load() const;
@@ -203,11 +208,13 @@ private:
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
     quint32 m_updateSequenceNumber;
+    quint32 m_lastSyncedSequenceNumber;
     mutable QFile m_cacheFile;
     QString m_infoFile;
 
     bool m_loading;
     mutable bool m_loaded;
+    mutable bool m_synced;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;
