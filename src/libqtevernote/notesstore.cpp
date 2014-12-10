@@ -292,9 +292,14 @@ void NotesStore::saveNotebook(const QString &guid)
         qWarning() << "Can't save notebook. Guid not found:" << guid;
         return;
     }
-    SaveNotebookJob *job = new SaveNotebookJob(notebook, this);
-    connect(job, &SaveNotebookJob::jobDone, this, &NotesStore::saveNotebookJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+
+    syncToCacheFile(notebook);
+
+    if (EvernoteConnection::instance()->isConnected()) {
+        SaveNotebookJob *job = new SaveNotebookJob(notebook, this);
+        connect(job, &SaveNotebookJob::jobDone, this, &NotesStore::saveNotebookJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
 void NotesStore::saveTag(const QString &guid)
