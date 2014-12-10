@@ -990,6 +990,10 @@ void NotesStore::deleteNote(const QString &guid)
             EvernoteConnection::instance()->enqueue(job);
         }
     }
+
+    if (note->reminder() && !note->reminderDone()) {
+        m_organizerAdapter->startSync();
+    }
 }
 
 void NotesStore::findNotes(const QString &searchWords)
