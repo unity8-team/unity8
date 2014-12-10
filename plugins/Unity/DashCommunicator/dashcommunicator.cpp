@@ -35,7 +35,7 @@ void DashCommunicator::run()
 {
     QScopedPointer<DashConnection> dashConnection(new DashConnection("com.canonical.UnityDash",
                                  "/com/canonical/UnityDash",
-                                 "", this));
+                                 ""));
 
     connect(this, &DashCommunicator::sendSetCurrentScope,
             dashConnection.data(), &DashConnection::setCurrentScope);
