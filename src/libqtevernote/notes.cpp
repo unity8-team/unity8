@@ -179,7 +179,6 @@ bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) con
         }
     }
     if (!m_showDeleted) {
-        qDebug() << "testing on deleted. showDeleted:" << m_showDeleted << "isDeleted" << NotesStore::instance()->data(sourceIndex, NotesStore::RoleDeleted).toBool();
         if (NotesStore::instance()->data(sourceIndex, NotesStore::RoleDeleted).toBool()) {
             return false;
         }

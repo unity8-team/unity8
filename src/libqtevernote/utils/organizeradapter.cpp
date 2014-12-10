@@ -126,7 +126,6 @@ void OrganizerAdapter::loadReminders()
     // start request
     connect(operation, &QOrganizerItemFetchRequest::stateChanged, this, &OrganizerAdapter::fetchStateChanged);
     operation->start();
-    qDebug() << "fetch operation started" << operation->state();
 }
 
 void OrganizerAdapter::fetchStateChanged(QOrganizerAbstractRequest::State state)

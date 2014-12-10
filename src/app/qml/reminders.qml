@@ -88,7 +88,7 @@ MainView {
     Connections {
         target: EvernoteConnection
         onIsConnectedChanged: {
-            if (EvernoteConnection.isConnected) {
+            if (EvernoteConnection.isConnected && root.uri) {
                 processUri();
             }
         }

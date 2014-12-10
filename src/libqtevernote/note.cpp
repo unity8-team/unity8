@@ -104,9 +104,12 @@ void Note::setGuid(const QString &guid)
         }
 
         m_guid = guid;
+        QString newCacheFileName = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml";
         if (m_cacheFile.exists()) {
-            qDebug() << "renaming cachefile from" << m_cacheFile.fileName() << "to" << QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml";
-            m_cacheFile.rename(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml");
+            qDebug() << "renaming cachefile from" << m_cacheFile.fileName() << "to" << newCacheFileName;
+            m_cacheFile.rename(newCacheFileName);
+        } else {
+            m_cacheFile.setFileName(newCacheFileName);
         }
         m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".info";
 
@@ -237,8 +240,8 @@ void Note::setEnmlContent(const QString &enmlContent)
         m_content.setEnml(enmlContent);
         m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
-        syncToCacheFile();
     }
+    m_loaded = true;
 }
 
 QString Note::htmlContent() const
@@ -259,7 +262,6 @@ void Note::setRichTextContent(const QString &richTextContent)
         m_content.setRichText(richTextContent);
         m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
-        syncToCacheFile();
     }
 }
 
@@ -517,7 +519,6 @@ void Note::attachFile(int position, const QUrl &fileName)
     m_content.attachFile(position, resource->hash(), resource->type());
     emit resourcesChanged();
     emit contentChanged();
-    syncToCacheFile();
 
     // Cleanup imported file.
     // TODO: If the app should be extended to allow attaching other files, and we somehow
@@ -608,15 +609,14 @@ void Note::syncToCacheFile()
         m_cacheFile.write(m_content.enml().toUtf8());
         m_cacheFile.close();
     }
-    m_loaded = true;
 }
 
 void Note::load() const
 {
+    qDebug() << "called load on note" << m_title << m_loaded << isCached() << m_cacheFile.exists() << m_cacheFile.fileName();
     if (!m_loaded && isCached()) {
         loadFromCacheFile();
-    }
-    if (!m_loaded && !m_loading) {
+    } else if (!m_loaded && !m_loading) {
         NotesStore::instance()->refreshNoteContent(m_guid);
     }
 }

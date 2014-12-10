@@ -685,6 +685,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         qDebug() << "refreshWithResourceData";
         refreshNoteContent(note->guid(), FetchNoteJob::LoadResources);
     }
+
+    syncToCacheFile(note); // Syncs into the list cache
+    note->syncToCacheFile(); // Syncs note's content into notes cache
 }
 
 void NotesStore::refreshNotebooks()
@@ -897,6 +900,7 @@ void NotesStore::saveNote(const QString &guid)
     }
     note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
     syncToCacheFile(note);
+    note->syncToCacheFile();
 
     if (EvernoteConnection::instance()->isConnected()) {
         note->setLoading(true);
@@ -1090,7 +1094,6 @@ void NotesStore::syncToCacheFile(Note *note)
     cacheFile.setValue(note->guid(), note->updateSequenceNumber());
     cacheFile.endGroup();
     note->syncToInfoFile();
-    note->syncToCacheFile();
 }
 
 void NotesStore::deleteFromCacheFile(Note *note)
