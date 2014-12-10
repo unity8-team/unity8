@@ -27,6 +27,7 @@ Page {
     property alias note: noteView.note
 
     signal editNote(var note)
+    signal openTaggedNotes(string title, string tagGuid)
 
     tools: ToolbarItems {
        ToolbarButton {
@@ -63,8 +64,9 @@ Page {
         id: noteView
         anchors.fill: parent
 
-        onEditNote: {
-            root.editNote(note) ;
+        onOpenTaggedNotes: {
+            console.log('babbo natale')
+            root.openTaggedNotes(title, tagGuid);
         }
     }
 }

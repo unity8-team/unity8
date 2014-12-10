@@ -42,6 +42,21 @@ Item {
 
     signal exitEditMode(var note)
 
+    function saveNote() {
+        var title = titleTextField.text ? titleTextField.text : i18n.tr("Untitled");
+        var notebookGuid = notebookSelector.selectedGuid;
+        var text = noteTextArea.text;
+
+        if (note) {
+            note.title = titleTextField.text;
+            note.notebookGuid = notebookSelector.selectedGuid;
+            note.richTextContent = noteTextArea.text;
+            NotesStore.saveNote(note.guid);
+        } else {
+            NotesStore.createNote(title, notebookGuid, text);
+        }
+    }
+
     QtObject {
         id: priv
         property int insertPosition
@@ -105,18 +120,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        var title = titleTextField.text ? titleTextField.text : i18n.tr("Untitled");
-                        var notebookGuid = notebookSelector.selectedGuid;
-                        var text = noteTextArea.text;
-
-                        if (note) {
-                            note.title = titleTextField.text
-                            note.notebookGuid = notebookSelector.selectedGuid
-                            note.richTextContent = noteTextArea.text
-                            NotesStore.saveNote(note.guid);
-                        } else {
-                            NotesStore.createNote(title, notebookGuid, text);
-                        }
+                        saveNote();
                         root.exitEditMode(root.note);
                     }
                 }
@@ -369,6 +373,11 @@ Item {
         }
     }
 
+    Component {
+        id: tagsDialog
+        EditTagsDialog { note: root.note; pageHeight: parent.height }
+    }
+
     Rectangle {
         anchors.fill: toolbox
         color: "#efefef"
@@ -383,6 +392,7 @@ Item {
 
         property bool charFormatExpanded: false
         property bool blockFormatExpanded: false
+        property bool tagsRowExpanded: false
 
         Behavior on height { UbuntuNumberAnimation {} }
 
@@ -581,6 +591,57 @@ Item {
             }
         }
 
+        Row {
+            anchors { left: parent.left; right: parent.right; rightMargin: units.gu(1) }
+            height: units.gu(4)
+            visible: toolbox.tagsRowExpanded
+            spacing: units.gu(1)
+
+            Rectangle {
+                z: 100
+                color: "#efefef"
+                height: parent.height
+                width: height + units.gu(1)
+                RtfButton {
+                    id: editTagsButton
+                    iconName: "edit"
+                    height: parent.height
+                    width: height
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    onClicked: {
+                        PopupUtils.open(tagsDialog)
+                    }
+                }
+            }
+
+            ListView {
+                width: parent.width - editTagsButton.width - units.gu(1)
+                height: units.gu(4)
+
+                model: root.note ? root.note.tagGuids.length : undefined
+                orientation: ListView.Horizontal
+                spacing: units.gu(1)
+
+
+                delegate: Rectangle {
+                    id: rectangle
+                    radius: units.gu(1)
+                    color: "white"
+                    border.color: preferences.colorForNotebook(root.note.notebookGuid)
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: NotesStore.tag(root.note.tagGuids[index]).name
+                        color: preferences.colorForNotebook(root.note.notebookGuid)
+                        Component.onCompleted: {
+                            rectangle.width = width + units.gu(2)
+                            rectangle.height = height + units.gu(1)
+                            anchors.centerIn = parent
+                        }
+                    }
+                }
+            }
+        }
+
         RowLayout {
             anchors { left: parent.left; right: parent.right }
             anchors.margins: units.gu(1)
@@ -650,6 +711,18 @@ Item {
                     priv.insertPosition = noteTextArea.cursorPosition;
                     note.richTextContent = noteTextArea.text;
                     importPicker.visible = true;
+                }
+            }
+
+            RtfSeparator {}
+
+            RtfButton {
+                iconSource: "../images/tags.svg"
+                height: parent.height
+                width: height
+                active: toolbox.tagsRowExpanded
+                onClicked: {
+                    toolbox.tagsRowExpanded = !toolbox.tagsRowExpanded
                 }
             }
 

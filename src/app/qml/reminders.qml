@@ -117,9 +117,11 @@ MainView {
             var page = component.createObject(root);
             page.note = note;
             page.editNote.connect(function(note) {root.switchToEditMode(note)})
+            page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
             pagestack.push(page)
         } else {
             var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
+            view.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, false)})
             view.note = note;
         }
     }
@@ -260,12 +262,30 @@ MainView {
                     print("Error registering PushClient:", req.status, req.responseText, req.statusText);
                 }
             }
+            req.send(JSON.stringify({
+                "userId" : UserStore.username,
+                "appId": root.applicationName,
+                "token": pushClient.token
+            }))
         }
-        req.send(JSON.stringify({
-            "userId" : UserStore.username,
-            "appId": root.applicationName,
-            "token": pushClient.token
-        }))
+    }
+
+    function openTaggedNotes(title, tagGuid, narrowMode) {
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
+        var page = component.createObject();
+        print("opening note page for tag", tagGuid)
+        pagestack.push(page, {title: title, filterTagGuid: tagGuid, narrowMode: narrowMode});
+        page.selectedNoteChanged.connect(function() {
+            if (page.selectedNote) {
+                root.displayNote(page.selectedNote);
+                if (root.narrowMode) {
+                    page.selectedNote = null;
+                }
+            }
+        })
+        page.editNote.connect(function(note) {
+            root.switchToEditMode(note)
+        })
     }
 
     PushClient {

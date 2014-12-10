@@ -61,6 +61,7 @@ Empty {
                     objectName: 'tagTitleLabel'
                     text: model.name
                     fontSize: "large"
+                    Layout.fillWidth: true
 
                     MouseArea {
                         onPressAndHold: {

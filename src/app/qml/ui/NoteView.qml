@@ -27,7 +27,7 @@ Item {
     property string title: note ? note.title : ""
     property var note: null
 
-    signal editNote(var note)
+    signal openTaggedNotes(string title, string tagGuid)
 
     BouncingProgressBar {
         anchors.top: parent.top
@@ -48,7 +48,8 @@ Item {
 
     WebView {
         id: noteTextArea
-        anchors { fill: parent}
+        width: parent.width
+        height: parent.height - tagsRow.height - (tagsRow.height > 0 ? units.gu(2) : 0)
 
         property string html: root.note ? note.htmlContent : ""
 
@@ -83,5 +84,41 @@ Item {
                 }
             }
         ]
+    }
+
+    ListView {
+        id: tagsRow
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom; margins: units.gu(1) }
+        model: root.note ? root.note.tagGuids.length : undefined
+        orientation: ListView.Horizontal
+        spacing: units.gu(1)
+        height: units.gu(3)
+
+        delegate: Rectangle {
+            id: rectangle
+            radius: units.gu(1)
+            color: "white"
+            border.color: preferences.colorForNotebook(root.note.notebookGuid)
+
+            Text {
+                text: NotesStore.tag(root.note.tagGuids[index]).name
+                color: preferences.colorForNotebook(root.note.notebookGuid)
+                Component.onCompleted: {
+                    rectangle.width = width + units.gu(2)
+                    rectangle.height = height + units.gu(1)
+                    anchors.centerIn = parent
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (!narrowMode) {
+                        sideViewLoader.clear();
+                    }
+                    root.openTaggedNotes(NotesStore.tag(root.note.tagGuids[index]).name, NotesStore.tag(root.note.tagGuids[index]).guid)
+                }
+            }
+        }
     }
 }
