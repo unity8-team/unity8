@@ -29,11 +29,18 @@ Tag::Tag(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
     m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
-    m_noteCount(0),
     m_infoFile(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/tag-" + guid + ".info", QSettings::IniFormat)
 {
     m_name = m_infoFile.value("name").toString();
-    updateNoteCount();
+
+    foreach (Note *note, NotesStore::instance()->notes()) {
+        if (note->tagGuids().contains(m_guid)) {
+            m_notesList.append(note->guid());
+        }
+    }
+    connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Tag::noteAdded);
+    connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Tag::noteRemoved);
+    connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Tag::noteChanged);
 }
 
 Tag::~Tag()
@@ -70,7 +77,7 @@ void Tag::setName(const QString &name)
 
 int Tag::noteCount() const
 {
-    return m_noteCount;
+    return m_notesList.count();
 }
 
 Tag *Tag::clone()
@@ -80,17 +87,37 @@ Tag *Tag::clone()
     return tag;
 }
 
-void Tag::updateNoteCount()
+void Tag::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
-    int noteCount = 0;
-    foreach (Note *note, NotesStore::instance()->notes()) {
-        if (note->tagGuids().contains(m_guid)) {
-            noteCount++;
-        }
-    }
-    if (m_noteCount != noteCount) {
-        m_noteCount = noteCount;
+    Q_UNUSED(notebookGuid)
+    if (NotesStore::instance()->note(noteGuid)->tagGuids().contains(m_guid)) {
+        m_notesList.append(noteGuid);
         emit noteCountChanged();
+    }
+}
+
+void Tag::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
+{
+    Q_UNUSED(notebookGuid)
+    if (NotesStore::instance()->note(noteGuid)->tagGuids().contains(m_guid)) {
+        m_notesList.removeAll(noteGuid);
+        emit noteCountChanged();
+    }
+}
+
+void Tag::noteChanged(const QString &noteGuid, const QString &notebookGuid)
+{
+    Q_UNUSED(notebookGuid)
+    if (NotesStore::instance()->note(noteGuid)->tagGuids().contains(m_guid)) {
+        if (!m_notesList.contains(noteGuid)) {
+            m_notesList.append(noteGuid);
+            emit noteCountChanged();
+        }
+    } else {
+        if (m_notesList.contains(noteGuid)) {
+            m_notesList.removeAll(noteGuid);
+            emit noteCountChanged();
+        }
     }
 }
 

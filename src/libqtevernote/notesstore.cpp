@@ -68,9 +68,7 @@ NotesStore::NotesStore(QObject *parent) :
     qRegisterMetaType<std::vector<evernote::edam::Tag> >("std::vector<evernote::edam::Tag>");
     qRegisterMetaType<evernote::edam::Tag>("evernote::edam::Tag");
 
-    qDebug() << "creating organizer";
     m_organizerAdapter = new OrganizerAdapter(this);
-    qDebug() << "done";
 }
 
 NotesStore *NotesStore::instance()
@@ -478,28 +476,6 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             tagGuids << QString::fromStdString(result.tagGuids.at(i));
         }
         if (note->tagGuids() != tagGuids) {
-            foreach (const QString &tagGuid, tagGuids) {
-                if (!note->tagGuids().contains(tagGuid)) {
-                    Tag *tag = m_tagsHash.value(tagGuid);
-                    if (tag) {
-                        tag->m_noteCount++;
-                        emit tag->noteCountChanged();
-                    } else {
-                        refreshTags();
-                    }
-                }
-            }
-            foreach (const QString &tagGuid, note->tagGuids()) {
-                if (!tagGuids.contains(tagGuid)) {
-                    Tag *tag = m_tagsHash.value(tagGuid);
-                    if (tag) {
-                        tag->m_noteCount--;
-                        emit tag->noteCountChanged();
-                    } else {
-                        refreshTags();
-                    }
-                }
-            }
             note->setTagGuids(tagGuids);
             changedRoles << RoleTagGuids;
         }
@@ -918,7 +894,7 @@ void NotesStore::saveNote(const QString &guid)
     emit dataChanged(index(idx), index(idx));
     emit noteChanged(guid, note->notebookGuid());
 
-    m_organizerAdapter->updateReminder(guid);
+    m_organizerAdapter->startSync();
 }
 
 void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)

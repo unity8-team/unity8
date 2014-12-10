@@ -70,38 +70,13 @@ void OrganizerAdapter::startSync()
     loadReminders();
 }
 
-void OrganizerAdapter::updateReminder(const QString &noteGuid)
-{
-    Note *note = NotesStore::instance()->note(noteGuid);
-    if (!note) {
-        qWarning() << "Note" << noteGuid << "not found. Can't sync reminder.";
-        return;
-    }
-
-    QOrganizerTodo item = findFromGuid(note->guid());
-    organizerEventFromNote(note, item);
-
-    QOrganizerItemSaveRequest *operation = new QOrganizerItemSaveRequest(this);
-    operation->setManager(m_manager);
-    operation->setItem(item);
-    connect(operation, &QOrganizerItemFetchRequest::stateChanged, this, &OrganizerAdapter::writeStateChanged);
-    operation->start();
-
-}
-
 void OrganizerAdapter::writeReminders()
 {
-    if (NotesStore::instance()->notes().count() == 0) {
-        //nothing to do
-        return;
-    }
-
     foreach (Note* note, NotesStore::instance()->notes()) {
         if (note->reminder() && note->hasReminderTime() && !note->reminderDone()) {
             qDebug() << "********* syncing reminder" << note->title();
 
-            // Do we already have a OrganizerItem?
-            QOrganizerTodo item = findFromGuid(note->guid());
+            QOrganizerTodo item;
             organizerEventFromNote(note, item);
 
             QOrganizerItemSaveRequest *operation = new QOrganizerItemSaveRequest(this);
@@ -161,6 +136,7 @@ void OrganizerAdapter::fetchStateChanged(QOrganizerAbstractRequest::State state)
     if (m_restart) {
         m_busy = false;
         startSync();
+        return;
     }
 
     if (state == QOrganizerAbstractRequest::CanceledState) {
@@ -173,22 +149,12 @@ void OrganizerAdapter::fetchStateChanged(QOrganizerAbstractRequest::State state)
     // cleaning up old reminders
     if (state == QOrganizerAbstractRequest::FinishedState) {
          QList<QOrganizerItem> items = request->items();
-         m_organizerItems.clear();
          foreach (const QOrganizerItem &item, items) {
-             qDebug() << "Have organizer item:" << item.guid() << item.displayLabel() << item.description();
-             m_organizerItems.append(item);
-
-             QString guid = item.description();
-             Note *note = NotesStore::instance()->note(guid);
-             if (note == 0 || !note->reminder() || !note->hasReminderTime() || note->reminderDone()) {
-                 qDebug() << "Deleting organizer item:" << item.description();
-
-                 QOrganizerItemRemoveRequest *removeRequest = new QOrganizerItemRemoveRequest(this);
-                 removeRequest->setItem(item);
-                 removeRequest->setManager(m_manager);
-                 connect(removeRequest, &QOrganizerItemRemoveRequest::stateChanged, this, &OrganizerAdapter::deleteStateChanged);
-                 removeRequest->start();
-             }
+             QOrganizerItemRemoveRequest *removeRequest = new QOrganizerItemRemoveRequest(this);
+             removeRequest->setItem(item);
+             removeRequest->setManager(m_manager);
+             connect(removeRequest, &QOrganizerItemRemoveRequest::stateChanged, this, &OrganizerAdapter::deleteStateChanged);
+             removeRequest->start();
          }
          request->deleteLater();
          writeReminders();
@@ -213,14 +179,4 @@ void OrganizerAdapter::deleteStateChanged(QOrganizerAbstractRequest::State state
         qDebug() << "delete job finished";
         request->deleteLater();
     }
-}
-
-QOrganizerTodo OrganizerAdapter::findFromGuid(const QString &guid)
-{
-    foreach (QOrganizerItem item, m_organizerItems) {
-        if (item.description() == guid) {
-            return item;
-        }
-    }
-    return QOrganizerTodo();
 }

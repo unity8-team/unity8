@@ -19,7 +19,6 @@ public:
     OrganizerAdapter(QObject *parent = 0);
 
     void startSync();
-    void updateReminder(const QString &noteGuid);
     bool busy() const;
 
 private slots:
@@ -28,7 +27,6 @@ private slots:
     void deleteStateChanged(QOrganizerAbstractRequest::State state);
 
 private:
-    QOrganizerTodo findFromGuid(const QString &guid);
     void organizerEventFromNote(Note *note, QOrganizerTodo &item);
     void loadReminders();
     void writeReminders();
@@ -37,7 +35,6 @@ private:
     QOrganizerCollection m_collection;
     bool m_busy;
     bool m_restart;
-    QList<QOrganizerTodo> m_organizerItems;
 };
 
 #endif
