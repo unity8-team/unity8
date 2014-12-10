@@ -67,6 +67,7 @@ private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
     void noteRemoved(const QString &noteGuid, const QString &notebookGuid);
     void noteChanged(const QString &noteGuid, const QString &notebookGuid);
+    void noteGuidChanged(const QString &oldGuid, const QString &newGuid);
 
 private:
     void syncToInfoFile();

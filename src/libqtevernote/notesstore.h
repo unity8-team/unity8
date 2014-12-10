@@ -161,6 +161,7 @@ signals:
     void notebookAdded(const QString &guid);
     void notebookChanged(const QString &guid);
     void notebookRemoved(const QString &guid);
+    void noteGuidChanged(const QString &oldGuid, const QString &newGuid);
 
     void tagAdded(const QString &guid);
     void tagChanged(const QString &guid);

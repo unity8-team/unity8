@@ -42,6 +42,7 @@ Tag::Tag(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Tag::noteAdded);
     connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Tag::noteRemoved);
     connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Tag::noteChanged);
+    connect(NotesStore::instance(), &NotesStore::noteGuidChanged, this, &Tag::noteGuidChanged);
 }
 
 Tag::~Tag()
@@ -138,6 +139,14 @@ void Tag::noteChanged(const QString &noteGuid, const QString &notebookGuid)
             m_notesList.removeAll(noteGuid);
             emit noteCountChanged();
         }
+    }
+}
+
+void Tag::noteGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int oldIndex = m_notesList.indexOf(oldGuid);
+    if (oldIndex != -1) {
+        m_notesList.replace(oldIndex, newGuid);
     }
 }
 

@@ -613,7 +613,6 @@ void Note::syncToCacheFile()
 
 void Note::load() const
 {
-    qDebug() << "called load on note" << m_title << m_loaded << isCached() << m_cacheFile.exists() << m_cacheFile.fileName();
     if (!m_loaded && isCached()) {
         loadFromCacheFile();
     } else if (!m_loaded && !m_loading) {

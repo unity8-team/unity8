@@ -854,6 +854,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
     QVector<int> roles;
     note->setGuid(guid);
+    emit noteGuidChanged(tmpGuid, guid);
     roles << RoleGuid;
 
     if (note->updateSequenceNumber() != result.updateSequenceNum) {

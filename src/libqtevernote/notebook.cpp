@@ -41,12 +41,14 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
 
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
+            qDebug() << "****** appending to notebook (ctor)";
             m_notesList.append(note->guid());
         }
     }
     connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Notebook::noteAdded);
     connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notebook::noteRemoved);
     connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Notebook::noteChanged);
+    connect(NotesStore::instance(), &NotesStore::noteGuidChanged, this, &Notebook::noteGuidChanged);
 }
 
 quint32 Notebook::updateSequenceNumber() const
@@ -153,8 +155,10 @@ void Notebook::save()
 
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
+    qDebug() << "note added:" << m_name << noteGuid << "have:" << m_notesList.count();
     Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
+        qDebug() << "****** appending to notebook";
         m_notesList.append(noteGuid);
         emit noteCountChanged();
     }
@@ -171,6 +175,7 @@ void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 
 void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
 {
+    qDebug() << "in notebook:" << m_name << "note changed:" << noteGuid << m_guid;
     if (notebookGuid != m_guid) {
         if (m_notesList.contains(noteGuid)) {
             m_notesList.removeAll(noteGuid);
@@ -178,9 +183,18 @@ void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
         }
     } else {
         if (!m_notesList.contains(noteGuid)) {
+            qDebug() << "****** appending to notebook";
             m_notesList.append(noteGuid);
             emit noteCountChanged();
         }
+    }
+}
+
+void Notebook::noteGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int oldIndex = m_notesList.indexOf(oldGuid);
+    if (oldIndex != -1) {
+        m_notesList.replace(oldIndex, newGuid);
     }
 }
 
