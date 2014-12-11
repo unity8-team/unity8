@@ -298,6 +298,12 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
     notebook->setUpdateSequenceNumber(result.updateSequenceNum);
     notebook->setName(QString::fromStdString(result.name));
     emit notebookChanged(notebook->guid());
+
+    QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
+    cacheFile.beginGroup("notebooks");
+    cacheFile.remove(tmpGuid);
+    cacheFile.endGroup();
+
     syncToCacheFile(notebook);
 }
 
