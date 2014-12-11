@@ -38,6 +38,10 @@ Item {
         anchors.fill: parent
     }
 
+    SignalSpy {
+        id: spy
+    }
+
     UT.UnityTestCase {
         name: "Dash"
         when: windowShown
@@ -162,6 +166,9 @@ Item {
         }
 
         function test_manage_dash_search_temp_scope() {
+            // TODO Search is disabled for now in manage dash
+            skip();
+
             // Show the manage dash
             touchFlick(dash, dash.width / 2, dash.height - 1, dash.width / 2, units.gu(2));
             var bottomEdgeController = findInvisibleChild(dash, "bottomEdgeController");
@@ -211,6 +218,25 @@ Item {
             compare(dashContentList.currentIndex, 0);
         }
 
+        function test_manage_dash_open_no_favorites() {
+            // Make it so there are no scopes
+            scopes.clear();
+            var dashContentList = findChild(dash, "dashContentList");
+            tryCompare(dashContentList, "count", 0);
+
+            // Show the manage dash
+            touchFlick(dash, dash.width / 2, dash.height - 1, dash.width / 2, units.gu(2));
+            var bottomEdgeController = findInvisibleChild(dash, "bottomEdgeController");
+            tryCompare(bottomEdgeController, "progress", 1);
+
+            // Go back
+            var scopesList = findChild(dash, "scopesList");
+            var scopesListPageHeader = findChild(scopesList, "pageHeader");
+            var backButton = findChild(findChild(scopesListPageHeader, "innerPageHeader"), "backButton");
+            mouseClick(backButton, 0, 0);
+            tryCompare(bottomEdgeController, "progress", 0);
+        }
+
         function test_setCurrentScope() {
             var dashContentList = findChild(dash, "dashContentList");
             var startX = dash.width - units.gu(1);
@@ -232,7 +258,9 @@ Item {
             var dashContent = findChild(dash, "dashContent");
             waitForRendering(dash)
 
-            var delegate0 = findChild(dash, "delegate0");
+            var scopeLoader0 = findChild(dashContent, "scopeLoader0");
+            var dashCategory0 = findChild(scopeLoader0, "dashCategory0");
+            var delegate0 = findChild(dashCategory0, "delegate0");
             mouseClick(delegate0, delegate0.width / 2, delegate0.height / 2);
 
             tryCompare(dashContent, "subPageShown", true)
@@ -261,6 +289,31 @@ Item {
 
             currentScope.setSearchInProgress(false);
             tryCompare(processingIndicator, "visible", false);
+        }
+
+        function test_manage_dash_store_no_favorites() {
+            // Show the manage dash
+            touchFlick(dash, dash.width / 2, dash.height - 1, dash.width / 2, units.gu(2));
+            var bottomEdgeController = findInvisibleChild(dash, "bottomEdgeController");
+            tryCompare(bottomEdgeController, "progress", 1);
+
+            // clear the favorite scopes
+            scopes.clearFavorites();
+            var dashContentList = findChild(dash, "dashContentList");
+            tryCompare(dashContentList, "count", 0);
+
+            var scopesList = findChild(dash, "scopesList");
+            spy.target = scopesList.scope;
+            spy.signalName = "performQuery";
+
+            // Do a search
+            var scopesListPageHeader = findChild(scopesList, "pageHeader");
+            var searchButton = findChild(scopesListPageHeader, "store_header_button");
+            mouseClick(searchButton, 0, 0);
+
+            spy.wait();
+            compare(spy.signalArguments[0][0], "scope://com.canonical.scopes.clickstore");
+            tryCompare(bottomEdgeController, "progress", 0);
         }
     }
 }
