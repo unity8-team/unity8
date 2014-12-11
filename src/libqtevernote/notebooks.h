@@ -64,6 +64,7 @@ signals:
 private slots:
     void notebookAdded(const QString &guid);
     void notebookRemoved(const QString &guid);
+    void notebookGuidChanged(const QString &oldGuid, const QString &newGuid);
 
     void nameChanged();
     void noteCountChanged();

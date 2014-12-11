@@ -35,6 +35,7 @@ Notebooks::Notebooks(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::notebooksErrorChanged, this, &Notebooks::errorChanged);
     connect(NotesStore::instance(), &NotesStore::notebookAdded, this, &Notebooks::notebookAdded);
     connect(NotesStore::instance(), &NotesStore::notebookRemoved, this, &Notebooks::notebookRemoved);
+    connect(NotesStore::instance(), &NotesStore::notebookGuidChanged, this, &Notebooks::notebookGuidChanged);
 }
 
 bool Notebooks::loading() const
@@ -54,6 +55,7 @@ int Notebooks::count() const
 
 QVariant Notebooks::data(const QModelIndex &index, int role) const
 {
+    qDebug() << "Asked for notebook index" << index.row();
     Notebook *notebook = NotesStore::instance()->notebook(m_list.at(index.row()));
     switch(role) {
     case RoleGuid:
@@ -125,6 +127,13 @@ void Notebooks::notebookRemoved(const QString &guid)
     m_list.removeAll(guid);
     endRemoveRows();
     emit countChanged();
+}
+
+void Notebooks::notebookGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int idx = m_list.indexOf(oldGuid);
+    m_list.replace(idx, newGuid);
+    emit dataChanged(index(idx), index(idx));
 }
 
 void Notebooks::nameChanged()

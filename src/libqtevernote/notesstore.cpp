@@ -283,9 +283,18 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
         qWarning() << "Error creating notebook:" << errorMessage;
         return;
     }
-    Notebook *notebook = m_notebooksHash.take(tmpGuid);
+    Notebook *notebook = m_notebooksHash.value(tmpGuid);
+    if (!notebook) {
+        qWarning() << "Cannot find temporary notebook after create finished";
+        return;
+    }
+    QString guid = QString::fromStdString(result.guid);
+    m_notebooksHash.remove(tmpGuid);
+    m_notebooksHash.insert(guid, notebook);
+
     notebook->setGuid(QString::fromStdString(result.guid));
-    m_notebooksHash.insert(notebook->guid(), notebook);
+    emit notebookGuidChanged(tmpGuid, notebook->guid());
+
     notebook->setUpdateSequenceNumber(result.updateSequenceNum);
     notebook->setName(QString::fromStdString(result.name));
     emit notebookChanged(notebook->guid());
