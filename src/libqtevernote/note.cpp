@@ -54,7 +54,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_reminderTime = infoFile.value("reminderTime").toDateTime();
     m_reminderDoneTime = infoFile.value("reminderDoneTime").toDateTime();
     m_deleted = infoFile.value("deleted").toBool();
-    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", m_updateSequenceNumber).toUInt();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", -1).toUInt();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     infoFile.beginGroup("resources");

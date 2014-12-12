@@ -638,6 +638,9 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             if (note->guid().startsWith("tmp-")) {
                 // This note hasn't been created on the server yet. Do that now.
                 qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
+                QModelIndex idx = index(m_notes.indexOf(note));
+                note->setLoading(true);
+                emit dataChanged(idx, idx, QVector<int>() << RoleLoading);
                 CreateNoteJob *job = new CreateNoteJob(note, this);
                 connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
                 EvernoteConnection::instance()->enqueue(job);
@@ -931,6 +934,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
     if (note->updateSequenceNumber() != result.updateSequenceNum) {
         note->setUpdateSequenceNumber(result.updateSequenceNum);
+        note->setLastSyncedSequenceNumber(result.updateSequenceNum);
         roles << RoleSynced;
     }
     if (result.__isset.created) {
