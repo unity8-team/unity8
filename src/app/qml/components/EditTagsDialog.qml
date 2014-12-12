@@ -61,7 +61,9 @@ Dialog {
                     }
                 }
 
-                NotesStore.createTag(tagName);
+                var newTag = NotesStore.createTag(tagName);
+                print("tag created", newTag.name, "appending to note");
+                note.tagGuids.push(newTag.guid)
             }
         }
 
@@ -70,13 +72,6 @@ Dialog {
             color: UbuntuColors.orange
             enabled: textField.text.replace(/\s+/g, '') !== ''; // Not only whitespaces!
             onClicked: textField.accept()
-        }
-    }
-
-    Connections {
-        target: NotesStore
-        onTagAdded: {
-            note.tagGuids.push(guid);
         }
     }
 
@@ -94,7 +89,7 @@ Dialog {
         model: tags
 
         delegate: OptionSelectorDelegate {
-            text: model.name
+            text: model.name + model.guid
             selected: root.note ? root.note.tagGuids.indexOf(model.guid) !== -1 : false
 
             MouseArea {

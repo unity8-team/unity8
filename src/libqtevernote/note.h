@@ -178,6 +178,9 @@ signals:
     void loadingChanged();
     void syncedChanged();
 
+private slots:
+    void tagGuidChanged(const QString &oldGuid, const QString &newGuid);
+
 private:
     // Those should only be called from NotesStore, which is a friend
     void setLoading(bool loading);

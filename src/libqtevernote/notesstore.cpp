@@ -289,11 +289,11 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
         return;
     }
     QString guid = QString::fromStdString(result.guid);
-    m_notebooksHash.remove(tmpGuid);
-    m_notebooksHash.insert(guid, notebook);
 
+    m_notebooksHash.insert(guid, notebook);
     notebook->setGuid(QString::fromStdString(result.guid));
     emit notebookGuidChanged(tmpGuid, notebook->guid());
+    m_notebooksHash.remove(tmpGuid);
 
     notebook->setUpdateSequenceNumber(result.updateSequenceNum);
     notebook->setName(QString::fromStdString(result.name));
@@ -353,7 +353,7 @@ Tag *NotesStore::tag(const QString &guid)
     return m_tagsHash.value(guid);
 }
 
-void NotesStore::createTag(const QString &name)
+Tag* NotesStore::createTag(const QString &name)
 {
     Tag *tag = new Tag("tmp-" + QUuid::createUuid().toString(), 0);
     tag->setName(name);
@@ -368,6 +368,7 @@ void NotesStore::createTag(const QString &name)
         connect(job, &CreateTagJob::jobDone, this, &NotesStore::createTagJobDone);
         EvernoteConnection::instance()->enqueue(job);
     }
+    return tag;
 }
 
 void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Tag &result)
@@ -383,11 +384,31 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
         return;
     }
 
+    QString guid = QString::fromStdString(result.guid);
+    m_tagsHash.insert(guid, tag);
     tag->setGuid(QString::fromStdString(result.guid));
+    emit tagGuidChanged(tmpGuid, guid);
+    m_tagsHash.remove(tmpGuid);
+
     int idx = m_tags.indexOf(tag);
     QModelIndex modelIndex = index(idx);
     emit dataChanged(modelIndex, modelIndex, QVector<int>() << RoleGuid);
     emit tagChanged(tag->guid());
+
+    syncToCacheFile(tag);
+
+    qDebug() << "tag created on server" << tag->name();
+    foreach (const QString &noteGuid, tag->m_notesList) {
+        qDebug() << "tag has notes:" << tag->m_notesList.count();
+        Note *note = m_notesHash.value(noteGuid);
+        if (note && note->tagGuids().contains(tmpGuid)) {
+            QStringList tagGuids = note->tagGuids();
+            tagGuids.replace(tagGuids.indexOf(tmpGuid), guid);
+            note->setTagGuids(tagGuids);
+            int noteIdx = m_notes.indexOf(note);
+            emit dataChanged(index(noteIdx), index(noteIdx), QVector<int>() << RoleTagGuids);
+        }
+    }
 }
 
 void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)

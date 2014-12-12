@@ -61,6 +61,7 @@ signals:
 private slots:
     void tagAdded(const QString &guid);
     void tagRemoved(const QString &guid);
+    void tagGuidChanged(const QString &oldGuid, const QString &newGuid);
 
     void nameChanged();
     void noteCountChanged();

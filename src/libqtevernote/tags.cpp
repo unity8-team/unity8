@@ -35,6 +35,7 @@ Tags::Tags(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::tagsErrorChanged, this, &Tags::errorChanged);
     connect(NotesStore::instance(), &NotesStore::tagAdded, this, &Tags::tagAdded);
     connect(NotesStore::instance(), &NotesStore::tagRemoved, this, &Tags::tagRemoved);
+    connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Tags::tagGuidChanged);
 }
 
 bool Tags::loading() const
@@ -54,6 +55,7 @@ int Tags::count() const
 
 QVariant Tags::data(const QModelIndex &index, int role) const
 {
+    qDebug() << "asked for tag guid:" << index.row() << m_list.count();
     Tag *tag = NotesStore::instance()->tag(m_list.at(index.row()));
     switch(role) {
     case RoleGuid:
@@ -112,6 +114,15 @@ void Tags::tagRemoved(const QString &guid)
     m_list.removeAll(guid);
     endRemoveRows();
     emit countChanged();
+}
+
+void Tags::tagGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int idx = m_list.indexOf(oldGuid);
+    if (idx != -1) {
+        m_list.replace(idx, newGuid);
+        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleGuid);
+    }
 }
 
 void Tags::nameChanged()

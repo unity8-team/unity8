@@ -129,7 +129,7 @@ public:
 
     QList<Tag*> tags() const;
     Q_INVOKABLE Tag* tag(const QString &guid);
-    Q_INVOKABLE void createTag(const QString &name);
+    Q_INVOKABLE Tag* createTag(const QString &name);
     Q_INVOKABLE void saveTag(const QString &guid);
     Q_INVOKABLE void tagNote(const QString &noteGuid, const QString &tagGuid);
     Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
@@ -157,16 +157,17 @@ signals:
     void noteAdded(const QString &guid, const QString &notebookGuid);
     void noteChanged(const QString &guid, const QString &notebookGuid);
     void noteRemoved(const QString &guid, const QString &notebookGuid);
+    void noteGuidChanged(const QString &oldGuid, const QString &newGuid);
 
     void notebookAdded(const QString &guid);
     void notebookChanged(const QString &guid);
     void notebookRemoved(const QString &guid);
-    void noteGuidChanged(const QString &oldGuid, const QString &newGuid);
     void notebookGuidChanged(const QString &oldGuid, const QString &newGuid);
 
     void tagAdded(const QString &guid);
     void tagChanged(const QString &guid);
     void tagRemoved(const QString &guid);
+    void tagGuidChanged(const QString &oldGuid, const QString &newGuid);
 
 private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);

@@ -69,6 +69,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
         }
     }
     infoFile.endGroup();
+
+    connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Note::tagGuidChanged);
 }
 
 Note::~Note()
@@ -638,5 +640,14 @@ void Note::deleteFromCache()
     QFile f(m_infoFile);
     if (f.exists()) {
         f.remove();
+    }
+}
+
+void Note::tagGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int idx = m_tagGuids.indexOf(oldGuid);
+    if (idx != -1) {
+        m_tagGuids.replace(idx, newGuid);
+        emit tagGuidsChanged();
     }
 }
