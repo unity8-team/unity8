@@ -203,6 +203,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->synced();
     case RoleLoading:
         return m_notes.at(index.row())->loading();
+    case RoleSyncError:
+        return m_notes.at(index.row())->syncError();
     }
     return QVariant();
 }
@@ -232,6 +234,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleDeleted, "deleted");
     roles.insert(RoleLoading, "loading");
     roles.insert(RoleSynced, "synced");
+    roles.insert(RoleSyncError, "syncError");
     return roles;
 }
 
@@ -270,7 +273,9 @@ void NotesStore::createNotebook(const QString &name)
 
     syncToCacheFile(notebook);
 
+    qDebug() << "creating notebook:" << name;
     if (EvernoteConnection::instance()->isConnected()) {
+        notebook->setLoading(true);
         CreateNotebookJob *job = new CreateNotebookJob(notebook);
         connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
         EvernoteConnection::instance()->enqueue(job);
@@ -279,16 +284,22 @@ void NotesStore::createNotebook(const QString &name)
 
 void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Notebook &result)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error creating notebook:" << errorMessage;
-        return;
-    }
+    qDebug() << "create notebooks job done";
     Notebook *notebook = m_notebooksHash.value(tmpGuid);
     if (!notebook) {
         qWarning() << "Cannot find temporary notebook after create finished";
         return;
     }
+
+    notebook->setLoading(false);
+
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error creating notebook:" << errorMessage;
+        notebook->setSyncError(true);
+        return;
+    }
     QString guid = QString::fromStdString(result.guid);
+    qDebug() << "create notebooks job done2";
 
     m_notebooksHash.insert(guid, notebook);
     notebook->setGuid(QString::fromStdString(result.guid));
@@ -296,6 +307,7 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
     m_notebooksHash.remove(tmpGuid);
 
     notebook->setUpdateSequenceNumber(result.updateSequenceNum);
+    notebook->setLastSyncedSequenceNumber(result.updateSequenceNum);
     notebook->setName(QString::fromStdString(result.name));
     emit notebookChanged(notebook->guid());
 
@@ -587,6 +599,9 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                 EvernoteConnection::instance()->enqueue(job);
             } else {
                 qWarning() << "CONFLICT: Note has been changed on server and locally!";
+                qWarning() << "local note sequence:" << note->updateSequenceNumber();
+                qWarning() << "last synced sequence:" << note->lastSyncedSequenceNumber();
+                qWarning() << "remote sequence:" << result.updateSequenceNum;
             }
         }
 
@@ -622,6 +637,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             qDebug() << "Have a local note that's not available on server!" << note->guid();
             if (note->guid().startsWith("tmp-")) {
                 // This note hasn't been created on the server yet. Do that now.
+                qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
                 CreateNoteJob *job = new CreateNoteJob(note, this);
                 connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
                 EvernoteConnection::instance()->enqueue(job);
@@ -882,23 +898,34 @@ Note* NotesStore::createNote(const QString &title, const QString &notebookGuid, 
 
 void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Note &result)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error creating note:" << errorMessage;
-        return;
-    }
-
     Note *note = m_notesHash.value(tmpGuid);
     if (!note) {
         qWarning() << "Cannot find temporary note after create operation!";
         return;
     }
 
-    QString guid = QString::fromStdString(result.guid);
-    m_notesHash.remove(tmpGuid);
-    m_notesHash.insert(guid, note);
+    int idx = m_notes.indexOf(note);
+
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error creating note:" << errorMessage;
+        note->setSyncError(true);
+        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleSyncError);
+        return;
+    }
 
     QVector<int> roles;
+    if (note->syncError()) {
+        note->setSyncError(false);
+        roles << RoleSyncError;
+    }
+
+    note->setLoading(false);
+    roles << RoleLoading;
+
+    QString guid = QString::fromStdString(result.guid);
+    m_notesHash.insert(guid, note);
     note->setGuid(guid);
+    m_notesHash.remove(tmpGuid);
     emit noteGuidChanged(tmpGuid, guid);
     roles << RoleGuid;
 
@@ -926,7 +953,6 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         note->setEnmlContent(QString::fromStdString(result.content));
         roles << RoleEnmlContent << RoleRichTextContent << RoleTagline << RolePlaintextContent;
     }
-    int idx = m_notes.indexOf(note);
     emit dataChanged(index(idx), index(idx), roles);
 
     QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
@@ -944,9 +970,9 @@ void NotesStore::saveNote(const QString &guid)
         qWarning() << "Can't save note. Guid not found:" << guid;
         return;
     }
-    note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
     syncToCacheFile(note);
     note->syncToCacheFile();
+    note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
 
     if (EvernoteConnection::instance()->isConnected()) {
         note->setLoading(true);
@@ -1212,7 +1238,6 @@ void NotesStore::loadFromCacheFile()
             Note *note = new Note(key, cacheFile.value(key).toUInt(), this);
             m_notesHash.insert(key, note);
             m_notes.append(note);
-            qDebug() << "creating note:" << key << cacheFile.value(key).toUInt() << note->notebookGuid() << note->title();
             emit noteAdded(note->guid(), note->notebookGuid());
         }
         endInsertRows();

@@ -158,6 +158,7 @@ PageWithBottomEdge {
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
             synced: model.synced
             loading: model.loading
+            syncError: model.syncError
 
             onClicked: {
                 root.selectedNote = NotesStore.note(guid);

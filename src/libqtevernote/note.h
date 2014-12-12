@@ -66,6 +66,7 @@ class Note : public QObject
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+    Q_PROPERTY(bool syncError READ syncError NOTIFY syncErrorChanged)
 
 public:
     explicit Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
@@ -142,6 +143,7 @@ public:
     bool isCached() const;
     bool loading() const;
     bool synced() const;
+    bool syncError() const;
 
     QStringList resourceUrls() const;
     Resource* resource(const QString &hash);
@@ -177,6 +179,7 @@ signals:
 
     void loadingChanged();
     void syncedChanged();
+    void syncErrorChanged();
 
 private slots:
     void tagGuidChanged(const QString &oldGuid, const QString &newGuid);
@@ -184,6 +187,7 @@ private slots:
 private:
     // Those should only be called from NotesStore, which is a friend
     void setLoading(bool loading);
+    void setSyncError(bool syncError);
     void setDeleted(bool deleted);
     void syncToCacheFile();
     void syncToInfoFile();
@@ -217,7 +221,8 @@ private:
 
     bool m_loading;
     mutable bool m_loaded;
-    mutable bool m_synced;
+    bool m_synced;
+    bool m_syncError;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;

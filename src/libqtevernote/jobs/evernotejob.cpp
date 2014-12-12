@@ -113,9 +113,8 @@ void EvernoteJob::run()
                 emitJobDone(errorCode, message);
             }
         } catch (const evernote::edam::EDAMNotFoundException &e) {
-            qWarning() << "EDAMNotFoundException in" << metaObject()->className() << e.what();
             if (retry >= maxTries)
-                emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, e.what());
+                emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, QString(gettext("The requested entry could not be found on the server: %1")).arg(QString::fromStdString(e.identifier)));
         }
     }
 }

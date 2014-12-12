@@ -41,7 +41,8 @@ public:
         RoleLastUpdated,
         RoleLastUpdatedString,
         RoleLoading,
-        RoleSynced
+        RoleSynced,
+        RoleSyncError
     };
     explicit Notebooks(QObject *parent = 0);
 

@@ -38,7 +38,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_updateSequenceNumber(updateSequenceNumber),
     m_deleted(false),
     m_loading(false),
-    m_loaded(false)
+    m_loaded(false),
+    m_syncError(false)
 {
     setGuid(guid);
     m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml");
@@ -86,6 +87,11 @@ bool Note::loading() const
 bool Note::synced() const
 {
     return m_synced;
+}
+
+bool Note::syncError() const
+{
+    return m_syncError;
 }
 
 QString Note::guid() const
@@ -585,6 +591,14 @@ void Note::setLoading(bool loading)
     if (m_loading != loading) {
         m_loading = loading;
         emit loadingChanged();
+    }
+}
+
+void Note::setSyncError(bool syncError)
+{
+    if (m_syncError != syncError) {
+        m_syncError = syncError;
+        emit syncErrorChanged();
     }
 }
 

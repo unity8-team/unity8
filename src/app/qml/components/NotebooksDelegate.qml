@@ -86,7 +86,7 @@ Empty {
                 Icon {
                     height: notebookTitleLabel.height
                     width: height
-                    name: model.loading ? "sync-updating" : model.synced ? "sync-idle" : "sync-offline"
+                    name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
                 }
             }
 

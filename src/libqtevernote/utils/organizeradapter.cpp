@@ -27,13 +27,9 @@ OrganizerAdapter::OrganizerAdapter(QObject *parent):
     if (envManager.isEmpty())
         envManager = ALARM_MANAGER;
     if (!QOrganizerManager::availableManagers().contains(envManager)) {
-        qWarning() << "WARNING: alarm manager" << envManager << "not installed, using" << QString(ALARM_MANAGER_FALLBACK);
         envManager = ALARM_MANAGER_FALLBACK;
     }
-    qDebug() << "creating manager" << qgetenv("UID") << QOrganizerManager::availableManagers() << envManager;
-    qDebug() << "XDGDIRS:" << qgetenv("XDG_RUNTIME_DIR");
     m_manager = new QOrganizerManager(envManager);
-    qDebug() << "done creating manager";
     m_manager->setParent(this);
 
     QList<QOrganizerCollection> collections = m_manager->collections();
@@ -163,10 +159,8 @@ void OrganizerAdapter::fetchStateChanged(QOrganizerAbstractRequest::State state)
 
 void OrganizerAdapter::writeStateChanged(QOrganizerAbstractRequest::State state)
 {
-    qDebug() << "write job status changed" << state;
     QOrganizerItemSaveRequest *request = static_cast<QOrganizerItemSaveRequest*>(sender());
     if (state == QOrganizerAbstractRequest::FinishedState || state == QOrganizerAbstractRequest::CanceledState) {
-        qDebug() << "write job finished";
         request->deleteLater();
     }
 }
@@ -175,7 +169,6 @@ void OrganizerAdapter::deleteStateChanged(QOrganizerAbstractRequest::State state
 {
     QOrganizerItemSaveRequest *request = static_cast<QOrganizerItemSaveRequest*>(sender());
     if (state == QOrganizerAbstractRequest::FinishedState || state == QOrganizerAbstractRequest::CanceledState) {
-        qDebug() << "delete job finished";
         request->deleteLater();
     }
 }

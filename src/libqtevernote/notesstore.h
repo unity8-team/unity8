@@ -87,7 +87,8 @@ public:
         RoleTagGuids,
         RoleDeleted,
         RoleLoading,
-        RoleSynced
+        RoleSynced,
+        RoleSyncError
     };
 
     ~NotesStore();

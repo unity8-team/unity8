@@ -32,7 +32,8 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
     m_published(false),
-    m_loading(false)
+    m_loading(false),
+    m_syncError(false)
 {
     setGuid(guid);
     QSettings infoFile(m_infoFile, QSettings::IniFormat);
@@ -227,6 +228,11 @@ bool Notebook::synced() const
     return m_synced;
 }
 
+bool Notebook::syncError() const
+{
+    return m_syncError;
+}
+
 quint32 Notebook::updateSequenceNumber() const
 {
     return m_updateSequenceNumber;
@@ -262,5 +268,13 @@ void Notebook::setLoading(bool loading)
     if (m_loading != loading) {
         m_loading = loading;
         emit loadingChanged();
+    }
+}
+
+void Notebook::setSyncError(bool syncError)
+{
+    if (m_syncError != syncError) {
+        m_syncError = syncError;
+        emit syncErrorChanged();
     }
 }

@@ -40,6 +40,7 @@ class Notebook : public QObject
 
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+    Q_PROPERTY(bool syncError READ syncError NOTIFY syncErrorChanged)
 
 public:
     explicit Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent = 0);
@@ -64,6 +65,7 @@ public:
 
     bool loading() const;
     bool synced() const;
+    bool syncError() const;
 
     Notebook *clone();
 
@@ -78,6 +80,7 @@ signals:
     void lastUpdatedChanged();
     void loadingChanged();
     void syncedChanged();
+    void syncErrorChanged();
 
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
@@ -89,6 +92,7 @@ private:
     void setGuid(const QString &guid);
 
     void setLoading(bool loading);
+    void setSyncError(bool syncError);
     void setUpdateSequenceNumber(quint32 updateSequenceNumber);
     void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
 
@@ -107,6 +111,7 @@ private:
 
     bool m_loading;
     bool m_synced;
+    bool m_syncError;
 
     friend class NotesStore;
 };

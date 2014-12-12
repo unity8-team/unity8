@@ -55,7 +55,6 @@ int Tags::count() const
 
 QVariant Tags::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "asked for tag guid:" << index.row() << m_list.count();
     Tag *tag = NotesStore::instance()->tag(m_list.at(index.row()));
     switch(role) {
     case RoleGuid:

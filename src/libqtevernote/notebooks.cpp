@@ -55,7 +55,6 @@ int Notebooks::count() const
 
 QVariant Notebooks::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "Asked for notebook index" << index.row();
     Notebook *notebook = NotesStore::instance()->notebook(m_list.at(index.row()));
     switch(role) {
     case RoleGuid:
@@ -75,6 +74,8 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->loading();
     case RoleSynced:
         return notebook->synced();
+    case RoleSyncError:
+        return notebook->syncError();
     }
     return QVariant();
 }
@@ -97,6 +98,7 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RoleLastUpdatedString, "lastUpdatedString");
     roles.insert(RoleLoading, "loading");
     roles.insert(RoleSynced, "synced");
+    roles.insert(RoleSyncError, "syncError");
     return roles;
 }
 

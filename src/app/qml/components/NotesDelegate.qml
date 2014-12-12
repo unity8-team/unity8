@@ -34,6 +34,7 @@ Empty {
     property string tags
     property bool loading
     property bool synced
+    property bool syncError
     property string notebookColor
 
     showDivider: false;
@@ -90,7 +91,7 @@ Empty {
                                 Icon {
                                     height: titleLabel.height
                                     width: height
-                                    name: root.loading ? "sync-updating" : root.synced ? "sync-idle" : "sync-offline"
+                                    name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : "sync-offline"
                                     visible: NotesStore.username !== "@local"
                                 }
                             }
