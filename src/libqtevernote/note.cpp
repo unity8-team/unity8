@@ -601,6 +601,7 @@ void Note::syncToInfoFile()
     infoFile.setValue("reminderTime", m_reminderTime);
     infoFile.setValue("reminderDoneTime", m_reminderDoneTime);
     infoFile.setValue("deleted", m_deleted);
+    infoFile.setValue("lastSyncedSequenceNumber", m_lastSyncedSequenceNumber);
 
     qDebug() << "synced note to disk:" << m_guid << m_notebookGuid;
 }

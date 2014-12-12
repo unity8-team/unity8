@@ -38,11 +38,11 @@ class Notebook : public QObject
     Q_PROPERTY(QString lastUpdatedString READ lastUpdatedString NOTIFY lastUpdatedChanged)
     // Don't forget to update clone() if you add new properties
 
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+
 public:
     explicit Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent = 0);
-
-    quint32 updateSequenceNumber() const;
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
 
     QString guid() const;
 
@@ -59,6 +59,12 @@ public:
 
     QString lastUpdatedString() const;
 
+    quint32 updateSequenceNumber() const;
+    quint32 lastSyncedSequenceNumber() const;
+
+    bool loading() const;
+    bool synced() const;
+
     Notebook *clone();
 
 public slots:
@@ -70,6 +76,8 @@ signals:
     void noteCountChanged();
     void publishedChanged();
     void lastUpdatedChanged();
+    void loadingChanged();
+    void syncedChanged();
 
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
@@ -79,10 +87,16 @@ private slots:
 
 private:
     void setGuid(const QString &guid);
+
+    void setLoading(bool loading);
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+
     void syncToInfoFile();
 
 private:
     quint32 m_updateSequenceNumber;
+    quint32 m_lastSyncedSequenceNumber;
     QString m_guid;
     QString m_name;
     bool m_published;
@@ -90,6 +104,9 @@ private:
     QList<QString> m_notesList;
 
     QString m_infoFile;
+
+    bool m_loading;
+    bool m_synced;
 
     friend class NotesStore;
 };

@@ -71,6 +71,10 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->lastUpdated();
     case RoleLastUpdatedString:
         return notebook->lastUpdatedString();
+    case RoleLoading:
+        return notebook->loading();
+    case RoleSynced:
+        return notebook->synced();
     }
     return QVariant();
 }
@@ -91,6 +95,8 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RolePublished, "published");
     roles.insert(RoleLastUpdated, "lastUpdated");
     roles.insert(RoleLastUpdatedString, "lastUpdatedString");
+    roles.insert(RoleLoading, "loading");
+    roles.insert(RoleSynced, "synced");
     return roles;
 }
 
@@ -114,6 +120,8 @@ void Notebooks::notebookAdded(const QString &guid)
     connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
     connect(notebook, &Notebook::publishedChanged, this, &Notebooks::publishedChanged);
     connect(notebook, &Notebook::lastUpdatedChanged, this, &Notebooks::lastUpdatedChanged);
+    connect(notebook, &Notebook::syncedChanged, this, &Notebooks::syncedChanged);
+    connect(notebook, &Notebook::loadingChanged, this, &Notebooks::notebookLoadingChanged);
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
@@ -162,4 +170,18 @@ void Notebooks::lastUpdatedChanged()
     Notebook *notebook = static_cast<Notebook*>(sender());
     QModelIndex idx = index(m_list.indexOf(notebook->guid()));
     emit dataChanged(idx, idx, QVector<int>() << RoleLastUpdated);
+}
+
+void Notebooks::syncedChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleSynced);
+}
+
+void Notebooks::notebookLoadingChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleLoading);
 }

@@ -321,6 +321,8 @@ void NotesStore::saveNotebook(const QString &guid)
         SaveNotebookJob *job = new SaveNotebookJob(notebook, this);
         connect(job, &SaveNotebookJob::jobDone, this, &NotesStore::saveNotebookJobDone);
         EvernoteConnection::instance()->enqueue(job);
+        notebook->setLoading(true);
+        emit
     }
 }
 
@@ -994,15 +996,20 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
     emit noteChanged(note->guid(), note->notebookGuid());
 }
 
-void NotesStore::saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
+void NotesStore::saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "error saving notebook" << errorMessage;
-
-        // Lets fetch the notebook from the server again to reflect the non-saved state...
-        refreshNotebooks();
         return;
     }
+
+    Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
+    if (!notebook) {
+        qWarning() << "Save notebook job done but notebook can't be found any more!";
+        return;
+    }
+
+    notebook->setLoading(false);
 }
 
 void NotesStore::deleteNote(const QString &guid)

@@ -31,13 +31,16 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     QObject(parent),
     m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
-    m_published(false)
+    m_published(false),
+    m_loading(false)
 {
     setGuid(guid);
     QSettings infoFile(m_infoFile, QSettings::IniFormat);
     m_name = infoFile.value("name").toString();
     m_published = infoFile.value("published").toBool();
     m_lastUpdated = infoFile.value("lastUpdated").toDateTime();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", updateSequenceNumber).toUInt();
+    m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
@@ -49,18 +52,6 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notebook::noteRemoved);
     connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Notebook::noteChanged);
     connect(NotesStore::instance(), &NotesStore::noteGuidChanged, this, &Notebook::noteGuidChanged);
-}
-
-quint32 Notebook::updateSequenceNumber() const
-{
-    return m_updateSequenceNumber;
-}
-
-void Notebook::setUpdateSequenceNumber(quint32 updateSequenceNumber)
-{
-    if (updateSequenceNumber != m_updateSequenceNumber) {
-        m_updateSequenceNumber = updateSequenceNumber;
-    }
 }
 
 QString Notebook::guid() const
@@ -223,4 +214,53 @@ void Notebook::syncToInfoFile()
     infoFile.setValue("name", m_name);
     infoFile.setValue("published", m_published);
     infoFile.value("lastUpdated", m_lastUpdated);
+    infoFile.setValue("lastSyncedSequenceNumber", m_lastSyncedSequenceNumber);
+}
+
+bool Notebook::loading() const
+{
+    return m_loading;
+}
+
+bool Notebook::synced() const
+{
+    return m_synced;
+}
+
+quint32 Notebook::updateSequenceNumber() const
+{
+    return m_updateSequenceNumber;
+}
+
+void Notebook::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+{
+    if (m_updateSequenceNumber != updateSequenceNumber) {
+        m_updateSequenceNumber = updateSequenceNumber;
+
+        m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        emit syncedChanged();
+    }
+}
+
+quint32 Notebook::lastSyncedSequenceNumber() const
+{
+    return m_lastSyncedSequenceNumber;
+}
+
+void Notebook::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+{
+    if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
+        m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;
+
+        m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        emit syncedChanged();
+    }
+}
+
+void Notebook::setLoading(bool loading)
+{
+    if (m_loading != loading) {
+        m_loading = loading;
+        emit loadingChanged();
+    }
 }

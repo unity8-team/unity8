@@ -40,22 +40,11 @@ Empty {
 
         onClicked: root.clicked()
 
-        RowLayout {
+        ColumnLayout {
             anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+            Layout.fillWidth: true
 
-            Item {
-                anchors { top: parent.top; bottom: parent.bottom }
-                width: units.gu(1)
-                Rectangle {
-                    anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
-                    width: units.gu(.5)
-                    color: root.notebookColor
-                    radius: width / 2
-                }
-            }
-
-            ColumnLayout {
-                height: parent.height
+            RowLayout {
                 Layout.fillWidth: true
 
                 Label {
@@ -64,6 +53,7 @@ Empty {
                     text: model.name
                     color: root.notebookColor
                     fontSize: "large"
+                    Layout.fillWidth: true
 
                     MouseArea {
                         onPressAndHold: {
@@ -80,6 +70,7 @@ Empty {
                     text: model.name
                     color: root.notebookColor
                     visible: !notebookTitleLabel.visible
+                    Layout.fillWidth: true
 
                     InverseMouseArea {
                         onClicked: {
@@ -92,30 +83,40 @@ Empty {
                         anchors.fill: parent
                     }
                 }
+                Icon {
+                    height: notebookTitleLabel.height
+                    width: height
+                    name: model.loading ? "sync-updating" : model.synced ? "sync-idle" : "sync-offline"
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
 
                 Label {
                     objectName: 'notebookLastUpdatedLabel'
                     text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
                     fontSize: "small"
                     color: "black"
+                    Layout.fillWidth: true
                 }
+
                 Label {
-                    objectName: 'notebookPublishedLabel'
+                    objectName: 'notebookNoteCountLabel'
                     Layout.fillHeight: true
-                    text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
-                    color: model.published ? "black" : "#b3b3b3"
-                    fontSize: "x-small"
                     verticalAlignment: Text.AlignVCenter
-                    font.bold: model.published
+                    text: "(" + model.noteCount + ")"
+                    color: "#b3b3b3"
                 }
             }
-
             Label {
-                objectName: 'notebookNoteCountLabel'
+                objectName: 'notebookPublishedLabel'
                 Layout.fillHeight: true
+                text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
+                color: model.published ? "black" : "#b3b3b3"
+                fontSize: "x-small"
                 verticalAlignment: Text.AlignVCenter
-                text: "(" + model.noteCount + ")"
-                color: "#b3b3b3"
+                font.bold: model.published
             }
         }
     }

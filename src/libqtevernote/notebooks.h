@@ -39,7 +39,9 @@ public:
         RoleNoteCount,
         RolePublished,
         RoleLastUpdated,
-        RoleLastUpdatedString
+        RoleLastUpdatedString,
+        RoleLoading,
+        RoleSynced
     };
     explicit Notebooks(QObject *parent = 0);
 
@@ -70,6 +72,8 @@ private slots:
     void noteCountChanged();
     void publishedChanged();
     void lastUpdatedChanged();
+    void syncedChanged();
+    void notebookLoadingChanged();
 
 private:
     QList<QString> m_list;
