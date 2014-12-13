@@ -40,12 +40,11 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     m_name = infoFile.value("name").toString();
     m_published = infoFile.value("published").toBool();
     m_lastUpdated = infoFile.value("lastUpdated").toDateTime();
-    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", -1).toUInt();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", 0).toUInt();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
-            qDebug() << "****** appending to notebook (ctor)";
             m_notesList.append(note->guid());
         }
     }
@@ -147,10 +146,8 @@ void Notebook::save()
 
 void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
-    qDebug() << "note added:" << m_name << noteGuid << "have:" << m_notesList.count();
     Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
-        qDebug() << "****** appending to notebook";
         m_notesList.append(noteGuid);
         emit noteCountChanged();
     }
@@ -167,7 +164,6 @@ void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 
 void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
 {
-    qDebug() << "in notebook:" << m_name << "note changed:" << noteGuid << m_guid;
     if (notebookGuid != m_guid) {
         if (m_notesList.contains(noteGuid)) {
             m_notesList.removeAll(noteGuid);

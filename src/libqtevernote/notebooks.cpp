@@ -124,6 +124,7 @@ void Notebooks::notebookAdded(const QString &guid)
     connect(notebook, &Notebook::lastUpdatedChanged, this, &Notebooks::lastUpdatedChanged);
     connect(notebook, &Notebook::syncedChanged, this, &Notebooks::syncedChanged);
     connect(notebook, &Notebook::loadingChanged, this, &Notebooks::notebookLoadingChanged);
+    connect(notebook, &Notebook::syncErrorChanged, this, &Notebooks::syncErrorChanged);
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
@@ -179,6 +180,13 @@ void Notebooks::syncedChanged()
     Notebook *notebook = static_cast<Notebook*>(sender());
     QModelIndex idx = index(m_list.indexOf(notebook->guid()));
     emit dataChanged(idx, idx, QVector<int>() << RoleSynced);
+}
+
+void Notebooks::syncErrorChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleSyncError);
 }
 
 void Notebooks::notebookLoadingChanged()

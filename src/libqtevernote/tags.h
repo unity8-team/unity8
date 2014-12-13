@@ -36,7 +36,10 @@ public:
     enum Roles {
         RoleGuid,
         RoleName,
-        RoleNoteCount
+        RoleNoteCount,
+        RoleLoading,
+        RoleSynced,
+        RoleSyncError
     };
     explicit Tags(QObject *parent = 0);
 
@@ -65,6 +68,9 @@ private slots:
 
     void nameChanged();
     void noteCountChanged();
+    void tagLoadingChanged();
+    void syncedChanged();
+    void syncErrorChanged();
 
 private:
     QList<QString> m_list;

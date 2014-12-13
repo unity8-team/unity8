@@ -75,6 +75,7 @@ private slots:
     void lastUpdatedChanged();
     void syncedChanged();
     void notebookLoadingChanged();
+    void syncErrorChanged();
 
 private:
     QList<QString> m_list;

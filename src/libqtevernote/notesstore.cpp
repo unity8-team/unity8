@@ -264,7 +264,7 @@ Notebook *NotesStore::notebook(const QString &guid)
 
 void NotesStore::createNotebook(const QString &name)
 {
-    Notebook *notebook = new Notebook("tmp-" + QUuid::createUuid().toString(), 0, this);
+    Notebook *notebook = new Notebook(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1, this);
     notebook->setName(name);
 
     m_notebooks.append(notebook);
@@ -325,6 +325,7 @@ void NotesStore::saveNotebook(const QString &guid)
         return;
     }
 
+    notebook->setUpdateSequenceNumber(notebook->updateSequenceNumber()+1);
     syncToCacheFile(notebook);
 
     if (EvernoteConnection::instance()->isConnected()) {
@@ -332,8 +333,8 @@ void NotesStore::saveNotebook(const QString &guid)
         connect(job, &SaveNotebookJob::jobDone, this, &NotesStore::saveNotebookJobDone);
         EvernoteConnection::instance()->enqueue(job);
         notebook->setLoading(true);
-        emit
     }
+    emit notebookChanged(notebook->guid());
 }
 
 void NotesStore::saveTag(const QString &guid)
@@ -343,9 +344,17 @@ void NotesStore::saveTag(const QString &guid)
         qWarning() << "Can't save tag. Guid not found:" << guid;
         return;
     }
-    SaveTagJob *job = new SaveTagJob(tag);
-    connect(job, &SaveTagJob::jobDone, this, &NotesStore::saveTagJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+
+    tag->setUpdateSequenceNumber(tag->updateSequenceNumber()+1);
+    syncToCacheFile(tag);
+
+    if (EvernoteConnection::instance()->isConnected()) {
+        tag->setLoading(true);
+        emit tagChanged(tag->guid());
+        SaveTagJob *job = new SaveTagJob(tag);
+        connect(job, &SaveTagJob::jobDone, this, &NotesStore::saveTagJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    }
 }
 
 void NotesStore::expungeNotebook(const QString &guid)
@@ -367,7 +376,7 @@ Tag *NotesStore::tag(const QString &guid)
 
 Tag* NotesStore::createTag(const QString &name)
 {
-    Tag *tag = new Tag("tmp-" + QUuid::createUuid().toString(), 0);
+    Tag *tag = new Tag(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 0);
     tag->setName(name);
     m_tags.append(tag);
     m_tagsHash.insert(tag->guid(), tag);
@@ -407,8 +416,6 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
     emit dataChanged(modelIndex, modelIndex, QVector<int>() << RoleGuid);
     emit tagChanged(tag->guid());
 
-    syncToCacheFile(tag);
-
     qDebug() << "tag created on server" << tag->name();
     foreach (const QString &noteGuid, tag->m_notesList) {
         qDebug() << "tag has notes:" << tag->m_notesList.count();
@@ -421,17 +428,35 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
             emit dataChanged(index(noteIdx), index(noteIdx), QVector<int>() << RoleTagGuids);
         }
     }
+
+    QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
+    cacheFile.beginGroup("tags");
+    cacheFile.remove(tmpGuid);
+    cacheFile.endGroup();
+
+    syncToCacheFile(tag);
 }
 
-void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
+void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "error updating tag" << errorMessage;
-
-        // Lets fetch the tags from the server again to reflect the non-saved state...
-        refreshTags();
+    Tag *tag = m_tagsHash.value(QString::fromStdString(result.guid));
+    if (!tag) {
+        qWarning() << "Save tag job finished, but tag can't be found any more";
         return;
     }
+    tag->setLoading(false);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "error updating tag" << errorMessage;
+        tag->setSyncError(true);
+        emit tagChanged(tag->guid());
+        return;
+    }
+
+    tag->setName(QString::fromStdString(result.name));
+    tag->setUpdateSequenceNumber(result.updateSequenceNum);
+    tag->setLastSyncedSequenceNumber(result.updateSequenceNum);
+    emit tagChanged(tag->guid());
+    syncToCacheFile(tag);
 }
 
 void NotesStore::tagNote(const QString &noteGuid, const QString &tagGuid)
@@ -489,6 +514,8 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
         return;
     }
 
+    m_unhandledNotes = m_notesHash.keys();
+
     if (EvernoteConnection::instance()->isConnected()) {
         m_loading = true;
         emit loadingChanged();
@@ -511,81 +538,42 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         emit errorChanged();
     }
 
-    QList<Note*> unhandledNotes = m_notes;
-
     for (unsigned int i = 0; i < results.notes.size(); ++i) {
         evernote::edam::NoteMetadata result = results.notes.at(i);
         Note *note = m_notesHash.value(QString::fromStdString(result.guid));
-        unhandledNotes.removeAll(note);
+        m_unhandledNotes.removeAll(QString::fromStdString(result.guid));
         QVector<int> changedRoles;
         bool newNote = note == 0;
         if (newNote) {
-            QString guid = QString::fromStdString(result.guid);
-            note = new Note(guid, result.updateSequenceNum, this);
-            note->setCreated(QDateTime::fromMSecsSinceEpoch(result.created));
+            note = new Note(QString::fromStdString(result.guid), 0, this);
             connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
             connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
-        }
 
-        if (note->updated() != QDateTime::fromMSecsSinceEpoch(result.updated)) {
-            note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
-            changedRoles << RoleUpdated;
-        }
-        if (note->title() != QString::fromStdString(result.title)) {
-            note->setTitle(QString::fromStdString(result.title));
-            changedRoles << RoleTitle;
-        }
-        if (note->notebookGuid() != QString::fromStdString(result.notebookGuid)) {
-            note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
-            changedRoles << RoleNotebookGuid;
-        }
-        if (note->reminderOrder() != result.attributes.reminderOrder) {
-            note->setReminderOrder(result.attributes.reminderOrder);
-            changedRoles << RoleReminder;
-        }
-        QStringList tagGuids;
-        for (quint32 i = 0; i < result.tagGuids.size(); i++) {
-            tagGuids << QString::fromStdString(result.tagGuids.at(i));
-        }
-        if (note->tagGuids() != tagGuids) {
-            note->setTagGuids(tagGuids);
-            changedRoles << RoleTagGuids;
-        }
+            updateFromEDAM(result, note);
+            qDebug() << "updated from EDAM:" << note->updateSequenceNumber() << note->lastSyncedSequenceNumber() << result.__isset.updateSequenceNum;
 
-        if (!results.searchedWords.empty()) {
-            note->setIsSearchResult(true);
-            changedRoles << RoleIsSearchResult;
-        }
+            beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
+            m_notesHash.insert(note->guid(), note);
+            m_notes.append(note);
+            endInsertRows();
+            emit noteAdded(note->guid(), note->notebookGuid());
+            emit countChanged();
+            syncToCacheFile(note);
 
-        QDateTime reminderTime;
-        if (result.attributes.reminderTime > 0) {
-            reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
-        }
-        if (note->reminderTime() != reminderTime) {
-            note->setReminderTime(reminderTime);
-            changedRoles << RoleReminderTime;
-        }
-        QDateTime reminderDoneTime;
-        if (result.attributes.reminderDoneTime > 0) {
-            reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
-        }
-        if (note->reminderDoneTime() != reminderDoneTime) {
-            note->setReminderDoneTime(reminderDoneTime);
-            changedRoles << RoleReminderDoneTime;
-        }
-
-        qDebug() << "have note with" << note->updateSequenceNumber() << note->lastSyncedSequenceNumber();
-        if (note->synced()) {
+        } else if (note->synced()) {
             // Local note did not change. Check if we need to refresh from server.
             if (note->updateSequenceNumber() < result.updateSequenceNum) {
                 qDebug() << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
+                changedRoles = updateFromEDAM(result, note);
                 refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
+                syncToCacheFile(note);
             }
         } else {
             // Local note changed. See if we can push our changes.
             if (note->lastSyncedSequenceNumber() == result.updateSequenceNum) {
                 qDebug() << "Local note has changed while server note did not. Pushing changes.";
                 note->setLoading(true);
+                changedRoles << RoleLoading;
                 SaveNoteJob *job = new SaveNoteJob(note, this);
                 connect(job, &SaveNoteJob::jobDone, this, &NotesStore::saveNoteJobDone);
                 EvernoteConnection::instance()->enqueue(job);
@@ -599,21 +587,16 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             }
         }
 
-        if (newNote) {
-            beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
-            m_notesHash.insert(note->guid(), note);
-            m_notes.append(note);
-            endInsertRows();
-            emit noteAdded(note->guid(), note->notebookGuid());
-            emit countChanged();
-            syncToCacheFile(note);
-        } else if (changedRoles.count() > 0) {
+        if (!results.searchedWords.empty()) {
+            note->setIsSearchResult(true);
+            changedRoles << RoleIsSearchResult;
+        }
+
+        if (changedRoles.count() > 0) {
             QModelIndex noteIndex = index(m_notes.indexOf(note));
             emit dataChanged(noteIndex, noteIndex, changedRoles);
             emit noteChanged(note->guid(), note->notebookGuid());
-            syncToCacheFile(note);
         }
-
     }
 
     if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
@@ -624,9 +607,13 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         emit loadingChanged();
 
 
-        foreach (Note *note, unhandledNotes) {
+        foreach (const QString &unhandledGuid, m_unhandledNotes) {
+            Note *note = m_notesHash.value(unhandledGuid);
+            if (!note) {
+                continue; // Note might be deleted locally by now
+            }
             qDebug() << "Have a local note that's not available on server!" << note->guid();
-            if (note->lastSyncedSequenceNumber() == -1) {
+            if (note->lastSyncedSequenceNumber() == 0) {
                 // This note hasn't been created on the server yet. Do that now.
                 qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
                 QModelIndex idx = index(m_notes.indexOf(note));
@@ -783,30 +770,41 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         unhandledNotebooks.removeAll(notebook);
         bool newNotebook = notebook == 0;
         if (newNotebook) {
-            notebook = new Notebook(QString::fromStdString(result.guid), result.updateSequenceNum, this);
-        }
-        notebook->setUpdateSequenceNumber(result.updateSequenceNum);
-        notebook->setLastSyncedSequenceNumber(result.updateSequenceNum);
-        notebook->setName(QString::fromStdString(result.name));
-        notebook->setPublished(result.published);
-        notebook->setLastUpdated(QDateTime::fromMSecsSinceEpoch(result.serviceUpdated));
-
-        if (newNotebook) {
+            notebook = new Notebook(QString::fromStdString(result.guid), 0, this);
+            updateFromEDAM(result, notebook);
             m_notebooksHash.insert(notebook->guid(), notebook);
             m_notebooks.append(notebook);
             emit notebookAdded(notebook->guid());
+            syncToCacheFile(notebook);
+        } else if (notebook->synced()) {
+            if (notebook->updateSequenceNumber() < result.updateSequenceNum) {
+                updateFromEDAM(result, notebook);
+                emit notebookChanged(notebook->guid());
+                syncToCacheFile(notebook);
+            }
         } else {
-            emit notebookChanged(notebook->guid());
+            // Local notebook changed. See if we can push our changes
+            if (result.updateSequenceNum == notebook->lastSyncedSequenceNumber()) {
+                SaveNotebookJob *job = new SaveNotebookJob(notebook);
+                connect(job, &SaveNotebookJob::jobDone, this, &NotesStore::saveNotebookJobDone);
+                EvernoteConnection::instance()->enqueue(job);
+                notebook->setLoading(true);
+                emit notebookChanged(notebook->guid());
+            } else {
+                qWarning() << "CONFLICT in notebook:" << notebook->name();
+                notebook->setSyncError(true);
+                emit notebookChanged(notebook->guid());
+            }
         }
-        syncToCacheFile(notebook);
     }
 
     foreach (Notebook *notebook, unhandledNotebooks) {
-        if (notebook->lastSyncedSequenceNumber() == -1) {
+        if (notebook->lastSyncedSequenceNumber() == 0) {
             notebook->setLoading(true);
             CreateNotebookJob *job = new CreateNotebookJob(notebook);
             connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
             EvernoteConnection::instance()->enqueue(job);
+            emit notebookChanged(notebook->guid());
         } else {
             m_notebooks.removeAll(notebook);
             m_notebooksHash.remove(notebook->guid());
@@ -819,7 +817,6 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
 
             notebook->deleteInfoFile();
             notebook->deleteLater();
-
         }
     }
 }
@@ -853,24 +850,61 @@ void NotesStore::fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const
         emit tagsErrorChanged();
     }
 
+    QHash<QString, Tag*> unhandledTags = m_tagsHash;
     for (unsigned int i = 0; i < results.size(); ++i) {
         evernote::edam::Tag result = results.at(i);
+        unhandledTags.remove(QString::fromStdString(result.guid));
         Tag *tag = m_tagsHash.value(QString::fromStdString(result.guid));
         bool newTag = tag == 0;
         if (newTag) {
             tag = new Tag(QString::fromStdString(result.guid), result.updateSequenceNum, this);
-        }
-        tag->setUpdateSequenceNumber(result.updateSequenceNum);
-        tag->setName(QString::fromStdString(result.name));
-
-        syncToCacheFile(tag);
-
-        if (newTag) {
+            tag->setLastSyncedSequenceNumber(result.updateSequenceNum);
+            qDebug() << "got new tag with seq:" << result.updateSequenceNum << tag->synced() << tag->updateSequenceNumber() << tag->lastSyncedSequenceNumber();
+            tag->setName(QString::fromStdString(result.name));
             m_tagsHash.insert(tag->guid(), tag);
             m_tags.append(tag);
             emit tagAdded(tag->guid());
+            syncToCacheFile(tag);
+        } else if (tag->synced()) {
+            if (tag->updateSequenceNumber() < result.updateSequenceNum) {
+                tag->setName(QString::fromStdString(result.name));
+                tag->setUpdateSequenceNumber(result.updateSequenceNum);
+                tag->setLastSyncedSequenceNumber(result.updateSequenceNum);
+                emit tagChanged(tag->guid());
+                syncToCacheFile(tag);
+            }
         } else {
+            // local tag changed. See if we can sync it to the server
+            if (result.updateSequenceNum == tag->lastSyncedSequenceNumber()) {
+                SaveTagJob *job = new SaveTagJob(tag);
+                connect(job, &SaveTagJob::jobDone, this, &NotesStore::saveTagJobDone);
+                EvernoteConnection::instance()->enqueue(job);
+                tag->setLoading(true);
+                emit tagChanged(tag->guid());
+            } else {
+                qWarning() << "CONFLICT in tag" << tag->name();
+                tag->setSyncError(true);
+                emit tagChanged(tag->guid());
+            }
+        }
+
+
+    }
+
+    foreach (Tag *tag, unhandledTags) {
+        if (tag->lastSyncedSequenceNumber() == 0) {
+            tag->setLoading(true);
+            CreateTagJob *job = new CreateTagJob(tag);
+            connect(job, &CreateTagJob::jobDone, this, &NotesStore::createTagJobDone);
+            EvernoteConnection::instance()->enqueue(job);
             emit tagChanged(tag->guid());
+        } else {
+            m_tags.removeAll(tag);
+            m_tagsHash.remove(tag->guid());
+            emit tagRemoved(tag->guid());
+
+            tag->deleteInfoFile();
+            tag->deleteLater();
         }
     }
 }
@@ -884,7 +918,7 @@ Note* NotesStore::createNote(const QString &title, const QString &notebookGuid, 
 
 Note* NotesStore::createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content)
 {
-    Note *note = new Note("tmp-" + QUuid::createUuid().toString(), 0, this);
+    Note *note = new Note(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1, this);
     connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
     connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
 
@@ -1056,8 +1090,11 @@ void NotesStore::saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, co
         qWarning() << "Save notebook job done but notebook can't be found any more!";
         return;
     }
-
+    qDebug() << "save notebook done for:" << notebook->name() << notebook->lastSyncedSequenceNumber() << notebook->updateSequenceNumber() << result.updateSequenceNum;
+    updateFromEDAM(result, notebook);
     notebook->setLoading(false);
+    emit notebookChanged(notebook->guid());
+    syncToCacheFile(notebook);
 }
 
 void NotesStore::deleteNote(const QString &guid)
@@ -1265,4 +1302,85 @@ void NotesStore::loadFromCacheFile()
         endInsertRows();
     }
     cacheFile.endGroup();
+}
+
+QVector<int> NotesStore::updateFromEDAM(const evernote::edam::NoteMetadata &evNote, Note *note)
+{
+    QVector<int> roles;
+    if (note->guid() != QString::fromStdString(evNote.guid)) {
+        note->setGuid(QString::fromStdString(evNote.guid));
+        roles << RoleGuid;
+    }
+
+    if (evNote.__isset.title && note->title() != QString::fromStdString(evNote.title)) {
+        note->setTitle(QString::fromStdString(evNote.title));
+        roles << RoleTitle;
+    }
+    if (evNote.__isset.created && note->created() != QDateTime::fromMSecsSinceEpoch(evNote.created)) {
+        note->setCreated(QDateTime::fromMSecsSinceEpoch(evNote.created));
+        roles << RoleCreated;
+    }
+    if (evNote.__isset.updated && note->updated() != QDateTime::fromMSecsSinceEpoch(evNote.updated)) {
+        note->setUpdated(QDateTime::fromMSecsSinceEpoch(evNote.updated));
+        roles << RoleUpdated;
+    }
+    if (evNote.__isset.updateSequenceNum && note->updateSequenceNumber() != evNote.updateSequenceNum) {
+        note->setUpdateSequenceNumber(evNote.updateSequenceNum);
+    }
+    if (evNote.__isset.notebookGuid && note->notebookGuid() != QString::fromStdString(evNote.notebookGuid)) {
+        note->setNotebookGuid(QString::fromStdString(evNote.notebookGuid));
+        roles << RoleNotebookGuid;
+    }
+    if (evNote.__isset.tagGuids) {
+        QStringList tagGuids;
+        for (quint32 i = 0; i < evNote.tagGuids.size(); i++) {
+            tagGuids << QString::fromStdString(evNote.tagGuids.at(i));
+        }
+        if (note->tagGuids() != tagGuids) {
+            note->setTagGuids(tagGuids);
+            roles << RoleTagGuids;
+        }
+    }
+    if (evNote.__isset.attributes && evNote.attributes.__isset.reminderTime) {
+        QDateTime reminderTime;
+        if (evNote.attributes.reminderTime > 0) {
+            reminderTime = QDateTime::fromMSecsSinceEpoch(evNote.attributes.reminderTime);
+        }
+        if (note->reminderTime() != reminderTime) {
+            note->setReminderTime(reminderTime);
+            roles << RoleReminderTime;
+        }
+    }
+    if (evNote.__isset.attributes && evNote.attributes.__isset.reminderDoneTime) {
+        QDateTime reminderDoneTime;
+        if (evNote.attributes.reminderDoneTime > 0) {
+            reminderDoneTime = QDateTime::fromMSecsSinceEpoch(evNote.attributes.reminderDoneTime);
+        }
+        if (note->reminderDoneTime() != reminderDoneTime) {
+            note->setReminderDoneTime(reminderDoneTime);
+            roles << RoleReminderDoneTime;
+        }
+    }
+    note->setLastSyncedSequenceNumber(evNote.updateSequenceNum);
+    return roles;
+}
+
+void NotesStore::updateFromEDAM(const evernote::edam::Notebook &evNotebook, Notebook *notebook)
+{
+    if (evNotebook.__isset.guid && QString::fromStdString(evNotebook.guid) != notebook->guid()) {
+        notebook->setGuid(QString::fromStdString(evNotebook.guid));
+    }
+    if (evNotebook.__isset.name && QString::fromStdString(evNotebook.name) != notebook->name()) {
+        notebook->setName(QString::fromStdString(evNotebook.name));
+    }
+    if (evNotebook.__isset.updateSequenceNum && evNotebook.updateSequenceNum != notebook->updateSequenceNumber()) {
+        notebook->setUpdateSequenceNumber(evNotebook.updateSequenceNum);
+    }
+    if (evNotebook.__isset.serviceUpdated && QDateTime::fromMSecsSinceEpoch(evNotebook.serviceUpdated) != notebook->lastUpdated()) {
+        notebook->setLastUpdated(QDateTime::fromMSecsSinceEpoch(evNotebook.serviceUpdated));
+    }
+    if (evNotebook.__isset.published && evNotebook.published != notebook->published()) {
+        notebook->setPublished(evNotebook.published);
+    }
+    notebook->setLastSyncedSequenceNumber(evNotebook.updateSequenceNum);
 }

@@ -38,6 +38,13 @@ Empty {
 
         onClicked: root.clicked()
 
+        Icon {
+            height: units.gu(2.5)
+            width: height
+            anchors { top: parent.top; right: parent.right; topMargin: units.gu(1) }
+            name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
+        }
+
         RowLayout {
             anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
 

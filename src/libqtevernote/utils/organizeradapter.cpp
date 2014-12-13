@@ -70,8 +70,6 @@ void OrganizerAdapter::writeReminders()
 {
     foreach (Note* note, NotesStore::instance()->notes()) {
         if (note->reminder() && note->hasReminderTime() && !note->reminderDone()) {
-            qDebug() << "********* syncing reminder" << note->title();
-
             QOrganizerTodo item;
             organizerEventFromNote(note, item);
 

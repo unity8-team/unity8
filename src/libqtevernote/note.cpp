@@ -54,7 +54,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_reminderTime = infoFile.value("reminderTime").toDateTime();
     m_reminderDoneTime = infoFile.value("reminderDoneTime").toDateTime();
     m_deleted = infoFile.value("deleted").toBool();
-    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", -1).toUInt();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", 0).toUInt();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     infoFile.beginGroup("resources");
@@ -616,8 +616,6 @@ void Note::syncToInfoFile()
     infoFile.setValue("reminderDoneTime", m_reminderDoneTime);
     infoFile.setValue("deleted", m_deleted);
     infoFile.setValue("lastSyncedSequenceNumber", m_lastSyncedSequenceNumber);
-
-    qDebug() << "synced note to disk:" << m_guid << m_notebookGuid;
 }
 
 void Note::syncToCacheFile()

@@ -35,13 +35,14 @@ public:
     virtual void attachToDuplicate(const EvernoteJob *other) override;
 
 signals:
-    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &tag);
 
 protected:
     void startJob();
     void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
+    evernote::edam::Tag m_result;
     Tag* m_tag;
 };
 

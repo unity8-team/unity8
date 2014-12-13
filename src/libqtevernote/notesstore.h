@@ -182,7 +182,7 @@ private slots:
     void expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid);
     void fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Tag> &results);
     void createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Tag &result);
-    void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
+    void saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result);
 
     void syncToCacheFile(Note *note);
     void deleteFromCacheFile(Note* note);
@@ -193,6 +193,10 @@ private slots:
     void userStoreConnected(const QString &username);
     void emitDataChanged();
     void clear();
+
+private:
+    QVector<int>    updateFromEDAM(const evernote::edam::NoteMetadata &evNote, Note *note);
+    void updateFromEDAM(const evernote::edam::Notebook &evNotebook, Notebook *notebook);
 
 private:
     explicit NotesStore(QObject *parent = 0);
@@ -216,6 +220,8 @@ private:
     QHash<QString, Note*> m_notesHash;
     QHash<QString, Notebook*> m_notebooksHash;
     QHash<QString, Tag*> m_tagsHash;
+
+    QStringList m_unhandledNotes;
 
     OrganizerAdapter *m_organizerAdapter;
 

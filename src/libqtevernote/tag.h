@@ -41,6 +41,10 @@ class Tag: public QObject
     Q_PROPERTY(int noteCount READ noteCount NOTIFY noteCountChanged)
     // Don't forget to update clone() if you add new properties
 
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+    Q_PROPERTY(bool syncError READ syncError NOTIFY syncErrorChanged)
+
 public:
     explicit Tag(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Tag();
@@ -49,12 +53,18 @@ public:
     void setGuid(const QString &guid);
 
     quint32 updateSequenceNumber() const;
-    void setUpdateSequenceNumber(quint32 updateSuequenceNumber);
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+
+    quint32 lastSyncedSequenceNumber() const;
 
     QString name() const;
     void setName(const QString &guid);
 
     int noteCount() const;
+
+    bool loading() const;
+    bool synced() const;
+    bool syncError() const;
 
     Tag *clone();
 
@@ -62,6 +72,9 @@ signals:
     void guidChanged();
     void nameChanged();
     void noteCountChanged();
+    void loadingChanged();
+    void syncedChanged();
+    void syncErrorChanged();
 
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
@@ -71,15 +84,24 @@ private slots:
 
 private:
     void syncToInfoFile();
+    void deleteInfoFile();
+    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setLoading(bool loading);
+    void setSyncError(bool syncError);
 
 private:
     quint32 m_updateSequenceNumber;
+    quint32 m_lastSyncedSequenceNumber;
     QString m_guid;
     QString m_name;
 
     QList<QString> m_notesList;
 
     QString m_infoFile;
+
+    bool m_loading;
+    bool m_synced;
+    bool m_syncError;
 
     friend class NotesStore;
 };

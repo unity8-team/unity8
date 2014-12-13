@@ -50,16 +50,17 @@ void SaveTagJob::attachToDuplicate(const EvernoteJob *other)
 
 void SaveTagJob::startJob()
 {
-    evernote::edam::Tag tag;
-    tag.guid = m_tag->guid().toStdString();
-    tag.__isset.guid = true;
-    tag.name = m_tag->name().toStdString();
-    tag.__isset.name = true;
+    m_result.guid = m_tag->guid().toStdString();
+    m_result.__isset.guid = true;
+    m_result.name = m_tag->name().toStdString();
+    m_result.__isset.name = true;
+    m_result.updateSequenceNum = m_tag->updateSequenceNumber();
+    m_result.__isset.updateSequenceNum = true;
 
-    client()->updateTag(token().toStdString(), tag);
+    client()->updateTag(token().toStdString(), m_result);
 }
 
 void SaveTagJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage);
+    emit jobDone(errorCode, errorMessage, m_result);
 }
