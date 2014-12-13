@@ -40,84 +40,100 @@ Empty {
 
         onClicked: root.clicked()
 
-        ColumnLayout {
+        RowLayout {
             anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
-            Layout.fillWidth: true
+            spacing: units.gu(1)
 
-            RowLayout {
+            Item {
+                anchors { top: parent.top; bottom: parent.bottom }
+                width: units.gu(1)
+                Rectangle {
+                    anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
+                    width: units.gu(.5)
+                    color: root.notebookColor
+                    radius: width / 2
+                }
+            }
+
+            ColumnLayout {
                 Layout.fillWidth: true
 
-                Label {
-                    id: notebookTitleLabel
-                    objectName: 'notebookTitleLabel'
-                    text: model.name
-                    color: root.notebookColor
-                    fontSize: "large"
+                RowLayout {
                     Layout.fillWidth: true
 
-                    MouseArea {
-                        onPressAndHold: {
-                            notebookTitleLabel.visible = false;
-                            notebookTitleTextField.forceActiveFocus();
-                        }
-                        anchors.fill: parent
-                        propagateComposedEvents: true
-                    }
-                }
+                    Label {
+                        id: notebookTitleLabel
+                        objectName: 'notebookTitleLabel'
+                        text: model.name
+                        color: root.notebookColor
+                        fontSize: "large"
+                        Layout.fillWidth: true
 
-                TextField {
-                    id: notebookTitleTextField
-                    text: model.name
-                    color: root.notebookColor
-                    visible: !notebookTitleLabel.visible
-                    Layout.fillWidth: true
-
-                    InverseMouseArea {
-                        onClicked: {
-                            if (notebookTitleTextField.text) {
-                                notebooks.notebook(index).name = notebookTitleTextField.text;
-                                NotesStore.saveNotebook(notebooks.notebook(index).guid);
-                                notebookTitleLabel.visible = true;
+                        MouseArea {
+                            onPressAndHold: {
+                                notebookTitleLabel.visible = false;
+                                notebookTitleTextField.forceActiveFocus();
                             }
+                            anchors.fill: parent
+                            propagateComposedEvents: true
                         }
-                        anchors.fill: parent
+                    }
+
+                    TextField {
+                        id: notebookTitleTextField
+                        text: model.name
+                        color: root.notebookColor
+                        visible: !notebookTitleLabel.visible
+                        Layout.fillWidth: true
+
+                        InverseMouseArea {
+                            onClicked: {
+                                if (notebookTitleTextField.text) {
+                                    notebooks.notebook(index).name = notebookTitleTextField.text;
+                                    NotesStore.saveNotebook(notebooks.notebook(index).guid);
+                                    notebookTitleLabel.visible = true;
+                                }
+                            }
+                            anchors.fill: parent
+                        }
+                    }
+                    Icon {
+                        height: notebookTitleLabel.height
+                        width: height
+                        name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
                     }
                 }
-                Icon {
-                    height: notebookTitleLabel.height
-                    width: height
-                    name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
-                }
-            }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                Label {
-                    objectName: 'notebookLastUpdatedLabel'
-                    text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
-                    fontSize: "small"
-                    color: "black"
+                RowLayout {
                     Layout.fillWidth: true
-                }
 
-                Label {
-                    objectName: 'notebookNoteCountLabel'
-                    Layout.fillHeight: true
-                    verticalAlignment: Text.AlignVCenter
-                    text: "(" + model.noteCount + ")"
-                    color: "#b3b3b3"
+                    Label {
+                        objectName: 'notebookLastUpdatedLabel'
+                        text: i18n.tr("Last edited %1").arg(model.lastUpdatedString)
+                        fontSize: "small"
+                        color: "black"
+                        Layout.fillWidth: true
+                    }
+
+                    Label {
+                        objectName: 'notebookNoteCountLabel'
+                        Layout.fillHeight: true
+                        verticalAlignment: Text.AlignVCenter
+                        text: "(" + model.noteCount + ")"
+                        color: "#b3b3b3"
+                    }
                 }
-            }
-            Label {
-                objectName: 'notebookPublishedLabel'
-                Layout.fillHeight: true
-                text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
-                color: model.published ? "black" : "#b3b3b3"
-                fontSize: "x-small"
-                verticalAlignment: Text.AlignVCenter
-                font.bold: model.published
+                Label {
+                    objectName: 'notebookPublishedLabel'
+                    Layout.fillHeight: true
+                    text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
+                    color: model.published ? "black" : "#b3b3b3"
+                    fontSize: "x-small"
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: model.published
+                }
             }
         }
+
     }
 }

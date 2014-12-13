@@ -32,6 +32,7 @@ Empty {
     property string content
     property string resource
     property string tags
+    property bool reminder
     property bool loading
     property bool synced
     property bool syncError
@@ -87,6 +88,12 @@ Empty {
                                     font.weight: Font.Light
                                     elide: Text.ElideRight
                                     color: root.notebookColor
+                                }
+                                Icon {
+                                    height: titleLabel.height
+                                    width: height
+                                    name: root.reminder ? "alarm-clock" : ""
+                                    visible: root.reminder
                                 }
                                 Icon {
                                     height: titleLabel.height

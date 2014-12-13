@@ -47,6 +47,7 @@ Empty {
 
         RowLayout {
             anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+            spacing: units.gu(1)
 
             Item {
                 anchors { top: parent.top; bottom: parent.bottom }

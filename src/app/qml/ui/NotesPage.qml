@@ -156,6 +156,7 @@ PageWithBottomEdge {
             }
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
+            reminder: model.reminder
             synced: model.synced
             loading: model.loading
             syncError: model.syncError

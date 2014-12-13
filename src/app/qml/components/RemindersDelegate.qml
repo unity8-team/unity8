@@ -106,23 +106,33 @@ Base {
                 }
             }
 
-            Column {
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 spacing: units.gu(1)
 
-                Label {
-                    text: note.title
-                    anchors { left: parent.left; right: parent.right }
-                    fontSize: "large"
-                    horizontalAlignment: Text.AlignLeft
-                    color: "black"
-                    elide: Text.ElideRight
+                RowLayout {
+                    Layout.fillWidth: true
+                    Label {
+                        id: titleLabel
+                        text: note.title
+                        Layout.fillWidth: true
+                        fontSize: "large"
+                        horizontalAlignment: Text.AlignLeft
+                        color: "black"
+                        elide: Text.ElideRight
+                    }
+                    Icon {
+                        height: titleLabel.height
+                        width: height
+                        name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
+                    }
                 }
                 Label {
                     text: note.tagline
                     fontSize: "small"
                     horizontalAlignment: Text.AlignLeft
+                    Layout.fillWidth: true
                     maximumLineCount: 2
                     width: parent.width
                     wrapMode: Text.WordWrap
