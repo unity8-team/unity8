@@ -602,6 +602,8 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                 qWarning() << "local note sequence:" << note->updateSequenceNumber();
                 qWarning() << "last synced sequence:" << note->lastSyncedSequenceNumber();
                 qWarning() << "remote sequence:" << result.updateSequenceNum;
+                note->setSyncError(true);
+                changedRoles << RoleSyncError;
             }
         }
 
@@ -974,9 +976,9 @@ void NotesStore::saveNote(const QString &guid)
         qWarning() << "Can't save note. Guid not found:" << guid;
         return;
     }
+    note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
     syncToCacheFile(note);
     note->syncToCacheFile();
-    note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
 
     if (EvernoteConnection::instance()->isConnected()) {
         note->setLoading(true);
