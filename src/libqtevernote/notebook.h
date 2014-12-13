@@ -97,6 +97,7 @@ private:
     void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
 
     void syncToInfoFile();
+    void deleteInfoFile();
 
 private:
     quint32 m_updateSequenceNumber;

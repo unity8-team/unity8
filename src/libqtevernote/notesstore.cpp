@@ -273,7 +273,6 @@ void NotesStore::createNotebook(const QString &name)
 
     syncToCacheFile(notebook);
 
-    qDebug() << "creating notebook:" << name;
     if (EvernoteConnection::instance()->isConnected()) {
         notebook->setLoading(true);
         CreateNotebookJob *job = new CreateNotebookJob(notebook);
@@ -284,7 +283,6 @@ void NotesStore::createNotebook(const QString &name)
 
 void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Notebook &result)
 {
-    qDebug() << "create notebooks job done";
     Notebook *notebook = m_notebooksHash.value(tmpGuid);
     if (!notebook) {
         qWarning() << "Cannot find temporary notebook after create finished";
@@ -493,12 +491,6 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
     if (EvernoteConnection::instance()->isConnected()) {
         m_loading = true;
-        foreach (Note *note, m_notesHash) {
-            QPointer<Note> notePtr = note;
-            m_unhandledNotes.insert(note->guid(), notePtr);
-        }
-        qDebug() << "refreshing notes" << m_unhandledNotes.count();
-
         emit loadingChanged();
         FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid, QString(), startIndex);
         connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
@@ -508,8 +500,6 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    qDebug() << "fetchnoteresult:" << results.notes.size() << m_unhandledNotes.count();
-
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Failed to fetch notes list:" << errorMessage;
         m_error = tr("Error refreshing notes: %1").arg(errorMessage);
@@ -521,10 +511,12 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         emit errorChanged();
     }
 
+    QList<Note*> unhandledNotes = m_notes;
+
     for (unsigned int i = 0; i < results.notes.size(); ++i) {
         evernote::edam::NoteMetadata result = results.notes.at(i);
-        m_unhandledNotes.remove(QString::fromStdString(result.guid));
         Note *note = m_notesHash.value(QString::fromStdString(result.guid));
+        unhandledNotes.removeAll(note);
         QVector<int> changedRoles;
         bool newNote = note == 0;
         if (newNote) {
@@ -632,12 +624,9 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         emit loadingChanged();
 
 
-        foreach (QPointer<Note> note, m_unhandledNotes) {
-            if (note.isNull()) {
-                continue;
-            }
+        foreach (Note *note, unhandledNotes) {
             qDebug() << "Have a local note that's not available on server!" << note->guid();
-            if (note->guid().startsWith("tmp-")) {
+            if (note->lastSyncedSequenceNumber() == -1) {
                 // This note hasn't been created on the server yet. Do that now.
                 qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
                 QModelIndex idx = index(m_notes.indexOf(note));
@@ -786,13 +775,18 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         emit notebooksErrorChanged();
     }
 
+    QList<Notebook*> unhandledNotebooks = m_notebooks;
+
     for (unsigned int i = 0; i < results.size(); ++i) {
         evernote::edam::Notebook result = results.at(i);
         Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
+        unhandledNotebooks.removeAll(notebook);
         bool newNotebook = notebook == 0;
         if (newNotebook) {
             notebook = new Notebook(QString::fromStdString(result.guid), result.updateSequenceNum, this);
         }
+        notebook->setUpdateSequenceNumber(result.updateSequenceNum);
+        notebook->setLastSyncedSequenceNumber(result.updateSequenceNum);
         notebook->setName(QString::fromStdString(result.name));
         notebook->setPublished(result.published);
         notebook->setLastUpdated(QDateTime::fromMSecsSinceEpoch(result.serviceUpdated));
@@ -805,6 +799,28 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
             emit notebookChanged(notebook->guid());
         }
         syncToCacheFile(notebook);
+    }
+
+    foreach (Notebook *notebook, unhandledNotebooks) {
+        if (notebook->lastSyncedSequenceNumber() == -1) {
+            notebook->setLoading(true);
+            CreateNotebookJob *job = new CreateNotebookJob(notebook);
+            connect(job, &CreateNotebookJob::jobDone, this, &NotesStore::createNotebookJobDone);
+            EvernoteConnection::instance()->enqueue(job);
+        } else {
+            m_notebooks.removeAll(notebook);
+            m_notebooksHash.remove(notebook->guid());
+            emit notebookRemoved(notebook->guid());
+
+            QSettings settings(m_cacheFile, QSettings::IniFormat);
+            settings.beginGroup("notenooks");
+            settings.remove(notebook->guid());
+            settings.endGroup();
+
+            notebook->deleteInfoFile();
+            notebook->deleteLater();
+
+        }
     }
 }
 

@@ -40,7 +40,7 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     m_name = infoFile.value("name").toString();
     m_published = infoFile.value("published").toBool();
     m_lastUpdated = infoFile.value("lastUpdated").toDateTime();
-    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", updateSequenceNumber).toUInt();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", -1).toUInt();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     foreach (Note *note, NotesStore::instance()->notes()) {
@@ -216,6 +216,14 @@ void Notebook::syncToInfoFile()
     infoFile.setValue("published", m_published);
     infoFile.value("lastUpdated", m_lastUpdated);
     infoFile.setValue("lastSyncedSequenceNumber", m_lastSyncedSequenceNumber);
+}
+
+void Notebook::deleteInfoFile()
+{
+    QFile f(m_infoFile);
+    if (f.exists()) {
+        f.remove();
+    }
 }
 
 bool Notebook::loading() const
