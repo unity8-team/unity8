@@ -137,6 +137,7 @@ PageWithBottomEdge {
         height: parent.height - y
         model: notes
         clip: true
+        maximumFlickVelocity: units.gu(200)
 
         onRefreshed: {
             NotesStore.refreshNotes();

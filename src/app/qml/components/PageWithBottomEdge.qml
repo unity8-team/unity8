@@ -361,6 +361,7 @@ Page {
             active: true
             asynchronous: true
             anchors.fill: parent
+            visible: page.bottomEdgeContentShown
 
             //WORKAROUND: The SDK move the page contents down to allocate space for the header we need to avoid that during the page dragging
             Binding {

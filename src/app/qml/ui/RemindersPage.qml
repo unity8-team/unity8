@@ -63,6 +63,7 @@ Page {
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y
             clip: true
+            maximumFlickVelocity: units.gu(200)
 
             delegate: RemindersDelegate {
                 width: remindersListView.width
