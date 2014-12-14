@@ -68,46 +68,31 @@ Empty {
                         GradientStop{ position: 1; color: "#d9d9d9" }
                     }
 
-                    Base {
+                    RowLayout {
                         anchors.fill: parent
-                        progression: true
-                        showDivider: false
-
-                        onClicked: root.clicked()   // Propagate the signal
+                        anchors.margins: units.gu(1)
+                        spacing: units.gu(1)
 
                         ColumnLayout {
-                            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1); rightMargin: -units.gu(2) }
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
 
-                            RowLayout {
+                            Label {
+                                id: titleLabel
                                 Layout.fillWidth: true
-                                height: titleLabel.height
-                                Label {
-                                    id: titleLabel
-                                    Layout.fillWidth: true
-                                    text: root.title
-                                    font.weight: Font.Light
-                                    elide: Text.ElideRight
-                                    color: root.notebookColor
-                                }
-                                Icon {
-                                    height: titleLabel.height
-                                    width: height
-                                    name: root.reminder ? "alarm-clock" : ""
-                                    visible: root.reminder
-                                }
-                                Icon {
-                                    height: titleLabel.height
-                                    width: height
-                                    name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : "sync-offline"
-                                    visible: NotesStore.username !== "@local"
-                                }
+                                text: root.title
+                                font.weight: Font.Light
+                                elide: Text.ElideRight
+                                color: root.notebookColor
                             }
-
-
                             Label {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                text: root.content
+                                // TRANSLATORS: the argument is a modification date that follows this format:
+                                // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
+                                text: "<font color=\"" + root.notebookColor + "\">" +
+                                    Qt.formatDateTime(root.creationDate, i18n.tr("yyyy/mm/dd hh:mm")) +
+                                    " </font>" + root.content
                                 wrapMode: Text.WordWrap
                                 textFormat: Text.StyledText
                                 maximumLineCount: 2
@@ -115,23 +100,36 @@ Empty {
                                 color: "black"
                             }
 
-                            RowLayout {
+                            Label {
                                 Layout.fillWidth: true
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: root.tags
-                                    fontSize: "small"
-                                    color: "#b3b3b3"
+                                text: root.tags
+                                wrapMode: Text.WordWrap
+                                maximumLineCount: 1
+                                fontSize: "small"
+                                color: "#b3b3b3"
+                            }
+                        }
 
-                                }
-                                Label {
-                                    // TRANSLATORS: the argument is a modification date that follows this format:
-                                    // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
-                                    text: Qt.formatDateTime(root.creationDate, i18n.tr("dddd, d hh:mm"))
-                                    color: "#b3b3b3"
-                                    fontSize: "small"
-                                    horizontalAlignment: Text.AlignRight
-                                }
+                        Item {
+                            Layout.fillHeight: true
+                            width: units.gu(2.5)
+
+                            Icon {
+                                anchors { left: parent.left; top: parent.top; right: parent.right }
+                                height: width
+                                name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : "sync-offline"
+                                visible: NotesStore.username !== "@local" && (!root.synced || root.syncError || root.loading)
+                            }
+                            Icon {
+                                anchors { left: parent.left; verticalCenter: parent.verticalCenter; right: parent.right }
+                                height: width
+                                name: "go-next"
+                            }
+                            Icon {
+                                anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
+                                height: width
+                                name: root.reminder ? "alarm-clock" : ""
+                                visible: root.reminder
                             }
                         }
                     }
