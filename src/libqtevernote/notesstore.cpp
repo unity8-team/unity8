@@ -994,9 +994,6 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         roles << RoleSyncError;
     }
 
-    note->setLoading(false);
-    roles << RoleLoading;
-
     QString guid = QString::fromStdString(result.guid);
     m_notesHash.insert(guid, note);
     note->setGuid(guid);
