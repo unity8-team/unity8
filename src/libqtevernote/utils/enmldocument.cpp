@@ -507,6 +507,6 @@ QString EnmlDocument::toPlaintext() const
         }
     }
 
-    plaintext.remove('\n');
+    plaintext.remove('\n').trimmed();
     return plaintext;
 }

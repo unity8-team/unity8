@@ -54,6 +54,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_reminderTime = infoFile.value("reminderTime").toDateTime();
     m_reminderDoneTime = infoFile.value("reminderDoneTime").toDateTime();
     m_deleted = infoFile.value("deleted").toBool();
+    m_tagline = infoFile.value("tagline").toString();
     m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", 0).toUInt();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
@@ -255,7 +256,9 @@ void Note::setEnmlContent(const QString &enmlContent)
 
 QString Note::htmlContent() const
 {
+    qDebug() << "html content asked;";
     load();
+    qDebug() << "returning" << m_content.toHtml(m_guid);
     return m_content.toHtml(m_guid);
 }
 
@@ -282,7 +285,9 @@ QString Note::plaintextContent() const
 
 QString Note::tagline() const
 {
-    load();
+    if (m_tagline.isEmpty()) {
+        load();
+    }
     return m_tagline;
 }
 
@@ -621,6 +626,9 @@ void Note::syncToInfoFile()
 
 void Note::syncToCacheFile()
 {
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    infoFile.setValue("tagline", m_tagline);
+
     if (m_cacheFile.open(QFile::WriteOnly | QFile::Truncate)) {
         m_cacheFile.write(m_content.enml().toUtf8());
         m_cacheFile.close();
@@ -629,9 +637,12 @@ void Note::syncToCacheFile()
 
 void Note::load() const
 {
+    qDebug() << "load called" << m_loaded << isCached() << m_loading;
     if (!m_loaded && isCached()) {
+        qDebug() << "loading from cache";
         loadFromCacheFile();
     } else if (!m_loaded && !m_loading) {
+        qDebug() << "refreshing from network";
         NotesStore::instance()->refreshNoteContent(m_guid);
     }
 }

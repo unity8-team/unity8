@@ -694,33 +694,71 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
 {
     qDebug() << "fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
     Note *note = m_notesHash.value(guid);
-    if (note) {
+    if (!note) {
+        qWarning() << "RefreshNoteContent: Can't refresn note content. Note guid not found:" << guid;
+        return;
+    }
+    if (EvernoteConnection::instance()->isConnected()) {
+        FetchNoteJob *job = new FetchNoteJob(guid, what, this);
+        connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
+        EvernoteConnection::instance()->enqueue(job, priority);
+
         note->setLoading(true);
         int idx = m_notes.indexOf(note);
         emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
     }
-
-    FetchNoteJob *job = new FetchNoteJob(guid, what, this);
-    connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
-    EvernoteConnection::instance()->enqueue(job, priority);
 }
 
 void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error fetching note:" << errorMessage;
-        return;
-    }
-
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
     if (!note) {
         qWarning() << "can't find note for this update... ignoring...";
         return;
     }
+    QModelIndex noteIndex = index(m_notes.indexOf(note));
+    QVector<int> roles;
+
     note->setLoading(false);
-    note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
-    note->setTitle(QString::fromStdString(result.title));
-    note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
+    roles << RoleLoading;
+
+    switch (errorCode) {
+    case EvernoteConnection::ErrorCodeNoError:
+        // All is well
+        emit dataChanged(noteIndex, noteIndex, roles);
+        break;
+    case EvernoteConnection::ErrorCodeUserException:
+        qWarning() << "FetchNoteJobDone: EDAMUserException:" << errorMessage;
+        emit dataChanged(noteIndex, noteIndex, roles);
+        return; // silently discarding...
+    case EvernoteConnection::ErrorCodeConnectionLost:
+        qWarning() << "FetchNoteJobDone: Connection with evernote lost:" << errorMessage;
+        emit dataChanged(noteIndex, noteIndex, roles);
+        return; // silently discarding...
+    case EvernoteConnection::ErrorCodeNotFoundExcpetion:
+        qWarning() << "FetchNoteJobDone: Item not found on server:" << errorMessage;
+        emit dataChanged(noteIndex, noteIndex, roles);
+        return; // silently discarding...
+    default:
+        qWarning() << "FetchNoteJobDone: Failed to fetch note content:" << errorMessage << errorCode;
+        note->setSyncError(true);
+        roles << RoleSyncError;
+        emit dataChanged(noteIndex, noteIndex, roles);
+        return;
+    }
+
+    if (note->notebookGuid() != QString::fromStdString(result.notebookGuid)) {
+        note->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+        roles << RoleGuid;
+    }
+    if (note->title() != QString::fromStdString(result.title)) {
+        note->setTitle(QString::fromStdString(result.title));
+        roles << RoleTitle;
+    }
+    if (note->updated() != QDateTime::fromMSecsSinceEpoch(result.updated)) {
+        note->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
+        roles << RoleUpdated << RoleUpdatedString;
+    }
 
     // Notes are fetched without resources by default. if we discover one or more resources where we don't have
     // data in the cache, let's refresh the note again with resource data.
@@ -746,27 +784,37 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
             qDebug() << "refetching for image";
             refreshWithResourceData = true;
         }
+        roles << RoleResourceUrls;
     }
 
     if (what == FetchNoteJob::LoadContent) {
         note->setEnmlContent(QString::fromStdString(result.content));
         note->setUpdateSequenceNumber(result.updateSequenceNum);
+        roles << RoleHtmlContent << RoleEnmlContent << RoleTagline << RolePlaintextContent;
     }
-    note->setReminderOrder(result.attributes.reminderOrder);
+    if (note->reminderOrder() != result.attributes.reminderOrder) {
+        note->setReminderOrder(result.attributes.reminderOrder);
+        roles << RoleReminder;
+    }
     QDateTime reminderTime;
     if (result.attributes.reminderTime > 0) {
         reminderTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderTime);
     }
-    note->setReminderTime(reminderTime);
+    if (note->reminderTime() != reminderTime) {
+        note->setReminderTime(reminderTime);
+        roles << RoleReminderTime << RoleReminderTimeString;
+    }
     QDateTime reminderDoneTime;
     if (result.attributes.reminderDoneTime > 0) {
         reminderDoneTime = QDateTime::fromMSecsSinceEpoch(result.attributes.reminderDoneTime);
     }
-    note->setReminderDoneTime(reminderDoneTime);
+    if (note->reminderDoneTime() != reminderDoneTime) {
+        note->setReminderDoneTime(reminderDoneTime);
+        roles << RoleReminderDone << RoleReminderDoneTime;
+    }
     emit noteChanged(note->guid(), note->notebookGuid());
 
-    QModelIndex noteIndex = index(m_notes.indexOf(note));
-    emit dataChanged(noteIndex, noteIndex);
+    emit dataChanged(noteIndex, noteIndex, roles);
 
     if (refreshWithResourceData) {
         qDebug() << "refreshWithResourceData";
