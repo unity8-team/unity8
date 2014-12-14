@@ -71,7 +71,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     }
     infoFile.endGroup();
 
-    connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Note::tagGuidChanged);
+    connect(NotesStore::instance(), &NotesStore::notebookGuidChanged, this, &Note::slotNotebookGuidChanged);
+    connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Note::slotTagGuidChanged);
 }
 
 Note::~Note()
@@ -656,7 +657,15 @@ void Note::deleteFromCache()
     }
 }
 
-void Note::tagGuidChanged(const QString &oldGuid, const QString &newGuid)
+void Note::slotNotebookGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    if (m_notebookGuid == oldGuid) {
+        m_notebookGuid = newGuid;
+        emit notebookGuidChanged();
+    }
+}
+
+void Note::slotTagGuidChanged(const QString &oldGuid, const QString &newGuid)
 {
     int idx = m_tagGuids.indexOf(oldGuid);
     if (idx != -1) {

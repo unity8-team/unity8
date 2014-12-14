@@ -182,7 +182,8 @@ signals:
     void syncErrorChanged();
 
 private slots:
-    void tagGuidChanged(const QString &oldGuid, const QString &newGuid);
+    void slotNotebookGuidChanged(const QString &oldGuid, const QString &newGuid);
+    void slotTagGuidChanged(const QString &oldGuid, const QString &newGuid);
 
 private:
     // Those should only be called from NotesStore, which is a friend

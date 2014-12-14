@@ -315,6 +315,10 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
     cacheFile.endGroup();
 
     syncToCacheFile(notebook);
+
+    foreach (const QString &noteGuid, notebook->m_notesList) {
+        saveNote(noteGuid);
+    }
 }
 
 void NotesStore::saveNotebook(const QString &guid)
@@ -620,6 +624,11 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                 }
                 if (hasUnsyncedTag) {
                     qDebug() << "Not syncing note to server yet. Have a tag that needs sync first";
+                    continue;
+                }
+                Notebook *notebook = m_notebooksHash.value(note->notebookGuid());
+                if (notebook && notebook->lastSyncedSequenceNumber() == 0) {
+                    qDebug() << "Not syncing note to server yet. The notebook needs to be synced first";
                     continue;
                 }
                 qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
@@ -966,17 +975,20 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
         qWarning() << "Cannot find temporary note after create operation!";
         return;
     }
-
     int idx = m_notes.indexOf(note);
+    QVector<int> roles;
+
+    note->setLoading(false);
+    roles << RoleLoading;
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error creating note:" << errorMessage;
         note->setSyncError(true);
-        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleSyncError);
+        roles << RoleSyncError;
+        emit dataChanged(index(idx), index(idx), roles);
         return;
     }
 
-    QVector<int> roles;
     if (note->syncError()) {
         note->setSyncError(false);
         roles << RoleSyncError;
