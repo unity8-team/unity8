@@ -58,17 +58,16 @@ void SaveNoteJob::startJob()
     note.title = m_note->title().toStdString();
     note.__isset.title = true;
 
+    note.notebookGuid = m_note->notebookGuid().toStdString();
+    note.__isset.notebookGuid = true;
+
+    note.updated = m_note->updated().toMSecsSinceEpoch();
+    note.__isset.updated = true;
+
     if (m_note->deleted()) {
         note.active = !m_note->deleted();
         note.__isset.active = m_note->deleted();
     } else {
-
-        note.notebookGuid = m_note->notebookGuid().toStdString();
-        note.__isset.notebookGuid = true;
-
-        note.updated = m_note->updated().toMSecsSinceEpoch();
-        note.__isset.updated = true;
-
         std::vector<evernote::edam::Guid> tags;
         foreach (const QString &tag, m_note->tagGuids()) {
             tags.push_back(tag.toStdString());

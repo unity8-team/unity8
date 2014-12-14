@@ -89,7 +89,7 @@ Dialog {
         model: tags
 
         delegate: OptionSelectorDelegate {
-            text: model.name + model.guid
+            text: model.name
             selected: root.note ? root.note.tagGuids.indexOf(model.guid) !== -1 : false
 
             MouseArea {
