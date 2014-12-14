@@ -28,7 +28,6 @@ Base {
     id: root
     height: units.gu(10)
     clip: true
-    progression: true
     removable: true
 
     backgroundIndicator: Row {
@@ -71,74 +70,75 @@ Base {
         NotesStore.saveNote(note.guid)
     }
 
-    Column {
-        id: mainColumn
-        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(1) }
-        spacing: units.gu(2)
-        height: implicitHeight + units.gu(1)
+    RowLayout {
+        anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+        spacing: units.gu(1)
 
-        RowLayout {
-            anchors { left: parent.left; right: parent.right }
-            height: units.gu(8)
-            spacing: units.gu(1)
+        UbuntuShape {
+            Layout.fillHeight: true
+            width: height
+            color: preferences.colorForNotebook(note.notebookGuid)
+            radius: "medium"
 
-            UbuntuShape {
-                Layout.fillHeight: true
-                width: height
-                color: preferences.colorForNotebook(note.notebookGuid)
-                radius: "medium"
-
-                Column {
-                    anchors.centerIn: parent
-                    Label {
-                        text: note.hasReminderTime ? Qt.formatDateTime(note.reminderTime, "hh") : "00"
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        font.bold: true
-                        fontSize: "large"
-                    }
-                    Label {
-                        text: note.hasReminderTime ? Qt.formatDateTime(note.reminderTime, "mm") : "00"
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        fontSize: "large"
-                    }
-                }
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: units.gu(1)
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Label {
-                        id: titleLabel
-                        text: note.title
-                        Layout.fillWidth: true
-                        fontSize: "large"
-                        horizontalAlignment: Text.AlignLeft
-                        color: "black"
-                        elide: Text.ElideRight
-                    }
-                    Icon {
-                        height: titleLabel.height
-                        width: height
-                        name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
-                        visible: NotesStore.username !== "@local"
-                    }
+            Column {
+                anchors.centerIn: parent
+                Label {
+                    text: note.hasReminderTime ? Qt.formatDateTime(note.reminderTime, "hh") : "00"
+                    color: "white"
+                    horizontalAlignment: Text.AlignHCenter
+                    font.bold: true
+                    fontSize: "large"
                 }
                 Label {
-                    text: note.tagline
-                    fontSize: "small"
-                    horizontalAlignment: Text.AlignLeft
-                    Layout.fillWidth: true
-                    maximumLineCount: 2
-                    width: parent.width
-                    wrapMode: Text.WordWrap
-                    color: "black"
+                    text: note.hasReminderTime ? Qt.formatDateTime(note.reminderTime, "mm") : "00"
+                    color: "white"
+                    horizontalAlignment: Text.AlignHCenter
+                    fontSize: "large"
                 }
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            spacing: units.gu(1)
+
+            Label {
+                id: titleLabel
+                text: note.title
+                Layout.fillWidth: true
+                fontSize: "large"
+                horizontalAlignment: Text.AlignLeft
+                color: "black"
+                elide: Text.ElideRight
+            }
+
+            Label {
+                text: note.tagline
+                fontSize: "small"
+                horizontalAlignment: Text.AlignLeft
+                Layout.fillWidth: true
+                maximumLineCount: 2
+                width: parent.width
+                wrapMode: Text.WordWrap
+                color: "black"
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+            width: units.gu(2)
+
+            Icon {
+                anchors { left: parent.left; verticalCenter: parent.verticalCenter; right: parent.right }
+                height: width
+                name: "go-next"
+            }
+            Icon {
+                anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
+                height: width
+                name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
+                visible: NotesStore.username !== "@local" && (!model.synced || model.syncError || model.loading)
             }
         }
     }

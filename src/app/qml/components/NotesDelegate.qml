@@ -112,7 +112,7 @@ Empty {
 
                         Item {
                             Layout.fillHeight: true
-                            width: units.gu(2.5)
+                            width: units.gu(2)
 
                             Icon {
                                 anchors { left: parent.left; top: parent.top; right: parent.right }
