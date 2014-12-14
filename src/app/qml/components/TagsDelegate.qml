@@ -97,6 +97,7 @@ Empty {
                 color: "#b3b3b3"
                 text: "(" + model.noteCount + ")"
                 fontSize: "small"
+                horizontalAlignment: Text.AlignRight
             }
             Icon {
                 anchors { left: parent.left; verticalCenter: parent.verticalCenter; right: parent.right }
