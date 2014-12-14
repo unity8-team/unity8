@@ -68,6 +68,13 @@ void CreateNoteJob::startJob()
     input.updated = m_note->updated().toMSecsSinceEpoch();
     input.__isset.updated = true;
 
+    std::vector<evernote::edam::Guid> tags;
+    foreach (const QString &tag, m_note->tagGuids()) {
+        tags.push_back(tag.toStdString());
+    }
+    input.tagGuids = tags;
+    input.__isset.tagGuids = true;
+
     client()->createNote(m_resultNote, token().toStdString(), input);
 }
 

@@ -50,7 +50,7 @@ bool Preferences::haveLocalUser() const
 
 void Preferences::setHaveLocalUser(bool haveLocalUser)
 {
-    m_settings.setValue("haveLocalUser", true);
+    m_settings.setValue("haveLocalUser", haveLocalUser);
     emit haveLocalUserChanged();
 }
 

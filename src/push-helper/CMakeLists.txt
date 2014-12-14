@@ -1,5 +1,4 @@
 pkg_search_module(SSL openssl REQUIRED)
-pkg_search_module(OAC OnlineAccountsClient REQUIRED)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -16,7 +15,7 @@ set(push-helper_SRCS
 
 add_executable(push-helper ${push-helper_SRCS})
 add_dependencies(push-helper qtevernote)
-target_link_libraries(push-helper evernote-sdk-cpp libthrift qtevernote pthread ${SSL_LDFLAGS} ${OAC_LDFLAGS})
+target_link_libraries(push-helper evernote-sdk-cpp libthrift qtevernote pthread ${SSL_LDFLAGS})
 
 qt5_use_modules(push-helper Core Organizer)
 

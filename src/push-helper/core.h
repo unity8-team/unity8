@@ -3,8 +3,6 @@
 
 #include <QObject>
 
-#include <online-accounts-client/setup.h>
-
 class Core: public QObject
 {
     Q_OBJECT
@@ -22,9 +20,6 @@ private slots:
     void oaRequestFinished(const QVariantMap &reply);
 
     void notesLoaded();
-
-private:
-    OnlineAccountsClient::Setup m_oaSetup;
 };
 
 #endif

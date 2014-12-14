@@ -376,7 +376,7 @@ Tag *NotesStore::tag(const QString &guid)
 
 Tag* NotesStore::createTag(const QString &name)
 {
-    Tag *tag = new Tag(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 0);
+    Tag *tag = new Tag(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1);
     tag->setName(name);
     m_tags.append(tag);
     m_tagsHash.insert(tag->guid(), tag);
@@ -394,14 +394,18 @@ Tag* NotesStore::createTag(const QString &name)
 
 void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Tag &result)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error creating tag:" << errorMessage;
-        return;
-    }
-
+    qDebug() << "CreateTagJob done";
     Tag *tag = m_tagsHash.value(tmpGuid);
     if (!tag) {
         qWarning() << "Create Tag job done but tag can't be found any more";
+        return;
+    }
+
+    tag->setLoading(false);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error creating tag:" << errorMessage;
+        tag->setSyncError(true);
+        emit tagChanged(tag->guid());
         return;
     }
 
@@ -411,23 +415,9 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
     emit tagGuidChanged(tmpGuid, guid);
     m_tagsHash.remove(tmpGuid);
 
-    int idx = m_tags.indexOf(tag);
-    QModelIndex modelIndex = index(idx);
-    emit dataChanged(modelIndex, modelIndex, QVector<int>() << RoleGuid);
+    tag->setUpdateSequenceNumber(result.updateSequenceNum);
+    tag->setLastSyncedSequenceNumber(result.updateSequenceNum);
     emit tagChanged(tag->guid());
-
-    qDebug() << "tag created on server" << tag->name();
-    foreach (const QString &noteGuid, tag->m_notesList) {
-        qDebug() << "tag has notes:" << tag->m_notesList.count();
-        Note *note = m_notesHash.value(noteGuid);
-        if (note && note->tagGuids().contains(tmpGuid)) {
-            QStringList tagGuids = note->tagGuids();
-            tagGuids.replace(tagGuids.indexOf(tmpGuid), guid);
-            note->setTagGuids(tagGuids);
-            int noteIdx = m_notes.indexOf(note);
-            emit dataChanged(index(noteIdx), index(noteIdx), QVector<int>() << RoleTagGuids);
-        }
-    }
 
     QSettings cacheFile(m_cacheFile, QSettings::IniFormat);
     cacheFile.beginGroup("tags");
@@ -435,6 +425,10 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
     cacheFile.endGroup();
 
     syncToCacheFile(tag);
+
+    foreach (const QString &noteGuid, tag->m_notesList) {
+        saveNote(noteGuid);
+    }
 }
 
 void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Tag &result)
@@ -615,7 +609,21 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             qDebug() << "Have a local note that's not available on server!" << note->guid();
             if (note->lastSyncedSequenceNumber() == 0) {
                 // This note hasn't been created on the server yet. Do that now.
+                bool hasUnsyncedTag = false;
+                foreach (const QString &tagGuid, note->tagGuids()) {
+                    Tag *tag = m_tagsHash.value(tagGuid);
+                    Q_ASSERT_X(tag, "FetchNotesJob done", "note->tagGuids() contains a non existing tag.");
+                    if (tag && tag->lastSyncedSequenceNumber() == 0) {
+                        hasUnsyncedTag = true;
+                        break;
+                    }
+                }
+                if (hasUnsyncedTag) {
+                    qDebug() << "Not syncing note to server yet. Have a tag that needs sync first";
+                    continue;
+                }
                 qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
+
                 QModelIndex idx = index(m_notes.indexOf(note));
                 note->setLoading(true);
                 emit dataChanged(idx, idx, QVector<int>() << RoleLoading);
@@ -1032,7 +1040,7 @@ void NotesStore::saveNote(const QString &guid)
 
     if (EvernoteConnection::instance()->isConnected()) {
         note->setLoading(true);
-        if (note->guid().startsWith("tmp-")) {
+        if (note->lastSyncedSequenceNumber() == 0) {
             // This note hasn't been created on the server yet... try that first
             CreateNoteJob *job = new CreateNoteJob(note, this);
             connect(job, &CreateNoteJob::jobDone, this, &NotesStore::createNoteJobDone);
@@ -1053,18 +1061,23 @@ void NotesStore::saveNote(const QString &guid)
 
 void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "error saving note" << errorMessage;
-        return;
-    }
-
+    qDebug() << "saveNoteJobDone. guid:" << QString::fromStdString(result.guid);
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
     if (!note) {
         qWarning() << "Got a save note job result, but note has disappeared locally.";
         return;
     }
 
+    int idx = m_notes.indexOf(note);
     note->setLoading(false);
+
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning() << "Error saving note:" << errorMessage;
+        note->setSyncError(true);
+        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading << RoleSyncError);
+        return;
+    }
+
     note->setUpdateSequenceNumber(result.updateSequenceNum);
     note->setLastSyncedSequenceNumber(result.updateSequenceNum);
     note->setTitle(QString::fromStdString(result.title));
@@ -1107,7 +1120,7 @@ void NotesStore::deleteNote(const QString &guid)
 
     int idx = m_notes.indexOf(note);
 
-    if (note->guid().startsWith("tmp-")) {
+    if (note->lastSyncedSequenceNumber() == 0) {
         emit noteRemoved(note->guid(), note->notebookGuid());
         beginRemoveRows(QModelIndex(), idx, idx);
         m_notes.takeAt(idx);
