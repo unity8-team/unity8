@@ -43,6 +43,7 @@ Empty {
             width: height
             anchors { top: parent.top; right: parent.right; topMargin: units.gu(1) }
             name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
+            visible: NotesStore.username !== "@local"
         }
 
         RowLayout {

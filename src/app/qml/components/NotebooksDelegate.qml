@@ -101,6 +101,7 @@ Empty {
                         height: notebookTitleLabel.height
                         width: height
                         name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
+                        visible: NotesStore.username !== "@local"
                     }
                 }
 
