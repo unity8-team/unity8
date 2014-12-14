@@ -303,7 +303,7 @@ MainView {
 
             if (notification["notebookGUID"] !== undefined) {
                 NotesStore.refreshNotebooks();
-                NoteStore.refreshNotes(notification["notebookGUID"]);
+                NotesStore.refreshNotes(notification["notebookGUID"]);
             }
             if (notification["noteGUID"] !== undefined) {
                 NotesStore.refreshNoteContent(notification["noteGUID"]);
@@ -410,8 +410,8 @@ MainView {
         id: statusBar
         anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
         color: root.backgroundColor
-        shown: EvernoteConnection.error
-        text: EvernoteConnection.error
+        shown: text
+        text: EvernoteConnection.error || NotesStore.error || NotesStore.notebooksError
         iconName: "sync-error"
 
     }

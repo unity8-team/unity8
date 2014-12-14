@@ -153,7 +153,7 @@ void EvernoteConnection::disconnectFromEvernote()
     }
 
     foreach (EvernoteJob *job, m_jobQueue) {
-        job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, gettext("Disconnected from Evernote"));
+        job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, "Disconnected from Evernote");
         job->deleteLater();
     }
     m_jobQueue.clear();

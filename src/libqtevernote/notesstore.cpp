@@ -41,6 +41,8 @@
 #include "jobs/createtagjob.h"
 #include "jobs/savetagjob.h"
 
+#include "libintl.h"
+
 #include <QImage>
 #include <QDebug>
 #include <QStandardPaths>
@@ -104,6 +106,7 @@ void NotesStore::setUsername(const QString &username)
 
 void NotesStore::userStoreConnected(const QString &username)
 {
+    qDebug() << "User store connected!" << username;
     setUsername(username);
 
     refreshNotebooks();
@@ -512,11 +515,14 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
         return;
     }
 
-    m_unhandledNotes = m_notesHash.keys();
-
     if (EvernoteConnection::instance()->isConnected()) {
         m_loading = true;
         emit loadingChanged();
+
+        if (startIndex == 0) {
+            m_unhandledNotes = m_notesHash.keys();
+        }
+
         FetchNotesJob *job = new FetchNotesJob(filterNotebookGuid, QString(), startIndex);
         connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
         EvernoteConnection::instance()->enqueue(job);
@@ -525,15 +531,36 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Failed to fetch notes list:" << errorMessage;
-        m_error = tr("Error refreshing notes: %1").arg(errorMessage);
+    switch (errorCode) {
+    case EvernoteConnection::ErrorCodeNoError:
+        // All is well, reset error code.
+        if (!m_error.isEmpty()) {
+            m_error.clear();
+            emit errorChanged();
+        }
+        break;
+    case EvernoteConnection::ErrorCodeUserException:
+        qWarning() << "FetchNotesJobDone: EDAMUserException:" << errorMessage;
+        m_loading = false;
+        emit loadingChanged();
+        return; // silently discarding...
+    case EvernoteConnection::ErrorCodeConnectionLost:
+        qWarning() << "FetchNotesJobDone: Connection with evernote lost:" << errorMessage;
+        m_loading = false;
+        emit loadingChanged();
+        return; // silently discarding...
+    case EvernoteConnection::ErrorCodeNotFoundExcpetion:
+        qWarning() << "FetchNotesJobDone: Item not found on server:" << errorMessage;
+        m_loading = false;
+        emit loadingChanged();
+        return; // silently discarding...
+    default:
+        qWarning() << "FetchNotesJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
+        m_error = QString(gettext("Error refreshing notes: %1")).arg(errorMessage);
         emit errorChanged();
+        m_loading = false;
+        emit loadingChanged();
         return;
-    }
-    if (!m_error.isEmpty()) {
-        m_error.clear();
-        emit errorChanged();
     }
 
     for (unsigned int i = 0; i < results.notes.size(); ++i) {
@@ -543,13 +570,12 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         QVector<int> changedRoles;
         bool newNote = note == 0;
         if (newNote) {
+            qDebug() << "FetchNotesJobDone: Found new note on server.";
             note = new Note(QString::fromStdString(result.guid), 0, this);
             connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
             connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
 
             updateFromEDAM(result, note);
-            qDebug() << "updated from EDAM:" << note->updateSequenceNumber() << note->lastSyncedSequenceNumber() << result.__isset.updateSequenceNum;
-
             beginInsertRows(QModelIndex(), m_notes.count(), m_notes.count());
             m_notesHash.insert(note->guid(), note);
             m_notes.append(note);
@@ -598,8 +624,10 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
     }
 
     if (results.startIndex + (int32_t)results.notes.size() < results.totalNotes) {
+        qDebug() << "FetchNotesJobDone: Not all notes fetched yet. Fetching next batch.";
         refreshNotes(filterNotebookGuid, results.startIndex + results.notes.size());
     } else {
+        qDebug() << "Fetched all notes. Starting merge...";
         m_organizerAdapter->startSync();
         m_loading = false;
         emit loadingChanged();
@@ -767,6 +795,25 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
 {
     m_notebooksLoading = false;
     emit notebooksLoadingChanged();
+
+    switch (errorCode) {
+    case EvernoteConnection::ErrorCodeNoError:
+        // All is well, reset error code.
+        if (!m_notebooksError.isEmpty()) {
+            m_notebooksError.clear();
+            emit notebooksErrorChanged();
+        }
+        break;
+    case EvernoteConnection::ErrorCodeUserException:
+        qWarning() << "FetchNotebooksJobDone: EDAMUserException:" << errorMessage;
+        // silently discarding...
+        return;
+    default:
+        qWarning() << "FetchNotebooksJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
+        m_error = tr("Error refreshing notebooks: %1").arg(errorMessage);
+        emit errorChanged();
+        return;
+    }
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qWarning() << "Error fetching notebooks:" << errorMessage;

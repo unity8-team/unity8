@@ -140,6 +140,7 @@ Empty {
                 Image {
                     source: root.resource
                     sourceSize.height: units.gu(11.6)
+                    asynchronous: true
 
                     Layout.maximumWidth: parent.width / 2
 

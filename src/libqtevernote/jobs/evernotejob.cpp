@@ -57,66 +57,126 @@ void EvernoteJob::run()
         return;
     }
 
-    bool done = false;
-    int retry = 0;
-    int maxTries = 2;
-    while (!done && retry < maxTries) {
+    bool retry = false;
+    int tryCount = 0;
+    do {
+        retry = false;
         try {
-            retry++;
-            if (retry > 1) {
-                // If this is not the first try, reset the connection first.
-                qWarning() << "Resetting connection in" << metaObject()->className();
-                resetConnection();
-            }
-
             startJob();
             emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
-            done = true;
         } catch (const TTransportException & e) {
-            qWarning() << "Got a transport exception in" << metaObject()->className() << e.what();
-            if (retry >= maxTries)
+            qWarning() << "TTransportException in" << metaObject()->className() << e.what();
+            if (tryCount < 2) {
+                qWarning() << "Resetting connection...";
+                resetConnection();
+                retry = true;
+            } else {
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
+            }
         } catch (const TApplicationException &e) {
-            qWarning() << "Cannot reestablish connection in " << metaObject()->className() << e.what();
-            if (retry >= maxTries)
+            qWarning() << "TApplicationException in " << metaObject()->className() << e.what();
+            if (tryCount < 2) {
+                qWarning() << "Resetting connection...";
+                resetConnection();
+                retry = true;
+            } else {
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
+            }
         } catch (const evernote::edam::EDAMUserException &e) {
-            qWarning() << "EDAMUserException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.parameter);
-            if (retry >= maxTries)
-                emitJobDone(EvernoteConnection::ErrorCodeUserException, e.what());
+            QString message;
+            switch (e.errorCode) {
+            case evernote::edam::EDAMErrorCode::UNKNOWN:
+                message = "Unknown Error: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::BAD_DATA_FORMAT:
+                message = "Bad data format: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::PERMISSION_DENIED:
+                message = "Permission denied: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::INTERNAL_ERROR:
+                message = "Internal Error: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::DATA_REQUIRED:
+                message = "Data required: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
+                message = "Limit reached: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::QUOTA_REACHED:
+                message = "Quota reached: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::INVALID_AUTH:
+                message = "Invalid auth: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
+                message = "Auth expired: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::DATA_CONFLICT:
+                message = "Data conflict: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::ENML_VALIDATION:
+                message = "ENML validation: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::SHARD_UNAVAILABLE:
+                message = "Shard unavailable: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::LEN_TOO_SHORT:
+                message = "Length too short: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::LEN_TOO_LONG:
+                message = "Length too long: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::TOO_FEW:
+                message = "Too few: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::TOO_MANY:
+                message = "Too many: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::UNSUPPORTED_OPERATION:
+                message = "Unsupported operation: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::TAKEN_DOWN:
+                message = "Taken down: %1";
+                break;
+            case evernote::edam::EDAMErrorCode::RATE_LIMIT_REACHED:
+                message = "Rate limit reached: %1";
+                break;
+            }
+            message = message.arg(QString::fromStdString(e.parameter));
+            qWarning() << metaObject()->className() << "EDAMUserException:" << message;
+            emitJobDone(EvernoteConnection::ErrorCodeUserException, message);
         } catch (const evernote::edam::EDAMSystemException &e) {
             qWarning() << "EDAMSystemException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.message);
-            if (retry >= maxTries) {
-                QString message;
-                EvernoteConnection::ErrorCode errorCode;
-                switch (e.errorCode) {
-                case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
-                    message = gettext("Authentication expired.");
-                    errorCode = EvernoteConnection::ErrorCodeAuthExpired;
-                    break;
-                case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
-                    message = gettext("Limit exceeded.");
-                    errorCode = EvernoteConnection::ErrorCodeLimitExceeded;
-                    break;
-                case evernote::edam::EDAMErrorCode::RATE_LIMIT_REACHED:
-                    message = gettext("Rate limit exceeded.");
-                    errorCode = EvernoteConnection::ErrorCodeRateLimitExceeded;
-                    break;
-                case evernote::edam::EDAMErrorCode::QUOTA_REACHED:
-                    message = gettext("Quota exceeded.");
-                    errorCode = EvernoteConnection::ErrorCodeQutaExceeded;
-                    break;
-                default:
-                    message = e.what();
-                    errorCode = EvernoteConnection::ErrorCodeSystemException;
-                }
-                emitJobDone(errorCode, message);
+            QString message;
+            EvernoteConnection::ErrorCode errorCode;
+            switch (e.errorCode) {
+            case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
+                message = gettext("Authentication expired.");
+                errorCode = EvernoteConnection::ErrorCodeAuthExpired;
+                break;
+            case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
+                message = gettext("Limit exceeded.");
+                errorCode = EvernoteConnection::ErrorCodeLimitExceeded;
+                break;
+            case evernote::edam::EDAMErrorCode::RATE_LIMIT_REACHED:
+                message = gettext("Rate limit exceeded.");
+                errorCode = EvernoteConnection::ErrorCodeRateLimitExceeded;
+                break;
+            case evernote::edam::EDAMErrorCode::QUOTA_REACHED:
+                message = gettext("Quota exceeded.");
+                errorCode = EvernoteConnection::ErrorCodeQutaExceeded;
+                break;
+            default:
+                message = e.what();
+                errorCode = EvernoteConnection::ErrorCodeSystemException;
             }
+            emitJobDone(errorCode, message);
         } catch (const evernote::edam::EDAMNotFoundException &e) {
-            if (retry >= maxTries)
-                emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, QString(gettext("The requested entry could not be found on the server: %1")).arg(QString::fromStdString(e.identifier)));
+            emitJobDone(EvernoteConnection::ErrorCodeNotFoundExcpetion, QString::fromStdString(e.identifier));
         }
-    }
+        tryCount++;
+    } while (retry);
 }
 
 QString EvernoteJob::token()
