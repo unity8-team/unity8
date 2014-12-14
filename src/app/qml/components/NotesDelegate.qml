@@ -117,8 +117,8 @@ Empty {
                             Icon {
                                 anchors { left: parent.left; top: parent.top; right: parent.right }
                                 height: width
-                                name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : "sync-offline"
-                                visible: NotesStore.username !== "@local" && (!root.synced || root.syncError || root.loading)
+                                name: root.reminder ? "alarm-clock" : ""
+                                visible: root.reminder
                             }
                             Icon {
                                 anchors { left: parent.left; verticalCenter: parent.verticalCenter; right: parent.right }
@@ -128,8 +128,8 @@ Empty {
                             Icon {
                                 anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
                                 height: width
-                                name: root.reminder ? "alarm-clock" : ""
-                                visible: root.reminder
+                                name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : "sync-offline"
+                                visible: NotesStore.username !== "@local" && (!root.synced || root.syncError || root.loading)
                             }
                         }
                     }
