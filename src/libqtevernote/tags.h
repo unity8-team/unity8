@@ -69,4 +69,4 @@ private:
     QList<QString> m_list;
 };
 
-#endif // NOTEBOOKS_H
+#endif // TAGS_H
