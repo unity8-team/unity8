@@ -55,6 +55,9 @@ void SaveNoteJob::startJob()
     note.guid = m_note->guid().toStdString();
     note.__isset.guid = true;
 
+    note.updateSequenceNum = m_note->updateSequenceNumber();
+    note.__isset.updateSequenceNum = true;
+
     note.title = m_note->title().toStdString();
     note.__isset.title = true;
 
@@ -114,6 +117,9 @@ void SaveNoteJob::startJob()
         }
         note.__isset.resources = true;
     }
+
+    // In some error cases it may happen that the resultNote is not filled in. Make sure we have at least the guid
+    m_resultNote.guid = m_note->guid().toStdString();
 
     client()->updateNote(m_resultNote, token().toStdString(), note);
 }

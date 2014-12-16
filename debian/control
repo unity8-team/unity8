@@ -11,7 +11,8 @@ Build-Depends: cmake,
                pkg-config,
                python3-all,
                qt5-default,
-               qtdeclarative5-dev
+               qtdeclarative5-dev,
+               qtpim5-dev
 Standards-Version: 3.9.5
 Section: misc
 Homepage: https://launchpad.net/reminders-app

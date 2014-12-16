@@ -39,7 +39,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_deleted(false),
     m_loading(false),
     m_loaded(false),
-    m_syncError(false)
+    m_syncError(false),
+    m_conflicting(false)
 {
     setGuid(guid);
     m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml");
@@ -637,12 +638,9 @@ void Note::syncToCacheFile()
 
 void Note::load() const
 {
-    qDebug() << "load called" << m_loaded << isCached() << m_loading;
     if (!m_loaded && isCached()) {
-        qDebug() << "loading from cache";
         loadFromCacheFile();
     } else if (!m_loaded && !m_loading) {
-        qDebug() << "refreshing from network";
         NotesStore::instance()->refreshNoteContent(m_guid);
     }
 }
@@ -650,7 +648,7 @@ void Note::load() const
 void Note::loadFromCacheFile() const
 {
     if (m_cacheFile.exists() && m_cacheFile.open(QFile::ReadOnly)) {
-        m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()));
+        m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()).trimmed());
         m_tagline = m_content.toPlaintext().left(100);
         m_cacheFile.close();
     }
@@ -682,5 +680,18 @@ void Note::slotTagGuidChanged(const QString &oldGuid, const QString &newGuid)
     if (idx != -1) {
         m_tagGuids.replace(idx, newGuid);
         emit tagGuidsChanged();
+    }
+}
+
+bool Note::conflicting() const
+{
+    return m_conflicting;
+}
+
+void Note::setConflicting(bool conflicting)
+{
+    if (m_conflicting != conflicting) {
+        m_conflicting = conflicting;
+        emit conflictingChanged();
     }
 }

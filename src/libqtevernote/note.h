@@ -60,6 +60,7 @@ class Note : public QObject
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
     Q_PROPERTY(bool deleted READ deleted NOTIFY deletedChanged)
+    Q_PROPERTY(bool conflicting READ conflicting NOTIFY conflictingChanged)
 //    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
     // Don't forget to update clone() if you add properties!
 
@@ -144,6 +145,7 @@ public:
     bool loading() const;
     bool synced() const;
     bool syncError() const;
+    bool conflicting() const;
 
     QStringList resourceUrls() const;
     Resource* resource(const QString &hash);
@@ -180,6 +182,7 @@ signals:
     void loadingChanged();
     void syncedChanged();
     void syncErrorChanged();
+    void conflictingChanged();
 
 private slots:
     void slotNotebookGuidChanged(const QString &oldGuid, const QString &newGuid);
@@ -195,6 +198,7 @@ private:
     void deleteFromCache();
     void setUpdateSequenceNumber(quint32 updateSequenceNumber);
     void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setConflicting(bool conflicting);
 
     // const because we want to load on demand in getters. Keep this private!
     void load() const;
@@ -224,6 +228,7 @@ private:
     mutable bool m_loaded;
     bool m_synced;
     bool m_syncError;
+    bool m_conflicting;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;

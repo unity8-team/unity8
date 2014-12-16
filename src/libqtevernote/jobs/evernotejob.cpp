@@ -68,7 +68,9 @@ void EvernoteJob::run()
             qWarning() << "TTransportException in" << metaObject()->className() << e.what();
             if (tryCount < 2) {
                 qWarning() << "Resetting connection...";
-                resetConnection();
+                try {
+                    resetConnection();
+                } catch(...) {}
                 retry = true;
             } else {
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
@@ -77,7 +79,9 @@ void EvernoteJob::run()
             qWarning() << "TApplicationException in " << metaObject()->className() << e.what();
             if (tryCount < 2) {
                 qWarning() << "Resetting connection...";
-                resetConnection();
+                try {
+                    resetConnection();
+                } catch(...) {}
                 retry = true;
             } else {
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());

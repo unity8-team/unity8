@@ -36,6 +36,7 @@ Empty {
     property bool loading
     property bool synced
     property bool syncError
+    property bool conflicting
     property string notebookColor
 
     showDivider: false;
@@ -128,8 +129,8 @@ Empty {
                             Icon {
                                 anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
                                 height: width
-                                name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : "sync-offline"
-                                visible: NotesStore.username !== "@local" && (!root.synced || root.syncError || root.loading)
+                                name: root.loading ? "sync-updating" : root.syncError ? "sync-error" : root.synced ? "sync-idle" : root.conflicting ? "weather-severe-alert-symbolic" : "sync-offline"
+                                visible: NotesStore.username !== "@local" && (!root.synced || root.syncError || root.loading || root.conflicting)
                             }
                         }
                     }

@@ -88,7 +88,8 @@ public:
         RoleDeleted,
         RoleLoading,
         RoleSynced,
-        RoleSyncError
+        RoleSyncError,
+        RoleConflicting
     };
 
     ~NotesStore();
@@ -169,6 +170,8 @@ signals:
     void tagChanged(const QString &guid);
     void tagRemoved(const QString &guid);
     void tagGuidChanged(const QString &oldGuid, const QString &newGuid);
+
+    void noteConflicting(const QString &guid);
 
 private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);

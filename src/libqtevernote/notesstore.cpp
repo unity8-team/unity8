@@ -208,6 +208,8 @@ QVariant NotesStore::data(const QModelIndex &index, int role) const
         return m_notes.at(index.row())->loading();
     case RoleSyncError:
         return m_notes.at(index.row())->syncError();
+    case RoleConflicting:
+        return m_notes.at(index.row())->conflicting();
     }
     return QVariant();
 }
@@ -238,6 +240,7 @@ QHash<int, QByteArray> NotesStore::roleNames() const
     roles.insert(RoleLoading, "loading");
     roles.insert(RoleSynced, "synced");
     roles.insert(RoleSyncError, "syncError");
+    roles.insert(RoleConflicting, "conflicting");
     return roles;
 }
 
@@ -595,7 +598,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         } else {
             // Local note changed. See if we can push our changes.
             if (note->lastSyncedSequenceNumber() == result.updateSequenceNum) {
-                qDebug() << "Local note has changed while server note did not. Pushing changes.";
+                qDebug() << "Local note" << note->guid() << "has changed while server note did not. Pushing changes.";
                 note->setLoading(true);
                 changedRoles << RoleLoading;
                 SaveNoteJob *job = new SaveNoteJob(note, this);
@@ -606,8 +609,8 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                 qWarning() << "local note sequence:" << note->updateSequenceNumber();
                 qWarning() << "last synced sequence:" << note->lastSyncedSequenceNumber();
                 qWarning() << "remote sequence:" << result.updateSequenceNum;
-                note->setSyncError(true);
-                changedRoles << RoleSyncError;
+                note->setConflicting(true);
+                changedRoles << RoleConflicting;
             }
         }
 
@@ -1181,6 +1184,7 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
         emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading << RoleSyncError);
         return;
     }
+    note->setSyncError(false);
 
     note->setUpdateSequenceNumber(result.updateSequenceNum);
     note->setLastSyncedSequenceNumber(result.updateSequenceNum);

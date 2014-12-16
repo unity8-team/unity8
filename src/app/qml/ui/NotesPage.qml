@@ -161,9 +161,12 @@ PageWithBottomEdge {
             synced: model.synced
             loading: model.loading
             syncError: model.syncError
+            conflicting: model.conflicting
 
             onClicked: {
-                root.selectedNote = NotesStore.note(guid);
+                if (!model.conflicting) {
+                    root.selectedNote = NotesStore.note(guid);
+                }
             }
         }
 
