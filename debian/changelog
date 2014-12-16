@@ -1,3 +1,24 @@
+unity8 (8.02+15.04.20141216~rtm-0ubuntu1) 14.09; urgency=medium
+
+  [ Michał Sawicz ]
+  * Bump version due to new Manage Dash
+
+  [ Albert Astals ]
+  * Fix tests (LP: #1400449)
+  * Allow pulling manage dash if there's no favorite scopes (LP:
+    #1400774)
+  * Manage Dash: Make store button work even if you have no favorites
+    (LP: #1400771)
+  * clickscope is back to being unfavoritable
+  * Fix clicking on the manage dash list after having moved the current scope
+  * ScopesList: Use the default scope style for the header
+
+  [ Josh Arenson ]
+  * Return focus to the application after a tusted session overlay is
+    closing. (LP: #1381292)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 16 Dec 2014 16:12:34 +0000
+
 unity8 (8.01.1+15.04.20141208~rtm-0ubuntu1) 14.09; urgency=medium
 
   [ Michael Terry ]
