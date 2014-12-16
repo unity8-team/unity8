@@ -115,6 +115,7 @@ Empty {
             width: units.gu(2)
 
              Label {
+                objectName: 'notebookNoteCountLabel'
                 anchors { left: parent.left; top: parent.top; right: parent.right }
                 height: width
                 color: "#b3b3b3"
