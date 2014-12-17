@@ -26,7 +26,8 @@ IndicatorBase {
     property string title: rootActionState.title
     property alias highlightFollowsCurrentItem : mainMenu.highlightFollowsCurrentItem
     readonly property alias factory: _factory
-    property var indicatorsMenu: null
+
+    signal repliedLastMessage()
 
     Indicators.UnityMenuModelStack {
         id: menuStack
@@ -102,7 +103,7 @@ IndicatorBase {
             if (messageReplied) {
                 messageReplied = false;
                 if (count == 0) {
-                    indicatorsMenu.hide();
+                    main.repliedLastMessage();
                 }
             }
         }

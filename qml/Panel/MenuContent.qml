@@ -71,7 +71,10 @@ Rectangle {
                 busName: indicatorProperties.busName
                 actionsObjectPath: indicatorProperties.actionsObjectPath
                 menuObjectPath: indicatorProperties.menuObjectPath
-                indicatorsMenu: content.indicatorsMenu
+
+                onRepliedLastMessage: {
+                    content.indicatorsMenu.hide()
+                }
             }
 
             onVisibleChanged: {
