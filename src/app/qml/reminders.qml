@@ -252,9 +252,10 @@ MainView {
     function registerPushClient() {
         console.log("Registering push client");
         var req = new XMLHttpRequest();
-        req.open("post", "http://162.213.34.150:7778/register", true);
+        req.open("post", "http://162.213.35.108/register", true);
         req.setRequestHeader("content-type", "application/json");
         req.onreadystatechange = function() {//Call a function when the state changes.
+            print("push client register response")
             if(req.readyState == 4) {
                 if (req.status == 200) {
                     print("PushClient registered")
@@ -262,12 +263,12 @@ MainView {
                     print("Error registering PushClient:", req.status, req.responseText, req.statusText);
                 }
             }
-            req.send(JSON.stringify({
-                "userId" : UserStore.username,
-                "appId": root.applicationName,
-                "token": pushClient.token
-            }))
         }
+        req.send(JSON.stringify({
+            "userId" : UserStore.username,
+            "appId": root.applicationName + "_reminders",
+            "token": pushClient.token
+        }))
     }
 
     function openTaggedNotes(title, tagGuid, narrowMode) {
