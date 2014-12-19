@@ -59,11 +59,11 @@ import dbusmock
 
 def initctl_set_env(variable, value):
     """initctl set-env to set the environmnent variable to given value."""
-    subprocess.call(['initctl', 'set-env', '{}={}'.format(variable, value)])
+    subprocess.call(['initctl', 'set-env', '-g', '{}={}'.format(variable, value)])
 
 def initctl_unset_env(variable):
     """initctl unset-env to unset the environmnent variable."""
-    subprocess.call(['initctl', 'unset-env', '{}'.format(variable)])
+    subprocess.call(['initctl', 'unset-env', '-g', '{}'.format(variable)])
 
 def initctl_restart(service_name):
     """initctl restart service of given name."""
@@ -92,14 +92,15 @@ class IndicatorPowerTestCase(dbusmock.DBusTestCase):
         # looks like:
         # unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995  # NOQA
         bus_address = bus_address_string.split(',')[0]
+        print(bus_address)
         initctl_set_env(
             'INDICATOR_POWER_BUS_ADDRESS_UPOWER',
             bus_address
         )
         initctl_restart('indicator-power')
-        initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
         # FIXME: wait for the bus to spin up
         time.sleep(5)
+        # initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
     def setUp(self):
         (self.p_mock, self.obj_upower) = self.spawn_server_template(
@@ -109,6 +110,7 @@ class IndicatorPowerTestCase(dbusmock.DBusTestCase):
         fcntl.fcntl(self.p_mock.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
         self.dbusmock = dbus.Interface(self.obj_upower, dbusmock.MOCK_IFACE)
         self.restart_indicator_power_listening_to_fake_bus()
+        initctl_set_env('G_MESSAGES_DEBUG', 'all')
 
     def test_discharging_battery(self):
         path = self.dbusmock.AddDischargingBattery('mock_BAT', 'Mock Battery', 30.0, 1200)
