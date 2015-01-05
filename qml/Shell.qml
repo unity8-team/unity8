@@ -129,6 +129,11 @@ Item {
         sourceSize.width: 0
     }
 
+    GSettings {
+        id: usageModeSettings
+        schema.id: "com.canonical.Unity8"
+    }
+
     Binding {
         target: LauncherModel
         property: "applicationManager"
@@ -267,7 +272,8 @@ Item {
             // the screen larger (maybe connects to monitor) and tries to enter
             // tablet mode.
             property bool tabletMode: shell.sideStageEnabled && !greeter.hasLockedApp
-            source: tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
+            source: usageModeSettings.usageMode === "Windowed" ? "Stages/DesktopStage.qml"
+                        : tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
 
             Binding {
                 target: applicationsDisplayLoader.item
@@ -304,6 +310,11 @@ Item {
                 target: applicationsDisplayLoader.item
                 property: "orientation"
                 value: shell.orientation
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "background"
+                value: shell.background
             }
         }
     }
@@ -543,9 +554,7 @@ Item {
             property string lockedApp: ""
             property bool hasLockedApp: lockedApp !== ""
 
-            available: true
             hides: [launcher, panel.indicators]
-            shown: true
             loadContent: required || lockscreen.required // keeps content in memory for quick show()
 
             locked: shell.locked
@@ -555,7 +564,12 @@ Item {
             width: parent.width
             height: parent.height
 
-            dragHandleWidth: shell.edgeSize
+
+            // avoid overlapping with Launcher's edge drag area
+            // FIXME: Fix TouchRegistry & friends and remove this workaround
+            //        Issue involves launcher's DDA getting disabled on a long
+            //        left-edge drag
+            dragHandleLeftMargin: launcher.available ? launcher.dragAreaWidth + 1 : 0
 
             function startUnlock() {
                 if (narrowMode) {
@@ -609,7 +623,12 @@ Item {
                 LauncherModel.setUser(user);
             }
 
-            onTease: launcher.tease()
+            onTapped: launcher.tease()
+            onDraggingChanged: {
+                if (dragging) {
+                    launcher.tease();
+                }
+            }
 
             Binding {
                 target: ApplicationManager
@@ -727,10 +746,12 @@ Item {
             readonly property bool dashSwipe: progress > 0
 
             anchors.top: parent.top
+            anchors.topMargin: inverted ? 0 : panel.panelHeight
             anchors.bottom: parent.bottom
             width: parent.width
             dragAreaWidth: shell.edgeSize
             available: edgeDemo.launcherEnabled && (!shell.locked || AccountsService.enableLauncherWhileLocked) && !greeter.hasLockedApp
+            inverted: usageModeSettings.usageMode === "Staged"
 
             onShowDashHome: showHome()
             onDash: showDash()
