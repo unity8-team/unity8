@@ -1,3 +1,16 @@
+unity8 (8.02+15.04.20150107~rtm-0ubuntu1) 14.09; urgency=low
+
+  [ Michael Zanetti ]
+  * merge rtm (LP: #1343242)
+
+  [ Albert Astals ]
+  * merge rtm (LP: #1343242)
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 07 Jan 2015 09:49:08 +0000
+
 unity8 (8.02+15.04.20141218~rtm-0ubuntu1) 14.09; urgency=low
 
   [ Andrea Cimitan ]
