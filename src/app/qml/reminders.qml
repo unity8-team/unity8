@@ -131,14 +131,14 @@ MainView {
             pagestack.pop();
             var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
             var page = component.createObject();
-            page.exitEditMode.connect(function() {pagestack.pop()});
+            page.exitEditMode.connect(function() {Qt.inputMethod.hide(); pagestack.pop()});
             pagestack.push(page, {note: note});
         } else {
             sideViewLoader.clear();
             var view = sideViewLoader.embed(Qt.resolvedUrl("ui/EditNoteView.qml"))
             print("--- setting note:", note)
             view.note = note;
-            view.exitEditMode.connect(function(note) {print("**** note", note); root.displayNote(note)});
+            view.exitEditMode.connect(function(note) {root.displayNote(note)});
         }
     }
 
@@ -396,7 +396,7 @@ MainView {
             if (root.narrowMode) {
                 var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
                 var page = component.createObject();
-                page.exitEditMode.connect(function() {pagestack.pop();});
+                page.exitEditMode.connect(function() {Qt.inputMethod.hide(); pagestack.pop();});
                 pagestack.push(page, {note: note});
             } else {
                 notesPage.selectedNote = note;
