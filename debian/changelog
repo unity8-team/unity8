@@ -1,13 +1,14 @@
 unity8 (8.02+15.04.20150108~rtm--0ubuntu1) UNRELEASED; urgency=medium
 
   [ Albert Astals ]
-  * Use QImageReader not to load the image into memory twice (LP:
-    #1384374)
+  * Use QImageReader not to load the image into memory twice
   * Don't create the whole current scope delegates, just height * 3 (LP:
-    #1384393, #1384374)
+    #1384393)
   * Make CroppedImageSizer async
   * Rework how we set the ranges so we get some more asynchronousity
-    from item views (LP: #1384374)
+    from item views
+  * Make sure changing a scope doesn't trigger creation/destruction of
+    delegates until it's finished
 
   [ Michael Terry ]
   * Don't block handling power events on loading the greeter's qml and the
