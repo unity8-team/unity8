@@ -7,7 +7,7 @@ import time
 import unittest
 
 import dbusmock
-from autopilot.matchers import Eventually, NotEquals
+from autopilot.matchers import Eventually
 from autopilot import platform
 
 from unity8.process_helpers import unlock_unity
@@ -153,4 +153,11 @@ class IndicatorPowerTestCase(UnityTestCase):
         self.assertRegex(out, ' percentage:\s+30%')
         self.assertRegex(out, ' time to empty:\s+20.0 min')
         self.assertRegex(out, ' state:\s+discharging')
-        time.sleep(60)
+
+        correct_icon_name = 'battery-040'
+        widget = self.main_window.wait_select_single(
+            objectName='indicator-power-widget'
+        )
+        # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
+        observed_icon_string = widget.icons[0]
+        self.assertIn(correct_icon_name, observed_icon_string)
