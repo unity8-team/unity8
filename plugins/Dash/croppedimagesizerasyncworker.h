@@ -14,13 +14,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
-import Dash 0.1
+#ifndef CROPPEDIMAGESIZERASYNCWORKER_H
+#define CROPPEDIMAGESIZERASYNCWORKER_H
 
-ListViewWithPageHeader {
-    maximumFlickVelocity: height * 10
-    flickDeceleration: height * 2
-    // 1073741823 is s^30 -1. A quite big number so that you have "infinite" cache, but not so
-    // big so that if you add if with itself you're outside the 2^31 int range
-    cacheBuffer: 1073741823
-}
+#include <QMutex>
+#include <QObject>
+
+class CroppedImageSizer;
+
+class QNetworkReply;
+
+class CroppedImageSizerAsyncWorker : public QObject
+{
+    Q_OBJECT
+public:
+    CroppedImageSizerAsyncWorker(CroppedImageSizer *sizer, QNetworkReply *reply);
+
+    void abort();
+
+private Q_SLOTS:
+    void requestFinished();
+
+private:
+    static void processRequestFinished(CroppedImageSizerAsyncWorker *worker);
+
+    QMutex m_mutex;
+    CroppedImageSizer *m_sizer;
+    QNetworkReply *m_reply;
+    bool m_ignoreAbort;
+};
+
+#endif
