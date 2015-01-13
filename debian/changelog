@@ -1,4 +1,4 @@
-unity8 (8.02+15.04.20150108~rtm--0ubuntu1) UNRELEASED; urgency=medium
+unity8 (8.02+15.04.20150113~rtm-0ubuntu1) 14.09; urgency=medium
 
   [ Albert Astals ]
   * Use QImageReader not to load the image into memory twice
@@ -14,7 +14,7 @@ unity8 (8.02+15.04.20150108~rtm--0ubuntu1) UNRELEASED; urgency=medium
   * Don't block handling power events on loading the greeter's qml and the
     background image. (LP: #1383277)
 
- -- Michał Sawicz <michal.sawicz@canonical.com>  Thu, 08 Jan 2015 14:02:47 +0100
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 13 Jan 2015 15:18:13 +0000
 
 unity8 (8.02+15.04.20150107~rtm-0ubuntu1) 14.09; urgency=low
 
