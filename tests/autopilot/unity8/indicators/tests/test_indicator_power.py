@@ -4,8 +4,14 @@ import fcntl
 import os
 import subprocess
 import time
+import unittest
 
 import dbusmock
+from autopilot.matchers import Eventually, NotEquals
+from autopilot import platform
+
+from unity8.process_helpers import unlock_unity
+from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
 
 # PLEASE IGNORE THIS BIT FOR NOW
@@ -70,16 +76,34 @@ def initctl_restart(service_name):
     subprocess.call(['initctl', 'restart', service_name])
 
 
-class IndicatorPowerTestCase(dbusmock.DBusTestCase):
+class IndicatorPowerTestCase(UnityTestCase):
 
-    @classmethod
-    def setUpClass(klass):
-        klass.start_system_bus()
-        klass.dbus_con = klass.get_dbus(True)
+    device_emulation_scenarios = _get_device_emulation_scenarios()
 
-    @classmethod
-    def tearDownClass(klass):
-        dbusmock.DBusTestCase.tearDownClass()
+    def setUp(self):
+        if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
+            os.environ['GRID_UNIT_PX'] = '13'
+        super(IndicatorPowerTestCase, self).setUp()
+        self.unity_proxy = self.launch_unity()
+        unlock_unity(self.unity_proxy)
+
+        dbusmock.DBusTestCase.start_system_bus()
+        (self.p_mock, self.obj_upower) = dbusmock.DBusTestCase.spawn_server_template(
+            'upower', {'OnBattery': True, 'HibernateAllowed': False}, stdout=subprocess.PIPE)
+        # set log to nonblocking
+        flags = fcntl.fcntl(self.p_mock.stdout, fcntl.F_GETFL)
+        fcntl.fcntl(self.p_mock.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
+        self.dbusmock = dbus.Interface(self.obj_upower, dbusmock.MOCK_IFACE)
+        self.restart_indicator_power_listening_to_fake_bus()
+        initctl_set_env('G_MESSAGES_DEBUG', 'all')
+
+    def tearDown(self):
+        # This feels icky but no public accessors are available.
+        if dbusmock.DBusTestCase.system_bus_pid is not None:
+            dbusmock.DBusTestCase.stop_dbus(dbusmock.DBusTestCase.system_bus_pid)
+            del os.environ['DBUS_SYSTEM_BUS_ADDRESS']
+            dbusmock.DBusTestCase.system_bus_pid = None
+        super(IndicatorPowerTestCase, self).tearDown()
 
     def restart_indicator_power_listening_to_fake_bus(self):
         """Restart indicator-power listening to fake bus.
@@ -91,31 +115,29 @@ class IndicatorPowerTestCase(dbusmock.DBusTestCase):
         bus_address_string = os.environ['DBUS_SYSTEM_BUS_ADDRESS']
         # looks like:
         # unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995  # NOQA
-        bus_address = bus_address_string.split(',')[0]
-        print(bus_address)
+        self.bus_address = bus_address_string.split(',')[0]
         initctl_set_env(
             'INDICATOR_POWER_BUS_ADDRESS_UPOWER',
-            bus_address
+            self.bus_address
         )
         initctl_restart('indicator-power')
+        
         # FIXME: wait for the bus to spin up
-        time.sleep(5)
+        # self.assertThat(
+        #     bus.get_object(
+        #         'org.freedesktop.UPower',
+        #         '/org/freedesktop/UPower'),
+        #     Eventually(NotEquals(None))
+        # )
+
         # initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
-    def setUp(self):
-        (self.p_mock, self.obj_upower) = self.spawn_server_template(
-            'upower', {'OnBattery': True, 'HibernateAllowed': False}, stdout=subprocess.PIPE)
-        # set log to nonblocking
-        flags = fcntl.fcntl(self.p_mock.stdout, fcntl.F_GETFL)
-        fcntl.fcntl(self.p_mock.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-        self.dbusmock = dbus.Interface(self.obj_upower, dbusmock.MOCK_IFACE)
-        self.restart_indicator_power_listening_to_fake_bus()
-        initctl_set_env('G_MESSAGES_DEBUG', 'all')
 
     def test_discharging_battery(self):
         path = self.dbusmock.AddDischargingBattery('mock_BAT', 'Mock Battery', 30.0, 1200)
         self.assertEqual(path, '/org/freedesktop/UPower/devices/mock_BAT')
-
+        bus = dbus.bus.BusConnection(self.bus_address)
+        
         self.assertRegex(self.p_mock.stdout.read(),
                          b'emit org.freedesktop.UPower.DeviceAdded '
                          b'"/org/freedesktop/UPower/devices/mock_BAT"\n')
