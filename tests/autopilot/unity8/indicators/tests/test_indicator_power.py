@@ -155,9 +155,27 @@ class IndicatorPowerTestCase(UnityTestCase):
         self.assertRegex(out, ' state:\s+discharging')
 
         correct_icon_name = 'battery-040'
-        widget = self.main_window.wait_select_single(
-            objectName='indicator-power-widget'
+
+        # widget = self.main_window.wait_select_single(
+        #     objectName='indicator-power-widget'
+        # )
+        # # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
+        # observed_icon_string = widget.icons[0]
+        # self.assertIn(correct_icon_name, observed_icon_string)
+
+        indicator = Indicator(self.main_window, 'indicator-power-widget')
+        self.assertTrue(indicator.icon_matches(correct_icon_name))
+
+
+class Indicator(object):
+
+    def __init__(self, main_window, name):
+        self.name = name
+        widget = main_window.wait_select_single(
+            objectName=name
         )
         # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
-        observed_icon_string = widget.icons[0]
-        self.assertIn(correct_icon_name, observed_icon_string)
+        self.observed_icon_string = widget.icons[0]
+        
+    def icon_matches(self, icon_name):
+        return icon_name in self.observed_icon_string
