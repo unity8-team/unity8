@@ -167,6 +167,7 @@ class IndicatorPowerTestCase(UnityTestCase):
         self.assertTrue(indicator.icon_matches(correct_icon_name))
 
 
+
 class Indicator(object):
 
     def __init__(self, main_window, name):
