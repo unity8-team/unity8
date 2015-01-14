@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os
+
 from autopilot import platform
 
 from unity8.process_helpers import unlock_unity
@@ -28,9 +30,9 @@ class IndicatorTestCase(UnityTestCase):
     device_emulation_scenarios = _get_device_emulation_scenarios()
 
     def setUp(self):
-        if platform.model() == 'Desktop':
-            self.skipTest('Test cannot be run on the desktop.')
+        # mysteriously disappeared from unity7, may need upstreaming
+        if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
+            os.environ['GRID_UNIT_PX'] = '13'
         super(IndicatorTestCase, self).setUp()
         self.unity_proxy = self.launch_unity()
         unlock_unity(self.unity_proxy)
-

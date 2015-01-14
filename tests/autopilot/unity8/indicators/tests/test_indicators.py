@@ -45,6 +45,9 @@ class IndicatorExistsTestCase(IndicatorTestCase):
         if (platform.model() == 'Nexus 10' and
                 self.indicator_name == 'indicator-bluetooth'):
             self.skipTest('Nexus 10 does not have bluetooth at the moment.')
+        if platform.model() == 'Desktop':
+            # names exported differently in unity7
+            self.skipTest('Test cannot be run on the desktop.')
 
     def test_indicator_exists(self):
         self.main_window._get_indicator_panel_item(
@@ -80,6 +83,9 @@ class IndicatorPageTitleMatchesWidgetTestCase(IndicatorTestCase):
         if (platform.model() == 'Nexus 10' and
                 self.indicator_name == 'indicator-bluetooth'):
             self.skipTest('Nexus 10 does not have bluetooth at the moment.')
+        if platform.model() == 'Desktop':
+            # names exported differently in unity7
+            self.skipTest('Test cannot be run on the desktop.')
 
     def test_indicator_page_title_matches_widget(self):
         """Swiping open an indicator must show its correct title.

@@ -9,9 +9,9 @@ import unittest
 import dbusmock
 from autopilot.matchers import Eventually
 from autopilot import platform
+from testtools.matchers import Not, Raises, MatchesException
 
-from unity8.process_helpers import unlock_unity
-from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
+from unity8.indicators.tests import IndicatorTestCase
 
 
 # PLEASE IGNORE THIS BIT FOR NOW
@@ -76,17 +76,10 @@ def initctl_restart(service_name):
     subprocess.call(['initctl', 'restart', service_name])
 
 
-class IndicatorPowerTestCase(UnityTestCase):
-
-    device_emulation_scenarios = _get_device_emulation_scenarios()
+class IndicatorPowerTestCase(IndicatorTestCase):
 
     def setUp(self):
-        if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
-            os.environ['GRID_UNIT_PX'] = '13'
         super(IndicatorPowerTestCase, self).setUp()
-        self.unity_proxy = self.launch_unity()
-        unlock_unity(self.unity_proxy)
-
         dbusmock.DBusTestCase.start_system_bus()
         (self.p_mock, self.obj_upower) = dbusmock.DBusTestCase.spawn_server_template(
             'upower', {'OnBattery': True, 'HibernateAllowed': False}, stdout=subprocess.PIPE)
@@ -121,51 +114,24 @@ class IndicatorPowerTestCase(UnityTestCase):
             self.bus_address
         )
         initctl_restart('indicator-power')
-        
-        # FIXME: wait for the bus to spin up
-        # self.assertThat(
-        #     bus.get_object(
-        #         'org.freedesktop.UPower',
-        #         '/org/freedesktop/UPower'),
-        #     Eventually(NotEquals(None))
-        # )
-
-        # initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
-
+        bus = dbus.bus.BusConnection(self.bus_address)
+        self.assertThat(
+            lambda: bus.get_object(
+                'org.freedesktop.UPower',
+                '/org/freedesktop/UPower'
+            ),
+            Eventually(Not(Raises(MatchesException(dbus.DBusException))))
+        )
+        # de-pollute initctl env
+        initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
     def test_discharging_battery(self):
+        """Battery icon must match UPower-reported level."""
         path = self.dbusmock.AddDischargingBattery('mock_BAT', 'Mock Battery', 30.0, 1200)
         self.assertEqual(path, '/org/freedesktop/UPower/devices/mock_BAT')
-        bus = dbus.bus.BusConnection(self.bus_address)
-        
-        self.assertRegex(self.p_mock.stdout.read(),
-                         b'emit org.freedesktop.UPower.DeviceAdded '
-                         b'"/org/freedesktop/UPower/devices/mock_BAT"\n')
-
-        out = subprocess.check_output(['upower', '--dump'],
-                                      universal_newlines=True)
-        self.assertRegex(out, 'Device: ' + path)
-        # note, Add* is not magic: this just adds an object, not change
-        # properties
-        self.assertRegex(out, 'on-battery:\s+yes')
-        self.assertRegex(out, 'lid-is-present:\s+yes')
-        self.assertRegex(out, ' present:\s+yes')
-        self.assertRegex(out, ' percentage:\s+30%')
-        self.assertRegex(out, ' time to empty:\s+20.0 min')
-        self.assertRegex(out, ' state:\s+discharging')
-
         correct_icon_name = 'battery-040'
-
-        # widget = self.main_window.wait_select_single(
-        #     objectName='indicator-power-widget'
-        # )
-        # # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
-        # observed_icon_string = widget.icons[0]
-        # self.assertIn(correct_icon_name, observed_icon_string)
-
         indicator = Indicator(self.main_window, 'indicator-power-widget')
         self.assertTrue(indicator.icon_matches(correct_icon_name))
-
 
 
 class Indicator(object):
