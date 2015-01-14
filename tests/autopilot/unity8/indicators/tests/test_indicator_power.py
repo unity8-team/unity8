@@ -3,12 +3,9 @@ import dbus
 import fcntl
 import os
 import subprocess
-import time
-import unittest
 
 import dbusmock
 from autopilot.matchers import Eventually
-from autopilot import platform
 from testtools.matchers import Not, Raises, MatchesException
 
 from unity8.indicators.tests import IndicatorTestCase
@@ -17,16 +14,16 @@ from unity8.indicators.tests import IndicatorTestCase
 # PLEASE IGNORE THIS BIT FOR NOW
 # class FakeUPowerException(Exception):
 #     pass
-# 
-# 
+#
+#
 # class FakeUPowerService:
-# 
+#
 #     """Fake upower service using a dbusmock interface."""
-# 
+#
 #     def __init__(self):
 #         super(FakeUPowerService, self).__init__()
 #         self.dbus_connection = dbusmock.DBusTestCase.get_dbus(system_bus=False)
-# 
+#
 #     def start(self):
 #         """Start the fake URL Dispatcher service."""
 #         # Stop the real url-dispatcher.
@@ -40,19 +37,19 @@ from unity8.indicators.tests import IndicatorTestCase
 #         self.mock = self._get_mock_interface()
 #         self.mock.AddMethod(
 #             'com.canonical.UPower', 'DispatchURL', 'ss', '', '')
-# 
+#
 #     def _get_mock_interface(self):
 #         return dbus.Interface(
 #             self.dbus_connection.get_object(
 #                 'com.canonical.UPower',
 #                 '/com/canonical/UPower'),
 #             dbusmock.MOCK_IFACE)
-# 
+#
 #     def stop(self):
 #         """Stop the fake URL Dispatcher service."""
 #         self.dbus_mock_server.terminate()
 #         self.dbus_mock_server.wait()
-# 
+#
 #     def get_last_dispatch_url_call_parameter(self):
 #         """Return the parameter used in the last call to dispatch URL."""
 #         calls = self.mock.GetCalls()
@@ -67,9 +64,11 @@ def initctl_set_env(variable, value):
     """initctl set-env to set the environmnent variable to given value."""
     subprocess.call(['initctl', 'set-env', '-g', '{}={}'.format(variable, value)])
 
+
 def initctl_unset_env(variable):
     """initctl unset-env to unset the environmnent variable."""
     subprocess.call(['initctl', 'unset-env', '-g', '{}'.format(variable)])
+
 
 def initctl_restart(service_name):
     """initctl restart service of given name."""
@@ -127,7 +126,12 @@ class IndicatorPowerTestCase(IndicatorTestCase):
 
     def test_discharging_battery(self):
         """Battery icon must match UPower-reported level."""
-        path = self.dbusmock.AddDischargingBattery('mock_BAT', 'Mock Battery', 30.0, 1200)
+        path = self.dbusmock.AddDischargingBattery(
+            'mock_BAT',
+            'Mock Battery',
+            30.0,
+            1200
+        )
         self.assertEqual(path, '/org/freedesktop/UPower/devices/mock_BAT')
         correct_icon_name = 'battery-040'
         indicator = Indicator(self.main_window, 'indicator-power-widget')
@@ -138,11 +142,9 @@ class Indicator(object):
 
     def __init__(self, main_window, name):
         self.name = name
-        widget = main_window.wait_select_single(
-            objectName=name
-        )
+        widget = main_window.wait_select_single(objectName=name)
         # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
         self.observed_icon_string = widget.icons[0]
-        
+
     def icon_matches(self, icon_name):
         return icon_name in self.observed_icon_string
