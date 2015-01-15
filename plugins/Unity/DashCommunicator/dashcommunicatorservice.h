@@ -26,13 +26,10 @@ class DashCommunicatorService: public QObject
     Q_OBJECT
 public:
     DashCommunicatorService(QObject *parent = 0);
-    ~DashCommunicatorService() = default;
+    ~DashCommunicatorService();
 
 Q_SIGNALS:
     void setCurrentScopeRequested(int index, bool animate, bool isSwipe);
-
-private Q_SLOTS:
-    void create();
 
 private:
     DBusDashCommunicatorService *m_dbusService;
