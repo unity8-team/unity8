@@ -29,7 +29,7 @@
 #include "TouchOwnershipEvent.h"
 #include "UnownedTouchEvent.h"
 
-#define TOUCHREGISTRY_DEBUG 0
+#define TOUCHREGISTRY_DEBUG 1
 
 #if TOUCHREGISTRY_DEBUG
     #include "DebugHelpers.h"

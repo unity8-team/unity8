@@ -24,7 +24,7 @@
 #include <QList>
 #include <QMap>
 
-#define TOUCHGATE_DEBUG 0
+#define TOUCHGATE_DEBUG 1
 
 class TouchOwnershipEvent;
 
