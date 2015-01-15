@@ -23,11 +23,13 @@
 
 #include "notesstorejob.h"
 
+class Notebook;
+
 class CreateNotebookJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit CreateNotebookJob(const QString &name, QObject *parent = 0);
+    explicit CreateNotebookJob(Notebook *notebook, QObject *parent = 0);
 
     virtual void startJob() override;
 
@@ -35,13 +37,13 @@ public:
     virtual void attachToDuplicate(const EvernoteJob *other) override;
 
 signals:
-    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Notebook &result);
 
 private slots:
     void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
-    QString m_name;
+    Notebook *m_notebook;
 
     evernote::edam::Notebook m_result;
 };

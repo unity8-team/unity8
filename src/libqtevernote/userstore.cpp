@@ -65,9 +65,14 @@ QString UserStore::username() const
 
 void UserStore::fetchUsername()
 {
-    FetchUsernameJob *job = new FetchUsernameJob();
-    connect(job, &FetchUsernameJob::jobDone, this, &UserStore::fetchUsernameJobDone);
-    EvernoteConnection::instance()->enqueue(job);
+    if (EvernoteConnection::instance()->isConnected()) {
+        FetchUsernameJob *job = new FetchUsernameJob();
+        connect(job, &FetchUsernameJob::jobDone, this, &UserStore::fetchUsernameJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    } else {
+        m_username.clear();
+        emit usernameChanged(m_username);
+    }
 }
 
 void UserStore::fetchUsernameJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &result)
@@ -78,5 +83,5 @@ void UserStore::fetchUsernameJobDone(EvernoteConnection::ErrorCode errorCode, co
     }
 
     m_username = result;
-    emit usernameChanged();
+    emit usernameChanged(m_username);
 }

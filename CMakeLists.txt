@@ -69,7 +69,11 @@ if(CLICK_MODE)
 
     add_custom_target(com_ubuntu_reminders_CLICKFiles ALL SOURCES ${CLICK_FILES})
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json reminders.apparmor reminders.url-dispatcher
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json
+        reminders.apparmor
+        reminders.url-dispatcher
+        push-helper.json
+        push-helper.apparmor
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES COPYING DESTINATION ${CMAKE_INSTALL_PREFIX})
 else(CLICK_MODE)

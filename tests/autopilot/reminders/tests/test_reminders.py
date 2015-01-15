@@ -25,6 +25,7 @@ from autopilot import platform
 from autopilot.matchers import Eventually
 from evernote.edam.error import ttypes as evernote_errors
 from testtools.matchers import Equals
+from time import sleep
 
 import reminders
 from reminders import credentials, evernote, fixture_setup, tests
@@ -107,6 +108,10 @@ class RemindersTestCaseWithAccount(tests.RemindersAppTestCase):
 
         notebooks_page = self.app.open_notebooks()
         notebooks_page.add_notebook(test_notebook_title)
+
+        # FIXME: This should wait for the note "synced" property to become true
+        # instead of just sleeping 2 secs
+        sleep(2)
 
         # An exception will be raised if the notebook is note found.
         self.evernote_client.get_notebook_by_name(test_notebook_title)

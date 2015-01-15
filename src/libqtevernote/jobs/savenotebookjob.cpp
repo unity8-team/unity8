@@ -50,16 +50,17 @@ void SaveNotebookJob::attachToDuplicate(const EvernoteJob *other)
 
 void SaveNotebookJob::startJob()
 {
-    evernote::edam::Notebook notebook;
-    notebook.guid = m_notebook->guid().toStdString();
-    notebook.__isset.guid = true;
-    notebook.name = m_notebook->name().toStdString();
-    notebook.__isset.name = true;
+    m_resultNotebook.guid = m_notebook->guid().toStdString();
+    m_resultNotebook.__isset.guid = true;
+    m_resultNotebook.name = m_notebook->name().toStdString();
+    m_resultNotebook.__isset.name = true;
+    m_resultNotebook.updateSequenceNum = m_notebook->updateSequenceNumber();
+    m_resultNotebook.__isset.updateSequenceNum = true;
 
-    client()->updateNotebook(token().toStdString(), notebook);
+    client()->updateNotebook(token().toStdString(), m_resultNotebook);
 }
 
 void SaveNotebookJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage);
+    emit jobDone(errorCode, errorMessage, m_resultNotebook);
 }

@@ -34,16 +34,21 @@ class Preferences: public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString accountName READ accountName WRITE setAccountName NOTIFY accountNameChanged)
+    Q_PROPERTY(bool haveLocalUser READ haveLocalUser WRITE setHaveLocalUser NOTIFY haveLocalUserChanged)
 
 public:
     Preferences(QObject *parent = 0);
     QString accountName() const;
     void setAccountName(const QString &accountName);
 
+    bool haveLocalUser() const;
+    void setHaveLocalUser(bool haveLocalUser);
+
     Q_INVOKABLE QString colorForNotebook(const QString &notebookGuid);
 
 signals:
     void accountNameChanged();
+    void haveLocalUserChanged();
 
 private:
     QSettings m_settings;

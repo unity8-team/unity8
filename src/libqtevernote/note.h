@@ -37,10 +37,10 @@ class Note : public QObject
     Q_OBJECT
 
     // Don't forget to update clone() if you add properties!
-    Q_PROPERTY(QString guid READ guid CONSTANT)
+    Q_PROPERTY(QString guid READ guid NOTIFY guidChanged)
     Q_PROPERTY(QString notebookGuid READ notebookGuid WRITE setNotebookGuid NOTIFY notebookGuidChanged)
-    Q_PROPERTY(QDateTime created READ created CONSTANT)
-    Q_PROPERTY(QString createdString READ createdString CONSTANT)
+    Q_PROPERTY(QDateTime created READ created NOTIFY createdChanged)
+    Q_PROPERTY(QString createdString READ createdString NOTIFY createdChanged)
     Q_PROPERTY(QDateTime updated READ updated WRITE setUpdated NOTIFY updatedChanged)
     Q_PROPERTY(QString updatedString READ updatedString)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
@@ -59,23 +59,29 @@ class Note : public QObject
     Q_PROPERTY(QDateTime reminderDoneTime READ reminderDoneTime WRITE setReminderDoneTime NOTIFY reminderDoneChanged)
     Q_PROPERTY(bool isSearchResult READ isSearchResult NOTIFY isSearchResultChanged)
     Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
-    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
+    Q_PROPERTY(bool deleted READ deleted NOTIFY deletedChanged)
+    Q_PROPERTY(bool conflicting READ conflicting NOTIFY conflictingChanged)
+//    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
     // Don't forget to update clone() if you add properties!
 
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+    Q_PROPERTY(bool syncError READ syncError NOTIFY syncErrorChanged)
 
 public:
-    explicit Note(const QString &guid, const QDateTime &created, quint32 updateSequenceNumber, QObject *parent = 0);
+    explicit Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Note();
     Note* clone();
 
     QString guid() const;
+    void setGuid(const QString &guid);
 
     QString notebookGuid() const;
     void setNotebookGuid(const QString &notebookGuid);
 
     QDateTime created() const;
+    void setCreated(const QDateTime &created);
     QString createdString() const;
 
     QDateTime updated() const;
@@ -127,15 +133,19 @@ public:
     QDateTime reminderDoneTime() const;
     void setReminderDoneTime(const QDateTime &reminderDoneTime);
 
+    bool deleted() const;
+
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
     quint32 updateSequenceNumber() const;
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    quint32 lastSyncedSequenceNumber() const;
 
     bool isCached() const;
-    bool loaded() const;
     bool loading() const;
+    bool synced() const;
+    bool syncError() const;
+    bool conflicting() const;
 
     QStringList resourceUrls() const;
     Resource* resource(const QString &hash);
@@ -153,6 +163,8 @@ public slots:
     void remove();
 
 signals:
+    void guidChanged();
+    void createdChanged();
     void titleChanged();
     void updatedChanged();
     void notebookGuidChanged();
@@ -165,13 +177,28 @@ signals:
     void isSearchResultChanged();
     void updateSequenceNumberChanged();
     void loadedChanged();
+    void deletedChanged();
 
     void loadingChanged();
+    void syncedChanged();
+    void syncErrorChanged();
+    void conflictingChanged();
+
+private slots:
+    void slotNotebookGuidChanged(const QString &oldGuid, const QString &newGuid);
+    void slotTagGuidChanged(const QString &oldGuid, const QString &newGuid);
 
 private:
+    // Those should only be called from NotesStore, which is a friend
     void setLoading(bool loading);
-
+    void setSyncError(bool syncError);
+    void setDeleted(bool deleted);
     void syncToCacheFile();
+    void syncToInfoFile();
+    void deleteFromCache();
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setConflicting(bool conflicting);
 
     // const because we want to load on demand in getters. Keep this private!
     void load() const;
@@ -189,14 +216,19 @@ private:
     qint64 m_reminderOrder;
     QDateTime m_reminderTime;
     QDateTime m_reminderDoneTime;
+    bool m_deleted;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
     quint32 m_updateSequenceNumber;
+    quint32 m_lastSyncedSequenceNumber;
     mutable QFile m_cacheFile;
-    QSettings m_infoFile;
+    QString m_infoFile;
 
     bool m_loading;
     mutable bool m_loaded;
+    bool m_synced;
+    bool m_syncError;
+    bool m_conflicting;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;

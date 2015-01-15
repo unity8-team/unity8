@@ -22,12 +22,11 @@
 
 #include <QDebug>
 
-CreateNoteJob::CreateNoteJob(const QString &title, const QString &notebookGuid, const QString &content, QObject *parent) :
-    NotesStoreJob(parent),
-    m_title(title),
-    m_notebookGuid(notebookGuid),
-    m_content(content)
+CreateNoteJob::CreateNoteJob(Note *note, QObject *parent) :
+    NotesStoreJob(parent)
 {
+    m_note = note->clone();
+    m_note->setParent(this);
 }
 
 bool CreateNoteJob::operator==(const EvernoteJob *other) const
@@ -36,9 +35,7 @@ bool CreateNoteJob::operator==(const EvernoteJob *other) const
     if (!otherJob) {
         return false;
     }
-    return this->m_title == otherJob->m_title
-            && this->m_notebookGuid == otherJob->m_notebookGuid
-            && this->m_content == otherJob->m_content;
+    return this->m_note->guid() == otherJob->m_note->guid();
 }
 
 void CreateNoteJob::attachToDuplicate(const EvernoteJob *other)
@@ -49,24 +46,39 @@ void CreateNoteJob::attachToDuplicate(const EvernoteJob *other)
 
 void CreateNoteJob::startJob()
 {
+    qDebug() << "creating note:" << m_note->guid() << m_note->enmlContent() << m_note->notebookGuid() << m_note->title();
     evernote::edam::Note input;
-    input.title = m_title.toStdString();
+    input.updateSequenceNum = m_note->updateSequenceNumber();
+    input.__isset.updateSequenceNum = true;
+
+    input.title = m_note->title().toStdString();
     input.__isset.title = true;
-    if (!m_notebookGuid.isEmpty()) {
-        input.notebookGuid = m_notebookGuid.toStdString();
+    if (!m_note->notebookGuid().isEmpty()) {
+        input.notebookGuid = m_note->notebookGuid().toStdString();
         input.__isset.notebookGuid = true;
     }
-    if (!m_content.isEmpty()) {
-        input.content = m_content.toStdString();
+    if (!m_note->enmlContent().isEmpty()) {
+        input.content = m_note->enmlContent().toStdString();
         input.__isset.content = true;
-        input.contentLength = m_content.length();
+        input.contentLength = m_note->enmlContent().length();
         input.__isset.contentLength = true;
     }
+    input.created = m_note->created().toMSecsSinceEpoch();
+    input.__isset.created = true;
+    input.updated = m_note->updated().toMSecsSinceEpoch();
+    input.__isset.updated = true;
+
+    std::vector<evernote::edam::Guid> tags;
+    foreach (const QString &tag, m_note->tagGuids()) {
+        tags.push_back(tag.toStdString());
+    }
+    input.tagGuids = tags;
+    input.__isset.tagGuids = true;
 
     client()->createNote(m_resultNote, token().toStdString(), input);
 }
 
 void CreateNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage, m_resultNote);
+    emit jobDone(errorCode, errorMessage, m_note->guid(), m_resultNote);
 }

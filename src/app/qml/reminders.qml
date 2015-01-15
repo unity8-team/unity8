@@ -17,14 +17,17 @@
  */
 
 import QtQuick 2.3
+import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0
-//import "components"
-import "ui"
+import Ubuntu.Connectivity 1.0
 import Evernote 0.1
 import Ubuntu.OnlineAccounts 0.1
 import Ubuntu.OnlineAccounts.Client 0.1
+import Ubuntu.PushNotifications 0.1
+import "components"
+import "ui"
 
 MainView {
     id: root
@@ -62,9 +65,30 @@ MainView {
     }
 
     Connections {
+        target: NetworkingStatus
+        onStatusChanged: {
+            switch (NetworkingStatus.status) {
+            case NetworkingStatus.Offline:
+                EvernoteConnection.disconnectFromEvernote();
+                break;
+            case NetworkingStatus.Online:
+                // Seems DNS still fails most of the time when we get this signal.
+                connectDelayTimer.start();
+                break;
+            }
+        }
+    }
+
+    Timer {
+        id: connectDelayTimer
+        interval: 2000
+        onTriggered: EvernoteConnection.connectToEvernote();
+    }
+
+    Connections {
         target: EvernoteConnection
         onIsConnectedChanged: {
-            if (EvernoteConnection.isConnected) {
+            if (EvernoteConnection.isConnected && root.uri) {
                 processUri();
             }
         }
@@ -80,8 +104,8 @@ MainView {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, { accounts: allAccounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
-        accountPage.accountSelected.connect(function(handle) { accountService.objectHandle = handle; pagestack.pop(); root.accountPage = null });
+        accountPage = component.createObject(root, { accounts: accounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
+        accountPage.accountSelected.connect(function(username, handle) { accountService.startAuthentication(username, handle); pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
 
@@ -107,47 +131,48 @@ MainView {
             pagestack.pop();
             var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
             var page = component.createObject();
-            page.exitEditMode.connect(function() {pagestack.pop()});
+            page.exitEditMode.connect(function() {Qt.inputMethod.hide(); pagestack.pop()});
             pagestack.push(page, {note: note});
         } else {
             sideViewLoader.clear();
             var view = sideViewLoader.embed(Qt.resolvedUrl("ui/EditNoteView.qml"))
             print("--- setting note:", note)
             view.note = note;
-            view.exitEditMode.connect(function(note) {print("**** note", note); root.displayNote(note)});
+            view.exitEditMode.connect(function(note) {root.displayNote(note)});
         }
     }
 
     function doLogin() {
         var accountName = preferences.accountName;
+        if (accountName == "@local") {
+            accountService.startAuthentication("@local", null);
+            return;
+        }
+
         if (accountName) {
             print("Last used account:", accountName);
             var i;
             for (i = 0; i < accounts.count; i++) {
                 if (accounts.get(i, "displayName") == accountName) {
                     print("Account", accountName, "still valid in Online Accounts.");
-                    accountService.objectHandle = accounts.get(i, "accountServiceHandle");
+                    accountService.startAuthentication(accounts.get(i, "displayName"), accounts.get(i, "accountServiceHandle"));
+                    return;
                 }
             }
         }
-        if (accountName && !accountService.objectHandle) {
-            print("Last used account doesn't seem to be valid any more");
-        }
 
-        if (!accountService.objectHandle) {
-            switch (accounts.count) {
-            case 0:
-                PopupUtils.open(noAccountDialog, root);
-                print("No account available! Please setup an account in the system settings");
-                break;
-            case 1:
-                print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
-                accountService.objectHandle = accounts.get(0, "accountServiceHandle");
-                break;
-            default:
-                print("There are multiple accounts. Allowing user to select one.");
-                openAccountPage(false);
-            }
+        switch (accounts.count) {
+        case 0:
+            PopupUtils.open(noAccountDialog, root);
+            print("No account available! Please setup an account in the system settings");
+            break;
+        case 1:
+            print("Connecting to account", accounts.get(0, "displayName"), "as there is only one account available");
+            accountService.startAuthentication(accounts.get(0, "displayName"), accounts.get(0, "accountServiceHandle"));
+            break;
+        default:
+            print("There are multiple accounts. Allowing user to select one.");
+            openAccountPage(false);
         }
     }
 
@@ -224,6 +249,28 @@ MainView {
         }
     }
 
+    function registerPushClient() {
+        console.log("Registering push client");
+        var req = new XMLHttpRequest();
+        req.open("post", "http://162.213.35.108/register", true);
+        req.setRequestHeader("content-type", "application/json");
+        req.onreadystatechange = function() {//Call a function when the state changes.
+            print("push client register response")
+            if(req.readyState == 4) {
+                if (req.status == 200) {
+                    print("PushClient registered")
+                } else {
+                    print("Error registering PushClient:", req.status, req.responseText, req.statusText);
+                }
+            }
+        }
+        req.send(JSON.stringify({
+            "userId" : UserStore.username,
+            "appId": root.applicationName + "_reminders",
+            "token": pushClient.token
+        }))
+    }
+
     function openTaggedNotes(title, tagGuid, narrowMode) {
         var component = Qt.createComponent(Qt.resolvedUrl("ui/NotesPage.qml"))
         var page = component.createObject();
@@ -240,7 +287,33 @@ MainView {
         page.editNote.connect(function(note) {
             root.switchToEditMode(note)
         })
-        NotesStore.refreshNotes();
+    }
+
+    PushClient {
+        id: pushClient
+        appId: root.applicationName + "_reminders"
+
+        onNotificationsChanged: {
+            print("PushClient notification:", notifications)
+            var notification = JSON.parse(notifications)["payload"];
+            print("user", notification["userId"])
+            if (notification["userId"] !== UserStore.username) {
+                console.warn("user mismatch:", notification["userId"], "!=", UserStore.username)
+                return;
+            }
+
+            if (notification["notebookGUID"] !== undefined) {
+                NotesStore.refreshNotebooks();
+                NotesStore.refreshNotes(notification["notebookGUID"]);
+            }
+            if (notification["noteGUID"] !== undefined) {
+                NotesStore.refreshNoteContent(notification["noteGUID"]);
+            }
+        }
+
+        onError: {
+            console.warn("PushClient Error:", error)
+        }
     }
 
     AccountServiceModel {
@@ -250,23 +323,40 @@ MainView {
 
     AccountServiceModel {
         id: allAccounts
+        applicationId: "com.ubuntu.reminders_reminders"
         service: useSandbox ? "evernote-sandbox" : "evernote"
         includeDisabled: true
     }
 
     AccountService {
         id: accountService
-        onObjectHandleChanged: {
+        function startAuthentication(username, objectHandle) {
+            //Load the cache
+            EvernoteConnection.disconnectFromEvernote();
+            EvernoteConnection.token = "";
+            NotesStore.username = username;
+            preferences.accountName = username;
+            if (username === "@local") {
+                preferences.haveLocalUser = true;
+            }
+
+            if (objectHandle === null) {
+                return;
+            }
+
+            accountService.objectHandle = objectHandle;
             // FIXME: workaround for lp:1351041. We'd normally set the hostname
             // under onAuthenticated, but it seems that now returns empty parameters
             EvernoteConnection.hostname = accountService.authData.parameters["HostName"];
             authenticate(null);
         }
+
         onAuthenticated: {
-            if (EvernoteConnection.token && EvernoteConnection.token != reply.AccessToken) {
-                EvernoteConnection.clearToken();
-            }
             EvernoteConnection.token = reply.AccessToken;
+            print("token is:", EvernoteConnection.token)
+            if (NetworkingStatus.online) {
+                EvernoteConnection.connectToEvernote();
+            }
         }
         onAuthenticationError: {
             console.log("Authentication failed, code " + error.code)
@@ -294,7 +384,7 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
-            preferences.accountName = UserStore.username;
+            registerPushClient();
         }
     }
 
@@ -306,7 +396,7 @@ MainView {
             if (root.narrowMode) {
                 var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
                 var page = component.createObject();
-                page.exitEditMode.connect(function() {pagestack.pop();});
+                page.exitEditMode.connect(function() {Qt.inputMethod.hide(); pagestack.pop();});
                 pagestack.push(page, {note: note});
             } else {
                 notesPage.selectedNote = note;
@@ -317,10 +407,21 @@ MainView {
         }
     }
 
+    StatusBar {
+        id: statusBar
+        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
+        color: root.backgroundColor
+        shown: text
+        text: EvernoteConnection.error || NotesStore.error || NotesStore.notebooksError
+        iconName: "sync-error"
+
+    }
+
     PageStack {
         id: pagestack
         anchors.rightMargin: root.narrowMode ? 0 : root.width - units.gu(40)
-        opacity: root.accountPage || EvernoteConnection.isConnected ? 1 : 0
+        anchors.topMargin: statusBar.height
+
 
         Tabs {
             id: rootTabs
@@ -433,39 +534,6 @@ MainView {
         }
     }
 
-    Column {
-        anchors { left: pagestack.left; right: pagestack.right; margins: units.gu(2); verticalCenter: pagestack.verticalCenter }
-        spacing: units.gu(2)
-
-        Label {
-            anchors { left: parent.left; right: parent.right }
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-            text: EvernoteConnection.error
-        }
-
-        Button {
-            anchors { left: parent.left; right: parent.right }
-            text: i18n.tr("Reconnect")
-            visible: EvernoteConnection.error
-            color: UbuntuColors.orange
-            onClicked: {
-                var token = EvernoteConnection.token
-                EvernoteConnection.token = ""
-                EvernoteConnection.token = token
-            }
-        }
-    }
-
-
-    ActivityIndicator {
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: units.gu(4.5)
-        running: visible
-        visible: !EvernoteConnection.isConnected && root.accountPage == null && !EvernoteConnection.error
-    }
-
-
     Label {
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: pagestack.width / 2
@@ -507,8 +575,10 @@ MainView {
         Dialog {
             id: noAccount
             objectName: "noAccountDialog"
-            title: i18n.tr("No account available")
-            text: i18n.tr("Please configure and authorize an Evernote account in System Settings")
+            title: i18n.tr("Setup Evernote connection?")
+            text: i18n.tr("Reminders can store your notes and reminders locally on this device. "
+                          + "In order to synchronize notes with Evernote, an account at Evernote is required. "
+                          + "Do you want to setup an account now?")
 
             Connections {
                 target: accounts
@@ -526,11 +596,25 @@ MainView {
                 providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
             }
 
-            Button {
-                objectName: "openAccountButton"
-                text: i18n.tr("Add account")
-                color: UbuntuColors.orange
-                onClicked: setup.exec()
+            RowLayout {
+                Button {
+                    objectName: "openAccountButton"
+                    text: i18n.tr("No")
+                    color: UbuntuColors.red
+                    onClicked: {
+                        PopupUtils.close(noAccount)
+                        NotesStore.username = "@local";
+                        preferences.haveLocalUser = true;
+                    }
+                    Layout.fillWidth: true
+                }
+                Button {
+                    objectName: "openAccountButton"
+                    text: i18n.tr("Yes")
+                    color: UbuntuColors.green
+                    onClicked: setup.exec()
+                    Layout.fillWidth: true
+                }
             }
         }
     }

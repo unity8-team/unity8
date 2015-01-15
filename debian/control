@@ -11,7 +11,8 @@ Build-Depends: cmake,
                pkg-config,
                python3-all,
                qt5-default,
-               qtdeclarative5-dev
+               qtdeclarative5-dev,
+               qtpim5-dev
 Standards-Version: 3.9.5
 Section: misc
 Homepage: https://launchpad.net/reminders-app
@@ -20,12 +21,14 @@ Vcs-Bzr: https://code.launchpad.net/~reminders-app-dev/reminders-app/trunk
 Package: reminders-app
 Architecture: any
 Depends: account-plugin-evernote,
+         qml-module-ubuntu-connectivity,
          qtdeclarative5-accounts-plugin,
          qtdeclarative5-evernote0.1,
          qtdeclarative5-localstorage-plugin,
          qtdeclarative5-online-accounts-client0.1 (>= 0.3+14.10.20140506),
          qtdeclarative5-qtquick2-plugin,
          qtdeclarative5-quicklayouts-plugin,
+         qtdeclarative5-ubuntu-push-plugin,
          qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu,
          signon-plugin-oauth2 (>= 0.19-0~57~),
          suru-icon-theme | ubuntu-mobile-icons,

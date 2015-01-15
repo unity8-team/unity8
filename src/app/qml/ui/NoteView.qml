@@ -29,12 +29,6 @@ Item {
 
     signal openTaggedNotes(string title, string tagGuid)
 
-    onNoteChanged: {
-        if (root.note != null) {
-            NotesStore.refreshNoteContent(root.note.guid)
-        }
-    }
-
     BouncingProgressBar {
         anchors.top: parent.top
         visible: root.note == null || root.note.loading

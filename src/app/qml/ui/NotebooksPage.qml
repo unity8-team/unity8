@@ -129,6 +129,7 @@ Page {
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - buttonRow.height - keyboardRect.height
             clip: true
+            maximumFlickVelocity: units.gu(200)
 
             onRefreshed: {
                 NotesStore.refreshNotebooks();
@@ -141,19 +142,9 @@ Page {
                 }
             }
 
-            ActivityIndicator {
-                anchors.centerIn: parent
-                running: notebooks.loading
-                visible: running
-            }
-
-            Label {
-                anchors.centerIn: parent
-                width: parent.width - units.gu(4)
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                visible: !notebooks.loading && notebooks.error
-                text: notebooks.error
+            BouncingProgressBar {
+                anchors.top: parent.top
+                visible: notebooks.loading
             }
 
             Scrollbar {

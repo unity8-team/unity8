@@ -19,6 +19,7 @@
  */
 
 #include "resource.h"
+#include "notesstore.h"
 
 #include <QFile>
 #include <QStandardPaths>
@@ -34,7 +35,7 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     m_type(type)
 {
 
-    m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + hash + "." + type.split('/').last();
+    m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/" + hash + "." + type.split('/').last();
 
     QFile file(m_filePath);
     if (!data.isEmpty() && !file.exists()) {
@@ -50,7 +51,7 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
 
 bool Resource::isCached(const QString &hash)
 {
-    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first());
+    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username());
     foreach (const QString fi, cacheDir.entryList()) {
         if (fi.contains(hash)) {
             return true;
@@ -83,7 +84,7 @@ Resource::Resource(const QString &path, QObject *parent):
         qWarning() << "cannot determine mime type of file" << m_fileName;
     }
 
-    m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + m_hash + "." + m_type.split('/').last();
+    m_filePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/" + m_hash + "." + m_type.split('/').last();
 
     QFile copy(m_filePath);
     if (!copy.exists()) {

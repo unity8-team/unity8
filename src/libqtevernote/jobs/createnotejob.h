@@ -22,27 +22,26 @@
 #define CREATENOTEJOB_H
 
 #include "notesstorejob.h"
+#include "note.h"
 
 class CreateNoteJob : public NotesStoreJob
 {
     Q_OBJECT
 public:
-    explicit CreateNoteJob(const QString &title, const QString &notebookGuid = QString(), const QString &content = QString(), QObject *parent = 0);
+    explicit CreateNoteJob(Note *note, QObject *parent = 0);
 
     virtual bool operator==(const EvernoteJob *other) const;
     virtual void attachToDuplicate(const EvernoteJob *other) override;
 
 signals:
-    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, evernote::edam::Note note);
+    void jobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, evernote::edam::Note note);
 
 protected:
     void startJob();
     void emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage);
 
 private:
-    QString m_title;
-    QString m_notebookGuid;
-    QString m_content;
+    Note *m_note;
 
     evernote::edam::Note m_resultNote;
 };

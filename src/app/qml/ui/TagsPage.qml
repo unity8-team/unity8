@@ -94,6 +94,7 @@ Page {
             anchors { left: parent.left; right: parent.right }
             height: parent.height - y - keyboardRect.height
             clip: true
+            maximumFlickVelocity: units.gu(200)
 
             onRefreshed: {
                 NotesStore.refreshTags();

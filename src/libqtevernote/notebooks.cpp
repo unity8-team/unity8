@@ -35,6 +35,7 @@ Notebooks::Notebooks(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::notebooksErrorChanged, this, &Notebooks::errorChanged);
     connect(NotesStore::instance(), &NotesStore::notebookAdded, this, &Notebooks::notebookAdded);
     connect(NotesStore::instance(), &NotesStore::notebookRemoved, this, &Notebooks::notebookRemoved);
+    connect(NotesStore::instance(), &NotesStore::notebookGuidChanged, this, &Notebooks::notebookGuidChanged);
 }
 
 bool Notebooks::loading() const
@@ -69,6 +70,12 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->lastUpdated();
     case RoleLastUpdatedString:
         return notebook->lastUpdatedString();
+    case RoleLoading:
+        return notebook->loading();
+    case RoleSynced:
+        return notebook->synced();
+    case RoleSyncError:
+        return notebook->syncError();
     }
     return QVariant();
 }
@@ -89,6 +96,9 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RolePublished, "published");
     roles.insert(RoleLastUpdated, "lastUpdated");
     roles.insert(RoleLastUpdatedString, "lastUpdatedString");
+    roles.insert(RoleLoading, "loading");
+    roles.insert(RoleSynced, "synced");
+    roles.insert(RoleSyncError, "syncError");
     return roles;
 }
 
@@ -112,6 +122,9 @@ void Notebooks::notebookAdded(const QString &guid)
     connect(notebook, &Notebook::noteCountChanged, this, &Notebooks::noteCountChanged);
     connect(notebook, &Notebook::publishedChanged, this, &Notebooks::publishedChanged);
     connect(notebook, &Notebook::lastUpdatedChanged, this, &Notebooks::lastUpdatedChanged);
+    connect(notebook, &Notebook::syncedChanged, this, &Notebooks::syncedChanged);
+    connect(notebook, &Notebook::loadingChanged, this, &Notebooks::notebookLoadingChanged);
+    connect(notebook, &Notebook::syncErrorChanged, this, &Notebooks::syncErrorChanged);
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
@@ -125,6 +138,13 @@ void Notebooks::notebookRemoved(const QString &guid)
     m_list.removeAll(guid);
     endRemoveRows();
     emit countChanged();
+}
+
+void Notebooks::notebookGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int idx = m_list.indexOf(oldGuid);
+    m_list.replace(idx, newGuid);
+    emit dataChanged(index(idx), index(idx));
 }
 
 void Notebooks::nameChanged()
@@ -153,4 +173,25 @@ void Notebooks::lastUpdatedChanged()
     Notebook *notebook = static_cast<Notebook*>(sender());
     QModelIndex idx = index(m_list.indexOf(notebook->guid()));
     emit dataChanged(idx, idx, QVector<int>() << RoleLastUpdated);
+}
+
+void Notebooks::syncedChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleSynced);
+}
+
+void Notebooks::syncErrorChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleSyncError);
+}
+
+void Notebooks::notebookLoadingChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf(notebook->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleLoading);
 }

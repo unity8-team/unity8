@@ -35,6 +35,7 @@ Tags::Tags(QObject *parent) :
     connect(NotesStore::instance(), &NotesStore::tagsErrorChanged, this, &Tags::errorChanged);
     connect(NotesStore::instance(), &NotesStore::tagAdded, this, &Tags::tagAdded);
     connect(NotesStore::instance(), &NotesStore::tagRemoved, this, &Tags::tagRemoved);
+    connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Tags::tagGuidChanged);
 }
 
 bool Tags::loading() const
@@ -62,6 +63,12 @@ QVariant Tags::data(const QModelIndex &index, int role) const
         return tag->name();
     case RoleNoteCount:
         return tag->noteCount();
+    case RoleLoading:
+        return tag->loading();
+    case RoleSynced:
+        return tag->synced();
+    case RoleSyncError:
+        return tag->syncError();
     }
     return QVariant();
 }
@@ -78,6 +85,9 @@ QHash<int, QByteArray> Tags::roleNames() const
     roles.insert(RoleGuid, "guid");
     roles.insert(RoleName, "name");
     roles.insert(RoleNoteCount, "noteCount");
+    roles.insert(RoleLoading, "loading");
+    roles.insert(RoleSynced, "synced");
+    roles.insert(RoleSyncError, "syncError");
     return roles;
 }
 
@@ -99,6 +109,9 @@ void Tags::tagAdded(const QString &guid)
     Tag *tag = NotesStore::instance()->tag(guid);
     connect(tag, &Tag::nameChanged, this, &Tags::nameChanged);
     connect(tag, &Tag::noteCountChanged, this, &Tags::noteCountChanged);
+    connect(tag, &Tag::loadingChanged, this, &Tags::tagLoadingChanged);
+    connect(tag, &Tag::syncedChanged, this, &Tags::syncedChanged);
+    connect(tag, &Tag::syncErrorChanged, this, &Tags::syncErrorChanged);
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
@@ -114,6 +127,15 @@ void Tags::tagRemoved(const QString &guid)
     emit countChanged();
 }
 
+void Tags::tagGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int idx = m_list.indexOf(oldGuid);
+    if (idx != -1) {
+        m_list.replace(idx, newGuid);
+        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleGuid);
+    }
+}
+
 void Tags::nameChanged()
 {
     Tag *tag = static_cast<Tag*>(sender());
@@ -127,3 +149,26 @@ void Tags::noteCountChanged()
     QModelIndex idx = index(m_list.indexOf(tag->guid()));
     emit dataChanged(idx, idx, QVector<int>() << RoleNoteCount);
 }
+
+void Tags::tagLoadingChanged()
+{
+    Tag *tag = static_cast<Tag*>(sender());
+    QModelIndex idx = index(m_list.indexOf(tag->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleLoading);
+}
+
+void Tags::syncedChanged()
+{
+    Tag *tag = static_cast<Tag*>(sender());
+    QModelIndex idx = index(m_list.indexOf(tag->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleSynced);
+}
+
+void Tags::syncErrorChanged()
+{
+    Tag *tag = static_cast<Tag*>(sender());
+    QModelIndex idx = index(m_list.indexOf(tag->guid()));
+    emit dataChanged(idx, idx, QVector<int>() << RoleSyncError);
+}
+
+

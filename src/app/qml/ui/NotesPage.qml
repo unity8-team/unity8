@@ -55,12 +55,6 @@ PageWithBottomEdge {
     signal openSearch()
     signal editNote(var note)
 
-    onActiveChanged: {
-        if (active) {
-            NotesStore.refreshNotes();
-        }
-    }
-
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
@@ -85,19 +79,8 @@ PageWithBottomEdge {
 
         ToolbarButton {
             action: Action {
-                text: i18n.tr("Refresh")
-                iconName: "reload"
-                onTriggered: {
-                    NotesStore.refreshNotes();
-                }
-            }
-        }
-
-        ToolbarButton {
-            action: Action {
                 text: i18n.tr("Accounts")
                 iconName: "contacts-app-symbolic"
-                visible: allAccounts.count > 1
                 onTriggered: {
                     openAccountPage(true);
                 }
@@ -154,6 +137,7 @@ PageWithBottomEdge {
         height: parent.height - y
         model: notes
         clip: true
+        maximumFlickVelocity: units.gu(200)
 
         onRefreshed: {
             NotesStore.refreshNotes();
@@ -173,9 +157,16 @@ PageWithBottomEdge {
             }
             resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
             notebookColor: preferences.colorForNotebook(model.notebookGuid)
+            reminder: model.reminder
+            synced: model.synced
+            loading: model.loading
+            syncError: model.syncError
+            conflicting: model.conflicting
 
             onClicked: {
-                root.selectedNote = NotesStore.note(guid);
+                if (!model.conflicting) {
+                    root.selectedNote = NotesStore.note(guid);
+                }
             }
         }
 

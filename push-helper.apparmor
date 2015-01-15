@@ -1,0 +1,11 @@
+{
+    "template": "ubuntu-push-helper",
+    "policy_groups": [
+        "push-notification-client",
+        "accounts",
+        "networking",
+        "calendar",
+        "webview"
+    ],
+    "policy_version": 1.2
+}

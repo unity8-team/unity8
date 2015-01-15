@@ -85,7 +85,8 @@ public:
     QString error() const;
 
 public slots:
-    void clearToken();
+    void connectToEvernote();
+    void disconnectFromEvernote();
 
 signals:
     void hostnameChanged();
@@ -94,7 +95,6 @@ signals:
     void errorChanged();
 
 private slots:
-    void connectToEvernote();
 
     void startJobQueue();
     void startNextJob();
@@ -123,15 +123,12 @@ private:
     QList<EvernoteJob*> m_jobQueue;
     EvernoteJob *m_currentJob;
 
-    // Those 4 are accessed from the job thread.
-    // Make sure to not access them while any jobs are running
-    // or we need to mutex them.
+    // Those need to be mutexed
     evernote::edam::NoteStoreClient *m_notesStoreClient;
     boost::shared_ptr<THttpClient> m_notesStoreHttpClient;
 
     evernote::edam::UserStoreClient *m_userstoreClient;
     boost::shared_ptr<THttpClient> m_userStoreHttpClient;
-
 };
 
 #endif // EVERNOTECONNECTION_H

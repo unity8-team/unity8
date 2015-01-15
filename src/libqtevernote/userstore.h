@@ -41,7 +41,7 @@ public:
     QString username() const;
 
 signals:
-    void usernameChanged();
+    void usernameChanged(const QString &username);
 
 private slots:
     void fetchUsername();

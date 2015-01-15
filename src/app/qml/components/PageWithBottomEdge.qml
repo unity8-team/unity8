@@ -111,7 +111,6 @@ Page {
         if (edgeLoader.status === Loader.Ready) {
             edgeLoader.item.active = true
 
-            NotesStore.createNote("Untitled", filterNotebookGuid);
 
             if (edgeLoader.item.flickable) {
                 edgeLoader.item.flickable.contentY = -page.header.height
@@ -119,6 +118,9 @@ Page {
             }
             if (edgeLoader.item.ready)
                 edgeLoader.item.ready()
+
+
+            NotesStore.createNote("Untitled", filterNotebookGuid);
         }
     }
 
@@ -359,6 +361,7 @@ Page {
             active: true
             asynchronous: true
             anchors.fill: parent
+            visible: page.bottomEdgeContentShown
 
             //WORKAROUND: The SDK move the page contents down to allocate space for the header we need to avoid that during the page dragging
             Binding {

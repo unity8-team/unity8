@@ -32,71 +32,83 @@ Empty {
         anchors.bottomMargin: units.dp(1)
     }
 
-    Base {
+    RowLayout {
         anchors.fill: parent
-        progression: true
+        anchors.margins: units.gu(1)
+        spacing: units.gu(1)
 
-        onClicked: root.clicked()
-
-        RowLayout {
-            anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
-
-            Item {
-                anchors { top: parent.top; bottom: parent.bottom }
-                width: units.gu(1)
-                Rectangle {
-                    anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
-                    width: units.gu(.5)
-                    color: "black"
-                    radius: width / 2
-                }
+        Item {
+            Layout.fillHeight: true
+            width: units.gu(1)
+            Rectangle {
+                anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: units.gu(1.5) }
+                width: units.gu(.5)
+                color: "black"
+                radius: width / 2
             }
+        }
 
-            ColumnLayout {
-                height: parent.height
-                Layout.fillWidth: true
-
-                Label {
-                    id: tagTitleLabel
-                    objectName: 'tagTitleLabel'
-                    text: model.name
-                    fontSize: "large"
-                    Layout.fillWidth: true
-
-                    MouseArea {
-                        onPressAndHold: {
-                            tagTitleLabel.visible = false;
-                            tagTitleTextField.forceActiveFocus();
-                        }
-                        anchors.fill: parent
-                        propagateComposedEvents: true
-                    }
-                }
-
-                TextField {
-                    id: tagTitleTextField
-                    text: model.name
-                    visible: !tagTitleLabel.visible
-
-                    InverseMouseArea {
-                        onClicked: {
-                            if (tagTitleTextField.text) {
-                                tags.tag(index).name = tagTitleTextField.text;
-                                NotesStore.saveTag(tags.tag(index).guid);
-                                tagTitleLabel.visible = true;
-                            }
-                        }
-                        anchors.fill: parent
-                    }
-                }
-            }
+        ColumnLayout {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
             Label {
-                objectName: 'tagNoteCountLabel'
-                Layout.fillHeight: true
-                verticalAlignment: Text.AlignVCenter
-                text: "(" + model.noteCount + ")"
+                id: tagTitleLabel
+                objectName: 'tagTitleLabel'
+                text: model.name
+                fontSize: "large"
+                Layout.fillWidth: true
+
+                MouseArea {
+                    onPressAndHold: {
+                        tagTitleLabel.visible = false;
+                        tagTitleTextField.forceActiveFocus();
+                    }
+                    anchors.fill: parent
+                    propagateComposedEvents: true
+                }
+            }
+
+            TextField {
+                id: tagTitleTextField
+                text: model.name
+                visible: !tagTitleLabel.visible
+
+                InverseMouseArea {
+                    onClicked: {
+                        if (tagTitleTextField.text) {
+                            tags.tag(index).name = tagTitleTextField.text;
+                            NotesStore.saveTag(tags.tag(index).guid);
+                            tagTitleLabel.visible = true;
+                        }
+                    }
+                    anchors.fill: parent
+                }
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+            width: units.gu(2)
+
+             Label {
+                anchors { left: parent.left; top: parent.top; right: parent.right }
+                height: width
                 color: "#b3b3b3"
+                text: "(" + model.noteCount + ")"
+                fontSize: "small"
+                horizontalAlignment: Text.AlignRight
+            }
+            Icon {
+                anchors { left: parent.left; verticalCenter: parent.verticalCenter; right: parent.right }
+                height: width
+                name: "go-next"
+            }
+            Icon {
+                anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
+                height: width
+                name: model.loading ? "sync-updating" : model.syncError ? "sync-error" : model.synced ? "sync-idle" : "sync-offline"
+                visible: NotesStore.username !== "@local" && (!model.synced || model.syncError || model.loading)
             }
         }
     }

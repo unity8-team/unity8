@@ -19,18 +19,21 @@
  */
 
 #include "createtagjob.h"
+#include "tag.h"
 
 #include <QDebug>
 
-CreateTagJob::CreateTagJob(const QString &name, QObject *parent) :
+CreateTagJob::CreateTagJob(Tag *tag, QObject *parent) :
     NotesStoreJob(parent),
-    m_name(name)
+    m_tag(tag->clone())
 {
+    m_tag->setParent(this);
+    m_tag->setUpdateSequenceNumber(m_tag->updateSequenceNumber()+1);
 }
 
 void CreateTagJob::startJob()
 {
-    m_result.name = m_name.toStdString();
+    m_result.name = m_tag->name().toStdString();
     m_result.__isset.name = true;
     client()->createTag(m_result, token().toStdString(), m_result);
 }
@@ -41,7 +44,7 @@ bool CreateTagJob::operator==(const EvernoteJob *other) const
     if (!otherJob) {
         return false;
     }
-    return this->m_name == otherJob->m_name;
+    return this->m_tag == otherJob->m_tag;
 }
 
 void CreateTagJob::attachToDuplicate(const EvernoteJob *other)
@@ -52,5 +55,5 @@ void CreateTagJob::attachToDuplicate(const EvernoteJob *other)
 
 void CreateTagJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)
 {
-    emit jobDone(errorCode, errorMessage, m_result);
+    emit jobDone(errorCode, errorMessage, m_tag->guid(), m_result);
 }

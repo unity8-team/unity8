@@ -25,7 +25,8 @@
 
 Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
-    m_onlyReminders(false)
+    m_onlyReminders(false),
+    m_showDeleted(false)
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
@@ -33,6 +34,7 @@ Notes::Notes(QObject *parent) :
     setSourceModel(NotesStore::instance());
     setSortRole(NotesStore::RoleUpdated);
     sort(0, Qt::DescendingOrder);
+    invalidateFilter();
 }
 
 QString Notes::filterNotebookGuid() const
@@ -103,6 +105,21 @@ void Notes::setOnlySearchResults(bool onlySearchResults)
     }
 }
 
+bool Notes::showDeleted() const
+{
+    return m_showDeleted;
+}
+
+void Notes::setShowDeleted(bool showDeleted)
+{
+    if (m_showDeleted != showDeleted) {
+        m_showDeleted = showDeleted;
+        emit showDeletedChanged();
+        invalidateFilter();
+        emit countChanged();
+    }
+}
+
 bool Notes::loading() const
 {
     return NotesStore::instance()->loading();
@@ -158,6 +175,11 @@ bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) con
     if (m_onlySearchResults) {
         Note *note = NotesStore::instance()->note(sourceModel()->data(sourceIndex, NotesStore::RoleGuid).toString());
         if (!note->isSearchResult()) {
+            return false;
+        }
+    }
+    if (!m_showDeleted) {
+        if (NotesStore::instance()->data(sourceIndex, NotesStore::RoleDeleted).toBool()) {
             return false;
         }
     }

@@ -23,13 +23,14 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QSettings>
 
 class Notebook : public QObject
 {
     Q_OBJECT
 
     // Don't forget to update clone() if you add new properties
-    Q_PROPERTY(QString guid READ guid CONSTANT)
+    Q_PROPERTY(QString guid READ guid NOTIFY guidChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int noteCount READ noteCount NOTIFY noteCountChanged)
     Q_PROPERTY(bool published READ published NOTIFY publishedChanged)
@@ -37,8 +38,12 @@ class Notebook : public QObject
     Q_PROPERTY(QString lastUpdatedString READ lastUpdatedString NOTIFY lastUpdatedChanged)
     // Don't forget to update clone() if you add new properties
 
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+    Q_PROPERTY(bool syncError READ syncError NOTIFY syncErrorChanged)
+
 public:
-    explicit Notebook(QString guid, QObject *parent = 0);
+    explicit Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent = 0);
 
     QString guid() const;
 
@@ -55,27 +60,61 @@ public:
 
     QString lastUpdatedString() const;
 
+    quint32 updateSequenceNumber() const;
+    quint32 lastSyncedSequenceNumber() const;
+
+    bool loading() const;
+    bool synced() const;
+    bool syncError() const;
+
     Notebook *clone();
 
 public slots:
     void save();
 
 signals:
+    void guidChanged();
     void nameChanged();
     void noteCountChanged();
     void publishedChanged();
     void lastUpdatedChanged();
+    void loadingChanged();
+    void syncedChanged();
+    void syncErrorChanged();
 
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
     void noteRemoved(const QString &noteGuid, const QString &notebookGuid);
+    void noteChanged(const QString &noteGuid, const QString &notebookGuid);
+    void noteGuidChanged(const QString &oldGuid, const QString &newGuid);
 
 private:
+    void setGuid(const QString &guid);
+
+    void setLoading(bool loading);
+    void setSyncError(bool syncError);
+    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+
+    void syncToInfoFile();
+    void deleteInfoFile();
+
+private:
+    quint32 m_updateSequenceNumber;
+    quint32 m_lastSyncedSequenceNumber;
     QString m_guid;
     QString m_name;
-    int m_noteCount;
     bool m_published;
     QDateTime m_lastUpdated;
+    QList<QString> m_notesList;
+
+    QString m_infoFile;
+
+    bool m_loading;
+    bool m_synced;
+    bool m_syncError;
+
+    friend class NotesStore;
 };
 
 #endif // NOTEBOOK_H

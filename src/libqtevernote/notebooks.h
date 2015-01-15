@@ -39,7 +39,10 @@ public:
         RoleNoteCount,
         RolePublished,
         RoleLastUpdated,
-        RoleLastUpdatedString
+        RoleLastUpdatedString,
+        RoleLoading,
+        RoleSynced,
+        RoleSyncError
     };
     explicit Notebooks(QObject *parent = 0);
 
@@ -64,11 +67,15 @@ signals:
 private slots:
     void notebookAdded(const QString &guid);
     void notebookRemoved(const QString &guid);
+    void notebookGuidChanged(const QString &oldGuid, const QString &newGuid);
 
     void nameChanged();
     void noteCountChanged();
     void publishedChanged();
     void lastUpdatedChanged();
+    void syncedChanged();
+    void notebookLoadingChanged();
+    void syncErrorChanged();
 
 private:
     QList<QString> m_list;

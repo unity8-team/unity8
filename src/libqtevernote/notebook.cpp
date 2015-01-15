@@ -25,20 +25,33 @@
 #include <libintl.h>
 
 #include <QDebug>
+#include <QStandardPaths>
 
-Notebook::Notebook(QString guid, QObject *parent) :
+Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
+    m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
-    m_noteCount(0),
-    m_published(false)
+    m_published(false),
+    m_loading(false),
+    m_syncError(false)
 {
+    setGuid(guid);
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    m_name = infoFile.value("name").toString();
+    m_published = infoFile.value("published").toBool();
+    m_lastUpdated = infoFile.value("lastUpdated").toDateTime();
+    m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", 0).toUInt();
+    m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
+
     foreach (Note *note, NotesStore::instance()->notes()) {
         if (note->notebookGuid() == m_guid) {
-            m_noteCount++;
+            m_notesList.append(note->guid());
         }
     }
     connect(NotesStore::instance(), &NotesStore::noteAdded, this, &Notebook::noteAdded);
     connect(NotesStore::instance(), &NotesStore::noteRemoved, this, &Notebook::noteRemoved);
+    connect(NotesStore::instance(), &NotesStore::noteChanged, this, &Notebook::noteChanged);
+    connect(NotesStore::instance(), &NotesStore::noteGuidChanged, this, &Notebook::noteGuidChanged);
 }
 
 QString Notebook::guid() const
@@ -61,7 +74,7 @@ void Notebook::setName(const QString &name)
 
 int Notebook::noteCount() const
 {
-    return m_noteCount;
+    return m_notesList.count();
 }
 
 bool Notebook::published() const
@@ -118,7 +131,7 @@ QString Notebook::lastUpdatedString() const
 
 Notebook *Notebook::clone()
 {
-    Notebook *notebook = new Notebook(m_guid);
+    Notebook *notebook = new Notebook(m_guid, m_updateSequenceNumber);
     notebook->setName(m_name);
     notebook->setLastUpdated(m_lastUpdated);
     notebook->setPublished(m_published);
@@ -135,7 +148,7 @@ void Notebook::noteAdded(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
-        m_noteCount++;
+        m_notesList.append(noteGuid);
         emit noteCountChanged();
     }
 }
@@ -144,7 +157,128 @@ void Notebook::noteRemoved(const QString &noteGuid, const QString &notebookGuid)
 {
     Q_UNUSED(noteGuid)
     if (notebookGuid == m_guid) {
-        m_noteCount--;
+        m_notesList.removeAll(noteGuid);
         emit noteCountChanged();
+    }
+}
+
+void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
+{
+    if (notebookGuid != m_guid) {
+        if (m_notesList.contains(noteGuid)) {
+            m_notesList.removeAll(noteGuid);
+            emit noteCountChanged();
+        }
+    } else {
+        if (!m_notesList.contains(noteGuid)) {
+            qDebug() << "****** appending to notebook";
+            m_notesList.append(noteGuid);
+            emit noteCountChanged();
+        }
+    }
+}
+
+void Notebook::noteGuidChanged(const QString &oldGuid, const QString &newGuid)
+{
+    int oldIndex = m_notesList.indexOf(oldGuid);
+    if (oldIndex != -1) {
+        m_notesList.replace(oldIndex, newGuid);
+    }
+}
+
+void Notebook::setGuid(const QString &guid)
+{
+    bool syncToFile = false;
+    if (!m_infoFile.isEmpty()) {
+        QFile ifile(m_infoFile);
+        ifile.remove();
+
+        syncToFile = true;
+    }
+
+    m_guid = guid;
+    m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/notebook-" + guid + ".info";
+
+    if (syncToFile) {
+        syncToInfoFile();
+    }
+    emit guidChanged();
+}
+
+void Notebook::syncToInfoFile()
+{
+    QSettings infoFile(m_infoFile, QSettings::IniFormat);
+    infoFile.setValue("name", m_name);
+    infoFile.setValue("published", m_published);
+    infoFile.value("lastUpdated", m_lastUpdated);
+    infoFile.setValue("lastSyncedSequenceNumber", m_lastSyncedSequenceNumber);
+}
+
+void Notebook::deleteInfoFile()
+{
+    QFile f(m_infoFile);
+    if (f.exists()) {
+        f.remove();
+    }
+}
+
+bool Notebook::loading() const
+{
+    return m_loading;
+}
+
+bool Notebook::synced() const
+{
+    return m_synced;
+}
+
+bool Notebook::syncError() const
+{
+    return m_syncError;
+}
+
+quint32 Notebook::updateSequenceNumber() const
+{
+    return m_updateSequenceNumber;
+}
+
+void Notebook::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+{
+    if (m_updateSequenceNumber != updateSequenceNumber) {
+        m_updateSequenceNumber = updateSequenceNumber;
+
+        m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        emit syncedChanged();
+    }
+}
+
+quint32 Notebook::lastSyncedSequenceNumber() const
+{
+    return m_lastSyncedSequenceNumber;
+}
+
+void Notebook::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+{
+    if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
+        m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;
+
+        m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        emit syncedChanged();
+    }
+}
+
+void Notebook::setLoading(bool loading)
+{
+    if (m_loading != loading) {
+        m_loading = loading;
+        emit loadingChanged();
+    }
+}
+
+void Notebook::setSyncError(bool syncError)
+{
+    if (m_syncError != syncError) {
+        m_syncError = syncError;
+        emit syncErrorChanged();
     }
 }
