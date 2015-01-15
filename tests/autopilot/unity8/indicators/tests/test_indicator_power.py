@@ -8,25 +8,6 @@ import dbusmock
 from unity8.indicators.tests import IndicatorTestCase
 
 
-def initctl_set_env(variable, value):
-    """initctl set-env to set the environmnent variable to given value."""
-    subprocess.call(
-        ['initctl', 'set-env', '-g', '{}={}'.format(variable, value)]
-    )
-
-
-def initctl_unset_env(variable):
-    """initctl unset-env to unset the environmnent variable."""
-    subprocess.call(
-        ['initctl', 'unset-env', '-g', '{}'.format(variable)]
-    )
-
-
-def initctl_restart(service_name):
-    """initctl restart service of given name."""
-    subprocess.call(['initctl', 'restart', service_name])
-
-
 def get_fake_system_bus_address():
     """Return dbusmock's fake system bus address."""
     bus_address_string = os.environ['DBUS_SYSTEM_BUS_ADDRESS']
@@ -84,7 +65,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         self.addCleanup(fake_upower_bus.stop)
         self.restart_indicator_power_listening_to_fake_bus()
         # restart the indicator listening to the authentic UPower bus
-        self.addCleanup(initctl_restart, 'indicator-power')
+        self.addCleanup(self.initctl_restart, 'indicator-power')
 
     def restart_indicator_power_listening_to_fake_bus(self):
         """Restart indicator-power listening to fake bus.
@@ -93,17 +74,17 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         indicator-power, unsetting the env.
 
         """
-        initctl_set_env(
+        self.initctl_set_env(
             'INDICATOR_POWER_BUS_ADDRESS_UPOWER',
             get_fake_system_bus_address()
         )
-        initctl_restart('indicator-power')
+        self.initctl_restart('indicator-power')
         # wait for the indicator to show up
         self.main_window.wait_select_single(
             objectName='indicator-power-widget'
         )
         # de-pollute initctl env
-        initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
+        self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
     def test_discharging_battery(self):
         """Battery icon must match UPower-reported level."""
