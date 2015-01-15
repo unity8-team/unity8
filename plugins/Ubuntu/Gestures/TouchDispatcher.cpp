@@ -25,7 +25,7 @@
 #include <private/qquickitem_p.h>
 #pragma GCC diagnostic pop
 
-#define TOUCHDISPATCHER_DEBUG 1
+#define TOUCHDISPATCHER_DEBUG 0
 
 #if TOUCHDISPATCHER_DEBUG
 #include <DebugHelpers.h>

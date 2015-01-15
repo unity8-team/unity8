@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ACTIVETOUCHESINFO_DEBUG 1
+#define ACTIVETOUCHESINFO_DEBUG 0
 #define DIRECTIONALDRAGAREA_DEBUG 1
 
 #include "DirectionalDragArea.h"
