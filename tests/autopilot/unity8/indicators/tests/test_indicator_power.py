@@ -107,7 +107,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         ]
 
         for percentage, expected_icon_name in percentages_and_icon_names:
-            self.fake_upower.SetDeviceProperty(battery_path, {
+            self.fake_upower.SetDeviceProperties(battery_path, {
                 'Percentage': dbus.Double(percentage, variant_level=1)
             })
             time.sleep(0.5)  # arbitrary interval for indicator to catch up
