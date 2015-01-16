@@ -16,15 +16,14 @@ class FakeUPower(object):
         dbusmock.DBusTestCase.start_system_bus()
         self.bus_address = os.environ['DBUS_SYSTEM_BUS_ADDRESS'].split(',')[0]
 
-        p_mock, obj_upower = dbusmock.DBusTestCase.spawn_server_template(
+        # start a mock upower service
+        upower_proxy = dbusmock.DBusTestCase.spawn_server_template(
             'upower',
             {'OnBattery': True, 'HibernateAllowed': False},
             stdout=subprocess.PIPE
-        )
-        mock_interface = dbus.Interface(obj_upower, dbusmock.MOCK_IFACE)
-        bus = dbus.bus.BusConnection(self.bus_address)
-        bus.get_object('org.freedesktop.UPower', '/org/freedesktop/UPower')
-        return mock_interface
+        )[1]
+
+        return upower_proxy
 
     def stop(self):
         dbusmock.DBusTestCase.tearDownClass()
