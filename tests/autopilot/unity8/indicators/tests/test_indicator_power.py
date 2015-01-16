@@ -8,25 +8,21 @@ import dbusmock
 from unity8.indicators.tests import IndicatorTestCase
 
 
-def get_fake_system_bus_address():
-    """Return dbusmock's fake system bus address."""
-    bus_address_string = os.environ['DBUS_SYSTEM_BUS_ADDRESS']
-    # looks like:
-    # unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995  # NOQA
-    return bus_address_string.split(',')[0]
-
-
 class FakeUPower(object):
 
     def start(self):
+        # start a fake system bus with dbusmock and get its address,
+        # which looks like "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
         dbusmock.DBusTestCase.start_system_bus()
+        self.bus_address = os.environ['DBUS_SYSTEM_BUS_ADDRESS'].split(',')[0]
+
         p_mock, obj_upower = dbusmock.DBusTestCase.spawn_server_template(
             'upower',
             {'OnBattery': True, 'HibernateAllowed': False},
             stdout=subprocess.PIPE
         )
         mock_interface = dbus.Interface(obj_upower, dbusmock.MOCK_IFACE)
-        bus = dbus.bus.BusConnection(get_fake_system_bus_address())
+        bus = dbus.bus.BusConnection(self.bus_address)
         bus.get_object('org.freedesktop.UPower', '/org/freedesktop/UPower')
         return mock_interface
 
@@ -57,6 +53,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         super(IndicatorPowerTestCase, self).setUp()
         fake_upower_bus = FakeUPower()
         self.fake_upower = fake_upower_bus.start()
+        self.fake_upower_address = fake_upower_bus.bus_address
         self.addCleanup(fake_upower_bus.stop)
         self.restart_indicator_power_listening_to_fake_bus()
         # restart the indicator listening to the authentic UPower bus
@@ -71,7 +68,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         """
         self.initctl_set_env(
             'INDICATOR_POWER_BUS_ADDRESS_UPOWER',
-            get_fake_system_bus_address()
+            self.fake_upower_address
         )
         self.initctl_restart('indicator-power')
         # wait for the indicator to show up
