@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-11 00:31+0100\n"
-"PO-Revision-Date: 2014-11-09 09:40+0000\n"
-"Last-Translator: Paco Molinero <paco@byasl.com>\n"
+"PO-Revision-Date: 2015-01-16 04:44+0000\n"
+"Last-Translator: Adolfo Jayme <fitoschido@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-12-04 06:36+0000\n"
-"X-Generator: Launchpad (build 17274)\n"
+"X-Launchpad-Export-Date: 2015-01-16 06:21+0000\n"
+"X-Generator: Launchpad (build 17303)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
@@ -75,7 +75,7 @@ msgstr "Etiquetas"
 
 #: src/app/qml/reminders.qml:330
 msgid "Reconnect"
-msgstr ""
+msgstr "Reconectar"
 
 #: src/app/qml/reminders.qml:354
 msgid ""
@@ -92,7 +92,7 @@ msgstr "No hay cuentas disponibles"
 #: src/app/qml/reminders.qml:392
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
-"Por favor, cree una cuenta de Evernote en Configuración y autorícela."
+"Añada y autorice una cuenta de Evernote en Configuración del sistema."
 
 #: src/app/qml/reminders.qml:412
 msgid "Add account"
@@ -122,31 +122,31 @@ msgstr "Sin título"
 
 #: src/app/qml/ui/EditNoteView.qml:406
 msgid "Font"
-msgstr ""
+msgstr "Tipo de letra"
 
 #: src/app/qml/ui/EditNoteView.qml:417
 msgid "Size"
-msgstr ""
+msgstr "Tamaño"
 
 #. TRANSLATORS: Toolbar button for "Bold"
 #: src/app/qml/ui/EditNoteView.qml:438
 msgid "B"
-msgstr ""
+msgstr "N"
 
 #. TRANSLATORS: Toolbar button for "Italic"
 #: src/app/qml/ui/EditNoteView.qml:451
 msgid "I"
-msgstr ""
+msgstr "K"
 
 #. TRANSLATORS: Toolbar button for "Underline"
 #: src/app/qml/ui/EditNoteView.qml:465
 msgid "U"
-msgstr ""
+msgstr "S"
 
 #. TRANSLATORS: Toolbar button for "Strikeout"
 #: src/app/qml/ui/EditNoteView.qml:479
 msgid "T"
-msgstr ""
+msgstr "T"
 
 #: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
@@ -206,7 +206,7 @@ msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
-"No hay recordatorios. Puede crear nuevos recordatorios durante la edición de "
+"No hay recordatorios. Puede crear recordatorios durante la visualización de "
 "una nota."
 
 #: src/app/qml/ui/SearchNotesPage.qml:30
@@ -224,52 +224,60 @@ msgstr ""
 
 #: src/libqtevernote/evernoteconnection.cpp:234
 msgid "Error connecting to Evernote: Please check network connection."
-msgstr ""
+msgstr "Error al conectar con Evernote: compruebe la conexión de red."
 
 #: src/libqtevernote/evernoteconnection.cpp:239
 msgid "Unknown error connecting to Evernote."
-msgstr ""
+msgstr "Error desconocido al conectar con Evernote."
 
 #: src/libqtevernote/evernoteconnection.cpp:252
 msgid ""
 "Error connecting to Evernote: Server version does not match app version. "
 "Please update the application."
 msgstr ""
+"Error al conectar con Evernote: la versión del servidor no coincide con la "
+"de la aplicación. Actualícela."
 
 #: src/libqtevernote/evernoteconnection.cpp:258
 #: src/libqtevernote/evernoteconnection.cpp:263
 #, qt-format
 msgid "Error connecting to Evernote: Error code %1"
-msgstr ""
+msgstr "Error al conectar con Evernote: código de error %1"
 
 #: src/libqtevernote/evernoteconnection.cpp:268
 msgid ""
 "Error connecting to Evernote: Cannot download version information from "
 "server."
 msgstr ""
+"Error al conectar con Evernote: no se puede descargar información de versión "
+"desde el servidor."
 
 #: src/libqtevernote/evernoteconnection.cpp:273
 #: src/libqtevernote/evernoteconnection.cpp:298
 msgid "Unknown error connecting to Evernote"
-msgstr ""
+msgstr "Error desconocido al conectar con Evernote"
 
 #: src/libqtevernote/evernoteconnection.cpp:287
 msgid "Error connecting to Evernote: Cannot download server information."
 msgstr ""
+"Error al conectar con Evernote: no se puede descargar información del "
+"servidor."
 
 #: src/libqtevernote/evernoteconnection.cpp:293
 msgid ""
 "Error connecting to Evernote: Connection failure when downloading server "
 "information."
 msgstr ""
+"Error al conectar con Evernote: falló la conexión al descargar información "
+"del servidor."
 
 #: src/libqtevernote/evernoteconnection.cpp:319
 msgid "Error connecting to Evernote: Connection failure"
-msgstr ""
+msgstr "Error al conectar con Evernote: falló la conexión"
 
 #: src/libqtevernote/evernoteconnection.cpp:323
 msgid "Unknown Error connecting to Evernote"
-msgstr ""
+msgstr "Error desconocido al conectar con Evernote"
 
 #: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
