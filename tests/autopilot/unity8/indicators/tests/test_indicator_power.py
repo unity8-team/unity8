@@ -1,4 +1,5 @@
 
+import dbus
 import os
 import subprocess
 
@@ -68,13 +69,15 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             'INDICATOR_POWER_BUS_ADDRESS_UPOWER',
             self.fake_upower_address
         )
-        self.initctl_restart('indicator-power')
-        # wait for the indicator to show up
-        self.main_window.wait_select_single(
-            objectName='indicator-power-widget'
-        )
-        # de-pollute initctl env
-        self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
+        try:
+            self.initctl_restart('indicator-power')
+            # wait for the indicator to show up
+            self.main_window.wait_select_single(
+                objectName='indicator-power-widget'
+            )
+        finally:
+            # de-pollute initctl env
+            self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
     def test_discharging_battery(self):
         """Battery icon must match UPower-reported level."""
