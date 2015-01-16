@@ -1,5 +1,4 @@
 
-import dbus
 import os
 import subprocess
 
@@ -11,8 +10,8 @@ from unity8.indicators.tests import IndicatorTestCase
 class FakeUPower(object):
 
     def start(self):
-        # start a fake system bus with dbusmock and get its address,
-        # which looks like "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
+        # start a dbusmock system bus and get its address, which looks like
+        # "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
         dbusmock.DBusTestCase.start_system_bus()
         self.bus_address = os.environ['DBUS_SYSTEM_BUS_ADDRESS'].split(',')[0]
 
