@@ -2,6 +2,7 @@
 import dbus
 import os
 import subprocess
+import time
 
 import dbusmock
 
@@ -80,13 +81,35 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
     def test_discharging_battery(self):
-        """Battery icon must match UPower-reported level."""
-        self.fake_upower.AddDischargingBattery(
+        """Test the icon as the battery drains."""
+
+        battery_path = self.fake_upower.AddDischargingBattery(
             'mock_BAT',
             'Mock Battery',
             30.0,
             1200
         )
-        correct_icon_name = 'battery-040'
+
         indicator = Indicator(self.main_window, 'indicator-power-widget')
-        self.assertTrue(indicator.icon_matches(correct_icon_name))
+
+        percentages_and_expected_icon_names = [
+            ( 100.0, 'battery-100' ), (  95.0, 'battery-100' ),
+            (  90.0, 'battery-100' ), (  85.0, 'battery-080' ),
+            (  80.0, 'battery-080' ), (  75.0, 'battery-080' ),
+            (  70.0, 'battery-080' ), (  65.0, 'battery-060' ),
+            (  60.0, 'battery-060' ), (  55.0, 'battery-060' ),
+            (  50.0, 'battery-060' ), (  45.0, 'battery-040' ),
+            (  40.0, 'battery-040' ), (  35.0, 'battery-040' ),
+            (  30.0, 'battery-040' ), (  25.0, 'battery-020' ),
+            (  20.0, 'battery-020' ), (  15.0, 'battery-020' ),
+            (  10.0, 'battery-020' ), (   5.0, 'battery-000' ),
+            (   0.0, 'battery-000' )
+        ]
+
+        for percentage, expected_icon_name in percentages_and_expected_icon_names:
+            self.fake_upower.SetDeviceProperty(battery_path, {
+                'Percentage': dbus.Double(percentage, variant_level=1)
+            })
+            time.sleep(0.5) # arbitrary wait interval for indicator to catch up
+            self.assertTrue(indicator.icon_matches(expected_icon_name))
+
