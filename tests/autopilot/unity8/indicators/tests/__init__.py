@@ -18,6 +18,7 @@
 
 
 import os
+import subprocess
 
 from autopilot import platform
 
@@ -36,3 +37,23 @@ class IndicatorTestCase(UnityTestCase):
         super(IndicatorTestCase, self).setUp()
         self.unity_proxy = self.launch_unity()
         unlock_unity(self.unity_proxy)
+
+    @staticmethod
+    def initctl_set_env(variable, value):
+        """initctl set-env to set the environmnent variable to given value."""
+        subprocess.call(
+            ['initctl', 'set-env', '-g', '{}={}'.format(variable, value)]
+        )
+
+    @staticmethod
+    def initctl_unset_env(variable):
+        """initctl unset-env to unset the environmnent variable."""
+        subprocess.call(
+            ['initctl', 'unset-env', '-g', '{}'.format(variable)]
+        )
+
+    @staticmethod
+    def initctl_restart(service_name):
+        """initctl restart service of given name."""
+        subprocess.call(['initctl', 'restart', service_name])
+

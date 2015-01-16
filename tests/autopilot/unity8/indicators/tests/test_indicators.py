@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from autopilot import platform
 from testscenarios import multiply_scenarios
 
-from unity8.indicators import IndicatorTestCase
+from unity8.indicators.tests import IndicatorTestCase
 
 
 class IndicatorExistsTestCase(IndicatorTestCase):
