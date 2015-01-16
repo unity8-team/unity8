@@ -31,13 +31,8 @@ class FakeUPower(object):
         return mock_interface
 
     def stop(self):
-        # This feels icky but no public accessors are available.
-        if dbusmock.DBusTestCase.system_bus_pid is not None:
-            dbusmock.DBusTestCase.stop_dbus(
-                dbusmock.DBusTestCase.system_bus_pid
-            )
-            del os.environ['DBUS_SYSTEM_BUS_ADDRESS']
-            dbusmock.DBusTestCase.system_bus_pid = None
+        dbusmock.DBusTestCase.tearDownClass()
+        self.bus_address = None
 
 
 class Indicator(object):
