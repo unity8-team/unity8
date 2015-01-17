@@ -49,6 +49,30 @@ class Indicator(object):
 
 class IndicatorPowerTestCase(IndicatorTestCase):
 
+    scenarios = [
+        ('100.0', {'percentage': 100.0, 'icon_name': 'battery-100'}),
+        ('95.0', {'percentage': 95.0, 'icon_name': 'battery-100'}),
+        ('90.0', {'percentage': 90.0, 'icon_name': 'battery-100'}),
+        ('85.0', {'percentage': 85.0, 'icon_name': 'battery-080'}),
+        ('80.0', {'percentage': 80.0, 'icon_name': 'battery-080'}),
+        ('75.0', {'percentage': 75.0, 'icon_name': 'battery-080'}),
+        ('70.0', {'percentage': 70.0, 'icon_name': 'battery-080'}),
+        ('65.0', {'percentage': 65.0, 'icon_name': 'battery-060'}),
+        ('60.0', {'percentage': 60.0, 'icon_name': 'battery-060'}),
+        ('55.0', {'percentage': 55.0, 'icon_name': 'battery-060'}),
+        ('50.0', {'percentage': 50.0, 'icon_name': 'battery-060'}),
+        ('45.0', {'percentage': 45.0, 'icon_name': 'battery-040'}),
+        ('40.0', {'percentage': 40.0, 'icon_name': 'battery-040'}),
+        ('35.0', {'percentage': 35.0, 'icon_name': 'battery-040'}),
+        ('30.0', {'percentage': 30.0, 'icon_name': 'battery-040'}),
+        ('25.0', {'percentage': 25.0, 'icon_name': 'battery-020'}),
+        ('20.0', {'percentage': 20.0, 'icon_name': 'battery-020'}),
+        ('15.0', {'percentage': 15.0, 'icon_name': 'battery-020'}),
+        ('10.0', {'percentage': 10.0, 'icon_name': 'battery-020'}),
+        ('5.0', {'percentage': 5.0, 'icon_name': 'battery-000'}),
+        ('0.0', {'percentage': 0.0, 'icon_name': 'battery-000'}),
+    ]
+
     def setUp(self):
         super(IndicatorPowerTestCase, self).setUp()
         fake_upower_bus = FakeUPower()
@@ -91,24 +115,8 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         )
 
         indicator = Indicator(self.main_window, 'indicator-power-widget')
-
-        percentages_and_icon_names = [
-            (100.0, 'battery-100'), (95.0, 'battery-100'),
-            (90.0, 'battery-100'), (85.0, 'battery-080'),
-            (80.0, 'battery-080'), (75.0, 'battery-080'),
-            (70.0, 'battery-080'), (65.0, 'battery-060'),
-            (60.0, 'battery-060'), (55.0, 'battery-060'),
-            (50.0, 'battery-060'), (45.0, 'battery-040'),
-            (40.0, 'battery-040'), (35.0, 'battery-040'),
-            (30.0, 'battery-040'), (25.0, 'battery-020'),
-            (20.0, 'battery-020'), (15.0, 'battery-020'),
-            (10.0, 'battery-020'), (5.0, 'battery-000'),
-            (0.0, 'battery-000')
-        ]
-
-        for percentage, expected_icon_name in percentages_and_icon_names:
-            self.fake_upower.SetDeviceProperties(battery_path, {
-                'Percentage': dbus.Double(percentage, variant_level=1)
-            })
-            time.sleep(0.5)  # arbitrary interval for indicator to catch up
-            self.assertTrue(indicator.icon_matches(expected_icon_name))
+        self.fake_upower.SetDeviceProperties(battery_path, {
+            'Percentage': dbus.Double(self.percentage, variant_level=1)
+        })
+        time.sleep(0.5)  # arbitrary interval for indicator to catch up
+        self.assertTrue(indicator.icon_matches(self.icon_name))
