@@ -2,7 +2,6 @@
 import dbus
 import os
 import subprocess
-import time
 
 import dbusmock
 
@@ -118,5 +117,4 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         self.fake_upower.SetDeviceProperties(battery_path, {
             'Percentage': dbus.Double(self.percentage, variant_level=1)
         })
-        time.sleep(0.5)  # arbitrary interval for indicator to catch up
         self.assertTrue(indicator.icon_matches(self.icon_name))
