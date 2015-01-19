@@ -322,7 +322,7 @@ Item {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
-        anchors { fill: parent; topMargin: panel.indicators.minimizedPanelHeight }
+        anchors { fill: parent; topMargin: panel.fullscreenMode ? 0 : panel.indicators.minimizedPanelHeight }
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
