@@ -364,10 +364,10 @@ Item {
         enabled: true
         showAnimation: StandardAnimation { property: "opacity"; to: 1 }
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
-        y: panel.panelHeight
+        y: panel.indicators.minimizedPanelHeight
         visible: required
         width: parent.width
-        height: parent.height - panel.panelHeight
+        height: parent.height - y
         background: shell.background
         darkenBackground: 0.4
         alphaNumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
