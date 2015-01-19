@@ -60,6 +60,9 @@ Showable {
     // 0: normal background, 1: black background
     property real darkenBackground: 0
 
+    // Set top margin for content in case panel occludes it
+    property real contentTopMargin: 0
+
     readonly property string passphrase: (pinPadLoader.item && pinPadLoader.item.passphrase) ? pinPadLoader.item.passphrase : ""
 
     signal entered(string passphrase)
@@ -84,7 +87,7 @@ Showable {
     }
 
     function showInfoPopup(title, text) {
-        var popup = PopupUtils.open(infoPopupComponent, root, {title: title, text: text})
+        var popup = PopupUtils.open(infoPopupComponent, loaderScope, {title: title, text: text})
         // FIXME: SDK will do this internally soonish
         popup.z = Number.MAX_VALUE
     }
@@ -130,6 +133,7 @@ Showable {
     FocusScope {
         id: loaderScope
         anchors.fill: parent
+        anchors.topMargin: root.contentTopMargin
 
         Loader {
             id: pinPadLoader
@@ -250,10 +254,7 @@ Showable {
         }
 
         MouseArea {
-            anchors.top: emergencyCallLabel.top
-            anchors.bottom: emergencyCallLabel.bottom
-            anchors.left: emergencyCallLabel.left
-            anchors.right: emergencyCallIcon.right
+            anchors.fill: emergencyCallLabel
             onClicked: root.emergencyCall()
         }
     }

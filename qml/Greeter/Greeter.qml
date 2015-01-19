@@ -25,6 +25,9 @@ Showable {
     enabled: shown
     created: greeterContentLoader.status == Loader.Ready && greeterContentLoader.item.ready
 
+    // Set top margin for content in case panel occludes it
+    property real contentTopMargin: 0
+
     property real dragHandleLeftMargin: 0
     property alias dragging: dragHandle.dragging
 
@@ -82,6 +85,7 @@ Showable {
         id: greeterContentLoader
         objectName: "greeterContentLoader"
         anchors.fill: parent
+        anchors.topMargin: greeter.contentTopMargin
         property var model: LightDM.Users
         property int currentIndex: 0
         property var infographicModel: LightDM.Infographic
@@ -106,8 +110,11 @@ Showable {
 
     DragHandle {
         id: dragHandle
-        anchors.fill: parent
-        anchors.leftMargin: greeter.dragHandleLeftMargin
+        anchors {
+            fill: parent
+            leftMargin: greeter.dragHandleLeftMargin
+            topMargin: greeter.contentTopMargin
+        }
         enabled: (greeter.narrowMode || !greeter.locked) && greeter.enabled && greeter.shown
         direction: Direction.Horizontal
 

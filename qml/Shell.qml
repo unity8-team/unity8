@@ -322,7 +322,7 @@ Item {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
-        anchors { fill: parent; topMargin: panel.panelHeight }
+        anchors { fill: parent; topMargin: panel.indicators.minimizedPanelHeight }
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
@@ -364,15 +364,15 @@ Item {
         enabled: true
         showAnimation: StandardAnimation { property: "opacity"; to: 1 }
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
-        y: panel.indicators.minimizedPanelHeight
         visible: required
         width: parent.width
-        height: parent.height - y
+        height: parent.height
         background: shell.background
         darkenBackground: 0.4
         alphaNumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
         minPinLength: 4
         maxPinLength: 4
+        contentTopMargin: panel.indicators.minimizedPanelHeight
 
         property string promptText
         infoText: promptText !== "" ? i18n.tr("Enter %1").arg(promptText) :
@@ -563,7 +563,7 @@ Item {
 
             width: parent.width
             height: parent.height
-
+            contentTopMargin: panel.indicators.minimizedPanelHeight
 
             // avoid overlapping with Launcher's edge drag area
             // FIXME: Fix TouchRegistry & friends and remove this workaround
