@@ -39,30 +39,9 @@ class IndicatorTestCase(UnityTestCase):
         unlock_unity(self.unity_proxy)
 
     @staticmethod
-    def initctl_set_env(variable, value):
-        """initctl set-env to set the environmnent variable to given value."""
-        return subprocess.check_call(
-            ['initctl', 'set-env', '-g', '{}={}'.format(variable, value)]
-        )
-
-    @staticmethod
-    def initctl_unset_env(variable):
-        """initctl unset-env to unset the environmnent variable."""
-        return subprocess.check_call(
-            ['initctl', 'unset-env', '-g', '{}'.format(variable)]
-        )
-
-    @staticmethod
-    def initctl_get_env(variable):
-        """initctl get-env to get the environmnent variable."""
-        return subprocess.check_output(
-            ['initctl', 'get-env', '-g', '{}'.format(variable)]
-        ).strip().decode('utf-8')
-
-    @staticmethod
-    def initctl_restart(service_name):
+    def initctl_restart(service_name, args=[]):
         """initctl restart service of given name."""
-        try:
-            subprocess.check_call(['initctl', 'start', service_name])
-        except subprocess.CalledProcessError:
-            subprocess.check_call(['initctl', 'restart', service_name])
+        # nb: since we're trying to change the job's configuratoin,
+        # we must stop + start here, rather than "initctl restart"
+        subprocess.check_call(['initctl', 'stop', service_name])
+        subprocess.check_call(['initctl', 'start', service_name] + args)

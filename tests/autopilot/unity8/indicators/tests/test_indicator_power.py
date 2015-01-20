@@ -22,6 +22,7 @@ class FakeUPower(object):
             )
         except KeyError:
             pass
+
         # start a dbusmock system bus and get its address, which looks like
         # "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
         dbusmock.DBusTestCase.start_system_bus()
@@ -85,40 +86,25 @@ class IndicatorPowerTestCase(IndicatorTestCase):
 
     def setUp(self):
         super(IndicatorPowerTestCase, self).setUp()
+
+        # star the mock dbus for upower
         fake_upower_bus = FakeUPower()
         self.fake_upower = fake_upower_bus.start()
-        self.fake_upower_address = fake_upower_bus.bus_address
         self.addCleanup(fake_upower_bus.stop)
-        self.restart_indicator_power_listening_to_fake_bus()
-        # restart the indicator listening to the authentic UPower bus
+        address = fake_upower_bus.bus_address
+
+        # restart indicator-power with the mock env variables, then
+        # add a cleanup task to restart a clean copy when we're done.
+        self.initctl_restart(
+            'indicator-power',
+            ['INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(address)]
+        )
         self.addCleanup(self.initctl_restart, 'indicator-power')
 
-    def restart_indicator_power_listening_to_fake_bus(self):
-        """Restart indicator-power listening to fake bus.
-
-        Set the upstart initctl environment and initctl restart
-        indicator-power, unsetting the env.
-
-        """
-        self.initctl_set_env(
-            'INDICATOR_POWER_BUS_ADDRESS_UPOWER',
-            self.fake_upower_address
+        # wait for the indicator to show up in the panel
+        self.main_window.wait_select_single(
+            objectName='indicator-power-widget'
         )
-        try:
-            self.assertEqual(
-                self.fake_upower_address,
-                self.initctl_get_env(
-                    'INDICATOR_POWER_BUS_ADDRESS_UPOWER'
-                ),
-            )
-            self.initctl_restart('indicator-power')
-            # wait for the indicator to show up
-            self.main_window.wait_select_single(
-                objectName='indicator-power-widget'
-            )
-        finally:
-            # de-pollute initctl env
-            self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
     def test_discharging_battery(self):
         """Test the icon as the battery drains."""
