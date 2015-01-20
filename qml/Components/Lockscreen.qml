@@ -103,9 +103,8 @@ Showable {
     Image {
         id: backgroundImage
         objectName: "lockscreenBackground"
-        anchors {
-            fill: parent
-        }
+        anchors.fill: parent
+
         // Limit how much memory we'll reserve for this image
         sourceSize.height: height
         sourceSize.width: width

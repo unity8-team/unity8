@@ -366,7 +366,7 @@ Item {
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
         visible: required
         width: parent.width
-        height: parent.height
+        anchors { top: parent.top; bottom: parent.bottom; }
         background: shell.background
         darkenBackground: 0.4
         alphaNumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
@@ -562,7 +562,7 @@ Item {
             background: shell.background
 
             width: parent.width
-            height: parent.height
+            anchors { top: parent.top; bottom: parent.bottom; }
             contentTopMargin: panel.indicators.minimizedPanelHeight
 
             // avoid overlapping with Launcher's edge drag area
