@@ -93,13 +93,11 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         self.addCleanup(fake_upower_bus.stop)
         address = fake_upower_bus.bus_address
 
-        # restart indicator-power with the mock env variables, then
-        # add a cleanup task to restart a clean copy when we're done.
-        self.initctl_restart(
+        # restart indicator-power with the mock env variables
+        self.restart_service(
             'indicator-power',
             ['INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(address)]
         )
-        self.addCleanup(self.initctl_restart, 'indicator-power')
 
         # wait for the indicator to show up in the panel
         self.main_window.wait_select_single(

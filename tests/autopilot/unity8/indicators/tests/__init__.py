@@ -28,6 +28,8 @@ from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
 class IndicatorTestCase(UnityTestCase):
 
+    __dirty_services = set()
+
     device_emulation_scenarios = _get_device_emulation_scenarios()
 
     def setUp(self):
@@ -38,8 +40,18 @@ class IndicatorTestCase(UnityTestCase):
         self.unity_proxy = self.launch_unity()
         unlock_unity(self.unity_proxy)
 
+    def restart_service(self, service_name, args):
+        """restarts a service with the specified args
+           and ensures there's a cleanup task to restart it sans args"""
+        try:
+            self.__initctl_restart(service_name, args)
+        finally:
+            if service_name not in self.__dirty_services:
+                self.__dirty_services.add(service_name)
+                self.addCleanup(self.__initctl_restart, service_name)
+
     @staticmethod
-    def initctl_restart(service_name, args=[]):
+    def __initctl_restart(service_name, args=[]):
         """initctl restart service of given name."""
         # nb: since we're trying to change the job's configuratoin,
         # we must stop + start here, rather than "initctl restart"
