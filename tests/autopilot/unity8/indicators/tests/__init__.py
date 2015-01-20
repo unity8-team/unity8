@@ -55,9 +55,9 @@ class IndicatorTestCase(UnityTestCase):
     @staticmethod
     def initctl_get_env(variable):
         """initctl get-env to get the environmnent variable."""
-        return subprocess.check_call(
+        return subprocess.check_output(
             ['initctl', 'get-env', '-g', '{}'.format(variable)]
-        )
+        ).strip().decode('utf-8')
 
     @staticmethod
     def initctl_restart(service_name):

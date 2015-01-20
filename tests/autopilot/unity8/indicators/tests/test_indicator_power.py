@@ -96,14 +96,18 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             self.fake_upower_address
         )
         try:
-            print('BUS ADDRESS: {}'.format(self.initctl_get_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')))
+            self.assertEqual(
+                self.fake_upower_address,
+                self.initctl_get_env(
+                    'INDICATOR_POWER_BUS_ADDRESS_UPOWER'
+                ),
+            )
             self.initctl_restart('indicator-power')
             # wait for the indicator to show up
             self.main_window.wait_select_single(
                 objectName='indicator-power-widget'
             )
         finally:
-            print('BUS ADDRESS: {}'.format(self.initctl_get_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')))
             # de-pollute initctl env
             self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
