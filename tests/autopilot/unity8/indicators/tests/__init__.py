@@ -62,5 +62,7 @@ class IndicatorTestCase(UnityTestCase):
     @staticmethod
     def initctl_restart(service_name):
         """initctl restart service of given name."""
-        return subprocess.check_call(['initctl', 'restart', service_name])
-
+        try:
+            subprocess.check_call(['initctl', 'start', service_name])
+        except subprocess.CalledProcessError:
+            subprocess.check_call(['initctl', 'restart', service_name])
