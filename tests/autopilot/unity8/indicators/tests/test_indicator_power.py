@@ -2,6 +2,7 @@
 import dbus
 import os
 import subprocess
+import time
 
 import dbusmock
 
@@ -23,6 +24,7 @@ class FakeUPower(object):
             stdout=subprocess.PIPE
         )[1]
 
+        time.sleep(3)
         return upower_proxy
 
     def stop(self):
@@ -50,26 +52,26 @@ class IndicatorPowerTestCase(IndicatorTestCase):
 
     scenarios = [
         ('100.0', {'percentage': 100.0, 'icon_name': 'battery-100'}),
-        ('95.0', {'percentage': 95.0, 'icon_name': 'battery-100'}),
-        ('90.0', {'percentage': 90.0, 'icon_name': 'battery-100'}),
-        ('85.0', {'percentage': 85.0, 'icon_name': 'battery-080'}),
-        ('80.0', {'percentage': 80.0, 'icon_name': 'battery-080'}),
-        ('75.0', {'percentage': 75.0, 'icon_name': 'battery-080'}),
-        ('70.0', {'percentage': 70.0, 'icon_name': 'battery-080'}),
-        ('65.0', {'percentage': 65.0, 'icon_name': 'battery-060'}),
-        ('60.0', {'percentage': 60.0, 'icon_name': 'battery-060'}),
-        ('55.0', {'percentage': 55.0, 'icon_name': 'battery-060'}),
-        ('50.0', {'percentage': 50.0, 'icon_name': 'battery-060'}),
-        ('45.0', {'percentage': 45.0, 'icon_name': 'battery-040'}),
-        ('40.0', {'percentage': 40.0, 'icon_name': 'battery-040'}),
-        ('35.0', {'percentage': 35.0, 'icon_name': 'battery-040'}),
-        ('30.0', {'percentage': 30.0, 'icon_name': 'battery-040'}),
-        ('25.0', {'percentage': 25.0, 'icon_name': 'battery-020'}),
-        ('20.0', {'percentage': 20.0, 'icon_name': 'battery-020'}),
-        ('15.0', {'percentage': 15.0, 'icon_name': 'battery-020'}),
-        ('10.0', {'percentage': 10.0, 'icon_name': 'battery-020'}),
-        ('5.0', {'percentage': 5.0, 'icon_name': 'battery-000'}),
-        ('0.0', {'percentage': 0.0, 'icon_name': 'battery-000'}),
+        # ('95.0', {'percentage': 95.0, 'icon_name': 'battery-100'}),
+        # ('90.0', {'percentage': 90.0, 'icon_name': 'battery-100'}),
+        # ('85.0', {'percentage': 85.0, 'icon_name': 'battery-080'}),
+        # ('80.0', {'percentage': 80.0, 'icon_name': 'battery-080'}),
+        # ('75.0', {'percentage': 75.0, 'icon_name': 'battery-080'}),
+        # ('70.0', {'percentage': 70.0, 'icon_name': 'battery-080'}),
+        # ('65.0', {'percentage': 65.0, 'icon_name': 'battery-060'}),
+        # ('60.0', {'percentage': 60.0, 'icon_name': 'battery-060'}),
+        # ('55.0', {'percentage': 55.0, 'icon_name': 'battery-060'}),
+        # ('50.0', {'percentage': 50.0, 'icon_name': 'battery-060'}),
+        # ('45.0', {'percentage': 45.0, 'icon_name': 'battery-040'}),
+        # ('40.0', {'percentage': 40.0, 'icon_name': 'battery-040'}),
+        # ('35.0', {'percentage': 35.0, 'icon_name': 'battery-040'}),
+        # ('30.0', {'percentage': 30.0, 'icon_name': 'battery-040'}),
+        # ('25.0', {'percentage': 25.0, 'icon_name': 'battery-020'}),
+        # ('20.0', {'percentage': 20.0, 'icon_name': 'battery-020'}),
+        # ('15.0', {'percentage': 15.0, 'icon_name': 'battery-020'}),
+        # ('10.0', {'percentage': 10.0, 'icon_name': 'battery-020'}),
+        # ('5.0', {'percentage': 5.0, 'icon_name': 'battery-000'}),
+        # ('0.0', {'percentage': 0.0, 'icon_name': 'battery-000'}),
     ]
 
     def setUp(self):
@@ -94,12 +96,14 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             self.fake_upower_address
         )
         try:
+            print('BUS ADDRESS: {}'.format(self.initctl_get_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')))
             self.initctl_restart('indicator-power')
             # wait for the indicator to show up
             self.main_window.wait_select_single(
                 objectName='indicator-power-widget'
             )
         finally:
+            print('BUS ADDRESS: {}'.format(self.initctl_get_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')))
             # de-pollute initctl env
             self.initctl_unset_env('INDICATOR_POWER_BUS_ADDRESS_UPOWER')
 
