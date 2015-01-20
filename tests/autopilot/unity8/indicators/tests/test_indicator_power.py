@@ -2,16 +2,26 @@
 import dbus
 import os
 import subprocess
-import time
 
 import dbusmock
 
 from unity8.indicators.tests import IndicatorTestCase
 
 
+class FakeUPowerException(Exception):
+    pass
+
+
 class FakeUPower(object):
 
     def start(self):
+        try:
+            os.environ['DBUS_SYSTEM_BUS_ADDRESS']
+            raise FakeUPowerException(
+                'DBUS_SYSTEM_BUS_ADDRESS exists before start.'
+            )
+        except KeyError:
+            pass
         # start a dbusmock system bus and get its address, which looks like
         # "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
         dbusmock.DBusTestCase.start_system_bus()
@@ -24,7 +34,6 @@ class FakeUPower(object):
             stdout=subprocess.PIPE
         )[1]
 
-        time.sleep(3)
         return upower_proxy
 
     def stop(self):
