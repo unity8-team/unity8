@@ -2,6 +2,7 @@
 import dbus
 import os
 import subprocess
+import time
 
 import dbusmock
 
@@ -50,30 +51,6 @@ class Indicator(object):
 
 class IndicatorPowerTestCase(IndicatorTestCase):
 
-    scenarios = [
-        ('100.0', {'percentage': 100.0, 'icon_name': 'battery-100'}),
-        ('95.0', {'percentage': 95.0, 'icon_name': 'battery-100'}),
-        ('90.0', {'percentage': 90.0, 'icon_name': 'battery-100'}),
-        ('85.0', {'percentage': 85.0, 'icon_name': 'battery-080'}),
-        ('80.0', {'percentage': 80.0, 'icon_name': 'battery-080'}),
-        ('75.0', {'percentage': 75.0, 'icon_name': 'battery-080'}),
-        ('70.0', {'percentage': 70.0, 'icon_name': 'battery-080'}),
-        ('65.0', {'percentage': 65.0, 'icon_name': 'battery-060'}),
-        ('60.0', {'percentage': 60.0, 'icon_name': 'battery-060'}),
-        ('55.0', {'percentage': 55.0, 'icon_name': 'battery-060'}),
-        ('50.0', {'percentage': 50.0, 'icon_name': 'battery-060'}),
-        ('45.0', {'percentage': 45.0, 'icon_name': 'battery-040'}),
-        ('40.0', {'percentage': 40.0, 'icon_name': 'battery-040'}),
-        ('35.0', {'percentage': 35.0, 'icon_name': 'battery-040'}),
-        ('30.0', {'percentage': 30.0, 'icon_name': 'battery-040'}),
-        ('25.0', {'percentage': 25.0, 'icon_name': 'battery-020'}),
-        ('20.0', {'percentage': 20.0, 'icon_name': 'battery-020'}),
-        ('15.0', {'percentage': 15.0, 'icon_name': 'battery-020'}),
-        ('10.0', {'percentage': 10.0, 'icon_name': 'battery-020'}),
-        ('5.0', {'percentage': 5.0, 'icon_name': 'battery-000'}),
-        ('0.0', {'percentage': 0.0, 'icon_name': 'battery-000'}),
-    ]
-
     def setUp(self):
         super().setUp()
 
@@ -99,6 +76,32 @@ class IndicatorPowerTestCase(IndicatorTestCase):
 
     def test_discharging_battery(self):
         """Test the icon as the battery drains."""
+
+        # tuples of battery states + expected outcomes for those states
+        steps = [
+            ({'Percentage': 100.0}, {'icon_name': 'battery-100'}),
+            ({'Percentage': 95.0}, {'icon_name': 'battery-100'}),
+            ({'Percentage': 90.0}, {'icon_name': 'battery-100'}),
+            ({'Percentage': 85.0}, {'icon_name': 'battery-080'}),
+            ({'Percentage': 80.0}, {'icon_name': 'battery-080'}),
+            ({'Percentage': 75.0}, {'icon_name': 'battery-080'}),
+            ({'Percentage': 70.0}, {'icon_name': 'battery-080'}),
+            ({'Percentage': 65.0}, {'icon_name': 'battery-060'}),
+            ({'Percentage': 60.0}, {'icon_name': 'battery-060'}),
+            ({'Percentage': 55.0}, {'icon_name': 'battery-060'}),
+            ({'Percentage': 50.0}, {'icon_name': 'battery-060'}),
+            ({'Percentage': 45.0}, {'icon_name': 'battery-040'}),
+            ({'Percentage': 40.0}, {'icon_name': 'battery-040'}),
+            ({'Percentage': 35.0}, {'icon_name': 'battery-040'}),
+            ({'Percentage': 30.0}, {'icon_name': 'battery-040'}),
+            ({'Percentage': 25.0}, {'icon_name': 'battery-020'}),
+            ({'Percentage': 20.0}, {'icon_name': 'battery-020'}),
+            ({'Percentage': 15.0}, {'icon_name': 'battery-020'}),
+            ({'Percentage': 10.0}, {'icon_name': 'battery-020'}),
+            ({'Percentage': 5.0}, {'icon_name': 'battery-000'}),
+            ({'Percentage': 0.0}, {'icon_name': 'battery-000'})
+        ]
+
         battery_path = self.fake_upower.AddDischargingBattery(
             'mock_BAT',
             'Mock Battery',
@@ -107,7 +110,9 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         )
 
         indicator = Indicator(self.main_window, 'indicator-power-widget')
-        self.fake_upower.SetDeviceProperties(battery_path, {
-            'Percentage': dbus.Double(self.percentage, variant_level=1)
-        })
-        self.assertTrue(indicator.icon_matches(self.icon_name))
+
+        for properties, expected in steps:
+            self.fake_upower.SetDeviceProperties(battery_path, properties);
+            # FIXME: sleep() is clumsy..
+            time.sleep(1);
+            self.assertTrue(indicator.icon_matches(expected['icon_name']))
