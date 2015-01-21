@@ -41,8 +41,10 @@ class IndicatorTestCase(UnityTestCase):
         unlock_unity(self.unity_proxy)
 
     def restart_service(self, service_name, args):
-        """restarts a service with the specified args
-           and ensures there's a cleanup task to restart it sans args"""
+        """
+        Restart a service with the specified args
+        and ensure there's a cleanup task to restart it w/o args.
+        """
         try:
             self.__initctl_restart(service_name, args)
         finally:
