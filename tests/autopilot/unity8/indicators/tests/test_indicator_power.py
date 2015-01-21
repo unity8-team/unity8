@@ -45,8 +45,7 @@ class Indicator(object):
             objectName=self.name
         )
         # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
-        self.observed_icon_string = widget.icons[0]
-        return icon_name in self.observed_icon_string
+        return icon_name in widget.icons[0]
 
 
 class IndicatorPowerTestCase(IndicatorTestCase):
