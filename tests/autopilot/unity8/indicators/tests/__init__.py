@@ -40,9 +40,10 @@ class IndicatorTestCase(UnityTestCase):
         unlock_unity(self.unity_proxy)
 
     def restart_service(self, service_name, args):
-        """
-        Restart a service with the specified args
-        and ensure there's a cleanup task to restart it w/o args.
+        """Restart a test copy of service_name with the specified args.
+
+        Adds a no-arguments restart to addCleanup() so that the system
+        can reset to a nontest version of the service when the tests finish.
         """
         try:
             self._initctl_restart(service_name, args)
@@ -53,7 +54,7 @@ class IndicatorTestCase(UnityTestCase):
 
     @staticmethod
     def _initctl_restart(service_name, args=[]):
-        """initctl restart service of given name."""
+        """Restart an upstart service; e.g. indicator-power-service"""
         # nb: since we're trying to change the job's configuratoin,
         # we must stop + start here, rather than "initctl restart"
         subprocess.check_call(['initctl', 'stop', service_name])
