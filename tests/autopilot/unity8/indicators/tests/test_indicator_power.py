@@ -36,7 +36,7 @@ class MockUPower(Fixture):
         self.proxy = None
         self.bus_address = None
         dbusmock.DBusTestCase.tearDownClass()
-        super().cleanup()
+        super().cleanUp()
 
 class Indicator(object):
 
