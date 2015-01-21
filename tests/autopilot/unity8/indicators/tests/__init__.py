@@ -55,7 +55,7 @@ class IndicatorTestCase(UnityTestCase):
     @staticmethod
     def _initctl_restart(service_name, args=[]):
         """Restart an upstart service; e.g. indicator-power-service"""
-        # nb: since we're trying to change the job's configuratoin,
+        # nb: since we're trying to change the job's configuration,
         # we must stop + start here, rather than "initctl restart"
         subprocess.check_call(['initctl', 'stop', service_name])
         subprocess.check_call(['initctl', 'start', service_name] + args)
