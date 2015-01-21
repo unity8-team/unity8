@@ -61,10 +61,10 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         address = fake_upower_bus.bus_address
 
         # restart indicator-power with the mock env variables
-        self.restart_service(
-            'indicator-power',
-            ['INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(address)]
-        )
+        service_test_args = [
+            'INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(address)
+        ]
+        self.start_test_service('indicator-power', *service_test_args)
 
         # try to get the indicator into the panel
         try:

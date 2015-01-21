@@ -18,11 +18,10 @@
 
 
 import os
-import subprocess
 
 from autopilot import platform
 
-from unity8.process_helpers import unlock_unity
+from unity8 import process_helpers
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
 
@@ -37,25 +36,22 @@ class IndicatorTestCase(UnityTestCase):
         super().setUp()
         self._dirty_services = set()
         self.unity_proxy = self.launch_unity()
-        unlock_unity(self.unity_proxy)
+        process_helpers.unlock_unity(self.unity_proxy)
 
-    def restart_service(self, service_name, args):
-        """Restart a test copy of service_name with the specified args.
+    def start_test_service(self, service_name, *args):
+        """Restart a service (e.g. 'indicator-power-service') with test args.
 
         Adds a no-arguments restart to addCleanup() so that the system
         can reset to a nontest version of the service when the tests finish.
         """
-        try:
-            self._initctl_restart(service_name, args)
-        finally:
-            if service_name not in self._dirty_services:
-                self._dirty_services.add(service_name)
-                self.addCleanup(self._initctl_restart, service_name)
+        self._start_service(service_name, *args)
+        if service_name not in self._dirty_services:
+            self._dirty_services.add(service_name)
+            self.addCleanup(self._start_service, service_name)
 
     @staticmethod
-    def _initctl_restart(service_name, args=[]):
+    def _start_service(service_name, *args):
         """Restart an upstart service; e.g. indicator-power-service"""
-        # nb: since we're trying to change the job's configuration,
-        # we must stop + start here, rather than "initctl restart"
-        subprocess.check_call(['initctl', 'stop', service_name])
-        subprocess.check_call(['initctl', 'start', service_name] + args)
+        if process_helpers.is_job_running(service_name):
+            process_helpers.stop_job(service_name)
+        process_helpers.start_job(service_name, *args)
