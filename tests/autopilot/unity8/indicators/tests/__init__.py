@@ -16,11 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import os
-
-from autopilot import platform
-
 from unity8 import process_helpers
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 

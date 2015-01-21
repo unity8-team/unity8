@@ -38,6 +38,7 @@ class MockUPower(Fixture):
         dbusmock.DBusTestCase.tearDownClass()
         super().cleanUp()
 
+
 class Indicator(object):
 
     def __init__(self, main_window, name):
