@@ -8,20 +8,11 @@ import dbusmock
 from unity8.indicators.tests import IndicatorTestCase
 
 
-class FakeUPowerException(Exception):
-    pass
-
-
 class FakeUPower(object):
 
     def start(self):
-        try:
-            os.environ['DBUS_SYSTEM_BUS_ADDRESS']
-            raise FakeUPowerException(
-                'DBUS_SYSTEM_BUS_ADDRESS exists before start.'
-            )
-        except KeyError:
-            pass
+        if 'DBUS_SYSTEM_BUS_ADDRESS' in os.environ:
+            raise OSError('environment variable DBUS_SYSTEM_BUS_ADDRESS was already set')
 
         # start a dbusmock system bus and get its address, which looks like
         # "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
