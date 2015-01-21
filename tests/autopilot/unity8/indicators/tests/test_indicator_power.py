@@ -33,11 +33,12 @@ class MockUPower(Fixture):
             stdout=subprocess.PIPE
         )[1]
 
-    def cleanUp(self):
+        self.addCleanup(self._cleanUp)
+
+    def _cleanUp(self):
         self.proxy = None
         self.bus_address = None
         dbusmock.DBusTestCase.tearDownClass()
-        super().cleanUp()
 
 
 class IndicatorPowerTestCase(IndicatorTestCase):
