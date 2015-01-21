@@ -18,6 +18,7 @@
 
 from unity8 import process_helpers
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
+from unity8.indicators.helpers.indicator import Indicator
 
 
 class IndicatorTestCase(UnityTestCase):

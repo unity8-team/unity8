@@ -8,6 +8,7 @@ import dbusmock
 from fixtures import Fixture
 
 from unity8.indicators.tests import IndicatorTestCase
+from unity8.indicators.helpers.indicator import Indicator
 
 
 class MockUPower(Fixture):
@@ -37,21 +38,6 @@ class MockUPower(Fixture):
         self.bus_address = None
         dbusmock.DBusTestCase.tearDownClass()
         super().cleanUp()
-
-
-class Indicator(object):
-
-    def __init__(self, main_window, name):
-        self.main_window = main_window
-        self.name = name
-
-    def icon_matches(self, icon_name):
-        """Does the icon match the given well-known icon name?"""
-        widget = self.main_window.wait_select_single(
-            objectName=self.name
-        )
-        # looks like [dbus.String('image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good')]  # NOQA
-        return icon_name in widget.icons[0]
 
 
 class IndicatorPowerTestCase(IndicatorTestCase):
