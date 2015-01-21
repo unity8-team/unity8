@@ -41,7 +41,7 @@ class IndicatorExistsTestCase(IndicatorTestCase):
     )
 
     def setUp(self):
-        super(IndicatorExistsTestCase, self).setUp()
+        super().setUp()
         if (platform.model() == 'Nexus 10' and
                 self.indicator_name == 'indicator-bluetooth'):
             self.skipTest('Nexus 10 does not have bluetooth at the moment.')
@@ -79,7 +79,7 @@ class IndicatorPageTitleMatchesWidgetTestCase(IndicatorTestCase):
     )
 
     def setUp(self):
-        super(IndicatorPageTitleMatchesWidgetTestCase, self).setUp()
+        super().setUp()
         if (platform.model() == 'Nexus 10' and
                 self.indicator_name == 'indicator-bluetooth'):
             self.skipTest('Nexus 10 does not have bluetooth at the moment.')

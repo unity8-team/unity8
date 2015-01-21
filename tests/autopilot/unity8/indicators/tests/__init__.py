@@ -34,7 +34,7 @@ class IndicatorTestCase(UnityTestCase):
         # mysteriously disappeared from unity7, may need upstreaming
         if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
             os.environ['GRID_UNIT_PX'] = '13'
-        super(IndicatorTestCase, self).setUp()
+        super().setUp()
         self._dirty_services = set()
         self.unity_proxy = self.launch_unity()
         unlock_unity(self.unity_proxy)

@@ -85,7 +85,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
     ]
 
     def setUp(self):
-        super(IndicatorPowerTestCase, self).setUp()
+        super().setUp()
 
         # star the mock dbus for upower
         fake_upower_bus = FakeUPower()
