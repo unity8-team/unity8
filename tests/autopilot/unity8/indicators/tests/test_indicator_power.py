@@ -1,19 +1,24 @@
 
-import dbus
 import os
 import subprocess
 import time
 
 import dbusmock
 
+from fixtures import Fixture
+
 from unity8.indicators.tests import IndicatorTestCase
 
 
-class FakeUPower(object):
+class MockUPower(Fixture):
 
-    def start(self):
-        if 'DBUS_SYSTEM_BUS_ADDRESS' in os.environ:
-            raise OSError('environment variable DBUS_SYSTEM_BUS_ADDRESS was already set')
+    def setUp(self):
+
+        super().setUp()
+
+        key = 'DBUS_SYSTEM_BUS_ADDRESS'
+        if key in os.environ:
+            raise OSError('environment variable '+key+' was already set')
 
         # start a dbusmock system bus and get its address, which looks like
         # "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
@@ -21,18 +26,17 @@ class FakeUPower(object):
         self.bus_address = os.environ['DBUS_SYSTEM_BUS_ADDRESS'].split(',')[0]
 
         # start a mock upower service
-        upower_proxy = dbusmock.DBusTestCase.spawn_server_template(
+        self.proxy = dbusmock.DBusTestCase.spawn_server_template(
             'upower',
             {'OnBattery': True, 'HibernateAllowed': False},
             stdout=subprocess.PIPE
         )[1]
 
-        return upower_proxy
-
-    def stop(self):
-        dbusmock.DBusTestCase.tearDownClass()
+    def cleanUp(self):
+        self.proxy = None
         self.bus_address = None
-
+        dbusmock.DBusTestCase.tearDownClass()
+        super().cleanup()
 
 class Indicator(object):
 
@@ -54,15 +58,12 @@ class IndicatorPowerTestCase(IndicatorTestCase):
     def setUp(self):
         super().setUp()
 
-        # star the mock dbus for upower
-        fake_upower_bus = FakeUPower()
-        self.fake_upower = fake_upower_bus.start()
-        self.addCleanup(fake_upower_bus.stop)
-        address = fake_upower_bus.bus_address
+        # start a mock UPower service
+        self.upower = self.useFixture(MockUPower())
 
         # restart indicator-power with the mock env variables
         service_test_args = [
-            'INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(address)
+            'INDICATOR_POWER_BUS_ADDRESS_UPOWER='+self.upower.bus_address
         ]
         self.start_test_service('indicator-power', *service_test_args)
 
@@ -102,7 +103,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             ({'Percentage': 0.0}, {'icon_name': 'battery-000'})
         ]
 
-        battery_path = self.fake_upower.AddDischargingBattery(
+        battery_path = self.upower.proxy.AddDischargingBattery(
             'mock_BAT',
             'Mock Battery',
             30.0,
@@ -112,7 +113,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         indicator = Indicator(self.main_window, 'indicator-power-widget')
 
         for properties, expected in steps:
-            self.fake_upower.SetDeviceProperties(battery_path, properties);
+            self.upower.proxy.SetDeviceProperties(battery_path, properties)
             # FIXME: sleep() is clumsy..
-            time.sleep(1);
+            time.sleep(1)
             self.assertTrue(indicator.icon_matches(expected['icon_name']))
