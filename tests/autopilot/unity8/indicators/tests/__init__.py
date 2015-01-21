@@ -27,13 +27,9 @@ from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
 class IndicatorTestCase(UnityTestCase):
 
-    device_emulation_scenarios = _get_device_emulation_scenarios()
+    scenarios = _get_device_emulation_scenarios()
 
     def setUp(self):
-        # mysteriously disappeared from unity7, may need upstreaming
-        # https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1413390
-        if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
-            os.environ['GRID_UNIT_PX'] = '13'
         super().setUp()
         self._dirty_services = set()
         self.unity_proxy = self.launch_unity()
