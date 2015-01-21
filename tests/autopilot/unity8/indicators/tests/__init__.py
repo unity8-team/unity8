@@ -28,8 +28,6 @@ from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
 class IndicatorTestCase(UnityTestCase):
 
-    _dirty_services = set()
-
     device_emulation_scenarios = _get_device_emulation_scenarios()
 
     def setUp(self):
@@ -37,6 +35,7 @@ class IndicatorTestCase(UnityTestCase):
         if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
             os.environ['GRID_UNIT_PX'] = '13'
         super(IndicatorTestCase, self).setUp()
+        self._dirty_services = set()
         self.unity_proxy = self.launch_unity()
         unlock_unity(self.unity_proxy)
 
