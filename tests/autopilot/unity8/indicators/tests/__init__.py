@@ -31,6 +31,7 @@ class IndicatorTestCase(UnityTestCase):
 
     def setUp(self):
         # mysteriously disappeared from unity7, may need upstreaming
+        # https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1413390
         if platform.model() == 'Desktop' and 'GRID_UNIT_PX' not in os.environ:
             os.environ['GRID_UNIT_PX'] = '13'
         super().setUp()
