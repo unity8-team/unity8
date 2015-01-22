@@ -19,15 +19,13 @@
 import os
 import subprocess
 
-import dbusmock
-
-from fixtures import Fixture
-
-from testtools.matchers import Contains
 from autopilot.matchers import Eventually
+import dbusmock
+from fixtures import Fixture
+from testtools.matchers import Contains
 
-from unity8.indicators.tests import IndicatorTestCase
 from unity8.indicators.helpers.indicator import Indicator
+from unity8.indicators.tests import IndicatorTestCase
 
 
 class MockBattery(object):
