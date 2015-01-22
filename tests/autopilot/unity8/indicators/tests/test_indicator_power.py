@@ -48,12 +48,12 @@ class MockUPower(Fixture):
 
         key = 'DBUS_SYSTEM_BUS_ADDRESS'
         if key in os.environ:
-            raise OSError('environment variable '+key+' was already set')
+            raise OSError("environment variable {} already set".format(key))
 
         # start a dbusmock system bus and get its address, which looks like
         # "unix:abstract=/tmp/dbus-LQo4Do4ldY,guid=3f7f39089f00884fa96533f354935995"
         dbusmock.DBusTestCase.start_system_bus()
-        self.bus_address = os.environ['DBUS_SYSTEM_BUS_ADDRESS'].split(',')[0]
+        self.bus_address = os.environ[key].split(',')[0]
 
         # start a mock upower service
         self.proxy = dbusmock.DBusTestCase.spawn_server_template(
