@@ -24,13 +24,16 @@ class Indicator(object):
         self.name = name
 
     def get_icon_name(self):
-        """Returns the icon name. May be a list of options, e.g. 'image://theme/battery-040,gpm-battery-040,battery-good-symbolic,battery-good'"""
+        """Returns the icon name.
+
+        Can be a list of options, eg 'image://theme/battery-040,battery-good-symbolic,battery-good'
+        """
         widget = self.main_window.wait_select_single(
             objectName=self.name
         )
         # convert it from a dbus.string to a normal string
         return str(widget.icons[0])
-        
+
     def icon_matches(self, icon_name):
         """Does the icon match the given well-known icon name?"""
         return icon_name in self.get_icon_name()
