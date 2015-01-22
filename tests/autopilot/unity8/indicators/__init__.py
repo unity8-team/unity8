@@ -33,7 +33,3 @@ class PowerIndicator(object):
         )
         # convert it from a dbus.string to a normal string
         return str(widget.icons[0])
-
-    def icon_matches(self, icon_name):
-        """Does the icon match the given well-known icon name?"""
-        return icon_name in self.get_icon_name()
