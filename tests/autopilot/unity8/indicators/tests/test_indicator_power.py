@@ -11,11 +11,23 @@ from unity8.indicators.tests import IndicatorTestCase
 from unity8.indicators.helpers.indicator import Indicator
 
 
+class MockBattery(object):
+
+    def __init__(self, proxy, object_path):
+        self.proxy = proxy
+        self.object_path = object_path
+
+    def set_properties(self, properties):
+        self.proxy.SetDeviceProperties(self.object_path, properties)
+
+
 class MockUPower(Fixture):
 
     def setUp(self):
 
         super().setUp()
+
+        self._battery_count = 0
 
         key = 'DBUS_SYSTEM_BUS_ADDRESS'
         if key in os.environ:
@@ -39,6 +51,25 @@ class MockUPower(Fixture):
         self.proxy = None
         self.bus_address = None
         dbusmock.DBusTestCase.tearDownClass()
+
+    def add_discharging_battery(
+            self,
+            model_name='Mock Battery',
+            percentage=30.0,
+            seconds_until_empty=1200):
+
+        # uniqueness required; this becomes part of the device's object_path
+        device_name = 'mock_BAT{}'.format(self._battery_count)
+        self._battery_count += 1
+
+        object_path = self.proxy.AddDischargingBattery(
+            device_name,
+            model_name,
+            percentage,
+            seconds_until_empty
+        )
+
+        return MockBattery(self.proxy, object_path)
 
 
 class IndicatorPowerTestCase(IndicatorTestCase):
@@ -91,17 +122,12 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             ({'Percentage': 0.0}, {'icon_name': 'battery-000'})
         ]
 
-        battery_path = self.upower.proxy.AddDischargingBattery(
-            'mock_BAT', # device name
-            'Mock Battery', # model name
-            30.0, # initial charge percentage
-            1200 # seconds until empty
-        )
+        battery = self.upower.add_discharging_battery()
 
         indicator = Indicator(self.main_window, 'indicator-power-widget')
 
         for properties, expected in steps:
-            self.upower.proxy.SetDeviceProperties(battery_path, properties)
+            battery.set_properties(properties)
             # FIXME: sleep() is clumsy..
             time.sleep(1)
             self.assertTrue(indicator.icon_matches(expected['icon_name']))
