@@ -1,11 +1,13 @@
 
 import os
 import subprocess
-import time
 
 import dbusmock
 
 from fixtures import Fixture
+
+from testtools.matchers import Contains
+from autopilot.matchers import Eventually
 
 from unity8.indicators.tests import IndicatorTestCase
 from unity8.indicators.helpers.indicator import Indicator
@@ -128,6 +130,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
 
         for properties, expected in steps:
             battery.set_properties(properties)
-            # FIXME: sleep() is clumsy..
-            time.sleep(1)
-            self.assertTrue(indicator.icon_matches(expected['icon_name']))
+            self.assertTrue(
+                indicator.get_icon_name,
+                Eventually(Contains(expected['icon_name']))
+            )
