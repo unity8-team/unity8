@@ -98,10 +98,12 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         self.upower = self.useFixture(MockUPower())
 
         # restart indicator-power with the mock env variables
-        service_test_args = [
-            'INDICATOR_POWER_BUS_ADDRESS_UPOWER='+self.upower.bus_address
-        ]
-        self.start_test_service('indicator-power', *service_test_args)
+        self.start_test_service(
+            'indicator-power',
+            'INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(
+                self.upower.bus_address
+            )
+        )
 
         # try to get the indicator into the panel
         try:
