@@ -17,8 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from unity8 import process_helpers
-from unity8.shell.tests import (UnityTestCase,
-    _get_device_emulation_scenarios)
+from unity8.shell.tests import (
+    UnityTestCase,
+    _get_device_emulation_scenarios,
+)
 
 
 class IndicatorTestCase(UnityTestCase):
@@ -26,7 +28,7 @@ class IndicatorTestCase(UnityTestCase):
     scenarios = _get_device_emulation_scenarios()
 
     def setUp(self):
-        super().setUp()
+        super(IndicatorTestCase, self).setUp()
         self._dirty_services = set()
         self.unity_proxy = self.launch_unity()
         process_helpers.unlock_unity(self.unity_proxy)

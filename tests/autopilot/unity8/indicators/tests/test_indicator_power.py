@@ -24,7 +24,7 @@ import dbusmock
 from fixtures import Fixture
 from testtools.matchers import Contains
 
-from unity8.indicators.helpers.indicator import Indicator
+from unity8.indicators import PowerIndicator
 from unity8.indicators.tests import IndicatorTestCase
 
 
@@ -42,7 +42,7 @@ class MockUPower(Fixture):
 
     def setUp(self):
 
-        super().setUp()
+        super(MockUPower, self).setUp()
 
         self._battery_count = 0
 
@@ -92,7 +92,7 @@ class MockUPower(Fixture):
 class IndicatorPowerTestCase(IndicatorTestCase):
 
     def setUp(self):
-        super().setUp()
+        super(IndicatorPowerTestCase, self).setUp()
 
         # start a mock UPower service
         self.upower = self.useFixture(MockUPower())
@@ -135,7 +135,7 @@ class IndicatorPowerTestCase(IndicatorTestCase):
 
         battery = self.upower.add_discharging_battery()
 
-        indicator = Indicator(self.main_window, 'indicator-power-widget')
+        indicator = PowerIndicator(self.main_window)
 
         for properties, expected in steps:
             battery.set_properties(properties)
