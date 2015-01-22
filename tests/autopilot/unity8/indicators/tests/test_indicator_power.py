@@ -105,14 +105,6 @@ class IndicatorPowerTestCase(IndicatorTestCase):
             )
         )
 
-        # try to get the indicator into the panel
-        try:
-            self.main_window.wait_select_single(
-                objectName='indicator-power-widget'
-            )
-        except:
-            pass
-
     def test_discharging_battery(self):
         """Test the icon as the battery drains."""
 
