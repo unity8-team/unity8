@@ -17,7 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from unity8 import process_helpers
-from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
+from unity8.shell.tests import (UnityTestCase,
+    _get_device_emulation_scenarios)
 
 
 class IndicatorTestCase(UnityTestCase):
