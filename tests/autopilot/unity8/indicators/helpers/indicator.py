@@ -26,7 +26,8 @@ class Indicator(object):
     def get_icon_name(self):
         """Returns the icon name.
 
-        Can be a list of options, eg 'image://theme/battery-040,battery-good-symbolic,battery-good'
+        Can be a list of options, eg
+        'image://theme/battery-040,battery-good-symbolic,battery-good'
         """
         widget = self.main_window.wait_select_single(
             objectName=self.name
