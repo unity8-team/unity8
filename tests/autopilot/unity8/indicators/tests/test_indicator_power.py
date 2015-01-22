@@ -92,10 +92,10 @@ class IndicatorPowerTestCase(IndicatorTestCase):
         ]
 
         battery_path = self.upower.proxy.AddDischargingBattery(
-            'mock_BAT',
-            'Mock Battery',
-            30.0,
-            1200
+            'mock_BAT', # device name
+            'Mock Battery', # model name
+            30.0, # initial charge percentage
+            1200 # seconds until empty
         )
 
         indicator = Indicator(self.main_window, 'indicator-power-widget')
