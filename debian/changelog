@@ -1,8 +1,9 @@
-ubuntu-settings-components (0.5-0ubuntu1) UNRELEASED; urgency=medium
+ubuntu-settings-components (0.5+15.04.20150123.1-0ubuntu1) vivid; urgency=medium
 
+  [ Sebastien Bacher ]
   * Updated version, so the users of the new property can update their depends
 
- -- Sebastien Bacher <seb128@ubuntu.com>  Wed, 12 Nov 2014 11:43:04 +0100
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 23 Jan 2015 12:17:25 +0000
 
 ubuntu-settings-components (0.4+15.04.20141105-0ubuntu1) vivid; urgency=low
 
