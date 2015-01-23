@@ -27,6 +27,7 @@ SimpleMessageMenu {
 
     property bool replyEnabled: true
     property string replyButtonText: i18n.tr("Send")
+    property string replyHintText
 
     signal replied(string value)
 
@@ -34,6 +35,7 @@ SimpleMessageMenu {
 
         activateEnabled: menu.replyEnabled
         buttonText: menu.replyButtonText
+        textHint: menu.replyHintText
 
         onActivated: {
             menu.replied(value);
