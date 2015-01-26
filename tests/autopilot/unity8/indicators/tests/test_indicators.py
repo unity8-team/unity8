@@ -18,24 +18,10 @@
 
 from __future__ import absolute_import
 
+from autopilot import platform
 from testscenarios import multiply_scenarios
 
-from autopilot import platform
-
-from unity8.process_helpers import unlock_unity
-from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
-
-
-class IndicatorTestCase(UnityTestCase):
-
-    device_emulation_scenarios = _get_device_emulation_scenarios()
-
-    def setUp(self):
-        if platform.model() == 'Desktop':
-            self.skipTest('Test cannot be run on the desktop.')
-        super(IndicatorTestCase, self).setUp()
-        self.unity_proxy = self.launch_unity()
-        unlock_unity(self.unity_proxy)
+from unity8.indicators.tests import IndicatorTestCase
 
 
 class IndicatorExistsTestCase(IndicatorTestCase):
@@ -51,7 +37,7 @@ class IndicatorExistsTestCase(IndicatorTestCase):
     ]
     scenarios = multiply_scenarios(
         indicator_scenarios,
-        IndicatorTestCase.device_emulation_scenarios
+        IndicatorTestCase.scenarios
     )
 
     def setUp(self):
@@ -59,6 +45,9 @@ class IndicatorExistsTestCase(IndicatorTestCase):
         if (platform.model() == 'Nexus 10' and
                 self.indicator_name == 'indicator-bluetooth'):
             self.skipTest('Nexus 10 does not have bluetooth at the moment.')
+        if platform.model() == 'Desktop':
+            # names exported differently in unity7
+            self.skipTest('Test cannot be run on the desktop.')
 
     def test_indicator_exists(self):
         self.main_window._get_indicator_panel_item(
@@ -86,7 +75,7 @@ class IndicatorPageTitleMatchesWidgetTestCase(IndicatorTestCase):
     ]
     scenarios = multiply_scenarios(
         indicator_scenarios,
-        IndicatorTestCase.device_emulation_scenarios
+        IndicatorTestCase.scenarios
     )
 
     def setUp(self):
@@ -94,6 +83,9 @@ class IndicatorPageTitleMatchesWidgetTestCase(IndicatorTestCase):
         if (platform.model() == 'Nexus 10' and
                 self.indicator_name == 'indicator-bluetooth'):
             self.skipTest('Nexus 10 does not have bluetooth at the moment.')
+        if platform.model() == 'Desktop':
+            # names exported differently in unity7
+            self.skipTest('Test cannot be run on the desktop.')
 
     def test_indicator_page_title_matches_widget(self):
         """Swiping open an indicator must show its correct title.
