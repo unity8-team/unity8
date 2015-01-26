@@ -30,6 +30,7 @@ import Unity.Test 0.1 as UT
 import Powerd 0.1
 
 import "../../qml"
+import "../../qml/Notifications"
 
 Item {
     id: root
@@ -96,16 +97,7 @@ Item {
         }
     }
 
-    Component {
-        id: mockNotification
-
-        QtObject {
-            function invokeAction(actionId) {
-                mockNotificationsModel.actionInvoked(actionId)
-            }
-        }
-    }
-    ListModel {
+    NotificationModel {
         id: mockNotificationsModel
 
         signal actionInvoked(string actionId)
@@ -115,8 +107,8 @@ Item {
         }
 
         onActionInvoked: {
-            if(actionId == "ok_id") {
-                mockNotificationsModel.clear()
+            if(action == "ok_id") {
+                mockNotificationsModel.remove(1)
             }
         }
     }
@@ -253,20 +245,21 @@ Item {
         }
 
         function addSnapDecisionNotification() {
-            var n = {
-                type: Notification.SnapDecision,
-                hints: {"x-canonical-private-affirmative-tint": "true"},
-                summary: "Tom Ato",
-                body: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-                icon: "../graphics/avatars/funky.png",
-                secondaryIcon: "../graphics/applicationIcons/facebook.png",
-                actions: [{ id: "ok_id", label: "Ok"},
-                    { id: "cancel_id", label: "Cancel"},
-                    { id: "notreally_id", label: "Not really"},
-                    { id: "noway_id", label: "messages:No way"},
-                    { id: "nada_id", label: "messages:Nada"}]
-            }
-
+            var component = Qt.createComponent("./Notifications/Notification.qml")
+            var n = component.createObject("notification", {"nid": 1,
+                                                            "type": Notification.SnapDecision,
+                                                            "hints": {"x-canonical-private-affirmative-tint": "true"},
+                                                            "summary": "Tom Ato",
+                                                            "body": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+                                                            "icon": "../graphics/avatars/funky.png",
+                                                            "secondaryIcon": "../graphics/applicationIcons/facebook.png",
+                                                            "rawActions": ["ok_id",        "Ok",
+                                                                           "cancel_id",    "Cancel",
+                                                                           "notreally_id", "Not really",
+                                                                           "noway_id",     "messages:No way",
+                                                                           "nada_id",      "messages:Nada"]})
+            n.completed.connect(mockNotificationsModel.onCompleted)
+            n.actionInvoked.connect(mockNotificationsModel.actionInvoked)
             mockNotificationsModel.append(n)
         }
 
