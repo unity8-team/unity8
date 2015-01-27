@@ -1,7 +1,7 @@
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 #
 # Unity Indicators Autopilot Test Suite
-# Copyright (C) 2013, 2014 Canonical
+# Copyright (C) 2013, 2014, 2015 Canonical
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@ from __future__ import absolute_import
 from autopilot import platform
 from testscenarios import multiply_scenarios
 
-from unity8.indicators.tests import IndicatorTestCase
+from unity8.indicators import tests
 
 
-class IndicatorExistsTestCase(IndicatorTestCase):
+class IndicatorExistsTestCase(tests.IndicatorTestCase):
 
     indicator_scenarios = [
         ('Bluetooth', dict(indicator_name='indicator-bluetooth')),
@@ -37,7 +37,7 @@ class IndicatorExistsTestCase(IndicatorTestCase):
     ]
     scenarios = multiply_scenarios(
         indicator_scenarios,
-        IndicatorTestCase.scenarios
+        tests.IndicatorTestCase.scenarios
     )
 
     def setUp(self):
@@ -55,7 +55,7 @@ class IndicatorExistsTestCase(IndicatorTestCase):
         )
 
 
-class IndicatorPageTitleMatchesWidgetTestCase(IndicatorTestCase):
+class IndicatorPageTitleMatchesWidgetTestCase(tests.IndicatorTestCase):
 
     indicator_scenarios = [
         ('Bluetooth', dict(indicator_name='indicator-bluetooth',
@@ -75,7 +75,7 @@ class IndicatorPageTitleMatchesWidgetTestCase(IndicatorTestCase):
     ]
     scenarios = multiply_scenarios(
         indicator_scenarios,
-        IndicatorTestCase.scenarios
+        tests.IndicatorTestCase.scenarios
     )
 
     def setUp(self):
