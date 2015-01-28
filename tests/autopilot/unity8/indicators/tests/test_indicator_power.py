@@ -143,3 +143,17 @@ class IndicatorPowerTestCase(IndicatorTestCase):
                 indicator.get_icon_name,
                 Eventually(Contains(expected['icon_name']))
             )
+
+    def test111(self):
+        battery_path = self.fake_upower.AddDischargingBattery(
+            'mock_BAT',
+            'Mock Battery',
+            30.0,
+            1200
+        )
+        print (battery_path)
+        self.fake_upower.SetDeviceProperties(battery_path, {
+            'Percentage': dbus.Double(2.0, variant_level=1)
+        })
+        n = wait_for_notification_dialog(self, timeout=10)
+        print (n)

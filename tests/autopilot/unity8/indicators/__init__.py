@@ -18,6 +18,8 @@
 
 import ubuntuuitoolkit
 from autopilot import introspection
+from autopilot.introspection.dbus import StateNotFoundError
+from autopilot.utilities import sleep
 
 from unity8.shell import emulators
 
@@ -142,3 +144,47 @@ class DisplayIndicatorPage(IndicatorPage):
         switcher = self._get_switcher()
         switcher.uncheck()
         switcher.checked.wait_for(False)
+
+def wait_for_notification_dialog(self, timeout):
+        """Wait for a notification dialog to appear.
+
+        :param int timeout: Maximum amount of time to wait for the notification,
+        in seconds.
+        :return: An autopilot custom proxy object for the notification dialog.
+        :raise StateNotFoundError: if the timeout expires when the
+        notification has not appeared.
+
+        """
+        notifications = self.main_window.select_single('Notifications')
+        notification = notifications.select_single('Notification', objectName='notification0')
+        for i in range(timeout):
+            if (not notification):
+                if i == timeout - 1:
+                    raise StateNotFoundError
+                sleep(1)
+        return notification
+        # Strategy to test the helper:
+        # use the create notification script to verify that the method returns
+        # when a notification is received.
+
+class Notification(emulators.UnityEmulatorBase):
+
+    """Custom proxy object for Notification dialogs."""
+    @classmethod
+    def validate_dbus_object(cls, path, state):
+        name = introspection.get_classname_from_path(path)
+        if name == b'Notification':
+            return True
+        return False
+
+    def get_data(self):
+        """Return the contents of a notification dialog.
+
+        :return: A data object that represents the contents of a notification
+            dialog.
+
+        """
+        return { 'summary': self.summary, 'body': self.body }
+        # Strategy to test the helper:
+        # use the create notification script to get a notification dialog.
+        # Check that the arguments passed to the script match the fields
