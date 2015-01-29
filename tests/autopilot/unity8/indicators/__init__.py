@@ -183,6 +183,14 @@ class Notification(emulators.UnityEmulatorBase):
             return True
         return False
 
+    def __init__(self, state, path, backend):
+        super(Notification, self).__init__(state, path, backend)
+        # Backup data
+        self._summary = self.summary
+        self._body = self.body
+        self._iconSource = self.iconSource
+
+
     def get_data(self):
         """Return the contents of a notification dialog.
 
@@ -190,7 +198,9 @@ class Notification(emulators.UnityEmulatorBase):
             dialog.
 
         """
-        return { 'summary': self.summary, 'body': self.body }
+        return { 'summary': self._summary,
+                 'body': self._body,
+                 'iconSource': self._iconSource }
         # Strategy to test the helper:
         # use the create notification script to get a notification dialog.
         # Check that the arguments passed to the script match the fields

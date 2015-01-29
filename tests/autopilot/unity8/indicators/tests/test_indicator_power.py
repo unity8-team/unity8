@@ -164,7 +164,4 @@ class IndicatorPowerTestCase2(IndicatorTestCase):
         battery.set_properties({'Percentage': 3.0})
 
         n = wait_for_notification_dialog(self, timeout=10)
-        print (n)
-        print (n.summary)
-        print (n.body)
-        print (n.value)
+        print (n.get_data())
