@@ -26,7 +26,7 @@ from testtools.matchers import Contains
 
 from unity8.indicators import PowerIndicator
 from unity8.indicators.tests import IndicatorTestCase
-
+from unity8.indicators import wait_for_notification_dialog
 
 class MockBattery(object):
 
@@ -144,16 +144,27 @@ class IndicatorPowerTestCase(IndicatorTestCase):
                 Eventually(Contains(expected['icon_name']))
             )
 
-    def test111(self):
-        battery_path = self.fake_upower.AddDischargingBattery(
-            'mock_BAT',
-            'Mock Battery',
-            30.0,
-            1200
+class IndicatorPowerTestCase2(IndicatorTestCase):
+    def setUp(self):
+        super(IndicatorPowerTestCase2, self).setUp()
+
+        # start a mock UPower service
+        self.upower = self.useFixture(MockUPower())
+
+        # restart indicator-power with the mock env variables
+        self.start_test_service(
+            'indicator-power',
+            'INDICATOR_POWER_BUS_ADDRESS_UPOWER={}'.format(
+                self.upower.bus_address
+            )
         )
-        print (battery_path)
-        self.fake_upower.SetDeviceProperties(battery_path, {
-            'Percentage': dbus.Double(2.0, variant_level=1)
-        })
+
+    def test111(self):
+        battery = self.upower.add_discharging_battery()
+        battery.set_properties({'Percentage': 3.0})
+
         n = wait_for_notification_dialog(self, timeout=10)
         print (n)
+        print (n.summary)
+        print (n.body)
+        print (n.value)
