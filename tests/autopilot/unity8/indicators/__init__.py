@@ -156,13 +156,19 @@ def wait_for_notification_dialog(self, timeout):
 
         """
         notifications = self.main_window.select_single('Notifications')
-        notification = notifications.select_single('Notification', objectName='notification0')
+        visibleNotification = None
         for i in range(timeout):
-            if (not notification):
+            notificationList = notifications.select_many('Notification')
+            visibleNotification = None
+            for notification in notificationList:
+                if (notification.visible):
+                    visibleNotification = notification
+                    
+            if (not visibleNotification):
                 if i == timeout - 1:
                     raise StateNotFoundError
                 sleep(1)
-        return notification
+        return visibleNotification
         # Strategy to test the helper:
         # use the create notification script to verify that the method returns
         # when a notification is received.
