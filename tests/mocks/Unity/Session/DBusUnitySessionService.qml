@@ -18,13 +18,7 @@ pragma Singleton
 import QtQuick 2.3
 
 Item {
-    signal requestLogout
     signal logout
-    signal logoutRequested
-    signal requestReboot
     signal reboot
-    signal rebootRequested
-    signal requestShutdown
     signal shutdown
-    signal shutdownRequested
 }
