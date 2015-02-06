@@ -110,12 +110,11 @@ Item {
             // First load it invisible, check that we should actually use
             // this page, and either skip it or continue.
             push(path, {"opacity": 0, "enabled": false})
+            root.pageLoaded(pageList.index)
 
             // Check for immediate skip or not.  We may have to wait for
             // skipValid to be assigned (see Connections object below)
             checkSkip()
-
-            root.pageLoaded(pageList.index)
         }
 
         function checkSkip() {
