@@ -21,7 +21,7 @@ import MeeGo.QOfono 0.2
 import QMenuModel 0.1
 import Ubuntu.Components 1.1
 import Ubuntu.SystemSettings.SecurityPrivacy 1.0
-import Unity.Session 1.0
+import Unity.Session 0.1
 import Unity.Test 0.1 as UT
 import Wizard 0.1
 import "../../../qml/Wizard"

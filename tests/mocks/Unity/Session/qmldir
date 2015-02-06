@@ -1,3 +1,3 @@
 module Unity.Session
 typeinfo UnitySession.qmltypes
-singleton DBusUnitySessionService 1.0 DBusUnitySessionService.qml
+singleton DBusUnitySessionService 0.1 DBusUnitySessionService.qml
