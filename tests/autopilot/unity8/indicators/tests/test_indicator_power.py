@@ -27,6 +27,7 @@ from testtools.matchers import Contains
 from unity8.indicators import PowerIndicator
 from unity8.indicators.tests import IndicatorTestCase
 from unity8.indicators import wait_for_notification_dialog
+from unity8 import process_helpers
 
 class MockBattery(object):
 
@@ -165,3 +166,14 @@ class IndicatorPowerTestCase2(IndicatorTestCase):
 
         n = wait_for_notification_dialog(self, timeout=10)
         print (n.get_data())
+
+    def test1(self):
+        command = [
+            'python3',
+            './unity8/shell/emulators/create_interactive_notification.py'
+        ]
+        p = subprocess.Popen(command)
+        n = wait_for_notification_dialog(self, timeout=10)
+        assertEqual(n.get_data()['summary'], 'Summary')
+        assertEqual(n.get_data()['body'], 'Body')
+        p.wait()
