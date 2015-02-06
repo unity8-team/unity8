@@ -17,7 +17,7 @@
 pragma Singleton
 import QtQuick 2.3
 
-Item {
+QtObject {
     signal logout
     signal reboot
     signal shutdown
