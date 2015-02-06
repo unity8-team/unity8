@@ -35,11 +35,6 @@ public:
     DBusUnitySessionService();
     ~DBusUnitySessionService();
 
-    // For use in QML. Javascript doesn't accept functions beginning with capital letters
-    Q_INVOKABLE void logout() { Logout(); }
-    Q_INVOKABLE void reboot() { Reboot(); }
-    Q_INVOKABLE void shutdown() { Shutdown(); }
-
 Q_SIGNALS:
     /**
      * logoutRequested signal
@@ -88,7 +83,7 @@ public Q_SLOTS:
      * Ordinary applications should avoid calling this method. Please call
      * RequestLogout() to ask the user to decide logout or not.
      */
-    Q_SCRIPTABLE void Logout();
+    Q_INVOKABLE void logout();
 
     /**
      * Reboot the system.
@@ -97,7 +92,7 @@ public Q_SLOTS:
      * Ordinary applications should avoid calling this method. Please call
      * RequestReboot() to ask the user to decide reboot or not.
      */
-    Q_SCRIPTABLE void Reboot();
+    Q_INVOKABLE void reboot();
 
     /**
      * Shutdown the system.
@@ -106,7 +101,7 @@ public Q_SLOTS:
      * Ordinary applications should avoid calling this method. Please call
      * RequestShutdown() to ask the user to decide shutdown or not.
      */
-    Q_SCRIPTABLE void Shutdown();
+    Q_INVOKABLE void shutdown();
 
     /**
      * Issue a logout request.
@@ -116,7 +111,7 @@ public Q_SLOTS:
      * this signal and display a dialog to ask the user to confirm the logout
      * action. If confirmed, shell can call Logout() method to logout.
      */
-    Q_SCRIPTABLE void RequestLogout();
+    Q_INVOKABLE void requestLogout();
 
     /**
      * Issue a reboot request.
@@ -126,7 +121,7 @@ public Q_SLOTS:
      * this signal and display a dialog to ask the user to confirm the reboot
      * action. If confirmed, shell can call Reboot() method to reboot
      */
-    Q_SCRIPTABLE void RequestReboot();
+    Q_INVOKABLE void requestReboot();
 
     /**
      * Issue a shutdown request.
@@ -137,7 +132,7 @@ public Q_SLOTS:
      * this signal and display a dialog to ask the user to confirm the reboot
      * action. If confirmed, shell can call Shutdown() method to reboot
      */
-    Q_SCRIPTABLE void RequestShutdown();
+    Q_INVOKABLE void requestShutdown();
 
 };
 

@@ -30,17 +30,17 @@ DBusUnitySessionService::~DBusUnitySessionService()
 {
 }
 
-void DBusUnitySessionService::Logout()
+void DBusUnitySessionService::logout()
 {
   Q_EMIT logoutReady();
 }
 
-void DBusUnitySessionService::RequestLogout()
+void DBusUnitySessionService::requestLogout()
 {
   Q_EMIT logoutRequested(false);
 }
 
-void DBusUnitySessionService::Reboot()
+void DBusUnitySessionService::reboot()
 {
   QDBusConnection connection = QDBusConnection::systemBus();
   QDBusInterface iface1 ("org.freedesktop.login1",
@@ -51,12 +51,12 @@ void DBusUnitySessionService::Reboot()
   iface1.call("Reboot", false);
 }
 
-void DBusUnitySessionService::RequestReboot()
+void DBusUnitySessionService::requestReboot()
 {
   Q_EMIT rebootRequested(false);
 }
 
-void DBusUnitySessionService::Shutdown()
+void DBusUnitySessionService::shutdown()
 {
   QDBusConnection connection = QDBusConnection::systemBus();
   QDBusInterface iface1 ("org.freedesktop.login1",
@@ -67,7 +67,7 @@ void DBusUnitySessionService::Shutdown()
   iface1.call("PowerOff", false);
 }
 
-void DBusUnitySessionService::RequestShutdown()
+void DBusUnitySessionService::requestShutdown()
 {
   Q_EMIT shutdownRequested(false);
 }

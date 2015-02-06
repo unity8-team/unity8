@@ -4,6 +4,7 @@ add_subdirectory(Indicators)
 add_subdirectory(Launcher)
 add_subdirectory(Notifications)
 add_subdirectory(DashCommunicator)
+add_subdirectory(Session)
 
 pkg_search_module(GOBJECT gobject-2.0 REQUIRED)
 pkg_check_modules(SCOPES_API REQUIRED unity-shell-scopes=5)

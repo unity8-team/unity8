@@ -29,6 +29,7 @@ Item {
     property string background
 
     signal quit()
+    signal pageLoaded(int index)
 
     // These should be set by a security page and we apply the settings when
     // the user exits the wizard.
@@ -113,6 +114,8 @@ Item {
             // Check for immediate skip or not.  We may have to wait for
             // skipValid to be assigned (see Connections object below)
             checkSkip()
+
+            root.pageLoaded(pageList.index)
         }
 
         function checkSkip() {

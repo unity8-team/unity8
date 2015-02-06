@@ -21,6 +21,7 @@ import MeeGo.QOfono 0.2
 import QMenuModel 0.1
 import Ubuntu.Components 1.1
 import Ubuntu.SystemSettings.SecurityPrivacy 1.0
+import Unity.Session 1.0
 import Unity.Test 0.1 as UT
 import Wizard 0.1
 import "../../../qml/Wizard"
@@ -67,6 +68,12 @@ Item {
     SignalSpy {
         id: activateGPSSpy
         signalName: "activated"
+    }
+
+    SignalSpy {
+        id: sessionSpy
+        target: DBusUnitySessionService
+        signalName: "shutdown"
     }
 
     function setup() {
@@ -129,6 +136,7 @@ Item {
             var pages = findChild(wizard, "wizardPages");
             var security = findInvisibleChild(pages, "securityPrivacy");
             setSecuritySpy.target = security;
+            sessionSpy.clear();
 
             setup();
         }
@@ -498,6 +506,20 @@ Item {
 
             tap(findChild(page, "backButton"));
             waitForPage("locationPage");
+        }
+
+        function test_idleTimer() {
+            var timer = findInvisibleChild(wizard, "idleTimer");
+            timer.triggered();
+            sessionSpy.wait();
+        }
+
+        function test_notIdleTimer() {
+            goToPage("simPage");
+            var timer = findInvisibleChild(wizard, "idleTimer");
+            verify(!timer.running, "Idle timer should be stopped");
+            expectFail("", "Idle timer should not trigger");
+            sessionSpy.wait();
         }
     }
 }

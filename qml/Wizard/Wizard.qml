@@ -16,6 +16,7 @@
 
 import QtQuick 2.3
 import Ubuntu.Components 1.1
+import Unity.Session 1.0
 import Wizard 0.1
 import "../Components"
 
@@ -35,6 +36,14 @@ Showable {
         }
     }
 
+    Timer {
+        id: idleTimer
+        objectName: "idleTimer"
+        interval: 120000
+        running: true
+        onTriggered: DBusUnitySessionService.shutdown()
+    }
+
     Loader {
         id: loader
         anchors.fill: parent
@@ -50,6 +59,7 @@ Showable {
         Connections {
             target: loader.item
             onQuit: root.hide()
+            onPageLoaded: if (index > 0) idleTimer.stop()
         }
     }
 }
