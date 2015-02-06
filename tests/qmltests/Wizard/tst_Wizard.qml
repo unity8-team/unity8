@@ -518,8 +518,7 @@ Item {
             goToPage("simPage");
             var timer = findInvisibleChild(wizard, "idleTimer");
             verify(!timer.running, "Idle timer should be stopped");
-            expectFail("", "Idle timer should not trigger");
-            sessionSpy.wait();
+            compare(sessionSpy.count, 0, "Shutdown should not have been called");
         }
     }
 }
