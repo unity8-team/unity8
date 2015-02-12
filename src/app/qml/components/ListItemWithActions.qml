@@ -245,6 +245,7 @@ Item {
                        width: units.gu(3)
                        height: units.gu(3)
                        name: modelData.iconName
+                       source: modelData.iconSource
                        color: root.activeAction === modelData ? UbuntuColors.lightAubergine : UbuntuColors.lightGrey
                    }
               }

@@ -43,6 +43,7 @@ ListItemWithActions {
     signal deleteNote()
     signal editNote()
     signal editReminder()
+    signal editTags()
 
     leftSideAction: Action {
         iconName: "delete"
@@ -60,7 +61,13 @@ ListItemWithActions {
                 root.editReminder();
             }
         },
-
+        Action {
+            iconSource: "../images/tags.svg"
+            text: i18n.tr("Tags")
+            onTriggered: {
+                root.editTags();
+            }
+        },
         Action {
             iconName: "edit"
             text: i18n.tr("Edit")
