@@ -603,8 +603,7 @@ MainView {
                     color: UbuntuColors.red
                     onClicked: {
                         PopupUtils.close(noAccount)
-                        NotesStore.username = "@local";
-                        preferences.haveLocalUser = true;
+                        accountService.startAuthentication("@local", null);
                     }
                     Layout.fillWidth: true
                 }
