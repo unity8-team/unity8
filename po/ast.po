@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-11 00:31+0100\n"
-"PO-Revision-Date: 2014-11-16 19:17+0000\n"
-"Last-Translator: albacoru <albacoru@gmail.com>\n"
+"PO-Revision-Date: 2015-02-11 21:06+0000\n"
+"Last-Translator: ivarela <ivarela@ubuntu.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-12-04 06:36+0000\n"
-"X-Generator: Launchpad (build 17274)\n"
+"X-Launchpad-Export-Date: 2015-02-12 07:07+0000\n"
+"X-Generator: Launchpad (build 17336)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
@@ -223,52 +223,59 @@ msgstr ""
 
 #: src/libqtevernote/evernoteconnection.cpp:234
 msgid "Error connecting to Evernote: Please check network connection."
-msgstr ""
+msgstr "Fallu al coneutar con Evernote: comprueba la conexón de rede."
 
 #: src/libqtevernote/evernoteconnection.cpp:239
 msgid "Unknown error connecting to Evernote."
-msgstr ""
+msgstr "Fallu desconocíu al coneutar con Evernote."
 
 #: src/libqtevernote/evernoteconnection.cpp:252
 msgid ""
 "Error connecting to Evernote: Server version does not match app version. "
 "Please update the application."
 msgstr ""
+"Fallu al coneutar con Evernote: la versión del sirvidor nun concasa cola de "
+"l'aplicación. Tendríes d'anovar l'app."
 
 #: src/libqtevernote/evernoteconnection.cpp:258
 #: src/libqtevernote/evernoteconnection.cpp:263
 #, qt-format
 msgid "Error connecting to Evernote: Error code %1"
-msgstr ""
+msgstr "Fallu al coneutar con Evernote: códigu de fallu %1"
 
 #: src/libqtevernote/evernoteconnection.cpp:268
 msgid ""
 "Error connecting to Evernote: Cannot download version information from "
 "server."
 msgstr ""
+"Fallu al coneutar con Evernote: nun pue descargase información de versión "
+"dende'l sirvidor."
 
 #: src/libqtevernote/evernoteconnection.cpp:273
 #: src/libqtevernote/evernoteconnection.cpp:298
 msgid "Unknown error connecting to Evernote"
-msgstr ""
+msgstr "Fallu desconocíu al coneutar con Evernote"
 
 #: src/libqtevernote/evernoteconnection.cpp:287
 msgid "Error connecting to Evernote: Cannot download server information."
 msgstr ""
+"Fallu al coneutar con Evernote: nun pue descargase información del sirvidor."
 
 #: src/libqtevernote/evernoteconnection.cpp:293
 msgid ""
 "Error connecting to Evernote: Connection failure when downloading server "
 "information."
 msgstr ""
+"Fallu al coneutar con Evernote: falló la conexón al descargar información "
+"del sirvidor."
 
 #: src/libqtevernote/evernoteconnection.cpp:319
 msgid "Error connecting to Evernote: Connection failure"
-msgstr ""
+msgstr "Fallu al coneutar con Evernote: falló la conexón"
 
 #: src/libqtevernote/evernoteconnection.cpp:323
 msgid "Unknown Error connecting to Evernote"
-msgstr ""
+msgstr "Fallu desconocíu al coneutar con Evernote"
 
 #: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
