@@ -128,7 +128,9 @@ MainView {
 
     function switchToEditMode(note) {
         if (root.narrowMode) {
-            pagestack.pop();
+            if (pagestack.depth > 1) {
+                pagestack.pop();
+            }
             var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
             var page = component.createObject();
             page.exitEditMode.connect(function() {Qt.inputMethod.hide(); pagestack.pop()});

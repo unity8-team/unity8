@@ -163,10 +163,20 @@ PageWithBottomEdge {
             syncError: model.syncError
             conflicting: model.conflicting
 
-            onClicked: {
+            onItemClicked: {
                 if (!model.conflicting) {
                     root.selectedNote = NotesStore.note(guid);
                 }
+            }
+
+            onDeleteNote: {
+                NotesStore.deleteNote(model.guid)
+            }
+            onEditNote: {
+                root.editNote(NotesStore.note(model.guid));
+            }
+            onEditReminder: {
+                pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: NotesStore.note(model.guid) });
             }
         }
 

@@ -26,7 +26,9 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
 
     QImage image;
     if (mediaType.startsWith("image")) {
+        qDebug() << "image requested" << NotesStore::instance()->note(noteGuid)->resource(resourceHash);
         image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(resourceHash)->imageData(requestedSize));
+        qDebug() << "done...";
     } else if (mediaType.startsWith("audio")) {
         image.load("/usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg");
     } else {

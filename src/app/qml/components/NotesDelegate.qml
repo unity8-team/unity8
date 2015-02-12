@@ -22,9 +22,10 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 
-Empty {
+ListItemWithActions {
     id: root
     height: units.gu(12)
+    width: parent.width
 
     property string title
     property date creationDate
@@ -39,10 +40,37 @@ Empty {
     property bool conflicting
     property string notebookColor
 
-    showDivider: false;
+    signal deleteNote()
+    signal editNote()
+    signal editReminder()
 
+    leftSideAction: Action {
+        iconName: "delete"
+        text: i18n.tr("Delete")
+        onTriggered: {
+            root.deleteNote()
+        }
+    }
+
+    rightSideActions: [
+        Action {
+            iconName: "alarm-clock"
+            text: i18n.tr("Reminder")
+            onTriggered: {
+                root.editReminder();
+            }
+        },
+
+        Action {
+            iconName: "edit"
+            text: i18n.tr("Edit")
+            onTriggered: {
+                root.editNote();
+            }
+        }
+    ]
     ColumnLayout {
-        anchors { fill: parent; leftMargin: units.gu(1); rightMargin: units.gu(1) }
+        anchors { fill: parent }
         spacing: 0
 
         Rectangle {

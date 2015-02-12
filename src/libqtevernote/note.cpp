@@ -35,8 +35,8 @@
 Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
     m_isSearchResult(false),
-    m_updateSequenceNumber(updateSequenceNumber),
     m_deleted(false),
+    m_updateSequenceNumber(updateSequenceNumber),
     m_loading(false),
     m_loaded(false),
     m_syncError(false),
