@@ -120,7 +120,7 @@ Page {
                 edgeLoader.item.ready()
 
 
-            NotesStore.createNote("Untitled", filterNotebookGuid);
+            NotesStore.createNote(i18n.tr("Untitled"), filterNotebookGuid);
         }
     }
 
