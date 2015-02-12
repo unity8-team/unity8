@@ -26,7 +26,11 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
 
     QImage image;
     if (mediaType.startsWith("image")) {
-        image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(resourceHash)->imageData(requestedSize));
+        QSize tmpSize = requestedSize;
+        if (!requestedSize.isValid() || requestedSize.width() > 1024 || requestedSize.height() > 1024) {
+            tmpSize = QSize(1024, 1024);
+        }
+        image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(resourceHash)->imageData(tmpSize));
     } else if (mediaType.startsWith("audio")) {
         image.load("/usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg");
     } else {
