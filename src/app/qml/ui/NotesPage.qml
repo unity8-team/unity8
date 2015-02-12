@@ -70,6 +70,16 @@ PageWithBottomEdge {
 
         ToolbarButton {
             action: Action {
+                text: i18n.tr("Search")
+                iconName: "search"
+                onTriggered: {
+                    root.openSearch();
+                }
+            }
+        }
+
+        ToolbarButton {
+            action: Action {
                 iconSource: "../images/sorting.svg"
                 text: i18n.tr("Sorting")
                 onTriggered: {
@@ -79,16 +89,6 @@ PageWithBottomEdge {
                         notes.sortOrder = popup.sortOrder
                     })
                     popup.sortOrder = notes.sortOrder;
-                }
-            }
-        }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Search")
-                iconName: "search"
-                onTriggered: {
-                    root.openSearch();
                 }
             }
         }
