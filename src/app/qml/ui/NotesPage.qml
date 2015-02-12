@@ -19,6 +19,7 @@
 import QtQuick 2.3
 import QtQuick.Layouts 1.0
 import Ubuntu.Components 1.1
+import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 import "../components"
@@ -63,6 +64,21 @@ PageWithBottomEdge {
                 iconName: "add"
                 onTriggered: {
                     NotesStore.createNote(i18n.tr("Untitled"), filterNotebookGuid);
+                }
+            }
+        }
+
+        ToolbarButton {
+            action: Action {
+                iconSource: "../images/sorting.svg"
+                text: i18n.tr("Sorting")
+                onTriggered: {
+                    print("sortorder is", notes.sortOrder)
+                    var popup = PopupUtils.open(Qt.resolvedUrl("../components/SortingDialog.qml"));
+                    popup.accepted.connect( function() {
+                        notes.sortOrder = popup.sortOrder
+                    })
+                    popup.sortOrder = notes.sortOrder;
                 }
             }
         }
@@ -145,8 +161,9 @@ PageWithBottomEdge {
 
         delegate: NotesDelegate {
             title: model.title
-            creationDate: model.created
-            changedDate: model.updated
+            date: notes.sortOrder == Notes.SortOrderUpdatedOldest || notes.sortOrder == Notes.SortOrderUpdatedNewest ?
+                      model.updated : model.created
+
             content: model.tagline
             tags: {
                 var tags = new Array();

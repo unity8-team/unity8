@@ -1142,6 +1142,7 @@ void NotesStore::saveNote(const QString &guid)
         return;
     }
     note->setUpdateSequenceNumber(note->updateSequenceNumber()+1);
+    note->setUpdated(QDateTime::currentDateTime());
     syncToCacheFile(note);
     note->syncToCacheFile();
 

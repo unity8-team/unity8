@@ -28,6 +28,7 @@
 class Notes : public QSortFilterProxyModel
 {
     Q_OBJECT
+    Q_ENUMS(SortOrder)
     Q_PROPERTY(QString filterNotebookGuid READ filterNotebookGuid WRITE setFilterNotebookGuid NOTIFY filterNotebookGuidChanged)
     Q_PROPERTY(QString filterTagGuid READ filterTagGuid WRITE setFilterTagGuid NOTIFY filterTagGuidChanged)
     Q_PROPERTY(bool onlyReminders READ onlyReminders WRITE setOnlyReminders NOTIFY onlyRemindersChanged)
@@ -36,8 +37,18 @@ class Notes : public QSortFilterProxyModel
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(SortOrder sortOrder READ sortOrder WRITE setSortOrder NOTIFY sortOrderChanged)
 
 public:
+    enum SortOrder {
+        SortOrderDateCreatedNewest,
+        SortOrderDateCreatedOldest,
+        SortOrderDateUpdatedNewest,
+        SortOrderDateUpdatedOldest,
+        SortOrderTitleAscending,
+        SortOrderTitleDescending
+    };
+
     explicit Notes(QObject *parent = 0);
 
     QString filterNotebookGuid() const;
@@ -63,6 +74,9 @@ public:
 
     Q_INVOKABLE int sectionCount(const QString &sectionRole, const QString &section);
 
+    SortOrder sortOrder() const;
+    void setSortOrder(SortOrder sortOrder);
+
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
@@ -76,6 +90,7 @@ signals:
     void loadingChanged();
     void errorChanged();
     void countChanged();
+    void sortOrderChanged();
 
 private:
     QString m_filterNotebookGuid;
@@ -83,6 +98,7 @@ private:
     bool m_onlyReminders;
     bool m_onlySearchResults;
     bool m_showDeleted;
+    SortOrder m_sortOrder;
 };
 
 #endif // NOTES_H

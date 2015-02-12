@@ -154,6 +154,45 @@ int Notes::sectionCount(const QString &sectionRole, const QString &section)
     return count;
 }
 
+Notes::SortOrder Notes::sortOrder() const
+{
+    return m_sortOrder;
+}
+
+void Notes::setSortOrder(Notes::SortOrder sortOrder)
+{
+    if (m_sortOrder != sortOrder) {
+        switch (sortOrder) {
+        case SortOrderDateCreatedNewest:
+            setSortRole(NotesStore::RoleCreated);
+            sort(0, Qt::DescendingOrder);
+            break;
+        case SortOrderDateCreatedOldest:
+            setSortRole(NotesStore::RoleCreated);
+            sort(0, Qt::AscendingOrder);
+            break;
+        case SortOrderDateUpdatedNewest:
+            setSortRole(NotesStore::RoleUpdated);
+            sort(0, Qt::DescendingOrder);
+            break;
+        case SortOrderDateUpdatedOldest:
+            setSortRole(NotesStore::RoleUpdated);
+            sort(0, Qt::AscendingOrder);
+            break;
+        case SortOrderTitleAscending:
+            setSortRole(NotesStore::RoleTitle);
+            sort(0, Qt::AscendingOrder);
+            break;
+        case SortOrderTitleDescending:
+            setSortRole(NotesStore::RoleTitle);
+            sort(0, Qt::DescendingOrder);
+            break;
+        }
+        m_sortOrder = sortOrder;
+        emit sortOrderChanged();
+    }
+}
+
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);

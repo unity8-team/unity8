@@ -27,8 +27,7 @@ Empty {
     height: units.gu(12)
 
     property string title
-    property date creationDate
-    property date changedDate
+    property string date
     property string content
     property string resource
     property string tags
@@ -89,10 +88,8 @@ Empty {
                             Label {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                // TRANSLATORS: the argument is a modification date that follows this format:
-                                // http://qt-project.org/doc/qt-5/qml-qtqml-date.html
                                 text: "<font color=\"" + root.notebookColor + "\">" +
-                                    Qt.formatDateTime(root.creationDate, i18n.tr("yyyy/mm/dd hh:mm")) +
+                                    Qt.formatDateTime(root.date, Qt.LocalDate) +
                                     " </font>" + root.content
                                 wrapMode: Text.WordWrap
                                 textFormat: Text.StyledText
