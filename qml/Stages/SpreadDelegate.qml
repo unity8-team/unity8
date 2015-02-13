@@ -21,7 +21,7 @@ import QtQuick 2.0
 import Ubuntu.Components 1.1
 import "../Components"
 
-Item {
+FocusScope {
     id: root
 
     // to be read from outside
@@ -41,9 +41,16 @@ Item {
     Item {
         objectName: "appWindowWithShadow"
 
-        y: dragArea.distance
+        readonly property real limit: root.height / 4
+
+        y: root.closeable ? dragArea.distance : elastic(dragArea.distance)
         width: parent.width
         height: parent.height
+
+        function elastic(distance) {
+            var k = distance < 0 ? -limit : limit
+            return k * (1 - Math.pow((k - 1) / k, distance))
+        }
 
         BorderImage {
             anchors {
@@ -58,6 +65,7 @@ Item {
         ApplicationWindow {
             id: appWindow
             objectName: application ? "appWindow_" + application.appId : "appWindow_null"
+            focus: true
             anchors {
                 fill: parent
                 topMargin: appWindow.fullscreen ? 0 : maximizedAppTopMargin

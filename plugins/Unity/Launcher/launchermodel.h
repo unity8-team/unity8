@@ -28,6 +28,7 @@
 class LauncherItem;
 class GSettings;
 class DBusInterface;
+class ASAdapter;
 
 using namespace unity::shell::launcher;
 using namespace unity::shell::application;
@@ -54,10 +55,14 @@ public:
     unity::shell::application::ApplicationManagerInterface* applicationManager() const;
     void setApplicationManager(unity::shell::application::ApplicationManagerInterface *appManager);
 
+    bool onlyPinned() const override;
+    void setOnlyPinned(bool onlyPinned) override;
+
     int findApplication(const QString &appId);
 
 public Q_SLOTS:
     void requestRemove(const QString &appId);
+    Q_INVOKABLE void refresh();
 
 private:
     void storeAppList();
@@ -68,7 +73,6 @@ private Q_SLOTS:
     void countChanged(const QString &appId, int count);
     void countVisibleChanged(const QString &appId, int count);
     void progressChanged(const QString &appId, int progress);
-    void refresh();
 
     void applicationAdded(const QModelIndex &parent, int row);
     void applicationRemoved(const QModelIndex &parent, int row);
@@ -79,6 +83,7 @@ private:
 
     GSettings *m_settings;
     DBusInterface *m_dbusIface;
+    ASAdapter *m_asAdapter;
 
     ApplicationManagerInterface *m_appManager;
 

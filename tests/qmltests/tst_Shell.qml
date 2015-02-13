@@ -25,6 +25,7 @@ import Ubuntu.Components 1.1
 import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Application 0.1
 import Unity.Connectivity 0.1
+import Unity.Indicators 0.1
 import Unity.Notifications 1.0
 import Unity.Test 0.1 as UT
 import Powerd 0.1
@@ -35,6 +36,13 @@ Item {
     id: root
     width: units.gu(60)
     height: units.gu(71)
+
+    Component.onCompleted: {
+        // must set the mock mode before loading the Shell
+        LightDM.Greeter.mockMode = "single";
+        LightDM.Users.mockMode = "single";
+        shellLoader.active = true;
+    }
 
     QtObject {
         id: applicationArguments
@@ -56,7 +64,9 @@ Item {
         anchors.fill: parent
         Loader {
             id: shellLoader
+            focus: true
 
+            active: false
             property bool itemDestroyed: false
             sourceComponent: Component {
                 Shell {
@@ -81,6 +91,7 @@ Item {
                     anchors { left: parent.left; right: parent.right }
                     Button {
                         text: "Show Greeter"
+                        activeFocusOnPress: false
                         onClicked: {
                             if (shellLoader.status !== Loader.Ready)
                                 return;
@@ -162,6 +173,7 @@ Item {
 
         function init() {
             tryCompare(shell, "enabled", true); // enabled by greeter when ready
+            shell.indicatorProfile = "phone";
 
             swipeAwayGreeter();
 
@@ -194,6 +206,7 @@ Item {
             killApps(ApplicationManager);
 
             unlockAllModemsSpy.clear()
+            LightDM.Greeter.authenticate(""); // reset greeter
 
             // reload our test subject to get it in a fresh state once again
             shellLoader.active = true;
@@ -221,7 +234,7 @@ Item {
 
             notifications.model = mockNotificationsModel;
 
-            // FIXME: Hack: SortFilterProxyModelQML doesn't work with QML ListModels which we use
+            // FIXME: Hack: UnitySortFilterProxyModelQML doesn't work with QML ListModels which we use
             // for mocking here (RoleType can't be found in the QML model). As we only need to show
             // one SnapDecision lets just disable the filtering and make appear any notification as a
             // SnapDecision.
@@ -244,7 +257,7 @@ Item {
 
             // Clicking the button should dismiss the notification and return focus
             var buttonAccept = findChild(notification, "notify_button0");
-            mouseClick(buttonAccept, buttonAccept.width / 2, buttonAccept.height / 2);
+            mouseClick(buttonAccept);
 
             // Make sure we're back to normal
             tryCompare(app.session.surface, "activeFocus", true);
@@ -426,11 +439,11 @@ Item {
             waitUntilTransitionsEnd(appWindowStateGroup);
         }
 
-        function test_surfaceLosesFocusWhilePanelIsOpen() {
+        function test_surfaceLosesActiveFocusWhilePanelIsOpen() {
             var app = ApplicationManager.startApplication("dialer-app");
             waitUntilAppWindowIsFullyLoaded(app);
 
-            tryCompare(app.session.surface, "focus", true);
+            tryCompare(app.session.surface, "activeFocus", true);
 
             // Drag the indicators panel half-open
             var touchX = shell.width / 2;
@@ -441,7 +454,7 @@ Item {
                     true /* beginTouch */, false /* endTouch */);
             verify(indicators.partiallyOpened);
 
-            tryCompare(app.session.surface, "focus", false);
+            tryCompare(app.session.surface, "activeFocus", false);
 
             // And finish getting it open
             touchFlick(indicators,
@@ -450,11 +463,21 @@ Item {
                     false /* beginTouch */, true /* endTouch */);
             tryCompare(indicators, "fullyOpened", true);
 
-            tryCompare(app.session.surface, "focus", false);
+            tryCompare(app.session.surface, "activeFocus", false);
 
             dragToCloseIndicatorsPanel();
 
-            tryCompare(app.session.surface, "focus", true);
+            tryCompare(app.session.surface, "activeFocus", true);
+        }
+
+        function test_launchedAppHasActiveFocus() {
+            var dialerApp = ApplicationManager.startApplication("dialer-app");
+            verify(dialerApp);
+            waitUntilAppSurfaceShowsUp("dialer-app")
+
+            verify(dialerApp.session.surface);
+
+            tryCompare(dialerApp.session.surface, "activeFocus", true);
         }
 
         // Wait for the whole UI to settle down
@@ -462,11 +485,19 @@ Item {
             var launcher = findChild(shell, "launcherPanel")
             tryCompareFunction(function() {return launcher.x === 0 || launcher.x === -launcher.width;}, true);
             if (launcher.x === 0) {
-                mouseClick(shell, shell.width / 2, shell.height / 2)
+                mouseClick(shell)
             }
             tryCompare(launcher, "x", -launcher.width)
 
             waitForRendering(shell)
+        }
+
+        function waitUntilAppSurfaceShowsUp(appId) {
+            var appWindow = findChild(shell, "appWindow_" + appId);
+            verify(appWindow);
+            var appWindowStates = findInvisibleChild(appWindow, "applicationWindowStateGroup");
+            verify(appWindowStates);
+            tryCompare(appWindowStates, "state", "surface");
         }
 
         function dragToCloseIndicatorsPanel() {
@@ -495,16 +526,8 @@ Item {
         function tapOnAppIconInLauncher() {
             var launcherPanel = findChild(shell, "launcherPanel");
 
-            // pick the first icon, the one at the bottom.
+            // pick the first icon, the one at the top.
             var appIcon = findChild(launcherPanel, "launcherDelegate0")
-
-            // Swipe upwards over the launcher to ensure that this icon
-            // at the bottom is not folded and faded away.
-            var touchStartX = launcherPanel.width / 2;
-            var touchStartY = launcherPanel.height / 2;
-            touchFlick(launcherPanel, touchStartX, touchStartY, touchStartX, 0);
-            tryCompare(launcherPanel, "moving", false);
-
             tap(appIcon, appIcon.width / 2, appIcon.height / 2);
         }
 
@@ -544,6 +567,33 @@ Item {
                 && itemRectInShell.y >= 0
                 && itemRectInShell.x + itemRectInShell.width <= shell.width
                 && itemRectInShell.y + itemRectInShell.height <= shell.height;
+        }
+
+        function test_greeterDoesNotChangeIndicatorProfile() {
+            var panel = findChild(shell, "panel");
+            tryCompare(panel.indicators.indicatorsModel, "profile", shell.indicatorProfile);
+
+            LightDM.Greeter.showGreeter();
+            tryCompare(panel.indicators.indicatorsModel, "profile", shell.indicatorProfile);
+
+            LightDM.Greeter.hideGreeter();
+            tryCompare(panel.indicators.indicatorsModel, "profile", shell.indicatorProfile);
+        }
+
+        function test_shellProfileChangesReachIndicators() {
+            var panel = findChild(shell, "panel");
+
+            shell.indicatorProfile = "test1";
+            for (var i = 0; i < panel.indicators.indicatorsModel.count; ++i) {
+                var properties = panel.indicators.indicatorsModel.data(i, IndicatorsModelRole.IndicatorProperties);
+                verify(properties["menuObjectPath"].substr(-5), "test1");
+            }
+
+            shell.indicatorProfile = "test2";
+            for (var i = 0; i < panel.indicators.indicatorsModel.count; ++i) {
+                var properties = panel.indicators.indicatorsModel.data(i, IndicatorsModelRole.IndicatorProperties);
+                verify(properties["menuObjectPath"].substr(-5), "test2");
+            }
         }
 
         function test_focusRequestedHidesGreeter() {
@@ -752,13 +802,17 @@ Item {
             dragLauncherIntoView();
 
             // Emulate a tap with a finger, where the touch position drifts during the tap.
+            // This is to test the touch ownership changes. The tap is happening on the button
+            // area but then drifting into the left edge drag area. This test makes sure
+            // the touch ownership stays with the button and doesn't move over to the
+            // left edge drag area.
             {
                 var buttonShowDashHome = findChild(launcher, "buttonShowDashHome");
                 var startPos = buttonShowDashHome.mapToItem(shell,
-                        buttonShowDashHome.width * 0.2,
+                        buttonShowDashHome.width * 0.8,
                         buttonShowDashHome.height * 0.2);
                 var endPos = buttonShowDashHome.mapToItem(shell,
-                        buttonShowDashHome.width * 0.8,
+                        buttonShowDashHome.width * 0.2,
                         buttonShowDashHome.height * 0.8);
                 touchFlick(shell, startPos.x, startPos.y, endPos.x, endPos.y);
             }

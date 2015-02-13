@@ -27,25 +27,34 @@
 
 // local
 #include "qlimitproxymodelqml.h"
-#include "qsortfilterproxymodelqml.h"
+#include "unitysortfilterproxymodelqml.h"
 #include "relativetimeformatter.h"
 #include "timeformatter.h"
 #include "unitymenumodelpaths.h"
 #include "windowkeysfilter.h"
 #include "easingcurve.h"
+#include "windowstatestorage.h"
+
+static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new WindowStateStorage();
+}
 
 void UtilsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("Utils"));
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<QLimitProxyModelQML>(uri, 0, 1, "LimitProxyModel");
-    qmlRegisterType<QSortFilterProxyModelQML>(uri, 0, 1, "SortFilterProxyModel");
+    qmlRegisterType<UnitySortFilterProxyModelQML>(uri, 0, 1, "UnitySortFilterProxyModel");
     qmlRegisterType<UnityMenuModelPaths>(uri, 0, 1, "UnityMenuModelPaths");
     qmlRegisterType<TimeFormatter>(uri, 0, 1, "TimeFormatter");
     qmlRegisterType<WindowKeysFilter>(uri, 0, 1, "WindowKeysFilter");
     qmlRegisterType<GDateTimeFormatter>(uri, 0, 1, "GDateTimeFormatter");
     qmlRegisterType<EasingCurve>(uri, 0, 1, "EasingCurve");
     qmlRegisterType<RelativeTimeFormatter>(uri, 0, 1, "RelativeTimeFormatter");
+    qmlRegisterSingletonType<WindowStateStorage>(uri, 0, 1, "WindowStateStorage", createWindowStateStorage);
 }
 
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

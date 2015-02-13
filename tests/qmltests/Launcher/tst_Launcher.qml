@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
 import QtTest 1.0
 import Unity.Test 0.1 as UT
 import Ubuntu.Components 1.1
@@ -74,10 +75,22 @@ Item {
         }
     }
 
-    Button {
+    ColumnLayout {
         anchors { bottom: parent.bottom; right: parent.right; margins: units.gu(1) }
-        text: "emit hinting signal"
-        onClicked: LauncherModel.emitHint()
+        spacing: units.gu(1)
+        width: units.gu(20)
+
+        Button {
+            text: "emit hinting signal"
+            onClicked: LauncherModel.emitHint()
+            Layout.fillWidth: true
+        }
+
+        Button {
+            text: "rotate"
+            onClicked: launcherLoader.item.inverted = !launcherLoader.item.inverted
+            Layout.fillWidth: true
+        }
     }
 
     SignalSpy {
@@ -118,11 +131,6 @@ Item {
 
             // Now do check that snapping is in fact enabled
             compare(listView.snapMode, ListView.SnapToItem, "Snapping is not enabled");
-
-            // Tests can be run in a reaaaaally slow environment or machine. Thus ensure
-            // the dismissTimer doesn't time out inadvertently.
-            var dismissTimer = findInvisibleChild(launcher, "dismissTimer");
-            dismissTimer.interval = 60 * 60 * 1000; // one hour
         }
 
         function dragLauncherIntoView() {
@@ -145,6 +153,18 @@ Item {
             tryCompare(panel, "x", -panel.width, 1000);
         }
 
+        function positionLauncherListAtBeginning() {
+            var listView = testCase.findChild(launcherLoader.item, "launcherListView");
+            listView.contentY = -listView.topMargin;
+        }
+        function positionLauncherListAtEnd() {
+            var listView = testCase.findChild(launcherLoader.item, "launcherListView");
+            if ((listView.contentHeight + listView.topMargin + listView.bottomMargin) > listView.height) {
+                listView.contentY = listView.topMargin + listView.contentHeight
+                    - listView.height;
+            }
+        }
+
         // Drag from the left edge of the screen rightwards and check that the launcher
         // appears (as if being dragged by the finger/pointer)
         function test_dragLeftEdgeToRevealLauncherAndTapCenterToDismiss() {
@@ -159,7 +179,7 @@ Item {
             dragLauncherIntoView()
 
             // tapping on the center of the screen should dismiss the launcher
-            mouseClick(launcher, launcher.width/2, launcher.height/2)
+            mouseClick(launcher)
 
             // should eventually get fully retracted (hidden)
             tryCompare(panel, "x", -launcher.panelWidth, 1000)
@@ -171,22 +191,22 @@ Item {
            launcherApplicationSelected("[...]dialer-app.desktop") */
         function test_clickingOnAppIconCausesSignalEmission() {
             dragLauncherIntoView();
-            launcher.lastSelectedApplication = ""
+            launcher.lastSelectedApplication = "";
+            launcher.inverted = false;
 
-            var listView = findChild(launcher, "launcherListView");
-            listView.positionViewAtEnd();
+            positionLauncherListAtBeginning();
 
-            var appIcon = findChild(launcher, "launcherDelegate0")
+            var appIcon = findChild(launcher, "launcherDelegate0");
 
-            verify(appIcon != undefined)
+            verify(appIcon != undefined);
 
-            mouseClick(appIcon, appIcon.width/2, appIcon.height/2)
+            mouseClick(appIcon);
 
             tryCompare(launcher, "lastSelectedApplication",
-                       "dialer-app")
+                       appIcon.appId);
 
             // Tapping on an application icon also dismisses the launcher
-            waitUntilLauncherDisappears()
+            waitUntilLauncherDisappears();
         }
 
         /* If I click on the dash icon on the launcher
@@ -199,7 +219,7 @@ Item {
             var dashIcon = findChild(launcher, "dashItem")
             verify(dashIcon != undefined)
 
-            mouseClick(dashIcon, dashIcon.width/2, dashIcon.height/2)
+            mouseClick(dashIcon)
 
             tryCompare(launcher, "showDashHome_count", 1)
 
@@ -282,25 +302,26 @@ Item {
         function test_clickFlick_data() {
             var listView = findChild(launcher, "launcherListView");
             return [
-                {tag: "unfolded top", positionViewAtBeginning: false,
+                {tag: "unfolded top", positionViewAtBeginning: true,
                                       clickY: listView.topMargin + units.gu(2),
                                       expectFlick: false},
 
-                {tag: "folded top", positionViewAtBeginning: true,
+                {tag: "folded top", positionViewAtBeginning: false,
                                     clickY: listView.topMargin + units.gu(2),
                                     expectFlick: true},
 
-                {tag: "unfolded bottom", positionViewAtBeginning: true,
+                {tag: "unfolded bottom", positionViewAtBeginning: false,
                                          clickY: listView.height - listView.topMargin - units.gu(1),
                                          expectFlick: false},
 
-                {tag: "folded bottom", positionViewAtBeginning: false,
+                {tag: "folded bottom", positionViewAtBeginning: true,
                                        clickY: listView.height - listView.topMargin - units.gu(1),
                                        expectFlick: true},
             ];
         }
 
         function test_clickFlick(data) {
+            launcher.inverted = false;
             launcher.lastSelectedApplication = "";
             dragLauncherIntoView();
             var listView = findChild(launcher, "launcherListView");
@@ -310,9 +331,9 @@ Item {
             // So for stability's sake we just put the listView in the position
             // we want to to actually start doing what this tests intends to check.
             if (data.positionViewAtBeginning) {
-                listView.positionViewAtBeginning();
+                positionLauncherListAtBeginning();
             } else {
-                listView.positionViewAtEnd();
+                positionLauncherListAtEnd();
             }
             tryCompare(listView, "flicking", false);
 
@@ -418,7 +439,7 @@ Item {
             compare(quickListShape.visible, false)
 
             // Doing longpress
-            mousePress(draggedItem, draggedItem.width / 2, draggedItem.height / 2)
+            mousePress(draggedItem)
             tryCompare(fakeDragItem, "visible", true) // Wait longpress happening
             tryCompare(quickListShape, "visible", true)
 
@@ -447,18 +468,19 @@ Item {
             // Position launcher to where we need it
             var listView = findChild(launcher, "launcherListView");
             if (data.flickTo == "top") {
-                listView.positionViewAtEnd();
+                positionLauncherListAtBeginning();
             } else {
-                listView.positionViewAtBeginning();
+                positionLauncherListAtEnd();
             }
 
             // Doing longpress
-            mousePress(draggedItem, draggedItem.width / 2, draggedItem.height / 2);
+            mousePress(draggedItem);
             tryCompare(quickListShape, "opacity", 0.96);
             mouseRelease(draggedItem);
 
             verify(quickList.y >= units.gu(1));
             verify(quickList.y + quickList.height + units.gu(1) <= launcher.height);
+            compare(quickList.width, units.gu(30));
 
             // Click somewhere in the empty space to dismiss the quicklist
             mouseClick(launcher, launcher.width - units.gu(1), units.gu(1));
@@ -486,7 +508,7 @@ Item {
             tryCompare(quickListShape, "visible", false)
 
             // Doing longpress
-            mousePress(clickedItem, clickedItem.width / 2, clickedItem.height / 2)
+            mousePress(clickedItem)
             tryCompare(clickedItem, "itemOpacity", 0) // Wait for longpress to happen
             verify(quickListShape.visible, "QuickList must be visible")
 
@@ -497,7 +519,7 @@ Item {
             signalSpy.clear();
             signalSpy.signalName = "quickListTriggered"
 
-            mouseClick(quickListEntry, quickListEntry.width / 2, quickListEntry.height / 2)
+            mouseClick(quickListEntry)
 
             if (data.clickable) {
                 // QuickList needs to be closed when some clickable item is clicked
@@ -529,7 +551,7 @@ Item {
             tryCompare(quickList, "state", "")
 
             // Doing longpress
-            mousePress(clickedItem, clickedItem.width / 2, clickedItem.height / 2)
+            mousePress(clickedItem)
             tryCompare(clickedItem, "itemOpacity", 0) // Wait for longpress to happen
             verify(quickList, "state", "open")
 

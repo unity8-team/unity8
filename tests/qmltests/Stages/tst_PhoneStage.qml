@@ -29,6 +29,7 @@ Item {
     PhoneStage {
         id: phoneStage
         anchors { fill: parent; rightMargin: units.gu(30) }
+        focus: true
         dragAreaWidth: units.gu(2)
         maximizedAppTopMargin: units.gu(3) + units.dp(2)
         interactive: true
@@ -51,6 +52,7 @@ Item {
             Button {
                 anchors { left: parent.left; right: parent.right }
                 text: "Add App"
+                activeFocusOnPress: false
                 onClicked: {
                     testCase.addApps();
                 }
@@ -58,6 +60,7 @@ Item {
             Button {
                 anchors { left: parent.left; right: parent.right }
                 text: "Remove Selected"
+                activeFocusOnPress: false
                 onClicked: {
                     ApplicationManager.stopApplication(ApplicationManager.get(appList.selectedAppIndex).appId);
                 }
@@ -65,6 +68,7 @@ Item {
             Button {
                 anchors { left: parent.left; right: parent.right }
                 text: "Stop Selected"
+                activeFocusOnPress: false
                 onClicked: {
                     ApplicationManager.get(appList.selectedAppIndex).setState(ApplicationInfoInterface.Stopped);
                 }
@@ -128,17 +132,20 @@ Item {
             var startX = phoneStage.width - 2;
             var startY = phoneStage.height / 2;
             var endY = startY;
-            var endX = units.gu(2);
+            var endX = phoneStage.width / 2;
 
             touchFlick(phoneStage, startX, startY, endX, endY,
                        true /* beginTouch */, true /* endTouch */, units.gu(10), 50);
+
+            tryCompare(spreadView, "phase", 2);
+            waitForRendering(phoneStage);
         }
 
         function test_shortFlick() {
             addApps(2)
             var startX = phoneStage.width - units.gu(1);
             var startY = phoneStage.height / 2;
-            var endX = phoneStage.width / 2;
+            var endX = startX - units.gu(4);
             var endY = startY;
 
             var activeApp = ApplicationManager.get(0);
@@ -164,7 +171,7 @@ Item {
                 {tag: "<position2 (non-linear)", positionMarker: "positionMarker2", linear: false, offset: -1, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
                 {tag: ">position2", positionMarker: "positionMarker2", linear: true, offset: +1, endPhase: 1, targetPhase: 0, newFocusedIndex: 1 },
                 {tag: "<position3", positionMarker: "positionMarker3", linear: true, offset: -1, endPhase: 1, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: ">position3", positionMarker: "positionMarker3", linear: true, offset: +1, endPhase: 2, targetPhase: 2, newFocusedIndex: 2 },
+                {tag: ">position3", positionMarker: "positionMarker3", linear: true, offset: +1, endPhase: 1, targetPhase: 2, newFocusedIndex: 2 },
             ];
         }
 
@@ -202,6 +209,7 @@ Item {
 
             if (data.targetPhase == 2) {
                 var app2 = findChild(spreadView, "appDelegate2");
+                tryCompare(app2, "swipeToCloseEnabled", true);
                 mouseClick(app2, units.gu(1), units.gu(1));
             }
 
@@ -246,6 +254,7 @@ Item {
             }
 
             console.log("clicking app", data.index, "(", appId, ")")
+            tryCompare(tile, "swipeToCloseEnabled", true);
             mouseClick(spreadView, tile.mapToItem(spreadView).x + units.gu(1), spreadView.height / 2)
             tryCompare(ApplicationManager, "focusedApplicationId", appId);
             tryCompare(spreadView, "phase", 0);
@@ -386,6 +395,32 @@ Item {
             compare(dragArea0.enabled, false);
             compare(dragArea1.enabled, false);
             compare(dragArea2.enabled, false);
+
+            tryCompare(spreadView, "contentX", -spreadView.shift)
+        }
+
+        function test_leftEdge_data() {
+            return [
+                { tag: "normal", inSpread: false, leftEdgeDragWidth: units.gu(5), shouldMoveApp: true },
+                { tag: "inSpread", inSpread: true, leftEdgeDragWidth: units.gu(5), shouldMoveApp: false }
+            ]
+        }
+
+        function test_leftEdge(data) {
+            addApps(2);
+
+            if (data.inSpread) {
+                goToSpread();
+            }
+
+            var focusedDelegate = findChild(phoneStage, "appDelegate0");
+            phoneStage.inverseProgress = data.leftEdgeDragWidth;
+
+            tryCompare(focusedDelegate, "x", data.shouldMoveApp ? data.leftEdgeDragWidth : 0);
+
+            phoneStage.inverseProgress = 0;
+
+            tryCompare(focusedDelegate, "x", 0);
         }
     }
 }

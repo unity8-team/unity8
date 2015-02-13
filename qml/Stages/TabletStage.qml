@@ -43,7 +43,7 @@ Rectangle {
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
             // left edge drag released. Minimum distance is given by design.
             if (priv.oldInverseProgress > units.gu(22)) {
-                ApplicationManager.focusApplication("unity8-dash");
+                ApplicationManager.requestFocusApplication("unity8-dash");
             }
         }
         priv.oldInverseProgress = inverseProgress;
@@ -76,6 +76,20 @@ Rectangle {
 
             appId0 = ApplicationManager.count >= 1 ? ApplicationManager.get(0).appId : "";
             appId1 = ApplicationManager.count > 1 ? ApplicationManager.get(1).appId : "";
+
+            // Update the QML focus accordingly
+            updateSpreadDelegateFocus();
+        }
+
+        function updateSpreadDelegateFocus() {
+            if (priv.focusedAppId) {
+                var focusedAppIndex = priv.indexOf(priv.focusedAppId);
+                if (focusedAppIndex !== -1) {
+                    spreadRepeater.itemAt(focusedAppIndex).focus = true;
+                } else {
+                    console.warn("TabletStage: Failed to find the SpreadDelegate for appID=" + priv.focusedAppId);
+                }
+            }
         }
 
         function indexOf(appId) {
@@ -492,7 +506,7 @@ Rectangle {
                     interactive: !spreadView.interactive && spreadView.phase === 0 && root.interactive
                     swipeToCloseEnabled: spreadView.interactive && !snapAnimation.running
                     maximizedAppTopMargin: root.maximizedAppTopMargin
-                    dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 ? root.inverseProgress : 0
+                    dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 && spreadView.phase === 0 ? root.inverseProgress : 0
                     application: ApplicationManager.get(index)
                     closeable: !isDash
 
@@ -590,7 +604,6 @@ Rectangle {
         width: root.dragAreaWidth
         direction: Direction.Leftwards
 
-        property bool attachedToView: false
         property var gesturePoints: new Array()
 
         onTouchXChanged: {
@@ -599,20 +612,12 @@ Rectangle {
                 spreadView.contentX = -spreadView.shift;
             }
 
-            if (dragging && attachedToView) {
-                spreadView.contentX = -touchX + spreadDragArea.width - spreadView.shift;
-                if (spreadView.shiftedContentX > spreadView.phase0Width + spreadView.phase1Width / 2) {
-                    attachedToView = false;
-                    spreadView.snap();
-                }
+            if (dragging) {
+                var dragX = -touchX + spreadDragArea.width - spreadView.shift;
+                var maxDrag = spreadView.width * spreadView.positionMarker4 - spreadView.shift;
+                spreadView.contentX = Math.min(dragX, maxDrag);
             }
             gesturePoints.push(touchX);
-        }
-
-        onStatusChanged: {
-            if (status == DirectionalDragArea.Recognized) {
-                attachedToView = true;
-            }
         }
 
         onDraggingChanged: {
@@ -630,7 +635,7 @@ Rectangle {
                 // If it was a short one-way movement, do the Alt+Tab switch
                 // no matter if we didn't cross positionMarker1 yet.
                 spreadView.snapTo(spreadView.nextInStack);
-            } else if (!dragging && attachedToView) {
+            } else if (!dragging) {
                 if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker1) {
                     spreadView.snap();
                 } else if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2) {

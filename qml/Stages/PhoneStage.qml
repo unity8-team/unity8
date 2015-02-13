@@ -32,6 +32,21 @@ Rectangle {
     property bool spreadEnabled: true // If false, animations and right edge will be disabled
     property real inverseProgress: 0 // This is the progress for left edge drags, in pixels.
     property int orientation: Qt.PortraitOrientation
+    property QtObject applicationManager: ApplicationManager
+    property bool focusFirstApp: true // If false, focused app will appear on right edge like other apps
+    property bool altTabEnabled: true
+    property real startScale: 1.1
+    property real endScale: 0.7
+
+    // How far left the stage has been dragged
+    readonly property real dragProgress: spreadRepeater.count > 0 ? -spreadRepeater.itemAt(0).xTranslate : 0
+
+    readonly property alias dragging: spreadDragArea.dragging
+
+    // Only used by the tutorial right now, when it is teasing the right edge
+    property real dragAreaOverlap
+
+    signal opened()
 
     color: "#111111"
 
@@ -52,30 +67,30 @@ Rectangle {
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
             // left edge drag released. Minimum distance is given by design.
             if (priv.oldInverseProgress > units.gu(22)) {
-                ApplicationManager.focusApplication("unity8-dash");
+                applicationManager.requestFocusApplication("unity8-dash");
             }
         }
         priv.oldInverseProgress = inverseProgress;
     }
 
     Connections {
-        target: ApplicationManager
+        target: applicationManager
 
         onFocusRequested: {
             if (spreadView.phase > 0) {
                 spreadView.snapTo(priv.indexOf(appId));
             } else {
-                ApplicationManager.focusApplication(appId);
+                applicationManager.focusApplication(appId);
             }
         }
 
         onApplicationAdded: {
             if (spreadView.phase == 2) {
-                spreadView.snapTo(ApplicationManager.count - 1);
+                spreadView.snapTo(applicationManager.count - 1);
             } else {
                 spreadView.phase = 0;
                 spreadView.contentX = -spreadView.shift;
-                ApplicationManager.focusApplication(appId);
+                applicationManager.focusApplication(appId);
             }
         }
 
@@ -90,9 +105,9 @@ Rectangle {
         }
 
         function focusTopMostApp() {
-            if (ApplicationManager.count > 0) {
-                var topmostApp = ApplicationManager.get(0);
-                ApplicationManager.focusApplication(topmostApp.appId);
+            if (applicationManager.count > 0) {
+                var topmostApp = applicationManager.get(0);
+                applicationManager.focusApplication(topmostApp.appId);
             }
         }
     }
@@ -100,18 +115,21 @@ Rectangle {
     QtObject {
         id: priv
 
-        property string focusedAppId: ApplicationManager.focusedApplicationId
-        property var focusedApplication: ApplicationManager.findApplication(focusedAppId)
+        readonly property int firstSpreadIndex: root.focusFirstApp ? 1 : 0
+        property string focusedAppId: applicationManager.focusedApplicationId
+        property var focusedApplication: applicationManager.findApplication(focusedAppId)
         property var focusedAppDelegate: null
 
         property real oldInverseProgress: 0
-        property bool animateX: true
+        property bool animateX: false
 
         onFocusedAppIdChanged: focusedAppDelegate = spreadRepeater.itemAt(0);
 
+        onFocusedAppDelegateChanged: focusedAppDelegate.focus = true;
+
         function indexOf(appId) {
-            for (var i = 0; i < ApplicationManager.count; i++) {
-                if (ApplicationManager.get(i).appId == appId) {
+            for (var i = 0; i < applicationManager.count; i++) {
+                if (applicationManager.get(i).appId == appId) {
                     return i;
                 }
             }
@@ -131,7 +149,7 @@ Rectangle {
 
         // This indicates when the spreadView is active. That means, all the animations
         // are activated and tiles need to line up for the spread.
-        readonly property bool active: shiftedContentX > 0 || spreadDragArea.status === DirectionalDragArea.Recognized
+        readonly property bool active: shiftedContentX > 0 || spreadDragArea.status === DirectionalDragArea.Recognized || !root.focusFirstApp
 
         // The flickable needs to fill the screen in order to get touch events all over.
         // However, we don't want to the user to be able to scroll back all the way. For
@@ -145,16 +163,16 @@ Rectangle {
 
         // Those markers mark the various positions in the spread (ratio to screen width from right to left):
         // 0 - 1: following finger, snap back to the beginning on release
-        property real positionMarker1: 0.3
+        property real positionMarker1: 0.2
         // 1 - 2: curved snapping movement, snap to app 1 on release
-        property real positionMarker2: 0.45
+        property real positionMarker2: 0.3
         // 2 - 3: movement follows finger, snaps back to app 1 on release
-        property real positionMarker3: 0.6
+        property real positionMarker3: 0.35
         // passing 3, we detach movement from the finger and snap to 4
         property real positionMarker4: 0.9
 
         // This is where the first app snaps to when bringing it in from the right edge.
-        property real snapPosition: 0.75
+        property real snapPosition: 0.7
 
         // Phase of the animation:
         // 0: Starting from right edge, a new app (index 1) comes in from the right
@@ -178,7 +196,7 @@ Rectangle {
             case 1:
                 if (shiftedContentX < width * positionMarker2) {
                     phase = 0;
-                } else if (shiftedContentX >= width * positionMarker4) {
+                } else if (shiftedContentX >= width * positionMarker4 && !spreadDragArea.dragging) {
                     phase = 2;
                 }
                 break;
@@ -197,10 +215,17 @@ Rectangle {
                 // Add 1 pixel to make sure we definitely hit positionMarker4 even with rounding errors of the animation.
                 snapAnimation.targetContentX = width * positionMarker4 + 1 - shift;
                 snapAnimation.start();
+                root.opened();
             }
         }
         function snapTo(index) {
-            if (ApplicationManager.count <= index) {
+            if (!root.altTabEnabled) {
+                // Reset to start instead
+                snapAnimation.targetContentX = -shift;
+                snapAnimation.start();
+                return;
+            }
+            if (applicationManager.count <= index) {
                 // In case we're trying to snap to some non existing app, lets snap back to the first one
                 index = 0;
             }
@@ -215,10 +240,12 @@ Rectangle {
             snapAnimation.start();
         }
 
-        // In case the ApplicationManager already holds an app when starting up we're missing animations
+        // In case the applicationManager already holds an app when starting up we're missing animations
         // Make sure we end up in the same state
         Component.onCompleted: {
             spreadView.contentX = -spreadView.shift
+            priv.animateX = true;
+            snapAnimation.complete();
         }
 
         SequentialAnimation {
@@ -235,7 +262,7 @@ Rectangle {
             ScriptAction {
                 script: {
                     if (spreadView.selectedIndex >= 0) {
-                        ApplicationManager.focusApplication(ApplicationManager.get(spreadView.selectedIndex).appId);
+                        applicationManager.focusApplication(applicationManager.get(spreadView.selectedIndex).appId);
 
                         spreadView.selectedIndex = -1;
                         spreadView.phase = 0;
@@ -250,7 +277,7 @@ Rectangle {
             // This width controls how much the spread can be flicked left/right. It's composed of:
             //  tileDistance * app count (with a minimum of 3 apps, in order to also allow moving 1 and 2 apps a bit)
             //  + some constant value (still scales with the screen width) which looks good and somewhat fills the screen
-            width: Math.max(3, ApplicationManager.count) * spreadView.tileDistance + (spreadView.width - spreadView.tileDistance) * 1.5
+            width: Math.max(3, applicationManager.count) * spreadView.tileDistance + (spreadView.width - spreadView.tileDistance) * 1.5
             height: parent.height
             Behavior on width {
                 enabled: spreadView.closingIndex >= 0
@@ -265,19 +292,22 @@ Rectangle {
             x: spreadView.contentX
 
             onClicked: {
-                spreadView.snapTo(0);
+                if (root.altTabEnabled) {
+                    spreadView.snapTo(0);
+                }
             }
 
             Repeater {
                 id: spreadRepeater
-                model: ApplicationManager
+                objectName: "spreadRepeater"
+                model: applicationManager
                 delegate: TransformedSpreadDelegate {
                     id: appDelegate
                     objectName: "appDelegate" + index
                     startAngle: 45
                     endAngle: 5
-                    startScale: 1.1
-                    endScale: 0.7
+                    startScale: root.startScale
+                    endScale: root.endScale
                     startDistance: spreadView.tileDistance
                     endDistance: units.gu(.5)
                     width: spreadView.width
@@ -285,11 +315,12 @@ Rectangle {
                     selected: spreadView.selectedIndex == index
                     otherSelected: spreadView.selectedIndex >= 0 && !selected
                     interactive: !spreadView.interactive && spreadView.phase === 0
-                            && spreadView.shiftedContentX === 0 && root.interactive && index === 0
-                    swipeToCloseEnabled: spreadView.interactive && !snapAnimation.running
+                            && spreadView.shiftedContentX === 0 && root.interactive && isFocused
+                    swipeToCloseEnabled: spreadView.interactive && root.interactive && !snapAnimation.running
                     maximizedAppTopMargin: root.maximizedAppTopMargin
                     dropShadow: spreadView.active ||
                                 (priv.focusedAppDelegate && priv.focusedAppDelegate.x !== 0)
+                    focusFirstApp: root.focusFirstApp
 
                     readonly property bool isDash: model.appId == "unity8-dash"
 
@@ -297,8 +328,8 @@ Rectangle {
 
                     x: {
                         // focused app is always positioned at 0 except when following left edge drag
-                        if (index == 0) {
-                            if (!isDash && root.inverseProgress > 0) {
+                        if (isFocused) {
+                            if (!isDash && root.inverseProgress > 0 && spreadView.phase === 0) {
                                 return root.inverseProgress;
                             }
                            return 0;
@@ -308,10 +339,10 @@ Rectangle {
                         }
 
                         // Otherwise line up for the spread
-                        return spreadView.width + (index - 1) * spreadView.tileDistance;
+                        return spreadView.width + spreadIndex * spreadView.tileDistance;
                     }
 
-                    application: ApplicationManager.get(index)
+                    application: applicationManager.get(index)
                     closeable: !isDash
 
                     property real behavioredIndex: index
@@ -349,7 +380,7 @@ Rectangle {
                     progress: {
                         var tileProgress = (spreadView.shiftedContentX - behavioredIndex * spreadView.tileDistance) / spreadView.width;
                         // Tile 1 needs to move directly from the beginning...
-                        if (behavioredIndex == 1 && spreadView.phase < 2) {
+                        if (root.focusFirstApp && behavioredIndex == 1 && spreadView.phase < 2) {
                             tileProgress += spreadView.tileDistance / spreadView.width;
                         }
                         // Limiting progress to ~0 and 1.7 to avoid binding calculations when tiles are not
@@ -364,11 +395,12 @@ Rectangle {
 
                     // This mostly is the same as progress, just adds the snapping to phase 1 for tiles 0 and 1
                     animatedProgress: {
-                        if (spreadView.phase == 0 && index < 2) {
+                        if (spreadView.phase == 0 && index <= priv.firstSpreadIndex) {
                             if (progress < spreadView.positionMarker1) {
                                 return progress;
-                            } else if (progress < spreadView.positionMarker1 + snappingCurve.period){
-                                return spreadView.positionMarker1 + snappingCurve.value * 3;
+                            } else if (progress < spreadView.positionMarker1 + 0.05){
+                                // p : 0.05 = x : pm2
+                                return spreadView.positionMarker1 + (progress - spreadView.positionMarker1) * (spreadView.positionMarker2 - spreadView.positionMarker1) / 0.05
                             } else {
                                 return spreadView.positionMarker2;
                             }
@@ -380,13 +412,6 @@ Rectangle {
                     visible: (progress >= 0 && progress < 1.7) ||
                              (isDash && priv.focusedAppDelegate.x !== 0)
 
-                    EasingCurve {
-                        id: snappingCurve
-                        type: EasingCurve.Linear
-                        period: 0.05
-                        progress: appDelegate.progress - spreadView.positionMarker1
-                    }
-
                     Binding {
                         target: appDelegate
                         property: "orientation"
@@ -395,11 +420,11 @@ Rectangle {
                     }
 
                     onClicked: {
-                        if (spreadView.phase == 2) {
-                            if (ApplicationManager.focusedApplicationId == ApplicationManager.get(index).appId) {
+                        if (root.altTabEnabled && spreadView.phase == 2) {
+                            if (applicationManager.focusedApplicationId == applicationManager.get(index).appId) {
                                 spreadView.snapTo(index);
                             } else {
-                                ApplicationManager.requestFocusApplication(ApplicationManager.get(index).appId);
+                                applicationManager.requestFocusApplication(applicationManager.get(index).appId);
                             }
                         }
                     }
@@ -414,7 +439,7 @@ Rectangle {
 
                     onClosed: {
                         spreadView.closingIndex = index;
-                        ApplicationManager.stopApplication(ApplicationManager.get(index).appId);
+                        applicationManager.stopApplication(applicationManager.get(index).appId);
                     }
                 }
             }
@@ -425,15 +450,10 @@ Rectangle {
         id: spreadDragArea
         objectName: "spreadDragArea"
         direction: Direction.Leftwards
-        enabled: spreadView.phase != 2 && root.spreadEnabled
+        enabled: (spreadView.phase != 2 && root.spreadEnabled) || dragging
 
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; rightMargin: -root.dragAreaOverlap }
         width: root.dragAreaWidth
-
-        // Sitting at the right edge of the screen, this EdgeDragArea directly controls the spreadView when
-        // attachedToView is true. When the finger movement passes positionMarker3 we detach it from the
-        // spreadView and make the spreadView snap to positionMarker4.
-        property bool attachedToView: true
 
         property var gesturePoints: new Array()
 
@@ -443,15 +463,13 @@ Rectangle {
                 spreadView.phase = 0;
                 spreadView.contentX = -spreadView.shift;
             }
-            if (dragging && status == DirectionalDragArea.Recognized && attachedToView) {
+            if (dragging && status == DirectionalDragArea.Recognized) {
                 // Gesture recognized. Let's move the spreadView with the finger
-                var finalX = Math.min(touchX + width, width);
-                spreadView.contentX = -finalX + spreadDragArea.width - spreadView.shift;
-            }
-            if (attachedToView && spreadView.shiftedContentX >= spreadView.width * spreadView.positionMarker3) {
-                // We passed positionMarker3. Detach from spreadView and snap it.
-                attachedToView = false;
-                spreadView.snap();
+                var dragX = Math.min(touchX + width, width); // Prevent dragging rightwards
+                dragX = -dragX + spreadDragArea.width - spreadView.shift;
+                // Don't allow dragging further than the animation crossing with phase2's animation
+                var maxMovement =  spreadView.width * spreadView.positionMarker4 - spreadView.shift;
+                spreadView.contentX = Math.min(dragX, maxMovement);
             }
             gesturePoints.push(touchX);
         }
@@ -462,10 +480,6 @@ Rectangle {
         onStatusChanged: {
             previousStatus = currentStatus;
             currentStatus = status;
-
-            if (status == DirectionalDragArea.Recognized) {
-                attachedToView = true;
-            }
         }
 
         onDraggingChanged: {
@@ -493,7 +507,7 @@ Rectangle {
                 // If it was a short one-way movement, do the Alt+Tab switch
                 // no matter if we didn't cross positionMarker1 yet.
                 spreadView.snapTo(1);
-            } else if (!dragging && attachedToView) {
+            } else if (!dragging) {
                 // otherwise snap to the closest snap position we can find
                 // (might be back to start, to app 1 or to spread)
                 spreadView.snap();

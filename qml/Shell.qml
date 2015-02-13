@@ -36,13 +36,19 @@ import "Panel"
 import "Components"
 import "Notifications"
 import "Stages"
-import "Panel/Indicators"
+import "Tutorial"
+import "Wizard"
 import Unity.Notifications 1.0 as NotificationBackend
 import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
+import Unity.Indicators 0.1 as Indicators
 
 Item {
     id: shell
+
+    // Disable everything so that user can't swipe greeter or launcher until
+    // we get first prompt/authenticate, which will re-enable the shell.
+    enabled: false
 
     // this is only here to select the width / height of the window if not running fullscreen
     property bool tablet: false
@@ -57,7 +63,7 @@ Item {
 
     readonly property bool locked: LightDM.Greeter.active && !LightDM.Greeter.authenticated && !forcedUnlock
     readonly property alias hasLockedApp: greeter.hasLockedApp
-    readonly property bool forcedUnlock: edgeDemo.running
+    readonly property bool forcedUnlock: tutorial.running
     onForcedUnlockChanged: if (forcedUnlock) lockscreen.hide()
 
     property bool sideStageEnabled: shell.width >= units.gu(100)
@@ -124,6 +130,11 @@ Item {
         sourceSize.width: 0
     }
 
+    GSettings {
+        id: usageModeSettings
+        schema.id: "com.canonical.Unity8"
+    }
+
     Binding {
         target: LauncherModel
         property: "applicationManager"
@@ -151,7 +162,7 @@ Item {
 
     ScreenGrabber {
         id: screenGrabber
-        z: edgeDemo.z + 10
+        z: dialogs.z + 10
         enabled: Powerd.status === Powerd.On
     }
 
@@ -170,8 +181,20 @@ Item {
 
     WindowKeysFilter {
         Keys.onPressed: {
-            if (event.key == Qt.Key_PowerOff || event.key == Qt.Key_PowerDown) {
-                dialogs.onPowerKeyPressed();
+            // Nokia earpieces give TogglePlayPause, while the iPhone's earpiece gives Play
+            if (event.key == Qt.Key_MediaTogglePlayPause || event.key == Qt.Key_MediaPlay) {
+                event.accepted = callManager.handleMediaKey(false);
+            } else if (event.key == Qt.Key_PowerOff || event.key == Qt.Key_PowerDown) {
+                // FIXME: We only consider power key presses if the screen is
+                // on because of bugs 1410830/1409003.  The theory is that when
+                // those bugs are encountered, there is a >2s delay between the
+                // power press event and the power release event, which causes
+                // the shutdown dialog to appear on resume.  So to avoid that
+                // symptom while we investigate the root cause, we simply won't
+                // initiate any dialogs when the screen is off.
+                if (Powerd.status === Powerd.On) {
+                    dialogs.onPowerKeyPressed();
+                }
                 event.accepted = true;
             } else {
                 volumeKeyFilter.onKeyPressed(event.key);
@@ -230,8 +253,18 @@ Item {
             }
 
             onApplicationAdded: {
-                if (greeter.shown && appId != "unity8-dash") {
-                    greeter.startUnlock()
+                if (appId != "unity8-dash") {
+                    if (greeter.shown) {
+                        greeter.startUnlock();
+                    }
+
+                    // If this happens on first boot, we may be in edge
+                    // tutorial or wizard while receiving a call.  But a call
+                    // is more important than wizard so just bail out of those.
+                    if (tutorial.running) {
+                        tutorial.finish();
+                        wizard.hide();
+                    }
                 }
                 if (greeter.narrowMode && greeter.hasLockedApp && appId === greeter.lockedApp) {
                     lockscreen.hide() // show locked app
@@ -254,7 +287,17 @@ Item {
             // the screen larger (maybe connects to monitor) and tries to enter
             // tablet mode.
             property bool tabletMode: shell.sideStageEnabled && !greeter.hasLockedApp
-            source: tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
+            source: usageModeSettings.usageMode === "Windowed" ? "Stages/DesktopStage.qml"
+                        : tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
+
+            property bool interactive: tutorial.spreadEnabled
+                    && !greeter.shown
+                    && !lockscreen.shown
+                    && panel.indicators.fullyClosed
+                    && launcher.progress == 0
+                    && !notifications.useModal
+
+            onInteractiveChanged: { if (interactive) { focus = true; } }
 
             Binding {
                 target: applicationsDisplayLoader.item
@@ -275,12 +318,12 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "interactive"
-                value: edgeDemo.stagesEnabled && !greeter.shown && !lockscreen.shown && panel.indicators.fullyClosed && launcher.progress == 0 && !notifications.useModal
+                value: applicationsDisplayLoader.interactive
             }
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "spreadEnabled"
-                value: edgeDemo.stagesEnabled && !greeter.hasLockedApp
+                value: tutorial.spreadEnabled && !greeter.hasLockedApp
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -292,6 +335,11 @@ Item {
                 property: "orientation"
                 value: shell.orientation
             }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "background"
+                value: shell.background
+            }
         }
     }
 
@@ -299,7 +347,7 @@ Item {
         id: inputMethod
         objectName: "inputMethod"
         anchors { fill: parent; topMargin: panel.panelHeight }
-        z: notifications.useModal || panel.indicators.shown ? overlay.z + 1 : overlay.z - 1
+        z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
     Connections {
@@ -350,6 +398,15 @@ Item {
         minPinLength: 4
         maxPinLength: 4
 
+        property string promptText
+        infoText: promptText !== "" ? i18n.tr("Enter %1").arg(promptText) :
+                  alphaNumeric ? i18n.tr("Enter passphrase") :
+                                 i18n.tr("Enter passcode")
+        errorText: promptText !== "" ? i18n.tr("Sorry, incorrect %1").arg(promptText) :
+                   alphaNumeric ? i18n.tr("Sorry, incorrect passphrase") + "\n" +
+                                  i18n.tr("Please re-enter") :
+                                  i18n.tr("Sorry, incorrect passcode")
+
         // FIXME: We *should* show emergency dialer if there is a SIM present,
         // regardless of whether the side stage is enabled.  But right now,
         // the assumption is that narrow screens are phones which have SIMs
@@ -366,8 +423,8 @@ Item {
         onShownChanged: if (shown) greeter.lockedApp = ""
 
         function maybeShow() {
-            if (!shell.forcedUnlock) {
-                show()
+            if (!shell.forcedUnlock && !shown) {
+                showNow();
             }
         }
 
@@ -403,20 +460,7 @@ Item {
                 return; // could happen if hideGreeter() comes in before we prompt
             }
             if (greeter.narrowMode) {
-                if (isDefaultPrompt) {
-                    if (lockscreen.alphaNumeric) {
-                        lockscreen.infoText = i18n.tr("Enter passphrase")
-                        lockscreen.errorText = i18n.tr("Sorry, incorrect passphrase") + "\n" +
-                                               i18n.tr("Please re-enter")
-                    } else {
-                        lockscreen.infoText = i18n.tr("Enter passcode")
-                        lockscreen.errorText = i18n.tr("Sorry, incorrect passcode")
-                    }
-                } else {
-                    lockscreen.infoText = i18n.tr("Enter %1").arg(text.toLowerCase())
-                    lockscreen.errorText = i18n.tr("Sorry, incorrect %1").arg(text.toLowerCase())
-                }
-
+                lockscreen.promptText = isDefaultPrompt ? "" : text.toLowerCase();
                 lockscreen.maybeShow();
             }
         }
@@ -495,7 +539,7 @@ Item {
         // Just a tiny wrapper to adjust greeter's x without messing with its own dragging
         id: greeterWrapper
         objectName: "greeterWrapper"
-        x: greeter.narrowMode ? launcher.progress : 0
+        x: (greeter.narrowMode && greeter.showProgress > 0) ? launcher.progress : 0
         y: panel.panelHeight
         width: parent.width
         height: parent.height - panel.panelHeight
@@ -534,9 +578,7 @@ Item {
             property string lockedApp: ""
             property bool hasLockedApp: lockedApp !== ""
 
-            available: true
             hides: [launcher, panel.indicators]
-            shown: true
             loadContent: required || lockscreen.required // keeps content in memory for quick show()
 
             locked: shell.locked
@@ -546,7 +588,12 @@ Item {
             width: parent.width
             height: parent.height
 
-            dragHandleWidth: shell.edgeSize
+
+            // avoid overlapping with Launcher's edge drag area
+            // FIXME: Fix TouchRegistry & friends and remove this workaround
+            //        Issue involves launcher's DDA getting disabled on a long
+            //        left-edge drag
+            dragHandleLeftMargin: launcher.available ? launcher.dragAreaWidth + 1 : 0
 
             function startUnlock() {
                 if (narrowMode) {
@@ -571,10 +618,19 @@ Item {
                 enabled = true;
             }
 
+            Timer {
+                // See powerConnection for why this is useful
+                id: showGreeterDelayed
+                interval: 1
+                onTriggered: {
+                    greeter.showNow();
+                }
+            }
+
             onShownChanged: {
                 if (shown) {
                     // Disable everything so that user can't swipe greeter or
-                    // launcher until we get first prompt/authenticate, which
+                    // launcher until we get the next prompt/authenticate, which
                     // will re-enable the shell.
                     shell.enabled = false;
 
@@ -600,7 +656,16 @@ Item {
                 LauncherModel.setUser(user);
             }
 
-            onTease: launcher.tease()
+            onTapped: {
+                if (!tutorial.running) {
+                    launcher.tease();
+                }
+            }
+            onDraggingChanged: {
+                if (dragging && !tutorial.running) {
+                    launcher.tease();
+                }
+            }
 
             Binding {
                 target: ApplicationManager
@@ -615,7 +680,7 @@ Item {
         target: callManager
 
         onHasCallsChanged: {
-            if (shell.locked && callManager.hasCalls) {
+            if (shell.locked && callManager.hasCalls && greeter.lockedApp !== "dialer-app") {
                 // We just received an incoming call while locked.  The
                 // indicator will have already launched dialer-app for us, but
                 // there is a race between "hasCalls" changing and the dialer
@@ -635,14 +700,23 @@ Item {
 
         onStatusChanged: {
             if (Powerd.status === Powerd.Off && reason !== Powerd.Proximity &&
-                    !callManager.hasCalls && !edgeDemo.running) {
-                greeter.showNow()
+                    !callManager.hasCalls && !tutorial.running) {
+                // We don't want to simply call greeter.showNow() here, because
+                // that will take too long.  Qt will delay button event
+                // handling until the greeter is done loading and may think the
+                // user held down the power button the whole time, leading to a
+                // power dialog being shown.  Instead, delay showing the
+                // greeter until we've finished handling the event.  We could
+                // make the greeter load asynchronously instead, but that
+                // introduces a whole host of timing issues, especially with
+                // its animations.  So this is simpler.
+                showGreeterDelayed.start();
             }
         }
     }
 
     function showHome() {
-        if (edgeDemo.running) {
+        if (tutorial.running) {
             return
         }
 
@@ -684,20 +758,18 @@ Item {
             anchors.fill: parent //because this draws indicator menus
             indicators {
                 hides: [launcher]
-                available: edgeDemo.panelEnabled && (!shell.locked || AccountsService.enableIndicatorsWhileLocked) && !greeter.hasLockedApp
-                contentEnabled: edgeDemo.panelContentEnabled
+                available: tutorial.panelEnabled && (!shell.locked || AccountsService.enableIndicatorsWhileLocked) && !greeter.hasLockedApp
+                contentEnabled: tutorial.panelContentEnabled
                 width: parent.width > units.gu(60) ? units.gu(40) : parent.width
 
                 minimizedPanelHeight: units.gu(3)
                 expandedPanelHeight: units.gu(7)
 
-                indicatorsModel: visibleIndicators.model
-            }
-
-            VisibleIndicators {
-                id: visibleIndicators
-                // TODO: This should be sourced by device type (eg "desktop", "tablet", "phone"...)
-                Component.onCompleted: initialise(indicatorProfile)
+                indicatorsModel: Indicators.IndicatorsModel {
+                    // TODO: This should be sourced by device type (e.g. "desktop", "tablet", "phone"...)
+                    profile: indicatorProfile
+                    Component.onCompleted: load()
+                }
             }
             callHint {
                 greeterShown: greeter.shown || lockscreen.shown
@@ -718,10 +790,13 @@ Item {
             readonly property bool dashSwipe: progress > 0
 
             anchors.top: parent.top
+            anchors.topMargin: inverted ? 0 : panel.panelHeight
             anchors.bottom: parent.bottom
             width: parent.width
             dragAreaWidth: shell.edgeSize
-            available: edgeDemo.launcherEnabled && (!shell.locked || AccountsService.enableLauncherWhileLocked) && !greeter.hasLockedApp
+            available: tutorial.launcherEnabled && (!shell.locked || AccountsService.enableLauncherWhileLocked) && !greeter.hasLockedApp
+            inverted: usageModeSettings.usageMode === "Staged"
+            shadeBackground: !tutorial.running
 
             onShowDashHome: showHome()
             onDash: showDash()
@@ -734,7 +809,7 @@ Item {
                 if (greeter.hasLockedApp) {
                     greeter.startUnlock()
                 }
-                if (!edgeDemo.running)
+                if (!tutorial.running)
                     shell.activateApplication(appId)
             }
             onShownChanged: {
@@ -742,6 +817,12 @@ Item {
                     panel.indicators.hide()
                 }
             }
+        }
+
+        Wizard {
+            id: wizard
+            anchors.fill: parent
+            background: shell.background
         }
 
         Rectangle {
@@ -801,15 +882,21 @@ Item {
         }
     }
 
-    EdgeDemo {
-        id: edgeDemo
-        objectName: "edgeDemo"
-        z: dialogs.z + 10
-        paused: Powerd.status === Powerd.Off // Saves power
-        greeter: greeter
+    Tutorial {
+        id: tutorial
+        objectName: "tutorial"
+        active: AccountsService.demoEdges
+        paused: LightDM.Greeter.active
         launcher: launcher
         panel: panel
         stages: stages
+        overlay: overlay
+        edgeSize: shell.edgeSize
+
+        onFinished: {
+            AccountsService.demoEdges = false;
+            active = false; // for immediate response / if AS is having problems
+        }
     }
 
     Connections {
@@ -819,7 +906,7 @@ Item {
 
     Rectangle {
         id: shutdownFadeOutRectangle
-        z: edgeDemo.z + 10
+        z: screenGrabber.z + 10
         enabled: false
         visible: false
         color: "black"

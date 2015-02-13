@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 Canonical Ltd.
+ * Copyright 2013-2015 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,12 @@ IndicatorTest {
             Layout.fillHeight: true
 
             id: itemArea
-            color: "blue"
+            color: backgroundMouseArea.pressed ? "red" : "blue"
+
+            MouseArea {
+                id: backgroundMouseArea
+                anchors.fill: parent
+            }
 
             Panel {
                 id: panel
@@ -128,6 +133,12 @@ IndicatorTest {
         name: "Panel"
         when: windowShown
 
+        SignalSpy {
+            id: backgroundPressedSpy
+            target: backgroundMouseArea
+            signalName: "pressedChanged"
+        }
+
         function init() {
             panel.fullscreenMode = false;
             callManager.foregroundCall = null;
@@ -140,6 +151,9 @@ IndicatorTest {
             // (switches between normal and fullscreen modes are animated)
             var indicatorArea = findChild(panel, "indicatorArea");
             tryCompare(indicatorArea, "y", 0);
+
+            backgroundPressedSpy.clear();
+            compare(backgroundPressedSpy.valid, true);
         }
 
         function get_indicator_item(index) {
@@ -186,11 +200,10 @@ IndicatorTest {
             for (var i = 0; i < root.originalModelData.length; i++) {
                 var indicatorItem = get_indicator_item(i);
 
-                var startXPosition = root.mapFromItem(indicatorItem, indicatorItem.width / 2, 0).x;
-                var startYPosition = root.mapFromItem(panel, 0, 0).y;
+                var startXPosition = panel.mapFromItem(indicatorItem, indicatorItem.width / 2, 0).x;
 
                 touchFlick(panel,
-                           startXPosition, startYPosition,
+                           startXPosition, 0,
                            startXPosition, panel.height,
                            true /* beginTouch */, false /* endTouch */, units.gu(5), 15);
 
@@ -244,17 +257,13 @@ IndicatorTest {
             // (switches between normal and fullscreen modes are animated)
             tryCompareFunction(function() { return indicatorArea.y }, data.indicatorY);
 
-            var startXPosition = root.mapFromItem(panel.indicators, panel.indicators.width / 2, 0).x;
-            var startYPosition = root.mapFromItem(panel, 0, panel.height).y;
-
             panel.indicators.show();
             tryCompare(panel.indicators.showAnimation, "running", false);
             tryCompare(panel.indicators, "unitProgress", 1);
 
-
             touchFlick(panel.indicators,
-                       startXPosition, startYPosition,
-                       startXPosition, 0,
+                       panel.indicators.width / 2, panel.height,
+                       panel.indicators.width / 2, 0,
                        true /* beginTouch */, false /* endTouch */, units.gu(5), 15);
 
             // Indicators height should follow the drag, and therefore increase accordingly.
@@ -263,7 +272,7 @@ IndicatorTest {
                 function() {return panel.indicators.height <= panel.height * 0.5},
                 true);
 
-            touchRelease(panel.indicators, startXPosition, 0);
+            touchRelease(panel.indicators, panel.indicators.width / 2, 0);
 
             tryCompare(panel.indicators.hideAnimation, "running", true);
             tryCompare(panel.indicators.hideAnimation, "running", false);
@@ -303,6 +312,23 @@ IndicatorTest {
             compare(panel.indicators.fullyOpened, false, "Indicator should not be fully opened");
 
             touchRelease(panel, mappedPosition.x, panel.minimizedPanelHeight / 2);
+        }
+
+        /* Checks that no input reaches items behind the indicator bar.
+           Ie., the indicator bar should eat all input events that hit it.
+         */
+        function test_indicatorBarEatsAllEvents() {
+            // Perform several taps throughout the length of the indicator bar to ensure
+            // that it doesn't have a "weak spot" from where taps pass through.
+            var numTaps = 5;
+            var stepLength = (panel.width / (numTaps + 1));
+            var tapY = panel.indicators.minimizedPanelHeight / 2;
+            for (var i = 1; i <= numTaps; ++i) {
+                tap(panel, stepLength * i, tapY);
+                tryCompare(panel.indicators, "fullyClosed", true);
+            }
+
+            compare(backgroundPressedSpy.count, 0);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Canonical, Ltd.
+ * Copyright (C) 2013-2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@ import QtQuick 2.2
 import Ubuntu.Components 1.1
 import Unity.Application 0.1
 import "../Components"
+import "../Components/PanelState"
 import ".."
 
 Item {
@@ -89,6 +90,9 @@ Item {
                 right: indicators.left
             }
             saturation: 1 - indicators.unitProgress
+
+            // Don't let input event pass trough
+            MouseArea { anchors.fill: parent }
         }
 
         Image {
@@ -109,8 +113,7 @@ Item {
                 right: indicators.left
             }
             height: indicators.minimizedPanelHeight
-            enabled: callHint.visible
-            onClicked: callHint.showLiveCall()
+            onClicked: { if (callHint.visible) { callHint.showLiveCall(); } }
         }
 
         IndicatorsMenu {
@@ -123,7 +126,7 @@ Item {
             }
 
             shown: false
-            width: root.width
+            width: root.width - (PanelState.buttonsVisible ? windowControlButtons.width : 0)
             minimizedPanelHeight: units.gu(3)
             expandedPanelHeight: units.gu(7)
             openedHeight: root.height - indicatorOrangeLine.height
@@ -148,6 +151,20 @@ Item {
             }
         }
 
+        WindowControlButtons {
+            id: windowControlButtons
+            anchors {
+                left: parent.left
+                top: parent.top
+                margins: units.gu(0.7)
+            }
+            height: indicators.minimizedPanelHeight - anchors.margins * 2
+            visible: PanelState.buttonsVisible
+            onClose: PanelState.close()
+            onMinimize: PanelState.minimize()
+            onMaximize: PanelState.maximize()
+        }
+
         PanelSeparatorLine {
             id: indicatorOrangeLine
             anchors {
@@ -161,7 +178,7 @@ Item {
             id: __callHint
             anchors {
                 top: parent.top
-                left: parent.left
+                left: PanelState.buttonsVisible ? windowControlButtons.right : parent.left
             }
             height: indicators.minimizedPanelHeight
             visible: active && indicators.state == "initial"
