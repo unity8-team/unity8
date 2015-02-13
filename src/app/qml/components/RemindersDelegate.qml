@@ -28,6 +28,7 @@ ListItemWithActions {
     id: root
     height: units.gu(10)
     clip: true
+    color: "transparent"
 
     property var note
 
