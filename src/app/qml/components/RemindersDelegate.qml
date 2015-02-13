@@ -42,7 +42,6 @@ ListItemWithActions {
 
     rightSideActions: [
         Action {
-            //iconName: root.note.reminderDone ? "" : "select"
             iconSource: root.note.reminderDone ? "image://theme/select" : "../images/unchecked.svg"
             text: root.note.reminderDone ? i18n.tr("Mark as undone") : i18n.tr("Mark as done")
             onTriggered: {
