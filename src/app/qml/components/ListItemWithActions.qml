@@ -348,6 +348,7 @@ Item {
         ScriptAction {
             script: {
                 root.activeAction.triggered(root)
+                root.activeAction = null;
                 mouseArea.state = ""
             }
         }
@@ -358,7 +359,6 @@ Item {
             target: main
             property: "x"
             to: 0
-
         }
     }
 
