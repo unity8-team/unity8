@@ -48,6 +48,13 @@ ListItemWithActions {
                 note.reminderDone = !root.note.reminderDone;
                 NotesStore.saveNote(note.guid)
             }
+        },
+        Action {
+            iconName: "alarm-clock"
+            text: i18n.tr("Edit reminder")
+            onTriggered: {
+                pageStack.push(Qt.resolvedUrl("../ui/SetReminderPage.qml"), { note: root.note });
+            }
         }
     ]
 
