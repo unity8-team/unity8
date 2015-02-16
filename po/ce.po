@@ -1,16 +1,16 @@
-# Greek translation for unity
-# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
-# This file is distributed under the same license as the unity package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+# Chechen translation for unity8
+# Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
+# This file is distributed under the same license as the unity8 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: unity\n"
+"Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-01-22 11:09+0100\n"
-"PO-Revision-Date: 2015-02-15 20:45+0000\n"
-"Last-Translator: Filippos Kolyvas <Unknown>\n"
-"Language-Team: Greek <el@li.org>\n"
+"PO-Revision-Date: 2015-02-15 04:01+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Chechen <ce@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,443 +20,423 @@ msgstr ""
 
 #: plugins/LightDM/Greeter.cpp:130
 msgid "Password: "
-msgstr "Κωδικός πρόσβασης: "
+msgstr ""
 
 #: plugins/Unity/Launcher/launcheritem.cpp:45
 #: plugins/Unity/Launcher/launcheritem.cpp:100
 msgid "Pin shortcut"
-msgstr "Καρφίτσωμα συντόμευσης"
+msgstr ""
 
 #: plugins/Unity/Launcher/launcheritem.cpp:100
 msgid "Unpin shortcut"
-msgstr "Ξεκαρφίτσωμα συντόμευσης"
+msgstr ""
 
 #: qml/Components/DelayedLockscreen.qml:47
 msgid "Device Locked"
-msgstr "Κλειδωμένη συσκευή"
+msgstr ""
 
 #: qml/Components/DelayedLockscreen.qml:62
 msgid "You have been locked out due to too many failed passphrase attempts."
 msgstr ""
-"Δεν σας επιτρέπεται η πρόσβαση καθώς προσπαθήσατε επανηλλημένως να "
-"συνδεθείτε με λάθος κωδικό."
 
 #: qml/Components/DelayedLockscreen.qml:63
 msgid "You have been locked out due to too many failed passcode attempts."
 msgstr ""
-"Δεν σας επιτρέπεται η πρόσβαση καθώς προσπαθήσατε επανηλλημένως να "
-"συνδεθείτε με λάθος κωδικό."
 
 #: qml/Components/DelayedLockscreen.qml:72
 #, qt-format
 msgid "Please wait %1 minute and then try again…"
 msgid_plural "Please wait %1 minutes and then try again…"
-msgstr[0] "Παρακαλώ περιμένετε %1 λεπτό και δοκιμάστε ξανά..."
-msgstr[1] "Παρακαλώ περιμένετε %1 λεπτά και δοκιμάστε ξανά..."
+msgstr[0] ""
+msgstr[1] ""
 
 #: qml/Components/Dialogs.qml:86
 msgid "Log out"
-msgstr "Αποσύνδεση"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:87
 msgid "Are you sure you want to log out?"
-msgstr "Επιθυμείτε σίγουρα να αποσυνδεθείτε;"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:89 qml/Components/Dialogs.qml:111
 #: qml/Components/Dialogs.qml:134
 msgid "No"
-msgstr "Όχι"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:95 qml/Components/Dialogs.qml:117
 #: qml/Components/Dialogs.qml:140
 msgid "Yes"
-msgstr "Ναι"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:108
 msgid "Shut down"
-msgstr "Τερματισμός λειτουργίας"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:109
 msgid "Are you sure you want to shut down?"
-msgstr "Επιθυμείτε σίγουρα τερματισμό;"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:131
 msgid "Reboot"
-msgstr "Επανεκκίνηση"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:132
 msgid "Are you sure you want to reboot?"
-msgstr "Επιθυμείτε σίγουρα επανεκκίνηση;"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:154
 msgid "Power"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:155
 msgid ""
 "Are you sure you would like\n"
 "to power off?"
 msgstr ""
-"Επιθυμείτε σίγουρα τον\n"
-"τερματισμό λειτουργίας;"
 
 #: qml/Components/Dialogs.qml:157
 msgid "Power off"
-msgstr "Τερματισμός"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:166
 msgid "Restart"
-msgstr "Επανεκκίνηση"
+msgstr ""
 
 #: qml/Components/Dialogs.qml:175
 msgid "Cancel"
-msgstr "Ακύρωση"
+msgstr ""
 
 #: qml/Components/EdgeDemoOverlay.qml:151
 msgid "Skip intro"
-msgstr "Παράλειψη εισαγωγής"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:125
 msgid "Right edge"
-msgstr "Δεξί άκρο"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:126
 msgid "Try swiping from the right edge to unlock the phone"
-msgstr "Σύρετε από το δεξί άκρο για ξεκλείδωμα του τηλεφώνου"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:157
 msgid "Top edge"
-msgstr "Πάνω άκρο"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:158
 msgid "Try swiping from the top edge to access the indicators"
-msgstr "Σύρετε από το πάνω άκρο για πρόσβαση στις ρυθμίσεις"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:183
 msgid "Close"
-msgstr "Κλείσιμο"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:184
 msgid "Swipe up again to close the settings screen"
-msgstr "Σύρετε προς τα επάνω για κλείσιμο των ρυθμίσεων"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:214
 msgid "Left edge"
-msgstr "Αριστερό άκρο"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:215
 msgid "Swipe from the left to reveal the launcher for quick access to apps"
 msgstr ""
-"Σύρετε από τα αριστερό άκρο για εμφάνιση του εκκινητή για άμεση πρόσβαση "
-"στις εφαρμογές"
 
 #: qml/Components/EdgeDemo.qml:242
 msgid "Well done"
-msgstr "Συγχαρητήρια"
+msgstr ""
 
 #: qml/Components/EdgeDemo.qml:243
 msgid ""
 "You have now mastered the edge gestures and can start using the "
 "phone<br><br>Tap on the screen to start"
 msgstr ""
-"Πλέον γνωρίζετε τις χειρονομίες από τα άκρα και μπορείτε να ξεκινήσετε να "
-"χρησιμοποιείτε το τηλέφωνο<br><br>Αγγίξτε την οθόνη για να ξεκινήσετε"
 
 #: qml/Components/Lockscreen.qml:238
 msgid "Return to Call"
-msgstr "Επιστροφή στην κλήση"
+msgstr ""
 
 #: qml/Components/Lockscreen.qml:238
 msgid "Emergency Call"
-msgstr "Κλήση έκτακτης ανάγκης"
+msgstr ""
 
 #: qml/Components/Lockscreen.qml:270
 msgid "OK"
-msgstr "OK"
+msgstr ""
 
 #: qml/Dash/GenericScopeView.qml:485 qml/Dash/GenericScopeView.qml:642
 msgid "See less"
-msgstr "Λιγότερα"
+msgstr ""
 
 #: qml/Dash/GenericScopeView.qml:485
 msgid "See all"
-msgstr "Εμφάνιση όλων"
+msgstr ""
 
 #: qml/Dash/GenericScopeView.qml:547 qml/Dash/PageHeader.qml:274
 #: qml/Panel/SearchIndicator.qml:27
 msgid "Search"
-msgstr "Αναζήτηση"
+msgstr ""
 
 #: qml/Dash/PageHeader.qml:267
 msgid "Store"
-msgstr "Κατάστημα"
+msgstr ""
 
 #: qml/Dash/PageHeader.qml:284
 msgid "Settings"
-msgstr "Ρυθμίσεις"
+msgstr ""
 
 #: qml/Dash/PageHeader.qml:291
 msgid "Remove from Favorites"
-msgstr "Αφαίρεση από τα αγαπημένα"
+msgstr ""
 
 #: qml/Dash/PageHeader.qml:291
 msgid "Add to Favorites"
-msgstr "Προσθήκη στα αγαπημένα"
+msgstr ""
 
 #: qml/Dash/Previews/PreviewActionCombo.qml:35
 msgid "More..."
-msgstr "Περισσότερα..."
+msgstr ""
 
 #: qml/Dash/Previews/PreviewActionCombo.qml:35
 msgid "Less..."
-msgstr "Λιγότερα..."
+msgstr ""
 
 #: qml/Dash/Previews/PreviewRatingInput.qml:81
 msgid "Rate this"
-msgstr "Βαθμολογήστε το"
+msgstr ""
 
 #: qml/Dash/Previews/PreviewRatingInput.qml:126
 msgid "Add a review"
-msgstr "Προσθέστε την αξιολόγησή σας"
+msgstr ""
 
 #: qml/Dash/Previews/PreviewRatingInput.qml:166
 msgid "Send"
-msgstr "Αποστολή"
+msgstr ""
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:55
 msgid "Pull to refresh…"
-msgstr "Σύρτε για ανανέωση…"
+msgstr ""
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:60
 msgid "Release to refresh…"
-msgstr "Αφήστε για ανανέωση…"
+msgstr ""
 
 #: qml/Dash/ScopesList.qml:66
 msgid "Manage"
-msgstr "Διαχείριση"
+msgstr ""
 
 #: qml/Dash/ScopesList.qml:112
 msgid "Home"
-msgstr "Αρχή"
+msgstr ""
 
 #: qml/Dash/ScopesList.qml:113
 msgid "Also installed"
-msgstr "Επίσης εγκατεστημένα"
+msgstr ""
 
 #: qml/Greeter/Greeter.qml:133
 msgid "Unlock"
-msgstr "Ξεκλείδωμα"
+msgstr ""
 
 #: qml/Notifications/NotificationMenuItemFactory.qml:128
 msgid "Show password"
-msgstr "Εμφάνιση κωδικού"
+msgstr ""
 
 #: qml/Panel/ActiveCallHint.qml:79
 msgid "Tap to return to call..."
-msgstr "Πατήστε για να γυρίσετε στην κλήση..."
+msgstr ""
 
 #: qml/Panel/ActiveCallHint.qml:92
 msgid "Conference"
-msgstr "Συνδιάσκεψη"
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:643
 msgid "Nothing is playing"
-msgstr "Δεν αναπαράγεται τίποτα"
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:791
 msgid "In queue…"
-msgstr "Στην ουρά..."
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:795
 msgid "Downloading"
-msgstr "Λήψη σε εξέλιξη"
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:797
 msgid "Paused, tap to resume"
-msgstr "Σταματημένο, αγγίξτε για συνέχιση"
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:799
 msgid "Canceled"
-msgstr "Ακυρώθηκε"
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:801
 msgid "Finished"
-msgstr "Ολοκληρώθηκε"
+msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:803
 msgid "Failed, tap to retry"
-msgstr "Αποτυχία, πατήστε για να ξαναπροσπαθήσετε"
+msgstr ""
 
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:149
 msgid "Reply"
-msgstr "Απάντηση"
+msgstr ""
 
 #: qml/Panel/Indicators/ModemInfoItem.qml:105
 msgid "Unlock SIM"
-msgstr "Ξεκλείδωμα SIM"
+msgstr ""
 
 #: qml/Panel/Indicators/RoamingIndication.qml:27
 msgid "Roaming"
-msgstr "Περιαγωγή"
+msgstr ""
 
 #: qml/Shell.qml:390
 #, qt-format
 msgid "Enter %1"
-msgstr "Εισάγετε %1"
+msgstr ""
 
 #: qml/Shell.qml:391 qml/Wizard/Pages/passwd-set.qml:60
 msgid "Enter passphrase"
-msgstr "Εισαγωγή συνθηματικού"
+msgstr ""
 
 #: qml/Shell.qml:392
 msgid "Enter passcode"
-msgstr "Εισαγωγή κωδικού"
+msgstr ""
 
 #: qml/Shell.qml:393
 #, qt-format
 msgid "Sorry, incorrect %1"
-msgstr "Συγνώμη, μη έγκυρο %1"
+msgstr ""
 
 #: qml/Shell.qml:394
 msgid "Sorry, incorrect passphrase"
-msgstr "Συγνώμη, μη έγκυρο συνθηματικό"
+msgstr ""
 
 #: qml/Shell.qml:395
 msgid "Please re-enter"
-msgstr "Παρακαλώ πληκτρολογήστε ξανά"
+msgstr ""
 
 #: qml/Shell.qml:396
 msgid "Sorry, incorrect passcode"
-msgstr "Συγνώμη, μη έγκυρος κωδικός πρόσβασης"
+msgstr ""
 
 #: qml/Shell.qml:490 qml/Wizard/Pages/passwd-confirm.qml:53
 msgid "Sorry, incorrect passphrase."
-msgstr "Συγνώμη, μη έγκυρη συνθηματική φράση."
+msgstr ""
 
 #: qml/Shell.qml:491 qml/Wizard/Pages/passwd-confirm.qml:54
 msgid "Sorry, incorrect passcode."
-msgstr "Συγνώμη, μη έγκυρος κωδικός πρόσβασης."
+msgstr ""
 
 #: qml/Shell.qml:492
 msgid "This will be your last attempt."
-msgstr "Αυτή θα είναι η τελευταία σας προσπάθεια."
+msgstr ""
 
 #: qml/Shell.qml:494
 msgid ""
 "If passphrase is entered incorrectly, your phone will conduct a factory "
 "reset and all personal data will be deleted."
 msgstr ""
-"Εάν η συνθηματική φράση που θα εισάγετε είναι μη έγκυρη, το τηλέφωνο σας θα "
-"κάνει επαναφορά των εργοστασιακών ρυθμίσεων και όλα τα δεδομένα σας θα "
-"διαγραφούν."
 
 #: qml/Shell.qml:495
 msgid ""
 "If passcode is entered incorrectly, your phone will conduct a factory reset "
 "and all personal data will be deleted."
 msgstr ""
-"Εάν ο κωδικός πρόσβασης που θα εισάγετε είναι μη έγκυρος, το τηλέφωνο σας θα "
-"κάνει επαναφορά των εργοστασιακών ρυθμίσεων και όλα τα δεδομένα σας θα "
-"διαγραφούν."
 
 #: qml/Wizard/Page.qml:89
 msgid "Back"
-msgstr "Πίσω"
+msgstr ""
 
 #: qml/Wizard/Pages/10-welcome.qml:27
 msgid "Hi!"
-msgstr "Γεια!"
+msgstr ""
 
 #: qml/Wizard/Pages/10-welcome.qml:44
 msgid "Welcome to your Ubuntu phone."
-msgstr "Καλώς ήρθατε στο Ubuntu phone σας."
+msgstr ""
 
 #: qml/Wizard/Pages/10-welcome.qml:52
 msgid "Let’s get started."
-msgstr "Ας ξεκινήσουμε."
+msgstr ""
 
 #: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
 #: qml/Wizard/Pages/40-wifi.qml:197 qml/Wizard/Pages/50-location.qml:131
 #: qml/Wizard/Pages/60-reporting.qml:50 qml/Wizard/Pages/passwd-confirm.qml:82
 #: qml/Wizard/Pages/passwd-set.qml:90
 msgid "Continue"
-msgstr "Συνέχιση"
+msgstr ""
 
 #: qml/Wizard/Pages/20-sim.qml:25
 msgid "Add a SIM card and restart your device"
-msgstr "Εισάγετε μια κάρτα SIM και επανεκκινήστε τη συσκευή σας"
+msgstr ""
 
 #: qml/Wizard/Pages/20-sim.qml:55
 msgid "Without it, you won’t be able to make calls or use text messaging."
 msgstr ""
-"Χωρίς αυτήν, δεν θα μπορείτε να κάνετε κλήσεις ή να χρησιμοποιήσετε μηνύματα "
-"κειμένου."
 
 #: qml/Wizard/Pages/20-sim.qml:69 qml/Wizard/Pages/40-wifi.qml:197
 msgid "Skip"
-msgstr "Παράβλεψη"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:39
 msgid "Lock security"
-msgstr "Κλείδωμα ασφαλείας"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:74
 msgid "Please select how you’d like to unlock your phone."
-msgstr "Παρακαλούμε επιλέξτε πως θα θέλατε να ξεκλειδώνετε το τηλέφωνό σας."
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:97
 msgid "Swipe"
-msgstr "Χειρονομία"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:98
 msgid "No security"
-msgstr "Χωρίς ασφάλεια"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:100
 msgid "Passcode"
-msgstr "Κωδικός πρόσβασης"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:101
 msgid "4 digits only"
-msgstr "Μόνο με 4 ψηφία"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:103
 msgid "Passphrase"
-msgstr "Συνθηματική φράση"
+msgstr ""
 
 #: qml/Wizard/Pages/30-passwd-type.qml:104
 msgid "Numbers and letters"
-msgstr "Αριθμοί και γράμματα"
+msgstr ""
 
 #: qml/Wizard/Pages/40-wifi.qml:28
 msgid "Connect to Wi‑Fi"
-msgstr "Σύνδεση σε δίκτυο Wi-Fi"
+msgstr ""
 
 #: qml/Wizard/Pages/40-wifi.qml:147
 msgid "Available networks…"
-msgstr "Διαθέσιμα δίκτυα..."
+msgstr ""
 
 #: qml/Wizard/Pages/40-wifi.qml:148
 msgid "No available networks."
-msgstr "Δεν υπάρχουν διαθέσιμα δίκτυα."
+msgstr ""
 
 #: qml/Wizard/Pages/50-location.qml:27
 msgid "Location"
-msgstr "Τοποθεσία"
+msgstr ""
 
 #: qml/Wizard/Pages/50-location.qml:62
 msgid "Let the phone detect your location:"
-msgstr "Επιτρέψετε το τηλέφωνο να εντοπίσει την τοποθεσία σας:"
+msgstr ""
 
 #: qml/Wizard/Pages/50-location.qml:69
 msgid "Using GPS only (less accurate)"
-msgstr "Χρήση μόνο GPS (λιγότερο ακριβή)"
+msgstr ""
 
 #: qml/Wizard/Pages/50-location.qml:86
 msgid "Using GPS, anonymized Wi-Fi and cellular network info (recommended)"
 msgstr ""
-"Χρήση GPS, ανωνυνοποιημένα δίκτυα Wi-Fi και πληροφορίες δικτύων κινητής "
-"τηλεφωνίας (συνιστάται)"
 
 #. TRANSLATORS: HERE is a trademark for Nokia's location service, you probably shouldn't translate it
 #: qml/Wizard/Pages/50-location.qml:103
@@ -464,110 +444,78 @@ msgid ""
 "By selecting this option you agree to the Nokia HERE <a href='#'>terms and "
 "conditions</a>."
 msgstr ""
-"Ενεργοποιώντας αυτή την επιλογή, αποδέχεστε τους <a href='#'>όρους και "
-"προϋποθέσεις</a> της Nokia HERE."
 
 #: qml/Wizard/Pages/50-location.qml:112
 msgid "Not at all"
-msgstr "Καθόλου"
+msgstr ""
 
 #: qml/Wizard/Pages/50-location.qml:124
 msgid "You can change your mind later in <b>System Settings</b>."
 msgstr ""
-"Μπορείτε να αλλάξετε τη γνώμη σας αργότερα στις <b>Ρυθμίσεις Συστήματος</b>."
 
 #: qml/Wizard/Pages/60-reporting.qml:24
 msgid "Improving your experience"
-msgstr "Βελτιώστε την εμπειρία σας"
+msgstr ""
 
 #: qml/Wizard/Pages/60-reporting.qml:36
 msgid ""
 "Your phone is set up to automatically report errors to Canonical and its "
 "partners, the makers of the operating system."
 msgstr ""
-"Το τηλέφωνό σας είναι ρυθμισμένο να στέλνει αυτόματα αναφορές σφαλμάτων στην "
-"Canonical και τους συνεργάτες της, τους δημιουργούς τους λειτουργικού "
-"συστήματος."
 
 #: qml/Wizard/Pages/60-reporting.qml:43
 msgid ""
 "This can be disabled in <b>System Settings</b> under <b>Security &amp; "
 "Privacy</b>"
 msgstr ""
-"Αυτό μπορεί να απενεργοποιηθεί στις <b>Ρυθμίσεις Συστήματος</b> στο πεδίο "
-"<b>Ασφάλεια &amp; Ιδιωτικότητα</b>"
 
 #: qml/Wizard/Pages/80-finished.qml:24
 msgid "All done"
-msgstr "Όλα έτοιμα"
+msgstr ""
 
 #: qml/Wizard/Pages/80-finished.qml:39
 msgid "Nice work!"
-msgstr "Ωραία δουλειά!"
+msgstr ""
 
 #: qml/Wizard/Pages/80-finished.qml:46
 msgid "Your phone is now ready to use."
-msgstr "Το τηλέφωνό σας είναι πλέον έτοιμο για χρήση."
+msgstr ""
 
 #: qml/Wizard/Pages/80-finished.qml:53
 msgid "Finish"
-msgstr "Ολοκλήρωση"
+msgstr ""
 
 #: qml/Wizard/Pages/here-terms.qml:27
 msgid "Terms & Conditions"
-msgstr "Όροι και προϋποθέσεις"
+msgstr ""
 
 #: qml/Wizard/Pages/passwd-confirm.qml:49
 msgid "Confirm passphrase"
-msgstr "Επιβεβαίωση φράσης πρόσβασης"
+msgstr ""
 
 #: qml/Wizard/Pages/passwd-confirm.qml:50
 msgid "Confirm passcode"
-msgstr "Επιβεβαιώστε τον κωδικό πρόσβασης"
+msgstr ""
 
 #: qml/Wizard/Pages/passwd-confirm.qml:53
 #: qml/Wizard/Pages/passwd-confirm.qml:54
 msgid "Please try again."
-msgstr "Παρακαλώ προσπαθήστε ξανά."
+msgstr ""
 
 #: qml/Wizard/Pages/passwd-set.qml:61
 msgid "Choose your passcode"
-msgstr "Επιλογή κωδικού πρόσβασης"
+msgstr ""
 
 #: qml/Wizard/Pages/passwd-set.qml:68
 msgid "Passphrase must be 4 characters long"
-msgstr "Η φράση πρόσβασης πρέπει να έχει 4 χαρακτήρες"
+msgstr ""
 
 #: qml/Wizard/StackButton.qml:39
 #, qt-format
 msgid "〈  %1"
-msgstr "〈  %1"
+msgstr ""
 
 #: qml/Wizard/StackButton.qml:42
 #, qt-format
 msgid "%1  〉"
-msgstr "%1  〉"
-
-#~ msgid "Confirm"
-#~ msgstr "Επιβεβαίωση"
-
-#~ msgid "Type or say a command"
-#~ msgstr "Πληκτρολογήστε ή πείτε μια εντολή"
-
-#~ msgid "Speak Now..."
-#~ msgstr "Μιλήστε τώρα..."
-
-#~ msgid "Speaking..."
-#~ msgstr "Ομιλία..."
-
-#~ msgid "Loading. Please Wait..."
-#~ msgstr "Γίνεται φόρτωση. Παρακαλώ περιμένετε..."
-
-#~ msgid "All"
-#~ msgstr "Όλα"
-
-#~ msgid "Favorites"
-#~ msgstr "Αγαπημένα"
-
-#~ msgid "Done"
-#~ msgstr "Ολοκληρώθηκε"
+msgstr ""
