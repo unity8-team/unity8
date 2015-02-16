@@ -25,7 +25,8 @@ import "../components"
 
 Item {
     id: root
-    property string title: !contentPeerPicker.visible && note ? note.title : ""
+    property string title: contentPeerPicker.visible ? ""
+                            : note ? note.title : i18n.tr("Untitled")
     property var note: null
 
     signal openTaggedNotes(string title, string tagGuid)
