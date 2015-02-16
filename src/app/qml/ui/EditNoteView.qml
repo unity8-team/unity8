@@ -134,34 +134,14 @@ Item {
 
         Rectangle {
             anchors { left: parent.left; right: parent.right }
-            height: notebookSelector.height
-            ValueSelector {
-                id: notebookSelector
-                text: values.notebook(selectedIndex).name
-                property string selectedGuid: values.notebook(selectedIndex) ? values.notebook(selectedIndex).guid : ""
-                values: Notebooks {}
-            }
-        }
-
-        Rectangle {
-            anchors { left: parent.left; right: parent.right }
             height: parent.height - y
             color: "white"
-
-//            TextArea {
-//                id: noteTextArea
-//                anchors.fill: parent
-//                focus: true
-//                wrapMode: TextEdit.Wrap
-//                textFormat: TextEdit.RichText
-//                text: root.note ? root.note.richTextContent : ""
-//            }
 
             Flickable {
                  id: flick
                  anchors.fill: parent
-                 contentWidth: noteTextArea.paintedWidth
-                 contentHeight: noteTextArea.paintedHeight
+                 contentWidth: parent.width
+                 contentHeight: innerColumn.height
                  flickableDirection: Flickable.VerticalFlick
                  clip: true
 
@@ -173,37 +153,50 @@ Item {
                          contentX = r.x+r.width-width;
                      if (contentY >= r.y)
                          contentY = r.y;
-                     else if (contentY+height <= r.y+r.height)
-                         contentY = r.y+r.height-height;
+                     else if (contentY+height-notebookSelector.height <= r.y+r.height)
+                         contentY = r.y+r.height-height+notebookSelector.height;
                  }
 
-                TextEdit {
-                    id: noteTextArea
-                    width: flick.width
-                    height: paintedHeight
-                    focus: true
-                    wrapMode: TextEdit.Wrap
-                    textFormat: TextEdit.RichText
-                    text: root.note ? root.note.richTextContent : ""
-                    onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
-                    selectByMouse: toolbox.charFormatExpanded
-                    textMargin: units.gu(1)
-                    selectionColor: UbuntuColors.blue
+                 Column {
+                     id: innerColumn
+                     width: parent.width
+                     height: childrenRect.height
 
-                    // Due to various things updating when creating the view,
-                    // we need to set the focus in the next event loop pass
-                    // in order to have any effect.
-                    Timer {
-                        id: setFocusTimer
-                        interval: 1
-                        running: !root.isBottomEdge
-                        repeat: false
-                        onTriggered: {
-                            noteTextArea.cursorPosition = noteTextArea.length;
-                            noteTextArea.forceActiveFocus();
-                        }
-                    }
-                }
+                     ValueSelector {
+                         id: notebookSelector
+                         text: values.notebook(selectedIndex).name
+                         property string selectedGuid: values.notebook(selectedIndex) ? values.notebook(selectedIndex).guid : ""
+                         values: Notebooks {}
+                     }
+
+                     TextEdit {
+                         id: noteTextArea
+                         width: flick.width
+                         height: Math.max(flick.height - notebookSelector.height, paintedHeight)
+                         focus: true
+                         wrapMode: TextEdit.Wrap
+                         textFormat: TextEdit.RichText
+                         text: root.note ? root.note.richTextContent : ""
+                         onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+                         selectByMouse: toolbox.charFormatExpanded
+                         textMargin: units.gu(1)
+                         selectionColor: UbuntuColors.blue
+
+                         // Due to various things updating when creating the view,
+                         // we need to set the focus in the next event loop pass
+                         // in order to have any effect.
+                         Timer {
+                             id: setFocusTimer
+                             interval: 1
+                             running: !root.isBottomEdge
+                             repeat: false
+                             onTriggered: {
+                                 noteTextArea.cursorPosition = noteTextArea.length;
+                                 noteTextArea.forceActiveFocus();
+                             }
+                         }
+                     }
+                 }
             }
         }
     }
