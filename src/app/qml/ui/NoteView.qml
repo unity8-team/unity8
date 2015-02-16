@@ -84,16 +84,19 @@ Item {
                     case "attachmentOpened":
                         print("attachment opened", data.resourceHash)
                         print("a", data.mediaType)
-                        var filePath = root.note.resource(data.resourceHash).fileName;
-
-                        print("f")
-                        print("b", filePath)
+                        var filePath = root.note.resource(data.resourceHash).hashedFilePath;
+                        contentPeerPicker.filePath = filePath;
 
                         if (data.mediaType == "application/pdf") {
                             contentPeerPicker.contentType = ContentType.Documents;
                         } else if (data.mediaType.split("/")[0] == "audio" ) {
                             contentPeerPicker.contentType = ContentType.Music;
+                        } else if (data.mediaType.split("/")[0] == "image" ) {
+                            contentPeerPicker.contentType = ContentType.Pictures;
+                        } else if (data.mediaType == "application/octet-stream" ) {
+                            contentPeerPicker.contentType = ContentType.All;
                         } else {
+                            print("setting unknown content type", data.mediaType)
                             contentPeerPicker.contentType = ContentType.Unknown;
                         }
                         contentPeerPicker.visible = true;
@@ -148,11 +151,12 @@ Item {
         id: contentPeerPicker
         visible: false
         contentType: ContentType.Unknown
-        handler: ContentHandler.Share
+        handler: ContentHandler.Destination
         anchors.fill: parent
 
         property string filePath: ""
         onPeerSelected: {
+            print("filepath is", contentPeerPicker.filePath)
             var transfer = peer.request();
             if (transfer.state === ContentTransfer.InProgress) {
                 var items = new Array()

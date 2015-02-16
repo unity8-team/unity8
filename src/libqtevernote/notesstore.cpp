@@ -825,10 +825,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     if (refreshWithResourceData) {
         qDebug() << "refreshWithResourceData";
         refreshNoteContent(note->guid(), FetchNoteJob::LoadResources);
+    } else {
+        syncToCacheFile(note); // Syncs into the list cache
+        note->syncToCacheFile(); // Syncs note's content into notes cache
     }
-
-    syncToCacheFile(note); // Syncs into the list cache
-    note->syncToCacheFile(); // Syncs note's content into notes cache
 }
 
 void NotesStore::refreshNotebooks()

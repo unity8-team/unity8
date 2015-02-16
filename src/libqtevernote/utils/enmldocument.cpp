@@ -184,7 +184,9 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                         QString imagePath = "file:///usr/share/icons/suru/mimetypes/scalable/audio-x-generic-symbolic.svg";
                         writer.writeAttribute("src", imagePath);
                         writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
-                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                        if (NotesStore::instance()->note(noteGuid)->resource(hash)) {
+                            writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                        }
                     }
                 } else if (mediaType == "application/pdf") {
                     if (type == TypeRichText) {
@@ -193,7 +195,9 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                         QString imagePath = "file:///usr/share/icons/suru/mimetypes/scalable/application-pdf-symbolic.svg";
                         writer.writeAttribute("src", imagePath);
                         writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
-                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                        if (NotesStore::instance()->note(noteGuid)->resource(hash)) {
+                            writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                        }
                     }
                 } else {
                     qDebug() << "unknown mediatype" << mediaType;
@@ -202,6 +206,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     } else if (type == TypeHtml) {
                         QString imagePath = "file:///usr/share/icons/suru/mimetypes/scalable/empty-symbolic.svg";
                         writer.writeAttribute("src", imagePath);
+                        writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
                         if (NotesStore::instance()->note(noteGuid)->resource(hash)) {
                             writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
                         }
