@@ -148,7 +148,7 @@ public:
     bool conflicting() const;
 
     QStringList resourceUrls() const;
-    Resource* resource(const QString &hash);
+    Q_INVOKABLE Resource* resource(const QString &hash);
     QList<Resource*> resources() const;
     Resource *addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type);
 

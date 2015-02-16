@@ -19,12 +19,13 @@
 import QtQuick 2.3
 import Ubuntu.Components 1.1
 import com.canonical.Oxide 1.0
+import Ubuntu.Content 1.0
 import Evernote 0.1
 import "../components"
 
 Item {
     id: root
-    property string title: note ? note.title : ""
+    property string title: !contentPeerPicker.visible && note ? note.title : ""
     property var note: null
 
     signal openTaggedNotes(string title, string tagGuid)
@@ -40,7 +41,7 @@ Item {
 
         userScripts: [
             UserScript {
-                context: 'reminders://todo'
+                context: 'reminders://interaction'
                 url: Qt.resolvedUrl("reminders-scripts.js");
             }
         ]
@@ -70,16 +71,32 @@ Item {
 
         messageHandlers: [
             ScriptMessageHandler {
-                msgId: 'todo'
-                contexts: ['reminders://todo']
+                msgId: 'interaction'
+                contexts: ['reminders://interaction']
                 callback: function(message, frame) {
                     var data = message.args;
 
                     switch (data.type) {
-                        case "checkboxChanged":
+                    case "checkboxChanged":
                         note.markTodo(data.todoId, data.checked);
                         NotesStore.saveNote(note.guid);
                         break;
+                    case "attachmentOpened":
+                        print("attachment opened", data.resourceHash)
+                        print("a", data.mediaType)
+                        var filePath = root.note.resource(data.resourceHash).fileName;
+
+                        print("f")
+                        print("b", filePath)
+
+                        if (data.mediaType == "application/pdf") {
+                            contentPeerPicker.contentType = ContentType.Documents;
+                        } else if (data.mediaType.split("/")[0] == "audio" ) {
+                            contentPeerPicker.contentType = ContentType.Music;
+                        } else {
+                            contentPeerPicker.contentType = ContentType.Unknown;
+                        }
+                        contentPeerPicker.visible = true;
                     }
                 }
             }
@@ -120,5 +137,33 @@ Item {
                 }
             }
         }
+    }
+
+    ContentItem {
+        id: exportItem
+        name: i18n.tr("Attachment")
+    }
+
+    ContentPeerPicker {
+        id: contentPeerPicker
+        visible: false
+        contentType: ContentType.Unknown
+        handler: ContentHandler.Share
+        anchors.fill: parent
+
+        property string filePath: ""
+        onPeerSelected: {
+            var transfer = peer.request();
+            if (transfer.state === ContentTransfer.InProgress) {
+                var items = new Array()
+                var path = contentPeerPicker.filePath;
+                exportItem.url = path
+                items.push(exportItem);
+                transfer.items = items;
+                transfer.state = ContentTransfer.Charged;
+            }
+            contentPeerPicker.visible = false
+        }
+        onCancelPressed: contentPeerPicker.visible = false
     }
 }

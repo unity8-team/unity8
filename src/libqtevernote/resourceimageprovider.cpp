@@ -30,10 +30,13 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
         image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(resourceHash)->imageData(requestedSize));
         qDebug() << "done...";
     } else if (mediaType.startsWith("audio")) {
-        image.load("/usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg");
+        image.load("/usr/share/icons/suru/mimetypes/scalable/audio-x-generic-symbolic.svg");
+    } else if (mediaType == "application/pdf") {
+        image.load("/usr/share/icons/suru/mimetypes/scalable/application-pdf-symbolic.svg");
     } else {
-        image.load("/usr/share/icons/ubuntu-mobile/actions/scalable/help.svg");
+        image.load("/usr/share/icons/suru/mimetypes/scalable/empty-symbolic.svg");
     }
+
     *size = image.size();
     return image;
 }

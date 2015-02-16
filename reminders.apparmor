@@ -7,7 +7,8 @@
         "webview",
         "push-notification-client",
         "calendar",
-        "connectivity"
+        "connectivity",
+        "content_exchange_source"
     ],
     "policy_version": 1.2
 }

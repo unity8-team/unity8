@@ -53,6 +53,8 @@ private:
 
     qreal gu(qreal px) const;
 
+    QString composeMediaTypeUrl(const QString &mediaType, const QString &noteGuid, const QString &hash) const;
+
 private:
     QString m_enml;
 

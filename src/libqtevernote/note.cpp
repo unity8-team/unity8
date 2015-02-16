@@ -501,9 +501,11 @@ Resource* Note::addResource(const QByteArray &data, const QString &hash, const Q
         return m_resources.value(hash);
     }
 
+    qDebug() << "adding resource" << fileName << type;
     Resource *resource = new Resource(data, hash, fileName, type, this);
     m_resources.insert(hash, resource);
     emit resourcesChanged();
+    emit contentChanged();
 
     QSettings infoFile(m_infoFile, QSettings::IniFormat);
     infoFile.beginGroup("resources");

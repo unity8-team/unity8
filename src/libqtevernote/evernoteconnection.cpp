@@ -359,6 +359,7 @@ void EvernoteConnection::enqueue(EvernoteJob *job, JobPriority priority)
     }
     EvernoteJob *duplicate = findDuplicate(job);
     if (duplicate) {
+        qDebug() << "have duplicate!!!";
         job->attachToDuplicate(duplicate);
         connect(duplicate, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         // reprioritze the repeated request
@@ -366,6 +367,7 @@ void EvernoteConnection::enqueue(EvernoteJob *job, JobPriority priority)
             m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
         }
     } else {
+        qDebug() << "adding" << priority;
         connect(job, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
         if (priority == JobPriorityHigh) {
@@ -399,6 +401,7 @@ void EvernoteConnection::startJobQueue()
     }
 
     if (m_currentJob) {
+        qDebug() << "waiting for job" << m_currentJob->metaObject()->className();
         return;
     }
 

@@ -157,15 +157,11 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                 writer.writeStartElement("img");
                 if (mediaType.startsWith("image")) {
                     if (type == TypeRichText) {
-                        QUrl url("image://resource/" + mediaType);
-                        QUrlQuery arguments;
-                        arguments.addQueryItem("noteGuid", noteGuid);
-                        arguments.addQueryItem("hash", hash);
-                        url.setQuery(arguments);
-                        writer.writeAttribute("src", url.toString());
+                        writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
                     } else if (type  == TypeHtml) {
                         QString imagePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/" + hash + "." + mediaType.split('/').last();
                         writer.writeAttribute("src", imagePath);
+                        writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
                     }
 
                     //set the width
@@ -183,29 +179,32 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     }
                 } else if (mediaType.startsWith("audio")) {
                     if (type == TypeRichText) {
-                        QUrl url("image://resource/" + mediaType);
-                        QUrlQuery arguments;
-                        arguments.addQueryItem("noteGuid", noteGuid);
-                        arguments.addQueryItem("hash", hash);
-                        url.setQuery(arguments);
-                        writer.writeAttribute("src", url.toString());
+                        writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
                     } else if (type == TypeHtml) {
-                        QString imagePath = "file:///usr/share/icons/ubuntu-mobile/actions/scalable/media-playback-start.svg";
+                        QString imagePath = "file:///usr/share/icons/suru/mimetypes/scalable/audio-x-generic-symbolic.svg";
                         writer.writeAttribute("src", imagePath);
+                        writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
+                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                    }
+                } else if (mediaType == "application/pdf") {
+                    if (type == TypeRichText) {
+                        writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
+                    } else if (type == TypeHtml) {
+                        QString imagePath = "file:///usr/share/icons/suru/mimetypes/scalable/application-pdf-symbolic.svg";
+                        writer.writeAttribute("src", imagePath);
+                        writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
                         writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
                     }
                 } else {
+                    qDebug() << "unknown mediatype" << mediaType;
                     if (type == TypeRichText) {
-                        QUrl url("image://resource/" + mediaType);
-                        QUrlQuery arguments;
-                        arguments.addQueryItem("noteGuid", noteGuid);
-                        arguments.addQueryItem("hash", hash);
-                        url.setQuery(arguments);
-                        writer.writeAttribute("src", url.toString());
+                        writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
                     } else if (type == TypeHtml) {
-                        QString imagePath = "file:///usr/share/icons/ubuntu-mobile/actions/scalable/help.svg";
+                        QString imagePath = "file:///usr/share/icons/suru/mimetypes/scalable/empty-symbolic.svg";
                         writer.writeAttribute("src", imagePath);
-                        writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                        if (NotesStore::instance()->note(noteGuid)->resource(hash)) {
+                            writer.writeCharacters(NotesStore::instance()->note(noteGuid)->resource(hash)->fileName());
+                        }
                     }
                 }
             }
@@ -225,7 +224,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     writer.writeAttribute("height", QString::number(gu(2)));
                 } else if (type == TypeHtml){
                     writer.writeStartElement("input");
-                    writer.writeAttribute("id", "en-todo" + QString::number(todoIndex++));
+                    writer.writeAttribute("id", "en-todo/" + QString::number(todoIndex++));
                     writer.writeAttribute("type", "checkbox");
                     if (checked) {
                         writer.writeAttribute("checked", "true");
@@ -281,6 +280,16 @@ qreal EnmlDocument::gu(qreal px) const
         ppgu = 8;
     }
     return px * ppgu;
+}
+
+QString EnmlDocument::composeMediaTypeUrl(const QString &mediaType, const QString &noteGuid, const QString &hash) const
+{
+    QUrl url("image://resource/" + mediaType);
+    QUrlQuery arguments;
+    arguments.addQueryItem("noteGuid", noteGuid);
+    arguments.addQueryItem("hash", hash);
+    url.setQuery(arguments);
+    return url.toString();
 }
 
 void EnmlDocument::setRichText(const QString &richText)
@@ -408,7 +417,7 @@ void EnmlDocument::markTodo(const QString &todoId, bool checked)
     writer.writeDTD("<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">");
 
     QString tmp = todoId;
-    int todoIndex = tmp.remove("en-todo").toInt();
+    int todoIndex = tmp.toInt();
     int todoCounter = 0;
 
     while (!reader.atEnd() && !reader.hasError()) {
