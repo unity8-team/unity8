@@ -96,7 +96,6 @@ Item {
                         } else if (data.mediaType == "application/octet-stream" ) {
                             contentPeerPicker.contentType = ContentType.All;
                         } else {
-                            print("setting unknown content type", data.mediaType)
                             contentPeerPicker.contentType = ContentType.Unknown;
                         }
                         contentPeerPicker.visible = true;
