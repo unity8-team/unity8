@@ -23,6 +23,7 @@ import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 import "../components"
+import Qt.labs.settings 1.0
 
 PageWithBottomEdge {
     id: root
@@ -139,6 +140,10 @@ PageWithBottomEdge {
                 }
             }
         }
+    }
+
+    Settings {
+        property alias sortOrder: notes.sortOrder
     }
 
     Notes {

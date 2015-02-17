@@ -26,7 +26,8 @@
 Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false),
-    m_showDeleted(false)
+    m_showDeleted(false),
+    m_sortOrder(SortOrderDateCreatedNewest)
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
@@ -162,6 +163,7 @@ Notes::SortOrder Notes::sortOrder() const
 void Notes::setSortOrder(Notes::SortOrder sortOrder)
 {
     if (m_sortOrder != sortOrder) {
+        emit layoutAboutToBeChanged();
         switch (sortOrder) {
         case SortOrderDateCreatedNewest:
             setSortRole(NotesStore::RoleCreated);
@@ -190,6 +192,7 @@ void Notes::setSortOrder(Notes::SortOrder sortOrder)
         }
         m_sortOrder = sortOrder;
         emit sortOrderChanged();
+        emit layoutChanged();
     }
 }
 
