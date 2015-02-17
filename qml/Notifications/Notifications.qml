@@ -68,12 +68,18 @@ ListView {
             if (index == 1) {
                 notificationList.topmostIsFullscreen = fullscreen
             }
+            else {
+                notificationList.topmostIsFullscreen = false
+            }
         }
 
         onFullscreenChanged: {
             // index 1 because 0 is the PlaceHolder...
             if (index == 1) {
                 notificationList.topmostIsFullscreen = fullscreen
+            }
+            else {
+                notificationList.topmostIsFullscreen = false
             }
         }
     }
