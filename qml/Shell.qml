@@ -829,7 +829,9 @@ Item {
 
                 indicatorsModel: Indicators.IndicatorsModel {
                     // tablet and phone both use the same profile
-                    profile: shell.usageScenario === "desktop" ? "desktop" : "phone"
+                    // FIXME: enable this once indicators stop freezing in desktop mode
+                    //profile: shell.usageScenario === "desktop" ? "desktop" : "phone"
+                    profile: "phone"
                     Component.onCompleted: load();
                 }
             }
