@@ -566,7 +566,6 @@ FocusScope {
         DashBackground {
             anchors.fill: parent
             fillMode: Image.TileVertically
-            visible: !colorBackground.visible
             z: -1
         }
 

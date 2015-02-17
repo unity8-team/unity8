@@ -104,10 +104,6 @@ Item {
 
         anchors.fill: parent
 
-        DashBackground {
-            anchors.fill: parent
-        }
-
         ListView {
             id: dashContentList
             objectName: "dashContentList"
