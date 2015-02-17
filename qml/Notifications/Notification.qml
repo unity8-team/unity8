@@ -396,6 +396,11 @@ Item {
                         onAccepted: {
                             notification.notification.invokeAction(actionRepeater.itemAt(0).actionId)
                         }
+                        Component.onDestruction: {
+                            if (notification.fullscreen) {
+                                notification.fullscreen = false;
+                            }
+                        }
                     }
                 }
             }
