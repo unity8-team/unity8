@@ -146,6 +146,11 @@ MainView {
         var accountName = preferences.accountName;
         if (accountName == "@local") {
             accountService.startAuthentication("@local", null);
+            // First use of local account: we create a default notebook
+            if (preferences.firstLocalLogin) {
+                preferences.firstLocalLogin = false;
+                NotesStore.createNotebook(i18n.tr("First notebook"));
+            }
             return;
         }
 
