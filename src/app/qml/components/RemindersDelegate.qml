@@ -24,54 +24,47 @@ import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.Pickers 1.0
 import Evernote 0.1
 
-Base {
+ListItemWithActions {
     id: root
     height: units.gu(10)
     clip: true
-    removable: true
+    color: "transparent"
 
-    backgroundIndicator: Row {
-        x: root.__contents.x > 0 ? root.__contents.x - width : 0
-        width: childrenRect.width
-        anchors.verticalCenter: parent.verticalCenter
-        spacing: units.gu(1)
+    property var note
 
-        Icon {
-            height: units.gu(3)
-            width: height
-            anchors.verticalCenter: parent.verticalCenter
-            name: root.note.reminderDone ? "clear" : "select"
-        }
-
-        Label {
-            id: confirmRemovalDialog
-            anchors.verticalCenter: parent.verticalCenter
-            text: root.note.reminderDone ? i18n.tr("Clear reminder") : i18n.tr("Mark as done")
+    leftSideAction: Action {
+        text: i18n.tr("Clear reminder")
+        iconName: "clear"
+        onTriggered: {
+            note.reminder = false;
+            NotesStore.saveNote(note.guid)
         }
     }
 
-    property var note
+    rightSideActions: [
+        Action {
+            iconSource: root.note.reminderDone ? "image://theme/select" : "../images/unchecked.svg"
+            text: root.note.reminderDone ? i18n.tr("Mark as undone") : i18n.tr("Mark as done")
+            onTriggered: {
+                note.reminderDone = !root.note.reminderDone;
+                NotesStore.saveNote(note.guid)
+            }
+        },
+        Action {
+            iconName: "alarm-clock"
+            text: i18n.tr("Edit reminder")
+            onTriggered: {
+                pageStack.push(Qt.resolvedUrl("../ui/SetReminderPage.qml"), { note: root.note });
+            }
+        }
+    ]
 
     Behavior on height {
         UbuntuNumberAnimation {}
     }
 
-    onItemRemoved: {
-        // Revert "removal"
-        root.cancelItemRemoval();
-        root.height = units.gu(10)
-        print("marking reminder as", !note.reminderDone, " done for note", note.title);
-        if (!note.reminderDone) {
-            note.reminderDone = true;
-        } else {
-            note.reminder = false;
-        }
-
-        NotesStore.saveNote(note.guid)
-    }
-
     RowLayout {
-        anchors { fill: parent; topMargin: units.gu(1); bottomMargin: units.gu(1) }
+        anchors { fill: parent; margins: units.gu(1) }
         spacing: units.gu(1)
 
         UbuntuShape {
