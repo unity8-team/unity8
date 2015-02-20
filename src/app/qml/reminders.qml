@@ -128,7 +128,9 @@ MainView {
 
     function switchToEditMode(note) {
         if (root.narrowMode) {
-            pagestack.pop();
+            if (pagestack.depth > 1) {
+                pagestack.pop();
+            }
             var component = Qt.createComponent(Qt.resolvedUrl("ui/EditNotePage.qml"));
             var page = component.createObject();
             page.exitEditMode.connect(function() {Qt.inputMethod.hide(); pagestack.pop()});
@@ -603,8 +605,7 @@ MainView {
                     color: UbuntuColors.red
                     onClicked: {
                         PopupUtils.close(noAccount)
-                        NotesStore.username = "@local";
-                        preferences.haveLocalUser = true;
+                        accountService.startAuthentication("@local", null);
                     }
                     Layout.fillWidth: true
                 }

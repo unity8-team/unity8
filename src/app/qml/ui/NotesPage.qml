@@ -20,6 +20,7 @@ import QtQuick 2.3
 import QtQuick.Layouts 1.0
 import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0
+import Ubuntu.Components.Popups 1.0
 import Evernote 0.1
 import "../components"
 
@@ -148,6 +149,7 @@ PageWithBottomEdge {
             creationDate: model.created
             changedDate: model.updated
             content: model.tagline
+            triggerActionOnMouseRelease: true
             tags: {
                 var tags = new Array();
                 for (var i = 0; i < model.tagGuids.length; i++) {
@@ -163,10 +165,24 @@ PageWithBottomEdge {
             syncError: model.syncError
             conflicting: model.conflicting
 
-            onClicked: {
+            onItemClicked: {
                 if (!model.conflicting) {
                     root.selectedNote = NotesStore.note(guid);
                 }
+            }
+
+            onDeleteNote: {
+                NotesStore.deleteNote(model.guid)
+            }
+            onEditNote: {
+                root.editNote(NotesStore.note(model.guid));
+            }
+            onEditReminder: {
+                pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: NotesStore.note(model.guid) });
+            }
+            onEditTags: {
+                PopupUtils.open(Qt.resolvedUrl("../components/EditTagsDialog.qml"), root,
+                                { note: NotesStore.note(model.guid), pageHeight: root.height });
             }
         }
 
