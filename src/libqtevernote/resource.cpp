@@ -121,11 +121,11 @@ QByteArray Resource::imageData(const QSize &size)
         if (!fi.exists()) {
             QImage image(m_filePath);
             if (size.height() > 0 && size.width() > 0) {
-                image = image.scaled(size);
+                image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             } else if (size.height() > 0) {
-                image = image.scaledToHeight(size.height());
+                image = image.scaledToHeight(size.height(), Qt::SmoothTransformation);
             } else {
-                image = image.scaledToWidth(size.width());
+                image = image.scaledToWidth(size.width(), Qt::SmoothTransformation);
             }
             image.save(finalFilePath);
         }
