@@ -197,7 +197,7 @@ Item {
                 }
                 event.accepted = true;
             } else {
-                volumeKeyFilter.onKeyPressed(event.key);
+                volumeKeyFilter.onKeyPressed(event);
                 event.accepted = false;
             }
         }
@@ -207,7 +207,7 @@ Item {
                 dialogs.onPowerKeyReleased();
                 event.accepted = true;
             } else {
-                volumeKeyFilter.onKeyReleased(event.key);
+                volumeKeyFilter.onKeyReleased(event);
                 event.accepted = false;
             }
         }

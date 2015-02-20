@@ -32,7 +32,8 @@ QtObject {
     property bool volumeDownKeyPressed: false
     property bool aVolumeKeyWasReleased: true
 
-    function onKeyPressed(key) {
+    function onKeyPressed(event) {
+        var key = event.key
         if (key == Qt.Key_VolumeUp) {
             volumeUpKeyPressed = true;
         } else if (key == Qt.Key_VolumeDown) {
@@ -44,10 +45,20 @@ QtObject {
                 aVolumeKeyWasReleased = false;
                 bothVolumeKeysPressed();
             }
+        } else if (event.isAutoRepeat) {
+            /* This is tricky, but it allows events to get through when
+             * a single volume key is held down
+             */
+            if (key == Qt.Key_VolumeUp) {
+                volumeUpReleased();
+            } else if (key == Qt.Key_VolumeDown) {
+                volumeDownReleased();
+            }
         }
     }
 
-    function onKeyReleased(key) {
+    function onKeyReleased(event) {
+        var key = event.key
         if (key == Qt.Key_VolumeUp) {
             aVolumeKeyWasReleased = true;
             volumeUpKeyPressed = false;
