@@ -176,7 +176,7 @@ Rectangle {
                         height: itemHeight
                         iconName: model.icon
                         count: model.count
-                        countVisible: model.countVisible
+                        countVisible: model.countVisible && model.appId !== "ubuntu-system-settings"
                         progress: model.progress
                         itemFocused: model.focused
                         inverted: root.inverted
