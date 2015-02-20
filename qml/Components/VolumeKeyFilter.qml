@@ -24,8 +24,8 @@ VolumeUp Pressed, VolumeDown Pressed or Volume Up+Down pressed
 QtObject {
     id: root
 
-    signal volumeUpPressed()
-    signal volumeDownPressed()
+    signal volumeUpReleased()
+    signal volumeDownReleased()
     signal bothVolumeKeysPressed()
 
     property bool volumeUpKeyPressed: false
@@ -33,31 +33,29 @@ QtObject {
     property bool aVolumeKeyWasReleased: true
 
     function onKeyPressed(key) {
-        if (key == Qt.Key_VolumeUp)
+        if (key == Qt.Key_VolumeUp) {
             volumeUpKeyPressed = true;
-        else if (key == Qt.Key_VolumeDown)
+        } else if (key == Qt.Key_VolumeDown) {
             volumeDownKeyPressed = true;
+        }
 
-        if (volumeDownKeyPressed && volumeUpKeyPressed) {
-            //avoids sending a signal repeatedly if both keys are held
-            //instead one of the keys must have been previously released
-            if (aVolumeKeyWasReleased)
+        if (volumeUpKeyPressed && volumeDownKeyPressed) {
+            if (aVolumeKeyWasReleased) {
+                aVolumeKeyWasReleased = false;
                 bothVolumeKeysPressed();
-            aVolumeKeyWasReleased = false;
-        } else if (volumeDownKeyPressed) {
-            volumeDownPressed();
-        } else if (volumeUpKeyPressed) {
-            volumeUpPressed();
+            }
         }
     }
 
     function onKeyReleased(key) {
         if (key == Qt.Key_VolumeUp) {
+            aVolumeKeyWasReleased = true;
             volumeUpKeyPressed = false;
-            aVolumeKeyWasReleased = true;
+            volumeUpReleased();
         } else if (key == Qt.Key_VolumeDown) {
-            volumeDownKeyPressed = false;
             aVolumeKeyWasReleased = true;
+            volumeDownKeyPressed = false;
+            volumeDownReleased();
         }
     }
 }

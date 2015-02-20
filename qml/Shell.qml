@@ -174,8 +174,8 @@ Item {
 
     VolumeKeyFilter {
         id: volumeKeyFilter
-        onVolumeDownPressed: volumeControl.volumeDown()
-        onVolumeUpPressed: volumeControl.volumeUp()
+        onVolumeDownReleased: volumeControl.volumeDown()
+        onVolumeUpReleased: volumeControl.volumeUp()
         onBothVolumeKeysPressed: screenGrabber.capture()
     }
 
