@@ -14,6 +14,8 @@ include_directories(
     ${LIBUSERMETRICSOUTPUT_INCLUDE_DIRS}
 )
 
+add_definitions(-DSHELL_INSTALL_QML="${SHELL_INSTALL_QML}")
+
 set(QMLPLUGIN_SRC
     ../Utils/unitysortfilterproxymodelqml.cpp # FIXME evaluate a more generic approach for using other plugins
     DBusGreeter.cpp
@@ -30,9 +32,8 @@ add_library(LightDM-qml MODULE
 target_link_libraries(LightDM-qml
     integratedLightDM
     unity8-private
-# TODO: Once we split out a separate greeter process, uncomment these lines
-#    ${LIBLIGHTDM_LDFLAGS}
     ${LIBUSERMETRICSOUTPUT_LDFLAGS}
+    -ldl
     )
 
 qt5_use_modules(LightDM-qml DBus Gui Qml)

@@ -256,6 +256,8 @@ Item {
             // the screen larger (maybe connects to monitor) and tries to enter
             // tablet mode.
             property bool tabletMode: shell.sideStageEnabled && !greeter.hasLockedApp
+
+            active: shellMode !== "greeter"
             source: usageModeSettings.usageMode === "Windowed" ? "Stages/DesktopStage.qml"
                         : tabletMode ? "Stages/TabletStage.qml" : "Stages/PhoneStage.qml"
 
@@ -481,7 +483,7 @@ Item {
 
                 indicatorsModel: Indicators.IndicatorsModel {
                     // TODO: This should be sourced by device type (e.g. "desktop", "tablet", "phone"...)
-                    profile: indicatorProfile
+                    profile: indicatorProfile + (shellMode === "greeter" ? "_greeter" : "")
                     Component.onCompleted: load()
                 }
             }

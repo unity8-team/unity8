@@ -73,6 +73,11 @@ int main(int argc, const char *argv[])
 Load the testability driver");
     parser.addOption(testabilityOption);
 
+    QCommandLineOption modeOption("mode",
+        "Whether to run greeter and/or shell [full-greeter, full-shell, greeter, shell]",
+        QString(), "full-greeter");
+    parser.addOption(modeOption);
+
     application = new QGuiApplication(argc, (char**)argv);
 
     // Treat args with single dashes the same as arguments with two dashes
@@ -120,6 +125,7 @@ Load the testability driver");
     view->engine()->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
     view->rootContext()->setContextProperty("applicationArguments", &qmlArgs);
     view->rootContext()->setContextProperty("indicatorProfile", indicatorProfile);
+    view->rootContext()->setContextProperty("shellMode", parser.value(modeOption));
     if (parser.isSet(framelessOption)) {
         view->setFlags(Qt::FramelessWindowHint);
     }
@@ -143,6 +149,16 @@ Load the testability driver");
 
     CachingNetworkManagerFactory *managerFactory = new CachingNetworkManagerFactory();
     view->engine()->setNetworkAccessManagerFactory(managerFactory);
+
+    if (parser.value(modeOption) == "greeter") {
+        if (isMirServer) {
+            // Add alpha to surface, so that the greeter can bleed through
+            QSurfaceFormat format;
+            format.setAlphaBufferSize(8);
+            view->setFormat(format);
+            view->setColor(Qt::transparent);
+        }
+    }
 
     view->setSource(source);
     QObject::connect(view->engine(), SIGNAL(quit()), application, SLOT(quit()));

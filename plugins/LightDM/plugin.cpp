@@ -28,7 +28,9 @@
 
 #include <QAbstractItemModel>
 #include <QDBusConnection>
+#include <QQmlContext>
 #include <QtQml/qqml.h>
+#include <dlfcn.h>
 
 static QObject *greeter_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -56,12 +58,35 @@ static QObject *infographic_provider(QQmlEngine *engine, QJSEngine *scriptEngine
     return UserMetricsOutput::UserMetrics::getInstance();
 }
 
+LightDMPlugin::LightDMPlugin()
+    : QQmlExtensionPlugin(),
+      libHandle(NULL)
+{
+}
+
+LightDMPlugin::~LightDMPlugin()
+{
+    if (libHandle) {
+        dlclose(libHandle);
+    }
+}
+
+void LightDMPlugin::initializeEngine(QQmlEngine *engine, const char * uri)
+{
+    Q_ASSERT(uri == QLatin1String("LightDM"));
+
+    if (engine->rootContext()->contextProperty("shellMode").toString() != "greeter") {
+        // Use our own internal version that authenticates against PAM directly
+        libHandle = dlopen(SHELL_INSTALL_QML "/liblightdm/liblightdm-qt5-3.so", RTLD_LAZY);
+    }
+}
+
 void LightDMPlugin::registerTypes(const char *uri)
 {
+    Q_ASSERT(uri == QLatin1String("LightDM"));
+
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<UserMetricsOutput::ColorTheme>();
-
-    Q_ASSERT(uri == QLatin1String("LightDM"));
     qRegisterMetaType<QLightDM::Greeter::MessageType>("QLightDM::Greeter::MessageType");
     qRegisterMetaType<QLightDM::Greeter::PromptType>("QLightDM::Greeter::PromptType");
     qmlRegisterSingletonType<Greeter>(uri, 0, 1, "Greeter", greeter_provider);

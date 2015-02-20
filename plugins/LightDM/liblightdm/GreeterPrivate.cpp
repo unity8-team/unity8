@@ -268,7 +268,14 @@ GreeterPrivate::GreeterPrivate(Greeter* parent)
 
 void GreeterPrivate::handleAuthenticate()
 {
-    m_impl->start(authenticationUser);
+    // Ignore authenticationUser variable, just always authenticate as the
+    // current user.  This library is meant to be used as a session lock; the
+    // only time we'd have a different user is if ~/.unity8-greeter-demo is
+    // specified, and even then, we don't have the authorization to log in as
+    // other users.  Besides, the session it unlocks is still this user's
+    // session.  So it makes sense to not let someone else's password unlock
+    // this user's session.
+    m_impl->start(qgetenv("USER"));
 }
 
 void GreeterPrivate::handleRespond(const QString &response)

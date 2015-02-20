@@ -40,8 +40,6 @@ UsersModel::UsersModel(QObject *parent) :
     QAbstractListModel(parent),
     d_ptr(new UsersModelPrivate(this))
 {
-    Q_D(UsersModel);
-
     // Extend roleNames (we want to keep the "display" role)
     QHash<int, QByteArray> roles = roleNames();
     roles[NameRole] = "name";
@@ -53,20 +51,6 @@ UsersModel::UsersModel(QObject *parent) :
     roles[HasMessagesRole] = "hasMessages";
     roles[ImagePathRole] = "imagePath";
     setRoleNames(roles);
-
-    // Now modify our mock user backgrounds
-    QDir bgdir = QDir("/usr/share/demo-assets/shell/backgrounds/");
-    QStringList backgrounds = bgdir.entryList(QDir::Files | QDir::NoDotAndDotDot);
-
-    for (int i = 0, j = 0; i < d->entries.size(); i++) {
-        Entry &entry = d->entries[i];
-        if (entry.background.isNull() && !backgrounds.isEmpty()) {
-            entry.background = bgdir.filePath(backgrounds[j++]);
-            if (j >= backgrounds.length()) {
-                j = 0;
-            }
-        }
-    }
 }
 
 UsersModel::~UsersModel()

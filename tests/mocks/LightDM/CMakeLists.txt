@@ -30,14 +30,14 @@ add_library(MockLightDM-qml MODULE
     ${QMLPLUGIN_SRC}
     )
 
-# We want to link to liblightdm-qt5-2, but we don't want to depend on it being
+# We want to link to liblightdm-qt5-3, but we don't want to depend on it being
 # installed on the system.  So we make sure we link to our full fake version
 # At run time, we can point to whichever version we happen to be using via
 # LD_LIBRARY_PATH.
 add_dependencies(MockLightDM-qml MockLightDM MockUserMetrics)
 target_link_libraries(MockLightDM-qml
     -L${CMAKE_CURRENT_BINARY_DIR}/liblightdm
-    -llightdm-qt5-2
+    -llightdm-qt5-3
     -L${CMAKE_BINARY_DIR}/tests/mocks/libusermetrics
     -lusermetricsoutput
     unity8-private

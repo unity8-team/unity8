@@ -29,7 +29,13 @@ class LightDMPlugin : public QQmlExtensionPlugin
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
 
 public:
+    LightDMPlugin();
+    ~LightDMPlugin();
+    void initializeEngine(QQmlEngine *engine, const char *uri);
     void registerTypes(const char *uri);
+
+private:
+    void *libHandle;
 };
 
 #endif
