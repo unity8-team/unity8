@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Ubuntu.Components.Popups 1.0
 import QtQuick 2.3
 import QtQuick.Layouts 1.0
 import Ubuntu.Components 1.1
@@ -84,9 +83,11 @@ PageWithBottomEdge {
                 iconSource: "../images/sorting.svg"
                 text: i18n.tr("Sorting")
                 onTriggered: {
-                    var popup = PopupUtils.open(Qt.resolvedUrl("../components/SortingDialog.qml"));
+                    var popupComponent = Qt.createComponent(Qt.resolvedUrl("../components/SortingDialog.qml"));
+                    var popup = popupComponent.createObject(root, {sortOrder: notes.sortOrder} )
                     popup.accepted.connect( function() {
                         notes.sortOrder = popup.sortOrder
+                        popup.destroy();
                     })
                     popup.sortOrder = notes.sortOrder;
                 }
