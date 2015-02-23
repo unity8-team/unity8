@@ -787,7 +787,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
             qDebug() << "refetching for image";
             refreshWithResourceData = true;
         }
-        roles << RoleResourceUrls;
+        roles << RoleHtmlContent << RoleEnmlContent << RoleResourceUrls;
     }
 
     if (what == FetchNoteJob::LoadContent) {
@@ -822,10 +822,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     if (refreshWithResourceData) {
         qDebug() << "refreshWithResourceData";
         refreshNoteContent(note->guid(), FetchNoteJob::LoadResources);
+    } else {
+        syncToCacheFile(note); // Syncs into the list cache
+        note->syncToCacheFile(); // Syncs note's content into notes cache
     }
-
-    syncToCacheFile(note); // Syncs into the list cache
-    note->syncToCacheFile(); // Syncs note's content into notes cache
 }
 
 void NotesStore::refreshNotebooks()

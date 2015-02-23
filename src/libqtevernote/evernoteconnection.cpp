@@ -161,8 +161,10 @@ void EvernoteConnection::disconnectFromEvernote()
     m_errorMessage.clear();
     emit errorChanged();
 
-    m_notesStoreHttpClient->close();
-    m_userStoreHttpClient->close();
+    try {
+        m_notesStoreHttpClient->close();
+        m_userStoreHttpClient->close();
+    } catch (...) {}
     emit isConnectedChanged();
 }
 

@@ -32,6 +32,7 @@ class Resource: public QObject
     Q_PROPERTY(QString hash READ hash CONSTANT)
     Q_PROPERTY(QString fileName READ fileName CONSTANT)
     Q_PROPERTY(QString type READ type CONSTANT)
+    Q_PROPERTY(QString hashedFilePath READ hashedFilePath CONSTANT)
 
 public:
     Resource(const QString &path, QObject *parent = 0);
@@ -43,6 +44,7 @@ public:
     QString hash() const;
     QString fileName() const;
     QString type() const;
+    QString hashedFilePath() const;
 
     QByteArray imageData(const QSize &size = QSize());
 

@@ -23,7 +23,7 @@ import "../components"
 
 Page {
     id: root
-    title: noteView.title || i18n.tr("Untitled")
+    title: noteView.title
     property alias note: noteView.note
 
     signal editNote(var note)

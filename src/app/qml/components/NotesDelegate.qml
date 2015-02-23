@@ -94,14 +94,9 @@ ListItemWithActions {
                 anchors.fill: parent
                 spacing: 0
 
-                Rectangle {
+                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-
-                    gradient: Gradient {
-                        GradientStop{ position: 0.8; color: "transparent" }
-                        GradientStop{ position: 1; color: "#d9d9d9" }
-                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -177,6 +172,14 @@ ListItemWithActions {
                     fillMode: Image.PreserveAspectCrop
                 }
             }
+            Rectangle {
+                anchors.fill: parent
+                gradient: Gradient {
+                    GradientStop{ position: 0.8; color: "transparent" }
+                    GradientStop{ position: 1; color: "#d9d9d9" }
+                }
+            }
         }
+
     }
 }
