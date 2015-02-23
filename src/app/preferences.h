@@ -35,7 +35,6 @@ class Preferences: public QObject
     Q_OBJECT
     Q_PROPERTY(QString accountName READ accountName WRITE setAccountName NOTIFY accountNameChanged)
     Q_PROPERTY(bool haveLocalUser READ haveLocalUser WRITE setHaveLocalUser NOTIFY haveLocalUserChanged)
-    Q_PROPERTY(bool firstLocalLogin READ firstLocalLogin WRITE setFirstLocalLogin NOTIFY firstLocalLoginChanged)
 
 public:
     Preferences(QObject *parent = 0);
@@ -45,15 +44,11 @@ public:
     bool haveLocalUser() const;
     void setHaveLocalUser(bool haveLocalUser);
 
-    bool firstLocalLogin() const;
-    void setFirstLocalLogin(bool firstLocalLogin);
-
     Q_INVOKABLE QString colorForNotebook(const QString &notebookGuid);
 
 signals:
     void accountNameChanged();
     void haveLocalUserChanged();
-    void firstLocalLoginChanged();
 
 private:
     QSettings m_settings;

@@ -54,17 +54,6 @@ void Preferences::setHaveLocalUser(bool haveLocalUser)
     emit haveLocalUserChanged();
 }
 
-bool Preferences::firstLocalLogin() const
-{
-    return m_settings.value("firstLocalLogin", true).toBool();
-}
-
-void Preferences::setFirstLocalLogin(bool firstLocalLogin)
-{
-    m_settings.setValue("firstLocalLogin", firstLocalLogin);
-    emit firstLocalLoginChanged();
-}
-
 QString Preferences::colorForNotebook(const QString &notebookGuid)
 {
     m_settings.beginGroup("notebookColors");
