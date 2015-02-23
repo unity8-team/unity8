@@ -26,7 +26,8 @@
 Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false),
-    m_showDeleted(false)
+    m_showDeleted(false),
+    m_sortOrder(SortOrderDateCreatedNewest)
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
@@ -152,6 +153,47 @@ int Notes::sectionCount(const QString &sectionRole, const QString &section)
         }
     }
     return count;
+}
+
+Notes::SortOrder Notes::sortOrder() const
+{
+    return m_sortOrder;
+}
+
+void Notes::setSortOrder(Notes::SortOrder sortOrder)
+{
+    if (m_sortOrder != sortOrder) {
+        emit layoutAboutToBeChanged();
+        switch (sortOrder) {
+        case SortOrderDateCreatedNewest:
+            setSortRole(NotesStore::RoleCreated);
+            sort(0, Qt::DescendingOrder);
+            break;
+        case SortOrderDateCreatedOldest:
+            setSortRole(NotesStore::RoleCreated);
+            sort(0, Qt::AscendingOrder);
+            break;
+        case SortOrderDateUpdatedNewest:
+            setSortRole(NotesStore::RoleUpdated);
+            sort(0, Qt::DescendingOrder);
+            break;
+        case SortOrderDateUpdatedOldest:
+            setSortRole(NotesStore::RoleUpdated);
+            sort(0, Qt::AscendingOrder);
+            break;
+        case SortOrderTitleAscending:
+            setSortRole(NotesStore::RoleTitle);
+            sort(0, Qt::AscendingOrder);
+            break;
+        case SortOrderTitleDescending:
+            setSortRole(NotesStore::RoleTitle);
+            sort(0, Qt::DescendingOrder);
+            break;
+        }
+        m_sortOrder = sortOrder;
+        emit sortOrderChanged();
+        emit layoutChanged();
+    }
 }
 
 bool Notes::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

@@ -23,6 +23,7 @@ import Ubuntu.Components.ListItems 1.0
 import Ubuntu.Components.Popups 1.0
 import Evernote 0.1
 import "../components"
+import Qt.labs.settings 1.0
 
 PageWithBottomEdge {
     id: root
@@ -80,6 +81,22 @@ PageWithBottomEdge {
 
         ToolbarButton {
             action: Action {
+                iconSource: "../images/sorting.svg"
+                text: i18n.tr("Sorting")
+                onTriggered: {
+                    var popupComponent = Qt.createComponent(Qt.resolvedUrl("../components/SortingDialog.qml"));
+                    var popup = popupComponent.createObject(root, {sortOrder: notes.sortOrder} )
+                    popup.accepted.connect( function() {
+                        notes.sortOrder = popup.sortOrder
+                        popup.destroy();
+                    })
+                    popup.sortOrder = notes.sortOrder;
+                }
+            }
+        }
+
+        ToolbarButton {
+            action: Action {
                 text: i18n.tr("Accounts")
                 iconName: "contacts-app-symbolic"
                 onTriggered: {
@@ -127,6 +144,10 @@ PageWithBottomEdge {
         }
     }
 
+    Settings {
+        property alias sortOrder: notes.sortOrder
+    }
+
     Notes {
         id: notes
     }
@@ -146,8 +167,9 @@ PageWithBottomEdge {
 
         delegate: NotesDelegate {
             title: model.title
-            creationDate: model.created
-            changedDate: model.updated
+            date: notes.sortOrder == Notes.SortOrderUpdatedOldest || notes.sortOrder == Notes.SortOrderUpdatedNewest ?
+                      model.updated : model.created
+
             content: model.tagline
             triggerActionOnMouseRelease: true
             tags: {
