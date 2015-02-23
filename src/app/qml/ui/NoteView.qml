@@ -83,8 +83,6 @@ Item {
                         NotesStore.saveNote(note.guid);
                         break;
                     case "attachmentOpened":
-                        print("attachment opened", data.resourceHash)
-                        print("a", data.mediaType)
                         var filePath = root.note.resource(data.resourceHash).hashedFilePath;
                         contentPeerPicker.filePath = filePath;
 
@@ -156,7 +154,6 @@ Item {
 
         property string filePath: ""
         onPeerSelected: {
-            print("filepath is", contentPeerPicker.filePath)
             var transfer = peer.request();
             if (transfer.state === ContentTransfer.InProgress) {
                 var items = new Array()
