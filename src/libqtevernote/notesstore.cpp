@@ -777,9 +777,6 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString fileName = QString::fromStdString(resource.attributes.fileName);
         QString mime = QString::fromStdString(resource.mime);
 
-        if (note->guid() == "e183062a-12e2-42c8-826c-cb79dbcd16d5") {
-            qDebug() << "***** resource" << mime;
-        }
         if (what == FetchNoteJob::LoadResources) {
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
             note->addResource(resourceData, hash, fileName, mime);
