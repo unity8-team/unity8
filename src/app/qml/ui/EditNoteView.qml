@@ -89,18 +89,17 @@ Item {
             anchors { left: parent.left; right: parent.right; margins: units.gu(1) }
             height: units.gu(7)
             spacing: units.gu(2)
-            Icon {
+            AbstractButton {
                 id: backIcon
-                name: "back"
                 height: units.gu(3)
                 width: height
                 anchors.verticalCenter: parent.verticalCenter
-
-                MouseArea {
+                Icon {
+                    name: "back"
                     anchors.fill: parent
-                    onClicked: {
-                        root.exitEditMode(root.note);
-                    }
+                }
+                onClicked: {
+                    root.exitEditMode(root.note);
                 }
             }
 
@@ -112,17 +111,17 @@ Item {
                 width: parent.width - (backIcon.width + parent.spacing) * 2
                 anchors.verticalCenter: parent.verticalCenter
             }
-            Icon {
-                name: "save"
+            AbstractButton {
                 height: units.gu(3)
                 width: height
                 anchors.verticalCenter: parent.verticalCenter
-                MouseArea {
+                Icon {
+                    name: "save"
                     anchors.fill: parent
-                    onClicked: {
-                        saveNote();
-                        root.exitEditMode(root.note);
-                    }
+                }
+                onClicked: {
+                    saveNote();
+                    root.exitEditMode(root.note);
                 }
             }
         }
