@@ -115,14 +115,14 @@ void Note::setGuid(const QString &guid)
         }
 
         m_guid = guid;
-        QString newCacheFileName = NotesStore::instance()->storageLocation() + "/note-" + guid + ".enml";
+        QString newCacheFileName = NotesStore::instance()->storageLocation() + "note-" + guid + ".enml";
         if (m_cacheFile.exists()) {
             qDebug() << "renaming cachefile from" << m_cacheFile.fileName() << "to" << newCacheFileName;
             m_cacheFile.rename(newCacheFileName);
         } else {
             m_cacheFile.setFileName(newCacheFileName);
         }
-        m_infoFile = NotesStore::instance()->storageLocation() + "/note-" + guid + ".info";
+        m_infoFile = NotesStore::instance()->storageLocation() + "note-" + guid + ".info";
 
         if (syncToFile) {
             syncToInfoFile();

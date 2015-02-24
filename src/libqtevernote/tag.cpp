@@ -69,7 +69,7 @@ void Tag::setGuid(const QString &guid)
     }
 
     m_guid = guid;
-    m_infoFile = NotesStore::instance()->storageLocation() + "/tag-" + guid + ".info";
+    m_infoFile = NotesStore::instance()->storageLocation() + "tag-" + guid + ".info";
 
     if (syncToFile) {
         syncToInfoFile();

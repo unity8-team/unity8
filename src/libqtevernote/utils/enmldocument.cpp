@@ -159,7 +159,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                     if (type == TypeRichText) {
                         writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
                     } else if (type  == TypeHtml) {
-                        QString imagePath = NotesStore::instance()->storageLocation() + "/" + hash + "." + mediaType.split('/').last();
+                        QString imagePath = NotesStore::instance()->storageLocation() + hash + "." + mediaType.split('/').last();
                         writer.writeAttribute("src", imagePath);
                         writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
                     }
