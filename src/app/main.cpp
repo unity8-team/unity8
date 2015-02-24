@@ -27,7 +27,6 @@
 #include <QtQuick/QQuickView>
 #include <QtQml/QtQml>
 #include <QLibrary>
-#include <QDir>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <QDebug>
@@ -140,12 +139,6 @@ int main(int argc, char *argv[])
     // It'll be overwritten again when qml loads but we need it already now.
     // So if you want to change it, make sure to find all the places where it is set, not just here :D
     QCoreApplication::setApplicationName("com.ubuntu.reminders");
-
-    QDir cacheDir(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first());
-    if (!cacheDir.exists()) {
-        qDebug() << "creating cacheDir:" << cacheDir.absolutePath();
-        cacheDir.mkpath(cacheDir.absolutePath());
-    }
 
     qDebug() << "using main qml file from:" << qmlfile;
     view.setSource(QUrl::fromLocalFile(qmlfile));

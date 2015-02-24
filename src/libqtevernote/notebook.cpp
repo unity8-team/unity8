@@ -197,7 +197,7 @@ void Notebook::setGuid(const QString &guid)
     }
 
     m_guid = guid;
-    m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/notebook-" + guid + ".info";
+    m_infoFile = NotesStore::instance()->storageLocation() + "/notebook-" + guid + ".info";
 
     if (syncToFile) {
         syncToInfoFile();

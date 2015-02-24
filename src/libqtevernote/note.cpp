@@ -43,7 +43,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_conflicting(false)
 {
     setGuid(guid);
-    m_cacheFile.setFileName(QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml");
+    m_cacheFile.setFileName(NotesStore::instance()->storageLocation() + "note-" + guid + ".enml");
 
     QSettings infoFile(m_infoFile, QSettings::IniFormat);
     m_created = infoFile.value("created").toDateTime();
@@ -115,14 +115,14 @@ void Note::setGuid(const QString &guid)
         }
 
         m_guid = guid;
-        QString newCacheFileName = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".enml";
+        QString newCacheFileName = NotesStore::instance()->storageLocation() + "/note-" + guid + ".enml";
         if (m_cacheFile.exists()) {
             qDebug() << "renaming cachefile from" << m_cacheFile.fileName() << "to" << newCacheFileName;
             m_cacheFile.rename(newCacheFileName);
         } else {
             m_cacheFile.setFileName(newCacheFileName);
         }
-        m_infoFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + NotesStore::instance()->username() + "/note-" + guid + ".info";
+        m_infoFile = NotesStore::instance()->storageLocation() + "/note-" + guid + ".info";
 
         if (syncToFile) {
             syncToInfoFile();
