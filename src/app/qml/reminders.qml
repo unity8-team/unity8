@@ -338,7 +338,8 @@ MainView {
             EvernoteConnection.token = "";
             NotesStore.username = username;
             preferences.accountName = username;
-            if (username === "@local") {
+            if (username === "@local" && !preferences.haveLocalUser) {
+                NotesStore.createNotebook(i18n.tr("Default notebook"));
                 preferences.haveLocalUser = true;
             }
 
