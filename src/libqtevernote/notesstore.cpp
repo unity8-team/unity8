@@ -48,6 +48,7 @@
 #include <QStandardPaths>
 #include <QUuid>
 #include <QPointer>
+#include <QDir>
 
 NotesStore* NotesStore::s_instance = 0;
 
@@ -68,6 +69,12 @@ NotesStore::NotesStore(QObject *parent) :
     qRegisterMetaType<evernote::edam::Tag>("evernote::edam::Tag");
 
     m_organizerAdapter = new OrganizerAdapter(this);
+
+    QDir storageDir(QStandardPaths::standardLocations(QStandardPaths::DataLocation).first());
+    if (!storageDir.exists()) {
+        qDebug() << "creating storage directory:" << storageDir.absolutePath();
+        storageDir.mkpath(storageDir.absolutePath());
+    }
 }
 
 NotesStore *NotesStore::instance()
@@ -98,10 +105,15 @@ void NotesStore::setUsername(const QString &username)
         m_username = username;
         emit usernameChanged();
 
-        m_cacheFile = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first() + "/" + m_username + "/notes.cache";
+        m_cacheFile = storageLocation() + "notes.cache";
         qDebug() << "initialized cacheFile" << m_cacheFile;
         loadFromCacheFile();
     }
+}
+
+QString NotesStore::storageLocation()
+{
+    return QStandardPaths::standardLocations(QStandardPaths::DataLocation).first() + "/" + m_username + "/";
 }
 
 void NotesStore::userStoreConnected(const QString &username)

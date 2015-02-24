@@ -98,6 +98,8 @@ public:
     QString username() const;
     Q_SLOT void setUsername(const QString &username);
 
+    QString storageLocation();
+
     bool loading() const;
     bool notebooksLoading() const;
     bool tagsLoading() const;
