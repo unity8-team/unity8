@@ -75,6 +75,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
 
     connect(NotesStore::instance(), &NotesStore::notebookGuidChanged, this, &Note::slotNotebookGuidChanged);
     connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Note::slotTagGuidChanged);
+
+    qDebug() << "Note created:" << m_guid << m_title << m_tagline << m_content.enml();
 }
 
 Note::~Note()
@@ -585,6 +587,11 @@ bool Note::isCached() const
     return m_cacheFile.exists();
 }
 
+bool Note::loaded() const
+{
+    return m_loaded;
+}
+
 void Note::save()
 {
     NotesStore::instance()->saveNote(m_guid);
@@ -649,10 +656,12 @@ void Note::load() const
 
 void Note::loadFromCacheFile() const
 {
+    qDebug() << "Loading from cacheFile:" << m_guid;
     if (m_cacheFile.exists() && m_cacheFile.open(QFile::ReadOnly)) {
         m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()).trimmed());
         m_tagline = m_content.toPlaintext().left(100);
         m_cacheFile.close();
+        qDebug() << "cache file opened" << m_tagline;
     }
     m_loaded = true;
 }

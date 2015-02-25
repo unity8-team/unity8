@@ -611,6 +611,12 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             // Local note changed. See if we can push our changes.
             if (note->lastSyncedSequenceNumber() == result.updateSequenceNum) {
                 qDebug() << "Local note" << note->guid() << "has changed while server note did not. Pushing changes.";
+
+                // Make sure we have everything loaded from cache before saving to server
+                if (!note->loaded() && note->isCached()) {
+                    note->loadFromCacheFile();
+                }
+
                 note->setLoading(true);
                 changedRoles << RoleLoading;
                 SaveNoteJob *job = new SaveNoteJob(note, this);
@@ -674,7 +680,12 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                     qDebug() << "Not syncing note to server yet. The notebook needs to be synced first";
                     continue;
                 }
-                qDebug() << "Creating note on server:" << note->notebookGuid() << m_notebooksHash.keys();
+                qDebug() << "Creating note on server:" << note->guid();
+
+                // Make sure we have everything loaded from cache before saving to server
+                if (!note->loaded() && note->isCached()) {
+                    note->loadFromCacheFile();
+                }
 
                 QModelIndex idx = index(m_notes.indexOf(note));
                 note->setLoading(true);
@@ -1092,7 +1103,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     roles << RoleLoading;
 
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error creating note:" << errorMessage;
+        qWarning() << "Error creating note:" << tmpGuid << errorMessage;
         note->setSyncError(true);
         roles << RoleSyncError;
         emit dataChanged(index(idx), index(idx), roles);
@@ -1105,6 +1116,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     }
 
     QString guid = QString::fromStdString(result.guid);
+    qDebug() << "Note created on server. Old guid:" << tmpGuid << "New guid:" << guid;
     m_notesHash.insert(guid, note);
     note->setGuid(guid);
     m_notesHash.remove(tmpGuid);
