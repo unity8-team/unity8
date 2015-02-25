@@ -26,6 +26,7 @@
 Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false),
+    m_onlySearchResults(false),
     m_showDeleted(false),
     m_sortOrder(SortOrderDateCreatedNewest)
 {
