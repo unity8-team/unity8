@@ -43,6 +43,14 @@ void FetchNoteJob::attachToDuplicate(const EvernoteJob *other)
     connect(otherJob, &FetchNoteJob::resultReady, this, &FetchNoteJob::resultReady);
 }
 
+QString FetchNoteJob::toString() const
+{
+    return QString("%1, NoteGuid: %2, What: %3")
+            .arg(metaObject()->className())
+            .arg(m_guid)
+            .arg(m_what == LoadContent ? "Content" : "Resources");
+}
+
 void FetchNoteJob::startJob()
 {
     client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), m_what == LoadContent, m_what == LoadResources, false, false);

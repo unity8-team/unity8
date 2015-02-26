@@ -142,7 +142,7 @@ public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString(), int startIndex = 0);
 
     // Defaulting to High priority to provide fast feedback to the ui. Use low priority if you call this to prefetch things in the background
-    void refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what = FetchNoteJob::LoadContent, EvernoteConnection::JobPriority priority = EvernoteConnection::JobPriorityHigh);
+    void refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what = FetchNoteJob::LoadContent, EvernoteJob::JobPriority priority = EvernoteJob::JobPriorityHigh);
     void refreshNotebooks();
     void refreshTags();
 

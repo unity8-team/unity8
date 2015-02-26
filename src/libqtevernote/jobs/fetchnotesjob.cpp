@@ -52,6 +52,16 @@ void FetchNotesJob::attachToDuplicate(const EvernoteJob *other)
     connect(otherJob, &FetchNotesJob::jobDone, this, &FetchNotesJob::jobDone);
 }
 
+QString FetchNotesJob::toString() const
+{
+    return QString("%1, NotebookFilter: %2, SearchWords: %3, StartIndex: %4, ChunkSize: %5")
+            .arg(metaObject()->className())
+            .arg(m_filterNotebookGuid)
+            .arg(m_searchWords)
+            .arg(m_startIndex)
+            .arg(m_chunkSize);
+}
+
 void FetchNotesJob::startJob()
 {
     int32_t start = m_startIndex;

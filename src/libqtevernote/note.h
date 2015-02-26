@@ -201,7 +201,7 @@ private:
     void setConflicting(bool conflicting);
 
     // const because we want to load on demand in getters. Keep this private!
-    void load() const;
+    void load(bool priorityHigh = true) const;
     void loadFromCacheFile() const;
 
 private:

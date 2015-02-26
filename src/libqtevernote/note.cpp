@@ -287,7 +287,7 @@ QString Note::plaintextContent() const
 QString Note::tagline() const
 {
     if (m_tagline.isEmpty()) {
-        load();
+        load(false);
     }
     return m_tagline;
 }
@@ -638,12 +638,12 @@ void Note::syncToCacheFile()
     }
 }
 
-void Note::load() const
+void Note::load(bool priorityHigh) const
 {
     if (!m_loaded && isCached()) {
         loadFromCacheFile();
-    } else if (!m_loaded && !m_loading) {
-        NotesStore::instance()->refreshNoteContent(m_guid);
+    } else if (!m_loaded && (priorityHigh || !m_loading)) {
+        NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadContent, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityLow);
     }
 }
 
