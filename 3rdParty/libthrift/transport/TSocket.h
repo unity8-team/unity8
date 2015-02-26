@@ -22,10 +22,14 @@
 
 #include <string>
 
-#include "TTransport.h"
-#include "TVirtualTransport.h"
-#include "TServerSocket.h"
+#include <transport/TTransport.h>
+#include <transport/TVirtualTransport.h>
+#include <transport/TServerSocket.h>
+#include <transport/PlatformSocket.h>
 
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -169,10 +173,15 @@ class TSocket : public TVirtualTransport<TSocket> {
   void setSendTimeout(int ms);
 
   /**
-   * Set the max number of recv retries in case of an EAGAIN
+   * Set the max number of recv retries in case of an THRIFT_EAGAIN
    * error
    */
   void setMaxRecvRetries(int maxRecvRetries);
+
+  /**
+   * Set SO_KEEPALIVE
+   */
+  void setKeepAlive(bool keepAlive);
 
   /**
    * Get socket information formated as a string <Host: x Port: x>
@@ -197,7 +206,7 @@ class TSocket : public TVirtualTransport<TSocket> {
   /**
    * Returns the underlying socket file descriptor.
    */
-  int getSocketFD() {
+  THRIFT_SOCKET getSocketFD() {
     return socket_;
   }
 
@@ -208,7 +217,7 @@ class TSocket : public TVirtualTransport<TSocket> {
    *
    * @param fd the descriptor for an already-connected socket
    */
-  void setSocketFD(int fd);
+  void setSocketFD(THRIFT_SOCKET fd);
 
   /*
    * Returns a cached copy of the peer address.
@@ -226,9 +235,16 @@ class TSocket : public TVirtualTransport<TSocket> {
   static bool getUseLowMinRto();
 
   /**
+   * Get the origin the socket is connected to
+   *
+   * @return string peer host identifier and port
+   */
+  virtual const std::string getOrigin();
+
+  /**
    * Constructor to create socket from raw UNIX handle.
    */
-  TSocket(int socket);
+  TSocket(THRIFT_SOCKET socket);
 
   /**
    * Set a cache of the peer address (used when trivially available: e.g.
@@ -259,7 +275,7 @@ class TSocket : public TVirtualTransport<TSocket> {
   std::string path_;
 
   /** Underlying UNIX socket handle */
-  int socket_;
+  THRIFT_SOCKET socket_;
 
   /** Connect timeout in ms */
   int connTimeout_;
@@ -269,6 +285,9 @@ class TSocket : public TVirtualTransport<TSocket> {
 
   /** Recv timeout in ms */
   int recvTimeout_;
+
+  /** Keep alive on */
+  bool keepAlive_;
 
   /** Linger on */
   bool lingerOn_;
@@ -282,17 +301,11 @@ class TSocket : public TVirtualTransport<TSocket> {
   /** Recv EGAIN retries */
   int maxRecvRetries_;
 
-  /** Recv timeout timeval */
-  struct timeval recvTimeval_;
-
   /** Cached peer address */
   union {
     sockaddr_in ipv4;
     sockaddr_in6 ipv6;
   } cachedPeerAddr_;
-
-  /** Connection start time */
-  timespec startTime_;
 
   /** Whether to use low minimum TCP retransmission timeout */
   static bool useLowMinRto_;

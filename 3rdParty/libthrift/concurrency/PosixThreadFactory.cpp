@@ -17,11 +17,10 @@
  * under the License.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include "PosixThreadFactory.h"
-#include "Exception.h"
+#include <thrift-config.h>
+
+#include <concurrency/PosixThreadFactory.h>
+#include <concurrency/Exception.h>
 
 #if GOOGLE_PERFTOOLS_REGISTER_THREAD
 #  include <google/profiler.h>
@@ -248,14 +247,8 @@ class PosixThreadFactory::Impl {
    * into the correpsonding relative priority level (lowest..highest) and
    * then pro-rate accordingly.
    */
-  static int toPthreadPriority(POLICY
-#if defined HAVE_SCHED_GET_PRIORITY_MAX || defined HAVE_SCHED_GET_PRIORITY_MIN
-      policy
-#endif
-      , PRIORITY priority) {
-#if defined HAVE_SCHED_GET_PRIORITY_MAX || defined HAVE_SCHED_GET_PRIORITY_MIN
+  static int toPthreadPriority(POLICY policy, PRIORITY priority) {
     int pthread_policy = toPthreadPolicy(policy);
-#endif
     int min_priority = 0;
     int max_priority = 0;
 #ifdef HAVE_SCHED_GET_PRIORITY_MIN

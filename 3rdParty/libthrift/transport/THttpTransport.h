@@ -21,7 +21,7 @@
 #define _THRIFT_TRANSPORT_THTTPTRANSPORT_H_ 1
 
 #include <transport/TBufferTransports.h>
-#include "TVirtualTransport.h"
+#include <transport/TVirtualTransport.h>
 
 namespace apache { namespace thrift { namespace transport {
 
@@ -62,9 +62,12 @@ class THttpTransport : public TVirtualTransport<THttpTransport> {
 
   virtual void flush() = 0;
 
+  virtual const std::string getOrigin();
+
  protected:
 
   boost::shared_ptr<TTransport> transport_;
+  std::string origin_;
 
   TMemoryBuffer writeBuffer_;
   TMemoryBuffer readBuffer_;

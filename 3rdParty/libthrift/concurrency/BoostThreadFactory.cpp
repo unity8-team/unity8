@@ -17,11 +17,12 @@
  * under the License.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include "BoostThreadFactory.h"
-#include "Exception.h"
+#include <thrift/thrift-config.h>
+
+#ifdef USE_BOOST_THREAD
+
+#include <thrift/concurrency/BoostThreadFactory.h>
+#include <thrift/concurrency/Exception.h>
 
 #include <cassert>
 
@@ -60,10 +61,10 @@ class BoostThread: public Thread {
  public:
 
   BoostThread(bool detached, shared_ptr<Runnable> runnable) :
-	 state_(uninitialized),
-	 detached_(detached) {
-    this->Thread::runnable(runnable);
-  }
+    state_(uninitialized),
+    detached_(detached) {
+      this->Thread::runnable(runnable);
+    }
 
   ~BoostThread() {
     if(!detached_) {
@@ -79,27 +80,27 @@ class BoostThread: public Thread {
     if (state_ != uninitialized) {
       return;
     }
-	
-	// Create reference
+
+  // Create reference
     shared_ptr<BoostThread>* selfRef = new shared_ptr<BoostThread>();
     *selfRef = self_.lock();
 
-	thread_ = std::auto_ptr<boost::thread>(new boost::thread(boost::bind(threadMain, (void*)selfRef)));
+    state_ = starting;
 
-	if(detached_)
-		thread_->detach();
+    thread_ = std::auto_ptr<boost::thread>(new boost::thread(boost::bind(threadMain, (void*)selfRef)));
 
-	state_ = starting;
+    if(detached_)
+      thread_->detach();
   }
 
   void join() {
     if (!detached_ && state_ != uninitialized) {
-	  thread_->join();
+      thread_->join();
     }
   }
 
   Thread::id_t getId() {
-	  return thread_.get() ? thread_->get_id() : boost::thread::id();
+    return thread_.get() ? thread_->get_id() : boost::thread::id();
   }
 
   shared_ptr<Runnable> runnable() const { return Thread::runnable(); }
@@ -116,7 +117,7 @@ void* BoostThread::threadMain(void* arg) {
   shared_ptr<BoostThread> thread = *(shared_ptr<BoostThread>*)arg;
   delete reinterpret_cast<shared_ptr<BoostThread>*>(arg);
 
-  if (thread == NULL) {
+  if (!thread) {
     return (void*)0;
   }
 
@@ -163,9 +164,8 @@ class BoostThreadFactory::Impl {
   void setDetached(bool value) { detached_ = value; }
 
   Thread::id_t getCurrentThreadId() const {
-	  return boost::this_thread::get_id();
+    return boost::this_thread::get_id();
   }
-
 };
 
 BoostThreadFactory::BoostThreadFactory(bool detached) :
@@ -180,3 +180,5 @@ void BoostThreadFactory::setDetached(bool value) { impl_->setDetached(value); }
 Thread::id_t BoostThreadFactory::getCurrentThreadId() const { return impl_->getCurrentThreadId(); }
 
 }}} // apache::thrift::concurrency
+
+#endif // USE_BOOST_THREAD

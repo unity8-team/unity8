@@ -20,10 +20,10 @@
 #ifndef _THRIFT_SERVER_TSERVER_H_
 #define _THRIFT_SERVER_TSERVER_H_ 1
 
-#include <TProcessor.h>
-#include <transport/TServerTransport.h>
-#include <protocol/TBinaryProtocol.h>
-#include <concurrency/Thread.h>
+#include <thrift/TProcessor.h>
+#include <thrift/transport/TServerTransport.h>
+#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/concurrency/Thread.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -142,7 +142,7 @@ class TServer : public concurrency::Runnable {
 
 protected:
   template<typename ProcessorFactory>
-  TServer(const boost::shared_ptr<TProcessorFactory>& processorFactory,
+  TServer(const boost::shared_ptr<ProcessorFactory>& processorFactory,
           THRIFT_OVERLOAD_IF(ProcessorFactory, TProcessorFactory)):
     processorFactory_(processorFactory) {
     setInputTransportFactory(boost::shared_ptr<TTransportFactory>(
@@ -166,7 +166,7 @@ protected:
   }
 
   template<typename ProcessorFactory>
-  TServer(const boost::shared_ptr<TProcessorFactory>& processorFactory,
+  TServer(const boost::shared_ptr<ProcessorFactory>& processorFactory,
           const boost::shared_ptr<TServerTransport>& serverTransport,
           THRIFT_OVERLOAD_IF(ProcessorFactory, TProcessorFactory)):
     processorFactory_(processorFactory),
@@ -307,8 +307,9 @@ public:
  * for the current process and all of its children.
  * By default, tries to increase it to as much as 2^24.
  */
+#ifdef HAVE_SYS_RESOURCE_H
  int increase_max_fds(int max_fds=(1<<24));
-
+#endif
 
 }}} // apache::thrift::server
 
