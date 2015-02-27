@@ -29,6 +29,8 @@ Dialog {
     property var note
     property int pageHeight
 
+    signal done();
+
     Tags {
         id: tags
     }
@@ -117,6 +119,9 @@ Dialog {
 
         text: i18n.tr("Done")
 
-        onClicked: PopupUtils.close(root)
+        onClicked: {
+            root.done();
+            PopupUtils.close(root)
+        }
     }
 }
