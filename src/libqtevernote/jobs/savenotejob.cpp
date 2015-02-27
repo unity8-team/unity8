@@ -78,10 +78,6 @@ void SaveNoteJob::startJob()
         note.tagGuids = tags;
         note.__isset.tagGuids = true;
 
-        note.content = m_note->enmlContent().toStdString();
-        note.__isset.content = true;
-        note.contentLength = m_note->enmlContent().length();
-
         note.__isset.attributes = true;
         note.attributes.reminderOrder = m_note->reminderOrder();
         note.attributes.__isset.reminderOrder = true;
@@ -90,32 +86,39 @@ void SaveNoteJob::startJob()
         note.attributes.reminderDoneTime = m_note->reminderDoneTime().toMSecsSinceEpoch();
         note.attributes.__isset.reminderDoneTime = true;
 
-        note.resources.clear();
-        foreach (Resource *resource, m_note->resources()) {
-            evernote::edam::Resource evResource;
-            evResource.noteGuid = m_note->guid().toStdString();
-            evResource.__isset.noteGuid = true;
-            evResource.mime = resource->type().toStdString();
-            evResource.__isset.mime = true;
+        qDebug() << "*** needs content sync" << m_note->needsContentSync();
+        if (m_note->needsContentSync()) {
+            note.content = m_note->enmlContent().toStdString();
+            note.__isset.content = true;
+            note.contentLength = m_note->enmlContent().length();
 
-            evResource.data.bodyHash = resource->hash().toStdString();
-            evResource.data.__isset.bodyHash = true;
+            note.resources.clear();
+            foreach (Resource *resource, m_note->resources()) {
+                evernote::edam::Resource evResource;
+                evResource.noteGuid = m_note->guid().toStdString();
+                evResource.__isset.noteGuid = true;
+                evResource.mime = resource->type().toStdString();
+                evResource.__isset.mime = true;
 
-            QByteArray data = resource->data();
-            evResource.data.body.assign(data.data(), data.length());
-            evResource.data.__isset.body = true;
+                evResource.data.bodyHash = resource->hash().toStdString();
+                evResource.data.__isset.bodyHash = true;
 
-            evResource.data.size = data.length();
-            evResource.data.__isset.size = true;
-            evResource.__isset.data = true;
+                QByteArray data = resource->data();
+                evResource.data.body.assign(data.data(), data.length());
+                evResource.data.__isset.body = true;
 
-            evResource.attributes.fileName = resource->fileName().toStdString();
-            evResource.attributes.__isset.fileName = true;
-            evResource.__isset.attributes = true;
+                evResource.data.size = data.length();
+                evResource.data.__isset.size = true;
+                evResource.__isset.data = true;
 
-            note.resources.push_back(evResource);
+                evResource.attributes.fileName = resource->fileName().toStdString();
+                evResource.attributes.__isset.fileName = true;
+                evResource.__isset.attributes = true;
+
+                note.resources.push_back(evResource);
+            }
+            note.__isset.resources = true;
         }
-        note.__isset.resources = true;
     }
 
     // In some error cases it may happen that the resultNote is not filled in. Make sure we have at least the guid

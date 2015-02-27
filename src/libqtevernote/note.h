@@ -147,6 +147,7 @@ public:
     bool synced() const;
     bool syncError() const;
     bool conflicting() const;
+    bool needsContentSync() const;
 
     QStringList resourceUrls() const;
     Q_INVOKABLE Resource* resource(const QString &hash);
@@ -229,6 +230,7 @@ private:
     bool m_loadingHighPriority;
     mutable bool m_loaded;
     bool m_synced;
+    bool m_needsContentSync;
     bool m_syncError;
     bool m_conflicting;
 

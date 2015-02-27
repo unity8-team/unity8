@@ -41,7 +41,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_loadingHighPriority(false),
     m_loaded(false),
     m_syncError(false),
-    m_conflicting(false)
+    m_conflicting(false),
+    m_needsContentSync(false)
 {
     setGuid(guid);
     m_cacheFile.setFileName(NotesStore::instance()->storageLocation() + "note-" + guid + ".enml");
@@ -58,6 +59,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_deleted = infoFile.value("deleted").toBool();
     m_tagline = infoFile.value("tagline").toString();
     m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", 0).toUInt();
+    m_needsContentSync = infoFile.value("needsContentSync", false).toBool();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     infoFile.beginGroup("resources");
@@ -254,6 +256,10 @@ void Note::setEnmlContent(const QString &enmlContent)
         m_content.setEnml(enmlContent);
         m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
+
+        if (m_loaded) {
+            m_needsContentSync = true;
+        }
     }
     m_loaded = true;
 }
@@ -278,6 +284,8 @@ void Note::setRichTextContent(const QString &richTextContent)
         m_content.setRichText(richTextContent);
         m_tagline = m_content.toPlaintext().left(100);
         emit contentChanged();
+
+        m_needsContentSync = true;
     }
 }
 
@@ -454,6 +462,9 @@ void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
         m_updateSequenceNumber = updateSequenceNumber;
 
         m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        if (m_synced) {
+            m_needsContentSync = false;
+        }
         emit syncedChanged();
     }
 }
@@ -469,6 +480,9 @@ void Note::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
         m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;
 
         m_synced = m_updateSequenceNumber == m_lastSyncedSequenceNumber;
+        if (m_synced) {
+            m_needsContentSync = false;
+        }
         emit syncedChanged();
     }
 }
@@ -544,6 +558,8 @@ void Note::attachFile(int position, const QUrl &fileName)
     // TODO: If the app should be extended to allow attaching other files, and we somehow
     // can browse to unconfined files, this needs to be made conditional to not delete those files!
     importedFile.remove();
+
+    m_needsContentSync = true;
 }
 
 void Note::format(int startPos, int endPos, TextFormat::Format format)
@@ -579,6 +595,7 @@ Note *Note::clone()
     foreach (Resource *resource, m_resources) {
         note->addResource(resource->data(), resource->hash(), resource->fileName(), resource->type());
     }
+    note->m_needsContentSync = m_needsContentSync;
 
     return note;
 }
@@ -631,6 +648,7 @@ void Note::syncToInfoFile()
     infoFile.setValue("created", m_created);
     infoFile.setValue("title", m_title);
     infoFile.setValue("updated", m_updated);
+    infoFile.setValue("needsContentSync", m_needsContentSync);
 
     infoFile.setValue("notebookGuid", m_notebookGuid);
     infoFile.setValue("tagGuids", m_tagGuids);
@@ -706,6 +724,11 @@ void Note::slotTagGuidChanged(const QString &oldGuid, const QString &newGuid)
 bool Note::conflicting() const
 {
     return m_conflicting;
+}
+
+bool Note::needsContentSync() const
+{
+    return m_needsContentSync;
 }
 
 void Note::setConflicting(bool conflicting)
