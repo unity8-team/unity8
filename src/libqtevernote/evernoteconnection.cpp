@@ -351,10 +351,10 @@ EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
     return nullptr;
 }
 
-void EvernoteConnection::enqueue(EvernoteJob *job, JobPriority priority)
+void EvernoteConnection::enqueue(EvernoteJob *job)
 {
     if (!isConnected()) {
-        qWarning() << "Not connected to evernote. Can't enqueue job.";
+        qWarning() << "[JobQueue] Not connected to evernote. Can't enqueue job.";
         job->emitJobDone(ErrorCodeConnectionLost, gettext("Disconnected from Evernote."));
         job->deleteLater();
         return;
@@ -364,15 +364,20 @@ void EvernoteConnection::enqueue(EvernoteJob *job, JobPriority priority)
         job->attachToDuplicate(duplicate);
         connect(duplicate, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         // reprioritze the repeated request
-        if (priority == JobPriorityHigh) {
+        qDebug() << "[JobQueue] Duplicate job already queued:" << job->toString();
+        if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
+            qDebug() << "[JobQueue] Reprioritising duplicate job:" << job->toString();
+            duplicate->setJobPriority(job->jobPriority());
             m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
         }
     } else {
         connect(job, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
-        if (priority == JobPriorityHigh) {
+        if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
+            qDebug() << "[JobQueue] Prepending high priority job request:" << job->toString();
             m_jobQueue.prepend(job);
         } else {
+            qDebug() << "[JobQueue] Appending low priority job request:" << job->toString();
             m_jobQueue.append(job);
         }
         startJobQueue();
@@ -405,6 +410,7 @@ void EvernoteConnection::startJobQueue()
     }
 
     m_currentJob = m_jobQueue.takeFirst();
+    qDebug() << "[JobQueue] Starting job:" << m_currentJob->toString();
     m_currentJob->start();
 }
 

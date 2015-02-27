@@ -604,7 +604,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             if (note->updateSequenceNumber() < result.updateSequenceNum) {
                 qDebug() << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
                 changedRoles = updateFromEDAM(result, note);
-                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteConnection::JobPriorityLow);
+                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteJob::JobPriorityLow);
                 syncToCacheFile(note);
             }
         } else {
@@ -716,7 +716,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
     }
 }
 
-void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what, EvernoteConnection::JobPriority priority)
+void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat what, EvernoteJob::JobPriority priority)
 {
     qDebug() << "fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
     Note *note = m_notesHash.value(guid);
@@ -726,10 +726,11 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
     }
     if (EvernoteConnection::instance()->isConnected()) {
         FetchNoteJob *job = new FetchNoteJob(guid, what, this);
+        job->setJobPriority(priority);
         connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
-        EvernoteConnection::instance()->enqueue(job, priority);
+        EvernoteConnection::instance()->enqueue(job);
 
-        note->setLoading(true);
+        note->setLoading(true, priority == EvernoteJob::JobPriorityHigh);
         int idx = m_notes.indexOf(note);
         emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
     }
@@ -737,6 +738,7 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
 
 void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what)
 {
+    FetchNoteJob *job = static_cast<FetchNoteJob*>(sender());
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
     if (!note) {
         qWarning() << "can't find note for this update... ignoring...";
@@ -801,13 +803,14 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString mime = QString::fromStdString(resource.mime);
 
         if (what == FetchNoteJob::LoadResources) {
+            qDebug() << "[Sync] Resource fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
             note->addResource(resourceData, hash, fileName, mime);
         } else if (Resource::isCached(hash)) {
-            qDebug() << "have resource cached";
+            qDebug() << "[Sync] Resource already cached for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             note->addResource(QByteArray(), hash, fileName, mime);
         } else {
-            qDebug() << "refetching for image";
+            qDebug() << "[Sync] Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             refreshWithResourceData = true;
         }
         roles << RoleHtmlContent << RoleEnmlContent << RoleResourceUrls;
@@ -844,7 +847,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     if (refreshWithResourceData) {
         qDebug() << "refreshWithResourceData";
-        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources);
+        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources, job->jobPriority());
     } else {
         syncToCacheFile(note); // Syncs into the list cache
         note->syncToCacheFile(); // Syncs note's content into notes cache

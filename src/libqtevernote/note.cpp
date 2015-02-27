@@ -38,6 +38,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_deleted(false),
     m_updateSequenceNumber(updateSequenceNumber),
     m_loading(false),
+    m_loadingHighPriority(false),
     m_loaded(false),
     m_syncError(false),
     m_conflicting(false)
@@ -289,7 +290,7 @@ QString Note::plaintextContent() const
 QString Note::tagline() const
 {
     if (m_tagline.isEmpty()) {
-        load();
+        load(false);
     }
     return m_tagline;
 }
@@ -602,11 +603,17 @@ void Note::remove()
     NotesStore::instance()->deleteNote(m_guid);
 }
 
-void Note::setLoading(bool loading)
+void Note::setLoading(bool loading, bool highPriority)
 {
     if (m_loading != loading) {
         m_loading = loading;
         emit loadingChanged();
+
+        if (!m_loading) {
+            m_loadingHighPriority = false;
+        } else {
+            m_loadingHighPriority = highPriority;
+        }
     }
 }
 
@@ -645,12 +652,14 @@ void Note::syncToCacheFile()
     }
 }
 
-void Note::load() const
+void Note::load(bool priorityHigh) const
 {
     if (!m_loaded && isCached()) {
         loadFromCacheFile();
-    } else if (!m_loaded && !m_loading) {
-        NotesStore::instance()->refreshNoteContent(m_guid);
+    } else if (!m_loaded) {
+        if (!m_loading || (priorityHigh && !m_loadingHighPriority)) {
+            NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadContent, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityLow);
+        }
     }
 }
 

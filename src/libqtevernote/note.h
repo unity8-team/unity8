@@ -191,7 +191,7 @@ private slots:
 
 private:
     // Those should only be called from NotesStore, which is a friend
-    void setLoading(bool loading);
+    void setLoading(bool loading, bool highPriority = false);
     void setSyncError(bool syncError);
     void setDeleted(bool deleted);
     void syncToCacheFile();
@@ -202,7 +202,7 @@ private:
     void setConflicting(bool conflicting);
 
     // const because we want to load on demand in getters. Keep this private!
-    void load() const;
+    void load(bool priorityHigh = true) const;
     void loadFromCacheFile() const;
 
 private:
@@ -226,6 +226,7 @@ private:
     QString m_infoFile;
 
     bool m_loading;
+    bool m_loadingHighPriority;
     mutable bool m_loaded;
     bool m_synced;
     bool m_syncError;

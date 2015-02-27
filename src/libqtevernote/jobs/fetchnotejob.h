@@ -36,6 +36,7 @@ public:
 
     virtual bool operator==(const EvernoteJob *other) const override;
     virtual void attachToDuplicate(const EvernoteJob *other) override;
+    virtual QString toString() const override;
 
 signals:
     void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note, LoadWhat what);

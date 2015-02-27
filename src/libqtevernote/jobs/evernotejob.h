@@ -44,14 +44,24 @@ class EvernoteJob : public QThread
 {
     Q_OBJECT
 public:
-    explicit EvernoteJob(QObject *parent = 0);
+    enum JobPriority {
+        JobPriorityHigh,
+        JobPriorityLow
+    };
+
+    explicit EvernoteJob(QObject *parent = 0, JobPriority jobPriority = JobPriorityHigh);
     virtual ~EvernoteJob();
+
+    JobPriority jobPriority() const;
+    void setJobPriority(JobPriority priority = JobPriorityHigh);
 
     void run() final;
 
     virtual bool operator==(const EvernoteJob *other) const = 0;
 
     virtual void attachToDuplicate(const EvernoteJob *other) = 0;
+
+    virtual QString toString() const;
 
 signals:
     void connectionLost(const QString &errorMessage);
@@ -65,6 +75,7 @@ protected:
 
 private:
     QString m_token;
+    JobPriority m_jobPriority;
 
     friend class EvernoteConnection;
 };
