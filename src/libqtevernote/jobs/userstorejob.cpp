@@ -29,16 +29,8 @@ UserStoreJob::UserStoreJob(QObject *parent) :
 
 void UserStoreJob::resetConnection()
 {
-    if (EvernoteConnection::instance()->m_userStoreHttpClient->isOpen()) {
-        EvernoteConnection::instance()->m_userStoreHttpClient->close();
-    }
-    try {
-        EvernoteConnection::instance()->m_userStoreHttpClient->readEnd();
-    } catch(...) {}
-    try {
-        EvernoteConnection::instance()->m_userStoreHttpClient->flush();
-    } catch(...) {}
-    EvernoteConnection::instance()->m_userStoreHttpClient->open();
+    EvernoteConnection::instance()->setupUserStore();
+    EvernoteConnection::instance()->connectUserStore();
 }
 
 evernote::edam::UserStoreClient *UserStoreJob::client() const

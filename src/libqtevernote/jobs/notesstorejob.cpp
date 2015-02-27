@@ -29,18 +29,8 @@ NotesStoreJob::NotesStoreJob(QObject *parent) :
 
 void NotesStoreJob::resetConnection()
 {
-    try {
-        EvernoteConnection::instance()->m_notesStoreHttpClient->readEnd();
-    } catch(...) {}
-    try {
-        EvernoteConnection::instance()->m_notesStoreHttpClient->flush();
-    } catch(...) {}
-    if (EvernoteConnection::instance()->m_notesStoreHttpClient->isOpen()) {
-        try {
-            EvernoteConnection::instance()->m_notesStoreHttpClient->close();
-        } catch(...) {}
-    }
-    EvernoteConnection::instance()->m_notesStoreHttpClient->open();
+    EvernoteConnection::instance()->setupNotesStore();
+    EvernoteConnection::instance()->connectNotesStore();
 }
 
 evernote::edam::NoteStoreClient *NotesStoreJob::client() const
