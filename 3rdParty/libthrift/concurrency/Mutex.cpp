@@ -17,57 +17,21 @@
  * under the License.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include "Mutex.h"
-#include "Util.h"
+#include <thrift-config.h>
+
+#include <Thrift.h>
+#include <concurrency/Mutex.h>
+#include <concurrency/Util.h>
 
 #include <assert.h>
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-#ifndef PTHREAD_RWLOCK_INITIALIZER
-#define __THRIFT_NO_RWLOCKS
-#endif
 #endif
 #include <signal.h>
 
 using boost::shared_ptr;
 
-#ifdef __THRIFT_NO_RWLOCKS
-typedef pthread_mutex_t pthread_rwlock_t;
-#define pthread_rwlock_init pthread_mutex_init
-#define pthread_rwlock_destroy pthread_mutex_destroy
-#define pthread_rwlock_rdlock pthread_mutex_lock
-#define pthread_rwlock_wrlock pthread_mutex_lock
-#define pthread_rwlock_tryrdlock pthread_mutex_trylock
-#define pthread_rwlock_trywrlock pthread_mutex_trylock
-#define pthread_rwlock_unlock pthread_mutex_unlock
-#endif
-
 namespace apache { namespace thrift { namespace concurrency {
-
-#ifndef HAVE_CLOCK_GETTIME
-
-#define CLOCK_REALTIME 0
-
-/**
- * Fake clock_gettime for systems like darwin
- */
-static int clock_gettime(int clk_id /*ignored*/, struct timespec *tp) {
-  struct timeval now;
-
-  int rv = gettimeofday(&now, NULL);
-  if (rv != 0) {
-    return rv;
-  }
-
-  tp->tv_sec = now.tv_sec;
-  tp->tv_nsec = now.tv_usec * 1000;
-  return 0;
-}
-
-#endif
 
 #ifndef THRIFT_NO_CONTENTION_PROFILING
 
@@ -163,6 +127,7 @@ class Mutex::impl {
     if (initialized_) {
       initialized_ = false;
       int ret = pthread_mutex_destroy(&pthread_mutex_);
+      THRIFT_UNUSED_VARIABLE(ret);
       assert(ret == 0);
     }
   }
@@ -179,16 +144,9 @@ class Mutex::impl {
 #if defined(_POSIX_TIMEOUTS) && _POSIX_TIMEOUTS >= 200112L
     PROFILE_MUTEX_START_LOCK();
 
-    struct timespec ts, now;
-    clock_gettime(CLOCK_REALTIME, &now);
-    Util::toTimespec(ts, milliseconds);
-    now.tv_sec += ts.tv_sec;
-    now.tv_nsec += ts.tv_nsec;
-    if (now.tv_nsec > 1000000000LL) {
-      now.tv_sec += 1;
-      now.tv_nsec -= 1000000000LL;
-    }
-    int ret = pthread_mutex_timedlock(&pthread_mutex_, &now);
+    struct THRIFT_TIMESPEC ts;
+    Util::toTimespec(ts, milliseconds + Util::currentTime());
+    int ret = pthread_mutex_timedlock(&pthread_mutex_, &ts);
     if (ret == 0) {
       PROFILE_MUTEX_LOCKED();
       return true;
@@ -198,24 +156,22 @@ class Mutex::impl {
     return false;
 #else
     /* Otherwise follow solution used by Mono for Android */
-    struct timeval was, now;
-    struct timespec sleepytime, to;
+    struct THRIFT_TIMESPEC sleepytime, now, to;
 
     /* This is just to avoid a completely busy wait */
     sleepytime.tv_sec = 0;
-    sleepytime.tv_nsec = 10000000; /* 10ms */
+    sleepytime.tv_nsec = 10000000L; /* 10ms */
 
-    Util::toTimespec(to, milliseconds);
+    Util::toTimespec(to, milliseconds + Util::currentTime());
 
-    gettimeofday(&was, NULL);
     while ((trylock()) == false) {
-      gettimeofday(&now, NULL);
-      if (now.tv_sec >= (was.tv_sec + to.tv_sec) && now.tv_usec >= (was.tv_usec + to.tv_nsec / 1000)) {
+      Util::toTimespec(now, Util::currentTime());
+      if (now.tv_sec >= to.tv_sec && now.tv_nsec >= to.tv_nsec) {
         return false;
       }
       nanosleep(&sleepytime, NULL);
     }
- 
+
     return true;
 #endif
   }
@@ -251,6 +207,7 @@ void Mutex::unlock() const { impl_->unlock(); }
 void Mutex::DEFAULT_INITIALIZER(void* arg) {
   pthread_mutex_t* pthread_mutex = (pthread_mutex_t*)arg;
   int ret = pthread_mutex_init(pthread_mutex, NULL);
+  THRIFT_UNUSED_VARIABLE(ret);
   assert(ret == 0);
 }
 
@@ -269,6 +226,7 @@ static void init_with_kind(pthread_mutex_t* mutex, int kind) {
 
   ret = pthread_mutexattr_destroy(&mutexattr);
   assert(ret == 0);
+  THRIFT_UNUSED_VARIABLE(ret);
 }
 #endif
 
@@ -305,6 +263,7 @@ public:
     profileTime_ = 0;
 #endif
     int ret = pthread_rwlock_init(&rw_lock_, NULL);
+    THRIFT_UNUSED_VARIABLE(ret);
     assert(ret == 0);
     initialized_ = true;
   }
@@ -313,6 +272,7 @@ public:
     if(initialized_) {
       initialized_ = false;
       int ret = pthread_rwlock_destroy(&rw_lock_);
+      THRIFT_UNUSED_VARIABLE(ret);
       assert(ret == 0);
     }
   }
@@ -329,9 +289,9 @@ public:
     PROFILE_MUTEX_LOCKED();
   }
 
-  bool attemptRead() const { return pthread_rwlock_tryrdlock(&rw_lock_); }
+  bool attemptRead() const { return !pthread_rwlock_tryrdlock(&rw_lock_); }
 
-  bool attemptWrite() const { return pthread_rwlock_trywrlock(&rw_lock_); }
+  bool attemptWrite() const { return !pthread_rwlock_trywrlock(&rw_lock_); }
 
   void release() const {
     PROFILE_MUTEX_START_UNLOCK();
@@ -358,6 +318,36 @@ bool ReadWriteMutex::attemptRead() const { return impl_->attemptRead(); }
 bool ReadWriteMutex::attemptWrite() const { return impl_->attemptWrite(); }
 
 void ReadWriteMutex::release() const { impl_->release(); }
+
+NoStarveReadWriteMutex::NoStarveReadWriteMutex() : writerWaiting_(false) {}
+
+void NoStarveReadWriteMutex::acquireRead() const
+{
+  if (writerWaiting_) {
+    // writer is waiting, block on the writer's mutex until he's done with it
+    mutex_.lock();
+    mutex_.unlock();
+  }
+
+  ReadWriteMutex::acquireRead();
+}
+
+void NoStarveReadWriteMutex::acquireWrite() const
+{
+  // if we can acquire the rwlock the easy way, we're done
+  if (attemptWrite()) {
+    return;
+  }
+
+  // failed to get the rwlock, do it the hard way:
+  // locking the mutex and setting writerWaiting will cause all new readers to
+  // block on the mutex rather than on the rwlock.
+  mutex_.lock();
+  writerWaiting_ = true;
+  ReadWriteMutex::acquireWrite();
+  writerWaiting_ = false;
+  mutex_.unlock();
+}
 
 }}} // apache::thrift::concurrency
 

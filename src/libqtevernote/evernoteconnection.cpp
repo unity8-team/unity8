@@ -268,12 +268,12 @@ bool EvernoteConnection::connectUserStore()
             return false;
         }
     } catch (const evernote::edam::EDAMUserException e) {
-        qWarning() << "Error fetching notestore url (EDAMUserException):" << e.what() << e.errorCode;
+        qWarning() << "Error fetching server version (EDAMUserException):" << e.what() << e.errorCode;
         m_errorMessage = QString(gettext("Error connecting to Evernote: Error code %1")).arg(e.errorCode);
         emit errorChanged();
         return false;
     } catch (const evernote::edam::EDAMSystemException e) {
-        qWarning() << "Error fetching notestore url (EDAMSystemException):" << e.what() << e.errorCode;
+        qWarning() << "Error fetching server version: (EDAMSystemException):" << e.what() << e.errorCode;
         m_errorMessage = QString(gettext("Error connecting to Evernote: Error code %1")).arg(e.errorCode);
         emit errorChanged();
         return false;

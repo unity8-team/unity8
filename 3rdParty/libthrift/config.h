@@ -2,7 +2,7 @@
  * Android NDK r7 compatible configuration.
  */
 
-#define VERSION     "0.8.0-arm"
+#define VERSION     "0.9.2"
 
 #define HAVE_UNISTD_H
 #define HAVE_INTTYPES_H

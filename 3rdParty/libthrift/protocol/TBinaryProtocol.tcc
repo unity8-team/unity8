@@ -20,7 +20,7 @@
 #ifndef _THRIFT_PROTOCOL_TBINARYPROTOCOL_TCC_
 #define _THRIFT_PROTOCOL_TBINARYPROTOCOL_TCC_ 1
 
-#include "TBinaryProtocol.h"
+#include <protocol/TBinaryProtocol.h>
 
 #include <limits>
 
@@ -176,8 +176,11 @@ uint32_t TBinaryProtocolT<Transport_>::writeDouble(const double dub) {
 
 
 template <class Transport_>
-uint32_t TBinaryProtocolT<Transport_>::writeString(const std::string& str) {
-  uint32_t size = str.size();
+template<typename StrType>
+uint32_t TBinaryProtocolT<Transport_>::writeString(const StrType& str) {
+  if(str.size() > static_cast<size_t>((std::numeric_limits<int32_t>::max)()))
+    throw TProtocolException(TProtocolException::SIZE_LIMIT);
+  uint32_t size = static_cast<uint32_t>(str.size());
   uint32_t result = writeI32((int32_t)size);
   if (size > 0) {
     this->trans_->write((uint8_t*)str.data(), size);
@@ -401,7 +404,8 @@ uint32_t TBinaryProtocolT<Transport_>::readDouble(double& dub) {
 }
 
 template <class Transport_>
-uint32_t TBinaryProtocolT<Transport_>::readString(std::string& str) {
+template<typename StrType>
+uint32_t TBinaryProtocolT<Transport_>::readString(StrType& str) {
   uint32_t result;
   int32_t size;
   result = readI32(size);
@@ -414,7 +418,8 @@ uint32_t TBinaryProtocolT<Transport_>::readBinary(std::string& str) {
 }
 
 template <class Transport_>
-uint32_t TBinaryProtocolT<Transport_>::readStringBody(std::string& str,
+template<typename StrType>
+uint32_t TBinaryProtocolT<Transport_>::readStringBody(StrType& str,
                                                       int32_t size) {
   uint32_t result = 0;
 
@@ -441,17 +446,8 @@ uint32_t TBinaryProtocolT<Transport_>::readStringBody(std::string& str,
     return size;
   }
 
-  // Use the heap here to prevent stack overflow for v. large strings
-  if (size > this->string_buf_size_ || this->string_buf_ == NULL) {
-    void* new_string_buf = std::realloc(this->string_buf_, (uint32_t)size);
-    if (new_string_buf == NULL) {
-      throw std::bad_alloc();
-    }
-    this->string_buf_ = (uint8_t*)new_string_buf;
-    this->string_buf_size_ = size;
-  }
-  this->trans_->readAll(this->string_buf_, size);
-  str.assign((char*)this->string_buf_, size);
+  str.resize(size);
+  this->trans_->readAll(reinterpret_cast<uint8_t *>(&str[0]), size);
   return (uint32_t)size;
 }
 

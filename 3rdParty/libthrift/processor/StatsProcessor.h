@@ -21,8 +21,8 @@
 #define STATSPROCESSOR_H
 
 #include <boost/shared_ptr.hpp>
-#include <transport/TTransport.h>
-#include <protocol/TProtocol.h>
+#include <thrift/transport/TTransport.h>
+#include <thrift/protocol/TProtocol.h>
 #include <TProcessor.h>
 
 namespace apache { namespace thrift { namespace processor {
@@ -50,7 +50,7 @@ public:
     int32_t seqid;
 
     piprot_->readMessageBegin(fname, mtype, seqid);
-    if (mtype != apache::thrift::protocol::T_CALL) {
+    if (mtype != apache::thrift::protocol::T_CALL && mtype != apache::thrift::protocol::T_ONEWAY) {
       if (print_) {
         printf("Unknown message type\n");
       }

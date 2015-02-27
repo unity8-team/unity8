@@ -20,18 +20,23 @@
 #ifndef _THRIFT_CONCURRENCY_PLATFORMTHREADFACTORY_H_
 #define _THRIFT_CONCURRENCY_PLATFORMTHREADFACTORY_H_ 1
 
-#ifndef USE_BOOST_THREAD
-#  include <concurrency/PosixThreadFactory.h>
-#else
+#include <thrift-config.h>
+#if USE_BOOST_THREAD
 #  include <concurrency/BoostThreadFactory.h>
+#elif USE_STD_THREAD
+#  include <concurrency/StdThreadFactory.h>
+#else
+#  include <concurrency/PosixThreadFactory.h>
 #endif
 
 namespace apache { namespace thrift { namespace concurrency {
 
-#ifndef USE_BOOST_THREAD
-  typedef PosixThreadFactory PlatformThreadFactory;
-#else
+#ifdef USE_BOOST_THREAD
   typedef BoostThreadFactory PlatformThreadFactory;
+#elif USE_STD_THREAD
+  typedef StdThreadFactory PlatformThreadFactory;
+#else
+  typedef PosixThreadFactory PlatformThreadFactory;
 #endif
 
 }}} // apache::thrift::concurrency
