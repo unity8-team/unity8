@@ -34,7 +34,10 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     m_fileName(fileName),
     m_type(type)
 {
-
+    if (m_fileName.isEmpty()) {
+        // TRANSLATORS: A default file name if we don't get one from the server. Avoid weird characters.
+        m_fileName = tr("Unnamed") + "." + m_type.split("/").last();
+    }
     m_filePath = NotesStore::instance()->storageLocation() + hash + "." + m_fileName.split('.').last();
 
     QFile file(m_filePath);
