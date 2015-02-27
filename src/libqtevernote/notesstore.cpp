@@ -719,7 +719,7 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
         EvernoteConnection::instance()->enqueue(job);
 
-        note->setLoading(true);
+        note->setLoading(true, priority == EvernoteJob::JobPriorityHigh);
         int idx = m_notes.indexOf(note);
         emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
     }
@@ -792,13 +792,14 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString mime = QString::fromStdString(resource.mime);
 
         if (what == FetchNoteJob::LoadResources) {
+            qDebug() << "[Sync] Resource fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
             note->addResource(resourceData, hash, fileName, mime);
         } else if (Resource::isCached(hash)) {
-            qDebug() << "have resource cached";
+            qDebug() << "[Sync] Resource already cached for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             note->addResource(QByteArray(), hash, fileName, mime);
         } else {
-            qDebug() << "refetching for image";
+            qDebug() << "[Sync] Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             refreshWithResourceData = true;
         }
         roles << RoleHtmlContent << RoleEnmlContent << RoleResourceUrls;
