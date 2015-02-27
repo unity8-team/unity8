@@ -61,7 +61,7 @@ class Note : public QObject
     Q_PROPERTY(quint32 updateSequenceNumber READ updateSequenceNumber NOTIFY updateSequenceNumberChanged)
     Q_PROPERTY(bool deleted READ deleted NOTIFY deletedChanged)
     Q_PROPERTY(bool conflicting READ conflicting NOTIFY conflictingChanged)
-//    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
+    Q_PROPERTY(bool loaded READ loaded NOTIFY loadedChanged)
     // Don't forget to update clone() if you add properties!
 
     // Don't clone() "loading" property as results of any current loading operation won't affect the clone.
@@ -142,6 +142,7 @@ public:
     quint32 lastSyncedSequenceNumber() const;
 
     bool isCached() const;
+    bool loaded() const;
     bool loading() const;
     bool synced() const;
     bool syncError() const;
