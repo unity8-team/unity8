@@ -231,11 +231,11 @@ PageWithBottomEdge {
         }
         Label {
             anchors.centerIn: parent
-            visible: !notes.loading && (notes.error || notesListView.count == 0)
+            visible: !notes.loading && notesListView.count == 0
             width: parent.width - units.gu(4)
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
-            text: notes.error ? notes.error : i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
+            text: i18n.tr("No notes available. You can create new notes using the \"Add note\" button.")
         }
 
         Scrollbar {
