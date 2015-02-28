@@ -683,12 +683,13 @@ void Note::load(bool priorityHigh) const
 
 void Note::loadFromCacheFile() const
 {
-    qDebug() << "Loading from cacheFile:" << m_guid;
     if (m_cacheFile.exists() && m_cacheFile.open(QFile::ReadOnly)) {
         m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()).trimmed());
         m_tagline = m_content.toPlaintext().left(100);
         m_cacheFile.close();
-        qDebug() << "cache file opened" << m_tagline;
+        qDebug() << "[Storage] Loaded note from storage:" << m_guid;
+    } else {
+        qDebug() << "[Storage] Failed attempt to load note from storage:" << m_guid;
     }
     m_loaded = true;
 }
