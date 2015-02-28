@@ -29,7 +29,7 @@ Page {
     title: i18n.tr("Select account")
 
     property alias accounts: optionSelector.model
-    property bool isChangingAccount
+    property bool showBackButton: false
     property bool unauthorizedAccounts
 
     signal accountSelected(string username, var handle)
@@ -100,7 +100,7 @@ Page {
      }
 
      head.backAction: Action {
-         visible: isChangingAccount
+         visible: root.showBackButton
          iconName: "back"
          text: i18n.tr("Back")
          onTriggered: { pagestack.pop(); }
