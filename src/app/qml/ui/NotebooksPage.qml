@@ -29,6 +29,7 @@ Page {
     property bool narrowMode
 
     signal openNotebook(string notebookGuid)
+    signal openSearch();
 
     onActiveChanged: {
         if (active) {
@@ -53,7 +54,7 @@ Page {
                 text: i18n.tr("Search")
                 iconName: "search"
                 onTriggered: {
-                    pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                    root.openSearch();
                 }
             }
         }
