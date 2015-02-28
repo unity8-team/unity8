@@ -78,7 +78,7 @@ void EvernoteJob::run()
         } catch (const TTransportException & e) {
             qWarning() << "TTransportException in" << metaObject()->className() << e.what();
             if (tryCount < 2) {
-                qWarning() << "Resetting connection...";
+                qWarning() << "[JobQueue] Resetting connection...";
                 try {
                     resetConnection();
                 } catch(...) {}

@@ -147,6 +147,7 @@ EvernoteConnection::~EvernoteConnection()
 
 void EvernoteConnection::disconnectFromEvernote()
 {
+    qDebug() << "[Connection] Disconnecting from Evernote.";
     if (!isConnected()) {
         qWarning() << "Not connected. Can't disconnect.";
         return;
@@ -201,35 +202,34 @@ void EvernoteConnection::connectToEvernote()
         return;
     }
 
+    qDebug() << "[Connection] Connecting to Evernote:" << m_hostname;
+
     m_errorMessage.clear();
     emit errorChanged();
 
     if (m_token.isEmpty()) {
-        qWarning() << "Can't connect to Evernote. No token set.";
+        qWarning() << "[Connection] Can't connect to Evernote. No token set.";
         return;
     }
     if (m_hostname.isEmpty()) {
-        qWarning() << "Can't connect to Evernote. No hostname set.";
+        qWarning() << "[Connection] Can't connect to Evernote. No hostname set.";
     }
-    qDebug() << "******* Connecting *******";
-    qDebug() << "hostname:" << m_hostname;
-//    qDebug() << "token:" << m_token;
 
     setupUserStore();
     bool ok = connectUserStore();
     if (!ok) {
-        qWarning() << "Error connecting User Store. Cannot continue.";
+        qWarning() << "[Connection] Error connecting User Store. Cannot continue.";
         return;
     }
     setupNotesStore();
     ok = connectNotesStore();
 
     if (!ok) {
-        qWarning() << "Error connecting Notes Store. Cannot continue.";
+        qWarning() << "[Connection] Error connecting Notes Store. Cannot continue.";
         return;
     }
 
-    qDebug() << "Connected!";
+    qDebug() << "[Connection] Connected!";
     emit isConnectedChanged();
 
 }
@@ -416,6 +416,7 @@ void EvernoteConnection::startJobQueue()
 
 void EvernoteConnection::startNextJob()
 {
+    qDebug() << "[JobQueue] Job done:" << m_currentJob->toString();
     m_currentJob = 0;
     startJobQueue();
 }
