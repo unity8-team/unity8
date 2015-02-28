@@ -885,22 +885,14 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         qWarning() << "FetchNotebooksJobDone: EDAMUserException:" << errorMessage;
         // silently discarding...
         return;
+    case EvernoteConnection::ErrorCodeConnectionLost:
+        qWarning() << "FetchNotebooksJobDone: Connection lost:" << errorMessage;
+        return; // silently discarding
     default:
         qWarning() << "FetchNotebooksJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
-        m_error = tr("Error refreshing notebooks: %1").arg(errorMessage);
-        emit errorChanged();
-        return;
-    }
-
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error fetching notebooks:" << errorMessage;
         m_notebooksError = tr("Error refreshing notebooks: %1").arg(errorMessage);
         emit notebooksErrorChanged();
         return;
-    }
-    if (!m_notebooksError.isEmpty()) {
-        m_notebooksError.clear();
-        emit notebooksErrorChanged();
     }
 
     QList<Notebook*> unhandledNotebooks = m_notebooks;
@@ -980,15 +972,26 @@ void NotesStore::fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const
     m_tagsLoading = false;
     emit tagsLoadingChanged();
 
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error fetching tags:" << errorMessage;
+    switch (errorCode) {
+    case EvernoteConnection::ErrorCodeNoError:
+        // All is well, reset error code.
+        if (!m_tagsError.isEmpty()) {
+            m_tagsError.clear();
+            emit tagsErrorChanged();
+        }
+        break;
+    case EvernoteConnection::ErrorCodeUserException:
+        qWarning() << "FetchTagsJobDone: EDAMUserException:" << errorMessage;
+        // silently discarding...
+        return;
+    case EvernoteConnection::ErrorCodeConnectionLost:
+        qWarning() << "FetchTagsJobDone: Connection lost:" << errorMessage;
+        return; // silently discarding
+    default:
+        qWarning() << "FetchTagsJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
         m_tagsError = tr("Error refreshing tags: %1").arg(errorMessage);
         emit tagsErrorChanged();
         return;
-    }
-    if (!m_tagsError.isEmpty()) {
-        m_tagsError.clear();
-        emit tagsErrorChanged();
     }
 
     QHash<QString, Tag*> unhandledTags = m_tagsHash;
