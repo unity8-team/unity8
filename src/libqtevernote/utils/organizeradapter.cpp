@@ -86,7 +86,7 @@ void OrganizerAdapter::organizerEventFromNote(Note *note, QOrganizerTodo &item)
 {
     item.setCollectionId(m_collection.id());
     item.setAllDay(false);
-    item.setStartDateTime(note->reminderTime());
+    item.setStartDateTime(note->reminderTime().toUTC());
     item.setDisplayLabel(note->title());
     item.setDescription(note->guid());
 
