@@ -203,8 +203,9 @@ PageWithBottomEdge {
                 pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: NotesStore.note(model.guid) });
             }
             onEditTags: {
-                PopupUtils.open(Qt.resolvedUrl("../components/EditTagsDialog.qml"), root,
+                var popup = PopupUtils.open(Qt.resolvedUrl("../components/EditTagsDialog.qml"), root,
                                 { note: NotesStore.note(model.guid), pageHeight: root.height });
+                popup.done.connect(function() { NotesStore.saveNote(popup.note.guid)})
             }
         }
 
