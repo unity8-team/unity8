@@ -422,7 +422,7 @@ MainView {
         anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
         color: root.backgroundColor
         shown: text
-        text: EvernoteConnection.error || NotesStore.error || NotesStore.notebooksError
+        text: EvernoteConnection.error || NotesStore.error || NotesStore.notebooksError || NotesStore.tagsError
         iconName: "sync-error"
 
     }

@@ -137,10 +137,10 @@ Page {
 
     Label {
         anchors.centerIn: parent
-        visible: !tags.loading && (tags.error || tagsListView.count == 0)
+        visible: !tags.loading && tagsListView.count == 0
         width: parent.width - units.gu(4)
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
-        text: tags.error ? tags.error : i18n.tr("No tags available. You can tag notes while viewing them.")
+        text: i18n.tr("No tags available. You can tag notes while viewing them.")
     }
 }

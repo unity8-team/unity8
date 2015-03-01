@@ -102,12 +102,11 @@ Page {
             }
             Label {
                 anchors.centerIn: parent
-                visible: !notes.loading && (notes.error || remindersListView.count == 0)
+                visible: !notes.loading && remindersListView.count == 0
                 width: parent.width - units.gu(4)
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
-                text: notes.error ? notes.error :
-                i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
+                text: i18n.tr("No reminders available. You can create new reminders by setting a reminder when viewing a note.")
             }
 
             Scrollbar {
