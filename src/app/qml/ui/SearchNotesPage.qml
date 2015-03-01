@@ -73,14 +73,42 @@ Page {
 
             delegate: NotesDelegate {
                 title: model.title
-                creationDate: model.created
-                content: model.plaintextContent
+                date: model.created
+                content: model.tagline
+                resource: model.resourceUrls.length > 0 ? model.resourceUrls[0] : ""
+                notebookColor: preferences.colorForNotebook(model.notebookGuid)
+                reminder: model.reminder
+                synced: model.synced
+                loading: model.loading
+                syncError: model.syncError
+                conflicting: model.conflicting
 
-                onClicked: {
+                triggerActionOnMouseRelease: true
+                tags: {
+                    var tags = new Array();
+                    for (var i = 0; i < model.tagGuids.length; i++) {
+                        tags.push(NotesStore.tag(model.tagGuids[i]).name)
+                    }
+                    return tags.join(" ");
+                }
+
+                onItemClicked: {
                     root.noteSelected(NotesStore.note(guid))
+                }
+                onDeleteNote: {
+                    NotesStore.deleteNote(model.guid)
+                }
+                onEditNote: {
+                    root.editNote(NotesStore.note(model.guid));
+                }
+                onEditReminder: {
+                    pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: NotesStore.note(model.guid) });
+                }
+                onEditTags: {
+                    PopupUtils.open(Qt.resolvedUrl("../components/EditTagsDialog.qml"), root,
+                                    { note: NotesStore.note(model.guid), pageHeight: root.height });
                 }
             }
         }
-
     }
 }

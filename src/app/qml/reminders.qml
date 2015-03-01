@@ -144,6 +144,13 @@ MainView {
         }
     }
 
+    function openSearch() {
+        var component = Qt.createComponent(Qt.resolvedUrl("ui/SearchNotesPage.qml"))
+        var page = component.createObject();
+        pagestack.push(page)
+        page.noteSelected.connect(function(note) {root.displayNote(note)})
+    }
+
     function doLogin() {
         var accountName = preferences.accountName;
         if (accountName == "@local") {
@@ -453,12 +460,7 @@ MainView {
                             sideViewLoader.clear();
                         }
                     }
-                    onOpenSearch: {
-                        var component = Qt.createComponent(Qt.resolvedUrl("ui/SearchNotesPage.qml"))
-                        var page = component.createObject();
-                        pagestack.push(page)
-                        page.noteSelected.connect(function(note) {root.displayNote(note)})
-                    }
+                    onOpenSearch: root.openSearch();
                 }
             }
 
@@ -490,6 +492,8 @@ MainView {
                         })
                         NotesStore.refreshNotes();
                     }
+
+                    onOpenSearch: root.openSearch();
                 }
             }
 
@@ -505,6 +509,8 @@ MainView {
                             sideViewLoader.clear();
                         }
                     }
+
+                    onOpenSearch: root.openSearch();
                 }
             }
 
@@ -532,6 +538,8 @@ MainView {
                         })
                         NotesStore.refreshNotes();
                     }
+
+                    onOpenSearch: root.openSearch();
                 }
             }
         }

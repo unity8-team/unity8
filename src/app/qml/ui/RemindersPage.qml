@@ -28,13 +28,15 @@ Page {
 
     property var selectedNote: null
 
+    signal openSearch();
+
     tools: ToolbarItems {
         ToolbarButton {
             action: Action {
                 text: i18n.tr("Search")
                 iconName: "search"
                 onTriggered: {
-                    pagestack.push(Qt.resolvedUrl("SearchNotesPage.qml"))
+                    root.openSearch();
                 }
             }
         }
