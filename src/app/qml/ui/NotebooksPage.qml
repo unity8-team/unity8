@@ -58,27 +58,6 @@ Page {
                 }
             }
         }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Refresh")
-                iconName: "reload"
-                onTriggered: {
-                    NotesStore.refreshNotebooks();
-                }
-            }
-        }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Accounts")
-                iconName: "contacts-app-symbolic"
-                visible: allAccounts.count > 1
-                onTriggered: {
-                    openAccountPage(true);
-                }
-            }
-        }
     }
 
     Notebooks {

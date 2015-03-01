@@ -104,7 +104,7 @@ MainView {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, { accounts: accounts, isChangingAccount: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
+        accountPage = component.createObject(root, { accounts: accounts, unauthorizedAccounts: unauthorizedAccounts });
         accountPage.accountSelected.connect(function(username, handle) { accountService.startAuthentication(username, handle); pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
@@ -540,6 +540,18 @@ MainView {
                     }
 
                     onOpenSearch: root.openSearch();
+                }
+            }
+            Tab {
+                title: i18n.tr("Accounts")
+
+                page: AccountSelectorPage {
+                    accounts: accounts
+                    unauthorizedAccounts: true
+                    onAccountSelected: {
+                        accountService.startAuthentication(username, handle)
+                        rootTabs.selectedTabIndex = 0;
+                    }
                 }
             }
         }

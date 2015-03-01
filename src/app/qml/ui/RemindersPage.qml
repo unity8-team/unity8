@@ -40,17 +40,6 @@ Page {
                 }
             }
         }
-
-        ToolbarButton {
-            action: Action {
-                text: i18n.tr("Accounts")
-                iconName: "contacts-app-symbolic"
-                visible: allAccounts.count > 1
-                onTriggered: {
-                    openAccountPage(true);
-                }
-            }
-        }
     }
 
     Notes {

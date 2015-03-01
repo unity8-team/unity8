@@ -71,16 +71,6 @@ PageWithBottomEdge {
 
         ToolbarButton {
             action: Action {
-                text: i18n.tr("Search")
-                iconName: "search"
-                onTriggered: {
-                    root.openSearch();
-                }
-            }
-        }
-
-        ToolbarButton {
-            action: Action {
                 iconSource: "../images/sorting.svg"
                 text: i18n.tr("Sorting")
                 onTriggered: {
@@ -97,10 +87,10 @@ PageWithBottomEdge {
 
         ToolbarButton {
             action: Action {
-                text: i18n.tr("Accounts")
-                iconName: "contacts-app-symbolic"
+                text: i18n.tr("Search")
+                iconName: "search"
                 onTriggered: {
-                    openAccountPage(true);
+                    root.openSearch();
                 }
             }
         }
