@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-11 00:31+0100\n"
-"PO-Revision-Date: 2014-07-25 17:25+0000\n"
-"Last-Translator: Jānis Marks Gailis <jm-gailis@fai-vianet.fr>\n"
+"PO-Revision-Date: 2015-02-28 15:24+0000\n"
+"Last-Translator: Rūdolfs Mazurs <Unknown>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-12-04 06:36+0000\n"
-"X-Generator: Launchpad (build 17274)\n"
+"X-Launchpad-Export-Date: 2015-03-01 05:32+0000\n"
+"X-Generator: Launchpad (build 17361)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
@@ -23,7 +23,7 @@ msgstr "Atgādinājumi"
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr ""
+msgstr "Ubuntu Atgādinājumu lietotne, ko darbina Evernote"
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
@@ -42,20 +42,20 @@ msgstr "Privāts"
 #. http://qt-project.org/doc/qt-5/qml-qtqml-date.html
 #: src/app/qml/components/NotesDelegate.qml:107
 msgid "dddd, d hh:mm"
-msgstr ""
+msgstr "dddd, d. hh.mm"
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr "Vilkt lai atsvaidzināt"
+msgstr "Atlaist, lai atsvaidzinātu"
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr "Velciet uz lēju lai atsvaidzināt"
+msgstr "Vilkt lejā, lai atsvaidzinātu"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 #: src/app/qml/ui/SetReminderView.qml:69
 msgid "Clear reminder"
-msgstr ""
+msgstr "Attīrīt atgādinātāju"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 msgid "Mark as done"
@@ -67,21 +67,23 @@ msgstr "Piezīmes"
 
 #: src/app/qml/reminders.qml:245
 msgid "Notebooks"
-msgstr "Piezīmju bloki"
+msgstr "Piezīmju grāmatiņas"
 
 #: src/app/qml/reminders.qml:289
 msgid "Tags"
-msgstr ""
+msgstr "Tagi"
 
 #: src/app/qml/reminders.qml:330
 msgid "Reconnect"
-msgstr ""
+msgstr "Savienoties atkal"
 
 #: src/app/qml/reminders.qml:354
 msgid ""
 "No note selected.\n"
 "Select a note to see it in detail."
 msgstr ""
+"Nav izvēlētu piezīmju.\n"
+"Izvēlieties piezīmi, lai to apskatītu."
 
 #: src/app/qml/reminders.qml:391
 msgid "No account available"
@@ -90,6 +92,7 @@ msgstr "Nav pieejamu kontu"
 #: src/app/qml/reminders.qml:392
 msgid "Please configure and authorize an Evernote account in System Settings"
 msgstr ""
+"Lūdzu, konfigurējiet un pilnvarojiet Evernote kontu sistēmas iestatījumos"
 
 #: src/app/qml/reminders.qml:412
 msgid "Add account"
@@ -97,66 +100,66 @@ msgstr "Pievienot kontu"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:29
 msgid "Select Evernote account"
-msgstr ""
+msgstr "Izvēlieties Evernote kontu"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:74
 #, qt-format
 msgid "%1 - Tap to authorize"
-msgstr ""
+msgstr "%1 – uzsitiet, lai pilnvarotu"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:83
 msgid "Add new account"
-msgstr ""
+msgstr "Pievienot jaunu kontu"
 
 #: src/app/qml/ui/AccountSelectorPage.qml:92
 msgid "Back"
-msgstr ""
+msgstr "Atpakaļ"
 
 #: src/app/qml/ui/EditNoteView.qml:95 src/app/qml/ui/EditNoteView.qml:108
 #: src/app/qml/ui/NotesPage.qml:71
 msgid "Untitled"
-msgstr "Nenosaukts"
+msgstr "Bez nosaukuma"
 
 #: src/app/qml/ui/EditNoteView.qml:406
 msgid "Font"
-msgstr ""
+msgstr "Fonts"
 
 #: src/app/qml/ui/EditNoteView.qml:417
 msgid "Size"
-msgstr ""
+msgstr "Izmērs"
 
 #. TRANSLATORS: Toolbar button for "Bold"
 #: src/app/qml/ui/EditNoteView.qml:438
 msgid "B"
-msgstr ""
+msgstr "T"
 
 #. TRANSLATORS: Toolbar button for "Italic"
 #: src/app/qml/ui/EditNoteView.qml:451
 msgid "I"
-msgstr ""
+msgstr "S"
 
 #. TRANSLATORS: Toolbar button for "Underline"
 #: src/app/qml/ui/EditNoteView.qml:465
 msgid "U"
-msgstr ""
+msgstr "P"
 
 #. TRANSLATORS: Toolbar button for "Strikeout"
 #: src/app/qml/ui/EditNoteView.qml:479
 msgid "T"
-msgstr ""
+msgstr "N"
 
 #: src/app/qml/ui/NotePage.qml:34 src/app/qml/ui/NotesPage.qml:135
 msgid "Edit"
-msgstr "Labot"
+msgstr "Rediģēt"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 msgid "Edit reminder"
-msgstr ""
+msgstr "Rediģēt atgādinājumu"
 
 #: src/app/qml/ui/NotePage.qml:43 src/app/qml/ui/NotesPage.qml:119
 #: src/app/qml/ui/SetReminderView.qml:53
 msgid "Set reminder"
-msgstr "Uzstādīt atgādinājumu"
+msgstr "Iestatīt atgādinājumu"
 
 #: src/app/qml/ui/NotePage.qml:57 src/app/qml/ui/NotesPage.qml:109
 msgid "Delete"
@@ -164,7 +167,7 @@ msgstr "Dzēst"
 
 #: src/app/qml/ui/NotebooksPage.qml:43
 msgid "Add notebook"
-msgstr "Pievienot blociņu"
+msgstr "Pievienot piezīmju grāmatu"
 
 #: src/app/qml/ui/NotebooksPage.qml:53 src/app/qml/ui/NotesPage.qml:78
 #: src/app/qml/ui/RemindersPage.qml:34 src/app/qml/ui/SearchNotesPage.qml:58
@@ -196,89 +199,101 @@ msgstr "Pievienot piezīmi"
 msgid ""
 "No notes available. You can create new notes using the \"Add note\" button."
 msgstr ""
+"Nav pieejamu piezīmju. Varat izveidot jaunas piezīmes ar pogu “Pievienot "
+"piezīmi”."
 
 #: src/app/qml/ui/RemindersPage.qml:112
 msgid ""
 "No reminders available. You can create new reminders by setting a reminder "
 "when viewing a note."
 msgstr ""
+"Nav pieejamu atgādinājumu. Varat izveidot jaunus atgādinājumus, kad skatāt "
+"piezīmi."
 
 #: src/app/qml/ui/SearchNotesPage.qml:30
 msgid "Search notes"
-msgstr ""
+msgstr "Meklēt piezīmes"
 
 #: src/app/qml/ui/SetReminderView.qml:36
 msgid "Select date and time for the reminder:"
-msgstr ""
+msgstr "Izvēlieties atgādinājuma datumu un laiku:"
 
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
+"Nav pieejamu tagu. Pievienot tagus piezīmēm var to aplūkošanas laikā."
 
 #: src/libqtevernote/evernoteconnection.cpp:234
 msgid "Error connecting to Evernote: Please check network connection."
-msgstr ""
+msgstr "Kļūda, savienojoties ar Evernote: pārbaudiet tīkla savienojumu."
 
 #: src/libqtevernote/evernoteconnection.cpp:239
 msgid "Unknown error connecting to Evernote."
-msgstr ""
+msgstr "Nezināma kļūda, savienojoties ar Evernote."
 
 #: src/libqtevernote/evernoteconnection.cpp:252
 msgid ""
 "Error connecting to Evernote: Server version does not match app version. "
 "Please update the application."
 msgstr ""
+"Kļūda, savienojoties ar Evernote: servera versija neatbilst lietotnes "
+"versijai. Lūdzu, atjauniniet lietotni."
 
 #: src/libqtevernote/evernoteconnection.cpp:258
 #: src/libqtevernote/evernoteconnection.cpp:263
 #, qt-format
 msgid "Error connecting to Evernote: Error code %1"
-msgstr ""
+msgstr "Kļūda, savienojoties ar Evernode: kļūdas kods %1"
 
 #: src/libqtevernote/evernoteconnection.cpp:268
 msgid ""
 "Error connecting to Evernote: Cannot download version information from "
 "server."
 msgstr ""
+"Kļūda, savienojoties ar Evernode: nevar no servera lejupielādēt informāciju "
+"par versiju."
 
 #: src/libqtevernote/evernoteconnection.cpp:273
 #: src/libqtevernote/evernoteconnection.cpp:298
 msgid "Unknown error connecting to Evernote"
-msgstr ""
+msgstr "Nezināma kļūda, savienojoties ar Evernote"
 
 #: src/libqtevernote/evernoteconnection.cpp:287
 msgid "Error connecting to Evernote: Cannot download server information."
 msgstr ""
+"Kļūda, savienojoties ar Evernote: nevar lejupielādēt informāciju par serveri."
 
 #: src/libqtevernote/evernoteconnection.cpp:293
 msgid ""
 "Error connecting to Evernote: Connection failure when downloading server "
 "information."
 msgstr ""
+"Kļūda, savienojoties ar Evernote: savienojuma kļūda, lejupielādējot "
+"informāciju par serveri."
 
 #: src/libqtevernote/evernoteconnection.cpp:319
 msgid "Error connecting to Evernote: Connection failure"
-msgstr ""
+msgstr "Kļūda, savienojoties ar Evernote: savienojuma kļūme"
 
 #: src/libqtevernote/evernoteconnection.cpp:323
 msgid "Unknown Error connecting to Evernote"
-msgstr ""
+msgstr "Nezināma kļūda, savienojoties ar Evernote"
 
 #: src/libqtevernote/jobs/evernotejob.cpp:94
 msgid "Authentication expired."
-msgstr ""
+msgstr "Iztecējis autentifikācijas termiņš"
 
 #: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
-msgstr ""
+msgstr "Pārsniegts limits."
 
 #: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
-msgstr ""
+msgstr "Pārsniegts apjoma limits."
 
 #: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
-msgstr ""
+msgstr "Pārsniegta kvota."
 
 #: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
 #: src/libqtevernote/note.cpp:294
@@ -291,11 +306,11 @@ msgstr "Vakar"
 
 #: src/libqtevernote/note.cpp:88 src/libqtevernote/note.cpp:122
 msgid "Last week"
-msgstr "Pagājušajā nedēļā"
+msgstr "Pagājušā nedēļa"
 
 #: src/libqtevernote/note.cpp:91 src/libqtevernote/note.cpp:125
 msgid "Two weeks ago"
-msgstr "Pirms divām nedēļām"
+msgstr "Pagājušās divas nedēļas"
 
 #. TRANSLATORS: the first argument refers to a month name and the second to a year
 #: src/libqtevernote/note.cpp:95 src/libqtevernote/note.cpp:129
@@ -325,7 +340,7 @@ msgstr "Nākamā nedēļa"
 
 #: src/libqtevernote/note.cpp:303
 msgid "In two weeks"
-msgstr "Pēc divām nēdēļam"
+msgstr "Divu nedēļu laikā"
 
 #: src/libqtevernote/note.cpp:305
 msgid "Later"
@@ -349,26 +364,26 @@ msgstr "iepriekšējā nedēļā"
 #. TRANSLATORS: this is part of a longer string - "Last updated: two weeks ago"
 #: src/libqtevernote/notebook.cpp:112
 msgid "two weeks ago"
-msgstr "pirms divām nēdēļam"
+msgstr "pirms divām nedēļam"
 
 #. TRANSLATORS: this is used in the notes list to group notes created on the same month
 #. the first parameter refers to a month name and the second to a year
 #: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr "no %1 %2"
+msgstr "%1 %2"
 
 #: src/libqtevernote/notesstore.cpp:366
 #, qt-format
 msgid "Error refreshing notes: %1"
-msgstr "Kļūda atsvaidzinot piezīmes: %1"
+msgstr "Kļūda, atsvaidzinot piezīmes: %1"
 
 #: src/libqtevernote/notesstore.cpp:551
 #, qt-format
 msgid "Error refreshing notebooks: %1"
-msgstr ""
+msgstr "Kļūda, atsvaidzinot piezīmju grāmatas: %1"
 
 #: src/libqtevernote/notesstore.cpp:605
 #, qt-format
 msgid "Error refreshing tags: %1"
-msgstr ""
+msgstr "Kļūda, atsvaidzinot tagus: %1"
