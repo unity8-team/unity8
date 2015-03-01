@@ -104,7 +104,7 @@ MainView {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, { accounts: accounts, showBackButton: isChangingAccount, unauthorizedAccounts: unauthorizedAccounts });
+        accountPage = component.createObject(root, { accounts: accounts, unauthorizedAccounts: unauthorizedAccounts });
         accountPage.accountSelected.connect(function(username, handle) { accountService.startAuthentication(username, handle); pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
@@ -539,7 +539,6 @@ MainView {
 
                 page: AccountSelectorPage {
                     accounts: accounts
-                    showBackButton: false
                     unauthorizedAccounts: true
                     onAccountSelected: {
                         accountService.startAuthentication(username, handle)
