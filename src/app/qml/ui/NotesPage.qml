@@ -208,8 +208,31 @@ PageWithBottomEdge {
             }
         }
 
-        section.criteria: ViewSection.FullString
-        section.property: "createdString"
+        section.criteria: {
+            switch (notes.sortOrder) {
+            case Notes.SortOrderTitleAscending:
+            case Notes.SortOrderTitleDescending:
+                return ViewSection.FirstCharacter;
+            }
+
+            return ViewSection.FullString
+        }
+        section.property: {
+            switch(notes.sortOrder) {
+            case Notes.SortOrderDateCreatedNewest:
+            case Notes.SortOrderDateCreatedOldest:
+                return "createdString";
+            case Notes.SortOrderDateUpdatedNewest:
+            case Notes.SortOrderDateUpdatedOldest:
+                return "updatedString";
+            case Notes.SortOrderTitleAscending:
+            case Notes.SortOrderTitleDescending:
+                return "title";
+            }
+            return "";
+        }
+
+
         section.delegate: Empty {
             height: units.gu(5)
             showDivider: false
