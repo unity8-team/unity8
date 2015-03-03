@@ -30,14 +30,10 @@ Page {
 
     property alias accounts: optionSelector.model
     property bool unauthorizedAccounts
+    property var oaSetup: null
 
     signal accountSelected(string username, var handle)
 
-    Setup {
-        id: setup
-        applicationId: "com.ubuntu.reminders_reminders"
-        providerId: useSandbox ? "evernote-sandbox" : "evernote"
-    }
 
     Column {
         anchors { fill: parent; margins: units.gu(2) }
@@ -94,7 +90,7 @@ Page {
             width: parent.width - units.gu(2)
             text: i18n.tr("Add new account")
             color: UbuntuColors.orange
-            onClicked: setup.exec()
+            onClicked: root.oaSetup.exec()
         }
      }
 
