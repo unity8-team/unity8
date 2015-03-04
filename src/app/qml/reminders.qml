@@ -422,8 +422,20 @@ MainView {
         anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: units.gu(9) }
         color: root.backgroundColor
         shown: text
-        text: EvernoteConnection.error || NotesStore.error || NotesStore.notebooksError || NotesStore.tagsError
+        text: EvernoteConnection.error || NotesStore.error
         iconName: "sync-error"
+
+        Timer {
+            interval: 5000
+            repeat: true
+            running: NotesStore.error
+            onTriggered: NotesStore.clearError();
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: NotesStore.clearError();
+        }
 
     }
 

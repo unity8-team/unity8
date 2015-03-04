@@ -19,6 +19,7 @@
 import QtQuick 2.3
 import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0
+import Ubuntu.Components.Popups 1.0
 import Evernote 0.1
 import "../components"
 
@@ -80,9 +81,24 @@ Page {
             }
 
             delegate: TagsDelegate {
-                onClicked: {
+                width: parent.width
+                height: units.gu(10)
+                triggerActionOnMouseRelease: true
+
+                onItemClicked: {
                     print("selected tag:", model.guid)
                     root.openTaggedNotes(model.guid)
+                }
+                onDeleteTag: {
+                    NotesStore.expungeTag(model.guid);
+                }
+
+                onRenameTag: {
+                    var popup = PopupUtils.open(renameTagDialogComponent, root, {name: model.name})
+                    popup.accepted.connect(function(newName) {
+                        tags.tag(index).name = newName;
+                        NotesStore.saveTag(model.guid);
+                    })
                 }
             }
 
@@ -90,15 +106,6 @@ Page {
                 anchors.centerIn: parent
                 running: tags.loading
                 visible: running
-            }
-
-            Label {
-                anchors.centerIn: parent
-                width: parent.width - units.gu(4)
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                visible: !tags.loading && tags.error
-                text: tags.error
             }
 
             Scrollbar {
@@ -120,5 +127,33 @@ Page {
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
         text: i18n.tr("No tags available. You can tag notes while viewing them.")
+    }
+
+    Component {
+        id: renameTagDialogComponent
+        Dialog {
+            id: renameTagDialog
+            title: i18n.tr("Rename tag")
+            text: i18n.tr("Enter a new name for tag %1").arg(name)
+
+            property string name
+
+            signal accepted(string newName)
+
+            TextField {
+                id: nameTextField
+                text: renameTagDialog.name
+                placeholderText: i18n.tr("Name cannot be empty")
+            }
+
+            Button {
+                text: i18n.tr("OK")
+                enabled: nameTextField.text
+                onClicked: {
+                    renameTagDialog.accepted(nameTextField.text)
+                    PopupUtils.close(renameTagDialog)
+                }
+            }
+        }
     }
 }

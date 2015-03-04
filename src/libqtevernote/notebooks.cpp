@@ -32,7 +32,6 @@ Notebooks::Notebooks(QObject *parent) :
     }
 
     connect(NotesStore::instance(), &NotesStore::notebooksLoadingChanged, this, &Notebooks::loadingChanged);
-    connect(NotesStore::instance(), &NotesStore::notebooksErrorChanged, this, &Notebooks::errorChanged);
     connect(NotesStore::instance(), &NotesStore::notebookAdded, this, &Notebooks::notebookAdded);
     connect(NotesStore::instance(), &NotesStore::notebookRemoved, this, &Notebooks::notebookRemoved);
     connect(NotesStore::instance(), &NotesStore::notebookGuidChanged, this, &Notebooks::notebookGuidChanged);
@@ -41,11 +40,6 @@ Notebooks::Notebooks(QObject *parent) :
 bool Notebooks::loading() const
 {
     return NotesStore::instance()->notebooksLoading();
-}
-
-QString Notebooks::error() const
-{
-    return NotesStore::instance()->notebooksError();
 }
 
 int Notebooks::count() const
@@ -76,6 +70,8 @@ QVariant Notebooks::data(const QModelIndex &index, int role) const
         return notebook->synced();
     case RoleSyncError:
         return notebook->syncError();
+    case RoleIsDefaultNotebook:
+        return notebook->isDefaultNotebook();
     }
     return QVariant();
 }
@@ -99,6 +95,7 @@ QHash<int, QByteArray> Notebooks::roleNames() const
     roles.insert(RoleLoading, "loading");
     roles.insert(RoleSynced, "synced");
     roles.insert(RoleSyncError, "syncError");
+    roles.insert(RoleIsDefaultNotebook, "isDefaultNotebook");
     return roles;
 }
 
@@ -125,6 +122,7 @@ void Notebooks::notebookAdded(const QString &guid)
     connect(notebook, &Notebook::syncedChanged, this, &Notebooks::syncedChanged);
     connect(notebook, &Notebook::loadingChanged, this, &Notebooks::notebookLoadingChanged);
     connect(notebook, &Notebook::syncErrorChanged, this, &Notebooks::syncErrorChanged);
+    connect(notebook, &Notebook::isDefaultNotebookChanged, this, &Notebooks::isDefaultNotebookChanged);
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
     m_list.append(guid);
@@ -145,6 +143,13 @@ void Notebooks::notebookGuidChanged(const QString &oldGuid, const QString &newGu
     int idx = m_list.indexOf(oldGuid);
     m_list.replace(idx, newGuid);
     emit dataChanged(index(idx), index(idx));
+}
+
+void Notebooks::isDefaultNotebookChanged()
+{
+    Notebook *notebook = static_cast<Notebook*>(sender());
+    QModelIndex idx = index(m_list.indexOf((notebook->guid())));
+    emit dataChanged(idx, idx, QVector<int>() << RoleIsDefaultNotebook);
 }
 
 void Notebooks::nameChanged()

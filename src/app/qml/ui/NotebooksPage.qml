@@ -19,6 +19,7 @@
 import QtQuick 2.3
 import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0
+import Ubuntu.Components.Popups 1.0
 import Evernote 0.1
 import "../components"
 
@@ -116,9 +117,29 @@ Page {
             }
 
             delegate: NotebooksDelegate {
-                onClicked: {
+                width: parent.width
+                height: units.gu(10)
+                triggerActionOnMouseRelease: true
+
+                onItemClicked: {
                     print("selected notebook:", model.guid)
                     root.openNotebook(model.guid)
+                }
+
+                onDeleteNotebook: {
+                    NotesStore.expungeNotebook(model.guid)
+                }
+
+                onSetAsDefault: {
+                    NotesStore.setDefaultNotebook(model.guid)
+                }
+
+                onRenameNotebook: {
+                    var popup = PopupUtils.open(renameNotebookDialogComponent, root, {name: model.name})
+                    popup.accepted.connect(function(newName) {
+                        notebooks.notebook(index).name = newName;
+                        NotesStore.saveNotebook(model.guid);
+                    })
                 }
             }
 
@@ -168,6 +189,34 @@ Page {
             id: keyboardRect
             anchors { left: parent.left; right: parent.right }
             height: Qt.inputMethod.keyboardRectangle.height
+        }
+    }
+
+    Component {
+        id: renameNotebookDialogComponent
+        Dialog {
+            id: renameNotebookDialog
+            title: i18n.tr("Rename notebook")
+            text: i18n.tr("Enter a new name for notebook %1").arg(name)
+
+            property string name
+
+            signal accepted(string newName)
+
+            TextField {
+                id: nameTextField
+                text: renameNotebookDialog.name
+                placeholderText: i18n.tr("Name cannot be empty")
+            }
+
+            Button {
+                text: i18n.tr("OK")
+                enabled: nameTextField.text
+                onClicked: {
+                    renameNotebookDialog.accepted(nameTextField.text)
+                    PopupUtils.close(renameNotebookDialog)
+                }
+            }
         }
     }
 }

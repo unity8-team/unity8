@@ -29,7 +29,6 @@ class Notebooks : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
-    Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
@@ -42,7 +41,8 @@ public:
         RoleLastUpdatedString,
         RoleLoading,
         RoleSynced,
-        RoleSyncError
+        RoleSyncError,
+        RoleIsDefaultNotebook
     };
     explicit Notebooks(QObject *parent = 0);
 
@@ -61,7 +61,6 @@ public slots:
 
 signals:
     void loadingChanged();
-    void errorChanged();
     void countChanged();
 
 private slots:
@@ -76,6 +75,7 @@ private slots:
     void syncedChanged();
     void notebookLoadingChanged();
     void syncErrorChanged();
+    void isDefaultNotebookChanged();
 
 private:
     QList<QString> m_list;
