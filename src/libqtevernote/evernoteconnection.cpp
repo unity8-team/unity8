@@ -153,11 +153,17 @@ void EvernoteConnection::disconnectFromEvernote()
         return;
     }
 
-    foreach (EvernoteJob *job, m_jobQueue) {
+    foreach (EvernoteJob *job, m_highPriorityJobQueue) {
         job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, "Disconnected from Evernote");
         job->deleteLater();
     }
-    m_jobQueue.clear();
+    m_highPriorityJobQueue.clear();
+
+    foreach (EvernoteJob *job, m_lowPriorityJobQueue) {
+        job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, "Disconnected from Evernote");
+        job->deleteLater();
+    }
+    m_lowPriorityJobQueue.clear();
 
     m_errorMessage.clear();
     emit errorChanged();
@@ -342,7 +348,13 @@ bool EvernoteConnection::connectNotesStore()
 
 EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
 {
-    foreach (EvernoteJob *queuedJob, m_jobQueue) {
+    foreach (EvernoteJob *queuedJob, m_highPriorityJobQueue) {
+        // explicitly use custom operator==()
+        if (job->operator ==(queuedJob)) {
+            return queuedJob;
+        }
+    }
+    foreach (EvernoteJob *queuedJob, m_lowPriorityJobQueue) {
         // explicitly use custom operator==()
         if (job->operator ==(queuedJob)) {
             return queuedJob;
@@ -368,17 +380,21 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
             qDebug() << "[JobQueue] Reprioritising duplicate job:" << job->toString();
             duplicate->setJobPriority(job->jobPriority());
-            m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
+            if (m_highPriorityJobQueue.contains(job)) {
+                m_highPriorityJobQueue.prepend(m_highPriorityJobQueue.takeAt(m_highPriorityJobQueue.indexOf(duplicate)));
+            } else {
+                m_highPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(duplicate)));
+            }
         }
     } else {
         connect(job, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
             qDebug() << "[JobQueue] Prepending high priority job request:" << job->toString();
-            m_jobQueue.prepend(job);
+            m_highPriorityJobQueue.prepend(job);
         } else {
             qDebug() << "[JobQueue] Appending low priority job request:" << job->toString();
-            m_jobQueue.append(job);
+            m_lowPriorityJobQueue.prepend(job);
         }
         startJobQueue();
     }
@@ -401,15 +417,20 @@ QString EvernoteConnection::error() const
 
 void EvernoteConnection::startJobQueue()
 {
-    if (m_jobQueue.isEmpty()) {
-        return;
-    }
-
     if (m_currentJob) {
         return;
     }
 
-    m_currentJob = m_jobQueue.takeFirst();
+    if (m_highPriorityJobQueue.isEmpty() && m_lowPriorityJobQueue.isEmpty()) {
+        return;
+    }
+
+    if (!m_highPriorityJobQueue.isEmpty()) {
+        m_currentJob = m_highPriorityJobQueue.takeFirst();
+    } else {
+        m_currentJob = m_lowPriorityJobQueue.takeFirst();
+    }
+
     qDebug() << "[JobQueue] Starting job:" << m_currentJob->toString();
     m_currentJob->start();
 }
