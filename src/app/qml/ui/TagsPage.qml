@@ -102,12 +102,6 @@ Page {
                 }
             }
 
-            ActivityIndicator {
-                anchors.centerIn: parent
-                running: tags.loading
-                visible: running
-            }
-
             Scrollbar {
                 flickableItem: parent
             }
@@ -118,6 +112,11 @@ Page {
             anchors { left: parent.left; right: parent.right }
             height: Qt.inputMethod.keyboardRectangle.height
         }
+    }
+
+    BouncingProgressBar {
+        anchors.top: parent.top
+        visible: tags.loading
     }
 
     Label {
