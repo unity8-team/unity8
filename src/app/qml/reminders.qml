@@ -104,7 +104,7 @@ MainView {
             accountPage.destroy(100)
         }
         var component = Qt.createComponent(Qt.resolvedUrl("ui/AccountSelectorPage.qml"));
-        accountPage = component.createObject(root, { accounts: accounts, unauthorizedAccounts: unauthorizedAccounts });
+        accountPage = component.createObject(root, { accounts: accounts, unauthorizedAccounts: unauthorizedAccounts, oaSetup: setup });
         accountPage.accountSelected.connect(function(username, handle) { accountService.startAuthentication(username, handle); pagestack.pop(); root.accountPage = null });
         pagestack.push(accountPage);
     }
@@ -560,6 +560,7 @@ MainView {
                 page: AccountSelectorPage {
                     accounts: accounts
                     unauthorizedAccounts: true
+                    oaSetup: setup
                     onAccountSelected: {
                         accountService.startAuthentication(username, handle)
                         rootTabs.selectedTabIndex = 0;
@@ -605,6 +606,12 @@ MainView {
         }
     }
 
+    Setup {
+        id: setup
+        applicationId: "com.ubuntu.reminders_reminders"
+        providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
+    }
+
     Component {
         id: noAccountDialog
         Dialog {
@@ -623,12 +630,6 @@ MainView {
                         doLogin();
                     }
                 }
-            }
-
-            Setup {
-                id: setup
-                applicationId: "com.ubuntu.reminders_reminders"
-                providerId: useSandbox ? "com.ubuntu.reminders_evernote-account-plugin-sandbox" : "com.ubuntu.reminders_evernote-account-plugin"
             }
 
             RowLayout {
