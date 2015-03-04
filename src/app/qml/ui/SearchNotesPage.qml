@@ -51,7 +51,7 @@ Page {
                 }
 
                 onAccepted: {
-                    NotesStore.findNotes(searchField.text + "*")
+                    NotesStore.findNotes(searchField.text)
                 }
             }
             Button {
@@ -59,7 +59,7 @@ Page {
                 height: searchField.height
                 text: i18n.tr("Search")
                 onClicked: {
-                    NotesStore.findNotes(searchField.text + "*")
+                    NotesStore.findNotes(searchField.text)
                 }
             }
         }
