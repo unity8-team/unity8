@@ -469,7 +469,7 @@ Tag *NotesStore::tag(const QString &guid)
 
 Tag* NotesStore::createTag(const QString &name)
 {
-    Tag *tag = new Tag(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1);
+    Tag *tag = new Tag(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1, this);
     tag->setName(name);
     m_tags.append(tag);
     m_tagsHash.insert(tag->guid(), tag);
