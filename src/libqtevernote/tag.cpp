@@ -77,12 +77,12 @@ void Tag::setGuid(const QString &guid)
     emit guidChanged();
 }
 
-quint32 Tag::updateSequenceNumber() const
+qint32 Tag::updateSequenceNumber() const
 {
     return m_updateSequenceNumber;
 }
 
-void Tag::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+void Tag::setUpdateSequenceNumber(qint32 updateSequenceNumber)
 {
     if (m_updateSequenceNumber != updateSequenceNumber) {
         m_updateSequenceNumber = updateSequenceNumber;
@@ -92,12 +92,12 @@ void Tag::setUpdateSequenceNumber(quint32 updateSequenceNumber)
     }
 }
 
-quint32 Tag::lastSyncedSequenceNumber() const
+qint32 Tag::lastSyncedSequenceNumber() const
 {
     return m_lastSyncedSequenceNumber;
 }
 
-void Tag::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+void Tag::setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber)
 {
     if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
         m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;

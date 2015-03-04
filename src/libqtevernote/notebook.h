@@ -65,8 +65,8 @@ public:
     bool isDefaultNotebook() const;
     void setIsDefaultNotebook(bool isDefaultNotebook);
 
-    quint32 updateSequenceNumber() const;
-    quint32 lastSyncedSequenceNumber() const;
+    qint32 updateSequenceNumber() const;
+    qint32 lastSyncedSequenceNumber() const;
 
     bool loading() const;
     bool synced() const;
@@ -99,15 +99,15 @@ private:
 
     void setLoading(bool loading);
     void setSyncError(bool syncError);
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
-    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setUpdateSequenceNumber(qint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber);
 
     void syncToInfoFile();
     void deleteInfoFile();
 
 private:
-    quint32 m_updateSequenceNumber;
-    quint32 m_lastSyncedSequenceNumber;
+    qint32 m_updateSequenceNumber;
+    qint32 m_lastSyncedSequenceNumber;
     QString m_guid;
     QString m_name;
     bool m_published;
