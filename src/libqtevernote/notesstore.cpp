@@ -1374,10 +1374,7 @@ void NotesStore::deleteNote(const QString &guid)
 
 void NotesStore::findNotes(const QString &searchWords)
 {
-    foreach (Note *note, m_notes) {
-        note->setIsSearchResult(false);
-    }
-    emit dataChanged(index(0), index(m_notes.count()), QVector<int>() << RoleIsSearchResult);
+    clearSearchResults();
 
     FetchNotesJob *job = new FetchNotesJob(QString(), searchWords);
     connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
