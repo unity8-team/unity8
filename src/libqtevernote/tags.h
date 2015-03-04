@@ -29,7 +29,6 @@ class Tags: public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
-    Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
@@ -44,7 +43,6 @@ public:
     explicit Tags(QObject *parent = 0);
 
     bool loading() const;
-    QString error() const;
     int count() const;
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -58,7 +56,6 @@ public slots:
 
 signals:
     void loadingChanged();
-    void errorChanged();
     void countChanged();
 
 private slots:

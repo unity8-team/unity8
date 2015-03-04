@@ -59,7 +59,6 @@ class NotesStore : public QAbstractListModel
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(bool notebooksLoading READ notebooksLoading NOTIFY notebooksLoadingChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString notebooksError READ notebooksError NOTIFY notebooksErrorChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
@@ -105,8 +104,6 @@ public:
     bool tagsLoading() const;
 
     QString error() const;
-    QString notebooksError() const;
-    QString tagsError() const;
 
     int count() const;
 
@@ -129,6 +126,7 @@ public:
     Q_INVOKABLE Notebook* notebook(const QString &guid);
     Q_INVOKABLE void createNotebook(const QString &name);
     Q_INVOKABLE void saveNotebook(const QString &guid);
+    Q_INVOKABLE void setDefaultNotebook(const QString &guid);
     Q_INVOKABLE void expungeNotebook(const QString &guid);
 
     QList<Tag*> tags() const;
@@ -137,6 +135,7 @@ public:
     Q_INVOKABLE void saveTag(const QString &guid);
     Q_INVOKABLE void tagNote(const QString &noteGuid, const QString &tagGuid);
     Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
+    Q_INVOKABLE void expungeTag(const QString &guid);
 
 public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString(), int startIndex = 0);
@@ -146,14 +145,14 @@ public slots:
     void refreshNotebooks();
     void refreshTags();
 
+    void clearError();
+
 signals:
     void usernameChanged();
     void loadingChanged();
     void notebooksLoadingChanged();
     void tagsLoadingChanged();
     void errorChanged();
-    void notebooksErrorChanged();
-    void tagsErrorChanged();
     void countChanged();
 
     void noteCreated(const QString &guid, const QString &notebookGuid);
@@ -167,6 +166,7 @@ signals:
     void notebookChanged(const QString &guid);
     void notebookRemoved(const QString &guid);
     void notebookGuidChanged(const QString &oldGuid, const QString &newGuid);
+    void defaultNotebookChanged(const QString &guid);
 
     void tagAdded(const QString &guid);
     void tagChanged(const QString &guid);
@@ -213,9 +213,7 @@ private:
     bool m_notebooksLoading;
     bool m_tagsLoading;
 
-    QString m_error;
-    QString m_notebooksError;
-    QString m_tagsError;
+    QStringList m_errorQueue;
 
     QList<Note*> m_notes;
     QList<Notebook*> m_notebooks;

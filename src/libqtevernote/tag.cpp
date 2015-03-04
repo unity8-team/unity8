@@ -219,3 +219,9 @@ void Tag::setSyncError(bool syncError)
         emit syncErrorChanged();
     }
 }
+
+
+QString Tag::noteAt(int index) const
+{
+    return m_notesList.at(index);
+}

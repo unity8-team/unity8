@@ -36,6 +36,7 @@ class Notebook : public QObject
     Q_PROPERTY(bool published READ published NOTIFY publishedChanged)
     Q_PROPERTY(QDateTime lastUpdated READ lastUpdated NOTIFY lastUpdatedChanged)
     Q_PROPERTY(QString lastUpdatedString READ lastUpdatedString NOTIFY lastUpdatedChanged)
+    Q_PROPERTY(bool isDefaultNotebook READ isDefaultNotebook WRITE setIsDefaultNotebook NOTIFY isDefaultNotebookChanged)
     // Don't forget to update clone() if you add new properties
 
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
@@ -51,6 +52,7 @@ public:
     void setName(const QString &name);
 
     int noteCount() const;
+    QString noteAt(int index) const;
 
     bool published() const;
     void setPublished(bool published);
@@ -59,6 +61,9 @@ public:
     void setLastUpdated(const QDateTime &lastUpdated);
 
     QString lastUpdatedString() const;
+
+    bool isDefaultNotebook() const;
+    void setIsDefaultNotebook(bool isDefaultNotebook);
 
     quint32 updateSequenceNumber() const;
     quint32 lastSyncedSequenceNumber() const;
@@ -81,6 +86,7 @@ signals:
     void loadingChanged();
     void syncedChanged();
     void syncErrorChanged();
+    void isDefaultNotebookChanged();
 
 private slots:
     void noteAdded(const QString &noteGuid, const QString &notebookGuid);
@@ -106,6 +112,7 @@ private:
     QString m_name;
     bool m_published;
     QDateTime m_lastUpdated;
+    bool m_isDefaultNotebook;
     QList<QString> m_notesList;
 
     QString m_infoFile;

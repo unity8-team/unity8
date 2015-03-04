@@ -32,7 +32,6 @@ Tags::Tags(QObject *parent) :
     }
 
     connect(NotesStore::instance(), &NotesStore::tagsLoadingChanged, this, &Tags::loadingChanged);
-    connect(NotesStore::instance(), &NotesStore::tagsErrorChanged, this, &Tags::errorChanged);
     connect(NotesStore::instance(), &NotesStore::tagAdded, this, &Tags::tagAdded);
     connect(NotesStore::instance(), &NotesStore::tagRemoved, this, &Tags::tagRemoved);
     connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Tags::tagGuidChanged);
@@ -41,11 +40,6 @@ Tags::Tags(QObject *parent) :
 bool Tags::loading() const
 {
     return NotesStore::instance()->tagsLoading();
-}
-
-QString Tags::error() const
-{
-    return NotesStore::instance()->tagsError();
 }
 
 int Tags::count() const

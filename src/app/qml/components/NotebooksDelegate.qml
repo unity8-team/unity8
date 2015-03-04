@@ -22,11 +22,37 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 
-Empty {
+ListItemWithActions {
     id: root
-    height: units.gu(10)
 
     property string notebookColor: preferences.colorForNotebook(model.guid)
+
+    signal deleteNotebook();
+    signal setAsDefault();
+    signal renameNotebook();
+
+    leftSideAction: Action {
+        iconName: "delete"
+        text: i18n.tr("Delete")
+        onTriggered: {
+            root.deleteNotebook();
+        }
+    }
+
+    rightSideActions: [
+        Action {
+            iconName: model.isDefaultNotebook ? "starred" : "non-starred"
+            onTriggered: {
+                root.setAsDefault();
+            }
+        },
+        Action {
+            iconName: "edit"
+            onTriggered: {
+                root.renameNotebook();
+            }
+        }
+    ]
 
     Rectangle {
         anchors.fill: parent
@@ -61,34 +87,6 @@ Empty {
                 color: root.notebookColor
                 fontSize: "large"
                 Layout.fillWidth: true
-
-                MouseArea {
-                    onPressAndHold: {
-                        notebookTitleLabel.visible = false;
-                        notebookTitleTextField.forceActiveFocus();
-                    }
-                    anchors.fill: parent
-                    propagateComposedEvents: true
-                }
-            }
-
-            TextField {
-                id: notebookTitleTextField
-                text: model.name
-                color: root.notebookColor
-                visible: !notebookTitleLabel.visible
-                Layout.fillWidth: true
-
-                InverseMouseArea {
-                    onClicked: {
-                        if (notebookTitleTextField.text) {
-                            notebooks.notebook(index).name = notebookTitleTextField.text;
-                            NotesStore.saveNotebook(notebooks.notebook(index).guid);
-                            notebookTitleLabel.visible = true;
-                        }
-                    }
-                    anchors.fill: parent
-                }
             }
 
             Label {
@@ -99,14 +97,25 @@ Empty {
                 Layout.fillWidth: true
             }
 
-            Label {
-                objectName: 'notebookPublishedLabel'
+            Row {
                 Layout.fillHeight: true
-                text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
-                color: model.published ? "black" : "#b3b3b3"
-                fontSize: "x-small"
-                verticalAlignment: Text.AlignVCenter
-                font.bold: model.published
+                spacing: units.gu(1)
+                Icon {
+                    height: parent.height
+                    width: height
+                    name: "starred"
+                    visible: model.isDefaultNotebook
+                }
+
+                Label {
+                    objectName: 'notebookPublishedLabel'
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.published ? i18n.tr("Shared") : i18n.tr("Private")
+                    color: model.published ? "black" : "#b3b3b3"
+                    fontSize: "x-small"
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: model.published
+                }
             }
         }
 

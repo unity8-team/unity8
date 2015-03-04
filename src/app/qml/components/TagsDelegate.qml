@@ -22,9 +22,29 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0
 import Evernote 0.1
 
-Empty {
+ListItemWithActions {
     id: root
     height: units.gu(10)
+
+    signal deleteTag();
+    signal renameTag();
+
+    leftSideAction: Action {
+        iconName: "delete"
+        text: i18n.tr("Delete")
+        onTriggered: {
+            root.deleteTag()
+        }
+    }
+
+    rightSideActions: [
+        Action {
+            iconName: "edit"
+            onTriggered: {
+                root.renameTag();
+            }
+        }
+    ]
 
     Rectangle {
         anchors.fill: parent
@@ -58,32 +78,6 @@ Empty {
                 text: model.name
                 fontSize: "large"
                 Layout.fillWidth: true
-
-                MouseArea {
-                    onPressAndHold: {
-                        tagTitleLabel.visible = false;
-                        tagTitleTextField.forceActiveFocus();
-                    }
-                    anchors.fill: parent
-                    propagateComposedEvents: true
-                }
-            }
-
-            TextField {
-                id: tagTitleTextField
-                text: model.name
-                visible: !tagTitleLabel.visible
-
-                InverseMouseArea {
-                    onClicked: {
-                        if (tagTitleTextField.text) {
-                            tags.tag(index).name = tagTitleTextField.text;
-                            NotesStore.saveTag(tags.tag(index).guid);
-                            tagTitleLabel.visible = true;
-                        }
-                    }
-                    anchors.fill: parent
-                }
             }
         }
 

@@ -61,6 +61,7 @@ public:
     void setName(const QString &guid);
 
     int noteCount() const;
+    QString noteAt(int index) const;
 
     bool loading() const;
     bool synced() const;

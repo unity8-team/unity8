@@ -21,20 +21,22 @@ Rectangle {
         anchors { left: parent.left; top: parent.top; right: parent.right }
         spacing: units.gu(1)
 
-        RowLayout {
+        Row {
             anchors { left: parent.left; right: parent.right; margins: units.gu(1) }
             spacing: units.gu(1)
+            height: label.height
 
             Icon {
                 id: icon
                 height: units.gu(3)
                 width: height
                 color: UbuntuColors.red
+                anchors.verticalCenter: parent.verticalCenter
             }
 
             Label {
                 id: label
-                Layout.fillWidth: true
+                width: parent.width - x
                 wrapMode: Text.WordWrap
             }
         }

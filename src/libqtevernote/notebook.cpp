@@ -32,6 +32,7 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     m_updateSequenceNumber(updateSequenceNumber),
     m_guid(guid),
     m_published(false),
+    m_isDefaultNotebook(false),
     m_loading(false),
     m_syncError(false)
 {
@@ -41,6 +42,7 @@ Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) 
     m_published = infoFile.value("published").toBool();
     m_lastUpdated = infoFile.value("lastUpdated").toDateTime();
     m_lastSyncedSequenceNumber = infoFile.value("lastSyncedSequenceNumber", 0).toUInt();
+    m_isDefaultNotebook = infoFile.value("isDefaultNotebook", false).toBool();
     m_synced = m_lastSyncedSequenceNumber == m_updateSequenceNumber;
 
     foreach (Note *note, NotesStore::instance()->notes()) {
@@ -75,6 +77,11 @@ void Notebook::setName(const QString &name)
 int Notebook::noteCount() const
 {
     return m_notesList.count();
+}
+
+QString Notebook::noteAt(int index) const
+{
+    return m_notesList.at(index);
 }
 
 bool Notebook::published() const
@@ -127,6 +134,19 @@ QString Notebook::lastUpdatedString() const
     // TRANSLATORS: this is used in the notes list to group notes created on the same month
     // the first parameter refers to a month name and the second to a year
     return QString(gettext("on %1 %2")).arg(QLocale::system().standaloneMonthName(updateDate.month())).arg(updateDate.year());
+}
+
+bool Notebook::isDefaultNotebook() const
+{
+    return m_isDefaultNotebook;
+}
+
+void Notebook::setIsDefaultNotebook(bool isDefaultNotebook)
+{
+    if (m_isDefaultNotebook != isDefaultNotebook) {
+        m_isDefaultNotebook = isDefaultNotebook;
+        emit isDefaultNotebookChanged();
+    }
 }
 
 Notebook *Notebook::clone()
@@ -212,6 +232,7 @@ void Notebook::syncToInfoFile()
     infoFile.setValue("published", m_published);
     infoFile.value("lastUpdated", m_lastUpdated);
     infoFile.setValue("lastSyncedSequenceNumber", m_lastSyncedSequenceNumber);
+    infoFile.setValue("isDefaultNotebook", m_isDefaultNotebook);
 }
 
 void Notebook::deleteInfoFile()

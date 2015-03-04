@@ -56,6 +56,8 @@ void SaveNotebookJob::startJob()
     m_resultNotebook.__isset.name = true;
     m_resultNotebook.updateSequenceNum = m_notebook->updateSequenceNumber();
     m_resultNotebook.__isset.updateSequenceNum = true;
+    m_resultNotebook.defaultNotebook = m_notebook->isDefaultNotebook();
+    m_resultNotebook.__isset.defaultNotebook = true;
 
     client()->updateNotebook(token().toStdString(), m_resultNotebook);
 }
