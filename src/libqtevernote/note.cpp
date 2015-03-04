@@ -34,15 +34,15 @@
 
 Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
-    m_isSearchResult(false),
     m_deleted(false),
+    m_isSearchResult(false),
     m_updateSequenceNumber(updateSequenceNumber),
     m_loading(false),
     m_loadingHighPriority(false),
     m_loaded(false),
+    m_needsContentSync(false),
     m_syncError(false),
-    m_conflicting(false),
-    m_needsContentSync(false)
+    m_conflicting(false)
 {
     setGuid(guid);
     m_cacheFile.setFileName(NotesStore::instance()->storageLocation() + "note-" + guid + ".enml");
@@ -451,12 +451,12 @@ void Note::setIsSearchResult(bool isSearchResult)
     }
 }
 
-quint32 Note::updateSequenceNumber() const
+qint32 Note::updateSequenceNumber() const
 {
     return m_updateSequenceNumber;
 }
 
-void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+void Note::setUpdateSequenceNumber(qint32 updateSequenceNumber)
 {
     if (m_updateSequenceNumber != updateSequenceNumber) {
         m_updateSequenceNumber = updateSequenceNumber;
@@ -469,12 +469,12 @@ void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
     }
 }
 
-quint32 Note::lastSyncedSequenceNumber() const
+qint32 Note::lastSyncedSequenceNumber() const
 {
     return m_lastSyncedSequenceNumber;
 }
 
-void Note::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+void Note::setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber)
 {
     if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
         m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;

@@ -272,7 +272,9 @@ Notebook *NotesStore::notebook(const QString &guid)
 
 void NotesStore::createNotebook(const QString &name)
 {
-    Notebook *notebook = new Notebook(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1, this);
+    QString newGuid = QUuid::createUuid().toString();
+    newGuid.remove("{").remove("}");
+    Notebook *notebook = new Notebook(newGuid, 1, this);
     notebook->setName(name);
     if (m_notebooks.isEmpty()) {
         notebook->setIsDefaultNotebook(true);
@@ -469,7 +471,9 @@ Tag *NotesStore::tag(const QString &guid)
 
 Tag* NotesStore::createTag(const QString &name)
 {
-    Tag *tag = new Tag(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1, this);
+    QString newGuid = QUuid::createUuid().toString();
+    newGuid.remove("{").remove("}");
+    Tag *tag = new Tag(newGuid, 1, this);
     tag->setName(name);
     m_tags.append(tag);
     m_tagsHash.insert(tag->guid(), tag);
@@ -1132,7 +1136,9 @@ Note* NotesStore::createNote(const QString &title, const QString &notebookGuid, 
 
 Note* NotesStore::createNote(const QString &title, const QString &notebookGuid, const EnmlDocument &content)
 {
-    Note *note = new Note(QUuid::createUuid().toString().remove(QRegExp("[\{\}]*")), 1, this);
+    QString newGuid = QUuid::createUuid().toString();
+    newGuid.remove("{").remove("}");
+    Note *note = new Note(newGuid, 1, this);
     connect(note, &Note::reminderChanged, this, &NotesStore::emitDataChanged);
     connect(note, &Note::reminderDoneChanged, this, &NotesStore::emitDataChanged);
 

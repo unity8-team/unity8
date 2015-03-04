@@ -138,8 +138,8 @@ public:
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
-    quint32 updateSequenceNumber() const;
-    quint32 lastSyncedSequenceNumber() const;
+    qint32 updateSequenceNumber() const;
+    qint32 lastSyncedSequenceNumber() const;
 
     bool isCached() const;
     bool loaded() const;
@@ -198,8 +198,8 @@ private:
     void syncToCacheFile();
     void syncToInfoFile();
     void deleteFromCache();
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
-    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setUpdateSequenceNumber(qint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber);
     void setConflicting(bool conflicting);
 
     // const because we want to load on demand in getters. Keep this private!
@@ -221,8 +221,8 @@ private:
     bool m_deleted;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
-    quint32 m_updateSequenceNumber;
-    quint32 m_lastSyncedSequenceNumber;
+    qint32 m_updateSequenceNumber;
+    qint32 m_lastSyncedSequenceNumber;
     mutable QFile m_cacheFile;
     QString m_infoFile;
 
