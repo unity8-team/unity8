@@ -394,7 +394,8 @@ MainView {
         target: UserStore
         onUsernameChanged: {
             print("Logged in as user:", UserStore.username);
-            registerPushClient();
+            // Disabling push notifications as we haven't had a chance to properly test that yet
+            //registerPushClient();
         }
     }
 
