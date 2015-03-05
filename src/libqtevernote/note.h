@@ -69,6 +69,12 @@ class Note : public QObject
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
     Q_PROPERTY(bool syncError READ syncError NOTIFY syncErrorChanged)
 
+    // When asking the note's richTextContent, usually the embedded images will have their original size.
+    // For rendering that content in a WebView or TextEdit, that might not be appropriate as images might
+    // be really big. Use this to restrict them to a maximum width.
+    // Set this to -1 (the default) to keep the original size
+    Q_PROPERTY(int renderWidth READ renderWidth WRITE setRenderWidth NOTIFY renderWidthChanged)
+
 public:
     explicit Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent = 0);
     ~Note();
@@ -160,6 +166,9 @@ public:
     Q_INVOKABLE void addTag(const QString &tagGuid);
     Q_INVOKABLE void removeTag(const QString &tagGuid);
 
+    int renderWidth() const;
+    void setRenderWidth(int renderWidth);
+
 public slots:
     void save();
     void remove();
@@ -185,6 +194,8 @@ signals:
     void syncedChanged();
     void syncErrorChanged();
     void conflictingChanged();
+
+    void renderWidthChanged();
 
 private slots:
     void slotNotebookGuidChanged(const QString &oldGuid, const QString &newGuid);

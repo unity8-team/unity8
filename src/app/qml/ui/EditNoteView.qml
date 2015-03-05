@@ -81,6 +81,12 @@ Item {
          }
      }
 
+    Binding {
+        target: note
+        property: "renderWidth"
+        value: noteTextArea.width - noteTextArea.textMargin * 2
+    }
+
     Column {
         anchors { left: parent.left; top: parent.top; right: parent.right; bottom: toolbox.top }
 
