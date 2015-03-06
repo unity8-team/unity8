@@ -49,9 +49,9 @@ QStringList EnmlDocument::s_commonTags = QStringList()
 QStringList EnmlDocument::s_argumentBlackListTags = QStringList()
         << "ul" << "li" << "ol";
 
-int EnmlDocument::s_richtextContentWidth = 640;
 EnmlDocument::EnmlDocument(const QString &enml):
-    m_enml(enml)
+    m_enml(enml),
+    m_renderWidth(-1)
 {
 }
 
@@ -156,6 +156,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
 
                 writer.writeStartElement("img");
                 if (mediaType.startsWith("image")) {
+
                     if (type == TypeRichText) {
                         writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
                     } else if (type  == TypeHtml) {
@@ -167,18 +168,17 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                         writer.writeAttribute("id", "en-attachment/" + hash + "/" + mediaType);
                     }
 
-                    //set the width
-                    if (reader.attributes().hasAttribute("width")) {
-                        writer.writeAttribute("width", reader.attributes().value("width").toString());
-                    } else {
-                        if (type == TypeRichText) {
-                            //get the size of the original image
-                            QImage image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(hash)->data());
-                            if (image.width() > EnmlDocument::s_richtextContentWidth)
-                                writer.writeAttribute("width", QString::number(EnmlDocument::s_richtextContentWidth));
-                        } else if (type == TypeHtml) {
-                            writer.writeAttribute("style", "max-width: 100%");
-                        }
+                    // Set the width. We always override what's coming from Evernote and adjust it to our view.
+                    // We don't even need to take care about what sizes we write back to Evernote as other
+                    // Evernote clients ignore and override/change that too.
+                    if (type == TypeRichText) {
+                        //get the size of the original image
+                        QImage image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(hash)->data());
+                        int originalWidthInGus = image.width() * gu(1) / 8;
+                        int imageWidth = m_renderWidth >= 0 && originalWidthInGus > m_renderWidth ? m_renderWidth : originalWidthInGus;
+                        writer.writeAttribute("width", QString::number(imageWidth));
+                    } else if (type == TypeHtml) {
+                        writer.writeAttribute("style", "max-width: 100%");
                     }
                 } else if (mediaType.startsWith("audio")) {
                     if (type == TypeRichText) {
@@ -451,6 +451,16 @@ void EnmlDocument::markTodo(const QString &todoId, bool checked)
         }
     }
     m_enml = output;
+}
+
+int EnmlDocument::renderWidth() const
+{
+    return m_renderWidth;
+}
+
+void EnmlDocument::setRenderWidth(int renderWidth)
+{
+    m_renderWidth = renderWidth;
 }
 
 void EnmlDocument::attachFile(int position, const QString &hash, const QString &type)

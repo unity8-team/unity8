@@ -43,6 +43,9 @@ public:
 
     void markTodo(const QString &todoId, bool checked);
 
+    int renderWidth() const;
+    void setRenderWidth(int renderWidth);
+
 private:
     enum Type {
         TypeRichText,
@@ -57,10 +60,10 @@ private:
 
 private:
     QString m_enml;
+    int m_renderWidth;
 
     static QStringList s_commonTags;
     static QStringList s_argumentBlackListTags;
-    static int s_richtextContentWidth;
 };
 
 #endif // ENMLDOCUMENT_H

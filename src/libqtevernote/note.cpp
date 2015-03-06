@@ -577,6 +577,19 @@ void Note::removeTag(const QString &tagGuid)
     NotesStore::instance()->untagNote(m_guid, tagGuid);
 }
 
+int Note::renderWidth() const
+{
+    return m_content.renderWidth();
+}
+
+void Note::setRenderWidth(int renderWidth)
+{
+    if (m_content.renderWidth() != renderWidth) {
+        m_content.setRenderWidth(renderWidth);
+        emit contentChanged();
+    }
+}
+
 Note *Note::clone()
 {
     Note *note = new Note(m_guid, m_updateSequenceNumber);
