@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     s_loggingFilters.insert("Warnings", true);
     s_loggingFilters.insert("Application", true);
     s_loggingFilters.insert("NotesStore", true);
-    s_loggingFilters.insert("JobQueue", true);
+    s_loggingFilters.insert("JobQueue", false);
     s_loggingFilters.insert("Sync", true);
     s_loggingFilters.insert("Connection", true);
     s_loggingFilters.insert("Enml", false);
