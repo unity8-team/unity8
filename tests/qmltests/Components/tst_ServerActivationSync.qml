@@ -31,7 +31,7 @@ Item {
         property bool checked: false
         property bool inSync: checked === switchControl.checked
 
-        property Timer switchTimer: Timer {
+        property Timer timer: Timer {
             interval: 1000
             onTriggered: switchBackend.checked = !switchBackend.checked
         }
@@ -43,7 +43,7 @@ Item {
         property bool checked: false
         property bool inSync: checked === checkControl.checked
 
-        property Timer checkTimer: Timer {
+        property Timer timer: Timer {
             interval: 1000
             onTriggered: checkBackend.checked = !checkBackend.checked
         }
@@ -54,13 +54,13 @@ Item {
 
         property real value: 50
         property bool inSync: value === slider.value
+        property var changeToValue: undefined
 
-        property Timer sliderTimer: Timer {
+        property Timer timer: Timer {
             interval: 1000
 
-            property var changeToValue: undefined
             onTriggered: {
-                sliderBackend.value = changeToValue;
+                sliderBackend.value = sliderBackend.changeToValue;
             }
         }
     }
@@ -90,7 +90,7 @@ Item {
                     serverTarget: switchBackend
                     serverProperty: "checked"
 
-                    onActivated: switchBackend.switchTimer.start()
+                    onActivated: switchBackend.timer.start()
 
                     onSyncWaitingChanged: switchSyncSpy.clear()
                 }
@@ -123,7 +123,7 @@ Item {
                     serverTarget: checkBackend
                     serverProperty: "checked"
 
-                    onActivated: checkBackend.checkTimer.start()
+                    onActivated: checkBackend.timer.start()
 
                     onSyncWaitingChanged: checkSyncSpy.clear()
                 }
@@ -159,8 +159,8 @@ Item {
                     serverProperty: "value"
 
                     onActivated: {
-                        sliderBackend.sliderTimer.changeToValue = value;
-                        sliderBackend.sliderTimer.start();
+                        sliderBackend.changeToValue = value;
+                        sliderBackend.timer.start();
                     }
 
                     onSyncWaitingChanged: sliderSyncSpy.clear()
@@ -213,9 +213,9 @@ Item {
         when: windowShown
 
         function init() {
-            switchBackend.switchTimer.interval = 100;
-            checkBackend.checkTimer.interval = 100;
-            sliderBackend.sliderTimer.interval = 100;
+            switchBackend.timer.interval = 100;
+            checkBackend.timer.interval = 100;
+            sliderBackend.timer.interval = 100;
 
             switchSync.syncTimeout = 200;
             checkSync.syncTimeout = 200;
@@ -224,6 +224,10 @@ Item {
         }
 
         function cleanup() {
+            switchBackend.timer.stop();
+            checkBackend.timer.stop();
+            sliderBackend.timer.stop();
+
             switchBackend.checked = false;
             checkBackend.checked = false;
             sliderBackend.value = 50;
@@ -279,6 +283,13 @@ Item {
             compare(switchControl.checked, true, "Switch should have been toggled");
             switchBackend2.checked2 = false;
             compare(switchControl.checked, false, "Switch should have been toggled");
+        }
+
+        function test_client_revert() {
+            switchBackend.timer.interval = 500;
+            switchControl.clicked();
+            compare(switchControl.checked, true);
+            tryCompare(switchControl, "checked", false);
         }
     }
 }
