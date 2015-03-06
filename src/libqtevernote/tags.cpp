@@ -21,8 +21,6 @@
 #include "tags.h"
 #include "tag.h"
 
-#include <QDebug>
-
 Tags::Tags(QObject *parent) :
     QAbstractListModel(parent)
 {

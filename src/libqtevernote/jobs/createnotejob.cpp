@@ -20,8 +20,6 @@
 
 #include "createnotejob.h"
 
-#include <QDebug>
-
 CreateNoteJob::CreateNoteJob(Note *note, QObject *parent) :
     NotesStoreJob(parent)
 {

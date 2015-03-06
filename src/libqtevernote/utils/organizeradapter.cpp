@@ -2,7 +2,6 @@
 #include "notesstore.h"
 #include "logging.h"
 
-#include <QDebug>
 #include <QOrganizerItemVisualReminder>
 #include <QOrganizerItemAudibleReminder>
 #include <QOrganizerItemSaveRequest>

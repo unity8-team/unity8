@@ -24,7 +24,6 @@
 
 #include <QFile>
 #include <QStandardPaths>
-#include <QDebug>
 #include <QCryptographicHash>
 #include <QFileInfo>
 #include <QDir>

@@ -29,7 +29,6 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QStandardPaths>
-#include <QDebug>
 #include <QCryptographicHash>
 #include <QFile>
 

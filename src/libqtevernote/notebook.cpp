@@ -24,7 +24,7 @@
 
 #include <libintl.h>
 
-#include <QDebug>
+#include <QLocale>
 #include <QStandardPaths>
 
 Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) :

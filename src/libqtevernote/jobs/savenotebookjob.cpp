@@ -21,8 +21,6 @@
 #include "savenotebookjob.h"
 #include "notebook.h"
 
-#include <QDebug>
-
 SaveNotebookJob::SaveNotebookJob(Notebook *notebook, QObject *parent) :
     NotesStoreJob(parent)
 {

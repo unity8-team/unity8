@@ -20,8 +20,6 @@
 
 #include "fetchtagsjob.h"
 
-#include <QDebug>
-
 FetchTagsJob::FetchTagsJob(QObject *parent) :
     NotesStoreJob(parent)
 {

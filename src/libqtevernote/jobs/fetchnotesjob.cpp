@@ -25,8 +25,6 @@
 // evernote sdk
 #include "Limits_constants.h"
 
-#include <QDebug>
-
 FetchNotesJob::FetchNotesJob(const QString &filterNotebookGuid, const QString &searchWords, int startIndex, int chunkSize, QObject *parent) :
     NotesStoreJob(parent),
     m_filterNotebookGuid(filterNotebookGuid),

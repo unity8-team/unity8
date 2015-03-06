@@ -37,7 +37,6 @@
 #include <UserStore_constants.h>
 #include <Errors_types.h>
 
-#include <QDebug>
 #include <QUrl>
 
 #include <libintl.h>

@@ -29,7 +29,6 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QStandardPaths>
-#include <QDebug>
 
 // ENML spec: http://xml.evernote.com/pub/enml2.dtd
 // QML supported HTML subset: http://qt-project.org/doc/qt-5.0/qtgui/richtext-html-subset.html

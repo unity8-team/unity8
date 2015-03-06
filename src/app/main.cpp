@@ -29,7 +29,6 @@
 #include <QLibrary>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
-#include <QDebug>
 #include <QLoggingCategory>
 
 QHash<QString, bool> s_loggingFilters;

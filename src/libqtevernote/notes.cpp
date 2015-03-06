@@ -21,8 +21,6 @@
 #include "notes.h"
 #include "note.h"
 
-#include <QDebug>
-
 Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false),

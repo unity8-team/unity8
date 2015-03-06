@@ -5,7 +5,6 @@
 #include <note.h>
 
 #include <QUrlQuery>
-#include <QDebug>
 
 ResourceImageProvider::ResourceImageProvider():
     QQuickImageProvider(QQuickImageProvider::Image)

@@ -45,7 +45,6 @@
 #include "libintl.h"
 
 #include <QImage>
-#include <QDebug>
 #include <QStandardPaths>
 #include <QUuid>
 #include <QPointer>
