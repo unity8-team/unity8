@@ -674,9 +674,9 @@ void Note::loadFromCacheFile() const
         m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()).trimmed());
         m_tagline = m_content.toPlaintext().left(100);
         m_cacheFile.close();
-        qCDebug(dcNotesStore) << "Loaded note from storage:" << m_guid;
+        qCDebug(dcNotesStore) << "Loaded note content from disk:" << m_guid;
     } else {
-        qCDebug(dcNotesStore) << "Failed attempt to load note from storage:" << m_guid;
+        qCDebug(dcNotesStore) << "Failed attempt to load note content from disk:" << m_guid;
     }
     m_loaded = true;
 }

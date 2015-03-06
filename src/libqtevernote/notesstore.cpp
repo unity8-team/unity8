@@ -721,7 +721,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
         qCDebug(dcSync) << "Not all notes fetched yet. Fetching next batch.";
         refreshNotes(filterNotebookGuid, results.startIndex + results.notes.size());
     } else {
-        qCDebug(dcSync) << "Fetched all notes. Starting merge...";
+        qCDebug(dcSync) << "Fetched all notes from Evernote. Starting merge of local changes...";
         m_organizerAdapter->startSync();
         m_loading = false;
         emit loadingChanged();
@@ -786,6 +786,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
                 }
             }
         }
+        qCDebug(dcSync) << "Local changes merged.";
     }
 }
 
@@ -964,7 +965,7 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
 
     QList<Notebook*> unhandledNotebooks = m_notebooks;
 
-    qCDebug(dcSync) << "Have" << results.size() << "notebooks from Evernote.";
+    qCDebug(dcSync) << "Received" << results.size() << "notebooks from Evernote.";
     for (unsigned int i = 0; i < results.size(); ++i) {
         evernote::edam::Notebook result = results.at(i);
         Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
@@ -984,8 +985,6 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
                 updateFromEDAM(result, notebook);
                 emit notebookChanged(notebook->guid());
                 syncToCacheFile(notebook);
-            } else {
-                qCDebug(dcSync) << "Notebook is in sync:" << notebook->guid();
             }
         } else {
             // Local notebook changed. See if we can push our changes
@@ -1514,6 +1513,7 @@ void NotesStore::loadFromCacheFile()
         }
     }
     cacheFile.endGroup();
+    qCDebug(dcNotesStore) << "Loaded" << m_notebooks.count() << "notebooks from disk.";
 
     cacheFile.beginGroup("tags");
     if (cacheFile.allKeys().count() > 0) {
@@ -1525,6 +1525,7 @@ void NotesStore::loadFromCacheFile()
         }
     }
     cacheFile.endGroup();
+    qCDebug(dcNotesStore) << "Loaded" << m_tags.count() << "tags from disk.";
 
     cacheFile.beginGroup("notes");
     if (cacheFile.allKeys().count() > 0) {
@@ -1542,6 +1543,7 @@ void NotesStore::loadFromCacheFile()
         endInsertRows();
     }
     cacheFile.endGroup();
+    qCDebug(dcNotesStore) << "Loaded" << m_notes.count() << "notes from disk.";
 }
 
 QVector<int> NotesStore::updateFromEDAM(const evernote::edam::NoteMetadata &evNote, Note *note)
