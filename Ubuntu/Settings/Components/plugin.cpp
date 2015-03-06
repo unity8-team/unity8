@@ -16,12 +16,12 @@
 
 // local
 #include "plugin.h"
-#include "signalbinder.h"
+#include "serveractivationsync.h"
 
 // Qt
 #include <QtQml/qqml.h>
 
 void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<SignalBinder>(uri, 0, 1, "SignalBinder");
+    qmlRegisterType<ServerActivationSync>(uri, 0, 1, "ServerActivationSync");
 }

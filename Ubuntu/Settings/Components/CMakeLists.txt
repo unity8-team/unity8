@@ -9,7 +9,7 @@ include_directories(
 
 set(UbuntuSettingsMenusQml_SOURCES
     plugin.cpp
-    signalbinder.cpp
+    serveractivationsync.cpp
 )
 add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
 
