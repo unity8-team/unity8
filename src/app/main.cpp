@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     cmdLineParser.addOption(phoneFactorOption);
     QCommandLineOption tabletFactorOption(QStringList() << "t" << "tablet", "If running on Desktop, start in a tablet sized window.");
     cmdLineParser.addOption(tabletFactorOption);
-    QCommandLineOption importPathOption("I", "Give a path for an additional QML import directory. May be used multiple times.", "paths");
+    QCommandLineOption importPathOption("I", "Give a path for an additional QML import directory. May be used multiple times.", "path");
     cmdLineParser.addOption(importPathOption);
     QCommandLineOption sandboxOption(QStringList() << "s" << "sandbox", "Use sandbox.evernote.com instead of www.evernote.com.");
     cmdLineParser.addOption(sandboxOption);
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     foreach (const QString &filterName, s_loggingFilters.keys()) {
         debugDescription += "\n" + filterName + " (" + (s_loggingFilters.value(filterName) ? "yes" : "no") + ")";
     }
-    QCommandLineOption debugOption(QStringList() << "d" << "debug", debugDescription, "debugAreas");
+    QCommandLineOption debugOption(QStringList() << "d" << "debug", debugDescription, "[No]DebugCategory");
     cmdLineParser.addOption(debugOption);
     QCommandLineOption testabilityOption("testability", "Load the testability driver.");
     cmdLineParser.addOption(testabilityOption);
