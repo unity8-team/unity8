@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-11 00:31+0100\n"
-"PO-Revision-Date: 2014-11-13 09:05+0000\n"
+"PO-Revision-Date: 2015-03-05 08:34+0000\n"
 "Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-12-04 06:36+0000\n"
-"X-Generator: Launchpad (build 17274)\n"
+"X-Launchpad-Export-Date: 2015-03-06 06:05+0000\n"
+"X-Generator: Launchpad (build 17374)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
@@ -23,7 +23,7 @@ msgstr "Emlékeztetők"
 
 #: com.ubuntu.reminders.desktop.in.in.h:2
 msgid "Ubuntu Reminders app, powered by Evernote"
-msgstr "Ubuntu emlékeztetőalkalmazás az Evernote alapján"
+msgstr "Ubuntu emlékeztetőalkalmazás, melynek az Evernote az alapja"
 
 #: src/app/qml/components/NotebooksDelegate.qml:98
 #, qt-format
@@ -186,7 +186,7 @@ msgstr "Fiókok"
 
 #: src/app/qml/ui/NotebooksPage.qml:175 src/app/qml/ui/TagsPage.qml:192
 msgid "Cancel"
-msgstr "Mégsem"
+msgstr "Mégse"
 
 #: src/app/qml/ui/NotebooksPage.qml:184 src/app/qml/ui/TagsPage.qml:201
 msgid "Save"
