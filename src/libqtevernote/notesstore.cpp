@@ -797,6 +797,11 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         qCWarning(dcSync) << "RefreshNoteContent: Can't refresn note content. Note guid not found:" << guid;
         return;
     }
+    qCDebug(dcSync) << "should start another one?" << note->loading() << note->m_loadingHighPriority;
+    if (note->loading() && (priority != EvernoteJob::JobPriorityHigh || note->m_loadingHighPriority)) {
+        qCDebug(dcSync) << "Load already loading with high priorty. Not starting again";
+        return;
+    }
     if (EvernoteConnection::instance()->isConnected()) {
         qCDebug(dcNotesStore) << "Fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
         FetchNoteJob *job = new FetchNoteJob(guid, what, this);
@@ -821,13 +826,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     QVector<int> roles;
 
-    note->setLoading(false);
-    roles << RoleLoading;
-
     switch (errorCode) {
     case EvernoteConnection::ErrorCodeNoError:
         // All is well
-        emit dataChanged(noteIndex, noteIndex, roles);
         break;
     case EvernoteConnection::ErrorCodeUserException:
         qCWarning(dcSync) << "FetchNoteJobDone: EDAMUserException:" << errorMessage;
@@ -915,6 +916,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         note->setReminderDoneTime(reminderDoneTime);
         roles << RoleReminderDone << RoleReminderDoneTime;
     }
+
+    note->setLoading(false);
+    roles << RoleLoading;
+
     emit noteChanged(note->guid(), note->notebookGuid());
 
     emit dataChanged(noteIndex, noteIndex, roles);

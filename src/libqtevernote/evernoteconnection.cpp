@@ -346,17 +346,27 @@ bool EvernoteConnection::connectNotesStore()
     return false;
 }
 
-EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
+void EvernoteConnection::attachDuplicate(EvernoteJob *original, EvernoteJob *duplicate)
+{
+    if (duplicate->originatingObject() && duplicate->originatingObject() != original->originatingObject()) {
+        duplicate->attachToDuplicate(m_currentJob);
+    }
+    connect(original, &EvernoteJob::finished, duplicate, &EvernoteJob::deleteLater);
+}
+
+EvernoteJob* EvernoteConnection::findExistingDuplicate(EvernoteJob *job)
 {
     foreach (EvernoteJob *queuedJob, m_highPriorityJobQueue) {
         // explicitly use custom operator==()
         if (job->operator ==(queuedJob)) {
+            qCDebug(dcJobQueue) << "Found duplicate in high priority queue";
             return queuedJob;
         }
     }
     foreach (EvernoteJob *queuedJob, m_lowPriorityJobQueue) {
         // explicitly use custom operator==()
         if (job->operator ==(queuedJob)) {
+            qCDebug(dcJobQueue) << "Found duplicate in low priority queue";
             return queuedJob;
         }
     }
@@ -371,19 +381,27 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
         job->deleteLater();
         return;
     }
-    EvernoteJob *duplicate = findDuplicate(job);
-    if (duplicate) {
-        job->attachToDuplicate(duplicate);
-        connect(duplicate, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
-        // reprioritze the repeated request
+    if (m_currentJob && m_currentJob->operator ==(job)) {
+        qCDebug(dcJobQueue) << "Duplicate of new job request already running:" << job->toString();
+        if (m_currentJob->isFinished()) {
+            job->deleteLater();
+        } else {
+            attachDuplicate(m_currentJob, job);
+        }
+        return;
+    }
+    EvernoteJob *existingJob = findExistingDuplicate(job);
+    if (existingJob) {
         qCDebug(dcJobQueue) << "Duplicate job already queued:" << job->toString();
+        attachDuplicate(existingJob, job);
+        // reprioritze the repeated request
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
             qCDebug(dcJobQueue) << "Reprioritising duplicate job:" << job->toString();
-            duplicate->setJobPriority(job->jobPriority());
-            if (m_highPriorityJobQueue.contains(job)) {
-                m_highPriorityJobQueue.prepend(m_highPriorityJobQueue.takeAt(m_highPriorityJobQueue.indexOf(duplicate)));
+            existingJob->setJobPriority(job->jobPriority());
+            if (m_highPriorityJobQueue.contains(existingJob)) {
+                m_highPriorityJobQueue.prepend(m_highPriorityJobQueue.takeAt(m_highPriorityJobQueue.indexOf(existingJob)));
             } else {
-                m_highPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(duplicate)));
+                m_highPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(existingJob)));
             }
         }
     } else {

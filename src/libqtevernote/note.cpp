@@ -243,7 +243,7 @@ void Note::setTagGuids(const QStringList &tagGuids)
 
 QString Note::enmlContent() const
 {
-    load();
+    load(true);
     return m_content.enml();
 }
 
@@ -263,13 +263,13 @@ void Note::setEnmlContent(const QString &enmlContent)
 
 QString Note::htmlContent() const
 {
-    load();
+    load(true);
     return m_content.toHtml(m_guid);
 }
 
 QString Note::richTextContent() const
 {
-    load();
+    load(true);
     return m_content.toRichText(m_guid);
 }
 
@@ -612,12 +612,14 @@ void Note::setLoading(bool loading, bool highPriority)
     if (m_loading != loading) {
         m_loading = loading;
         emit loadingChanged();
+    }
 
-        if (!m_loading) {
-            m_loadingHighPriority = false;
-        } else {
-            m_loadingHighPriority = highPriority;
+    if (m_loading) {
+        if (!m_loadingHighPriority && highPriority) {
+            m_loadingHighPriority = true;
         }
+    } else {
+        m_loadingHighPriority = false;
     }
 }
 

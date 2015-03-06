@@ -73,6 +73,18 @@ public:
     QString token() const;
     void setToken(const QString &token);
 
+    // This will add the job to the job queue. The job queue will take ownership of the object
+    // and manage it's lifetime.
+    // * If there is an identical job already existing in the queue, the duplicate will be
+    //   attached to original job and not actually fetched a second time from the network in
+    //   order to reduce network traffic.
+    // * If the new job has a higher priority than the existing one, the existing one will
+    //   reprioritized to the higher priorty.
+    // * If the jobs have different originatingObjects, each job will emit the jobDone signal,
+    //   if instead the originatingObject is the same in both jobs, only one of them will emit
+    //   a jobDone signal. This is useful if you want to reschedule a job with higher priority
+    //   without having to track previously queued jobs and avoid invoking the connected slot
+    //   multiple times.
     void enqueue(EvernoteJob *job);
 
     bool isConnected() const;
@@ -104,7 +116,10 @@ private:
     bool connectUserStore();
     bool connectNotesStore();
 
-    EvernoteJob* findDuplicate(EvernoteJob *job);
+    EvernoteJob* findExistingDuplicate(EvernoteJob *job);
+
+    // "duplicate" will be attached to "original"
+    void attachDuplicate(EvernoteJob *original, EvernoteJob *duplicate);
 
     bool m_useSSL;
     bool m_isConnected;
