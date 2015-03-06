@@ -21,6 +21,7 @@
 #include "enmldocument.h"
 #include "notesstore.h"
 #include "note.h"
+#include "logging.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -28,7 +29,6 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QStandardPaths>
-#include <QDebug>
 
 // ENML spec: http://xml.evernote.com/pub/enml2.dtd
 // QML supported HTML subset: http://qt-project.org/doc/qt-5.0/qtgui/richtext-html-subset.html
@@ -203,7 +203,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
                         }
                     }
                 } else {
-                    qDebug() << "unknown mediatype" << mediaType;
+                    qCWarning(dcEnml) << "Unknown mediatype" << mediaType;
                     if (type == TypeRichText) {
                         writer.writeAttribute("src", composeMediaTypeUrl(mediaType, noteGuid, hash));
                     } else if (type == TypeHtml) {
@@ -276,7 +276,7 @@ QString EnmlDocument::convert(const QString &noteGuid, EnmlDocument::Type type) 
 
     writer.writeEndElement();
     writer.writeEndDocument();
-    qDebug() << "converted to html" << html;
+    qCDebug(dcEnml) << QString("Converted to %1:").arg(type == TypeHtml ? "HTML" : "RichText") << html;
     return html;
 }
 

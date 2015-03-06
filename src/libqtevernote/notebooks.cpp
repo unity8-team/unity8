@@ -21,8 +21,6 @@
 #include "notebooks.h"
 #include "notebook.h"
 
-#include <QDebug>
-
 Notebooks::Notebooks(QObject *parent) :
     QAbstractListModel(parent)
 {

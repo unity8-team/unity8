@@ -24,7 +24,7 @@
 
 #include <libintl.h>
 
-#include <QDebug>
+#include <QLocale>
 #include <QStandardPaths>
 
 Notebook::Notebook(QString guid, quint32 updateSequenceNumber, QObject *parent) :
@@ -191,7 +191,6 @@ void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
         }
     } else {
         if (!m_notesList.contains(noteGuid)) {
-            qDebug() << "****** appending to notebook";
             m_notesList.append(noteGuid);
             emit noteCountChanged();
         }
@@ -258,12 +257,12 @@ bool Notebook::syncError() const
     return m_syncError;
 }
 
-quint32 Notebook::updateSequenceNumber() const
+qint32 Notebook::updateSequenceNumber() const
 {
     return m_updateSequenceNumber;
 }
 
-void Notebook::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+void Notebook::setUpdateSequenceNumber(qint32 updateSequenceNumber)
 {
     if (m_updateSequenceNumber != updateSequenceNumber) {
         m_updateSequenceNumber = updateSequenceNumber;
@@ -273,12 +272,12 @@ void Notebook::setUpdateSequenceNumber(quint32 updateSequenceNumber)
     }
 }
 
-quint32 Notebook::lastSyncedSequenceNumber() const
+qint32 Notebook::lastSyncedSequenceNumber() const
 {
     return m_lastSyncedSequenceNumber;
 }
 
-void Notebook::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+void Notebook::setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber)
 {
     if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
         m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;

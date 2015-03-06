@@ -26,7 +26,6 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QObject>
-#include <QDebug>
 #include <QList>
 #include <QColor>
 

@@ -21,6 +21,7 @@
 #include "userstore.h"
 #include "evernoteconnection.h"
 #include "jobs/fetchusernamejob.h"
+#include "logging.h"
 
 // Evernote sdk
 #include <UserStore.h>
@@ -33,8 +34,6 @@
 #include <transport/THttpClient.h>
 #include <transport/TSSLSocket.h>
 #include <Thrift.h>
-
-#include <QDebug>
 
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
@@ -78,7 +77,7 @@ void UserStore::fetchUsername()
 void UserStore::fetchUsernameJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &result)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error fetching username:" << errorMessage;
+        qCWarning(dcConnection) << "Error fetching username:" << errorMessage;
         return;
     }
 

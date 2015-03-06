@@ -248,7 +248,11 @@ class PosixThreadFactory::Impl {
    * then pro-rate accordingly.
    */
   static int toPthreadPriority(POLICY policy, PRIORITY priority) {
+#if defined HAVE_SCHED_GET_PRIORITY_MIN || defined HAVE_SCHED_GET_PRIORITY_MAX
     int pthread_policy = toPthreadPolicy(policy);
+#else
+    (void) policy;
+#endif
     int min_priority = 0;
     int max_priority = 0;
 #ifdef HAVE_SCHED_GET_PRIORITY_MIN

@@ -23,7 +23,6 @@
 
 #include "utils/enmldocument.h"
 #include "resource.h"
-#include "utils/textformat.h"
 
 #include <QObject>
 #include <QDateTime>
@@ -138,8 +137,8 @@ public:
     bool isSearchResult() const;
     void setIsSearchResult(bool isSearchResult);
 
-    quint32 updateSequenceNumber() const;
-    quint32 lastSyncedSequenceNumber() const;
+    qint32 updateSequenceNumber() const;
+    qint32 lastSyncedSequenceNumber() const;
 
     bool isCached() const;
     bool loaded() const;
@@ -156,7 +155,6 @@ public:
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
-    Q_INVOKABLE void format(int startPos, int endPos, TextFormat::Format format);
     Q_INVOKABLE void addTag(const QString &tagGuid);
     Q_INVOKABLE void removeTag(const QString &tagGuid);
 
@@ -198,8 +196,8 @@ private:
     void syncToCacheFile();
     void syncToInfoFile();
     void deleteFromCache();
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
-    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setUpdateSequenceNumber(qint32 updateSequenceNumber);
+    void setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber);
     void setConflicting(bool conflicting);
 
     // const because we want to load on demand in getters. Keep this private!
@@ -221,8 +219,8 @@ private:
     bool m_deleted;
     bool m_isSearchResult;
     QHash<QString, Resource*> m_resources;
-    quint32 m_updateSequenceNumber;
-    quint32 m_lastSyncedSequenceNumber;
+    qint32 m_updateSequenceNumber;
+    qint32 m_lastSyncedSequenceNumber;
     mutable QFile m_cacheFile;
     QString m_infoFile;
 

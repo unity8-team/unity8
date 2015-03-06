@@ -20,8 +20,6 @@
 
 #include "createnotejob.h"
 
-#include <QDebug>
-
 CreateNoteJob::CreateNoteJob(Note *note, QObject *parent) :
     NotesStoreJob(parent)
 {
@@ -46,7 +44,6 @@ void CreateNoteJob::attachToDuplicate(const EvernoteJob *other)
 
 void CreateNoteJob::startJob()
 {
-    qDebug() << "creating note:" << m_note->guid() << m_note->enmlContent() << m_note->notebookGuid() << m_note->title();
     evernote::edam::Note input;
     input.updateSequenceNum = m_note->updateSequenceNumber();
     input.__isset.updateSequenceNum = true;

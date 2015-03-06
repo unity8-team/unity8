@@ -23,7 +23,6 @@
 
 #include "utils/enmldocument.h"
 #include "resource.h"
-#include "utils/textformat.h"
 
 #include <QObject>
 #include <QDateTime>
@@ -52,10 +51,10 @@ public:
     QString guid() const;
     void setGuid(const QString &guid);
 
-    quint32 updateSequenceNumber() const;
-    void setUpdateSequenceNumber(quint32 updateSequenceNumber);
+    qint32 updateSequenceNumber() const;
+    void setUpdateSequenceNumber(qint32 updateSequenceNumber);
 
-    quint32 lastSyncedSequenceNumber() const;
+    qint32 lastSyncedSequenceNumber() const;
 
     QString name() const;
     void setName(const QString &guid);
@@ -86,13 +85,13 @@ private slots:
 private:
     void syncToInfoFile();
     void deleteInfoFile();
-    void setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber);
+    void setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber);
     void setLoading(bool loading);
     void setSyncError(bool syncError);
 
 private:
-    quint32 m_updateSequenceNumber;
-    quint32 m_lastSyncedSequenceNumber;
+    qint32 m_updateSequenceNumber;
+    qint32 m_lastSyncedSequenceNumber;
     QString m_guid;
     QString m_name;
 

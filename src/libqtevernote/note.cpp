@@ -21,6 +21,7 @@
 #include "note.h"
 
 #include "notesstore.h"
+#include "logging.h"
 
 #include <libintl.h>
 
@@ -28,21 +29,20 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QStandardPaths>
-#include <QDebug>
 #include <QCryptographicHash>
 #include <QFile>
 
 Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     QObject(parent),
-    m_isSearchResult(false),
     m_deleted(false),
+    m_isSearchResult(false),
     m_updateSequenceNumber(updateSequenceNumber),
     m_loading(false),
     m_loadingHighPriority(false),
     m_loaded(false),
+    m_needsContentSync(false),
     m_syncError(false),
-    m_conflicting(false),
-    m_needsContentSync(false)
+    m_conflicting(false)
 {
     setGuid(guid);
     m_cacheFile.setFileName(NotesStore::instance()->storageLocation() + "note-" + guid + ".enml");
@@ -71,15 +71,13 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
             infoFile.endGroup();
         } else {
             // uh oh... have a resource description without file... reset sequence number to indicate we need a sync
-            qWarning() << "Have a resource description but no resource file for it";
+            qCWarning(dcNotesStore) << "Have a resource description but no resource file for it";
         }
     }
     infoFile.endGroup();
 
     connect(NotesStore::instance(), &NotesStore::notebookGuidChanged, this, &Note::slotNotebookGuidChanged);
     connect(NotesStore::instance(), &NotesStore::tagGuidChanged, this, &Note::slotTagGuidChanged);
-
-    qDebug() << "Note created:" << m_guid << m_title << m_tagline << m_content.enml();
 }
 
 Note::~Note()
@@ -122,7 +120,6 @@ void Note::setGuid(const QString &guid)
         m_guid = guid;
         QString newCacheFileName = NotesStore::instance()->storageLocation() + "note-" + guid + ".enml";
         if (m_cacheFile.exists()) {
-            qDebug() << "renaming cachefile from" << m_cacheFile.fileName() << "to" << newCacheFileName;
             m_cacheFile.rename(newCacheFileName);
         } else {
             m_cacheFile.setFileName(newCacheFileName);
@@ -266,9 +263,7 @@ void Note::setEnmlContent(const QString &enmlContent)
 
 QString Note::htmlContent() const
 {
-    qDebug() << "html content asked;";
     load();
-    qDebug() << "returning" << m_content.toHtml(m_guid);
     return m_content.toHtml(m_guid);
 }
 
@@ -430,9 +425,7 @@ bool Note::deleted() const
 
 void Note::setDeleted(bool deleted)
 {
-    qDebug() << "note" << this << "isDelted:" << m_deleted << "setting to" << deleted;
     if (m_deleted != deleted) {
-        qDebug() << "setting m_deleted to to" << deleted;
         m_deleted = deleted;
         emit deletedChanged();
     }
@@ -451,12 +444,12 @@ void Note::setIsSearchResult(bool isSearchResult)
     }
 }
 
-quint32 Note::updateSequenceNumber() const
+qint32 Note::updateSequenceNumber() const
 {
     return m_updateSequenceNumber;
 }
 
-void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
+void Note::setUpdateSequenceNumber(qint32 updateSequenceNumber)
 {
     if (m_updateSequenceNumber != updateSequenceNumber) {
         m_updateSequenceNumber = updateSequenceNumber;
@@ -469,12 +462,12 @@ void Note::setUpdateSequenceNumber(quint32 updateSequenceNumber)
     }
 }
 
-quint32 Note::lastSyncedSequenceNumber() const
+qint32 Note::lastSyncedSequenceNumber() const
 {
     return m_lastSyncedSequenceNumber;
 }
 
-void Note::setLastSyncedSequenceNumber(quint32 lastSyncedSequenceNumber)
+void Note::setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber)
 {
     if (m_lastSyncedSequenceNumber != lastSyncedSequenceNumber) {
         m_lastSyncedSequenceNumber = lastSyncedSequenceNumber;
@@ -518,7 +511,6 @@ Resource* Note::addResource(const QByteArray &data, const QString &hash, const Q
         return m_resources.value(hash);
     }
 
-    qDebug() << "adding resource" << fileName << type;
     Resource *resource = new Resource(data, hash, fileName, type, this);
     m_resources.insert(hash, resource);
     emit resourcesChanged();
@@ -544,7 +536,7 @@ void Note::attachFile(int position, const QUrl &fileName)
 {
     QFile importedFile(fileName.path());
     if (!importedFile.exists()) {
-        qWarning() << "File doesn't exist. Cannot attach.";
+        qCWarning(dcNotesStore) << "File doesn't exist. Cannot attach.";
         return;
     }
 
@@ -560,11 +552,6 @@ void Note::attachFile(int position, const QUrl &fileName)
     importedFile.remove();
 
     m_needsContentSync = true;
-}
-
-void Note::format(int startPos, int endPos, TextFormat::Format format)
-{
-    qDebug() << "Should format from" << startPos << "to" << endPos << "with format:" << format;
 }
 
 void Note::addTag(const QString &tagGuid)
@@ -687,9 +674,9 @@ void Note::loadFromCacheFile() const
         m_content.setEnml(QString::fromUtf8(m_cacheFile.readAll()).trimmed());
         m_tagline = m_content.toPlaintext().left(100);
         m_cacheFile.close();
-        qDebug() << "[Storage] Loaded note from storage:" << m_guid;
+        qCDebug(dcNotesStore) << "Loaded note content from disk:" << m_guid;
     } else {
-        qDebug() << "[Storage] Failed attempt to load note from storage:" << m_guid;
+        qCDebug(dcNotesStore) << "Failed attempt to load note content from disk:" << m_guid;
     }
     m_loaded = true;
 }

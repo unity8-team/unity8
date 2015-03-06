@@ -1,7 +1,7 @@
 #include "organizeradapter.h"
 #include "notesstore.h"
+#include "logging.h"
 
-#include <QDebug>
 #include <QOrganizerItemVisualReminder>
 #include <QOrganizerItemAudibleReminder>
 #include <QOrganizerItemSaveRequest>
@@ -47,12 +47,12 @@ OrganizerAdapter::OrganizerAdapter(QObject *parent):
         // EDS requires extra metadata to be set
         m_collection.setExtendedMetaData("collection-type", "Task List");
         if (!m_manager->saveCollection(&m_collection)) {
-            qWarning() << "WARNING: Creating dedicated collection for reminders was not possible, reminders will be saved into the default collection!";
+            qCWarning(dcOrganizer) << "WARNING: Creating dedicated collection for reminders was not possible, reminders will be saved into the default collection!";
             m_collection = m_manager->defaultCollection();
         }
     }
 
-    qDebug() << "have collection" << m_collection.id().toString();
+    qCDebug(dcOrganizer) << "Have Organizer collection" << m_collection.id().toString();
 }
 
 void OrganizerAdapter::startSync()
@@ -133,7 +133,7 @@ void OrganizerAdapter::fetchStateChanged(QOrganizerAbstractRequest::State state)
     }
 
     if (state == QOrganizerAbstractRequest::CanceledState) {
-        qWarning() << "Error syncing reminders. Could not read organizer items.";
+        qCWarning(dcOrganizer) << "Error syncing reminders. Could not read organizer items.";
         m_busy = false;
         request->deleteLater();
         return;
