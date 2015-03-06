@@ -1374,14 +1374,19 @@ void NotesStore::deleteNote(const QString &guid)
 
 void NotesStore::findNotes(const QString &searchWords)
 {
-    foreach (Note *note, m_notes) {
-        note->setIsSearchResult(false);
+    if (EvernoteConnection::instance()->isConnected()) {
+        clearSearchResults();
+        FetchNotesJob *job = new FetchNotesJob(QString(), searchWords + "*");
+        connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
+        EvernoteConnection::instance()->enqueue(job);
+    } else {
+        foreach (Note *note, m_notes) {
+            bool matches = note->title().contains(searchWords, Qt::CaseInsensitive);
+            matches |= note->plaintextContent().contains(searchWords, Qt::CaseInsensitive);
+            note->setIsSearchResult(matches);
+        }
+        emit dataChanged(index(0), index(m_notes.count()-1), QVector<int>() << RoleIsSearchResult);
     }
-    emit dataChanged(index(0), index(m_notes.count()), QVector<int>() << RoleIsSearchResult);
-
-    FetchNotesJob *job = new FetchNotesJob(QString(), searchWords);
-    connect(job, &FetchNotesJob::jobDone, this, &NotesStore::fetchNotesJobDone);
-    EvernoteConnection::instance()->enqueue(job);
 }
 
 void NotesStore::clearSearchResults()

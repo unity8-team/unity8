@@ -149,6 +149,7 @@ MainView {
         var page = component.createObject();
         pagestack.push(page)
         page.noteSelected.connect(function(note) {root.displayNote(note)})
+        page.editNote.connect(function(note) {root.switchToEditMode(note)})
     }
 
     function doLogin() {
@@ -502,6 +503,9 @@ MainView {
                         })
                         page.editNote.connect(function(note) {
                             root.switchToEditMode(note)
+                        })
+                        page.openSearch.connect(function() {
+                            root.openSearch();
                         })
                         NotesStore.refreshNotes();
                     }
