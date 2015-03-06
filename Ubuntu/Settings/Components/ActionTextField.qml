@@ -27,6 +27,7 @@ Item {
     property alias text: replyField.text
     property alias buttonText: sendButton.text
     property bool activateEnabled: false
+    property alias textHint: replyField.placeholderText
 
     signal activated(var value)
 
@@ -44,7 +45,6 @@ Item {
             id: replyField
             objectName: "replyText"
 
-            placeholderText: i18n.tr("Reply")
             hasClearButton: false
 
             Layout.fillWidth: true
@@ -62,10 +62,11 @@ Item {
             id: sendButton
             objectName: "sendButton"
             Layout.preferredWidth: units.gu(9)
-            enabled: replyField.text !== "" && textField.activateEnabled
+            enabled: (replyField.text !== "" || replyField.inputMethodComposing) && textField.activateEnabled
             color: UbuntuColors.green
 
             onClicked: {
+                Qt.inputMethod.commit();
                 textField.activated(replyField.text);
             }
         }
