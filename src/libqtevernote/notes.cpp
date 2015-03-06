@@ -28,7 +28,7 @@ Notes::Notes(QObject *parent) :
     m_onlyReminders(false),
     m_onlySearchResults(false),
     m_showDeleted(false),
-    m_sortOrder(SortOrderDateCreatedNewest)
+    m_sortOrder(SortOrderDateUpdatedNewest)
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);
     connect(NotesStore::instance(), &NotesStore::errorChanged, this, &Notes::errorChanged);
