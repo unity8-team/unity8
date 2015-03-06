@@ -21,6 +21,7 @@
 #include "userstore.h"
 #include "evernoteconnection.h"
 #include "jobs/fetchusernamejob.h"
+#include "logging.h"
 
 // Evernote sdk
 #include <UserStore.h>
@@ -78,7 +79,7 @@ void UserStore::fetchUsername()
 void UserStore::fetchUsernameJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &result)
 {
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qWarning() << "Error fetching username:" << errorMessage;
+        qCWarning(dcConnection) << "Error fetching username:" << errorMessage;
         return;
     }
 

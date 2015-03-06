@@ -191,7 +191,6 @@ void Notebook::noteChanged(const QString &noteGuid, const QString &notebookGuid)
         }
     } else {
         if (!m_notesList.contains(noteGuid)) {
-            qDebug() << "****** appending to notebook";
             m_notesList.append(noteGuid);
             emit noteCountChanged();
         }

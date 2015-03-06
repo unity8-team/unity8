@@ -30,12 +30,38 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <QDebug>
+#include <QLoggingCategory>
+
+QHash<QString, bool> s_loggingFilters;
+QLoggingCategory dcApplication("Application");
+
+void loggingCategoryFilter(QLoggingCategory *category)
+{
+    if (s_loggingFilters.contains(category->categoryName())) {
+        bool debugEnabled = s_loggingFilters.value(category->categoryName());
+        category->setEnabled(QtDebugMsg, debugEnabled);
+        category->setEnabled(QtWarningMsg, debugEnabled || s_loggingFilters.value("Warnings"));
+    } else {
+        category->setEnabled(QtDebugMsg, false);
+        category->setEnabled(QtWarningMsg, s_loggingFilters.value("qml") || s_loggingFilters.value("Warnings"));
+    }
+}
 
 int main(int argc, char *argv[])
 {
     QGuiApplication a(argc, argv);
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
+
+    s_loggingFilters.insert("Warnings", true);
+    s_loggingFilters.insert("Application", true);
+    s_loggingFilters.insert("NotesStore", true);
+    s_loggingFilters.insert("JobQueue", true);
+    s_loggingFilters.insert("Sync", true);
+    s_loggingFilters.insert("Connection", true);
+    s_loggingFilters.insert("Enml", false);
+    s_loggingFilters.insert("Organizer", false);
+    s_loggingFilters.insert("qml", true);
 
     // Set up import paths
     QStringList importPathList = view.engine()->importPathList();
@@ -54,12 +80,27 @@ int main(int argc, char *argv[])
     cmdLineParser.addOption(importPathOption);
     QCommandLineOption sandboxOption(QStringList() << "s" << "sandbox", "Use sandbox.evernote.com instead of www.evernote.com.");
     cmdLineParser.addOption(sandboxOption);
+    QString debugDescription = QString("Debug categories to enable. Prefix with \"No\" to disable. Warnings from all categories will be printed unless explicitly muted with \"NoWarnings\". May be used multiple times. Categories are:");
+    foreach (const QString &filterName, s_loggingFilters.keys()) {
+        debugDescription += "\n" + filterName + " (" + (s_loggingFilters.value(filterName) ? "yes" : "no") + ")";
+    }
+    QCommandLineOption debugOption(QStringList() << "d" << "debug", debugDescription, "debugAreas");
+    cmdLineParser.addOption(debugOption);
     QCommandLineOption testabilityOption("testability", "Load the testability driver.");
     cmdLineParser.addOption(testabilityOption);
     cmdLineParser.addPositionalArgument("uri", "Uri to start the application in a specific mode. E.g. evernote://newnote to directly create and edit a new note.");
     cmdLineParser.addHelpOption();
 
     cmdLineParser.process(a);
+
+    foreach (QString debugArea, cmdLineParser.values(debugOption)) {
+        bool enable = !debugArea.startsWith("No");
+        debugArea.remove(QRegExp("^No"));
+        if (s_loggingFilters.contains(debugArea)) {
+            s_loggingFilters[debugArea] = enable;
+        }
+    }
+    QLoggingCategory::installFilter(loggingCategoryFilter);
 
     foreach (QString addedPath, cmdLineParser.values(importPathOption)) {
         if (addedPath == "." || addedPath.startsWith("./")) {
@@ -86,20 +127,20 @@ int main(int argc, char *argv[])
 
     if (cmdLineParser.isSet(sandboxOption)) {
         view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(true));
-        qDebug() << "Running against the sandbox server";
+        qCDebug(dcApplication) << "Running against the sandbox server";
     } else {
         view.engine()->rootContext()->setContextProperty("useSandbox", QVariant(false));
-        qDebug() << "Running against the production server";
+        qCDebug(dcApplication) << "Running against the production server";
     }
 
     view.engine()->rootContext()->setContextProperty("tablet", QVariant(false));
     view.engine()->rootContext()->setContextProperty("phone", QVariant(false));
 
     if (cmdLineParser.isSet(tabletFactorOption)) {
-        qDebug() << "running in tablet mode";
+        qCDebug(dcApplication) << "Running in tablet mode";
         view.engine()->rootContext()->setContextProperty("tablet", QVariant(true));
     } else if (cmdLineParser.isSet(phoneFactorOption)){
-        qDebug() << "running in phone mode";
+        qCDebug(dcApplication) << "Running in phone mode";
         view.engine()->rootContext()->setContextProperty("phone", QVariant(true));
     } else if (qgetenv("QT_QPA_PLATFORM") != "ubuntumirclient") {
         // Default to tablet size on X11
@@ -140,7 +181,7 @@ int main(int argc, char *argv[])
     // So if you want to change it, make sure to find all the places where it is set, not just here :D
     QCoreApplication::setApplicationName("com.ubuntu.reminders");
 
-    qDebug() << "using main qml file from:" << qmlfile;
+    qCDebug(dcApplication) << "Using main qml file from:" << qmlfile;
     view.setSource(QUrl::fromLocalFile(qmlfile));
     view.show();
 

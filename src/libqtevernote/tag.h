@@ -23,7 +23,6 @@
 
 #include "utils/enmldocument.h"
 #include "resource.h"
-#include "utils/textformat.h"
 
 #include <QObject>
 #include <QDateTime>

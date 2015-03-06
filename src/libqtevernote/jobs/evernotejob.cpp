@@ -20,6 +20,7 @@
 
 #include "evernotejob.h"
 #include "evernoteconnection.h"
+#include "logging.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -32,8 +33,6 @@
 #include <Errors_types.h>
 
 #include <libintl.h>
-
-#include <QDebug>
 
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
@@ -63,7 +62,7 @@ void EvernoteJob::setJobPriority(EvernoteJob::JobPriority priority)
 void EvernoteJob::run()
 {
     if (!EvernoteConnection::instance()->isConnected()) {
-        qWarning() << "EvernoteConnection is not connected. (" << this->metaObject()->className() << ")";
+        qCWarning(dcJobQueue) << "EvernoteConnection is not connected. (" << toString() << ")";
         emitJobDone(EvernoteConnection::ErrorCodeUserException, QStringLiteral("Not connected."));
         return;
     }
@@ -76,9 +75,9 @@ void EvernoteJob::run()
             startJob();
             emitJobDone(EvernoteConnection::ErrorCodeNoError, QString());
         } catch (const TTransportException & e) {
-            qWarning() << "TTransportException in" << metaObject()->className() << e.what();
+            qCWarning(dcJobQueue) << "TTransportException in" << metaObject()->className() << e.what();
             if (tryCount < 2) {
-                qWarning() << "[JobQueue] Resetting connection...";
+                qCWarning(dcJobQueue) << "Resetting connection...";
                 try {
                     resetConnection();
                 } catch(...) {}
@@ -87,9 +86,9 @@ void EvernoteJob::run()
                 emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, e.what());
             }
         } catch (const TApplicationException &e) {
-            qWarning() << "TApplicationException in " << metaObject()->className() << e.what();
+            qCWarning(dcJobQueue) << "TApplicationException in " << metaObject()->className() << e.what();
             if (tryCount < 2) {
-                qWarning() << "Resetting connection...";
+                qCWarning(dcJobQueue) << "Resetting connection...";
                 try {
                     resetConnection();
                 } catch(...) {}
@@ -159,10 +158,10 @@ void EvernoteJob::run()
                 break;
             }
             message = message.arg(QString::fromStdString(e.parameter));
-            qWarning() << metaObject()->className() << "EDAMUserException:" << message;
+            qCWarning(dcJobQueue) << metaObject()->className() << "EDAMUserException:" << message;
             emitJobDone(EvernoteConnection::ErrorCodeUserException, message);
         } catch (const evernote::edam::EDAMSystemException &e) {
-            qWarning() << "EDAMSystemException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.message);
+            qCWarning(dcJobQueue) << "EDAMSystemException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.message);
             QString message;
             EvernoteConnection::ErrorCode errorCode;
             switch (e.errorCode) {

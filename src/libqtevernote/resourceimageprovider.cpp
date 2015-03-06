@@ -1,4 +1,5 @@
 #include "resourceimageprovider.h"
+#include "logging.h"
 
 #include <notesstore.h>
 #include <note.h>
@@ -20,7 +21,7 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
     QString resourceHash = arguments.queryItemValue("hash");
     Note *note = NotesStore::instance()->note(noteGuid);
     if (!note) {
-        qWarning() << "Unable to find note for resource:" << id;
+        qCWarning(dcNotesStore) << "Unable to find note for resource:" << id;
         return QImage();
     }
 
