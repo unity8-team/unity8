@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
         debugArea.remove(QRegExp("^No"));
         if (s_loggingFilters.contains(debugArea)) {
             s_loggingFilters[debugArea] = enable;
+        } else {
+            qWarning() << "No such debug category:" << debugArea;
         }
     }
     QLoggingCategory::installFilter(loggingCategoryFilter);
