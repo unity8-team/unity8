@@ -404,7 +404,7 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
             } else {
                 m_highPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(existingJob)));
             }
-        } else {
+        } else if (job->jobPriority() == EvernoteJob::JobPriorityLow){
             if (m_lowPriorityJobQueue.contains(existingJob)) {
                 qCDebug(dcJobQueue) << "Reprioritising duplicate job in low priority queue:" << job->toString();
                 m_lowPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(existingJob)));
@@ -416,9 +416,12 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
             qCDebug(dcJobQueue) << "Adding high priority job request:" << job->toString();
             m_highPriorityJobQueue.prepend(job);
-        } else {
+        } else if (job->priority() == EvernoteJob::JobPriorityLow){
             qCDebug(dcJobQueue) << "Adding low priority job request:" << job->toString();
             m_lowPriorityJobQueue.prepend(job);
+        } else {
+            qCDebug(dcJobQueue) << "Adding very low priority job request:" << job->toString();
+            m_lowPriorityJobQueue.append(job);
         }
         startJobQueue();
     }
@@ -455,7 +458,7 @@ void EvernoteConnection::startJobQueue()
         m_currentJob = m_lowPriorityJobQueue.takeFirst();
     }
 
-    qCDebug(dcJobQueue) << "Starting job:" << m_currentJob->toString();
+    qCDebug(dcJobQueue) << QString("Starting job (Priority: %1):").arg(m_currentJob->jobPriority()) << m_currentJob->toString();
     m_currentJob->start();
 }
 

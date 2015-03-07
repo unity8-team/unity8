@@ -879,15 +879,17 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString mime = QString::fromStdString(resource.mime);
 
         if (what == FetchNoteJob::LoadResources) {
-            qCDebug(dcSync) << "Resource fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
+            qCDebug(dcSync) << "Resource content fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
-            note->addResource(resourceData, hash, fileName, mime);
-        } else if (Resource::isCached(hash)) {
-            qCDebug(dcSync) << "Resource already cached for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
-            note->addResource(QByteArray(), hash, fileName, mime);
+            note->addResource(hash, fileName, mime, resourceData);
         } else {
-            qCDebug(dcSync) << "Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
-            refreshWithResourceData = true;
+            qCDebug(dcSync) << "Adding resource info to note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
+            note->addResource(hash, fileName, mime);
+
+            if (!Resource::isCached(hash)) {
+                qCDebug(dcSync) << "Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
+                refreshWithResourceData = true;
+            }
         }
         roles << RoleHtmlContent << RoleEnmlContent << RoleResourceUrls;
     }
@@ -928,7 +930,8 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     if (refreshWithResourceData) {
         qCDebug(dcSync) << "Fetching Note resources:" << note->guid();
-        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources, job->jobPriority());
+        EvernoteJob::JobPriority newPriority = job->jobPriority() == EvernoteJob::JobPriorityLow ? EvernoteJob::JobPriorityVeryLow : job->jobPriority();
+        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources, newPriority);
     } else {
         syncToCacheFile(note); // Syncs into the list cache
         note->syncToCacheFile(); // Syncs note's content into notes cache

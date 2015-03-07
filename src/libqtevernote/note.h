@@ -157,7 +157,7 @@ public:
     QStringList resourceUrls() const;
     Q_INVOKABLE Resource* resource(const QString &hash);
     QList<Resource*> resources() const;
-    Resource *addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type);
+
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
@@ -211,6 +211,9 @@ private:
     void setUpdateSequenceNumber(qint32 updateSequenceNumber);
     void setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber);
     void setConflicting(bool conflicting);
+    Resource *addResource(const QString &hash, const QString &fileName, const QString &type, const QByteArray &data = QByteArray());
+    void addMissingResource();
+    void setMissingResources(int missingResources);
 
     // const because we want to load on demand in getters. Keep this private!
     void load(bool highPriority = false) const;
@@ -244,6 +247,7 @@ private:
     bool m_needsContentSync;
     bool m_syncError;
     bool m_conflicting;
+    int m_missingResources;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;

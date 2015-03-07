@@ -45,7 +45,8 @@ class EvernoteJob : public QThread
 public:
     enum JobPriority {
         JobPriorityHigh,
-        JobPriorityLow
+        JobPriorityLow,
+        JobPriorityVeryLow
     };
 
     explicit EvernoteJob(QObject *originatingObject = 0, JobPriority jobPriority = JobPriorityHigh);
