@@ -384,6 +384,7 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
     if (m_currentJob && m_currentJob->operator ==(job)) {
         qCDebug(dcJobQueue) << "Duplicate of new job request already running:" << job->toString();
         if (m_currentJob->isFinished()) {
+            qCWarning(dcJobQueue) << "Job seems to be stuck in a loop. Deleting it:" << job->toString();
             job->deleteLater();
         } else {
             attachDuplicate(m_currentJob, job);
