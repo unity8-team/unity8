@@ -21,8 +21,6 @@
 #include "createnotebookjob.h"
 #include "notebook.h"
 
-#include <QDebug>
-
 CreateNotebookJob::CreateNotebookJob(Notebook *notebook, QObject *parent) :
     NotesStoreJob(parent),
     m_notebook(notebook->clone())

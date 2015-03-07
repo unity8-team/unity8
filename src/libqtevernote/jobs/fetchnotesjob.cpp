@@ -25,8 +25,6 @@
 // evernote sdk
 #include "Limits_constants.h"
 
-#include <QDebug>
-
 FetchNotesJob::FetchNotesJob(const QString &filterNotebookGuid, const QString &searchWords, int startIndex, int chunkSize, QObject *parent) :
     NotesStoreJob(parent),
     m_filterNotebookGuid(filterNotebookGuid),
@@ -43,7 +41,9 @@ bool FetchNotesJob::operator==(const EvernoteJob *other) const
         return false;
     }
     return this->m_filterNotebookGuid == otherJob->m_filterNotebookGuid
-            && this->m_searchWords == otherJob->m_searchWords;
+            && this->m_searchWords == otherJob->m_searchWords
+            && this->m_startIndex == otherJob->m_startIndex
+            && this->m_chunkSize == otherJob->m_chunkSize;
 }
 
 void FetchNotesJob::attachToDuplicate(const EvernoteJob *other)

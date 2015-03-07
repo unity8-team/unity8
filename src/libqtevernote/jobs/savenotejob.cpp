@@ -21,8 +21,6 @@
 #include "savenotejob.h"
 #include "note.h"
 
-#include <QDebug>
-
 SaveNoteJob::SaveNoteJob(Note *note, QObject *parent) :
     NotesStoreJob(parent)
 {
@@ -86,7 +84,6 @@ void SaveNoteJob::startJob()
         note.attributes.reminderDoneTime = m_note->reminderDoneTime().toMSecsSinceEpoch();
         note.attributes.__isset.reminderDoneTime = true;
 
-        qDebug() << "*** needs content sync" << m_note->needsContentSync();
         if (m_note->needsContentSync()) {
             note.content = m_note->enmlContent().toStdString();
             note.__isset.content = true;

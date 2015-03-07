@@ -20,10 +20,10 @@
 
 #include "resource.h"
 #include "notesstore.h"
+#include "logging.h"
 
 #include <QFile>
 #include <QStandardPaths>
-#include <QDebug>
 #include <QCryptographicHash>
 #include <QFileInfo>
 #include <QDir>
@@ -44,7 +44,7 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     if (!data.isEmpty() && !file.exists()) {
 
         if (!file.open(QFile::WriteOnly)) {
-            qWarning() << "error writing file" << m_filePath;
+            qCWarning(dcNotesStore) << "error writing file" << m_filePath;
             return;
         }
         file.write(data);
@@ -69,7 +69,7 @@ Resource::Resource(const QString &path, QObject *parent):
 
     QFile file(path);
     if (!file.open(QFile::ReadOnly)) {
-        qWarning() << "Cannot open file for reading...";
+        qCWarning(dcNotesStore) << "Cannot open file for reading...";
         return;
     }
     QByteArray fileContent = file.readAll();
@@ -84,7 +84,7 @@ Resource::Resource(const QString &path, QObject *parent):
     } else if (m_fileName.endsWith(".gif")) {
         m_type = "image/gif";
     } else {
-        qWarning() << "cannot determine mime type of file" << m_fileName;
+        qCWarning(dcNotesStore) << "cannot determine mime type of file" << m_fileName;
     }
 
     m_filePath = NotesStore::instance()->storageLocation() + m_hash + "." + m_fileName.split('.').last();
@@ -93,7 +93,7 @@ Resource::Resource(const QString &path, QObject *parent):
     if (!copy.exists()) {
 
         if (!copy.open(QFile::WriteOnly)) {
-            qWarning() << "error writing file" << m_filePath;
+            qCWarning(dcNotesStore) << "error writing file" << m_filePath;
             return;
         }
         copy.write(fileContent);

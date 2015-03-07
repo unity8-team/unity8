@@ -21,6 +21,7 @@
 
 #include "evernoteconnection.h"
 #include "jobs/evernotejob.h"
+#include "logging.h"
 
 // Thrift
 #include <arpa/inet.h> // seems thrift forgot this one
@@ -36,7 +37,6 @@
 #include <UserStore_constants.h>
 #include <Errors_types.h>
 
-#include <QDebug>
 #include <QUrl>
 
 #include <libintl.h>
@@ -79,11 +79,11 @@ void EvernoteConnection::setupUserStore()
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
         socket = sslSocketFactory->createSocket(m_hostname.toStdString(), 443);
-        qDebug() << "created UserStore SSL socket to host " << m_hostname;
+        qCDebug(dcConnection) << "created UserStore SSL socket to host " << m_hostname;
     } else {
         // Create a non-secure socket
         socket = boost::shared_ptr<TSocket> (new TSocket(m_hostname.toStdString(), 80));
-        qDebug() << "created insecure UserStore socket to host " << m_hostname;
+        qCDebug(dcConnection) << "created insecure UserStore socket to host " << m_hostname;
     }
 
     // setup UserStore client
@@ -108,11 +108,11 @@ void EvernoteConnection::setupNotesStore()
     if (m_useSSL) {
         boost::shared_ptr<TSSLSocketFactory> sslSocketFactory(new TSSLSocketFactory());
         socket = sslSocketFactory->createSocket(m_hostname.toStdString(), 443);
-        qDebug() << "created NotesStore SSL socket to host " << m_hostname;
+        qCDebug(dcConnection) << "created NotesStore SSL socket to host " << m_hostname;
     } else {
         // Create a non-secure socket
         socket = boost::shared_ptr<TSocket> (new TSocket(m_hostname.toStdString(), 80));
-        qDebug() << "created insecure NotesStore socket to host " << m_hostname;
+        qCDebug(dcConnection) << "created insecure NotesStore socket to host " << m_hostname;
     }
 
     // setup NotesStore client
@@ -147,17 +147,23 @@ EvernoteConnection::~EvernoteConnection()
 
 void EvernoteConnection::disconnectFromEvernote()
 {
-    qDebug() << "[Connection] Disconnecting from Evernote.";
+    qCDebug(dcConnection) << "Disconnecting from Evernote.";
     if (!isConnected()) {
-        qWarning() << "Not connected. Can't disconnect.";
+        qCWarning(dcConnection()) << "Not connected. Can't disconnect.";
         return;
     }
 
-    foreach (EvernoteJob *job, m_jobQueue) {
+    foreach (EvernoteJob *job, m_highPriorityJobQueue) {
         job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, "Disconnected from Evernote");
         job->deleteLater();
     }
-    m_jobQueue.clear();
+    m_highPriorityJobQueue.clear();
+
+    foreach (EvernoteJob *job, m_lowPriorityJobQueue) {
+        job->emitJobDone(EvernoteConnection::ErrorCodeConnectionLost, "Disconnected from Evernote");
+        job->deleteLater();
+    }
+    m_lowPriorityJobQueue.clear();
 
     m_errorMessage.clear();
     emit errorChanged();
@@ -198,38 +204,38 @@ void EvernoteConnection::setToken(const QString &token)
 void EvernoteConnection::connectToEvernote()
 {
     if (isConnected()) {
-        qWarning() << "Already connected.";
+        qCWarning(dcConnection) << "Already connected.";
         return;
     }
 
-    qDebug() << "[Connection] Connecting to Evernote:" << m_hostname;
+    qCDebug(dcConnection) << "Connecting to Evernote:" << m_hostname;
 
     m_errorMessage.clear();
     emit errorChanged();
 
     if (m_token.isEmpty()) {
-        qWarning() << "[Connection] Can't connect to Evernote. No token set.";
+        qCWarning(dcConnection) << "Can't connect to Evernote. No token set.";
         return;
     }
     if (m_hostname.isEmpty()) {
-        qWarning() << "[Connection] Can't connect to Evernote. No hostname set.";
+        qCWarning(dcConnection) << "Can't connect to Evernote. No hostname set.";
     }
 
     setupUserStore();
     bool ok = connectUserStore();
     if (!ok) {
-        qWarning() << "[Connection] Error connecting User Store. Cannot continue.";
+        qCWarning(dcConnection) << "Error connecting User Store. Cannot continue.";
         return;
     }
     setupNotesStore();
     ok = connectNotesStore();
 
     if (!ok) {
-        qWarning() << "[Connection] Error connecting Notes Store. Cannot continue.";
+        qCWarning(dcConnection) << "Error connecting Notes Store. Cannot continue.";
         return;
     }
 
-    qDebug() << "[Connection] Connected!";
+    qCDebug(dcConnection) << "Connected!";
     emit isConnectedChanged();
 
 }
@@ -242,14 +248,14 @@ bool EvernoteConnection::connectUserStore()
 
     try {
         m_userStoreHttpClient->open();
-        qDebug() << "UserStoreClient socket opened.";
+        qCDebug(dcConnection) << "UserStoreClient socket opened.";
     } catch (const TTransportException & e) {
-        qWarning() << "Failed to open connection:" <<  e.what() << e.getType();
+        qCWarning(dcConnection) << "Failed to open connection:" <<  e.what() << e.getType();
         m_errorMessage = gettext("Offline mode");
         emit errorChanged();
         return false;
     } catch (const TException & e) {
-        qWarning() << "Generic Thrift exception when opening the connection:" << e.what();
+        qCWarning(dcConnection) << "Generic Thrift exception when opening the connection:" << e.what();
         m_errorMessage = gettext("Unknown error connecting to Evernote.");
         emit errorChanged();
         return false;
@@ -262,28 +268,28 @@ bool EvernoteConnection::connectUserStore()
                                                                       constants.EDAM_VERSION_MINOR);
 
         if (!versionOk) {
-            qWarning() << "Server version mismatch! This application should be updated!";
+            qCWarning(dcConnection) << "Server version mismatch! This application should be updated!";
             m_errorMessage = QString(gettext("Error connecting to Evernote: Server version does not match app version. Please update the application."));
             emit errorChanged();
             return false;
         }
     } catch (const evernote::edam::EDAMUserException e) {
-        qWarning() << "Error fetching server version (EDAMUserException):" << e.what() << e.errorCode;
+        qCWarning(dcConnection) << "Error fetching server version (EDAMUserException):" << e.what() << e.errorCode;
         m_errorMessage = QString(gettext("Error connecting to Evernote: Error code %1")).arg(e.errorCode);
         emit errorChanged();
         return false;
     } catch (const evernote::edam::EDAMSystemException e) {
-        qWarning() << "Error fetching server version: (EDAMSystemException):" << e.what() << e.errorCode;
+        qCWarning(dcConnection) << "Error fetching server version: (EDAMSystemException):" << e.what() << e.errorCode;
         m_errorMessage = QString(gettext("Error connecting to Evernote: Error code %1")).arg(e.errorCode);
         emit errorChanged();
         return false;
     } catch (const TTransportException & e) {
-        qWarning() << "Failed to fetch server version:" <<  e.what();
+        qCWarning(dcConnection) << "Failed to fetch server version:" <<  e.what();
         m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot download version information from server."));
         emit errorChanged();
         return false;
     } catch (const TException & e) {
-        qWarning() << "Generic Thrift exception when fetching server version:" << e.what();
+        qCWarning(dcConnection) << "Generic Thrift exception when fetching server version:" << e.what();
         m_errorMessage = QString(gettext("Unknown error connecting to Evernote"));
         emit errorChanged();
         return false;
@@ -291,24 +297,24 @@ bool EvernoteConnection::connectUserStore()
 
     try {
         std::string notesStoreUrl;
-        qDebug() << "getting ntoe store url with token" << m_token;
+        qCDebug(dcConnection) << "getting ntoe store url with token" << m_token;
         m_userstoreClient->getNoteStoreUrl(notesStoreUrl, m_token.toStdString());
 
         m_notesStorePath = QUrl(QString::fromStdString(notesStoreUrl)).path();
 
         if (m_notesStorePath.isEmpty()) {
-            qWarning() << "Failed to fetch notesstore path from server. Fetching notes will not work.";
+            qCWarning(dcConnection) << "Failed to fetch notesstore path from server. Fetching notes will not work.";
             m_errorMessage = QString(gettext("Error connecting to Evernote: Cannot download server information."));
             emit errorChanged();
             return false;
         }
     } catch (const TTransportException & e) {
-        qWarning() << "Failed to fetch notestore path:" <<  e.what();
+        qCWarning(dcConnection) << "Failed to fetch notestore path:" <<  e.what();
         m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure when downloading server information."));
         emit errorChanged();
         return false;
     } catch (const TException & e) {
-        qWarning() << "Generic Thrift exception when fetching notestore path:" << e.what();
+        qCWarning(dcConnection) << "Generic Thrift exception when fetching notestore path:" << e.what();
         m_errorMessage = gettext("Unknown error connecting to Evernote");
         emit errorChanged();
         return false;
@@ -325,26 +331,42 @@ bool EvernoteConnection::connectNotesStore()
 
     try {
         m_notesStoreHttpClient->open();
-        qDebug() << "NotesStoreClient socket opened." << m_notesStoreHttpClient->isOpen();
+        qCDebug(dcConnection) << "NotesStoreClient socket opened." << m_notesStoreHttpClient->isOpen();
         return true;
 
     } catch (const TTransportException & e) {
-        qWarning() << "Failed to open connection:" <<  e.what();
+        qCWarning(dcConnection) << "Failed to open connection:" <<  e.what();
         m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure"));
         emit errorChanged();
     } catch (const TException & e) {
-        qWarning() << "Generic Thrift exception when opening the NotesStore connection:" << e.what();
+        qCWarning(dcConnection) << "Generic Thrift exception when opening the NotesStore connection:" << e.what();
         m_errorMessage = QString(gettext("Unknown Error connecting to Evernote"));
         emit errorChanged();
     }
     return false;
 }
 
-EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
+void EvernoteConnection::attachDuplicate(EvernoteJob *original, EvernoteJob *duplicate)
 {
-    foreach (EvernoteJob *queuedJob, m_jobQueue) {
+    if (duplicate->originatingObject() && duplicate->originatingObject() != original->originatingObject()) {
+        duplicate->attachToDuplicate(m_currentJob);
+    }
+    connect(original, &EvernoteJob::finished, duplicate, &EvernoteJob::deleteLater);
+}
+
+EvernoteJob* EvernoteConnection::findExistingDuplicate(EvernoteJob *job)
+{
+    foreach (EvernoteJob *queuedJob, m_highPriorityJobQueue) {
         // explicitly use custom operator==()
         if (job->operator ==(queuedJob)) {
+            qCDebug(dcJobQueue) << "Found duplicate in high priority queue";
+            return queuedJob;
+        }
+    }
+    foreach (EvernoteJob *queuedJob, m_lowPriorityJobQueue) {
+        // explicitly use custom operator==()
+        if (job->operator ==(queuedJob)) {
+            qCDebug(dcJobQueue) << "Found duplicate in low priority queue";
             return queuedJob;
         }
     }
@@ -354,31 +376,44 @@ EvernoteJob* EvernoteConnection::findDuplicate(EvernoteJob *job)
 void EvernoteConnection::enqueue(EvernoteJob *job)
 {
     if (!isConnected()) {
-        qWarning() << "[JobQueue] Not connected to evernote. Can't enqueue job.";
+        qCWarning(dcJobQueue) << "Not connected to evernote. Can't enqueue job.";
         job->emitJobDone(ErrorCodeConnectionLost, gettext("Disconnected from Evernote."));
         job->deleteLater();
         return;
     }
-    EvernoteJob *duplicate = findDuplicate(job);
-    if (duplicate) {
-        job->attachToDuplicate(duplicate);
-        connect(duplicate, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
+    if (m_currentJob && m_currentJob->operator ==(job)) {
+        qCDebug(dcJobQueue) << "Duplicate of new job request already running:" << job->toString();
+        if (m_currentJob->isFinished()) {
+            qCWarning(dcJobQueue) << "Job seems to be stuck in a loop. Deleting it:" << job->toString();
+            job->deleteLater();
+        } else {
+            attachDuplicate(m_currentJob, job);
+        }
+        return;
+    }
+    EvernoteJob *existingJob = findExistingDuplicate(job);
+    if (existingJob) {
+        qCDebug(dcJobQueue) << "Duplicate job already queued:" << job->toString();
+        attachDuplicate(existingJob, job);
         // reprioritze the repeated request
-        qDebug() << "[JobQueue] Duplicate job already queued:" << job->toString();
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
-            qDebug() << "[JobQueue] Reprioritising duplicate job:" << job->toString();
-            duplicate->setJobPriority(job->jobPriority());
-            m_jobQueue.prepend(m_jobQueue.takeAt(m_jobQueue.indexOf(duplicate)));
+            qCDebug(dcJobQueue) << "Reprioritising duplicate job:" << job->toString();
+            existingJob->setJobPriority(job->jobPriority());
+            if (m_highPriorityJobQueue.contains(existingJob)) {
+                m_highPriorityJobQueue.prepend(m_highPriorityJobQueue.takeAt(m_highPriorityJobQueue.indexOf(existingJob)));
+            } else {
+                m_highPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(existingJob)));
+            }
         }
     } else {
         connect(job, &EvernoteJob::finished, job, &EvernoteJob::deleteLater);
         connect(job, &EvernoteJob::finished, this, &EvernoteConnection::startNextJob);
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
-            qDebug() << "[JobQueue] Prepending high priority job request:" << job->toString();
-            m_jobQueue.prepend(job);
+            qCDebug(dcJobQueue) << "Adding high priority job request:" << job->toString();
+            m_highPriorityJobQueue.prepend(job);
         } else {
-            qDebug() << "[JobQueue] Appending low priority job request:" << job->toString();
-            m_jobQueue.append(job);
+            qCDebug(dcJobQueue) << "Adding low priority job request:" << job->toString();
+            m_lowPriorityJobQueue.prepend(job);
         }
         startJobQueue();
     }
@@ -401,22 +436,27 @@ QString EvernoteConnection::error() const
 
 void EvernoteConnection::startJobQueue()
 {
-    if (m_jobQueue.isEmpty()) {
-        return;
-    }
-
     if (m_currentJob) {
         return;
     }
 
-    m_currentJob = m_jobQueue.takeFirst();
-    qDebug() << "[JobQueue] Starting job:" << m_currentJob->toString();
+    if (m_highPriorityJobQueue.isEmpty() && m_lowPriorityJobQueue.isEmpty()) {
+        return;
+    }
+
+    if (!m_highPriorityJobQueue.isEmpty()) {
+        m_currentJob = m_highPriorityJobQueue.takeFirst();
+    } else {
+        m_currentJob = m_lowPriorityJobQueue.takeFirst();
+    }
+
+    qCDebug(dcJobQueue) << "Starting job:" << m_currentJob->toString();
     m_currentJob->start();
 }
 
 void EvernoteConnection::startNextJob()
 {
-    qDebug() << "[JobQueue] Job done:" << m_currentJob->toString();
+    qCDebug(dcJobQueue) << "Job done:" << m_currentJob->toString();
     m_currentJob = 0;
     startJobQueue();
 }

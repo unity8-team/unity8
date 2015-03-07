@@ -32,8 +32,6 @@
 #include "tag.h"
 #include "resourceimageprovider.h"
 
-#include "utils/textformat.h"
-
 #include <QtQml>
 
 static QObject* userStoreProvider(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine */)
@@ -64,8 +62,6 @@ void EvernotePlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<Notebook>(uri, 0, 1, "Notebook", "Cannot create Notes in QML. Use NotesStore.createNotebook() instead.");
     qmlRegisterUncreatableType<Tag>(uri, 0, 1, "Tag", "Cannot create Tags in QML. Use NotesStore.createTag() instead.");
     qmlRegisterUncreatableType<Resource>(uri, 0, 1, "Resource", "Cannot create Resources. Use Note.attachFile() instead.");
-
-    qmlRegisterUncreatableType<TextFormat>(uri, 0, 1, "TextFormat", "TextFormat is not creatable. It's just here to export enums to QML");
 }
 
 void EvernotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)
