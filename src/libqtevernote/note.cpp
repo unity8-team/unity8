@@ -495,6 +495,7 @@ QStringList Note::resourceUrls() const
         QUrlQuery arguments;
         arguments.addQueryItem("noteGuid", m_guid);
         arguments.addQueryItem("hash", hash);
+        arguments.addQueryItem("loaded", Resource::isCached(hash) ? "true" : "false");
         url.setQuery(arguments);
         ret << url.toString();
     }

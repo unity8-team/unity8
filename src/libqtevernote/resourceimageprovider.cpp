@@ -18,6 +18,7 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
     QUrlQuery arguments(id.split('?').last());
     QString noteGuid = arguments.queryItemValue("noteGuid");
     QString resourceHash = arguments.queryItemValue("hash");
+    bool isLoaded = arguments.queryItemValue("loaded") == "true";
     Note *note = NotesStore::instance()->note(noteGuid);
     if (!note) {
         qCWarning(dcNotesStore) << "Unable to find note for resource:" << id;
@@ -30,7 +31,11 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
         if (!requestedSize.isValid() || requestedSize.width() > 1024 || requestedSize.height() > 1024) {
             tmpSize = QSize(1024, 1024);
         }
-        image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(resourceHash)->imageData(tmpSize));
+        if (isLoaded) {
+            image = QImage::fromData(NotesStore::instance()->note(noteGuid)->resource(resourceHash)->imageData(tmpSize));
+        } else {
+            image.load("/usr/share/icons/suru/mimetypes/scalable/image-x-generic-symbolic.svg");
+        }
     } else if (mediaType.startsWith("audio")) {
         image.load("/usr/share/icons/suru/mimetypes/scalable/audio-x-generic-symbolic.svg");
     } else if (mediaType == "application/pdf") {
