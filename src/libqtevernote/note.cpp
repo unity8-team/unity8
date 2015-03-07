@@ -38,6 +38,7 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_isSearchResult(false),
     m_updateSequenceNumber(updateSequenceNumber),
     m_loading(false),
+    m_autoLoadingEnabled(true),
     m_loadingHighPriority(false),
     m_loaded(false),
     m_needsContentSync(false),
@@ -636,6 +637,11 @@ void Note::setLoading(bool loading, bool highPriority)
     }
 }
 
+void Note::setAutoLoadingEnabled(bool autoLoadingEnabled)
+{
+    m_autoLoadingEnabled = autoLoadingEnabled;
+}
+
 void Note::setSyncError(bool syncError)
 {
     if (m_syncError != syncError) {
@@ -676,10 +682,9 @@ void Note::load(bool priorityHigh) const
 {
     if (!m_loaded && isCached()) {
         loadFromCacheFile();
-    } else if (!m_loaded) {
-        if (!m_loading || (priorityHigh && !m_loadingHighPriority)) {
-            NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadContent, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityLow);
-        }
+    } else if (!m_loaded && m_autoLoadingEnabled) {
+        qCDebug(dcNotesStore) << "Note autoloading:" << m_guid << "High priority:" << priorityHigh;
+        NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadContent, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityLow);
     }
 }
 

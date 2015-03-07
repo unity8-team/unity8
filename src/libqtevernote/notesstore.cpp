@@ -797,11 +797,6 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         qCWarning(dcSync) << "RefreshNoteContent: Can't refresn note content. Note guid not found:" << guid;
         return;
     }
-    qCDebug(dcSync) << "should start another one?" << note->loading() << note->m_loadingHighPriority;
-    if (note->loading() && (priority != EvernoteJob::JobPriorityHigh || note->m_loadingHighPriority)) {
-        qCDebug(dcSync) << "Load already loading with high priorty. Not starting again";
-        return;
-    }
     if (EvernoteConnection::instance()->isConnected()) {
         qCDebug(dcNotesStore) << "Fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
         FetchNoteJob *job = new FetchNoteJob(guid, what, this);
@@ -809,9 +804,12 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
         EvernoteConnection::instance()->enqueue(job);
 
+        bool wasLoading = note->loading();
         note->setLoading(true, priority == EvernoteJob::JobPriorityHigh);
-        int idx = m_notes.indexOf(note);
-        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
+        if (!wasLoading) {
+            int idx = m_notes.indexOf(note);
+            emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
+        }
     }
 }
 
@@ -823,6 +821,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         qCWarning(dcSync) << "can't find note for this update... ignoring...";
         return;
     }
+    // Disabling automatic loading of stuff as it will start emitting changed signals and cause views to update and reload
+    note->setAutoLoadingEnabled(false);
+
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     QVector<int> roles;
 
@@ -921,8 +922,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     roles << RoleLoading;
 
     emit noteChanged(note->guid(), note->notebookGuid());
-
     emit dataChanged(noteIndex, noteIndex, roles);
+
+    note->setAutoLoadingEnabled(true);
 
     if (refreshWithResourceData) {
         qCDebug(dcSync) << "Fetching Note resources:" << note->guid();

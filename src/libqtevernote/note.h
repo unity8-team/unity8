@@ -202,6 +202,7 @@ private slots:
 private:
     // Those should only be called from NotesStore, which is a friend
     void setLoading(bool loading, bool highPriority = false);
+    void setAutoLoadingEnabled(bool autoLoadingEnabled);
     void setSyncError(bool syncError);
     void setDeleted(bool deleted);
     void syncToCacheFile();
@@ -236,6 +237,7 @@ private:
     QString m_infoFile;
 
     bool m_loading;
+    bool m_autoLoadingEnabled;
     bool m_loadingHighPriority;
     mutable bool m_loaded;
     bool m_synced;

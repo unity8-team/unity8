@@ -397,12 +397,17 @@ void EvernoteConnection::enqueue(EvernoteJob *job)
         attachDuplicate(existingJob, job);
         // reprioritze the repeated request
         if (job->jobPriority() == EvernoteJob::JobPriorityHigh) {
-            qCDebug(dcJobQueue) << "Reprioritising duplicate job:" << job->toString();
+            qCDebug(dcJobQueue) << "Reprioritising duplicate job in high priority queue:" << job->toString();
             existingJob->setJobPriority(job->jobPriority());
             if (m_highPriorityJobQueue.contains(existingJob)) {
                 m_highPriorityJobQueue.prepend(m_highPriorityJobQueue.takeAt(m_highPriorityJobQueue.indexOf(existingJob)));
             } else {
                 m_highPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(existingJob)));
+            }
+        } else {
+            if (m_lowPriorityJobQueue.contains(existingJob)) {
+                qCDebug(dcJobQueue) << "Reprioritising duplicate job in low priority queue:" << job->toString();
+                m_lowPriorityJobQueue.prepend(m_lowPriorityJobQueue.takeAt(m_lowPriorityJobQueue.indexOf(existingJob)));
             }
         }
     } else {
