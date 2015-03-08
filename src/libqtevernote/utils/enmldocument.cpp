@@ -296,6 +296,7 @@ QString EnmlDocument::composeMediaTypeUrl(const QString &mediaType, const QStrin
     QUrlQuery arguments;
     arguments.addQueryItem("noteGuid", noteGuid);
     arguments.addQueryItem("hash", hash);
+    arguments.addQueryItem("loaded", NotesStore::instance()->note(noteGuid)->resource(hash)->isCached() ? "true" : "false");
     url.setQuery(arguments);
     return url.toString();
 }
