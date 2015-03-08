@@ -677,7 +677,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             if (note->updateSequenceNumber() < result.updateSequenceNum) {
                 qCDebug(dcSync) << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
                 changedRoles = updateFromEDAM(result, note);
-                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteJob::JobPriorityLow);
+                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteJob::JobPriorityMedium);
                 syncToCacheFile(note);
             }
         } else {
@@ -798,7 +798,7 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         return;
     }
     if (EvernoteConnection::instance()->isConnected()) {
-        qCDebug(dcNotesStore) << "Fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
+        qCDebug(dcNotesStore) << "Fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "Content" : "Resource") << "Priority:" << priority;
         FetchNoteJob *job = new FetchNoteJob(guid, what, this);
         job->setJobPriority(priority);
         connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
@@ -821,8 +821,6 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         qCWarning(dcSync) << "can't find note for this update... ignoring...";
         return;
     }
-    // Disabling automatic loading of stuff as it will start emitting changed signals and cause views to update and reload
-    note->setAutoLoadingEnabled(false);
 
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     QVector<int> roles;
@@ -884,9 +882,9 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
             note->addResource(hash, fileName, mime, resourceData);
         } else {
             qCDebug(dcSync) << "Adding resource info to note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
-            note->addResource(hash, fileName, mime);
+            Resource *resource = note->addResource(hash, fileName, mime);
 
-            if (!Resource::isCached(hash)) {
+            if (!resource->isCached()) {
                 qCDebug(dcSync) << "Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
                 refreshWithResourceData = true;
             }
@@ -926,16 +924,13 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     emit noteChanged(note->guid(), note->notebookGuid());
     emit dataChanged(noteIndex, noteIndex, roles);
 
-    note->setAutoLoadingEnabled(true);
-
     if (refreshWithResourceData) {
         qCDebug(dcSync) << "Fetching Note resources:" << note->guid();
-        EvernoteJob::JobPriority newPriority = job->jobPriority() == EvernoteJob::JobPriorityLow ? EvernoteJob::JobPriorityVeryLow : job->jobPriority();
+        EvernoteJob::JobPriority newPriority = job->jobPriority() == EvernoteJob::JobPriorityMedium ? EvernoteJob::JobPriorityLow : job->jobPriority();
         refreshNoteContent(note->guid(), FetchNoteJob::LoadResources, newPriority);
-    } else {
-        syncToCacheFile(note); // Syncs into the list cache
-        note->syncToCacheFile(); // Syncs note's content into notes cache
     }
+    syncToCacheFile(note); // Syncs into the list cache
+    note->syncToCacheFile(); // Syncs note's content into notes cache
 }
 
 void NotesStore::refreshNotebooks()
@@ -1014,6 +1009,8 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         }
     }
 
+    qCDebug(dcSync) << "Remote notebooks merged into storage. Merging local changes to server.";
+
     foreach (Notebook *notebook, unhandledNotebooks) {
         if (notebook->lastSyncedSequenceNumber() == 0) {
             qCDebug(dcSync) << "Have a local notebook that doesn't exist on Evernote. Creating on server:" << notebook->guid();
@@ -1037,6 +1034,8 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
             notebook->deleteLater();
         }
     }
+
+    qCDebug(dcSync) << "Notebooks merged.";
 }
 
 void NotesStore::refreshTags()

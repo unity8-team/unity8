@@ -45,8 +45,8 @@ class EvernoteJob : public QThread
 public:
     enum JobPriority {
         JobPriorityHigh,
-        JobPriorityLow,
-        JobPriorityVeryLow
+        JobPriorityMedium,
+        JobPriorityLow
     };
 
     explicit EvernoteJob(QObject *originatingObject = 0, JobPriority jobPriority = JobPriorityHigh);
@@ -67,6 +67,8 @@ public:
 
 signals:
     void connectionLost(const QString &errorMessage);
+
+    void jobFinished();
 
 protected:
     virtual void resetConnection() = 0;

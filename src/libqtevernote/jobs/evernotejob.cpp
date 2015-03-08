@@ -44,6 +44,7 @@ EvernoteJob::EvernoteJob(QObject *originatingObject, JobPriority jobPriority) :
     m_jobPriority(jobPriority),
     m_originatingObject(originatingObject)
 {
+    connect(this, &QThread::finished, this, &EvernoteJob::jobFinished);
 }
 
 EvernoteJob::~EvernoteJob()

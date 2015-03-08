@@ -167,6 +167,8 @@ public:
     int renderWidth() const;
     void setRenderWidth(int renderWidth);
 
+    Q_INVOKABLE void load(bool highPriority = false);
+
 public slots:
     void save();
     void remove();
@@ -202,7 +204,6 @@ private slots:
 private:
     // Those should only be called from NotesStore, which is a friend
     void setLoading(bool loading, bool highPriority = false);
-    void setAutoLoadingEnabled(bool autoLoadingEnabled);
     void setSyncError(bool syncError);
     void setDeleted(bool deleted);
     void syncToCacheFile();
@@ -215,8 +216,6 @@ private:
     void addMissingResource();
     void setMissingResources(int missingResources);
 
-    // const because we want to load on demand in getters. Keep this private!
-    void load(bool highPriority = false) const;
     void loadFromCacheFile() const;
 
 private:
@@ -240,14 +239,11 @@ private:
     QString m_infoFile;
 
     bool m_loading;
-    bool m_autoLoadingEnabled;
-    bool m_loadingHighPriority;
     mutable bool m_loaded;
     bool m_synced;
     bool m_needsContentSync;
     bool m_syncError;
     bool m_conflicting;
-    int m_missingResources;
 
     // Needed to be able to call private setLoading (we don't want to have that set by anyone except the NotesStore)
     friend class NotesStore;

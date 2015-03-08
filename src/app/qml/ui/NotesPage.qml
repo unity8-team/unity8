@@ -177,6 +177,10 @@ PageWithBottomEdge {
             syncError: model.syncError
             conflicting: model.conflicting
 
+            Component.onCompleted: {
+                notes.note(model.guid).load(false);
+            }
+
             onItemClicked: {
                 if (!model.conflicting) {
                     root.selectedNote = NotesStore.note(guid);

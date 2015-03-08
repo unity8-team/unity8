@@ -58,15 +58,10 @@ Resource::Resource(const QString &hash, const QString &fileName, const QString &
 
 }
 
-bool Resource::isCached(const QString &hash)
+bool Resource::isCached()
 {
-    QDir cacheDir(NotesStore::instance()->storageLocation());
-    foreach (const QString fi, cacheDir.entryList()) {
-        if (fi.contains(hash)) {
-            return true;
-        }
-    }
-    return false;
+    QFileInfo fi(m_filePath);
+    return fi.exists();
 }
 
 Resource::Resource(const QString &path, QObject *parent):

@@ -131,6 +131,7 @@ private:
     // There must be only one job running at a time
     // Do not start jobs other than with startJobQueue()
     QList<EvernoteJob*> m_highPriorityJobQueue;
+    QList<EvernoteJob*> m_mediumPriorityJobQueue;
     QList<EvernoteJob*> m_lowPriorityJobQueue;
     EvernoteJob *m_currentJob;
 
