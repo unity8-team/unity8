@@ -21,7 +21,6 @@
 
 #include "formattinghelper.h"
 
-#include <QDebug>
 #include <QTextBlock>
 #include <QTextObject>
 #include <QTextCharFormat>

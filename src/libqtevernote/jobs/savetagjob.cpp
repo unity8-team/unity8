@@ -21,8 +21,6 @@
 #include "savetagjob.h"
 #include "tag.h"
 
-#include <QDebug>
-
 SaveTagJob::SaveTagJob(Tag *tag, QObject *parent) :
     NotesStoreJob(parent)
 {

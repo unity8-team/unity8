@@ -20,8 +20,6 @@
 
 #include "fetchnotebooksjob.h"
 
-#include <QDebug>
-
 FetchNotebooksJob::FetchNotebooksJob(QObject *parent) :
     NotesStoreJob(parent)
 {

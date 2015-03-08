@@ -23,7 +23,6 @@
 
 #include "utils/enmldocument.h"
 #include "resource.h"
-#include "utils/textformat.h"
 
 #include <QObject>
 #include <QDateTime>
@@ -162,7 +161,6 @@ public:
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
-    Q_INVOKABLE void format(int startPos, int endPos, TextFormat::Format format);
     Q_INVOKABLE void addTag(const QString &tagGuid);
     Q_INVOKABLE void removeTag(const QString &tagGuid);
 

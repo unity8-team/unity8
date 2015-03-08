@@ -20,8 +20,6 @@
 
 #include "expungenotebookjob.h"
 
-#include <QDebug>
-
 ExpungeNotebookJob::ExpungeNotebookJob(const QString &guid, QObject *parent) :
     NotesStoreJob(parent),
     m_guid(guid)

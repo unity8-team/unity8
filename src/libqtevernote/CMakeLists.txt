@@ -14,6 +14,7 @@ set(qtevernote_SRCS
     notebook.cpp
     tag.cpp
     tags.cpp
+    logging.cpp
     jobs/fetchnotesjob.cpp
     jobs/fetchnotebooksjob.cpp
     jobs/fetchnotejob.cpp
@@ -33,7 +34,6 @@ set(qtevernote_SRCS
     jobs/savetagjob.cpp
     resourceimageprovider.cpp
     utils/enmldocument.cpp
-    utils/textformat.cpp
     utils/organizeradapter.cpp
 )
 

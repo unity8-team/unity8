@@ -21,8 +21,6 @@
 #include "createtagjob.h"
 #include "tag.h"
 
-#include <QDebug>
-
 CreateTagJob::CreateTagJob(Tag *tag, QObject *parent) :
     NotesStoreJob(parent),
     m_tag(tag->clone())
