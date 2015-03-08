@@ -841,6 +841,11 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         qCWarning(dcSync) << "FetchNoteJobDone: Item not found on server:" << errorMessage;
         emit dataChanged(noteIndex, noteIndex, roles);
         return; // silently discarding...
+    case EvernoteConnection::ErrorCodeRateLimitExceeded:
+        qCWarning(dcSync) << "FetchNoteJobDone: Rate limit exceeded:" << errorMessage;
+        m_errorQueue.append(gettext("Cannot download note. Rate limit exceeded"));
+        emit errorChanged();
+        return;
     default:
         qCWarning(dcSync) << "FetchNoteJobDone: Failed to fetch note content:" << errorMessage << errorCode;
         note->setSyncError(true);
@@ -1305,13 +1310,24 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
     int idx = m_notes.indexOf(note);
     note->setLoading(false);
 
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qCWarning(dcSync) << "Error saving note:" << errorMessage;
+    switch (errorCode) {
+    case EvernoteConnection::ErrorCodeNoError:
+        // All is well
+        note->setSyncError(false);
+        break;
+    case EvernoteConnection::ErrorCodeQutaExceeded:
+        qCWarning(dcSync) << "Error saving note. Upload quota reached.";
+        m_errorQueue.append(gettext("Error saving note: Upload quota reached."));
+        emit errorChanged();
+        note->setSyncError(true);
+        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading << RoleSyncError);
+        return;
+    default:
+        qCWarning(dcSync) << "Unhandled error saving note:" << errorCode << "Message:" << errorMessage;
         note->setSyncError(true);
         emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading << RoleSyncError);
         return;
     }
-    note->setSyncError(false);
 
     note->setUpdateSequenceNumber(result.updateSequenceNum);
     note->setLastSyncedSequenceNumber(result.updateSequenceNum);

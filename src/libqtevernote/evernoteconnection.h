@@ -28,6 +28,7 @@
 #include <transport/THttpClient.h>
 
 #include <QObject>
+#include <QTimer>
 
 namespace evernote {
 namespace edam {
@@ -141,6 +142,8 @@ private:
 
     evernote::edam::UserStoreClient *m_userstoreClient;
     boost::shared_ptr<THttpClient> m_userStoreHttpClient;
+
+    QTimer m_reconnectTimer;
 };
 
 #endif // EVERNOTECONNECTION_H

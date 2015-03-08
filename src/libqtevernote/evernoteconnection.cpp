@@ -38,6 +38,7 @@
 #include <Errors_types.h>
 
 #include <QUrl>
+#include <QTime>
 
 #include <libintl.h>
 
@@ -65,6 +66,9 @@ EvernoteConnection::EvernoteConnection(QObject *parent) :
     m_userStoreHttpClient(0)
 {
     qRegisterMetaType<EvernoteConnection::ErrorCode>("EvernoteConnection::ErrorCode");
+
+    m_reconnectTimer.setSingleShot(true);
+    connect(&m_reconnectTimer, &QTimer::timeout, this, &EvernoteConnection::connectToEvernote);
 }
 
 void EvernoteConnection::setupUserStore()
@@ -148,6 +152,10 @@ EvernoteConnection::~EvernoteConnection()
 void EvernoteConnection::disconnectFromEvernote()
 {
     qCDebug(dcConnection) << "Disconnecting from Evernote.";
+
+    m_errorMessage.clear();
+    emit errorChanged();
+
     if (!isConnected()) {
         qCWarning(dcConnection()) << "Not connected. Can't disconnect.";
         return;
@@ -314,6 +322,36 @@ bool EvernoteConnection::connectUserStore()
             emit errorChanged();
             return false;
         }
+    } catch (const evernote::edam::EDAMUserException &e) {
+        qCWarning(dcConnection) << "EDAMUserException getting note store path:" << e.what() << "EDAM Error Code:" << e.errorCode;
+        switch (e.errorCode) {
+        case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
+            m_errorMessage = gettext("Authentication for Evernote server expired. Please renew login information in the accounts settings.");
+            break;
+        default:
+            m_errorMessage = QString(gettext("Unknown error connecting to Evernote: %1")).arg(e.errorCode);
+            break;
+        }
+        emit errorChanged();
+        return false;
+    } catch (const evernote::edam::EDAMSystemException &e) {
+        qCWarning(dcConnection) << "EDAMSystemException getting note store path:" << e.what() << e.errorCode;
+        switch (e.errorCode) {
+        case evernote::edam::EDAMErrorCode::RATE_LIMIT_REACHED:
+            m_errorMessage = gettext("Error connecting to Evernote: Rate limit exceeded. Please try again later.");
+            m_reconnectTimer.stop();
+            m_reconnectTimer.start(e.rateLimitDuration * 1000);
+            {
+                QTime time = QTime::fromMSecsSinceStartOfDay(e.rateLimitDuration * 1000);
+                qCDebug(dcConnection) << "Cannot connect. Rate limit exceeded. Reconnecting in" << time.toString("mm:ss");
+            }
+            break;
+        default:
+            m_errorMessage = gettext("Unknown error connecting to Evernote: %1");
+            break;
+        }
+        emit errorChanged();
+        return false;
     } catch (const TTransportException & e) {
         qCWarning(dcConnection) << "Failed to fetch notestore path:" <<  e.what();
         m_errorMessage = QString(gettext("Error connecting to Evernote: Connection failure when downloading server information."));
@@ -321,7 +359,7 @@ bool EvernoteConnection::connectUserStore()
         return false;
     } catch (const TException & e) {
         qCWarning(dcConnection) << "Generic Thrift exception when fetching notestore path:" << e.what();
-        m_errorMessage = gettext("Unknown error connecting to Evernote");
+        m_errorMessage = gettext("Unknown error connecting to Evernote.");
         emit errorChanged();
         return false;
     }

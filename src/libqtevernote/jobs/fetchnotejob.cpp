@@ -53,6 +53,8 @@ QString FetchNoteJob::toString() const
 
 void FetchNoteJob::startJob()
 {
+    // Just in case we error out, make sure the reply can be idenfied by note guid
+    m_result.guid = m_guid.toStdString();
     client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), m_what == LoadContent, m_what == LoadResources, false, false);
 }
 
