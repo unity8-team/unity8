@@ -203,7 +203,7 @@ private slots:
 
 private:
     // Those should only be called from NotesStore, which is a friend
-    void setLoading(bool loading, bool highPriority = false);
+    void setLoading(bool loading);
     void setSyncError(bool syncError);
     void setDeleted(bool deleted);
     void syncToCacheFile();

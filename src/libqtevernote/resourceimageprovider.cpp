@@ -6,11 +6,12 @@
 
 #include <QUrlQuery>
 #include <QFileInfo>
+#include <QStandardPaths>
+#include <QDir>
 
 ResourceImageProvider::ResourceImageProvider():
     QQuickImageProvider(QQuickImageProvider::Image)
 {
-
 }
 
 QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
@@ -51,7 +52,8 @@ QImage ResourceImageProvider::requestImage(const QString &id, QSize *size, const
 
 QImage ResourceImageProvider::loadIcon(const QString &name, const QSize &size)
 {
-    QString path = QString("/home/phablet/.cache/com.ubuntu.reminders/%1_%2x%3.png").arg(name).arg(size.width()).arg(size.height());
+    QString cachePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).first();
+    QString path = QString(cachePath + "/%1_%2x%3.png").arg(name).arg(size.width()).arg(size.height());
     QFileInfo fi(path);
     if (fi.exists()) {
         QImage image;
@@ -68,6 +70,10 @@ QImage ResourceImageProvider::loadIcon(const QString &name, const QSize &size)
         image = image.scaledToHeight(size.height(), Qt::SmoothTransformation);
     } else if (size.width() > 0) {
         image = image.scaledToWidth(size.width(), Qt::SmoothTransformation);
+    }
+    QDir dir(cachePath);
+    if (!dir.exists()) {
+        dir.mkpath(cachePath);
     }
     image.save(path);
     return image;

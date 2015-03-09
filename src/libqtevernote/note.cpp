@@ -611,7 +611,7 @@ void Note::remove()
     NotesStore::instance()->deleteNote(m_guid);
 }
 
-void Note::setLoading(bool loading, bool highPriority)
+void Note::setLoading(bool loading)
 {
     if (m_loading != loading) {
         m_loading = loading;

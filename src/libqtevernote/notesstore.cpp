@@ -804,9 +804,8 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
         EvernoteConnection::instance()->enqueue(job);
 
-        bool wasLoading = note->loading();
-        note->setLoading(true, priority == EvernoteJob::JobPriorityHigh);
-        if (!wasLoading) {
+        if (!note->loading()) {
+            note->setLoading(true);
             int idx = m_notes.indexOf(note);
             emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
         }
