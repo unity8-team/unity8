@@ -38,7 +38,6 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_isSearchResult(false),
     m_updateSequenceNumber(updateSequenceNumber),
     m_loading(false),
-    m_loadingHighPriority(false),
     m_loaded(false),
     m_needsContentSync(false),
     m_syncError(false),
@@ -64,15 +63,9 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
 
     infoFile.beginGroup("resources");
     foreach (const QString &hash, infoFile.childGroups()) {
-        if (Resource::isCached(hash)) {
-            infoFile.beginGroup(hash);
-            // Assuming the resource is already cached...
-            addResource(QByteArray(), hash, infoFile.value("fileName").toString(), infoFile.value("type").toString());
-            infoFile.endGroup();
-        } else {
-            // uh oh... have a resource description without file... reset sequence number to indicate we need a sync
-            qCWarning(dcNotesStore) << "Have a resource description but no resource file for it";
-        }
+        infoFile.beginGroup(hash);
+        addResource(hash, infoFile.value("fileName").toString(), infoFile.value("type").toString());
+        infoFile.endGroup();
     }
     infoFile.endGroup();
 
@@ -243,7 +236,6 @@ void Note::setTagGuids(const QStringList &tagGuids)
 
 QString Note::enmlContent() const
 {
-    load();
     return m_content.enml();
 }
 
@@ -263,13 +255,11 @@ void Note::setEnmlContent(const QString &enmlContent)
 
 QString Note::htmlContent() const
 {
-    load();
     return m_content.toHtml(m_guid);
 }
 
 QString Note::richTextContent() const
 {
-    load();
     return m_content.toRichText(m_guid);
 }
 
@@ -286,15 +276,11 @@ void Note::setRichTextContent(const QString &richTextContent)
 
 QString Note::plaintextContent() const
 {
-    load();
     return m_content.toPlaintext().trimmed();
 }
 
 QString Note::tagline() const
 {
-    if (m_tagline.isEmpty()) {
-        load(false);
-    }
     return m_tagline;
 }
 
@@ -488,11 +474,12 @@ QList<Resource*> Note::resources() const
 QStringList Note::resourceUrls() const
 {
     QList<QString> ret;
-    foreach (const QString &hash, m_resources.keys()) {
-        QUrl url("image://resource/" + m_resources.value(hash)->type());
+    foreach (Resource *resource, m_resources) {
+        QUrl url("image://resource/" + resource->type());
         QUrlQuery arguments;
         arguments.addQueryItem("noteGuid", m_guid);
-        arguments.addQueryItem("hash", hash);
+        arguments.addQueryItem("hash", resource->hash());
+        arguments.addQueryItem("loaded", resource->isCached() ? "true" : "false");
         url.setQuery(arguments);
         ret << url.toString();
     }
@@ -505,24 +492,28 @@ Resource* Note::resource(const QString &hash)
 }
 
 
-Resource* Note::addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type)
+Resource* Note::addResource(const QString &hash, const QString &fileName, const QString &type, const QByteArray &data)
 {
+    Resource *resource;
     if (m_resources.contains(hash)) {
-        return m_resources.value(hash);
+        resource = m_resources.value(hash);
+        if (!data.isEmpty()) {
+            resource->setData(data);
+        }
+    } else {
+        resource = new Resource(data, hash, fileName, type, this);
+        m_resources.insert(hash, resource);
+        QSettings infoFile(m_infoFile, QSettings::IniFormat);
+        infoFile.beginGroup("resources");
+        infoFile.beginGroup(hash);
+        infoFile.setValue("fileName", fileName);
+        infoFile.setValue("type", type);
+        infoFile.endGroup();
+        infoFile.endGroup();
     }
 
-    Resource *resource = new Resource(data, hash, fileName, type, this);
-    m_resources.insert(hash, resource);
     emit resourcesChanged();
     emit contentChanged();
-
-    QSettings infoFile(m_infoFile, QSettings::IniFormat);
-    infoFile.beginGroup("resources");
-    infoFile.beginGroup(hash);
-    infoFile.setValue("fileName", fileName);
-    infoFile.setValue("type", type);
-    infoFile.endGroup();
-    infoFile.endGroup();
 
     return resource;
 }
@@ -593,7 +584,7 @@ Note *Note::clone()
     note->setUpdateSequenceNumber(m_updateSequenceNumber);
     note->setDeleted(m_deleted);
     foreach (Resource *resource, m_resources) {
-        note->addResource(resource->data(), resource->hash(), resource->fileName(), resource->type());
+        note->addResource(resource->hash(), resource->fileName(), resource->type(), resource->data());
     }
     note->m_needsContentSync = m_needsContentSync;
 
@@ -620,17 +611,11 @@ void Note::remove()
     NotesStore::instance()->deleteNote(m_guid);
 }
 
-void Note::setLoading(bool loading, bool highPriority)
+void Note::setLoading(bool loading)
 {
     if (m_loading != loading) {
         m_loading = loading;
         emit loadingChanged();
-
-        if (!m_loading) {
-            m_loadingHighPriority = false;
-        } else {
-            m_loadingHighPriority = highPriority;
-        }
     }
 }
 
@@ -670,13 +655,22 @@ void Note::syncToCacheFile()
     }
 }
 
-void Note::load(bool priorityHigh) const
+void Note::load(bool priorityHigh)
 {
     if (!m_loaded && isCached()) {
         loadFromCacheFile();
-    } else if (!m_loaded) {
-        if (!m_loading || (priorityHigh && !m_loadingHighPriority)) {
-            NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadContent, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityLow);
+    }
+
+    if (!m_loaded) {
+        NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadContent, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityMedium);
+        return;
+    }
+
+    // Check if resources are loaded
+    foreach (Resource *resource, m_resources) {
+        if (!resource->isCached()) {
+            NotesStore::instance()->refreshNoteContent(m_guid, FetchNoteJob::LoadResources, priorityHigh ? EvernoteJob::JobPriorityHigh : EvernoteJob::JobPriorityLow);
+            break;
         }
     }
 }

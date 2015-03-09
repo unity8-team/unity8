@@ -157,7 +157,7 @@ public:
     QStringList resourceUrls() const;
     Q_INVOKABLE Resource* resource(const QString &hash);
     QList<Resource*> resources() const;
-    Resource *addResource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type);
+
 
     Q_INVOKABLE void markTodo(const QString &todoId, bool checked);
     Q_INVOKABLE void attachFile(int position, const QUrl &fileName);
@@ -166,6 +166,8 @@ public:
 
     int renderWidth() const;
     void setRenderWidth(int renderWidth);
+
+    Q_INVOKABLE void load(bool highPriority = false);
 
 public slots:
     void save();
@@ -201,7 +203,7 @@ private slots:
 
 private:
     // Those should only be called from NotesStore, which is a friend
-    void setLoading(bool loading, bool highPriority = false);
+    void setLoading(bool loading);
     void setSyncError(bool syncError);
     void setDeleted(bool deleted);
     void syncToCacheFile();
@@ -210,9 +212,10 @@ private:
     void setUpdateSequenceNumber(qint32 updateSequenceNumber);
     void setLastSyncedSequenceNumber(qint32 lastSyncedSequenceNumber);
     void setConflicting(bool conflicting);
+    Resource *addResource(const QString &hash, const QString &fileName, const QString &type, const QByteArray &data = QByteArray());
+    void addMissingResource();
+    void setMissingResources(int missingResources);
 
-    // const because we want to load on demand in getters. Keep this private!
-    void load(bool priorityHigh = true) const;
     void loadFromCacheFile() const;
 
 private:
@@ -236,7 +239,6 @@ private:
     QString m_infoFile;
 
     bool m_loading;
-    bool m_loadingHighPriority;
     mutable bool m_loaded;
     bool m_synced;
     bool m_needsContentSync;

@@ -37,8 +37,7 @@
  *   your job won't be executed but you should instead forward the other's job results.
  *
  * Jobs can be enqueue()d in NotesStore.
- * They will destroy themselves when finished.
- * The jobqueue will take care about starting them.
+ * The jobqueue will take care about starting them and deleting them.
  */
 class EvernoteJob : public QThread
 {
@@ -46,10 +45,11 @@ class EvernoteJob : public QThread
 public:
     enum JobPriority {
         JobPriorityHigh,
+        JobPriorityMedium,
         JobPriorityLow
     };
 
-    explicit EvernoteJob(QObject *parent = 0, JobPriority jobPriority = JobPriorityHigh);
+    explicit EvernoteJob(QObject *originatingObject = 0, JobPriority jobPriority = JobPriorityHigh);
     virtual ~EvernoteJob();
 
     JobPriority jobPriority() const;
@@ -63,8 +63,12 @@ public:
 
     virtual QString toString() const;
 
+    QObject* originatingObject() const;
+
 signals:
     void connectionLost(const QString &errorMessage);
+
+    void jobFinished();
 
 protected:
     virtual void resetConnection() = 0;
@@ -76,6 +80,7 @@ protected:
 private:
     QString m_token;
     JobPriority m_jobPriority;
+    QObject *m_originatingObject;
 
     friend class EvernoteConnection;
 };

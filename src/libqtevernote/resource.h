@@ -37,10 +37,12 @@ class Resource: public QObject
 public:
     Resource(const QString &path, QObject *parent = 0);
     Resource(const QByteArray &data, const QString &hash, const QString &fileName, const QString &type, QObject *parent = 0);
+    Resource(const QString &hash, const QString &fileName, const QString &type, QObject *parent = 0);
 
-    static bool isCached(const QString &hash);
+    bool isCached();
 
     QByteArray data() const;
+    void setData(const QByteArray &data);
     QString hash() const;
     QString fileName() const;
     QString type() const;

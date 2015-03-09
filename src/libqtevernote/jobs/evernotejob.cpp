@@ -38,11 +38,13 @@ using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 
-EvernoteJob::EvernoteJob(QObject *parent, JobPriority jobPriority) :
-    QThread(parent),
+EvernoteJob::EvernoteJob(QObject *originatingObject, JobPriority jobPriority) :
+    QThread(nullptr),
     m_token(EvernoteConnection::instance()->token()),
-    m_jobPriority(jobPriority)
+    m_jobPriority(jobPriority),
+    m_originatingObject(originatingObject)
 {
+    connect(this, &QThread::finished, this, &EvernoteJob::jobFinished);
 }
 
 EvernoteJob::~EvernoteJob()
@@ -196,6 +198,11 @@ void EvernoteJob::run()
 QString EvernoteJob::toString() const
 {
     return metaObject()->className();
+}
+
+QObject *EvernoteJob::originatingObject() const
+{
+    return m_originatingObject;
 }
 
 QString EvernoteJob::token()

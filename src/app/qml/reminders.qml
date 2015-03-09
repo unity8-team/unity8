@@ -111,6 +111,7 @@ MainView {
 
     function displayNote(note) {
         print("displayNote:", note.guid)
+        note.load(true);
         if (root.narrowMode) {
             print("creating noteview");
             var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
@@ -127,6 +128,7 @@ MainView {
     }
 
     function switchToEditMode(note) {
+        note.load(true)
         if (root.narrowMode) {
             if (pagestack.depth > 1) {
                 pagestack.pop();

@@ -52,15 +52,16 @@ Resource::Resource(const QByteArray &data, const QString &hash, const QString &f
     }
 }
 
-bool Resource::isCached(const QString &hash)
+Resource::Resource(const QString &hash, const QString &fileName, const QString &type, QObject *parent):
+    Resource(QByteArray(), hash, fileName, type, parent)
 {
-    QDir cacheDir(NotesStore::instance()->storageLocation());
-    foreach (const QString fi, cacheDir.entryList()) {
-        if (fi.contains(hash)) {
-            return true;
-        }
-    }
-    return false;
+
+}
+
+bool Resource::isCached()
+{
+    QFileInfo fi(m_filePath);
+    return fi.exists();
 }
 
 Resource::Resource(const QString &path, QObject *parent):
@@ -158,4 +159,14 @@ QByteArray Resource::data() const
         return file.readAll();
     }
     return QByteArray();
+}
+
+void Resource::setData(const QByteArray &data)
+{
+    QFile file(m_filePath);
+    if (file.open(QFile::WriteOnly | QFile::Truncate)) {
+        file.write(data);
+    } else {
+        qCDebug(dcNotesStore) << "Error saving data for resource:" << m_hash;
+    }
 }

@@ -677,7 +677,7 @@ void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, cons
             if (note->updateSequenceNumber() < result.updateSequenceNum) {
                 qCDebug(dcSync) << "refreshing note from network. suequence number changed: " << note->updateSequenceNumber() << "->" << result.updateSequenceNum;
                 changedRoles = updateFromEDAM(result, note);
-                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteJob::JobPriorityLow);
+                refreshNoteContent(note->guid(), FetchNoteJob::LoadContent, EvernoteJob::JobPriorityMedium);
                 syncToCacheFile(note);
             }
         } else {
@@ -798,15 +798,17 @@ void NotesStore::refreshNoteContent(const QString &guid, FetchNoteJob::LoadWhat 
         return;
     }
     if (EvernoteConnection::instance()->isConnected()) {
-        qCDebug(dcNotesStore) << "Fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "content" : "image");
+        qCDebug(dcNotesStore) << "Fetching note content from network for note" << guid << (what == FetchNoteJob::LoadContent ? "Content" : "Resource") << "Priority:" << priority;
         FetchNoteJob *job = new FetchNoteJob(guid, what, this);
         job->setJobPriority(priority);
         connect(job, &FetchNoteJob::resultReady, this, &NotesStore::fetchNoteJobDone);
         EvernoteConnection::instance()->enqueue(job);
 
-        note->setLoading(true, priority == EvernoteJob::JobPriorityHigh);
-        int idx = m_notes.indexOf(note);
-        emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
+        if (!note->loading()) {
+            note->setLoading(true);
+            int idx = m_notes.indexOf(note);
+            emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading);
+        }
     }
 }
 
@@ -818,16 +820,13 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         qCWarning(dcSync) << "can't find note for this update... ignoring...";
         return;
     }
+
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     QVector<int> roles;
-
-    note->setLoading(false);
-    roles << RoleLoading;
 
     switch (errorCode) {
     case EvernoteConnection::ErrorCodeNoError:
         // All is well
-        emit dataChanged(noteIndex, noteIndex, roles);
         break;
     case EvernoteConnection::ErrorCodeUserException:
         qCWarning(dcSync) << "FetchNoteJobDone: EDAMUserException:" << errorMessage;
@@ -877,15 +876,17 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         QString mime = QString::fromStdString(resource.mime);
 
         if (what == FetchNoteJob::LoadResources) {
-            qCDebug(dcSync) << "Resource fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
+            qCDebug(dcSync) << "Resource content fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
             QByteArray resourceData = QByteArray(resource.data.body.data(), resource.data.size);
-            note->addResource(resourceData, hash, fileName, mime);
-        } else if (Resource::isCached(hash)) {
-            qCDebug(dcSync) << "Resource already cached for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
-            note->addResource(QByteArray(), hash, fileName, mime);
+            note->addResource(hash, fileName, mime, resourceData);
         } else {
-            qCDebug(dcSync) << "Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
-            refreshWithResourceData = true;
+            qCDebug(dcSync) << "Adding resource info to note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
+            Resource *resource = note->addResource(hash, fileName, mime);
+
+            if (!resource->isCached()) {
+                qCDebug(dcSync) << "Resource not yet fetched for note:" << note->guid() << "Filename:" << fileName << "Mimetype:" << mime << "Hash:" << hash;
+                refreshWithResourceData = true;
+            }
         }
         roles << RoleHtmlContent << RoleEnmlContent << RoleResourceUrls;
     }
@@ -915,17 +916,20 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
         note->setReminderDoneTime(reminderDoneTime);
         roles << RoleReminderDone << RoleReminderDoneTime;
     }
-    emit noteChanged(note->guid(), note->notebookGuid());
 
+    note->setLoading(false);
+    roles << RoleLoading;
+
+    emit noteChanged(note->guid(), note->notebookGuid());
     emit dataChanged(noteIndex, noteIndex, roles);
 
     if (refreshWithResourceData) {
         qCDebug(dcSync) << "Fetching Note resources:" << note->guid();
-        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources, job->jobPriority());
-    } else {
-        syncToCacheFile(note); // Syncs into the list cache
-        note->syncToCacheFile(); // Syncs note's content into notes cache
+        EvernoteJob::JobPriority newPriority = job->jobPriority() == EvernoteJob::JobPriorityMedium ? EvernoteJob::JobPriorityLow : job->jobPriority();
+        refreshNoteContent(note->guid(), FetchNoteJob::LoadResources, newPriority);
     }
+    syncToCacheFile(note); // Syncs into the list cache
+    note->syncToCacheFile(); // Syncs note's content into notes cache
 }
 
 void NotesStore::refreshNotebooks()
@@ -1004,6 +1008,8 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
         }
     }
 
+    qCDebug(dcSync) << "Remote notebooks merged into storage. Merging local changes to server.";
+
     foreach (Notebook *notebook, unhandledNotebooks) {
         if (notebook->lastSyncedSequenceNumber() == 0) {
             qCDebug(dcSync) << "Have a local notebook that doesn't exist on Evernote. Creating on server:" << notebook->guid();
@@ -1027,6 +1033,8 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
             notebook->deleteLater();
         }
     }
+
+    qCDebug(dcSync) << "Notebooks merged.";
 }
 
 void NotesStore::refreshTags()
