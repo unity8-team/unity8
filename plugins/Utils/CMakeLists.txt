@@ -17,6 +17,7 @@ set(QMLPLUGIN_SRC
     windowscreenshotprovider.cpp
     easingcurve.cpp
     windowstatestorage.cpp
+    uscorientationcontroller.cpp
     plugin.cpp
     )
 

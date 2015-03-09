@@ -32,6 +32,7 @@
 #include "relativetimeformatter.h"
 #include "timeformatter.h"
 #include "unitymenumodelpaths.h"
+#include "uscorientationcontroller.h"
 #include "windowkeysfilter.h"
 #include "windowscreenshotprovider.h"
 #include "windowstatestorage.h"
@@ -55,6 +56,7 @@ void UtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<GDateTimeFormatter>(uri, 0, 1, "GDateTimeFormatter");
     qmlRegisterType<EasingCurve>(uri, 0, 1, "EasingCurve");
     qmlRegisterType<RelativeTimeFormatter>(uri, 0, 1, "RelativeTimeFormatter");
+    qmlRegisterType<USCOrientationController>(uri, 0, 1, "USCOrientationController");
     qmlRegisterSingletonType<WindowStateStorage>(uri, 0, 1, "WindowStateStorage", createWindowStateStorage);
 }
 

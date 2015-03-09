@@ -17,6 +17,7 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0
 import Unity.Session 0.1
+import Utils 0.1
 import GSettings 1.0
 import "Components"
 import "Rotation"
@@ -120,6 +121,10 @@ Rectangle {
         shell: shell
         shellCover: shellCover
         windowScreenshot: windowScreenshot
+    }
+
+    USCOrientationController {
+        angle: shell.orientationAngle
     }
 
     Shell {
