@@ -362,9 +362,9 @@ void EvernoteConnection::attachDuplicate(EvernoteJob *original, EvernoteJob *dup
 
 EvernoteJob* EvernoteConnection::findExistingDuplicate(EvernoteJob *job)
 {
-    qDebug(dcJobQueue) << "Length:"
-                       << m_highPriorityJobQueue.count() + m_mediumPriorityJobQueue.count() + m_lowPriorityJobQueue.count()
-                       << "(High:" << m_highPriorityJobQueue.count() << "Medium:" << m_mediumPriorityJobQueue.count() << "Low:" << m_lowPriorityJobQueue.count() << ")";
+    qCDebug(dcJobQueue) << "Length:"
+                        << m_highPriorityJobQueue.count() + m_mediumPriorityJobQueue.count() + m_lowPriorityJobQueue.count()
+                        << "(High:" << m_highPriorityJobQueue.count() << "Medium:" << m_mediumPriorityJobQueue.count() << "Low:" << m_lowPriorityJobQueue.count() << ")";
 
     foreach (EvernoteJob *queuedJob, m_highPriorityJobQueue) {
         // explicitly use custom operator==()
