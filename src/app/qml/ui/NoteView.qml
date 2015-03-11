@@ -110,7 +110,8 @@ Item {
         model: root.note ? root.note.tagGuids.length : undefined
         orientation: ListView.Horizontal
         spacing: units.gu(1)
-        height: units.gu(3)
+        height: visible ? units.gu(3) : 0
+        visible: root.note ? root.note.tagGuids.length > 0 ? true : false : false
 
         delegate: Rectangle {
             id: rectangle
