@@ -37,7 +37,15 @@ class ServerActivationSync : public QObject, public QQmlParserStatus
     Q_PROPERTY(int syncTimeout READ syncTimeout WRITE setSyncTimeout NOTIFY syncTimeoutChanged)
     Q_PROPERTY(bool syncWaiting READ syncWaiting NOTIFY syncWaitingChanged)
 
-    Q_PROPERTY(bool useWaitBuffer READ useWaitBuffer WRITE setUseWaitBuffer NOTIFY useWaitBufferChanged)
+    Q_PROPERTY(bool useWaitBuffer
+               READ useWaitBuffer
+               WRITE setUseWaitBuffer
+               NOTIFY useWaitBufferChanged)
+
+    Q_PROPERTY(bool bufferedSyncTimeout
+               READ bufferedSyncTimeout
+               WRITE setBufferedSyncTimeout
+               NOTIFY bufferedSyncTimeoutChanged)
 
 public:
     ServerActivationSync(QObject* parent = nullptr);
@@ -63,6 +71,9 @@ public:
     bool useWaitBuffer() const;
     void setUseWaitBuffer(bool value);
 
+    bool bufferedSyncTimeout() const;
+    void setBufferedSyncTimeout(bool);
+
     bool syncWaiting() const;
 
     Q_INVOKABLE void activate();
@@ -79,6 +90,7 @@ Q_SIGNALS:
 
     void syncTimeoutChanged(int timeout);
     void syncWaitingChanged(bool waiting);
+    void bufferedSyncTimeoutChanged(bool);
 
     void useWaitBufferChanged(bool);
 
@@ -104,6 +116,7 @@ private:
     QTimer* m_serverSync;
     bool m_useWaitBuffer;
     bool m_buffering;
+    bool m_bufferedSyncTimeout;
 };
 
 #endif // SERVERACTIVATIONSYNC_H

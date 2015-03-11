@@ -18,6 +18,7 @@ import QtQuick 2.3
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1 as USC
+import Ubuntu.Settings.Menus 0.1 as USM
 import Ubuntu.Components 0.1
 
 Item {
@@ -32,7 +33,7 @@ Item {
         property bool inSync: checked === switchControl.checked
 
         property Timer timer: Timer {
-            interval: 1000
+            interval: 2000
             onTriggered: switchBackend.checked = !switchBackend.checked
         }
     }
@@ -44,7 +45,7 @@ Item {
         property bool inSync: checked === checkControl.checked
 
         property Timer timer: Timer {
-            interval: 1000
+            interval: 2000
             onTriggered: checkBackend.checked = !checkBackend.checked
         }
     }
@@ -57,7 +58,7 @@ Item {
         property var changeToValue: undefined
 
         property Timer timer: Timer {
-            interval: 1000
+            interval: 2000
 
             onTriggered: {
                 sliderBackend.value = sliderBackend.changeToValue;
@@ -82,7 +83,9 @@ Item {
 
                 USC.ServerActivationSync {
                     id: switchSync
-                    syncTimeout: 2000
+                    objectName: "switchSync"
+
+                    syncTimeout: 3000
 
                     userTarget: switchControl
                     userProperty: "checked"
@@ -91,7 +94,6 @@ Item {
                     serverProperty: "checked"
 
                     onActivated: switchBackend.timer.start()
-
                     onSyncWaitingChanged: switchSyncSpy.clear()
                 }
             }
@@ -114,8 +116,9 @@ Item {
 
                 USC.ServerActivationSync {
                     id: checkSync
+                    objectName: "checkSync"
 
-                    syncTimeout: 2000
+                    syncTimeout: 3000
 
                     userTarget: checkControl
                     userProperty: "checked"
@@ -149,8 +152,9 @@ Item {
 
                 USC.ServerActivationSync {
                     id: sliderSync
+                    objectName: "sliderSync"
 
-                    syncTimeout: 2000
+                    syncTimeout: 3000
 
                     userTarget: slider
                     userProperty: "value"
@@ -170,6 +174,45 @@ Item {
             Column {
                 Label { text: sliderBackend.inSync ? "synced" : "out of sync" }
                 Label { text: sliderSync.syncWaiting ? "syncWait" : "no syncWait" }
+                Label { text: "activates: " + sliderSyncSpy.count }
+            }
+        }
+
+
+        Row {
+            spacing: units.gu(3)
+            height: childrenRect.height
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            USM.SwitchMenu {
+                id: switchMenu
+                width: units.gu(30)
+
+                text: "Test Check Menu"
+                onTriggered: switchMenuSync.activate()
+
+                USC.ServerActivationSync {
+                    id: switchMenuSync
+                    objectName: "switchMenuSync"
+
+                    syncTimeout: 3000
+
+                    userTarget: switchMenu
+                    userProperty: "checked"
+
+                    serverTarget: switchBackend
+                    serverProperty: "checked"
+
+                    onActivated: switchBackend.timer.start()
+
+                    onSyncWaitingChanged: switchSyncSpy.clear()
+                }
+            }
+
+            Column {
+                Label { text: switchBackend.checked === switchMenu.checked ? "synced" : "out of sync" }
+                Label { text: switchMenuSync.syncWaiting ? "syncWait" : "no syncWait" }
                 Label { text: "activates: " + sliderSyncSpy.count }
             }
         }

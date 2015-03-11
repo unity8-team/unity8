@@ -18,6 +18,7 @@
 
 #include <QQmlProperty>
 #include <QTimer>
+#include <QDebug>
 
 ServerActivationSync::ServerActivationSync(QObject* parent)
     : QObject(parent)
@@ -29,6 +30,7 @@ ServerActivationSync::ServerActivationSync(QObject* parent)
     , m_serverSync(new QTimer(this))
     , m_useWaitBuffer(true)
     , m_buffering(false)
+    , m_bufferedSyncTimeout(false)
 {
     m_serverSync->setSingleShot(true);
     m_serverSync->setInterval(30000);
@@ -128,6 +130,19 @@ void ServerActivationSync::setUseWaitBuffer(bool value)
     }
 }
 
+bool ServerActivationSync::bufferedSyncTimeout() const
+{
+    return m_bufferedSyncTimeout;
+}
+
+void ServerActivationSync::setBufferedSyncTimeout(bool value)
+{
+    if (m_bufferedSyncTimeout != value) {
+        m_bufferedSyncTimeout = value;
+        Q_EMIT bufferedSyncTimeoutChanged(value);
+    }
+}
+
 bool ServerActivationSync::syncWaiting() const
 {
     return m_serverSync->isActive();
@@ -138,7 +153,7 @@ void ServerActivationSync::activate()
     if (m_busy) return;
     m_busy = true;
 
-    // Waiting for sync?
+    // Still waiting for an update from server? Buffer the change.
     if (m_serverSync->isActive()) {
         m_busy = false;
         m_buffering = m_useWaitBuffer;
@@ -191,7 +206,11 @@ void ServerActivationSync::updateUserValue()
         return;
     }
 
+    // If we've been buffering changes since last change was send,
+    // we verify that what the server gave us is what we want, and send another
+    // activation if not.
     if (m_buffering) {
+        m_buffering = false;
         m_busy = false;
         if (serverProp.read() != userProp.read()) {
             activate();
@@ -205,6 +224,9 @@ void ServerActivationSync::updateUserValue()
 
 void ServerActivationSync::serverSyncTimedOut()
 {
+    if (m_buffering && !m_bufferedSyncTimeout) {
+        m_buffering = false;
+    }
     Q_EMIT syncWaitingChanged(false);
     updateUserValue();
 }
