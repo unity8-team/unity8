@@ -64,9 +64,11 @@ Item {
         id: logoutDialogComponent
         ShellDialog {
             id: logoutDialog
+            // TRANSLATORS: Title for dialog to log out the user or lock the screen
             title: i18n.tr("Log out")
             text: i18n.tr("Are you sure you want to log out?")
             Button {
+                // TRANSLATORS: Button for locking the screen
                 text: i18n.tr("Lock")
                 onClicked: {
                     LightDM.Greeter.showGreeter()
@@ -74,6 +76,7 @@ Item {
                 }
             }
             Button {
+                // TRANSLATORS: Button for logging out the current user
                 text: i18n.tr("Log Out")
                 onClicked: {
                     unitySessionService.logout();
@@ -93,9 +96,11 @@ Item {
         id: shutdownDialogComponent
         ShellDialog {
             id: shutdownDialog
+            // TRANSLATORS: Title for dialog to reboot or shutdown the device
             title: i18n.tr("Shut down")
             text: i18n.tr("Are you sure you want to shut down?")
             Button {
+                // TRANSLATORS: Button for rebooting the device
                 text: i18n.tr("Reboot")
                 onClicked: {
                     root.closeAllApps();
@@ -104,6 +109,7 @@ Item {
                 }
             }
             Button {
+                // TRANSLATORS: Button for shutting down the device
                 text: i18n.tr("Shutdown")
                 onClicked: {
                     root.closeAllApps();
@@ -124,6 +130,7 @@ Item {
         id: rebootDialogComponent
         ShellDialog {
             id: rebootDialog
+            // TRANSLATORS: Title for dialog to reboot the device
             title: i18n.tr("Reboot")
             text: i18n.tr("Are you sure you want to reboot?")
             Button {
@@ -147,9 +154,11 @@ Item {
         id: powerDialogComponent
         ShellDialog {
             id: powerDialog
+            // TRANSLATORS: Title for power dialog, with options to shut down or restart.
             title: i18n.tr("Power")
             text: i18n.tr("Are you sure you would like\nto power off?")
             Button {
+                // TRANSLATORS: Button for powering off the device
                 text: i18n.tr("Power off")
                 onClicked: {
                     root.closeAllApps();
@@ -159,6 +168,7 @@ Item {
                 color: UbuntuColors.red
             }
             Button {
+                // TRANSLATORS: Button for restarting the device
                 text: i18n.tr("Restart")
                 onClicked: {
                     root.closeAllApps();
