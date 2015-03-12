@@ -18,7 +18,6 @@
 
 #include <QQmlProperty>
 #include <QTimer>
-#include <QDebug>
 
 ServerActivationSync::ServerActivationSync(QObject* parent)
     : QObject(parent)
