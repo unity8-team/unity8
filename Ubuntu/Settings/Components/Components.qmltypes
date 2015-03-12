@@ -19,6 +19,7 @@ Module {
         Property { name: "syncTimeout"; type: "int" }
         Property { name: "syncWaiting"; type: "bool"; isReadonly: true }
         Property { name: "useWaitBuffer"; type: "bool" }
+        Property { name: "bufferedSyncTimeout"; type: "bool" }
         Signal {
             name: "serverTargetChanged"
             Parameter { name: "serverTarget"; type: "QObject"; isPointer: true }
@@ -42,6 +43,10 @@ Module {
         Signal {
             name: "syncWaitingChanged"
             Parameter { name: "waiting"; type: "bool" }
+        }
+        Signal {
+            name: "bufferedSyncTimeoutChanged"
+            Parameter { type: "bool" }
         }
         Signal {
             name: "useWaitBufferChanged"
