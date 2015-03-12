@@ -307,9 +307,11 @@ void NotesStore::createNotebookJobDone(EvernoteConnection::ErrorCode errorCode, 
 
     notebook->setLoading(false);
 
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "Error creating notebook:" << errorMessage;
         notebook->setSyncError(true);
+        emit notebookChanged(notebook->guid());
         return;
     }
     QString guid = QString::fromStdString(result.guid);
@@ -503,6 +505,8 @@ void NotesStore::createTagJobDone(EvernoteConnection::ErrorCode errorCode, const
     }
 
     tag->setLoading(false);
+
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "Error creating tag on server:" << errorMessage;
         tag->setSyncError(true);
@@ -540,6 +544,8 @@ void NotesStore::saveTagJobDone(EvernoteConnection::ErrorCode errorCode, const Q
         return;
     }
     tag->setLoading(false);
+
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "Error updating tag on server" << errorMessage;
         tag->setSyncError(true);
@@ -625,26 +631,8 @@ void NotesStore::refreshNotes(const QString &filterNotebookGuid, int startIndex)
 
 void NotesStore::fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid)
 {
-    switch (errorCode) {
-    case EvernoteConnection::ErrorCodeNoError:
-        // All is well...
-        break;
-    case EvernoteConnection::ErrorCodeUserException:
-        qCWarning(dcSync) << "FetchNotesJobDone: EDAMUserException:" << errorMessage;
-        m_loading = false;
-        emit loadingChanged();
-        return; // silently discarding...
-    case EvernoteConnection::ErrorCodeConnectionLost:
-        qCWarning(dcSync) << "FetchNotesJobDone: Connection with evernote lost:" << errorMessage;
-        m_loading = false;
-        emit loadingChanged();
-        return; // silently discarding...
-    case EvernoteConnection::ErrorCodeNotFoundExcpetion:
-        qCWarning(dcSync) << "FetchNotesJobDone: Item not found on server:" << errorMessage;
-        m_loading = false;
-        emit loadingChanged();
-        return; // silently discarding...
-    default:
+    handleUserError(errorCode);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "FetchNotesJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
         m_loading = false;
         emit loadingChanged();
@@ -824,24 +812,10 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
     QModelIndex noteIndex = index(m_notes.indexOf(note));
     QVector<int> roles;
 
-    switch (errorCode) {
-    case EvernoteConnection::ErrorCodeNoError:
-        // All is well
-        break;
-    case EvernoteConnection::ErrorCodeUserException:
-        qCWarning(dcSync) << "FetchNoteJobDone: EDAMUserException:" << errorMessage;
-        emit dataChanged(noteIndex, noteIndex, roles);
-        return; // silently discarding...
-    case EvernoteConnection::ErrorCodeConnectionLost:
-        qCWarning(dcSync) << "FetchNoteJobDone: Connection with evernote lost:" << errorMessage;
-        emit dataChanged(noteIndex, noteIndex, roles);
-        return; // silently discarding...
-    case EvernoteConnection::ErrorCodeNotFoundExcpetion:
-        qCWarning(dcSync) << "FetchNoteJobDone: Item not found on server:" << errorMessage;
-        emit dataChanged(noteIndex, noteIndex, roles);
-        return; // silently discarding...
-    default:
-        qCWarning(dcSync) << "FetchNoteJobDone: Failed to fetch note content:" << errorMessage << errorCode;
+    handleUserError(errorCode);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        note->setLoading(false);
+        roles << RoleLoading;
         note->setSyncError(true);
         roles << RoleSyncError;
         emit dataChanged(noteIndex, noteIndex, roles);
@@ -951,20 +925,10 @@ void NotesStore::fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, 
     m_notebooksLoading = false;
     emit notebooksLoadingChanged();
 
-    switch (errorCode) {
-    case EvernoteConnection::ErrorCodeNoError:
-        // All is well...
-        break;
-    case EvernoteConnection::ErrorCodeUserException:
-        qCWarning(dcSync) << "FetchNotebooksJobDone: EDAMUserException:" << errorMessage;
-        // silently discarding...
-        return;
-    case EvernoteConnection::ErrorCodeConnectionLost:
-        qCWarning(dcSync) << "FetchNotebooksJobDone: Connection lost:" << errorMessage;
-        return; // silently discarding
-    default:
+    handleUserError(errorCode);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "FetchNotebooksJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
-        return; // silently discarding
+        return;
     }
 
     QList<Notebook*> unhandledNotebooks = m_notebooks;
@@ -1063,20 +1027,10 @@ void NotesStore::fetchTagsJobDone(EvernoteConnection::ErrorCode errorCode, const
     m_tagsLoading = false;
     emit tagsLoadingChanged();
 
-    switch (errorCode) {
-    case EvernoteConnection::ErrorCodeNoError:
-        // All is well...
-        break;
-    case EvernoteConnection::ErrorCodeUserException:
-        qCWarning(dcSync) << "FetchTagsJobDone: EDAMUserException:" << errorMessage;
-        // silently discarding...
-        return;
-    case EvernoteConnection::ErrorCodeConnectionLost:
-        qCWarning(dcSync) << "FetchTagsJobDone: Connection lost:" << errorMessage;
-        return; // silently discarding
-    default:
+    handleUserError(errorCode);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "FetchTagsJobDone: Failed to fetch notes list:" << errorMessage << errorCode;
-        return; // silently discarding
+        return;
     }
 
     QHash<QString, Tag*> unhandledTags = m_tagsHash;
@@ -1203,6 +1157,7 @@ void NotesStore::createNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
     note->setLoading(false);
     roles << RoleLoading;
 
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "Error creating note on server:" << tmpGuid << errorMessage;
         note->setSyncError(true);
@@ -1304,13 +1259,13 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
     int idx = m_notes.indexOf(note);
     note->setLoading(false);
 
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qCWarning(dcSync) << "Error saving note:" << errorMessage;
+        qCWarning(dcSync) << "Unhandled error saving note:" << errorCode << "Message:" << errorMessage;
         note->setSyncError(true);
         emit dataChanged(index(idx), index(idx), QVector<int>() << RoleLoading << RoleSyncError);
         return;
     }
-    note->setSyncError(false);
 
     note->setUpdateSequenceNumber(result.updateSequenceNum);
     note->setLastSyncedSequenceNumber(result.updateSequenceNum);
@@ -1327,19 +1282,25 @@ void NotesStore::saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const 
 
 void NotesStore::saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result)
 {
-    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qCWarning(dcSync) << "Error saving notebook to server" << errorMessage;
-        return;
-    }
-
     Notebook *notebook = m_notebooksHash.value(QString::fromStdString(result.guid));
     if (!notebook) {
         qCWarning(dcSync) << "Save notebook job done but notebook can't be found any more!";
         return;
     }
+
+    handleUserError(errorCode);
+    if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qCWarning(dcSync) << "Error saving notebook to server" << errorCode << errorMessage;
+        notebook->setSyncError(true);
+        emit notebookChanged(notebook->guid());
+        return;
+    }
+
+    notebook->setLoading(false);
+    notebook->setSyncError(false);
+
     qCDebug(dcSync) << "Notebooks saved to server:" << notebook->guid();
     updateFromEDAM(result, notebook);
-    notebook->setLoading(false);
     emit notebookChanged(notebook->guid());
     syncToCacheFile(notebook);
 }
@@ -1410,6 +1371,7 @@ void NotesStore::clearSearchResults()
 
 void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid)
 {
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "Cannot delete note from server:" << errorMessage;
         return;
@@ -1430,6 +1392,7 @@ void NotesStore::deleteNoteJobDone(EvernoteConnection::ErrorCode errorCode, cons
 
 void NotesStore::expungeNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &guid)
 {
+    handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
         qCWarning(dcSync) << "Error expunging notebook:" << errorMessage;
         return;
@@ -1641,6 +1604,25 @@ void NotesStore::updateFromEDAM(const evernote::edam::Notebook &evNotebook, Note
         notebook->setIsDefaultNotebook(evNotebook.defaultNotebook);
     }
     notebook->setLastSyncedSequenceNumber(evNotebook.updateSequenceNum);
+}
+
+bool NotesStore::handleUserError(EvernoteConnection::ErrorCode errorCode)
+{
+    switch (errorCode) {
+    case EvernoteConnection::ErrorCodeAuthExpired:
+        m_errorQueue.append(gettext("Authentication for Evernote server expired. Please renew login information in the accounts settings."));
+        break;
+    case EvernoteConnection::ErrorCodeLimitExceeded:
+        m_errorQueue.append(gettext("Rate limit for Evernote server exceeded. Please try again later."));
+        break;
+    case EvernoteConnection::ErrorCodeQutaExceeded:
+        m_errorQueue.append(gettext("Upload quota for Evernote server exceed. Please try again later."));
+        break;
+    default:
+        return false;
+    }
+    emit errorChanged();
+    return true;
 }
 
 

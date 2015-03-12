@@ -203,6 +203,8 @@ private:
     QVector<int>    updateFromEDAM(const evernote::edam::NoteMetadata &evNote, Note *note);
     void updateFromEDAM(const evernote::edam::Notebook &evNotebook, Notebook *notebook);
 
+    bool handleUserError(EvernoteConnection::ErrorCode errorCode);
+
 private:
     explicit NotesStore(QObject *parent = 0);
     static NotesStore *s_instance;

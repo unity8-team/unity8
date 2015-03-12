@@ -100,6 +100,7 @@ void EvernoteJob::run()
             }
         } catch (const evernote::edam::EDAMUserException &e) {
             QString message;
+            EvernoteConnection::ErrorCode errorCode = EvernoteConnection::ErrorCodeUserException;
             switch (e.errorCode) {
             case evernote::edam::EDAMErrorCode::UNKNOWN:
                 message = "Unknown Error: %1";
@@ -118,15 +119,18 @@ void EvernoteJob::run()
                 break;
             case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
                 message = "Limit reached: %1";
+                errorCode = EvernoteConnection::ErrorCodeLimitExceeded;
                 break;
             case evernote::edam::EDAMErrorCode::QUOTA_REACHED:
                 message = "Quota reached: %1";
+                errorCode = EvernoteConnection::ErrorCodeQutaExceeded;
                 break;
             case evernote::edam::EDAMErrorCode::INVALID_AUTH:
                 message = "Invalid auth: %1";
                 break;
             case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
                 message = "Auth expired: %1";
+                errorCode = EvernoteConnection::ErrorCodeAuthExpired;
                 break;
             case evernote::edam::EDAMErrorCode::DATA_CONFLICT:
                 message = "Data conflict: %1";
@@ -161,26 +165,26 @@ void EvernoteJob::run()
             }
             message = message.arg(QString::fromStdString(e.parameter));
             qCWarning(dcJobQueue) << metaObject()->className() << "EDAMUserException:" << message;
-            emitJobDone(EvernoteConnection::ErrorCodeUserException, message);
+            emitJobDone(errorCode, message);
         } catch (const evernote::edam::EDAMSystemException &e) {
             qCWarning(dcJobQueue) << "EDAMSystemException in" << metaObject()->className() << e.what() << e.errorCode << QString::fromStdString(e.message);
             QString message;
             EvernoteConnection::ErrorCode errorCode;
             switch (e.errorCode) {
             case evernote::edam::EDAMErrorCode::AUTH_EXPIRED:
-                message = gettext("Authentication expired.");
+                message = "Authentication expired.";
                 errorCode = EvernoteConnection::ErrorCodeAuthExpired;
                 break;
             case evernote::edam::EDAMErrorCode::LIMIT_REACHED:
-                message = gettext("Limit exceeded.");
+                message = "Limit exceeded.";
                 errorCode = EvernoteConnection::ErrorCodeLimitExceeded;
                 break;
             case evernote::edam::EDAMErrorCode::RATE_LIMIT_REACHED:
-                message = gettext("Rate limit exceeded.");
+                message = "Rate limit exceeded.";
                 errorCode = EvernoteConnection::ErrorCodeRateLimitExceeded;
                 break;
             case evernote::edam::EDAMErrorCode::QUOTA_REACHED:
-                message = gettext("Quota exceeded.");
+                message = "Quota exceeded.";
                 errorCode = EvernoteConnection::ErrorCodeQutaExceeded;
                 break;
             default:
