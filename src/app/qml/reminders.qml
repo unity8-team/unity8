@@ -110,13 +110,17 @@ MainView {
     }
 
     function displayNote(note, conflictMode) {
+        if (conflictMode == undefined) {
+            conflictMode = false;
+        }
+
         print("displayNote:", note.guid)
         note.load(true);
         if (root.narrowMode) {
             print("creating noteview");
             var page;
             if (!conflictMode && note.conflicting) {
-                // We want to open the note normally even though it is conflicting! Show the Conflict page instead.
+                // User wants to open the note even though it is conflicting! Show the Conflict page instead.
                 var component = Qt.createComponent(Qt.resolvedUrl("ui/NoteConflictPage.qml"));
                 page = component.createObject(root, {note: note});
                 page.displayNote.connect(function(note) { root.displayNote(note, true); } );
@@ -138,9 +142,20 @@ MainView {
             pagestack.push(page)
         } else {
             var view;
-            if (note.conflicting) {
+            if (!conflictMode && note.conflicting) {
+                // User wants to open the note even though it is conflicting! Show the Conflict page instead.
+                notesPage.conflictMode = true;
                 view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteConflictView.qml"))
+                view.displayNote.connect(function(note) {root.displayNote(note,true)})
+                view.resolveConflict.connect(function(keepLocal) {
+                    var confirmation = PopupUtils.open(Qt.resolvedUrl("components/ResolveConflictConfirmationDialog.qml"), page, {keepLocal: keepLocal, remoteDeleted: note.conflictingNote.deleted, localDeleted: note.deleted});
+                    confirmation.accepted.connect(function() {
+                        print("dialog accepted. keepLocal:", keepLocal)
+                        NotesStore.resolveConflict(note.guid, keepLocal ? NotesStore.KeepLocal : NotesStore.KeepRemote);
+                    });
+                })
             } else {
+                notesPage.conflictMode = conflictMode;
                 view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
                 view.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, false)})
             }
@@ -480,6 +495,8 @@ MainView {
                 objectName: "NotesTab"
                 page: NotesPage {
                     id: notesPage
+                    readOnly: conflictMode
+                    property bool conflictMode: false
 
                     narrowMode: root.narrowMode
 

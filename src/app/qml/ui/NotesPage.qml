@@ -29,6 +29,7 @@ PageWithBottomEdge {
     id: root
 
     property var selectedNote: null
+    property bool readOnly: false
     property bool narrowMode
 
     property alias filterNotebookGuid: notes.filterNotebookGuid
@@ -99,7 +100,7 @@ PageWithBottomEdge {
             action: Action {
                 text: i18n.tr("Delete")
                 iconName: "delete"
-                visible: root.selectedNote !== null
+                visible: root.selectedNote !== null && !root.readOnly
                 onTriggered: {
                     NotesStore.deleteNote(root.selectedNote.guid);
                 }
@@ -114,7 +115,7 @@ PageWithBottomEdge {
                 iconSource: root.selectedNote.reminder ?
                     Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
                     Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
-                visible: root.selectedNote !== null
+                visible: root.selectedNote !== null && !root.readOnly
                 onTriggered: {
                     root.selectedNote.reminder = !root.selectedNote.reminder
                     NotesStore.saveNote(root.selectedNote.guid)
@@ -125,7 +126,7 @@ PageWithBottomEdge {
             action: Action {
                 text: i18n.tr("Edit")
                 iconName: "edit"
-                visible: root.selectedNote !== null
+                visible: root.selectedNote !== null && !root.readOnly
                 onTriggered: {
                     print("should edit note")
                     root.editNote(root.selectedNote)
