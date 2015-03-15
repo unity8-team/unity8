@@ -161,7 +161,6 @@ PageWithBottomEdge {
                       model.updated : model.created
 
             content: model.tagline
-            triggerActionOnMouseRelease: true
             tags: {
                 var tags = new Array();
                 for (var i = 0; i < model.tagGuids.length; i++) {
@@ -176,15 +175,15 @@ PageWithBottomEdge {
             loading: model.loading
             syncError: model.syncError
             conflicting: model.conflicting
+            locked: conflicting
+            deleted: model.deleted
 
             Component.onCompleted: {
                 notes.note(model.guid).load(false);
             }
 
             onItemClicked: {
-                if (!model.conflicting) {
-                    root.selectedNote = NotesStore.note(guid);
-                }
+                root.selectedNote = NotesStore.note(guid);
             }
 
             onDeleteNote: {

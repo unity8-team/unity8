@@ -20,12 +20,13 @@
 
 #include "fetchnotejob.h"
 
-FetchNoteJob::FetchNoteJob(const QString &guid, LoadWhat what, QObject *parent) :
+FetchNoteJob::FetchNoteJob(const QString &guid, LoadWhatFlags what, QObject *parent) :
     NotesStoreJob(parent),
     m_guid(guid),
     m_what(what)
 {
     qRegisterMetaType<LoadWhat>("LoadWhat");
+    qRegisterMetaType<LoadWhatFlags>("LoadWhatFlags");
 }
 
 bool FetchNoteJob::operator==(const EvernoteJob *other) const
@@ -55,7 +56,7 @@ void FetchNoteJob::startJob()
 {
     // Just in case we error out, make sure the reply can be idenfied by note guid
     m_result.guid = m_guid.toStdString();
-    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), m_what == LoadContent, m_what == LoadResources, false, false);
+    client()->getNote(m_result, token().toStdString(), m_guid.toStdString(), m_what.testFlag(LoadContent), m_what.testFlag(LoadResources), false, false);
 }
 
 void FetchNoteJob::emitJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage)

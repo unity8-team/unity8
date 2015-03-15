@@ -109,20 +109,41 @@ MainView {
         pagestack.push(accountPage);
     }
 
-    function displayNote(note) {
+    function displayNote(note, conflictMode) {
         print("displayNote:", note.guid)
         note.load(true);
         if (root.narrowMode) {
             print("creating noteview");
-            var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-            var page = component.createObject(root);
+            var page;
+            if (!conflictMode && note.conflicting) {
+                // We want to open the note normally even though it is conflicting! Show the Conflict page instead.
+                var component = Qt.createComponent(Qt.resolvedUrl("ui/NoteConflictPage.qml"));
+                page = component.createObject(root, {note: note});
+                page.displayNote.connect(function(note) { root.displayNote(note, true); } );
+                page.resolveConflict.connect(function(keepLocal) {
+                    var confirmation = PopupUtils.open(Qt.resolvedUrl("components/ResolveConflictConfirmationDialog.qml"), page, {keepLocal: keepLocal, remoteDeleted: note.conflictingNote.deleted, localDeleted: note.deleted});
+                    confirmation.accepted.connect(function() {
+                        print("dialog accepted. keepLocal:", keepLocal)
+                        NotesStore.resolveConflict(note.guid, keepLocal ? NotesStore.KeepLocal : NotesStore.KeepRemote);
+                        pagestack.pop();
+                    });
+                })
+            } else {
+                var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
+                page = component.createObject(root, {readOnly: conflictMode });
+                page.editNote.connect(function(note) {root.switchToEditMode(note)})
+                page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
+            }
             page.note = note;
-            page.editNote.connect(function(note) {root.switchToEditMode(note)})
-            page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
             pagestack.push(page)
         } else {
-            var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
-            view.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, false)})
+            var view;
+            if (note.conflicting) {
+                view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteConflictView.qml"))
+            } else {
+                view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
+                view.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, false)})
+            }
             view.note = note;
         }
     }

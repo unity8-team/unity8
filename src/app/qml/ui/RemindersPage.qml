@@ -59,7 +59,6 @@ Page {
             delegate: RemindersDelegate {
                 width: remindersListView.width
                 note: notes.note(guid)
-                triggerActionOnMouseRelease: true
 
                 onItemClicked: {
                     root.selectedNote = NotesStore.note(guid);

@@ -51,6 +51,7 @@ using namespace apache::thrift::transport;
 class NotesStore : public QAbstractListModel
 {
     Q_OBJECT
+    Q_ENUMS(ConflictResolveMode)
     // Setting the username will cause notes to be loaded from cache
     // If you want to load the local cache only (not associated with an Evernote account), make sure to set this to ""
     // Note that if you use EvernoteConnection to log in (by setting a token obtained from OA) this username
@@ -89,6 +90,11 @@ public:
         RoleSynced,
         RoleSyncError,
         RoleConflicting
+    };
+
+    enum ConflictResolveMode {
+        KeepLocal,
+        KeepRemote
     };
 
     ~NotesStore();
@@ -137,6 +143,8 @@ public:
     Q_INVOKABLE void untagNote(const QString &noteGuid, const QString &tagGuid);
     Q_INVOKABLE void expungeTag(const QString &guid);
 
+    Q_INVOKABLE void resolveConflict(const QString &noteGuid, ConflictResolveMode mode);
+
 public slots:
     void refreshNotes(const QString &filterNotebookGuid = QString(), int startIndex = 0);
 
@@ -178,7 +186,8 @@ signals:
 private slots:
     void fetchNotesJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::NotesMetadataList &results, const QString &filterNotebookGuid);
     void fetchNotebooksJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const std::vector<evernote::edam::Notebook> &results);
-    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhat what);
+    void fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhatFlags what);
+    void fetchConflictingNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhatFlags what);
     void createNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const QString &tmpGuid, const evernote::edam::Note &result);
     void saveNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result);
     void saveNotebookJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Notebook &result);

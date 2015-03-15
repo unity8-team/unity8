@@ -41,6 +41,8 @@ ListItemWithActions {
         }
     }
 
+    selectedRightActionColor: UbuntuColors.green
+    triggerActionOnMouseRelease: true
     rightSideActions: [
         Action {
             iconSource: root.note.reminderDone ? "image://theme/select" : "../images/unchecked.svg"

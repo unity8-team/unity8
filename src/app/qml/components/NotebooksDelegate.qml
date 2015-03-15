@@ -39,6 +39,8 @@ ListItemWithActions {
         }
     }
 
+    selectedRightActionColor: UbuntuColors.green
+    triggerActionOnMouseRelease: true
     rightSideActions: [
         Action {
             iconName: model.isDefaultNotebook ? "starred" : "non-starred"
