@@ -41,8 +41,6 @@ PageWithBottomEdge {
     bottomEdgeLabelVisible: narrowMode && (!notes.filterNotebookGuid || !notes.loading)
     bottomEdgeTitle: i18n.tr("Add note")
     bottomEdgePageComponent: EditNotePage {
-        isBottomEdge: true;
-
         MouseArea {
             anchors.fill: parent
         }

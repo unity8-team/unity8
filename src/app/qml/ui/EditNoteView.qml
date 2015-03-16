@@ -30,7 +30,6 @@ import "../components"
 Item {
     id: root
     property var note
-    property bool isBottomEdge: false
 
     onNoteChanged: {
         for (var i = 0; i < notebookSelector.values.count; i++) {
@@ -81,61 +80,16 @@ Item {
          }
      }
 
-    Binding {
-        target: note
-        property: "renderWidth"
-        value: noteTextArea.width - noteTextArea.textMargin * 2
+    Connections {
+        target: noteTextArea
+        onWidthChanged: {
+            note.richTextContent = noteTextArea.text;
+            note.renderWidth = noteTextArea.width - noteTextArea.textMargin
+        }
     }
 
     Column {
         anchors { left: parent.left; top: parent.top; right: parent.right; bottom: toolbox.top }
-
-        Row {
-            visible: !root.isBottomEdge
-            anchors { left: parent.left; right: parent.right; margins: units.gu(1) }
-            height: units.gu(7)
-            spacing: units.gu(2)
-            AbstractButton {
-                id: backIcon
-                height: units.gu(3)
-                width: height
-                anchors.verticalCenter: parent.verticalCenter
-                Icon {
-                    name: "back"
-                    anchors.fill: parent
-                }
-                onClicked: {
-                    root.exitEditMode(root.note);
-                }
-            }
-
-            TextField {
-                id: titleTextField
-                text: root.note ? root.note.title : ""
-                placeholderText: i18n.tr("Untitled")
-                height: units.gu(4)
-                width: parent.width - (backIcon.width + parent.spacing) * 2
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            AbstractButton {
-                height: units.gu(3)
-                width: height
-                anchors.verticalCenter: parent.verticalCenter
-                Icon {
-                    name: "save"
-                    anchors.fill: parent
-                }
-                onClicked: {
-                    saveNote();
-                    root.exitEditMode(root.note);
-                }
-            }
-        }
-
-        Divider {
-            visible: !root.isBottomEdge
-            height: units.gu(2)
-        }
 
         Rectangle {
             anchors { left: parent.left; right: parent.right }
@@ -152,14 +106,16 @@ Item {
 
                  function ensureVisible(r)
                  {
+                     var staticHeight = titleTextField.height + notebookSelector.height
                      if (contentX >= r.x)
                          contentX = r.x;
-                     else if (contentX+width <= r.x+r.width)
+                     else if (contentX +width <= r.x+r.width)
                          contentX = r.x+r.width-width;
                      if (contentY >= r.y)
                          contentY = r.y;
-                     else if (contentY+height-notebookSelector.height <= r.y+r.height)
-                         contentY = r.y+r.height-height+notebookSelector.height;
+                     else if (contentY + height <= r.y + staticHeight + r.height) {
+                         contentY = r.y + r.height - staticHeight;
+                     }
                  }
 
                  Column {
@@ -167,17 +123,84 @@ Item {
                      width: parent.width
                      height: childrenRect.height
 
+                     TextField {
+                         id: titleTextField
+                         height: units.gu(6)
+                         width: parent.width
+                         text: root.note ? root.note.title : ""
+                         placeholderText: i18n.tr("Untitled")
+                         font.pixelSize: units.gu(4)
+                         style: TextFieldStyle {
+                             background: null
+                         }
+                     }
+
+                     ThinDivider {}
+
                      ValueSelector {
                          id: notebookSelector
+                         width: parent.width
                          text: values.notebook(selectedIndex).name
                          property string selectedGuid: values.notebook(selectedIndex) ? values.notebook(selectedIndex).guid : ""
                          values: Notebooks {}
+
+                         // The ValueSelector is not customizable enough, yet we wanna use the expanstion it provides. Let's just paint on top of it
+
+                         Rectangle {
+                             anchors { left: parent.left; right: parent.right; top: parent.top }
+                             height: units.gu(6)
+                             color: "white"
+
+                             RowLayout {
+                                 anchors.fill: parent
+                                 anchors.margins: units.gu(1)
+
+                                 Item {
+                                     height: parent.height
+                                     width: height
+                                     Icon {
+                                         anchors.fill: parent
+                                         anchors.margins: units.gu(0.5)
+                                         name: "notebook"
+                                         color: preferences.colorForNotebook(notebookSelector.values.notebook(notebookSelector.selectedIndex).guid)
+                                     }
+                                 }
+
+                                 Label {
+                                     text: notebookSelector.values.notebook(notebookSelector.selectedIndex).name
+                                     Layout.fillWidth: true
+                                     color: preferences.colorForNotebook(notebookSelector.values.notebook(notebookSelector.selectedIndex).guid)
+                                 }
+                                 RtfButton {
+                                     iconName: root.note && root.note.reminder ? "reminder" : "reminder-new"
+                                     height: parent.height
+                                     width: height
+                                     iconColor: root.note && note.reminder ? UbuntuColors.blue : Qt.rgba(0.0, 0.0, 0.0, 0.0)
+                                     onClicked: {
+                                         Qt.inputMethod.hide();
+                                         pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: root.note});
+                                     }
+                                 }
+                                 RtfButton {
+                                     id: tagsButton
+                                     iconSource: "../images/tags.svg"
+                                     height: parent.height
+                                     width: height
+                                     onClicked: {
+                                         Qt.inputMethod.hide();
+                                         PopupUtils.open(tagsDialog)
+                                     }
+                                 }
+                             }
+                         }
                      }
+
+                     ThinDivider {}
 
                      TextEdit {
                          id: noteTextArea
                          width: flick.width
-                         height: Math.max(flick.height - notebookSelector.height, paintedHeight)
+                         height: Math.max(flick.height - notebookSelector.height - titleTextField.height, paintedHeight)
                          focus: true
                          wrapMode: TextEdit.Wrap
                          textFormat: TextEdit.RichText
@@ -193,7 +216,6 @@ Item {
                          Timer {
                              id: setFocusTimer
                              interval: 1
-                             running: !root.isBottomEdge
                              repeat: false
                              onTriggered: {
                                  noteTextArea.cursorPosition = noteTextArea.length;
@@ -390,7 +412,6 @@ Item {
 
         property bool charFormatExpanded: false
         property bool blockFormatExpanded: false
-        property bool tagsRowExpanded: false
 
         Behavior on height { UbuntuNumberAnimation {} }
 
@@ -429,6 +450,7 @@ Item {
                 horizontalAlignment: Text.AlignLeft
                 Layout.fillWidth: true
                 onClicked: {
+                    Qt.inputMethod.hide();
                     PopupUtils.open(fontPopoverComponent, fontButton, {selectionStart: noteTextArea.selectionStart, selectionEnd: noteTextArea.selectionEnd})
                 }
             }
@@ -439,6 +461,7 @@ Item {
                 height: parent.height
                 width: height
                 onClicked: {
+                    Qt.inputMethod.hide();
                     PopupUtils.open(fontSizePopoverComponent, fontSizeButton, {selectionStart: noteTextArea.selectionStart, selectionEnd: noteTextArea.selectionEnd})
                 }
             }
@@ -448,6 +471,7 @@ Item {
                 width: height
                 color: formattingHelper.color
                 onClicked: {
+                    Qt.inputMethod.hide();
                     PopupUtils.open(colorPopoverComponent, colorButton, {selectionStart: noteTextArea.selectionStart, selectionEnd: noteTextArea.selectionEnd})
                 }
             }
@@ -587,56 +611,9 @@ Item {
                     formattingHelper.alignment = Qt.AlignRight
                 }
             }
-        }
-
-        Row {
-            anchors { left: parent.left; right: parent.right; rightMargin: units.gu(1) }
-            height: units.gu(4)
-            visible: toolbox.tagsRowExpanded
-            spacing: units.gu(1)
-
-            Rectangle {
-                z: 100
-                color: "#efefef"
-                height: parent.height
-                width: height + units.gu(1)
-                RtfButton {
-                    id: editTagsButton
-                    iconName: "edit"
-                    height: parent.height
-                    width: height
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    onClicked: {
-                        PopupUtils.open(tagsDialog)
-                    }
-                }
-            }
-
-            ListView {
-                width: parent.width - editTagsButton.width - units.gu(1)
-                height: units.gu(4)
-
-                model: root.note ? root.note.tagGuids.length : undefined
-                orientation: ListView.Horizontal
-                spacing: units.gu(1)
-
-
-                delegate: Rectangle {
-                    id: rectangle
-                    radius: units.gu(1)
-                    color: "white"
-                    border.color: preferences.colorForNotebook(root.note.notebookGuid)
-                    anchors.verticalCenter: parent.verticalCenter
-                    Text {
-                        text: NotesStore.tag(root.note.tagGuids[index]).name
-                        color: preferences.colorForNotebook(root.note.notebookGuid)
-                        Component.onCompleted: {
-                            rectangle.width = width + units.gu(2)
-                            rectangle.height = height + units.gu(1)
-                            anchors.centerIn = parent
-                        }
-                    }
-                }
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
             }
         }
 
@@ -644,6 +621,20 @@ Item {
             anchors { left: parent.left; right: parent.right }
             anchors.margins: units.gu(1)
             height: units.gu(4)
+
+            RtfButton {
+                iconName: "tick"
+                // TRANSLATORS: Button to close the edit mode
+                text: i18n.tr("Done")
+                height: parent.height
+                iconColor: UbuntuColors.green
+                onClicked: {
+                    saveNote();
+                    root.exitEditMode(root.note);
+                }
+            }
+
+            RtfSeparator { }
 
             RtfButton {
                 iconName: "undo"
@@ -670,6 +661,8 @@ Item {
                 Layout.fillWidth: true
             }
 
+            RtfSeparator {}
+
             RtfButton {
                 iconName: "select"
                 height: parent.height
@@ -678,15 +671,6 @@ Item {
                     var pos = noteTextArea.cursorPosition
                     noteTextArea.insert(pos, "<img src=\"../images/unchecked.svg\" height=" + units.gu(2) + ">")
                     noteTextArea.cursorPosition = pos + 1;
-                }
-            }
-
-            RtfButton {
-                iconName: note.reminder ? "reminder" : "reminder-new"
-                height: parent.height
-                width: height
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("SetReminderPage.qml"), { note: root.note});
                 }
             }
 
@@ -709,18 +693,7 @@ Item {
                     priv.insertPosition = noteTextArea.cursorPosition;
                     note.richTextContent = noteTextArea.text;
                     importPicker.visible = true;
-                }
-            }
-
-            RtfSeparator {}
-
-            RtfButton {
-                iconSource: "../images/tags.svg"
-                height: parent.height
-                width: height
-                active: toolbox.tagsRowExpanded
-                onClicked: {
-                    toolbox.tagsRowExpanded = !toolbox.tagsRowExpanded
+                    Qt.inputMethod.hide();
                 }
             }
 
@@ -735,8 +708,6 @@ Item {
                     toolbox.blockFormatExpanded = !toolbox.blockFormatExpanded
                 }
             }
-
-            RtfSeparator {}
 
             RtfButton {
                 iconName: "edit-select-all"
