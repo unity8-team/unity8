@@ -955,6 +955,7 @@ void NotesStore::fetchConflictingNoteJobDone(EvernoteConnection::ErrorCode error
     serverNote->setLastSyncedSequenceNumber(result.updateSequenceNum);
     serverNote->setTitle(QString::fromStdString(result.title));
     serverNote->setNotebookGuid(QString::fromStdString(result.notebookGuid));
+    serverNote->setCreated(QDateTime::fromMSecsSinceEpoch(result.created));
     serverNote->setUpdated(QDateTime::fromMSecsSinceEpoch(result.updated));
     serverNote->setDeleted(result.deleted > 0);
     QStringList tagGuids;
@@ -1631,6 +1632,10 @@ QVector<int> NotesStore::updateFromEDAM(const evernote::edam::NoteMetadata &evNo
             roles << RoleTagGuids;
         }
     }
+    if (evNote.__isset.attributes && evNote.attributes.__isset.reminderOrder) {
+        note->setReminderOrder(evNote.attributes.reminderOrder);
+        roles << RoleReminder;
+    }
     if (evNote.__isset.attributes && evNote.attributes.__isset.reminderTime) {
         QDateTime reminderTime;
         if (evNote.attributes.reminderTime > 0) {
@@ -1650,6 +1655,10 @@ QVector<int> NotesStore::updateFromEDAM(const evernote::edam::NoteMetadata &evNo
             note->setReminderDoneTime(reminderDoneTime);
             roles << RoleReminderDoneTime;
         }
+    }
+    if (evNote.__isset.deleted) {
+        note->setDeleted(evNote.deleted);
+        roles << RoleDeleted;
     }
     note->setLastSyncedSequenceNumber(evNote.updateSequenceNum);
     return roles;
