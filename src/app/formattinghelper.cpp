@@ -224,12 +224,12 @@ void FormattingHelper::setUnderline(bool underline)
     if (m_selectionCursor.selectedText().isEmpty()) {
         m_nextFormat.setFontUnderline(underline);
         m_formatPosition = m_textCursor.position();
-        emit formatChanged();
     } else {
         QTextCharFormat f = m_selectionCursor.charFormat();
         f.setFontUnderline(underline);
         m_selectionCursor.setCharFormat(f);
     }
+    emit formatChanged();
 }
 
 bool FormattingHelper::strikeout() const
