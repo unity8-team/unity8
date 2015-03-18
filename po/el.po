@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: reminders-app\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-11 00:31+0100\n"
-"PO-Revision-Date: 2015-03-09 23:52+0000\n"
+"PO-Revision-Date: 2015-03-17 14:49+0000\n"
 "Last-Translator: Aggelos Arnaoutis <angelosarn@hotmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-11 05:45+0000\n"
-"X-Generator: Launchpad (build 17389)\n"
+"X-Launchpad-Export-Date: 2015-03-18 06:11+0000\n"
+"X-Generator: Launchpad (build 17403)\n"
 
 #: com.ubuntu.reminders.desktop.in.in.h:1 src/app/qml/reminders.qml:274
 msgid "Reminders"
@@ -46,11 +46,11 @@ msgstr "dddd, d hh:mm"
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Release to refresh"
-msgstr ""
+msgstr "Αφήστε για ανανέωση"
 
 #: src/app/qml/components/PulldownListView.qml:40
 msgid "Pull down to refresh"
-msgstr ""
+msgstr "Τραβήξτε προς τα κάτω για ανανέωση"
 
 #: src/app/qml/components/RemindersDelegate.qml:50
 #: src/app/qml/ui/SetReminderView.qml:69
@@ -222,6 +222,8 @@ msgstr "Επιλέξτε ημερομηνία και χρόνο για την υ
 #: src/app/qml/ui/TagsPage.qml:175
 msgid "No tags available. You can tag notes while viewing them."
 msgstr ""
+"Καμία ετικέτα δεν είναι διαθέσιμη. Μπορείτε να βάλετε ετικέτες στις "
+"σημειώσεις ενώ τις βλέπετε."
 
 #: src/libqtevernote/evernoteconnection.cpp:234
 msgid "Error connecting to Evernote: Please check network connection."
@@ -238,6 +240,8 @@ msgid ""
 "Error connecting to Evernote: Server version does not match app version. "
 "Please update the application."
 msgstr ""
+"Σφάλμα κατά την σύνδεση στο Evernote: Η έκδοση του διακομιστή δεν ταιριάζει "
+"με την έκδοση της εφαρμογής. Παρακαλώ ενημερώστε την εφαρμογή."
 
 #: src/libqtevernote/evernoteconnection.cpp:258
 #: src/libqtevernote/evernoteconnection.cpp:263
@@ -286,15 +290,15 @@ msgstr "Έληξε η εξουσιοδότηση."
 
 #: src/libqtevernote/jobs/evernotejob.cpp:98
 msgid "Limit exceeded."
-msgstr ""
+msgstr "Το όριο ξεπεράστηκε."
 
 #: src/libqtevernote/jobs/evernotejob.cpp:102
 msgid "Rate limit exceeded."
-msgstr ""
+msgstr "Το όριο ρυθμού ξεπεράστηκε."
 
 #: src/libqtevernote/jobs/evernotejob.cpp:106
 msgid "Quota exceeded."
-msgstr ""
+msgstr "Το ποσοστό ξεπεράστηκε"
 
 #: src/libqtevernote/note.cpp:82 src/libqtevernote/note.cpp:116
 #: src/libqtevernote/note.cpp:294
@@ -372,7 +376,7 @@ msgstr "δύο βδομάδες πριν"
 #: src/libqtevernote/notebook.cpp:116
 #, qt-format
 msgid "on %1 %2"
-msgstr ""
+msgstr "στις %1 %2"
 
 #: src/libqtevernote/notesstore.cpp:366
 #, qt-format
