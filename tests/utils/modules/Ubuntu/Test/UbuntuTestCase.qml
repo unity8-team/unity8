@@ -14,12 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import QtQuick 2.0
 import QtTest 1.0
 import Ubuntu.Components 1.1
 import Ubuntu.Test 0.1 as UT
 
 TestCase {
+    id: testCase
     TestUtil {id:util}
+
+    ActivityIndicator {
+        visible: testCase.running
+        anchors.centerIn: parent
+        Component.onCompleted: parent = testCase.parent
+        z: 100
+        running: visible
+    }
 
     // Fake implementation to be provided to items under test
     property var fakeDateTime: new function() {
@@ -296,5 +306,14 @@ TestCase {
         event = touchEvent()
         event.release(0 /* touchId */, x, y)
         event.commit()
+    }
+
+    // TODO This function can be removed altogether once we use Qt 5.5 which has the same feature
+    function waitForRendering(item, timeout) {
+        if (timeout === undefined)
+            timeout = 5000;
+        if (!item)
+            qtest_fail("No item given to waitForRendering", 1);
+        return qtest_results.waitForRendering(item, timeout);
     }
 }
