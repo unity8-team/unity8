@@ -11,7 +11,7 @@ set(qmltest_DEFAULT_IMPORT_PATHS
 )
 
 add_qml_test(Components Calendar)
-add_qml_test(Components ServerActivationSync)
+add_qml_test(Components ServerPropertySynchroniser)
 add_qml_test(Components StatusIcon)
 
 add_qml_test(Menus AccessPointMenu)

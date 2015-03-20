@@ -14,18 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "serveractivationsync.h"
+#include "serverpropertysynchroniser.h"
 
 #include <QQmlProperty>
 #include <QTimer>
+#include <QDebug>
 
-ServerActivationSync::ServerActivationSync(QObject* parent)
+ServerPropertySynchroniser::ServerPropertySynchroniser(QObject* parent)
     : QObject(parent)
     , m_serverTarget(nullptr)
     , m_userTarget(nullptr)
     , m_classComplete(false)
     , m_busy(false)
     , m_connectedServerTarget(nullptr)
+    , m_connectedUserTarget(nullptr)
     , m_serverSync(new QTimer(this))
     , m_useWaitBuffer(true)
     , m_buffering(false)
@@ -33,26 +35,27 @@ ServerActivationSync::ServerActivationSync(QObject* parent)
 {
     m_serverSync->setSingleShot(true);
     m_serverSync->setInterval(30000);
-    connect(m_serverSync, &QTimer::timeout, this, &ServerActivationSync::serverSyncTimedOut);
+    connect(m_serverSync, &QTimer::timeout, this, &ServerPropertySynchroniser::serverSyncTimedOut);
 }
 
-void ServerActivationSync::classBegin()
+void ServerPropertySynchroniser::classBegin()
 {
     m_classComplete = false;
 }
 
-void ServerActivationSync::componentComplete()
+void ServerPropertySynchroniser::componentComplete()
 {
     m_classComplete = true;
     connectServer();
+    connectUser();
 }
 
-QObject *ServerActivationSync::serverTarget() const
+QObject *ServerPropertySynchroniser::serverTarget() const
 {
     return m_serverTarget;
 }
 
-void ServerActivationSync::setServerTarget(QObject *target)
+void ServerPropertySynchroniser::setServerTarget(QObject *target)
 {
     if (m_serverTarget != target) {
         m_serverTarget = target;
@@ -62,12 +65,12 @@ void ServerActivationSync::setServerTarget(QObject *target)
     }
 }
 
-QString ServerActivationSync::serverProperty() const
+QString ServerPropertySynchroniser::serverProperty() const
 {
     return m_serverProperty;
 }
 
-void ServerActivationSync::setServerProperty(const QString &property)
+void ServerPropertySynchroniser::setServerProperty(const QString &property)
 {
     if (m_serverProperty != property) {
         m_serverProperty = property;
@@ -77,38 +80,57 @@ void ServerActivationSync::setServerProperty(const QString &property)
     }
 }
 
-QObject *ServerActivationSync::userTarget() const
+QObject *ServerPropertySynchroniser::userTarget() const
 {
     return m_userTarget;
 }
 
-void ServerActivationSync::setUserTarget(QObject *target)
+void ServerPropertySynchroniser::setUserTarget(QObject *target)
 {
     if (m_userTarget != target) {
         m_userTarget = target;
         Q_EMIT userTargetChanged(m_userTarget);
+
+        connectUser();
     }
 }
 
-QString ServerActivationSync::userProperty() const
+QString ServerPropertySynchroniser::userProperty() const
 {
     return m_userProperty;
 }
 
-void ServerActivationSync::setUserProperty(const QString &property)
+void ServerPropertySynchroniser::setUserProperty(const QString &property)
 {
     if (m_userProperty != property) {
         m_userProperty = property;
         Q_EMIT userPropertyChanged(m_userProperty);
+
+        connectUser();
     }
 }
 
-int ServerActivationSync::syncTimeout() const
+QString ServerPropertySynchroniser::userTrigger() const
+{
+    return m_userTrigger;
+}
+
+void ServerPropertySynchroniser::setUserTrigger(const QString &trigger)
+{
+    if (m_userTrigger != trigger) {
+        m_userTrigger = trigger;
+        Q_EMIT userPropertyChanged(m_userTrigger);
+
+        connectUser();
+    }
+}
+
+int ServerPropertySynchroniser::syncTimeout() const
 {
     return m_serverSync->interval();
 }
 
-void ServerActivationSync::setSyncTimeout(int timeout)
+void ServerPropertySynchroniser::setSyncTimeout(int timeout)
 {
     if (m_serverSync->interval() != timeout) {
         m_serverSync->setInterval(timeout);
@@ -116,12 +138,12 @@ void ServerActivationSync::setSyncTimeout(int timeout)
     }
 }
 
-bool ServerActivationSync::useWaitBuffer() const
+bool ServerPropertySynchroniser::useWaitBuffer() const
 {
     return m_useWaitBuffer;
 }
 
-void ServerActivationSync::setUseWaitBuffer(bool value)
+void ServerPropertySynchroniser::setUseWaitBuffer(bool value)
 {
     if (m_useWaitBuffer != value) {
         m_useWaitBuffer = value;
@@ -129,12 +151,12 @@ void ServerActivationSync::setUseWaitBuffer(bool value)
     }
 }
 
-bool ServerActivationSync::bufferedSyncTimeout() const
+bool ServerPropertySynchroniser::bufferedSyncTimeout() const
 {
     return m_bufferedSyncTimeout;
 }
 
-void ServerActivationSync::setBufferedSyncTimeout(bool value)
+void ServerPropertySynchroniser::setBufferedSyncTimeout(bool value)
 {
     if (m_bufferedSyncTimeout != value) {
         m_bufferedSyncTimeout = value;
@@ -142,13 +164,14 @@ void ServerActivationSync::setBufferedSyncTimeout(bool value)
     }
 }
 
-bool ServerActivationSync::syncWaiting() const
+bool ServerPropertySynchroniser::syncWaiting() const
 {
     return m_serverSync->isActive();
 }
 
-void ServerActivationSync::activate()
+void ServerPropertySynchroniser::activate()
 {
+    // Don't want any signals we fire to create binding loops.
     if (m_busy) return;
     m_busy = true;
 
@@ -162,37 +185,83 @@ void ServerActivationSync::activate()
     m_serverSync->start();
     Q_EMIT syncWaitingChanged(true);
 
+    // Fire off a change to the server user property value
     QQmlProperty userProp(m_userTarget, m_userProperty);
     if (!userProp.isValid()) {
-        Q_EMIT activated(QVariant());
+        Q_EMIT syncTriggered(QVariant());
     } else {
-        Q_EMIT activated(userProp.read());
+        Q_EMIT syncTriggered(userProp.read());
     }
     m_busy = false;
 }
 
-void ServerActivationSync::connectServer()
+void ServerPropertySynchroniser::connectServer()
 {
-    if (m_connectedServerTarget) QObject::disconnect(m_connectedServerTarget, 0, this, 0);
-
+    // if we havent finished constructing the class, then wait
     if (!m_classComplete) return;
+
+    if (m_connectedServerTarget) QObject::disconnect(m_connectedServerTarget, 0, this, 0);
     if (!m_serverTarget || m_serverProperty.isEmpty()) {
         return;
     }
+
+    // Connect to the server property change
     QQmlProperty prop(m_serverTarget, m_serverProperty);
     if (prop.isValid()) {
         if (prop.connectNotifySignal(this, SLOT(updateUserValue()))) {
             m_connectedServerTarget = m_serverTarget;
         }
+        // once we're connected to the server property, we need to make sure the user target is
+        // set to the server value
         updateUserValue();
     }
 }
 
-void ServerActivationSync::updateUserValue()
+void ServerPropertySynchroniser::connectUser()
 {
+    // if we havent finished constructing the class, then wait
+    if (!m_classComplete) return;
+
+    if (m_connectedUserTarget) QObject::disconnect(m_connectedUserTarget, 0, this, 0);
+    if (!m_userTarget) {
+        if (!parent()) return;
+        m_userTarget = parent();
+        Q_EMIT userTargetChanged(m_userTarget);
+    }
+
+    if (m_userTrigger.isEmpty()) {
+        // Connect to the user property change
+        QQmlProperty prop(m_userTarget, m_userProperty);
+        if (prop.isValid()) {
+            if (prop.connectNotifySignal(this, SLOT(activate()))) {
+                m_connectedUserTarget = m_userTarget;
+            }
+            // once we're connected to the user property, we need to make sure the user target is
+            // set to the server value
+            updateUserValue();
+        }
+    } else {
+        QQmlProperty prop(m_userTarget, m_userTrigger);
+        if (prop.isValid() && prop.isSignalProperty()) {
+            if (connect(m_userTarget, ("2" + prop.method().methodSignature()).constData(),
+                        this, SLOT(activate()))) {
+                m_connectedUserTarget = m_userTarget;
+            }
+
+            // once we're connected to the user signal, we need to make sure the user target is
+            // set to the server value
+            updateUserValue();
+        }
+    }
+}
+
+void ServerPropertySynchroniser::updateUserValue()
+{
+    // Don't want any signals we fire to create binding loops.
     if (m_busy) return;
     m_busy = true;
 
+    // If we've been waiting for a sync, stop the wait.
     if (m_serverSync->isActive()) {
         m_serverSync->stop();
         Q_EMIT syncWaitingChanged(false);
@@ -217,11 +286,12 @@ void ServerActivationSync::updateUserValue()
         return;
     }
 
+    // update the user target property.
     userProp.write(serverProp.read());
     m_busy = false;
 }
 
-void ServerActivationSync::serverSyncTimedOut()
+void ServerPropertySynchroniser::serverSyncTimedOut()
 {
     if (m_buffering && !m_bufferedSyncTimeout) {
         m_buffering = false;

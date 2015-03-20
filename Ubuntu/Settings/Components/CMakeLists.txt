@@ -9,7 +9,7 @@ include_directories(
 
 set(UbuntuSettingsMenusQml_SOURCES
     plugin.cpp
-    serveractivationsync.cpp
+    serverpropertysynchroniser.cpp
 )
 add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
 

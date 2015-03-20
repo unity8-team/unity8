@@ -16,12 +16,12 @@
 
 // local
 #include "plugin.h"
-#include "serveractivationsync.h"
+#include "serverpropertysynchroniser.h"
 
 // Qt
 #include <QtQml/qqml.h>
 
 void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<ServerActivationSync>(uri, 0, 1, "ServerActivationSync");
+    qmlRegisterType<ServerPropertySynchroniser>(uri, 0, 1, "ServerPropertySynchroniser");
 }

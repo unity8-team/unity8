@@ -66,6 +66,19 @@ Item {
         }
     }
 
+    QtObject {
+        id: apBackend
+
+        property bool active: false
+        property bool inSync: active === apMenu.active
+
+        property Timer timer: Timer {
+            interval: 2000
+            onTriggered: apBackend.active = !apBackend.active
+        }
+    }
+
+
     Column {
         anchors.fill: parent
         anchors.margins: units.gu(1)
@@ -79,9 +92,7 @@ Item {
                 id: switchControl
                 anchors.verticalCenter: parent.verticalCenter
 
-                onTriggered: switchSync.activate()
-
-                USC.ServerActivationSync {
+                USC.ServerPropertySynchroniser {
                     id: switchSync
                     objectName: "switchSync"
 
@@ -93,7 +104,7 @@ Item {
                     serverTarget: switchBackend
                     serverProperty: "checked"
 
-                    onActivated: switchBackend.timer.start()
+                    onSyncTriggered: switchBackend.timer.start()
                     onSyncWaitingChanged: switchSyncSpy.clear()
                 }
             }
@@ -112,9 +123,7 @@ Item {
                 id: checkControl
                 anchors.verticalCenter: parent.verticalCenter
 
-                onTriggered: checkSync.activate()
-
-                USC.ServerActivationSync {
+                USC.ServerPropertySynchroniser {
                     id: checkSync
                     objectName: "checkSync"
 
@@ -126,7 +135,7 @@ Item {
                     serverTarget: checkBackend
                     serverProperty: "checked"
 
-                    onActivated: checkBackend.timer.start()
+                    onSyncTriggered: checkBackend.timer.start()
 
                     onSyncWaitingChanged: checkSyncSpy.clear()
                 }
@@ -148,9 +157,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 live: true
 
-                onValueChanged: sliderSync.activate()
-
-                USC.ServerActivationSync {
+                USC.ServerPropertySynchroniser {
                     id: sliderSync
                     objectName: "sliderSync"
 
@@ -162,7 +169,7 @@ Item {
                     serverTarget: sliderBackend
                     serverProperty: "value"
 
-                    onActivated: {
+                    onSyncTriggered: {
                         sliderBackend.changeToValue = value;
                         sliderBackend.timer.start();
                     }
@@ -178,42 +185,41 @@ Item {
             }
         }
 
-
         Row {
             spacing: units.gu(3)
             height: childrenRect.height
             anchors.left: parent.left
             anchors.right: parent.right
 
-            USM.SwitchMenu {
-                id: switchMenu
+            USM.AccessPointMenu {
+                id: apMenu
                 width: units.gu(30)
 
                 text: "Test Check Menu"
-                onTriggered: switchMenuSync.activate()
 
-                USC.ServerActivationSync {
-                    id: switchMenuSync
-                    objectName: "switchMenuSync"
+                USC.ServerPropertySynchroniser {
+                    id: apMenuSync
+                    objectName: "apMenuSync"
 
                     syncTimeout: 3000
 
-                    userTarget: switchMenu
-                    userProperty: "checked"
+                    userTarget: apMenu
+                    userProperty: "active"
+                    userTrigger: "onTriggered"
 
-                    serverTarget: switchBackend
-                    serverProperty: "checked"
+                    serverTarget: apBackend
+                    serverProperty: "active"
 
-                    onActivated: switchBackend.timer.start()
+                    onSyncTriggered: apBackend.timer.start()
 
                     onSyncWaitingChanged: switchSyncSpy.clear()
                 }
             }
 
             Column {
-                Label { text: switchBackend.checked === switchMenu.checked ? "synced" : "out of sync" }
-                Label { text: switchMenuSync.syncWaiting ? "syncWait" : "no syncWait" }
-                Label { text: "activates: " + sliderSyncSpy.count }
+                Label { text: apBackend.inSync ? "synced" : "out of sync" }
+                Label { text: apMenuSync.syncWaiting ? "syncWait" : "no syncWait" }
+                Label { text: "activates: " + apSyncSpy.count }
             }
         }
     }
@@ -234,9 +240,19 @@ Item {
         signalName: "valueChanged"
     }
     SignalSpy {
+        id: apSyncSpy
+        target: apMenu
+        signalName: "triggered"
+    }
+    SignalSpy {
         id: sliderSyncActivatedSpy
         target: sliderSync
-        signalName: "activated"
+        signalName: "syncTriggered"
+    }
+    SignalSpy {
+        id:apSyncActivatedSpy
+        target: apMenuSync
+        signalName: "syncTriggered"
     }
 
     QtObject {
@@ -259,11 +275,14 @@ Item {
             switchBackend.timer.interval = 100;
             checkBackend.timer.interval = 100;
             sliderBackend.timer.interval = 100;
+            apBackend.timer.interval = 100;
 
             switchSync.syncTimeout = 200;
             checkSync.syncTimeout = 200;
             sliderSync.syncTimeout = 200;
+            apMenuSync.syncTimeout = 200;
             sliderSyncActivatedSpy.clear();
+            apSyncActivatedSpy.clear();
         }
 
         function cleanup() {
@@ -274,6 +293,7 @@ Item {
             switchBackend.checked = false;
             checkBackend.checked = false;
             sliderBackend.value = 50;
+            apBackend.active = false;
 
             tryCompare(switchBackend, "inSync", true);
             tryCompare(checkBackend, "inSync", true);
@@ -333,6 +353,19 @@ Item {
             switchControl.clicked();
             compare(switchControl.checked, true);
             tryCompare(switchControl, "checked", false);
+        }
+
+        function test_user_trigger() {
+            apMenu.trigger();
+
+            compare(apSyncActivatedSpy.count, 1, "Triggering should have caused signal to be emitted");
+            tryCompare(apBackend, "active", true);
+            compare(apMenu.active, true, "User value should have updated to match server");
+        }
+
+        function test_user_trigger_doesnt_activate_on_user_property_change() {
+            apMenu.active = true;
+            compare(apSyncActivatedSpy.count, 0);
         }
     }
 }
