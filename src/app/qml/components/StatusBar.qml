@@ -38,6 +38,7 @@ Rectangle {
                 id: label
                 width: parent.width - x
                 wrapMode: Text.WordWrap
+                anchors.verticalCenter: parent.verticalCenter
             }
         }
     }
