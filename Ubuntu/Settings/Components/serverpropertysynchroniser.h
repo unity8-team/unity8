@@ -51,7 +51,14 @@ class ServerPropertySynchroniser : public QObject, public QQmlParserStatus
                WRITE setUseWaitBuffer
                NOTIFY useWaitBufferChanged)
 
-    // Resend the buffered value if we timeout waiting for a change from the server
+    // Maximum intervals between buffers for the server to respond. If we don't get a response within this interval,
+    // the next buffer will be sent. Good for live sliders. Defaults to disabled.
+    Q_PROPERTY(int maximumWaitBufferInterval
+               READ maximumWaitBufferInterval
+               WRITE setMaximumWaitBufferInterval
+               NOTIFY maximumWaitBufferIntervalChanged)
+
+    // Resend the buffered value if we timeout waiting for a change from the server. Defaults to false
     Q_PROPERTY(bool bufferedSyncTimeout
                READ bufferedSyncTimeout
                WRITE setBufferedSyncTimeout
@@ -84,6 +91,9 @@ public:
     bool useWaitBuffer() const;
     void setUseWaitBuffer(bool value);
 
+    int maximumWaitBufferInterval() const;
+    void setMaximumWaitBufferInterval(int timeout);
+
     bool bufferedSyncTimeout() const;
     void setBufferedSyncTimeout(bool);
 
@@ -108,13 +118,15 @@ Q_SIGNALS:
     void syncWaitingChanged(bool waiting);
     void bufferedSyncTimeoutChanged(bool);
 
-    void useWaitBufferChanged(bool);
+    void useWaitBufferChanged(bool useWaitBuffer);
+    void maximumWaitBufferIntervalChanged(int timeout);
 
     // Emitted when we want to update the backend.
     void syncTriggered(const QVariant& value);
 
 private Q_SLOTS:
     void serverSyncTimedOut();
+    void bufferTimedOut();
 
 private:
     void connectServer();
@@ -133,7 +145,8 @@ private:
     QObject* m_connectedServerTarget;
     QObject* m_connectedUserTarget;
 
-    QTimer* m_serverSync;
+    QTimer* m_serverSyncTimer;
+    QTimer* m_bufferTimeout;
     bool m_useWaitBuffer;
     bool m_buffering;
     bool m_bufferedSyncTimeout;

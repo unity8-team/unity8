@@ -58,7 +58,7 @@ Item {
         property var changeToValue: undefined
 
         property Timer timer: Timer {
-            interval: 2000
+            interval: 200
 
             onTriggered: {
                 sliderBackend.value = sliderBackend.changeToValue;
@@ -156,7 +156,10 @@ Item {
                 id: slider
                 anchors.verticalCenter: parent.verticalCenter
                 live: true
+                minimumValue: 0.0
+                maximumValue: 100.0
 
+                property real serverValue: sliderBackend.value
                 USC.ServerPropertySynchroniser {
                     id: sliderSync
                     objectName: "sliderSync"
@@ -166,8 +169,8 @@ Item {
                     userTarget: slider
                     userProperty: "value"
 
-                    serverTarget: sliderBackend
-                    serverProperty: "value"
+                    serverTarget: slider
+                    serverProperty: "serverValue"
 
                     onSyncTriggered: {
                         sliderBackend.changeToValue = value;
@@ -282,6 +285,9 @@ Item {
             checkSync.syncTimeout = 200;
             sliderSync.syncTimeout = 200;
             apMenuSync.syncTimeout = 200;
+
+            sliderSync.maximumWaitBufferInterval = -1
+
             sliderSyncActivatedSpy.clear();
             apSyncActivatedSpy.clear();
         }
@@ -335,8 +341,26 @@ Item {
             slider.value = 80;
             slider.value = 90;
             compare(sliderSyncActivatedSpy.count, 1, "activated signals should have been buffered")
-            tryCompare(sliderSyncActivatedSpy, "count", 2)
             tryCompare(sliderBackend, "value", 90);
+            tryCompare(sliderSyncActivatedSpy, "count", 2)
+        }
+
+        function test_buffered_change_with_maximum_interval() {
+            sliderSync.maximumWaitBufferInterval = 50;
+            sliderSync.syncTimeout = 500;
+
+            slider.value = 60;
+            compare(sliderSyncActivatedSpy.count, 1, "activated signal should have been sent")
+            slider.value = 70;
+            slider.value = 80;
+            wait(100)
+            compare(sliderSyncActivatedSpy.count, 2, "activated signals should have been buffered")
+            slider.value = 90;
+            wait(100)
+            compare(sliderSyncActivatedSpy.count, 3, "activated signals should have been buffered")
+            slider.value = 100;
+            tryCompare(sliderSyncActivatedSpy, "count", 4);
+            tryCompare(sliderBackend, "value", 100);
         }
 
         function test_connect_to_another_object() {
