@@ -51,6 +51,16 @@ void ServerPropertySynchroniser::componentComplete()
     connectUser();
 }
 
+void ServerPropertySynchroniser::reset()
+{
+    if (m_serverSyncTimer->isActive()) {
+        m_serverSyncTimer->stop();
+        Q_EMIT syncWaitingChanged(false);
+    }
+    if (m_bufferTimeout) m_bufferTimeout->stop();
+    m_buffering = false;
+}
+
 QObject *ServerPropertySynchroniser::serverTarget() const
 {
     return m_serverTarget;
@@ -174,6 +184,9 @@ void ServerPropertySynchroniser::setMaximumWaitBufferInterval(int timeout)
         }
 
     } else if (m_bufferTimeout) {
+        if (m_bufferTimeout->isActive()) {
+            m_buffering = false;
+        }
         delete m_bufferTimeout;
         m_bufferTimeout = nullptr;
         Q_EMIT maximumWaitBufferIntervalChanged(timeout);

@@ -286,8 +286,6 @@ Item {
             sliderSync.syncTimeout = 200;
             apMenuSync.syncTimeout = 200;
 
-            sliderSync.maximumWaitBufferInterval = -1
-
             sliderSyncActivatedSpy.clear();
             apSyncActivatedSpy.clear();
         }
@@ -301,6 +299,12 @@ Item {
             checkBackend.checked = false;
             sliderBackend.value = 50;
             apBackend.active = false;
+
+            switchSync.reset();
+            checkSync.reset();
+            sliderSync.reset();
+            apMenuSync.reset();
+            sliderSync.maximumWaitBufferInterval = -1
 
             tryCompare(switchBackend, "inSync", true);
             tryCompare(checkBackend, "inSync", true);
@@ -347,19 +351,17 @@ Item {
 
         function test_buffered_change_with_maximum_interval() {
             sliderSync.maximumWaitBufferInterval = 50;
-            sliderSync.syncTimeout = 500;
+            sliderSync.syncTimeout = 5000;
 
             slider.value = 60;
             compare(sliderSyncActivatedSpy.count, 1, "activated signal should have been sent")
             slider.value = 70;
             slider.value = 80;
-            wait(100)
-            compare(sliderSyncActivatedSpy.count, 2, "activated signals should have been buffered")
+            tryCompare(sliderSyncActivatedSpy, "count", 2, 500, "activated signal should have been sent after max interval")
             slider.value = 90;
-            wait(100)
-            compare(sliderSyncActivatedSpy.count, 3, "activated signals should have been buffered")
+            tryCompare(sliderSyncActivatedSpy, "count", 3, 500, "activated signal should have been sent after max interval")
             slider.value = 100;
-            tryCompare(sliderSyncActivatedSpy, "count", 4);
+            tryCompare(sliderSyncActivatedSpy, "count", 4, 500);
             tryCompare(sliderBackend, "value", 100);
         }
 

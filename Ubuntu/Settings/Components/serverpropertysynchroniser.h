@@ -102,6 +102,8 @@ public:
     void classBegin() override;
     void componentComplete() override;
 
+    Q_INVOKABLE void reset();
+
 public Q_SLOTS:
     void updateUserValue();
     void activate();
