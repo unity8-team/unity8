@@ -31,6 +31,7 @@ from unity8.shell import tests
 import ubuntuuitoolkit
 import logging
 from testtools.matchers import Equals, NotEquals
+from autopilot.utilities import sleep
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,8 @@ class RotationBase(tests.UnityTestCase):
         self.useFixture(unity_with_sensors)
         process_helpers.unlock_unity(unity_with_sensors.unity_proxy)
         self.fake_sensors = unity_with_sensors.fake_sensors
-        self.shell_proxy = unity_with_sensors.main_win.select_single(objectName="shell")
+        #unity_with_sensors.main_win.print_tree()
+        self.shell_proxy = unity_with_sensors.main_win.select_single('Shell')
 
     def _create_test_application(self):
         desktop_file_dict = ubuntuuitoolkit.fixture_setup.DEFAULT_DESKTOP_FILE_DICT
@@ -71,7 +73,7 @@ class RotationBase(tests.UnityTestCase):
 
     def _assert_change_of_orientation_and_angle(self):
         tmp_o = self.shell_proxy.orientation
-        tmp_a = self.shell_proxy.orientationAngle
+        tmp_a = self.shell_proxy.deviceOrientationAngle
         print("default orientation: ", self.orientation, ", current orientation: ", tmp_o)
         print("default angle: ", self.angle, ", current angle: ", tmp_a)
         self.assertThat(self.orientation, Equals(tmp_o))
@@ -85,22 +87,34 @@ class RotationBase(tests.UnityTestCase):
 
         # get default orientation and angle
         self.orientation = self.shell_proxy.orientation
-        self.angle = self.shell_proxy.orientationAngle
+        self.angle = self.shell_proxy.deviceOrientationAngle
 
         # check if fake sensors affect orientation and angle
-        print("\nafter fake-sensor changed to top-up...")
         self.fake_sensors.set_orientation_top_up()
+        self.orientation = 1
+        self.angle = 0
+        sleep(10);
+        print("\nafter fake-sensor changed to top-up...")
         self._assert_change_of_orientation_and_angle()
 
         self.fake_sensors.set_orientation_right_up()
+        self.orientation = 8
+        self.angle = 90
+        sleep(10);
         print("\nafter fake-sensor changed to right-up...")
         self._assert_change_of_orientation_and_angle()
 
         self.fake_sensors.set_orientation_top_down()
+        self.orientation = 4
+        self.angle = 180
+        sleep(10);
         print("\nafter  top-down...")
         self._assert_change_of_orientation_and_angle()
 
         self.fake_sensors.set_orientation_left_up()
+        self.orientation = 2
+        self.angle = 270
+        sleep(10);
         print("\nafter fake-sensor changed to left-up...")
         self._assert_change_of_orientation_and_angle()
 
