@@ -73,7 +73,7 @@ class RotationBase(tests.UnityTestCase):
 
     def _assert_change_of_orientation_and_angle(self):
         tmp_o = self.shell_proxy.orientation
-        tmp_a = self.shell_proxy.deviceOrientationAngle
+        tmp_a = self.shell_proxy.orientationAngle
         print("default orientation: ", self.orientation, ", current orientation: ", tmp_o)
         print("default angle: ", self.angle, ", current angle: ", tmp_a)
         self.assertThat(self.orientation, Equals(tmp_o))
@@ -87,7 +87,7 @@ class RotationBase(tests.UnityTestCase):
 
         # get default orientation and angle
         self.orientation = self.shell_proxy.orientation
-        self.angle = self.shell_proxy.deviceOrientationAngle
+        self.angle = self.shell_proxy.orientationAngle
 
         # check if fake sensors affect orientation and angle
         self.fake_sensors.set_orientation_top_up()
