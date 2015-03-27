@@ -54,6 +54,7 @@ class RotationBase(tests.UnityTestCase):
         self.fake_sensors = unity_with_sensors.fake_sensors
         #unity_with_sensors.main_win.print_tree()
         self.shell_proxy = unity_with_sensors.main_win.select_single('Shell')
+        self.oriented_shell_proxy = unity_with_sensors.main_win.select_single('OrientedShell')
 
     def _create_test_application(self):
         desktop_file_dict = ubuntuuitoolkit.fixture_setup.DEFAULT_DESKTOP_FILE_DICT
@@ -78,6 +79,31 @@ class RotationBase(tests.UnityTestCase):
         print("default angle: ", self.angle, ", current angle: ", tmp_a)
         self.assertThat(self.orientation, Equals(tmp_o))
         self.assertThat(self.angle, Equals(tmp_a))
+
+    def test_fake_sensor(self):
+        self.fake_sensors.set_orientation_top_up()
+        self.orientation = 1
+        self.angle = 0
+        sleep(10);
+        self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
+
+        self.fake_sensors.set_orientation_right_up()
+        self.orientation = 8
+        self.angle = 90
+        sleep(10);
+        self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
+
+        self.fake_sensors.set_orientation_top_down()
+        self.orientation = 4
+        self.angle = 180
+        sleep(10);
+        self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
+
+        self.fake_sensors.set_orientation_left_up()
+        self.orientation = 2
+        self.angle = 270
+        sleep(10);
+        self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
 
     def test_rotation(self):
         """Do an orientation-change and verify that an app and the shell adapted correctly"""
