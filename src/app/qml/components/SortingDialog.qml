@@ -33,12 +33,9 @@ Item {
                     i18n.tr("Title (ascending)"),
                     i18n.tr("Title (descending)")
                 ]
-            }
 
-            Button {
-                text: i18n.tr("Close")
-                onClicked: {
-                    root.sortOrder = optionSelector.selectedIndex
+                onDelegateClicked: {
+                    root.sortOrder = index
                     root.accepted();
                     PopupUtils.close(dialog);
                 }

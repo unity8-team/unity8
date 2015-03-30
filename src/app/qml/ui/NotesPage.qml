@@ -232,7 +232,7 @@ PageWithBottomEdge {
             height: units.gu(5)
             showDivider: false
             RowLayout {
-                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(2) }
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: units.gu(1) }
                 Label {
                     text: section
                     Layout.fillWidth: true
