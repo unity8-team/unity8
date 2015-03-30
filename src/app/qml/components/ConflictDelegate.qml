@@ -30,10 +30,12 @@ ColumnLayout {
     signal keepThis();
 
     RowLayout {
+        Layout.fillWidth: true
         Label {
             text: i18n.tr("Notebook:")
         }
         Label {
+            Layout.fillWidth: true
             text: root.note ? NotesStore.notebook(root.note.notebookGuid).name : ""
         }
     }
@@ -41,13 +43,13 @@ ColumnLayout {
     NotesDelegate {
         Layout.fillWidth: true
 
-        title: root.note.title
-        content: root.note.plaintextContent
+        title: root.note ? root.note.title : ""
+        content: root.note ? root.note.plaintextContent : ""
 
-        resource: root.note.resourceUrls.length > 0 ? root.note.resourceUrls[0] : ""
-        notebookColor: preferences.colorForNotebook(root.note.notebookGuid)
-        reminder: root.note.reminder
-        date: root.note.updated
+        resource: root.note && root.note.resourceUrls.length > 0 ? root.note.resourceUrls[0] : ""
+        notebookColor: root.note ? preferences.colorForNotebook(root.note.notebookGuid) : "black"
+        reminder: root.note && root.note.reminder
+        date: root.note ? root.note.updated : ""
         conflicting: true
 
         onItemClicked: root.clicked();

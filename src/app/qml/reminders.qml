@@ -127,18 +127,16 @@ MainView {
                 page.resolveConflict.connect(function(keepLocal) {
                     var confirmation = PopupUtils.open(Qt.resolvedUrl("components/ResolveConflictConfirmationDialog.qml"), page, {keepLocal: keepLocal, remoteDeleted: note.conflictingNote.deleted, localDeleted: note.deleted});
                     confirmation.accepted.connect(function() {
-                        print("dialog accepted. keepLocal:", keepLocal)
                         NotesStore.resolveConflict(note.guid, keepLocal ? NotesStore.KeepLocal : NotesStore.KeepRemote);
                         pagestack.pop();
                     });
                 })
             } else {
                 var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-                page = component.createObject(root, {readOnly: conflictMode });
+                page = component.createObject(root, {readOnly: conflictMode, note: note });
                 page.editNote.connect(function(note) {root.switchToEditMode(note)})
                 page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
             }
-            page.note = note;
             pagestack.push(page)
         } else {
             var view;
@@ -150,7 +148,6 @@ MainView {
                 view.resolveConflict.connect(function(keepLocal) {
                     var confirmation = PopupUtils.open(Qt.resolvedUrl("components/ResolveConflictConfirmationDialog.qml"), page, {keepLocal: keepLocal, remoteDeleted: note.conflictingNote.deleted, localDeleted: note.deleted});
                     confirmation.accepted.connect(function() {
-                        print("dialog accepted. keepLocal:", keepLocal)
                         NotesStore.resolveConflict(note.guid, keepLocal ? NotesStore.KeepLocal : NotesStore.KeepRemote);
                     });
                 })

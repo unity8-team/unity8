@@ -839,6 +839,7 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
     handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
+        qWarning(dcSync) << "Fetch note job failed:" << errorMessage;
         note->setLoading(false);
         roles << RoleLoading;
         note->setSyncError(true);
@@ -933,6 +934,8 @@ void NotesStore::fetchNoteJobDone(EvernoteConnection::ErrorCode errorCode, const
 
 void NotesStore::fetchConflictingNoteJobDone(EvernoteConnection::ErrorCode errorCode, const QString &errorMessage, const evernote::edam::Note &result, FetchNoteJob::LoadWhatFlags what)
 {
+    Q_UNUSED(what) // We always fetch everything when sensing a conflict
+
     Note *note = m_notesHash.value(QString::fromStdString(result.guid));
     if (!note) {
         qCWarning(dcSync) << "Fetched conflicting note from server but local note can't be found any more:" << QString::fromStdString(result.guid);
@@ -941,7 +944,7 @@ void NotesStore::fetchConflictingNoteJobDone(EvernoteConnection::ErrorCode error
 
     handleUserError(errorCode);
     if (errorCode != EvernoteConnection::ErrorCodeNoError) {
-        qCWarning(dcSync) << "Failed to fetch conflicting note for" << note->guid();
+        qCWarning(dcSync) << "Failed to fetch conflicting note for" << note->guid() << errorMessage;
         return;
     }
 
