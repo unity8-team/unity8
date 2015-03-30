@@ -49,6 +49,7 @@ class RotationBase(tests.UnityTestCase):
 
         # get unity8 with fake sensors running 
         unity_with_sensors = fixture_setup.LaunchUnityWithFakeSensors()
+        self.unity_with_sensors = unity_with_sensors
         self.useFixture(unity_with_sensors)
         process_helpers.unlock_unity(unity_with_sensors.unity_proxy)
         self.fake_sensors = unity_with_sensors.fake_sensors
@@ -67,9 +68,15 @@ class RotationBase(tests.UnityTestCase):
 
     def _launch_fake_app(self):
         _, desktop_file_path = self._create_test_application()
+        print ('desktop_file_path = '+desktop_file_path)
         desktop_file_name = os.path.basename(desktop_file_path)
+        print ('desktop_file_name = '+desktop_file_name)
         application_name, _ = os.path.splitext(desktop_file_name)
-        self.launch_upstart_application(application_name)
+        self.launch_upstart_application('webbrowser-app')
+        print ('application_name = '+application_name)
+        self.unity_with_sensors.main_win.show_dash_from_launcher()
+        self.unity_with_sensors.main_win.launch_application('webbrowser-app')
+        print ('self.main_window.get_current_focused_app_id = '+self.unity_with_sensors.main_win.get_current_focused_app_id())
         return application_name
 
     def _assert_change_of_orientation_and_angle(self):
@@ -85,28 +92,33 @@ class RotationBase(tests.UnityTestCase):
         self.orientation = 1
         self.angle = 0
         sleep(10);
+        print("\nafter fake-sensor changed to top-up...")
         self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
 
         self.fake_sensors.set_orientation_right_up()
         self.orientation = 8
         self.angle = 90
         sleep(10);
+        print("\nafter fake-sensor changed to right-up...")
         self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
 
         self.fake_sensors.set_orientation_top_down()
         self.orientation = 4
         self.angle = 180
         sleep(10);
+        print("\nafter  top-down...")
         self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
 
         self.fake_sensors.set_orientation_left_up()
         self.orientation = 2
         self.angle = 270
         sleep(10);
+        print("\nafter fake-sensor changed to left-up...")
         self.assertThat(self.oriented_shell_proxy.physicalOrientation, Equals(self.orientation))
 
     def test_rotation(self):
         """Do an orientation-change and verify that an app and the shell adapted correctly"""
+        sleep(10)
 
         # launch an application
         app_name = self._launch_fake_app()
