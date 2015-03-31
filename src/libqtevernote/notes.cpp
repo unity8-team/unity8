@@ -25,7 +25,7 @@ Notes::Notes(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_onlyReminders(false),
     m_onlySearchResults(false),
-    m_showDeleted(false),
+    m_showDeleted(true),
     m_sortOrder(SortOrderDateUpdatedNewest)
 {
     connect(NotesStore::instance(), &NotesStore::loadingChanged, this, &Notes::loadingChanged);

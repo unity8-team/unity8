@@ -76,6 +76,9 @@ void SaveNoteJob::startJob()
         note.tagGuids = tags;
         note.__isset.tagGuids = true;
 
+        note.active = true;
+        note.__isset.active = true;
+
         note.__isset.attributes = true;
         note.attributes.reminderOrder = m_note->reminderOrder();
         note.attributes.__isset.reminderOrder = true;

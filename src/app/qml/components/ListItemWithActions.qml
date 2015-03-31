@@ -29,6 +29,7 @@ Item {
     property bool triggerActionOnMouseRelease: false
     property color color: Theme.palette.normal.background
     property color selectedColor: "#E6E6E6"
+    property color selectedRightActionColor: UbuntuColors.lightAubergine
     property bool selected: false
     property bool selectionMode: false
     property alias internalAnchors: mainContents.anchors
@@ -246,7 +247,7 @@ Item {
                        height: units.gu(3)
                        name: modelData.iconName
                        source: modelData.iconSource
-                       color: root.activeAction === modelData ? UbuntuColors.lightAubergine : UbuntuColors.lightGrey
+                       color: root.activeAction === modelData ? root.selectedRightActionColor : UbuntuColors.lightGrey
                    }
               }
            }

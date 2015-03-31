@@ -90,8 +90,8 @@ Page {
                 loading: model.loading
                 syncError: model.syncError
                 conflicting: model.conflicting
+                deleted: model.deleted
 
-                triggerActionOnMouseRelease: true
                 tags: {
                     var tags = new Array();
                     for (var i = 0; i < model.tagGuids.length; i++) {

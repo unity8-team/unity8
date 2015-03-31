@@ -109,20 +109,53 @@ MainView {
         pagestack.push(accountPage);
     }
 
-    function displayNote(note) {
+    function displayNote(note, conflictMode) {
+        if (conflictMode == undefined) {
+            conflictMode = false;
+        }
+
         print("displayNote:", note.guid)
         note.load(true);
         if (root.narrowMode) {
             print("creating noteview");
-            var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
-            var page = component.createObject(root);
-            page.note = note;
-            page.editNote.connect(function(note) {root.switchToEditMode(note)})
-            page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
+            var page;
+            if (!conflictMode && note.conflicting) {
+                // User wants to open the note even though it is conflicting! Show the Conflict page instead.
+                var component = Qt.createComponent(Qt.resolvedUrl("ui/NoteConflictPage.qml"));
+                page = component.createObject(root, {note: note});
+                page.displayNote.connect(function(note) { root.displayNote(note, true); } );
+                page.resolveConflict.connect(function(keepLocal) {
+                    var confirmation = PopupUtils.open(Qt.resolvedUrl("components/ResolveConflictConfirmationDialog.qml"), page, {keepLocal: keepLocal, remoteDeleted: note.conflictingNote.deleted, localDeleted: note.deleted});
+                    confirmation.accepted.connect(function() {
+                        NotesStore.resolveConflict(note.guid, keepLocal ? NotesStore.KeepLocal : NotesStore.KeepRemote);
+                        pagestack.pop();
+                    });
+                })
+            } else {
+                var component = Qt.createComponent(Qt.resolvedUrl("ui/NotePage.qml"));
+                page = component.createObject(root, {readOnly: conflictMode, note: note });
+                page.editNote.connect(function(note) {root.switchToEditMode(note)})
+                page.openTaggedNotes.connect(function(title, tagGuid) {pagestack.pop();root.openTaggedNotes(title, tagGuid, true)})
+            }
             pagestack.push(page)
         } else {
-            var view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
-            view.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, false)})
+            var view;
+            if (!conflictMode && note.conflicting) {
+                // User wants to open the note even though it is conflicting! Show the Conflict page instead.
+                notesPage.conflictMode = true;
+                view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteConflictView.qml"))
+                view.displayNote.connect(function(note) {root.displayNote(note,true)})
+                view.resolveConflict.connect(function(keepLocal) {
+                    var confirmation = PopupUtils.open(Qt.resolvedUrl("components/ResolveConflictConfirmationDialog.qml"), page, {keepLocal: keepLocal, remoteDeleted: note.conflictingNote.deleted, localDeleted: note.deleted});
+                    confirmation.accepted.connect(function() {
+                        NotesStore.resolveConflict(note.guid, keepLocal ? NotesStore.KeepLocal : NotesStore.KeepRemote);
+                    });
+                })
+            } else {
+                notesPage.conflictMode = conflictMode;
+                view = sideViewLoader.embed(Qt.resolvedUrl("ui/NoteView.qml"))
+                view.openTaggedNotes.connect(function(title, tagGuid) {root.openTaggedNotes(title, tagGuid, false)})
+            }
             view.note = note;
         }
     }
@@ -459,6 +492,8 @@ MainView {
                 objectName: "NotesTab"
                 page: NotesPage {
                     id: notesPage
+                    readOnly: conflictMode
+                    property bool conflictMode: false
 
                     narrowMode: root.narrowMode
 

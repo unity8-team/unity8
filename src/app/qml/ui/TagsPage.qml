@@ -83,7 +83,6 @@ Page {
             delegate: TagsDelegate {
                 width: parent.width
                 height: units.gu(10)
-                triggerActionOnMouseRelease: true
 
                 onItemClicked: {
                     print("selected tag:", model.guid)

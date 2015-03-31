@@ -41,7 +41,8 @@ Note::Note(const QString &guid, quint32 updateSequenceNumber, QObject *parent) :
     m_loaded(false),
     m_needsContentSync(false),
     m_syncError(false),
-    m_conflicting(false)
+    m_conflicting(false),
+    m_conflictingNote(nullptr)
 {
     setGuid(guid);
     m_cacheFile.setFileName(NotesStore::instance()->storageLocation() + "note-" + guid + ".enml");
@@ -471,6 +472,11 @@ QList<Resource*> Note::resources() const
     return m_resources.values();
 }
 
+Note *Note::conflictingNote() const
+{
+    return m_conflictingNote;
+}
+
 QStringList Note::resourceUrls() const
 {
     QList<QString> ret;
@@ -531,7 +537,7 @@ void Note::attachFile(int position, const QUrl &fileName)
         return;
     }
 
-    Resource *resource = new Resource(fileName.path());
+    Resource *resource = new Resource(fileName.path(), this);
     m_resources.insert(resource->hash(), resource);
     m_content.attachFile(position, resource->hash(), resource->type());
     emit resourcesChanged();
@@ -732,4 +738,16 @@ void Note::setConflicting(bool conflicting)
         m_conflicting = conflicting;
         emit conflictingChanged();
     }
+}
+
+void Note::setConflictingNote(Note *note)
+{
+    if (m_conflictingNote) {
+        m_conflictingNote->deleteLater();
+    }
+    m_conflictingNote = note;
+    if (m_conflictingNote) {
+        m_conflictingNote->setParent(this);
+    }
+    emit conflictingNoteChanged();
 }

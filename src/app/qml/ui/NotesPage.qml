@@ -29,6 +29,7 @@ PageWithBottomEdge {
     id: root
 
     property var selectedNote: null
+    property bool readOnly: false
     property bool narrowMode
 
     property alias filterNotebookGuid: notes.filterNotebookGuid
@@ -97,7 +98,7 @@ PageWithBottomEdge {
             action: Action {
                 text: i18n.tr("Delete")
                 iconName: "delete"
-                visible: root.selectedNote !== null
+                visible: root.selectedNote !== null && !root.readOnly
                 onTriggered: {
                     NotesStore.deleteNote(root.selectedNote.guid);
                 }
@@ -112,7 +113,7 @@ PageWithBottomEdge {
                 iconSource: root.selectedNote.reminder ?
                     Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder.svg") :
                     Qt.resolvedUrl("/usr/share/icons/suru/actions/scalable/reminder-new.svg")
-                visible: root.selectedNote !== null
+                visible: root.selectedNote !== null && !root.readOnly
                 onTriggered: {
                     root.selectedNote.reminder = !root.selectedNote.reminder
                     NotesStore.saveNote(root.selectedNote.guid)
@@ -123,7 +124,7 @@ PageWithBottomEdge {
             action: Action {
                 text: i18n.tr("Edit")
                 iconName: "edit"
-                visible: root.selectedNote !== null
+                visible: root.selectedNote !== null && !root.readOnly
                 onTriggered: {
                     print("should edit note")
                     root.editNote(root.selectedNote)
@@ -159,7 +160,6 @@ PageWithBottomEdge {
                       model.updated : model.created
 
             content: model.tagline
-            triggerActionOnMouseRelease: true
             tags: {
                 var tags = new Array();
                 for (var i = 0; i < model.tagGuids.length; i++) {
@@ -174,15 +174,15 @@ PageWithBottomEdge {
             loading: model.loading
             syncError: model.syncError
             conflicting: model.conflicting
+            locked: conflicting
+            deleted: model.deleted
 
             Component.onCompleted: {
                 notes.note(model.guid).load(false);
             }
 
             onItemClicked: {
-                if (!model.conflicting) {
-                    root.selectedNote = NotesStore.note(guid);
-                }
+                root.selectedNote = NotesStore.note(guid);
             }
 
             onDeleteNote: {

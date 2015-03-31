@@ -28,18 +28,19 @@ class FetchNoteJob : public NotesStoreJob
     Q_OBJECT
 public:
     enum LoadWhat {
-        LoadContent,
-        LoadResources
+        LoadContent = 0x01,
+        LoadResources = 0x02
     };
+    Q_DECLARE_FLAGS(LoadWhatFlags, LoadWhat)
 
-    explicit FetchNoteJob(const QString &guid, LoadWhat what, QObject *parent = 0);
+    explicit FetchNoteJob(const QString &guid, LoadWhatFlags what, QObject *parent = 0);
 
     virtual bool operator==(const EvernoteJob *other) const override;
     virtual void attachToDuplicate(const EvernoteJob *other) override;
     virtual QString toString() const override;
 
 signals:
-    void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note, LoadWhat what);
+    void resultReady(EvernoteConnection::ErrorCode error, const QString &errorMessage, const evernote::edam::Note &note, LoadWhatFlags what);
 
 protected:
     void startJob();
@@ -49,7 +50,7 @@ private:
     evernote::edam::NoteStoreClient *m_client;
     QString m_token;
     QString m_guid;
-    LoadWhat m_what;
+    LoadWhatFlags m_what;
 
     evernote::edam::Note m_result;
 

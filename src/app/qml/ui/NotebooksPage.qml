@@ -119,7 +119,6 @@ Page {
             delegate: NotebooksDelegate {
                 width: parent.width
                 height: units.gu(10)
-                triggerActionOnMouseRelease: true
 
                 onItemClicked: {
                     print("selected notebook:", model.guid)
