@@ -17,14 +17,17 @@
  */
 
 import QtQuick 2.3
+import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.1
 
 Item {
     id: root
+    implicitWidth: Math.max(height, contentRow.width + units.gu(1))
     property alias text: textField.text
     property alias iconName: icon.name
     property alias iconSource: icon.source
     property string color: "transparent"
+    property alias iconColor: icon.color
     property alias horizontalAlignment: textField.horizontalAlignment
 
     property alias font: textField.font
@@ -36,6 +39,7 @@ Item {
     opacity: enabled ? 1 : 0.5
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
         onClicked: root.clicked()
     }
@@ -43,22 +47,27 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: UbuntuColors.darkGrey
-        opacity: root.active ? 0.2 : 0
+        opacity: root.active || mouseArea.pressed ? 0.2 : 0
     }
 
-    Label {
-        id: textField
-        anchors { top: parent.top; bottom: parent.bottom; left: parent.left }
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        width: parent.width
-        elide: Text.ElideRight
-    }
-
-    Icon {
-        id: icon
-        anchors.fill: parent
-        anchors.margins: units.gu(0.5)
+    Row {
+        id: contentRow
+        anchors { top: parent.top; bottom: parent.bottom; left: parent.left; leftMargin: units.gu(0.5) }
+        spacing: units.gu(0.5)
+        Icon {
+            id: icon
+            anchors { top: parent.top; bottom: parent.bottom; margins: units.gu(0.5) }
+            width: height
+            visible: source.toString().length > 0
+        }
+        Label {
+            id: textField
+            anchors { top: parent.top; bottom: parent.bottom; margins: units.gu(0.5) }
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
+            width: Math.min(implicitWidth, root.width)
+        }
     }
 
     UbuntuShape {
