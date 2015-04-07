@@ -6,7 +6,7 @@ set(qmltest_DEFAULT_NO_ADD_TEST TRUE)
 set(qmltest_DEFAULT_PROPERTIES ENVIRONMENT "LC_ALL=C")
 
 set(qmltest_DEFAULT_IMPORT_PATHS
-  ${CMAKE_BINARY_DIR}
+  ${CMAKE_BINARY_DIR}/plugins
   ${CMAKE_BINARY_DIR}/tests/utils/modules
 )
 

@@ -1,6 +1,6 @@
 module Ubuntu.Settings.Components
 plugin UbuntuSettingsComponentsQml
-typeinfo plugin.qmltypes
+typeinfo Components.qmltypes
 
 ActionTextField 0.1 ActionTextField.qml
 Calendar 0.1 Calendar.qml

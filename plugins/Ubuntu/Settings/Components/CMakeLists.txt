@@ -7,14 +7,11 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(UbuntuSettingsMenusQml_SOURCES
-    plugin.cpp
-    serverpropertysynchroniser.cpp
-)
 add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
 
 add_library(UbuntuSettingsComponentsQml MODULE
-    ${UbuntuSettingsMenusQml_SOURCES}
+    plugin.cpp
+    serverpropertysynchroniser.cpp
 )
 
 qt5_use_modules(UbuntuSettingsComponentsQml Core Qml Quick)
