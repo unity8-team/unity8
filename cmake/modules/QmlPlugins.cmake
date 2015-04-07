@@ -126,12 +126,6 @@ macro(export_qmlplugin PLUGIN VERSION PATH)
         set(target_prefix ${QMLPLUGIN_TARGET_PREFIX}${PLUGIN})
         set(qmltypes_path ${CMAKE_CURRENT_SOURCE_DIR}/${plugin_suffix}.qmltypes)
 
-        add_custom_target(${target_prefix}-qmltypesprint
-            COMMAND echo ${CMAKE_BINARY_DIR}
-            COMMAND echo ${QMLPLUGIN_MODULE_DIR}
-            COMMAND echo ${QMLPLUGIN_BINARY_DIR}
-        )
-
         add_custom_target(${target_prefix}-qmltypes
             COMMAND env ${QMLPLUGIN_ENVIRONMENT} ${qmlplugindump_executable} -notrelocatable
                     ${PLUGIN} ${VERSION} ${QMLPLUGIN_MODULE_DIR} > ${qmltypes_path}
