@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UBUNTUSETTINGSCOMPOENNTS_PLUGIN_H
-#define UBUNTUSETTINGSCOMPOENNTS_PLUGIN_H
+#ifndef UBUNTUSETTINGSCOMPONENTS_PLUGIN_H
+#define UBUNTUSETTINGSCOMPONENTS_PLUGIN_H
 
 #include <QtQml/QQmlExtensionPlugin>
 
@@ -27,4 +27,4 @@ public:
     void registerTypes(const char *uri);
 };
 
-#endif // UBUNTUSETTINGSCOMPOENNTS_PLUGIN_H
+#endif // UBUNTUSETTINGSCOMPONENTS_PLUGIN_H

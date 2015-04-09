@@ -1,6 +1,6 @@
 module Ubuntu.Settings.Menus
 plugin UbuntuSettingsMenusQml
-typeinfo plugin.qmltypes
+typeinfo Menus.qmltypes
 
 AccessPointMenu 0.1 AccessPointMenu.qml
 ButtonMenu 0.1 ButtonMenu.qml

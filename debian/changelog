@@ -1,9 +1,22 @@
+ubuntu-settings-components (0.6-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ Nick Dedekind ]
+  * Added ServerActivationSync
+
+ -- Nick Dedekind <nick.dedekind@canonical.com>  Thu, 12 Mar 2015 14:04:34 +0000
+
 ubuntu-settings-components (0.5+15.04.20150123.1-0ubuntu1) vivid; urgency=medium
 
   [ Sebastien Bacher ]
   * Updated version, so the users of the new property can update their depends
 
  -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 23 Jan 2015 12:17:25 +0000
+
+ubuntu-settings-components (0.5-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Added SyncSwitch & SyncCheckBox components
+
+ -- Nick Dedekind <nick.dedekind@canonical.com>  Thu, 23 Oct 2014 17:09:21 -0400
 
 ubuntu-settings-components (0.4+15.04.20141105-0ubuntu1) vivid; urgency=low
 

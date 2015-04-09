@@ -5,5 +5,4 @@ macro(add_usc_plugin PLUGIN VERSION PATH)
     export_qmlplugin(${PLUGIN} ${VERSION} ${PATH} DESTINATION ${QT_IMPORTS_DIR} ${ARGN})
 endmacro()
 
-add_subdirectory(Components)
-add_subdirectory(Menus)
+add_subdirectory(Ubuntu)
