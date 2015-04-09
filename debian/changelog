@@ -1,9 +1,12 @@
-ubuntu-settings-components (0.6-0ubuntu1) UNRELEASED; urgency=medium
+ubuntu-settings-components (0.6+15.04.20150409.1-0ubuntu1) vivid; urgency=medium
 
   [ Nick Dedekind ]
   * Added ServerActivationSync
 
- -- Nick Dedekind <nick.dedekind@canonical.com>  Thu, 12 Mar 2015 14:04:34 +0000
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 09 Apr 2015 13:57:19 +0000
 
 ubuntu-settings-components (0.5+15.04.20150123.1-0ubuntu1) vivid; urgency=medium
 
