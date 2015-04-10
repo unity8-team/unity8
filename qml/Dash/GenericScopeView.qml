@@ -157,6 +157,7 @@ FocusScope {
     }
 
     Rectangle {
+        id: colorBackground
         anchors.fill: parent
         color: scopeView.scopeStyle ? scopeView.scopeStyle.background : "transparent"
         visible: color != "transparent"
@@ -569,6 +570,7 @@ FocusScope {
 
         DashBackground {
             anchors.fill: parent
+            visible: !colorBackground.visible || colorBackground.color == "#f5f5f5"
             z: -1
         }
 
