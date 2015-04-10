@@ -17,7 +17,7 @@
 import QtQuick 2.0
 
 Image {
-    source: anchors.fill.width > anchors.fill.height ? "graphics/suru_wp_1080x1920_landscape.jpg" : "graphics/suru_wp_1080x1920_portrait.jpg"
+    source: anchors.fill.width > anchors.fill.height ? "graphics/suru_scope_landscape.jpg" : "graphics/suru_scope_portrait.jpg"
     fillMode: Image.TileVertically
     horizontalAlignment: Image.AlignRight
     verticalAlignment: Image.AlignTop
