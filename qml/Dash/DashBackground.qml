@@ -18,7 +18,9 @@ import QtQuick 2.0
 
 Image {
     source: anchors.fill.width > anchors.fill.height ? "graphics/suru_wp_1080x1920_landscape.jpg" : "graphics/suru_wp_1080x1920_portrait.jpg"
-    fillMode: Image.PreserveAspectCrop
+    fillMode: Image.TileVertically
     horizontalAlignment: Image.AlignRight
     verticalAlignment: Image.AlignTop
+    sourceSize.width: anchors.fill.width
+    sourceSize.height: 0
 }

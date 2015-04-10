@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,10 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.3
-import MeeGo.QOfono 0.2
+import QtQuick 2.0
+import QtQuick.Layouts 1.1
+import Ubuntu.Components 1.1
+import Unity.Test 0.1
 
-Item {
-    readonly property var modems: MockQOfono.modems
-    readonly property bool available: MockQOfono.available
+RowLayout {
+    id: root
+    property alias color: label.color
+
+    Binding {
+        target: MouseTouchAdaptor
+        property: "enabled"
+        value: checkbox.checked
+    }
+
+    Layout.fillWidth: true
+    CheckBox {
+        id: checkbox
+        checked: true
+        activeFocusOnPress: false
+    }
+    Label {
+        id: label
+        text: "Mouse emulates touch"
+        anchors.verticalCenter: parent.verticalCenter
+    }
 }
