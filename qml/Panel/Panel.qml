@@ -159,7 +159,7 @@ Item {
                 margins: units.gu(0.7)
             }
             height: indicators.minimizedPanelHeight - anchors.margins * 2
-            visible: PanelState.buttonsVisible
+            visible: PanelState.buttonsVisible && usageModeSettings.usageMode === "Windowed"
             onClose: PanelState.close()
             onMinimize: PanelState.minimize()
             onMaximize: PanelState.maximize()
