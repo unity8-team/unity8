@@ -58,7 +58,7 @@ FocusScope {
         id: priv
 
         readonly property string focusedAppId: ApplicationManager.focusedApplicationId
-        readonly property var focusedAppDelegate: focusedAppId ? appRepeater.itemAt(indexOf(focusedAppId)) : null
+        readonly property var focusedAppDelegate: focusedAppId && appRepeater.count == ApplicationManager.count ? appRepeater.itemAt(indexOf(focusedAppId)) : null
 
         function indexOf(appId) {
             for (var i = 0; i < ApplicationManager.count; i++) {
@@ -83,6 +83,10 @@ FocusScope {
         target: PanelState
         property: "buttonsVisible"
         value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.state === "maximized"
+    }
+
+    Component.onDestruction: {
+        PanelState.buttonsVisible = false;
     }
 
     Repeater {

@@ -37,6 +37,7 @@ import "Notifications"
 import "Stages"
 import "Tutorial"
 import "Wizard"
+import "Components/PanelState"
 import Unity.Notifications 1.0 as NotificationBackend
 import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
@@ -214,6 +215,13 @@ Item {
             onApplicationAdded: {
                 launcher.hide();
             }
+        }
+
+        Binding {
+            target: PanelState
+            property: "buttonsVisible"
+            value: false
+            when: usageModeSettings.usageMode !== "Windowed"
         }
 
         Loader {
