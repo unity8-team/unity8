@@ -72,6 +72,10 @@ class Dash(emulators.UnityEmulatorBase):
         return self.dash_content_list.wait_select_single(
             'QQuickLoader', objectName=("scopeLoader%i" % scope_index))
 
+    def wait_for_processing_to_complete(self):
+        self.select_single(
+            objectName='processingIndicator').visible.wait_for(False)
+
     @autopilot_logging.log_action(logger.info)
     def open_scope(self, scope_id):
         """Open a dash scope.
