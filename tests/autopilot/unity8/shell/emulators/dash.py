@@ -214,6 +214,13 @@ class GenericScopeView(emulators.UnityEmulatorBase):
             Preview, objectName='preview{}'.format(preview_list.currentIndex))
 
     @autopilot_logging.log_action(logger.debug)
+    def swipe_to_top(self):
+        """Swipe to the top of the scope."""
+        list_view = self.select_single(
+            ListViewWithPageHeader, objectName='categoryListView')
+        list_view.swipe_to_top()
+
+    @autopilot_logging.log_action(logger.debug)
     def click_scope_item(self, category, title, press_duration=0.10):
         """Click an item from the scope.
 
