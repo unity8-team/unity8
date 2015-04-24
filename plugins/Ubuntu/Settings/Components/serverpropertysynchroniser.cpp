@@ -365,18 +365,5 @@ void ServerPropertySynchroniser::bufferTimedOut()
     if (m_buffering) {
         m_buffering = false;
         activate();
-    } else {
-        // Update the user value.
-        if (m_busy) return;
-        m_busy = true;
-
-        QQmlProperty userProp(m_userTarget, m_userProperty);
-        QQmlProperty serverProp(m_serverTarget, m_serverProperty);
-        if (!userProp.isValid() || !serverProp.isValid()) {
-            m_busy = false;
-            return;
-        }
-        userProp.write(serverProp.read());
-        m_busy = false;
     }
 }

@@ -58,7 +58,7 @@ Item {
         property var changeToValue: undefined
 
         property Timer timer: Timer {
-            interval: 200
+            interval: 2000
 
             onTriggered: {
                 sliderBackend.value = sliderBackend.changeToValue;
@@ -165,6 +165,7 @@ Item {
                     objectName: "sliderSync"
 
                     syncTimeout: 3000
+                    maximumWaitBufferInterval: 50
 
                     userTarget: slider
                     userProperty: "value"
@@ -276,14 +277,20 @@ Item {
 
         function init() {
             waitForRendering(root);
+
+            switchSync.reset();
+            checkSync.reset();
+            sliderSync.reset();
+            apMenuSync.reset();
+
             switchBackend.timer.interval = 100;
             checkBackend.timer.interval = 100;
-            sliderBackend.timer.interval = 100;
+            sliderBackend.timer.interval = 200;
             apBackend.timer.interval = 100;
 
             switchSync.syncTimeout = 200;
             checkSync.syncTimeout = 200;
-            sliderSync.syncTimeout = 200;
+            sliderSync.syncTimeout = 400;
             apMenuSync.syncTimeout = 200;
 
             sliderSyncActivatedSpy.clear();
@@ -300,10 +307,6 @@ Item {
             sliderBackend.value = 50;
             apBackend.active = false;
 
-            switchSync.reset();
-            checkSync.reset();
-            sliderSync.reset();
-            apMenuSync.reset();
             sliderSync.maximumWaitBufferInterval = -1
 
             tryCompare(switchBackend, "inSync", true);
@@ -354,14 +357,27 @@ Item {
             sliderSync.syncTimeout = 5000;
 
             slider.value = 60;
-            compare(sliderSyncActivatedSpy.count, 1, "activated signal should have been sent")
+            compare(sliderSyncActivatedSpy.count, 1, "activated signal should have been sent");
+            wait(100); // wait for buffer timeout
+            compare(slider.value, 60, "value should be set to last activate");
+
             slider.value = 70;
             slider.value = 80;
-            tryCompare(sliderSyncActivatedSpy, "count", 2, 500, "activated signal should have been sent after max interval")
+            tryCompare(sliderSyncActivatedSpy, "count", 2, 500, "activated signal should have been sent after max interval");
+            wait(100); // wait for buffer timeout
+            compare(slider.value, 80, "value should be set to last activate");
+            tryCompare(sliderSyncActivatedSpy, "count", 3, 500, "activated signal should have been sent after max interval");
+
             slider.value = 90;
-            tryCompare(sliderSyncActivatedSpy, "count", 3, 500, "activated signal should have been sent after max interval")
+            tryCompare(sliderSyncActivatedSpy, "count", 4, 500, "activated signal should have been sent after max interval");
+            wait(100); // wait for buffer timeout
+            compare(slider.value, 90, "value should be set to last activate");
+
             slider.value = 100;
-            tryCompare(sliderSyncActivatedSpy, "count", 4, 500);
+            tryCompare(sliderSyncActivatedSpy, "count", 5, 500);
+            wait(100); // wait for buffer timeout
+            compare(slider.value, 100, "value should be set to last activate");
+
             tryCompare(sliderBackend, "value", 100);
         }
 
