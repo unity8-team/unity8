@@ -98,6 +98,9 @@ class Indicator():
 class DisplayIndicator(Indicator):
 
     def __init__(self, main_window):
+        # QA Minor: Old style call, py3 allows: super().__init__(. . .)
+        # QA Minor: Inconsistant indentation relative to the rest of the
+        # project.
         super(DisplayIndicator, self).__init__(main_window,
                                                'indicator-rotation-lock')
         self._main_window = main_window

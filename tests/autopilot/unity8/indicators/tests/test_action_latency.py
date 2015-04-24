@@ -30,10 +30,28 @@ from testtools.matchers import Equals, NotEquals
 
 class TestIndicatorBaseTestCase(tests.IndicatorTestCase):
 
+    # QA Minor: A comment stating why this is only using a single scenario
+    # would be clearer
     scenarios = [tests.IndicatorTestCase.device_emulation_scenarios[0]]
 
     def setUp(self):
+        # QA: Outdated, with python3 this can be super().setUp()
         super(TestIndicatorBaseTestCase, self).setUp()
+
+        # QA Prob: The use of self.action_delay in such a way (Expecting it to
+        # be dynamically set before setUp is called, in this instance using
+        # scenarios) isn't very well defined and makes it possible to use the
+        # class incorrectly (i.e. it's not obvious to authors subclassing this
+        # that they need to set a member variable called action_delay.
+        #
+        # QA Suggestion: I would suggest making action_delay an argument to
+        # setUp. This way it can default to a sensible value as well and now
+        # being obvious that it's there (and not relying on it to magically be
+        # set.)
+        # def setUp(self, action_delay):
+        #    ...
+        #    self.launch_indicator_service(action_delay)
+        # ...
 
         self.launch_indicator_service()
 
@@ -65,6 +83,13 @@ class TestServerValueUpdate(TestIndicatorBaseTestCase):
         TestIndicatorBaseTestCase.scenarios
     )
 
+    # QA: with the suggested enhancement this would need something like:
+    # def setUp(self):
+    #     super().setUp(self.action_delay)
+
+    # QA Query: How come there is a need for an extended timeout in all the
+    # assertThat calls? A comment stating why clarifies for future authors.
+
     def test_switch_reaches_server_value(self):
         switch = self.indicator_page.get_switcher()
         switch_menu = self.indicator_page.get_switch_menu()
@@ -77,6 +102,7 @@ class TestServerValueUpdate(TestIndicatorBaseTestCase):
         )
 
     def test_slider_reaches_server_value(self):
+        # QA minor: Needs docstring describing what this test is doing/expects.
         slider = self.indicator_page.get_slider()
         slider_menu = self.indicator_page.get_slider_menu()
 
@@ -100,9 +126,18 @@ class TestBuffering(TestIndicatorBaseTestCase):
 
     See https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1390136 .
     """
+    # QA: As per above suggestion, the use of this becomes clearer.
     action_delay = 2500
 
     def test_switch_buffers_actvations(self):
+        # QA: This should have a docstring clarifying what the test intends to
+        # check.
+        # For instance; Is this checking that the state really quickly does not
+        # check the UI but the server end should change back and forth?
+
+        # QA: Due to dealing with timing an autopilot test might not be the
+        # best level to test with. (the docstring mentioned above would help
+        # clarify this point.)
 
         switch = self.indicator_page.get_switcher()
         switch.change_state()
@@ -133,6 +168,12 @@ class TestBuffering(TestIndicatorBaseTestCase):
             Eventually(Equals(final_value), timeout=20)
         )
 
+        # QA Query: Is this check not the same as the one above? Checking
+        # switch_menu.serverChecked against final_value (which is
+        # switch.checked) is the same as checking:
+        # switch.checked (which is final_value) against
+        # switch_menu.serverChecked
+
         # make sure we've got the server value set.
         self.assertThat(
             switch.checked,
@@ -140,6 +181,7 @@ class TestBuffering(TestIndicatorBaseTestCase):
         )
 
     def test_slider_buffers_activations(self):
+        # QA: Docstring needed.
 
         slider = self.indicator_page.get_slider()
         original_value = slider.value
@@ -170,6 +212,9 @@ class TestBuffering(TestIndicatorBaseTestCase):
             Equals(final_value)
         )
 
+        # QA: It appears that these 2 asserts are checking the same thing, just
+        # using different variable names to do so.
+        # (Same as mentioned above).
         # server will respond to the second activate
         self.assertThat(
             slider_menu.serverValue,
@@ -190,8 +235,14 @@ class TestClientRevertsToServerValue(TestIndicatorBaseTestCase):
 
     See https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1390136 .
     """
+
+    # QA: The use of action_delay would either be removed (if a default is
+    # used) or more obvious (as it's needed to be passed to setUp()).
     action_delay = -1  # never action.
 
+    # QA: Autopilot tests aren't the best fit for tests that depend on timing.
+    # QA Suggestion: Make these tests at a better level for example <link to
+    # documentation re: better level of testing.>
     def test_switch_reverts_on_late_response(self):
 
         switch = self.indicator_page.get_switcher()

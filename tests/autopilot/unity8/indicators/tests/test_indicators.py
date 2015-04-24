@@ -25,6 +25,18 @@ from unity8.indicators import tests
 
 class IndicatorExistsTestCase(tests.DeviceIndicatorTestCase):
 
+    # QA: Removing the Bluetooth scenario from here and conditionally adding it
+    # before the multiply_scenarios call will save an extra check for each test
+    # call.
+    # i.e.
+    # if platform.model() != 'Nexus 10':
+    #     indicator_scenarios.append(
+    #         ('Bluetooth', dict(indicator_name='indicator-bluetooth'))
+    #     )
+    # Although this does mean that the number of reported tests will be
+    # inconsistent depending on which platform is used to list the tests.
+    # (as opposed to skipping in the setUp which means the number stays the
+    # same regardless.)
     indicator_scenarios = [
         ('Bluetooth', dict(indicator_name='indicator-bluetooth')),
         ('Datetime', dict(indicator_name='indicator-datetime')),
@@ -53,6 +65,8 @@ class IndicatorExistsTestCase(tests.DeviceIndicatorTestCase):
 
 class IndicatorPageTitleMatchesWidgetTestCase(tests.DeviceIndicatorTestCase):
 
+    # QA Minor: Consider merging this with the above Test class to limit
+    # duplication.
     indicator_scenarios = [
         ('Bluetooth', dict(indicator_name='indicator-bluetooth',
                            title='Bluetooth')),

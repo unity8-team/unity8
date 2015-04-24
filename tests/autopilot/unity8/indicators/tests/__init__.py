@@ -34,11 +34,16 @@ class IndicatorTestCase(tests.UnityTestCase):
         process_helpers.unlock_unity(self.unity_proxy)
 
 
+# QA Minor: Perhaps this would be better called something like
+# 'DeviceOnlyIndicatorTestCase' to further implicit
 class DeviceIndicatorTestCase(IndicatorTestCase):
 
     def setUp(self):
         if platform.model() == 'Desktop':
             self.skipTest('Test cannot be run on the desktop.')
         super().setUp()
+        # QA: These 2 calls are not needed as unity is launched in the super
+        # setup (IndicatorTestCase). As this is currently unity is started then
+        # stopped then started again (all before the actual test starts.)
         self.unity_proxy = self.launch_unity()
         process_helpers.unlock_unity(self.unity_proxy)

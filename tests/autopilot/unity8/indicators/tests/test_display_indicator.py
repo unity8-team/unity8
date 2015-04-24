@@ -28,6 +28,8 @@ class DisplayIndicatorTestCase(tests.DeviceIndicatorTestCase):
     scenarios = tests.IndicatorTestCase.device_emulation_scenarios
 
     def test_indicator_icon_must_be_visible_after_rotation_locked(self):
+        # QA Minor: Fixture usage would be concise using a single line:
+        # self.useFixture(fixture_setup.DisplayRotationLock(False))
         rotation_unlocked = fixture_setup.DisplayRotationLock(False)
         self.useFixture(rotation_unlocked)
         display_indicator = indicators.DisplayIndicator(self.main_window)
@@ -40,8 +42,14 @@ class DisplayIndicatorTestCase(tests.DeviceIndicatorTestCase):
         self.assertTrue(display_indicator.is_indicator_icon_visible())
 
     def test_indicator_icon_must_not_be_visible_after_rotation_unlocked(self):
+        # QA Minor: Fixture usage would be concise using a single line:
+        # self.useFixture(fixture_setup.DisplayRotationLock(False))
         rotation_locked = fixture_setup.DisplayRotationLock(True)
         self.useFixture(rotation_locked)
+
+        # QA Minor: this code is duplicated in both tests, would be nice to
+        # separate out into a named method. De-dupes as well as making the
+        # action obvious.
         display_indicator = indicators.DisplayIndicator(self.main_window)
         self.assertTrue(display_indicator.is_indicator_icon_visible())
 
