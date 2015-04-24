@@ -353,32 +353,21 @@ Item {
         }
 
         function test_buffered_change_with_maximum_interval() {
-            sliderSync.maximumWaitBufferInterval = 50;
+            sliderSync.maximumWaitBufferInterval = 25;
             sliderSync.syncTimeout = 5000;
 
             slider.value = 60;
             compare(sliderSyncActivatedSpy.count, 1, "activated signal should have been sent");
-            wait(100); // wait for buffer timeout
-            compare(slider.value, 60, "value should be set to last activate");
-
             slider.value = 70;
             slider.value = 80;
-            tryCompare(sliderSyncActivatedSpy, "count", 2, 500, "activated signal should have been sent after max interval");
             wait(100); // wait for buffer timeout
+            tryCompare(sliderSyncActivatedSpy, "count", 2, 1000, "aditional activate signal should have been sent");
             compare(slider.value, 80, "value should be set to last activate");
-            tryCompare(sliderSyncActivatedSpy, "count", 3, 500, "activated signal should have been sent after max interval");
 
             slider.value = 90;
-            tryCompare(sliderSyncActivatedSpy, "count", 4, 500, "activated signal should have been sent after max interval");
             wait(100); // wait for buffer timeout
+            tryCompare(sliderSyncActivatedSpy, "count", 3, 1000, "aditional activate signal should have been sent");
             compare(slider.value, 90, "value should be set to last activate");
-
-            slider.value = 100;
-            tryCompare(sliderSyncActivatedSpy, "count", 5, 500);
-            wait(100); // wait for buffer timeout
-            compare(slider.value, 100, "value should be set to last activate");
-
-            tryCompare(sliderBackend, "value", 100);
         }
 
         function test_connect_to_another_object() {
