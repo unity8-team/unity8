@@ -30,7 +30,6 @@ FocusScope {
     property alias background: wallpaper.source
 
     property var windowStateStorage: WindowStateStorage
-
     CrossFadeImage {
         id: wallpaper
         anchors.fill: parent
@@ -47,8 +46,30 @@ FocusScope {
         onFocusRequested: {
             var appIndex = priv.indexOf(appId);
             var appDelegate = appRepeater.itemAt(appIndex);
+            var fullscreen = (appDelegate.x ==0 && appDelegate.y ==0 && appDelegate.width ==root.width && appDelegate.height ==root.height)
             if (appDelegate.state === "minimized") {
-                appDelegate.state = "normal"
+                if (!appDelegate.maxtomin) {
+                    appDelegate.getNorGeometry()
+                    appDelegate.state = "normal"
+                    appDelegate.maxtomin = false
+                } else {
+                    appDelegate.state = "maximized"
+                    appDelegate.maxtomin = false
+                }
+            }
+            if (appDelegate.state === "" ) {
+                if (fullscreen) {
+                    appDelegate.state = "maximized"
+                }
+                else {
+                    if (appDelegate.getNorGeometry()) {
+                        appDelegate.state = "normal"
+                    }
+                    else {
+                        appDelegate.saveNorGeometry()
+                        appDelegate.state = "normal"
+                        }
+                    }
             }
             ApplicationManager.focusApplication(appId);
         }
@@ -72,11 +93,17 @@ FocusScope {
 
     Connections {
         target: PanelState
-        onClose: {
-            ApplicationManager.stopApplication(ApplicationManager.focusedApplicationId)
+        onClose:  ApplicationManager.stopApplication(ApplicationManager.focusedApplicationId)
+        onMinimize: {
+            if (appRepeater.itemAt(0).state == "maximized") {
+                appRepeater.itemAt(0).maxtomin = true
+            }
+            appRepeater.itemAt(0).state = "minimized"
         }
-        onMinimize: appRepeater.itemAt(0).state = "minimized"
-        onMaximize: appRepeater.itemAt(0).state = "normal"
+        onMaximize: {
+            appRepeater.itemAt(0).getNorGeometry()
+            appRepeater.itemAt(0).state = "normal"
+        }
     }
 
     Binding {
@@ -95,13 +122,30 @@ FocusScope {
             y: units.gu(3)
             width: units.gu(60)
             height: units.gu(50)
-
             readonly property int minWidth: units.gu(10)
             readonly property int minHeight: units.gu(10)
-
+            property var windowstate
+            property bool maxtomin: false
+            function saveNorGeometry() {
+                windowstate = Qt.rect(x,y,width,height)
+                windowStateStorage.saveGeometry(model.appId, windowstate,1)
+            }
+            function getNorGeometry() {
+                windowstate = windowStateStorage.getGeometry(model.appId, Qt.rect(null,null,null,null),1)
+                    if(windowstate.width==0 ||windowstate.height==0){
+                        return false
+                    }
+                        return true
+            }
+            function normalStateSave() {
+                if (state == "normal") {
+                    saveNorGeometry()
+                }
+            }
             states: [
                 State {
                     name: "normal"
+                    PropertyChanges { target: appDelegate; x:windowstate.x ; y:windowstate.y; width:windowstate.width; height:windowstate.height }
                 },
                 State {
                     name: "maximized"
@@ -125,7 +169,6 @@ FocusScope {
                 minHeight: appDelegate.minHeight
                 resizeHandleWidth: units.gu(0.5)
                 windowId: model.appId // FIXME: Change this to point to windowId once we have such a thing
-
                 onPressed: decoratedWindow.focus = true;
             }
 
@@ -142,9 +185,24 @@ FocusScope {
                     }
                 }
 
-                onClose: ApplicationManager.stopApplication(model.appId)
-                onMaximize: appDelegate.state = (appDelegate.state == "maximized" ? "normal" : "maximized")
-                onMinimize: appDelegate.state = "minimized"
+                onClose: {
+                    appDelegate.normalStateSave()
+                    ApplicationManager.stopApplication(model.appId)
+                }
+                onMaximize: {
+                    appDelegate.normalStateSave()
+                    if(appDelegate.state == "maximized"){
+                        appDelegate.getNorGeometry()
+                    }
+                    appDelegate.state = (appDelegate.state == "maximized" ? "normal" : "maximized")
+                }
+                onMinimize: {
+                    appDelegate.normalStateSave()
+                    if(appDelegate.state == "maximized"){
+                        appDelegate.maxtomin = true
+                    }
+                    appDelegate.state = "minimized"
+                }
             }
         }
     }

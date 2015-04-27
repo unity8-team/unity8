@@ -26,8 +26,8 @@ public:
     WindowStateStorage(QObject *parent = 0);
     virtual ~WindowStateStorage();
 
-    Q_INVOKABLE void saveGeometry(const QString &windowId, const QRect &rect);
-    Q_INVOKABLE QRect getGeometry(const QString &windowId, const QRect &defaultValue);
+    Q_INVOKABLE void saveGeometry(const QString &windowId, const QRect &rect,const int tables);
+    Q_INVOKABLE QRect getGeometry(const QString &windowId, const QRect &defaultValue,const int tables);
 
 private:
     void initdb();

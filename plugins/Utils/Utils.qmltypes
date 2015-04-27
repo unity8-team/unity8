@@ -164,12 +164,14 @@ Module {
             name: "saveGeometry"
             Parameter { name: "windowId"; type: "string" }
             Parameter { name: "rect"; type: "QRect" }
+            Parameter { name: "tables"; type: "int"}
         }
         Method {
             name: "getGeometry"
             type: "QRect"
             Parameter { name: "windowId"; type: "string" }
             Parameter { name: "defaultValue"; type: "QRect" }
+            Parameter { name: "tables"; type: "int"}
         }
     }
 }

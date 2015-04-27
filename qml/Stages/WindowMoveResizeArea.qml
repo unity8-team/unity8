@@ -50,7 +50,7 @@ MouseArea {
     }
 
     Component.onCompleted: {
-        var windowState = windowStateStorage.getGeometry(root.windowId, Qt.rect(target.x, target.y, target.width, target.height))
+        var windowState = windowStateStorage.getGeometry(root.windowId, Qt.rect(target.x, target.y, target.width, target.height),0)
         if (windowState !== undefined) {
             target.x = windowState.x
             target.y = windowState.y
@@ -104,6 +104,6 @@ MouseArea {
     }
 
     Component.onDestruction: {
-        windowStateStorage.saveGeometry(root.windowId, Qt.rect(target.x, target.y, target.width, target.height))
+        windowStateStorage.saveGeometry(root.windowId, Qt.rect(target.x, target.y, target.width, target.height),0)
     }
 }

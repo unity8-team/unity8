@@ -47,20 +47,27 @@ WindowStateStorage::~WindowStateStorage()
     m_db.close();
 }
 
-void WindowStateStorage::saveGeometry(const QString &windowId, const QRect &rect)
+void WindowStateStorage::saveGeometry(const QString &windowId, const QRect &rect,const int tables)
 {
     QMutexLocker mutexLocker(&s_mutex);
-
-    QString queryString = QString("INSERT OR REPLACE INTO geometry (windowId, x, y, width, height) values ('%1', '%2', '%3', '%4', '%5');")
-            .arg(windowId)
-            .arg(rect.x())
-            .arg(rect.y())
-            .arg(rect.width())
-            .arg(rect.height());
-
+    QString queryString;
+    if (tables ==0) {
+        queryString = QString("INSERT OR REPLACE INTO geometry (windowId, x, y, width, height) values ('%1', '%2', '%3', '%4', '%5');")
+                .arg(windowId)
+                .arg(rect.x())
+                .arg(rect.y())
+                .arg(rect.width())
+                .arg(rect.height());
+    }else {
+         queryString = QString("INSERT OR REPLACE INTO normalstate (windowId, x, y, width, height) values ('%1', '%2', '%3', '%4', '%5');")
+                .arg(windowId)
+                .arg(rect.x())
+                .arg(rect.y())
+                .arg(rect.width())
+                .arg(rect.height());
+    }
     QFuture<void> future = QtConcurrent::run(executeAsyncQuery, queryString);
     m_asyncQueries.append(future);
-
     QFutureWatcher<void> *futureWatcher = new QFutureWatcher<void>();
     futureWatcher->setFuture(future);
     connect(futureWatcher, &QFutureWatcher<void>::finished,
@@ -82,11 +89,18 @@ void WindowStateStorage::executeAsyncQuery(const QString &queryString)
     }
 }
 
-QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defaultValue)
+QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defaultValue,const int tables)
 {
     QMutexLocker l(&s_mutex);
-    QString queryString = QString("SELECT * FROM geometry WHERE windowId = '%1';")
-            .arg(windowId);
+    QString queryString;
+    if(tables ==0) {
+        queryString = QString("SELECT * FROM geometry WHERE windowId = '%1';")
+                .arg(windowId);
+    }
+    else {
+        queryString = QString("SELECT * FROM normalstate WHERE windowId = '%1';")
+                .arg(windowId);
+    }
     QSqlQuery query;
 
     bool ok = query.exec(queryString);
@@ -113,5 +127,10 @@ void WindowStateStorage::initdb()
     if (!m_db.tables().contains("geometry")) {
         QSqlQuery query;
         query.exec("CREATE TABLE geometry(windowId TEXT UNIQUE, x INTEGER, y INTEGER, width INTEGER, height INTEGER);");
+    }
+    if (!m_db.tables().contains("normalstate")) {
+        QSqlQuery statequery;
+        qWarning() <<"create table normalstate";
+        statequery.exec("CREATE TABLE normalstate(windowId TEXT UNIQUE, x INTEGER, y INTEGER, width INTEGER, height INTEGER);");
     }
 }
