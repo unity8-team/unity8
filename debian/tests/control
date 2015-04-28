@@ -13,4 +13,5 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Tests: doesnt-hang-on-boot
+Depends: unity8
 Restrictions: needs-root
