@@ -16,7 +16,7 @@
 
 set +ex
 
-reboots=30
+reboots=100
 
 if [ -z ${ADT_REBOOT_MARK} ] ; then
     iteration=1
