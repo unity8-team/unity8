@@ -14,14 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-set +ex
+set +e
 
 reboots=100
 
 if [ -z ${ADT_REBOOT_MARK} ] ; then
     iteration=1
 else
-    iteration=$(expr ${ADT_REBOOT_MARK#reboot_mark-} + 1)
+    iteration=$((ADT_REBOOT_MARK+1))
 fi
 
 if [ $((iteration)) -ge $((reboots)) ] ; then
@@ -30,6 +30,6 @@ if [ $((iteration)) -ge $((reboots)) ] ; then
     exit 0
 else
     rm -fR ~/.cache/QML
-    echo "Reboot with reboot_mark-${iteration}"
-    /tmp/autopkgtest-reboot reboot_mark-${iteration}
+    echo "Reboot #${iteration}"
+    /tmp/autopkgtest-reboot ${iteration}
 fi
