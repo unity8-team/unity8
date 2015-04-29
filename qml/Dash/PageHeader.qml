@@ -387,7 +387,7 @@ Item {
 
     Row {
         visible: bottomBorder.visible
-        spacing: units.gu(.5)
+        spacing: ((units.gu(1.5) * (root.paginationCount + 1)) > root.width)? (root.width / (root.paginationCount + 1) - units.gu(1.)): units.gu(.5)
         Repeater {
             objectName: "paginationRepeater"
             model: root.paginationCount
