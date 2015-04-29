@@ -182,7 +182,9 @@ Showable {
             scopesList.scope.performQuery("scope://com.canonical.scopes.clickstore");
         }
         onRequestFavorite: {
-            scopes.setFavorite(scopeId, favorite);
+            if ((scopes.rowCount() <= 20) || (scopes.rowCount() > 20 && !favorite)) {
+            	scopes.setFavorite(scopeId, favorite);
+			}
         }
         onRequestFavoriteMoveTo: {
             scopes.moveFavoriteTo(scopeId, index);
