@@ -74,9 +74,6 @@ ListItems.Empty {
             id: componentLoader
             asynchronous: false
             visible: status == Loader.Ready
-
-            Layout.preferredHeight: item ? item.height : 0
-            Layout.preferredWidth: item ? item.width : 0
         }
     }
 }

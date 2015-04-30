@@ -30,8 +30,8 @@ StandardMenu {
         Rectangle {
             id: activeIcon
             objectName: "activeIcon"
-            width: checkMark.width + units.gu(1.5)
-            height: checkMark.height + units.gu(1.5)
+            implicitWidth: checkMark.width + units.gu(1.5)
+            implicitHeight: checkMark.height + units.gu(1.5)
             radius: width / 2
             antialiasing: true
             color: Theme.palette.normal.backgroundText
