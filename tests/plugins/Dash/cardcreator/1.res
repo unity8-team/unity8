@@ -1,7 +1,6 @@
 AbstractButton { 
                 id: root; 
                 property var template; 
-                property var components; 
                 property var cardData; 
                 property var artShapeBorderSource: undefined; 
                 property real fontScale: 1.0; 
@@ -34,7 +33,7 @@ Item  {
                                     radius: "medium"; 
                                     visible: image.status == Image.Ready; 
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; 
-                                    readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : components !== undefined ? components["art"]["aspect-ratio"] : 1; 
+                                    readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : 1.6;
                                     Component.onCompleted: { updateWidthHeightBindings(); if (artShapeBorderSource !== undefined) borderSource = artShapeBorderSource; }
                                     Connections { target: root; onFixedArtShapeSizeChanged: updateWidthHeightBindings(); } 
                                     function updateWidthHeightBindings() { 

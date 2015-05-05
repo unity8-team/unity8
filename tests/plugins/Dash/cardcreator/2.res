@@ -1,7 +1,6 @@
 AbstractButton { 
                 id: root; 
                 property var template; 
-                property var components; 
                 property var cardData; 
                 property var artShapeBorderSource: undefined; 
                 property real fontScale: 1.0; 

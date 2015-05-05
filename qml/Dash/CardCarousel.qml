@@ -62,7 +62,6 @@ DashRenderer {
                 item.height = Qt.binding(function() { return cardTool.cardHeight; });
                 item.cardData = Qt.binding(function() { return model; });
                 item.template = Qt.binding(function() { return cardTool.template; });
-                item.components = Qt.binding(function() { return cardTool.components; });
                 item.fontScale = Qt.binding(function() { return carousel.fontScale; });
                 item.showHeader = Qt.binding(function() { return loader.explicitlyScaled; });
                 item.artShapeBorderSource = "none";
