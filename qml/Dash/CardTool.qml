@@ -216,11 +216,11 @@ Item {
             item.height = Qt.binding(function() { return cardTool.cardHeight || item.implicitHeight; });
         }
         Connections {
-            target: cardLoader.item
+            target: cardTool
             onComponentsChanged: {
                 var data = {};
                 for (var k in cardLoader.fields) {
-                    var component = cardLoader.item.components[cardLoader.fields[k]];
+                    var component = cardTool.components[cardLoader.fields[k]];
                     var key = cardLoader.fields[k];
                     if ((typeof component === "string" && component.length > 0) ||
                         (typeof component === "object" && component !== null
