@@ -29,10 +29,12 @@ ServerPropertySynchroniser::ServerPropertySynchroniser(QObject* parent)
     , m_connectedServerTarget(nullptr)
     , m_connectedUserTarget(nullptr)
     , m_serverSyncTimer(new QTimer(this))
-    , m_bufferTimeout(nullptr)
+    , m_bufferDamper(nullptr)
     , m_useWaitBuffer(true)
-    , m_buffering(false)
+    , m_haveNextActivate(false)
     , m_bufferedSyncTimeout(false)
+    , m_serverUpdatedDuringBufferDamping(false)
+    , m_activateCount(0)
 {
     m_serverSyncTimer->setSingleShot(true);
     m_serverSyncTimer->setInterval(30000);
@@ -57,8 +59,10 @@ void ServerPropertySynchroniser::reset()
         m_serverSyncTimer->stop();
         Q_EMIT syncWaitingChanged(false);
     }
-    if (m_bufferTimeout) m_bufferTimeout->stop();
-    m_buffering = false;
+    if (m_bufferDamper) m_bufferDamper->stop();
+    m_haveNextActivate = false;
+    m_activateCount = 0;
+    m_serverUpdatedDuringBufferDamping = false;
 }
 
 QObject *ServerPropertySynchroniser::serverTarget() const
@@ -164,31 +168,31 @@ void ServerPropertySynchroniser::setUseWaitBuffer(bool value)
 
 int ServerPropertySynchroniser::maximumWaitBufferInterval() const
 {
-    return m_bufferTimeout ? m_bufferTimeout->interval() : -1;
+    return m_bufferDamper ? m_bufferDamper->interval() : -1;
 }
 
 void ServerPropertySynchroniser::setMaximumWaitBufferInterval(int timeout)
 {
     if (timeout >= 0) {
-        if (!m_bufferTimeout) {
-            m_bufferTimeout = new QTimer(this);
-            m_bufferTimeout->setInterval(timeout);
-            m_bufferTimeout->setSingleShot(true);
-            connect(m_bufferTimeout, &QTimer::timeout, this, &ServerPropertySynchroniser::bufferTimedOut);
+        if (!m_bufferDamper) {
+            m_bufferDamper = new QTimer(this);
+            m_bufferDamper->setInterval(timeout);
+            m_bufferDamper->setSingleShot(true);
+            connect(m_bufferDamper, &QTimer::timeout, this, &ServerPropertySynchroniser::bufferTimedOut);
 
             Q_EMIT maximumWaitBufferIntervalChanged(timeout);
         }
-        else if (timeout != m_bufferTimeout->interval()) {
-            m_bufferTimeout->setInterval(timeout);
+        else if (timeout != m_bufferDamper->interval()) {
+            m_bufferDamper->setInterval(timeout);
             Q_EMIT maximumWaitBufferIntervalChanged(timeout);
         }
 
-    } else if (m_bufferTimeout) {
-        if (m_bufferTimeout->isActive()) {
-            m_buffering = false;
+    } else if (m_bufferDamper) {
+        if (m_bufferDamper->isActive()) {
+            m_haveNextActivate = false;
         }
-        delete m_bufferTimeout;
-        m_bufferTimeout = nullptr;
+        delete m_bufferDamper;
+        m_bufferDamper = nullptr;
         Q_EMIT maximumWaitBufferIntervalChanged(timeout);
     }
 }
@@ -219,16 +223,16 @@ void ServerPropertySynchroniser::activate()
 
     if (m_useWaitBuffer) {
         // Dampen the activations? Buffer the change.
-        if (m_bufferTimeout) {
-            if (m_bufferTimeout->isActive()) {
-                m_buffering = true;
+        if (m_bufferDamper) {
+            if (m_bufferDamper->isActive()) {
+                m_haveNextActivate = true;
                 m_busy = false;
                 return;
             }
-            m_bufferTimeout->start();
-        // Not using a buffer timer? Buffer the change till server timeout
+            m_bufferDamper->start();
+        // Not using a damp interval? Buffer the change till we get a server response, or timeout
         } else if (m_serverSyncTimer->isActive()) {
-            m_buffering = true;
+            m_haveNextActivate = true;
             m_busy = false;
             return;
         }
@@ -236,6 +240,7 @@ void ServerPropertySynchroniser::activate()
 
     m_serverSyncTimer->start();
     Q_EMIT syncWaitingChanged(true);
+    m_activateCount++;
 
     // Fire off a change to the server user property value
     QQmlProperty userProp(m_userTarget, m_userProperty);
@@ -251,6 +256,7 @@ void ServerPropertySynchroniser::connectServer()
 {
     // if we havent finished constructing the class, then wait
     if (!m_classComplete) return;
+    reset();
 
     if (m_connectedServerTarget) QObject::disconnect(m_connectedServerTarget, 0, this, 0);
     if (!m_serverTarget || m_serverProperty.isEmpty()) {
@@ -273,6 +279,7 @@ void ServerPropertySynchroniser::connectUser()
 {
     // if we havent finished constructing the class, then wait
     if (!m_classComplete) return;
+    reset();
 
     if (m_connectedUserTarget) QObject::disconnect(m_connectedUserTarget, 0, this, 0);
     if (!m_userTarget) {
@@ -313,13 +320,21 @@ void ServerPropertySynchroniser::updateUserValue()
     if (m_busy) return;
     m_busy = true;
 
-    bool waitingBufferedServerChange = m_bufferTimeout && m_bufferTimeout->isActive();
-
-    // If we've been waiting for a sync, stop the wait.
+    // Are we waiting for a server sync.
     if (m_serverSyncTimer->isActive()) {
+        // are we waiting for more from the server? (number of activates sent > number of receives)
+        if (--m_activateCount > 0) {
+            // ignore the change and update on server sync timeout.
+            m_busy = false;
+            return;
+        }
+
+        // stop the wait
         m_serverSyncTimer->stop();
         Q_EMIT syncWaitingChanged(false);
     }
+    m_activateCount = 0;
+    m_serverUpdatedDuringBufferDamping = m_bufferDamper && m_bufferDamper->isActive();
 
     QQmlProperty userProp(m_userTarget, m_userProperty);
     QQmlProperty serverProp(m_serverTarget, m_serverProperty);
@@ -331,8 +346,8 @@ void ServerPropertySynchroniser::updateUserValue()
     // If we've been buffering changes since last change was send,
     // we verify that what the server gave us is what we want, and send another
     // activation if not.
-    if (m_buffering) {
-        m_buffering = false;
+    if (m_haveNextActivate) {
+        m_haveNextActivate = false;
         m_busy = false;
         if (serverProp.read() != userProp.read()) {
             activate();
@@ -341,7 +356,7 @@ void ServerPropertySynchroniser::updateUserValue()
     }
 
     // Don't update until we hit the buffer timeout.
-    if (waitingBufferedServerChange) {
+    if (m_serverUpdatedDuringBufferDamping) {
         m_busy = false;
         return;
     }
@@ -353,8 +368,8 @@ void ServerPropertySynchroniser::updateUserValue()
 
 void ServerPropertySynchroniser::serverSyncTimedOut()
 {
-    if (m_buffering && !m_bufferedSyncTimeout) {
-        m_buffering = false;
+    if (m_haveNextActivate && !m_bufferedSyncTimeout) {
+        m_haveNextActivate = false;
     }
     Q_EMIT syncWaitingChanged(false);
     updateUserValue();
@@ -362,8 +377,25 @@ void ServerPropertySynchroniser::serverSyncTimedOut()
 
 void ServerPropertySynchroniser::bufferTimedOut()
 {
-    if (m_buffering) {
-        m_buffering = false;
+    if (m_haveNextActivate) {
+        m_haveNextActivate = false;
         activate();
     }
+    // if we received a server change while we were in change buffer but don't need to send another activate,
+    // update to the value we received.
+    else if (m_serverUpdatedDuringBufferDamping) {
+        // Update the user value.
+        if (m_busy) return;
+        m_busy = true;
+
+        QQmlProperty userProp(m_userTarget, m_userProperty);
+        QQmlProperty serverProp(m_serverTarget, m_serverProperty);
+        if (!userProp.isValid() || !serverProp.isValid()) {
+            m_busy = false;
+            return;
+        }
+        userProp.write(serverProp.read());
+        m_busy = false;
+    }
+    m_serverUpdatedDuringBufferDamping = false;
 }

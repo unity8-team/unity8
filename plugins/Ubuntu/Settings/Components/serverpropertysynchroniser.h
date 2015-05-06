@@ -148,10 +148,13 @@ private:
     QObject* m_connectedUserTarget;
 
     QTimer* m_serverSyncTimer;
-    QTimer* m_bufferTimeout;
+    QTimer* m_bufferDamper;
     bool m_useWaitBuffer;
-    bool m_buffering;
+    bool m_haveNextActivate;
     bool m_bufferedSyncTimeout;
+    bool m_serverUpdatedDuringBufferDamping;
+
+    int m_activateCount;
 };
 
 #endif // SERVERPROPERTYSYNCHRONISER_H
