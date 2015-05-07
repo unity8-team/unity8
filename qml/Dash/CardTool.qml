@@ -66,7 +66,12 @@ Item {
         return layout;
     }
 
-    property var cardComponent: CardCreatorCache.getCardComponent(cardTool.template, cardTool.components);
+    /*!
+     \brief The scope id for this card tool.
+     */
+    property string scopeId
+
+    property var cardComponent: CardCreatorCache.getCardComponent(cardTool.template, cardTool.components, cardTool.scopeId);
 
     // FIXME: Saviq
     // Only way for the card below to actually be laid out completely.
@@ -212,16 +217,15 @@ Item {
             item.objectName = "cardToolCard";
             item.asynchronous = false;
             item.template = Qt.binding(function() { return cardTool.template; });
-            item.components = Qt.binding(function() { return cardTool.components; });
             item.width = Qt.binding(function() { return cardTool.cardWidth || item.implicitWidth; });
             item.height = Qt.binding(function() { return cardTool.cardHeight || item.implicitHeight; });
         }
         Connections {
-            target: cardLoader.item
+            target: cardTool
             onComponentsChanged: {
                 var data = {};
                 for (var k in cardLoader.fields) {
-                    var component = cardLoader.item.components[cardLoader.fields[k]];
+                    var component = cardTool.components[cardLoader.fields[k]];
                     var key = cardLoader.fields[k];
                     if ((typeof component === "string" && component.length > 0) ||
                         (typeof component === "object" && component !== null

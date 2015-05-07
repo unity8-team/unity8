@@ -254,6 +254,7 @@ FocusScope {
                 count: results ? results.count : 0
                 template: model.renderer
                 components: model.components
+                scopeId: scope.id
                 viewWidth: parent.width
             }
 

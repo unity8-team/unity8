@@ -62,7 +62,6 @@ Rectangle {
                 item.height = Qt.binding(function() { return cardTool.cardHeight || implicitHeight; });
                 item.cardData = Qt.binding(function() { return Helpers.mapData(root.cardData, cardTool.components); });
                 item.template = Qt.binding(function() { return cardTool.template; });
-                item.components = Qt.binding(function() { return cardTool.components; });
             }
         }
     }
