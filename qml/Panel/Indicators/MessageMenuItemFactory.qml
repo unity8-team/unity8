@@ -23,6 +23,9 @@ import Ubuntu.Components 0.1
 import Ubuntu.Settings.Menus 0.1 as Menus
 import QMenuModel 0.1 as QMenuModel
 import Utils 0.1 as Utils
+import Ubuntu.Telephony.PhoneNumber 0.1 as PhoneNumber
+
+import "ba-linkify.js" as BaLinkify
 
 Loader {
     id: messageFactoryItem
@@ -92,6 +95,35 @@ Loader {
         return defaultValue;
     }
 
+    function getCountryCode() {
+        var localeName = Qt.locale().name
+        return localeName.substr(localeName.length - 2, 2)
+    }
+
+    function formatTelSchemeWith(phoneNumber) {
+        return '<a href="tel:///' + phoneNumber + '">' + phoneNumber + '</a>'
+    }
+
+    function parseText(text) {
+        // remove html tags
+        text = text.replace(/</g,'&lt;').replace(/>/g,'<tt>&gt;</tt>');
+        // replace line breaks
+        text = text.replace(/(\n)+/g, '<br />');
+        // check for links
+        var htmlText = BaLinkify.linkify(text);
+        if (htmlText !== text) {
+            return htmlText
+        }
+
+        // linkify phone numbers if no web links were found
+        var phoneNumbers = PhoneNumber.PhoneUtils.matchInText(text, getCountryCode())
+        for (var i = 0; i < phoneNumbers.length; ++i) {
+            var currentNumber = phoneNumbers[i]
+            text = text.replace(currentNumber, formatTelSchemeWith(currentNumber))
+        }
+        return text
+    }
+
     Component {
         id: simpleMessage
 
@@ -144,7 +176,7 @@ Loader {
             // text
             title: menuData && menuData.label || ""
             time: timeFormatter.timeString
-            body: getExtendedProperty(extendedData, "xCanonicalText", "")
+            body: parseText(getExtendedProperty(extendedData, "xCanonicalText", ""))
             replyButtonText: getExtendedProperty(replyActionDescription, "label", "Send")
             replyHintText: i18n.ctr("Label: Hint in message indicator line edit", "Reply")
             // icons
