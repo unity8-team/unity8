@@ -1,149 +1,116 @@
 import QtQuick 2.2
 import Ubuntu.Components 1.1
 import Utils 0.1
+import Unity.Application 0.1
 
 Item {
+
+    Label {
+        anchors {left: parent.left; top: parent.top }
+        text: "prog:" + transitionCurve.progress.toFixed(2)
+        color: leftFoldingAreaProgress > 0 || rightFoldingAreaProgress > 0 ? "red" : "black"
+    }
+
     id: root
     anchors { left: parent.left; top: parent.top; margins: units.gu(1) }
 
-    // Information about the transformed item
     property int itemIndex: 0
-    property real itemHeight: units.gu(10)
-
-    // Information about the environment
     property int totalItems: 0
     property Item flickable: null
-    property int sceneHeight: units.gu(20)
+    property int margins: units.gu(5)
+    property int foldingAreaWidth: units.gu(10)
 
-    // Spread properties
-    property real spreadHeight: sceneHeight * 0.4
-    property int spreadBottomOffset: sceneHeight * 0.2
-    property int foldingAreaWidth: flickableWidth * 0.2
-    property int maxVisibleItems: 7
-    property int margins: flickableWidth * 0.05
-    property real stackScale: 0.1
-    property int leftEndFoldedAngle: 70
-    property int rightEndFoldedAngle: 65
-    property int unfoldedAngle: 30
-    property int stackWidth: flickableWidth * 0.01
+    property int maxVisibleItems: 10
 
+    property int sceneHeight: 100
+    property int spreadHeight: sceneHeight * 0.4
+    property int itemHeight: sceneHeight / 2
 
-    // Internal
     readonly property int flickableWidth: flickable ? flickable.width : 0
     readonly property int flickableContentWidth: flickable ? flickable.contentWidth: 0
     readonly property real flickableProgress: flickable ? flickable.contentX / (flickable.contentWidth -  flickableWidth) : 0
 
     readonly property int contentWidth: flickableWidth - root.margins * 2
 
-    readonly property int distance: (flickableContentWidth - (margins * 2) - (foldingAreaWidth * 2)) / (totalItems - 2)
-    readonly property int startPos: margins + foldingAreaWidth + (itemIndex - 1) * distance
-    readonly property int linearX: startPos - flickableProgress * (flickableContentWidth - flickableWidth)
+    readonly property int unfoldedDistance: (contentWidth - foldingAreaWidth) / maxVisibleItems
 
-    readonly property int leftFoldingAreaX: margins + foldingAreaWidth
-    readonly property int rightFoldingAreaX: flickableWidth - foldingAreaWidth - margins
+    // Internal
+    readonly property real progressSlice: 1 / totalItems;
+    readonly property real startProgress: (index - maxVisibleItems/2) * progressSlice
+    readonly property real endProgress: (index + maxVisibleItems/2) * progressSlice
 
-    readonly property real leftFoldingAreaProgress: linearAnimation(leftFoldingAreaX, margins, 0, 1, linearX)
-    readonly property real rightFoldingAreaProgress: linearAnimation(rightFoldingAreaX, flickableWidth - margins, 0, 1, linearX)
+//    readonly property real startX: index < maxVisibleItems ?
+//                                       margins + index * unfoldedDistance
+//                                     : contentWidth - foldingAreaWidth + (startLayout.value * foldingAreaWidth)
 
-    readonly property real limitedLeftProgress: Math.min(2, leftFoldingAreaProgress)
-    readonly property real limitedRightProgress: Math.min(2, rightFoldingAreaProgress)
+    readonly property real startX: contentWidth - foldingAreaWidth + (startLayout.value * foldingAreaWidth)
 
-//    Label {
-//        anchors { left: parent.left; top: parent.top; topMargin: - 100 }
-//        text: leftFoldingAreaProgress.toFixed(2)
-//        color: "green"
-//        fontSize: "x-large"
-//    }
+//    readonly property real endX: totalItems - maxVisibleItems < index ?
+//                                     contentWidth - (totalItems - index) * unfoldedDistance
+//                                   : margins + foldingAreaWidth - (endLayout.value * foldingAreaWidth)
 
-    // Output
-    readonly property int animatedX: {
-        if (leftFoldingAreaProgress > 4) { // Stop it at the edge
-            return margins;
+    readonly property real endX: margins + foldingAreaWidth - (endLayout.value * foldingAreaWidth)
+
+    readonly property int animatedX: transitionCurve.value * (endX - startX) + startX
+
+    readonly property int animatedY: sceneHeight - itemHeight - (sceneHeight * 0.2);
+
+    property int leftEndFoldedAngle: 70
+    property int rightEndFoldedAngle: 65
+    property int unfoldedAngle: 30
+
+    // faw : 1 = x : p
+    property real leftFoldingAreaProgress: (foldingAreaWidth + margins - animatedX) / foldingAreaWidth
+    property real rightFoldingAreaProgress: (animatedX + margins*2 - contentWidth) / foldingAreaWidth
+
+
+    // x : foldingAreaWidth = leftEndFoldedAngle: unfoldedAngle
+
+    readonly property int animatedAngle: 1/*leftFoldingAreaProgress > 0 ?
+                                             linearAnimation(0, 1, unfoldedAngle, leftEndFoldedAngle, leftFoldingAreaProgress)
+                                           : rightFoldingAreaProgress > 0 ?
+                                                 linearAnimation(0, 1, unfoldedAngle, rightEndFoldedAngle, rightFoldingAreaProgress)
+                                               : unfoldedAngle*/
+
+    onAnimatedAngleChanged: if (index == 10) print("**** animated angle", animatedAngle, rightFoldingAreaProgress)
+
+    function desktopScale(sceneHeight, itemHeight) {
+        var maxHeight = sceneHeight * 0.35;
+        if (itemHeight > maxHeight) {
+            return maxHeight / itemHeight
         }
-        if (leftFoldingAreaProgress > 2) { // move it slowly through the stack
-            return linearAnimation(2, 4, margins + stackWidth, margins, leftFoldingAreaProgress)
-        }
-        if (leftFoldingAreaProgress > 1 && itemIndex == 0) {
-            // The leftmost runs faster... make it stop before the stack and wait for others
-            return margins + stackWidth;
-        }
-
-        if (leftFoldingAreaProgress > 0) { // slow it down in a curve
-            if (itemIndex == 0) { // except if it's the leftmost. that one goes straigt
-                return linearAnimation(0, 1, leftFoldingAreaX, margins + stackWidth, leftFoldingAreaProgress)
-            }
-            return linearAnimation(0, 1, leftFoldingAreaX, margins + stackWidth, leftEasing.value)
-        }
-        // same for the right side stack... mostly... don't need to treat the rightmost special...
-        if (rightFoldingAreaProgress > 4) {
-            return flickableWidth - margins
-        }
-        if (rightFoldingAreaProgress > 2) {
-            return linearAnimation(2, 4, flickableWidth - margins - stackWidth, flickableWidth - margins, rightFoldingAreaProgress)
-        }
-
-        if (rightFoldingAreaProgress > 0) {
-            return linearAnimation(0, 1, rightFoldingAreaX, flickableWidth - margins - stackWidth, rightEasing.value);
-        }
-
-        return linearX//margins + foldingAreaWidth + centerEasing.value * (linearX - margins - foldingAreaWidth);
+        return 1;
     }
 
-    readonly property int animatedY: sceneHeight - itemHeight - spreadBottomOffset
+    readonly property real scale: 1
 
-    readonly property int animatedAngle: {
-        if (limitedLeftProgress > 0) {
-            // Leftmost is special...
-            if (index == 0) {
-                if (limitedLeftProgress < 1) {
-                    return unfoldedAngle;
-                } else {
-                    return linearAnimation(1, 2, unfoldedAngle, leftEndFoldedAngle, limitedLeftProgress)
-                }
-            }
-            return linearAnimation(0, 2, unfoldedAngle, leftEndFoldedAngle, limitedLeftProgress)
-        } else if (limitedRightProgress > 0) {
-            return linearAnimation(0, 2, unfoldedAngle, rightEndFoldedAngle, limitedRightProgress)
-        } else {
-            return unfoldedAngle
-        }
-    }
+    readonly property real tileInfoOpacity: 1
 
-    readonly property real scale: limitedLeftProgress > 0 ?
-                                     linearAnimation(0, 1, 1, 1 + stackScale, leftEasing.value)
-                                   : limitedRightProgress > 0 ?
-                                          linearAnimation(0, 1, 1, 1 + stackScale, rightEasing.value)
-                                        : 1
-
-    readonly property real tileInfoOpacity: leftFoldingAreaProgress > 0 ?
-                                                      linearAnimation(1, 2, 1, 0, leftFoldingAreaProgress)
-                                                    : rightFoldingAreaProgress > 0 ?
-                                                          linearAnimation(1 ,2, 1, 0, rightFoldingAreaProgress)
-                                                        : 1
-
-
-    // Helpers
     function linearAnimation(startProgress, endProgress, startValue, endValue, progress) {
         // progress : progressDiff = value : valueDiff => value = progress * valueDiff / progressDiff
         return (progress - startProgress) * (endValue - startValue) / (endProgress - startProgress) + startValue;
     }
 
     EasingCurve {
-        id: centerEasing
+        id: transitionCurve
         type: EasingCurve.InOutSine
-        property int totalDistance: flickableWidth - foldingAreaWidth * 2 - margins * 2
-        progress: (linearX - margins - foldingAreaWidth) / totalDistance
+
+        readonly property real normalizedEndProgress: endProgress - startProgress
+        readonly property real normalizedProgress: (root.flickableProgress - root.startProgress) / normalizedEndProgress
+        progress: normalizedProgress
     }
 
     EasingCurve {
-        id: leftEasing
+        id: startLayout
         type: EasingCurve.OutSine
-        progress: limitedLeftProgress / 2 // OutSine starts with twice the speed. slow it down.
+        // total : 1 = index : p
+        progress: 1.0 * index / root.totalItems
     }
 
     EasingCurve {
-        id: rightEasing
+        id: endLayout
         type: EasingCurve.OutSine
-        progress: limitedRightProgress / 2 // OutSine starts with twice the speed. slow it down.
+        // total : 1 = index : p
+        progress: 1 - (1.0 * index / root.totalItems)
     }
 }
