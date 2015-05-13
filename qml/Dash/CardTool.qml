@@ -71,7 +71,7 @@ Item {
      */
     property string scopeId
 
-    property var cardComponent: CardCreatorCache.getCardComponent(cardTool.template, cardTool.components, cardTool.scopeId);
+    property var cardComponent: CardCreatorCache.getCardComponent(cardTool.template, cardTool.components);
 
     // FIXME: Saviq
     // Only way for the card below to actually be laid out completely.

@@ -25,6 +25,8 @@ DashRenderer {
         return cardTool.template["collapsed-rows"];
     }
 
+    readonly property var artStyle: cardTool.scopeId === "clickscope" && cardTool.template["card-size"] === "small" ? "shadow" : "inset";
+
     expandedHeight: grid.totalContentHeight
     collapsedHeight: Math.min(grid.contentHeightForRows(collapsedRows, grid.cellHeight), expandedHeight)
     collapsedItemCount: collapsedRows * grid.columns
@@ -52,6 +54,7 @@ DashRenderer {
         displayMarginEnd: root.displayMarginEnd
         cacheBuffer: root.cacheBuffer
         interactive: false
+        topMargin: root.artStyle === "shadow" ? units.gu(0.25) : 0
         delegate: Item {
             width: grid.cellWidth
             height: grid.cellHeight
@@ -69,6 +72,7 @@ DashRenderer {
                     item.template = Qt.binding(function() { return cardTool.template; });
                     item.titleAlignment = Qt.binding(function() { return cardTool.titleAlignment; });
                     item.scopeStyle = root.scopeStyle;
+                    item.artStyle = root.artStyle;
                 }
                 Connections {
                     target: loader.item

@@ -37,6 +37,8 @@ target_link_libraries(Dash-qml
     ${Qt5Quick_LIBRARIES}
     )
 
+export_qmlfiles(${PLUGIN} ${PATH} DESTINATION ${SHELL_INSTALL_QML}/Dash ${ARGN})
+
 qt5_use_modules(Dash-qml Qml Quick Concurrent)
 
 add_unity8_plugin(Dash 0.1 Dash TARGETS Dash-qml)

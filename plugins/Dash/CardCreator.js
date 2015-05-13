@@ -54,6 +54,8 @@ var kBackgroundLoaderCode = 'Loader {\n\
 // %2 is used as image width
 // %3 is used as image height
 // %4 is used as aspect ratio
+// %5 is used for shadow style
+// %6 is used for additional components
 var kArtShapeHolderCode = 'Item  { \n\
                             id: artShapeHolder; \n\
                             height: root.fixedArtShapeSize.height > 0 ? root.fixedArtShapeSize.height : artShapeLoader.height; \n\
@@ -69,18 +71,19 @@ var kArtShapeHolderCode = 'Item  { \n\
                                     id: artShape; \n\
                                     objectName: "artShape"; \n\
                                     radius: "medium"; \n\
-                                    visible: image.status == Image.Ready; \n\
+                                    visible: source.status == Image.Ready; \n\
+                                    aspect: root.artStyle !== "inset" ? UbuntuShape.Flat : UbuntuShape.Inset; \n\
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; \n\
-                                    readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : %4; \n\
-                                    Component.onCompleted: { updateWidthHeightBindings(); if (artShapeBorderSource !== undefined) borderSource = artShapeBorderSource; } \n\
+                                    readonly property real artAspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : %4; \n\
+                                    Component.onCompleted: { updateWidthHeightBindings(); } \n\
                                     Connections { target: root; onFixedArtShapeSizeChanged: updateWidthHeightBindings(); } \n\
                                     function updateWidthHeightBindings() { \n\
                                         if (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) { \n\
                                             width = root.fixedArtShapeSize.width; \n\
                                             height = root.fixedArtShapeSize.height; \n\
                                         } else { \n\
-                                            width = Qt.binding(function() { return image.status !== Image.Ready ? 0 : image.width }); \n\
-                                            height = Qt.binding(function() { return image.status !== Image.Ready ? 0 : image.height }); \n\
+                                            width = Qt.binding(function() { return source.status !== Image.Ready ? 0 : source.width }); \n\
+                                            height = Qt.binding(function() { return source.status !== Image.Ready ? 0 : source.height }); \n\
                                         } \n\
                                     } \n\
                                     CroppedImageMinimumSourceSize { \n\
@@ -92,9 +95,28 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         width: %2; \n\
                                         height: %3; \n\
                                     } \n\
-                                    image: artImage.image; \n\
+                                    source: artImage.image; \n\
+                                    sourceFillMode: UbuntuShape.PreserveAspectCrop; \n\
                                 } \n\
                             } \n\
+                            BorderImage { \n\
+                                id: itemGlow \n\
+                                anchors.centerIn: artShapeLoader; \n\
+                                source: "shadow.png"; \n\
+                                width: artShapeLoader.width + units.gu(0.5); \n\
+                                height: artShapeLoader.height + units.gu(0.5); \n\
+                                visible: root.artStyle === "shadow"; \n\
+                                z: -1; \n\
+                            } \n\
+                            BorderImage { \n\
+                                id: bevel \n\
+                                anchors.centerIn: artShapeLoader; \n\
+                                source: "bevel.png"; \n\
+                                width: artShapeLoader.width; \n\
+                                height: artShapeLoader.height; \n\
+                                visible: root.artStyle === "shadow"; \n\
+                                z: 1; \n\
+                            } \n
                         }\n';
 
 var kOverlayLoaderCode = 'Loader { \n\
@@ -301,13 +323,12 @@ var kSummaryLabelCode = 'Label { \n\
                             color: %3; \n\
                         }\n';
 
-function cardString(template, components, scopeId) {
+function cardString(template, components) {
     var code;
     code = 'AbstractButton { \n\
                 id: root; \n\
                 property var template; \n\
                 property var cardData; \n\
-                property var artShapeBorderSource: undefined; \n\
                 property real fontScale: 1.0; \n\
                 property var scopeStyle: null; \n\
                 property int titleAlignment: Text.AlignLeft; \n\
@@ -316,6 +337,7 @@ function cardString(template, components, scopeId) {
                 readonly property string title: cardData && cardData["title"] || ""; \n\
                 property bool asynchronous: true; \n\
                 property bool showHeader: true; \n\
+                property string artStyle: "inset"; \n\
                 implicitWidth: childrenRect.width; \n\
                 enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true); \n\
                 \n';
@@ -339,7 +361,7 @@ function cardString(template, components, scopeId) {
     }
 
     if (hasArt) {
-        code += 'onArtShapeBorderSourceChanged: { if (artShapeBorderSource !== undefined && artShapeLoader.item) artShapeLoader.item.borderSource = artShapeBorderSource; } \n';
+        code += 'onArtStyleChanged: { if (artShapeLoader.item) artShapeLoader.item.artStyle = artStyle; } \n';
         code += 'readonly property size artShapeSize: artShapeLoader.item ? Qt.size(artShapeLoader.item.width, artShapeLoader.item.height) : Qt.size(-1, -1);\n';
 
         var widthCode, heightCode;
@@ -347,18 +369,18 @@ function cardString(template, components, scopeId) {
         if (isHorizontal) {
             artAnchors = 'left: parent.left';
             if (hasMascot || hasTitle) {
-                widthCode = 'height * artShape.aspect'
+                widthCode = 'height * artShape.artAspect'
                 heightCode = 'headerHeight + 2 * units.gu(1)';
             } else {
                 // This side of the else is a bit silly, who wants an horizontal layout without mascot and title?
                 // So we define a "random" height of the image height + 2 gu for the margins
-                widthCode = 'height * artShape.aspect'
+                widthCode = 'height * artShape.artAspect'
                 heightCode = 'units.gu(7.625)';
             }
         } else {
             artAnchors = 'horizontalCenter: parent.horizontalCenter;';
             widthCode = 'root.width'
-            heightCode = 'width / artShape.aspect';
+            heightCode = 'width / artShape.artAspect';
         }
 
         var aspectRatio = components["art"] && components["art"]["aspect-ratio"] || 1;
@@ -444,20 +466,20 @@ function cardString(template, components, scopeId) {
         mascotCode = kMascotImageCode.arg(mascotAnchors).arg(mascotImageVisible);
     }
 
-    var summaryColorWithBackground = 'backgroundLoader.active && backgroundLoader.item && root.scopeStyle ? root.scopeStyle.getTextColor(backgroundLoader.item.luminance) : (backgroundLoader.item && backgroundLoader.item.luminance > 0.7 ? Theme.palette.normal.baseText : "white")';
+    var summaryColorWithBackground = 'backgroundLoader.active && backgroundLoader.item && root.scopeStyle ? root.scopeStyle.getTextColor(backgroundLoader.item.luminance) : (backgroundLoader.item && backgroundLoader.item.luminance > 0.7 ? ThemeSettings.palette.normal.baseText : "white")';
 
     var hasTitleContainer = hasTitle && (hasEmblem || (hasMascot && (hasSubtitle || hasAttributes)));
     var titleSubtitleCode = '';
     if (hasTitle) {
         var titleColor;
         if (headerAsOverlay) {
-            titleColor = 'root.scopeStyle && overlayLoader.item ? root.scopeStyle.getTextColor(overlayLoader.item.luminance) : (overlayLoader.item && overlayLoader.item.luminance > 0.7 ? Theme.palette.normal.baseText : "white")';
+            titleColor = 'root.scopeStyle && overlayLoader.item ? root.scopeStyle.getTextColor(overlayLoader.item.luminance) : (overlayLoader.item && overlayLoader.item.luminance > 0.7 ? ThemeSettings.palette.normal.baseText : "white")';
         } else if (hasSummary) {
             titleColor = 'summary.color';
         } else if (hasBackground) {
             titleColor = summaryColorWithBackground;
         } else {
-            titleColor = 'root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText';
+            titleColor = 'root.scopeStyle ? root.scopeStyle.foreground : ThemeSettings.palette.normal.baseText';
         }
 
         var titleAnchors;
@@ -611,7 +633,7 @@ function cardString(template, components, scopeId) {
         if (hasBackground) {
             summaryColor = summaryColorWithBackground;
         } else {
-            summaryColor = 'root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText';
+            summaryColor = 'root.scopeStyle ? root.scopeStyle.foreground : ThemeSettings.palette.normal.baseText';
         }
 
         var summaryTopMargin = (hasMascot || hasSubtitle || hasAttributes ? 'anchors.margins' : '0');
@@ -656,13 +678,13 @@ function cardString(template, components, scopeId) {
     return code;
 }
 
-function createCardComponent(parent, template, components, scopeId) {
+function createCardComponent(parent, template, components) {
     var imports = 'import QtQuick 2.2; \n\
-                   import Ubuntu.Components 1.1; \n\
+                   import Ubuntu.Components 1.3; \n\
                    import Ubuntu.Settings.Components 0.1; \n\
                    import Dash 0.1;\n\
                    import Utils 0.1;\n';
-    var card = cardString(template, components, scopeId);
+    var card = cardString(template, components);
     var code = imports + 'Component {\n' + card + '}\n';
 
     try {
