@@ -54,8 +54,6 @@ var kBackgroundLoaderCode = 'Loader {\n\
 // %2 is used as image width
 // %3 is used as image height
 // %4 is used as aspect ratio
-// %5 is used for shadow style
-// %6 is used for additional components
 var kArtShapeHolderCode = 'Item  { \n\
                             id: artShapeHolder; \n\
                             height: root.fixedArtShapeSize.height > 0 ? root.fixedArtShapeSize.height : artShapeLoader.height; \n\
