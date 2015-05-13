@@ -70,7 +70,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                     objectName: "artShape"; \n\
                                     radius: "medium"; \n\
                                     visible: source.status == Image.Ready; \n\
-                                    aspect: root.artStyle !== "inset" ? UbuntuShape.Flat : UbuntuShape.Inset; \n\
+                                    aspect: root.artStyle === "inset" ? UbuntuShape.Inset : UbuntuShape.Flat; \n\
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; \n\
                                     readonly property real artAspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : %4; \n\
                                     Component.onCompleted: { updateWidthHeightBindings(); } \n\
