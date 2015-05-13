@@ -69,8 +69,8 @@ var kArtShapeHolderCode = 'Item  { \n\
                                     id: artShape; \n\
                                     objectName: "artShape"; \n\
                                     radius: "medium"; \n\
+                                    aspect: root.artShapeStyle === "inset" ? UbuntuShape.Inset : UbuntuShape.Flat; \n\
                                     visible: source.status == Image.Ready; \n\
-                                    aspect: root.artStyle === "inset" ? UbuntuShape.Inset : UbuntuShape.Flat; \n\
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; \n\
                                     readonly property real artAspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : %4; \n\
                                     Component.onCompleted: { updateWidthHeightBindings(); } \n\
@@ -103,7 +103,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                 source: "shadow.png"; \n\
                                 width: artShapeLoader.width + units.gu(0.5); \n\
                                 height: artShapeLoader.height + units.gu(0.5); \n\
-                                visible: root.artStyle === "shadow"; \n\
+                                visible: root.artShapeStyle === "shadow"; \n\
                                 z: -1; \n\
                             } \n\
                             BorderImage { \n\
@@ -112,7 +112,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                 source: "bevel.png"; \n\
                                 width: artShapeLoader.width; \n\
                                 height: artShapeLoader.height; \n\
-                                visible: root.artStyle === "shadow"; \n\
+                                visible: root.artShapeStyle === "shadow"; \n\
                                 z: 1; \n\
                             } \n
                         }\n';
@@ -327,6 +327,7 @@ function cardString(template, components) {
                 id: root; \n\
                 property var template; \n\
                 property var cardData; \n\
+                property string artShapeStyle: "inset"; \n\
                 property real fontScale: 1.0; \n\
                 property var scopeStyle: null; \n\
                 property int titleAlignment: Text.AlignLeft; \n\
@@ -335,7 +336,6 @@ function cardString(template, components) {
                 readonly property string title: cardData && cardData["title"] || ""; \n\
                 property bool asynchronous: true; \n\
                 property bool showHeader: true; \n\
-                property string artStyle: "inset"; \n\
                 implicitWidth: childrenRect.width; \n\
                 enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true); \n\
                 \n';
@@ -359,7 +359,7 @@ function cardString(template, components) {
     }
 
     if (hasArt) {
-        code += 'onArtStyleChanged: { if (artShapeLoader.item) artShapeLoader.item.artStyle = artStyle; } \n';
+        code += 'onArtShapeStyleChanged: { if (artShapeLoader.item) artShapeLoader.item.artShapeStyle = artShapeStyle; } \n';
         code += 'readonly property size artShapeSize: artShapeLoader.item ? Qt.size(artShapeLoader.item.width, artShapeLoader.item.height) : Qt.size(-1, -1);\n';
 
         var widthCode, heightCode;
@@ -464,20 +464,20 @@ function cardString(template, components) {
         mascotCode = kMascotImageCode.arg(mascotAnchors).arg(mascotImageVisible);
     }
 
-    var summaryColorWithBackground = 'backgroundLoader.active && backgroundLoader.item && root.scopeStyle ? root.scopeStyle.getTextColor(backgroundLoader.item.luminance) : (backgroundLoader.item && backgroundLoader.item.luminance > 0.7 ? ThemeSettings.palette.normal.baseText : "white")';
+    var summaryColorWithBackground = 'backgroundLoader.active && backgroundLoader.item && root.scopeStyle ? root.scopeStyle.getTextColor(backgroundLoader.item.luminance) : (backgroundLoader.item && backgroundLoader.item.luminance > 0.7 ? theme.palette.normal.baseText : "white")';
 
     var hasTitleContainer = hasTitle && (hasEmblem || (hasMascot && (hasSubtitle || hasAttributes)));
     var titleSubtitleCode = '';
     if (hasTitle) {
         var titleColor;
         if (headerAsOverlay) {
-            titleColor = 'root.scopeStyle && overlayLoader.item ? root.scopeStyle.getTextColor(overlayLoader.item.luminance) : (overlayLoader.item && overlayLoader.item.luminance > 0.7 ? ThemeSettings.palette.normal.baseText : "white")';
+            titleColor = 'root.scopeStyle && overlayLoader.item ? root.scopeStyle.getTextColor(overlayLoader.item.luminance) : (overlayLoader.item && overlayLoader.item.luminance > 0.7 ? theme.palette.normal.baseText : "white")';
         } else if (hasSummary) {
             titleColor = 'summary.color';
         } else if (hasBackground) {
             titleColor = summaryColorWithBackground;
         } else {
-            titleColor = 'root.scopeStyle ? root.scopeStyle.foreground : ThemeSettings.palette.normal.baseText';
+            titleColor = 'root.scopeStyle ? root.scopeStyle.foreground : theme.palette.normal.baseText';
         }
 
         var titleAnchors;
@@ -631,7 +631,7 @@ function cardString(template, components) {
         if (hasBackground) {
             summaryColor = summaryColorWithBackground;
         } else {
-            summaryColor = 'root.scopeStyle ? root.scopeStyle.foreground : ThemeSettings.palette.normal.baseText';
+            summaryColor = 'root.scopeStyle ? root.scopeStyle.foreground : theme.palette.normal.baseText';
         }
 
         var summaryTopMargin = (hasMascot || hasSubtitle || hasAttributes ? 'anchors.margins' : '0');

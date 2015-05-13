@@ -2,7 +2,7 @@ AbstractButton {
                 id: root; 
                 property var template; 
                 property var cardData; 
-                property var artShapeBorderSource: undefined; 
+                property string artShapeStyle: "inset"; 
                 property real fontScale: 1.0; 
                 property var scopeStyle: null; 
                 property int titleAlignment: Text.AlignLeft; 
@@ -14,7 +14,7 @@ AbstractButton {
                 implicitWidth: childrenRect.width; 
                 enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true);
 
-onArtShapeBorderSourceChanged: { if (artShapeBorderSource !== undefined && artShapeLoader.item) artShapeLoader.item.borderSource = artShapeBorderSource; } 
+onArtShapeStyleChanged: { if (artShapeLoader.item) artShapeLoader.item.artShapeStyle = artShapeStyle; } 
 readonly property size artShapeSize: artShapeLoader.item ? Qt.size(artShapeLoader.item.width, artShapeLoader.item.height) : Qt.size(-1, -1);
 Item  { 
                             id: artShapeHolder; 
@@ -31,18 +31,19 @@ Item  {
                                     id: artShape; 
                                     objectName: "artShape"; 
                                     radius: "medium"; 
-                                    visible: image.status == Image.Ready; 
+                                    aspect: root.artShapeStyle === "inset" ? UbuntuShape.Inset : UbuntuShape.Flat; 
+                                    visible: source.status == Image.Ready; 
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; 
-                                    readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : 1.6;
-                                    Component.onCompleted: { updateWidthHeightBindings(); if (artShapeBorderSource !== undefined) borderSource = artShapeBorderSource; }
+                                    readonly property real artAspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : 1.6;
+                                    Component.onCompleted: { updateWidthHeightBindings(); }
                                     Connections { target: root; onFixedArtShapeSizeChanged: updateWidthHeightBindings(); } 
                                     function updateWidthHeightBindings() { 
                                         if (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) { 
                                             width = root.fixedArtShapeSize.width; 
                                             height = root.fixedArtShapeSize.height; 
                                         } else { 
-                                            width = Qt.binding(function() { return image.status !== Image.Ready ? 0 : image.width });
-                                            height = Qt.binding(function() { return image.status !== Image.Ready ? 0 : image.height });
+                                            width = Qt.binding(function() { return source.status !== Image.Ready ? 0 : source.width });
+                                            height = Qt.binding(function() { return source.status !== Image.Ready ? 0 : source.height });
                                         } 
                                     } 
                                     CroppedImageMinimumSourceSize {
@@ -52,10 +53,29 @@ Item  {
                                         asynchronous: root.asynchronous; 
                                         visible: false; 
                                         width: root.width; 
-                                        height: width / artShape.aspect; 
+                                        height: width / artShape.artAspect; 
                                     } 
-                                    image: artImage.image; 
+                                    source: artImage.image; 
+                                    sourceFillMode: UbuntuShape.PreserveAspectCrop; 
                                 } 
+                            } 
+                            BorderImage { 
+                                id: itemGlow 
+                                anchors.centerIn: artShapeLoader; 
+                                source: "shadow.png"; 
+                                width: artShapeLoader.width + units.gu(0.5); 
+                                height: artShapeLoader.height + units.gu(0.5); 
+                                visible: root.artShapeStyle === "shadow"; 
+                                z: -1; 
+                            } 
+                            BorderImage { 
+                                id: bevel 
+                                anchors.centerIn: artShapeLoader; 
+                                source: "bevel.png"; 
+                                width: artShapeLoader.width; 
+                                height: artShapeLoader.height; 
+                                visible: root.artShapeStyle === "shadow"; 
+                                z: 1; 
                             } 
                         }
 readonly property int headerHeight: titleLabel.height;
@@ -72,7 +92,7 @@ Label {
                         wrapMode: Text.Wrap; 
                         maximumLineCount: 2; 
                         font.pixelSize: Math.round(FontUtils.sizeToPixels(fontSize) * fontScale); 
-                        color: root.scopeStyle ? root.scopeStyle.foreground : Theme.palette.normal.baseText;
+                        color: root.scopeStyle ? root.scopeStyle.foreground : theme.palette.normal.baseText;
                         visible: showHeader ; 
                         text: root.title; 
                         font.weight: cardData && cardData["subtitle"] ? Font.DemiBold : Font.Normal; 

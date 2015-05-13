@@ -66,11 +66,6 @@ Item {
         return layout;
     }
 
-    /*!
-     \brief The scope id for this card tool.
-     */
-    property string scopeId
-
     property var cardComponent: CardCreatorCache.getCardComponent(cardTool.template, cardTool.components);
 
     // FIXME: Saviq
