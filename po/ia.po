@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-04-14 16:13+0200\n"
-"PO-Revision-Date: 2015-04-27 10:07+0000\n"
+"PO-Revision-Date: 2015-05-14 09:20+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Interlingua <ia@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2015-04-28 05:33+0000\n"
-"X-Generator: Launchpad (build 17453)\n"
+"X-Launchpad-Export-Date: 2015-05-15 05:49+0000\n"
+"X-Generator: Launchpad (build 17493)\n"
 
 #: plugins/LightDM/Greeter.cpp:112
 msgid "Password: "
@@ -29,7 +29,7 @@ msgstr "Via-breve a pin"
 
 #: plugins/Unity/Launcher/launcheritem.cpp:100
 msgid "Unpin shortcut"
-msgstr "Via-breve levar pin"
+msgstr "Via-breve a levar pin"
 
 #: qml/Components/DelayedLockscreen.qml:49
 msgid "Device Locked"
@@ -49,7 +49,7 @@ msgstr ""
 #, qt-format
 msgid "Please wait %1 minute and then try again…"
 msgid_plural "Please wait %1 minutes and then try again…"
-msgstr[0] "Per favor attende %1 minuta e postea tentar de nove"
+msgstr[0] "Per favor attende %1 minuta e postea tenta de nove"
 msgstr[1] "Per favor attende %1 minutas e postea tentar de nove"
 
 #: qml/Components/Dialogs.qml:69
@@ -102,7 +102,7 @@ msgstr ""
 
 #: qml/Components/Dialogs.qml:130
 msgid "Are you sure you want to reboot?"
-msgstr "Desira tu vermente Reinitiar"
+msgstr "Desira tu vermente reinitiar"
 
 #: qml/Components/Dialogs.qml:132
 msgid "No"
@@ -123,7 +123,7 @@ msgid ""
 "to power off?"
 msgstr ""
 "Desira tu vermente \n"
-"Stoppar le energia?"
+"stoppar le energia?"
 
 #: qml/Components/Dialogs.qml:155
 msgctxt "Button: Power off the system"
@@ -299,7 +299,7 @@ msgstr "Displacente, codice-contrasigno incorrecte"
 
 #: qml/Notifications/NotificationMenuItemFactory.qml:128
 msgid "Show password"
-msgstr "Monstra le contrasigno"
+msgstr "Monstrar le contrasigno"
 
 #: qml/Panel/ActiveCallHint.qml:79
 msgid "Tap to return to call..."
@@ -590,84 +590,3 @@ msgstr ""
 #, qt-format
 msgid "%1  〉"
 msgstr ""
-
-#~ msgid "Log out"
-#~ msgstr "Clauder le Session"
-
-#~ msgid "Reboot"
-#~ msgstr "Reinitiar"
-
-#~ msgid "Shut down"
-#~ msgstr "Stoppar"
-
-#~ msgid "Power"
-#~ msgstr "Energia"
-
-#~ msgid "Restart"
-#~ msgstr "Re-Initiar"
-
-#~ msgid "Power off"
-#~ msgstr "Stoppar le energia"
-
-#~ msgid "Top edge"
-#~ msgstr "Bordo superior"
-
-#~ msgid "Try swiping from the top edge to access the indicators"
-#~ msgstr "Proba striar le bordo superior pro acceder le indicatores"
-
-#~ msgid "Close"
-#~ msgstr "Clauder"
-
-#~ msgid "Left edge"
-#~ msgstr "Bordo sinistre"
-
-#~ msgid "Try swiping from the right edge to unlock the phone"
-#~ msgstr "Proba striar le bordo dextere pro liberar le telephono"
-
-#~ msgid "Skip intro"
-#~ msgstr "Saltar le introduction"
-
-#~ msgid "Right edge"
-#~ msgstr "Bordo dextere"
-
-#~ msgid "Swipe up again to close the settings screen"
-#~ msgstr "Stria novemente pro clauder le pagina del preparationes"
-
-#~ msgid "Swipe from the left to reveal the launcher for quick access to apps"
-#~ msgstr ""
-#~ "Striar ab le sinistra pro revelar le lanceator pro un celere accesso al "
-#~ "applicationes"
-
-#~ msgid "Well done"
-#~ msgstr "Ben!"
-
-#~ msgid ""
-#~ "You have now mastered the edge gestures and can start using the "
-#~ "phone<br><br>Tap on the screen to start"
-#~ msgstr ""
-#~ "Tu ha ora maestrate le gestos del bordo e pote initiar usar le "
-#~ "telephono<br><br>colpar sur le schermo pro initiar"
-
-#~ msgid "Search"
-#~ msgstr "Cercar"
-
-#~ msgid "Store"
-#~ msgstr "Salvar"
-
-#~ msgid "Settings"
-#~ msgstr "Preparationes"
-
-#~ msgid "Confirm"
-#~ msgstr "Confirmar"
-
-#~ msgid "Type or say a command"
-#~ msgstr "Scriber o dicer un commando"
-
-#~ msgid "Loading. Please Wait..."
-#~ msgstr "Cargante. Attender per favor..."
-
-#~ msgid "Speak Now..."
-#~ msgstr "Parlar Ora..."
-
-#~ msgid "Speaking..."
-#~ msgstr "Parlante..."

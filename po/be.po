@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-04-14 16:13+0200\n"
-"PO-Revision-Date: 2015-04-27 14:34+0000\n"
+"PO-Revision-Date: 2015-05-14 09:20+0000\n"
 "Last-Translator: Arsień Šachalevič <semen.shah@gmail.com>\n"
 "Language-Team: Belarusian <be@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Launchpad-Export-Date: 2015-04-28 05:33+0000\n"
-"X-Generator: Launchpad (build 17453)\n"
+"X-Launchpad-Export-Date: 2015-05-15 05:48+0000\n"
+"X-Generator: Launchpad (build 17493)\n"
 
 #: plugins/LightDM/Greeter.cpp:112
 msgid "Password: "
@@ -45,7 +45,7 @@ msgstr ""
 msgid "You have been locked out due to too many failed passcode attempts."
 msgstr ""
 "Вы былі заблакаваныя з-за занадта вялікай колькасці няўдалых спробаў уводу "
-"код доступу."
+"кода доступу."
 
 #: qml/Components/DelayedLockscreen.qml:74
 #, qt-format
@@ -53,7 +53,7 @@ msgid "Please wait %1 minute and then try again…"
 msgid_plural "Please wait %1 minutes and then try again…"
 msgstr[0] "Пачакайце %1 хвіліну і паўтарыце спробу…"
 msgstr[1] "Пачакайце %1 хвіліны і паўтарыце спробу…"
-msgstr[2] "Пачакайце %1 хвілінаў і паўтарыце спробу…"
+msgstr[2] "Пачакайце %1 хвілін і паўтарыце спробу…"
 
 #: qml/Components/Dialogs.qml:69
 msgctxt "Title: Lock/Log out dialog"
@@ -125,8 +125,8 @@ msgid ""
 "Are you sure you would like\n"
 "to power off?"
 msgstr ""
-"Вы сапраўды хочаце выключыць\n"
-"сілкаванне?"
+"Вы ўпэўнены, што хочаце\n"
+"выключыць кампутар?"
 
 #: qml/Components/Dialogs.qml:155
 msgctxt "Button: Power off the system"
@@ -224,7 +224,7 @@ msgstr "Кіраванне"
 
 #: qml/Dash/ScopesList.qml:112
 msgid "Home"
-msgstr "Дом"
+msgstr "Хатняя тэчка"
 
 #: qml/Dash/ScopesList.qml:113
 msgid "Also installed"
@@ -244,11 +244,11 @@ msgstr "Націсніце, каб разблакаваць"
 
 #: qml/Greeter/NarrowView.qml:53 qml/Wizard/Pages/passwd-confirm.qml:53
 msgid "Sorry, incorrect passphrase."
-msgstr "Даруце, няслушны пароль"
+msgstr "Даруйце, няслушны пароль."
 
 #: qml/Greeter/NarrowView.qml:54 qml/Wizard/Pages/passwd-confirm.qml:54
 msgid "Sorry, incorrect passcode."
-msgstr "Даруйце, няслушны код"
+msgstr "Даруйце, няслушны код."
 
 #: qml/Greeter/NarrowView.qml:55
 msgid "This will be your last attempt."
@@ -259,16 +259,16 @@ msgid ""
 "If passphrase is entered incorrectly, your phone will conduct a factory "
 "reset and all personal data will be deleted."
 msgstr ""
-"Калі пароль паказаны няправільна, тэлефон вернецца ў зыходны стан, усе "
-"асабістыя дадзеныя будуць выдаленыя."
+"Калі ўведзены пароль няправільны, Ваш тэлефон зробіць агульны скід налад і  "
+"ўсе асабістыя дадзеныя будуць выдалены."
 
 #: qml/Greeter/NarrowView.qml:58
 msgid ""
 "If passcode is entered incorrectly, your phone will conduct a factory reset "
 "and all personal data will be deleted."
 msgstr ""
-"Калі пароль уведзены няправільна, то ваш тэлефон будзе праводзіць скід да "
-"завадскіх налад і ўсе асабістыя дадзеныя будуць выдаленыя."
+"Калі ўведзены код няправільны, Ваш тэлефон зробіць агульны скід налад і  ўсе "
+"асабістыя дадзеныя будуць выдалены."
 
 #: qml/Greeter/NarrowView.qml:115
 #, qt-format
@@ -294,7 +294,7 @@ msgstr "Даруйце, няслушны пароль"
 
 #: qml/Greeter/NarrowView.qml:120
 msgid "Please re-enter"
-msgstr "Калі ласка паўтарыце ўвод"
+msgstr "Калі ласка, паўтарыце ўвод"
 
 #: qml/Greeter/NarrowView.qml:121
 msgid "Sorry, incorrect passcode"
@@ -314,7 +314,7 @@ msgstr "Канферэнцыя"
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:639
 msgid "Nothing is playing"
-msgstr "Анічога не прайграецца"
+msgstr "Нішто не грае"
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:787
 msgid "In queue…"
@@ -338,7 +338,7 @@ msgstr "Скончана"
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:799
 msgid "Failed, tap to retry"
-msgstr "Памылка, націсніце для паўтору"
+msgstr "Не атрымалася, націсніце, каб паўтарыць спробу"
 
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:149
 msgctxt "Label: Hint in message indicator line edit"
@@ -440,7 +440,7 @@ msgstr "Дадайце SIM-карту і перазагрузіце Вашую �
 
 #: qml/Wizard/Pages/20-sim.qml:59
 msgid "Without it, you won’t be able to make calls or use text messaging."
-msgstr "Без яе вы не зможаце тэлефанаваць ці адпраўляць паведамленні."
+msgstr "Без яе Вы не зможаце тэлефанаваць ці адпраўляць паведамленні."
 
 #: qml/Wizard/Pages/20-sim.qml:73 qml/Wizard/Pages/40-wifi.qml:215
 msgid "Skip"
@@ -448,7 +448,7 @@ msgstr "Прапусціць"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:39
 msgid "Lock security"
-msgstr "Блакаванне бяспекі"
+msgstr "Блакіроўка"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:74
 msgid "Please select how you’d like to unlock your phone."
@@ -528,7 +528,7 @@ msgstr "Не дазваляць"
 
 #: qml/Wizard/Pages/50-location.qml:124
 msgid "You can change your mind later in <b>System Settings</b>."
-msgstr "Пасля змяніць налады можна з дапамогай <b>Сістэмных параметраў</b>."
+msgstr "Пасля змяніць налады можна з дапамогай <b>Сістэмных наладкаў</b>."
 
 #: qml/Wizard/Pages/60-reporting.qml:24
 msgid "Improving your experience"
@@ -547,8 +547,8 @@ msgid ""
 "This can be disabled in <b>System Settings</b> under <b>Security &amp; "
 "Privacy</b>"
 msgstr ""
-"Гэтае можна адключыць у <b>Сістэмных параметрах</b>, <b>Бяспека &amp; "
-"канфедэнцыйнасць</b>"
+"Гэтае можна адключыць у <b>Сістэмных наладках</b>, дзе <b>Бяспека &amp; "
+"канфедэнцыйнасці</b>"
 
 #: qml/Wizard/Pages/80-finished.qml:24
 msgid "All done"
@@ -585,11 +585,11 @@ msgstr "Калі ласка, паспрабуйце яшчэ раз."
 
 #: qml/Wizard/Pages/passwd-set.qml:61
 msgid "Choose your passcode"
-msgstr "Выберыце ваш код-пароль"
+msgstr "Выберыце код"
 
 #: qml/Wizard/Pages/passwd-set.qml:68
 msgid "Passphrase must be 4 characters long"
-msgstr "Пароль мусіць складацца мінімум з 4 сімвалаў"
+msgstr "Код мусіць складацца з 4 сімвалаў"
 
 #: qml/Wizard/StackButton.qml:39
 #, qt-format
@@ -600,85 +600,3 @@ msgstr "〈  %1"
 #, qt-format
 msgid "%1  〉"
 msgstr "%1  〉"
-
-#~ msgid "Reboot"
-#~ msgstr "Перазагрузіць"
-
-#~ msgid "Shut down"
-#~ msgstr "Выключыць"
-
-#~ msgid "Top edge"
-#~ msgstr "Верхні край"
-
-#~ msgid "Right edge"
-#~ msgstr "Правы край"
-
-#~ msgid "Close"
-#~ msgstr "Зачыніць"
-
-#~ msgid "Left edge"
-#~ msgstr "Левы край"
-
-#~ msgid "Search"
-#~ msgstr "Пошук"
-
-#~ msgid "Confirm"
-#~ msgstr "Пацвердзіць"
-
-#~ msgid "Try swiping from the right edge to unlock the phone"
-#~ msgstr "Правядзіце пальцам з правага краю, каб разблакаваць тэлефон"
-
-#~ msgid "Loading. Please Wait..."
-#~ msgstr "Загрузка. Чакайце..."
-
-#~ msgid "Speaking..."
-#~ msgstr "Кажа..."
-
-#~ msgid "Speak Now..."
-#~ msgstr "Кажыце..."
-
-#~ msgid "Type or say a command"
-#~ msgstr "Напішыце або вымавіце каманду"
-
-#~ msgid "Log out"
-#~ msgstr "Выйсці"
-
-#~ msgid "Power"
-#~ msgstr "Сілкаванне"
-
-#~ msgid "Restart"
-#~ msgstr "Перазапуск"
-
-#~ msgid "Power off"
-#~ msgstr "Выключыць"
-
-#~ msgid "Try swiping from the top edge to access the indicators"
-#~ msgstr ""
-#~ "Паспрабуйце правесці пальцам ад верхняга краю, для доступу да індыкатараў"
-
-#~ msgid "Swipe up again to close the settings screen"
-#~ msgstr "Правядзіце пальцам яшчэ раз, каб зачыніць акно параметраў"
-
-#~ msgid "Well done"
-#~ msgstr "Добра"
-
-#~ msgid "Swipe from the left to reveal the launcher for quick access to apps"
-#~ msgstr ""
-#~ "Правядзіце пальцам ад левага краю, каб адкрыць панэль запуску для паскарэння "
-#~ "доступу да праграм"
-
-#~ msgid "Skip intro"
-#~ msgstr "Прапусціць уводзіны"
-
-#~ msgid "Settings"
-#~ msgstr "Параметры"
-
-#~ msgid ""
-#~ "You have now mastered the edge gestures and can start using the "
-#~ "phone<br><br>Tap on the screen to start"
-#~ msgstr ""
-#~ "Вамі наладжаныя дзеянні на дакрананні па краях экрана. Цяпер тэлефон можна "
-#~ "выкарыстоўваць.<br><br>Дакраніцеся да экрана, каб пачаць."
-
-#~ msgid "Store"
-#~ msgstr "Крама"

@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-04-14 16:13+0200\n"
-"PO-Revision-Date: 2013-12-12 11:12+0000\n"
+"PO-Revision-Date: 2015-05-14 09:20+0000\n"
 "Last-Translator: Pyae Sone <Unknown>\n"
 "Language-Team: Burmese <my@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2015-04-23 06:48+0000\n"
-"X-Generator: Launchpad (build 17430)\n"
+"X-Launchpad-Export-Date: 2015-05-15 05:48+0000\n"
+"X-Generator: Launchpad (build 17493)\n"
 
 #: plugins/LightDM/Greeter.cpp:112
 msgid "Password: "
-msgstr ""
+msgstr "စကားဝှက် - "
 
 #: plugins/Unity/Launcher/launcheritem.cpp:45
 #: plugins/Unity/Launcher/launcheritem.cpp:100
@@ -53,7 +53,7 @@ msgstr[1] ""
 #: qml/Components/Dialogs.qml:69
 msgctxt "Title: Lock/Log out dialog"
 msgid "Log out"
-msgstr ""
+msgstr "ထွက်"
 
 #: qml/Components/Dialogs.qml:70
 msgid "Are you sure you want to log out?"
@@ -62,17 +62,17 @@ msgstr ""
 #: qml/Components/Dialogs.qml:72
 msgctxt "Button: Lock the system"
 msgid "Lock"
-msgstr ""
+msgstr "သော့ခတ်"
 
 #: qml/Components/Dialogs.qml:79
 msgctxt "Button: Log out from the system"
 msgid "Log Out"
-msgstr ""
+msgstr "ထွက်ခွာရန်"
 
 #: qml/Components/Dialogs.qml:86 qml/Components/Dialogs.qml:117
 #: qml/Components/Dialogs.qml:173
 msgid "Cancel"
-msgstr ""
+msgstr "ပယ်ဖျက်မည်"
 
 #: qml/Components/Dialogs.qml:98
 msgctxt "Title: Reboot/Shut down dialog"
@@ -86,7 +86,7 @@ msgstr ""
 #: qml/Components/Dialogs.qml:101
 msgctxt "Button: Reboot the system"
 msgid "Reboot"
-msgstr ""
+msgstr "စနစ်ပြန်လည်စတင်ရန်"
 
 #: qml/Components/Dialogs.qml:109
 msgctxt "Button: Shut down the system"
@@ -96,7 +96,7 @@ msgstr ""
 #: qml/Components/Dialogs.qml:129
 msgctxt "Title: Reboot dialog"
 msgid "Reboot"
-msgstr ""
+msgstr "စနစ်ပြန်လည်စတင်ရန်"
 
 #: qml/Components/Dialogs.qml:130
 msgid "Are you sure you want to reboot?"
@@ -104,16 +104,16 @@ msgstr ""
 
 #: qml/Components/Dialogs.qml:132
 msgid "No"
-msgstr ""
+msgstr "မဟုတ်ပါ"
 
 #: qml/Components/Dialogs.qml:138
 msgid "Yes"
-msgstr ""
+msgstr "ဟုတ်ကဲ့"
 
 #: qml/Components/Dialogs.qml:152
 msgctxt "Title: Power off/Restart dialog"
 msgid "Power"
-msgstr ""
+msgstr "ပါဝါ"
 
 #: qml/Components/Dialogs.qml:153
 msgid ""
@@ -124,12 +124,12 @@ msgstr ""
 #: qml/Components/Dialogs.qml:155
 msgctxt "Button: Power off the system"
 msgid "Power off"
-msgstr ""
+msgstr "ပါဝါပိတ်မည်။"
 
 #: qml/Components/Dialogs.qml:164
 msgctxt "Button: Restart the system"
 msgid "Restart"
-msgstr ""
+msgstr "အစမှ ပြန်ဖွင့်မည်"
 
 #: qml/Components/Lockscreen.qml:245
 msgid "Return to Call"
@@ -141,7 +141,7 @@ msgstr "အရေးပေါ်ခေါ်မည်"
 
 #: qml/Components/Lockscreen.qml:277
 msgid "OK"
-msgstr ""
+msgstr "ကောင်းပြီ"
 
 #: qml/Dash/GenericScopeView.qml:532 qml/Dash/GenericScopeView.qml:690
 msgid "See less"
@@ -154,34 +154,34 @@ msgstr ""
 #: qml/Dash/GenericScopeView.qml:594
 msgctxt "Label: Hint for dash search line edit"
 msgid "Search"
-msgstr ""
+msgstr "ရှာဖွေရန်"
 
 #: qml/Dash/PageHeader.qml:269
 msgctxt "Button: Open the Ubuntu Store"
 msgid "Store"
-msgstr ""
+msgstr "မှတ်သားပါ"
 
 #: qml/Dash/PageHeader.qml:276
 msgctxt "Button: Start a search in the current dash scope"
 msgid "Search"
-msgstr ""
+msgstr "ရှာဖွေရန်"
 
 #: qml/Dash/PageHeader.qml:286
 msgctxt "Button: Show the current dash scope settings"
 msgid "Settings"
-msgstr ""
+msgstr "ချိန်ညှိစရာများ"
 
 #: qml/Dash/PageHeader.qml:293
 msgid "Remove from Favorites"
-msgstr ""
+msgstr "နှစ်သက်မှုအဖြစ်မှပယ်ဖျက်ပါ"
 
 #: qml/Dash/PageHeader.qml:293
 msgid "Add to Favorites"
-msgstr ""
+msgstr "နှစ်သက်မှုအဖြစ်ထည့်ပါ"
 
 #: qml/Dash/Previews/PreviewActionCombo.qml:35
 msgid "More..."
-msgstr ""
+msgstr "ပိုမို၍..."
 
 #: qml/Dash/Previews/PreviewActionCombo.qml:35
 msgid "Less..."
@@ -213,11 +213,11 @@ msgstr ""
 
 #: qml/Dash/ScopesList.qml:66
 msgid "Manage"
-msgstr ""
+msgstr "စီစဉ်မည်။"
 
 #: qml/Dash/ScopesList.qml:112
 msgid "Home"
-msgstr ""
+msgstr "ပင်မ"
 
 #: qml/Dash/ScopesList.qml:113
 msgid "Also installed"
@@ -229,7 +229,7 @@ msgstr ""
 
 #: qml/Greeter/LoginList.qml:236
 msgid "Retry"
-msgstr ""
+msgstr "ထပ်ကြိုးစားပါ"
 
 #: qml/Greeter/LoginList.qml:237
 msgid "Tap to unlock"
@@ -311,7 +311,7 @@ msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:791
 msgid "Downloading"
-msgstr ""
+msgstr "ဒေါင်းလုပ်ချနေသည်"
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:793
 msgid "Paused, tap to resume"
@@ -319,11 +319,11 @@ msgstr ""
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:795
 msgid "Canceled"
-msgstr ""
+msgstr "ပယ်ဖျက်မည်။"
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:797
 msgid "Finished"
-msgstr ""
+msgstr "ပြီးစီးသည်"
 
 #: qml/Panel/Indicators/MenuItemFactory.qml:799
 msgid "Failed, tap to retry"
@@ -332,7 +332,7 @@ msgstr ""
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:149
 msgctxt "Label: Hint in message indicator line edit"
 msgid "Reply"
-msgstr ""
+msgstr "စာပြန်မည်"
 
 #: qml/Panel/Indicators/ModemInfoItem.qml:105
 msgid "Unlock SIM"
@@ -340,7 +340,7 @@ msgstr ""
 
 #: qml/Panel/Indicators/RoamingIndication.qml:27
 msgid "Roaming"
-msgstr ""
+msgstr "Roaming"
 
 #: qml/Tutorial/TutorialBottomFinish.qml:24
 msgid "This action does different things for different apps"
@@ -402,7 +402,7 @@ msgstr ""
 #: qml/Wizard/Page.qml:89
 msgctxt "Button: Go back one page in the Wizard"
 msgid "Back"
-msgstr ""
+msgstr "နောက်သို့"
 
 #: qml/Wizard/Pages/10-welcome.qml:27
 msgid "Hi!"
@@ -421,7 +421,7 @@ msgstr ""
 #: qml/Wizard/Pages/60-reporting.qml:50 qml/Wizard/Pages/passwd-confirm.qml:82
 #: qml/Wizard/Pages/passwd-set.qml:90
 msgid "Continue"
-msgstr ""
+msgstr "ဆက်လုပ်ရန်"
 
 #: qml/Wizard/Pages/20-sim.qml:25
 msgid "Add a SIM card and restart your device"
@@ -582,39 +582,3 @@ msgstr ""
 #, qt-format
 msgid "%1  〉"
 msgstr ""
-
-#~ msgid "Confirm"
-#~ msgstr "အတည်ပြုပါ"
-
-#~ msgid "Type or say a command"
-#~ msgstr "Command တစ်ခု ပြောပါ သို့မဟုတ် ရိုက်ထည့်ပါ"
-
-#~ msgid "Loading. Please Wait..."
-#~ msgstr "ဖွင့်နေသည်။ ခဏစောင့်ပါ"
-
-#~ msgid "Speak Now..."
-#~ msgstr "ယခုပြောပါ"
-
-#~ msgid "Speaking..."
-#~ msgstr "ပြောနေသည်"
-
-#~ msgid "Search"
-#~ msgstr "ရှာဖွေ"
-
-#~ msgid "Right edge"
-#~ msgstr "ညာဖက် အစွန်း"
-
-#~ msgid "Skip intro"
-#~ msgstr "မိတ်ဆက်ကိုကျော်မည်"
-
-#~ msgid "Top edge"
-#~ msgstr "ထိပ် အစွန်း"
-
-#~ msgid "Close"
-#~ msgstr "ပိတ်"
-
-#~ msgid "Left edge"
-#~ msgstr "ဘယ်​ဖက် အစွန်း"
-
-#~ msgid "Well done"
-#~ msgstr "ကောင်းအောင်ပြုလုပ်ခဲ့သည်"
