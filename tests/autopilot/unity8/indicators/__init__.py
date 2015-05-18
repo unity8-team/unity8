@@ -187,8 +187,11 @@ class Slider(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
         start_y = stop_y = y + height/2
         stop_x = x
 
-        self.pointing_device.drag(start_x, start_y, stop_x, stop_y, rate)
+        self.pointing_device.move(start_x, start_y, rate=rate)
+        self.pointing_device.press()
+        self.pointing_device.move(stop_x, stop_y, rate=rate)
         self.value.wait_for(self.minimumValue, timeout)
+        self.pointing_device.release()
 
     def slide_right(self, timeout=10):
         x, y, width, height = self.globalRect
@@ -198,5 +201,8 @@ class Slider(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
         start_y = stop_y = y + height/2
         stop_x = x + width
 
-        self.pointing_device.drag(start_x, start_y, stop_x, stop_y, rate)
+        self.pointing_device.move(start_x, start_y, rate=rate)
+        self.pointing_device.press()
+        self.pointing_device.move(stop_x, stop_y, rate=rate)
         self.value.wait_for(self.maximumValue, timeout)
+        self.pointing_device.release()
