@@ -50,7 +50,7 @@ FocusScope {
     readonly property bool processing: scope ? scope.searchInProgress || subPageLoader.processing : false
 
     signal backClicked()
-
+    signal resetNavigation()
     onScopeChanged: {
         floatingSeeLess.companionBase = null;
     }
@@ -65,6 +65,10 @@ FocusScope {
 
     function closePreview() {
         subPageLoader.closeSubPage()
+    }
+
+    function resetClickscopeNavigation() {
+        scopeView.resetNavigation()
     }
 
     function itemClicked(index, result, item, itemModel, resultsModel, limitedCategoryItemCount, categoryId) {
@@ -602,11 +606,16 @@ FocusScope {
                     paginationIndex: scopeView.paginationIndex
 
                     bottomItem: DashNavigation {
+                        id: dashnavigation
                         scope: scopeView.scope
                         anchors { left: parent.left; right: parent.right }
                         windowHeight: scopeView.height
                         windowWidth: scopeView.width
                         scopeStyle: scopeView.scopeStyle
+                        Connections {
+                            target: scopeView
+                            onResetNavigation: dashnavigation.resetClickNavigation()
+                        }
                     }
 
                     onBackClicked: scopeView.backClicked()
