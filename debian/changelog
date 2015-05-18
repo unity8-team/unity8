@@ -1,3 +1,14 @@
+ubuntu-settings-components (0.6+15.10.20150518-0ubuntu1) wily; urgency=medium
+
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Nick Dedekind ]
+  * ServerPropertySynchorniser - Do not update to old server value when
+    the control is no longer buffering.
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Mon, 18 May 2015 23:02:01 +0000
+
 ubuntu-settings-components (0.6+15.04.20150409.1-0ubuntu1) vivid; urgency=medium
 
   [ Nick Dedekind ]
