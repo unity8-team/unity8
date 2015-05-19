@@ -19,6 +19,7 @@ import Ubuntu.Components 0.1
 import Unity 0.2
 import Utils 0.1
 import "../Components"
+import QtSystemInfo 5.0
 
 Item {
     id: dashContent
@@ -35,11 +36,18 @@ Item {
                                        && dashContentList.currentItem.item.processing || false
     readonly property bool pageHeaderTotallyVisible: dashContentList.currentItem && dashContentList.currentItem.item
                                        && dashContentList.currentItem.item.pageHeaderTotallyVisible || false
-
+    property bool connectStatus: connectnotify.connectName != ""
+    property int  scopesRefreshIndex
     signal scopeLoaded(string scopeId)
     signal gotoScope(string scopeId)
     signal openScope(var scope)
     signal closePreview()
+
+    onConnectStatusChanged: {
+        if (connectStatus)
+            for(scopesRefreshIndex = 0 ;scopesRefreshIndex < dashContentList.count; scopesRefreshIndex++)
+                dashContent.scopes.getScope(scopesRefreshIndex).refresh()
+    }
 
     // If we set the current scope index before the scopes have been added,
     // then we need to wait until the loaded signals gets emitted from the scopes
@@ -91,6 +99,25 @@ Item {
             dashContentList.highlightMoveDuration = storedMoveDuration
             dashContentList.highlightMoveVelocity = storedMoveSpeed
         }
+    }
+
+    NetworkInfo {
+        id: connectnotify
+        monitorCurrentNetworkMode:  true
+        monitorNetworkName: true
+        monitorNetworkStatus: true
+        property string connectName
+        onCurrentNetworkModeChanged: getAccessPointName()
+        onNetworkNameChanged: getAccessPointName()
+        onNetworkStatusChanged: if (status !== NetworkInfo.HomeNetwork) connectName = " "
+
+        function getAccessPointName() {
+            if (currentNetworkMode > 0 && networkStatus(currentNetworkMode,0) >0 )
+                connectName = networkName(currentNetworkMode,0)
+            else
+                connectName = ""
+        }
+        Component.onCompleted: getAccessPointName()
     }
 
     Item {
