@@ -61,6 +61,10 @@ Showable {
         loader.item.reset();
     }
 
+    function wizardExit() {
+        loader.item.wizardExitFocus()
+    }
+
     function notifyAppFocused(appId) {
         if (!active) {
             return;

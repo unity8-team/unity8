@@ -43,6 +43,10 @@ FocusScope {
         // TODO
     }
 
+    function wizardExitFocus() {
+        // nothing to do
+    }
+
     function showPrompt(text, isSecret, isDefaultPrompt) {
         lockscreen.promptText = isDefaultPrompt ? "" : text.toLowerCase();
         lockscreen.maybeShow();

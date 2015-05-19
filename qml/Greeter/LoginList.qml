@@ -35,7 +35,12 @@ Item {
     signal selected(int index)
     signal responded(string response)
 
+    function wizardExitFocus() {
+        passwordInput.forceActiveFocus();
+    }
+
     function tryToUnlock() {
+        passwordInput.needFocus = true;
         if (wasPrompted) {
             passwordInput.forceActiveFocus();
         } else {
@@ -230,7 +235,7 @@ Item {
         height: units.gu(4.5)
         width: parent.width - anchors.margins * 2
         opacity: userList.movingInternally ? 0 : 1
-
+        property bool needFocus: true
         property string promptText
         placeholderText: root.wasPrompted ? promptText
                                           : (root.locked ? i18n.tr("Retry")
@@ -248,6 +253,7 @@ Item {
             root.responded(text);
         }
         Keys.onEscapePressed: {
+            passwordInput.needFocus = false;
             root.selected(currentIndex);
         }
 
@@ -274,7 +280,17 @@ Item {
                 }
             }
         }
-
+        Connections {
+            target: passwordInput
+            onFocusChanged: {
+                if (!focus && passwordInput.needFocus) {
+                    passwordInput.forceActiveFocus()
+                }
+            }
+        }
+        Component.onCompleted: {
+            passwordInput.forceActiveFocus()
+        }
     }
 
     MouseArea {

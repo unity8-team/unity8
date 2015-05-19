@@ -69,6 +69,10 @@ FocusScope {
         loginList.reset();
     }
 
+    function wizardExitFocus() {
+        loginList.wizardExitFocus()
+    }
+
     function tryToUnlock(toTheRight) {
         if (root.locked) {
             coverPage.show();
