@@ -31,9 +31,6 @@
 #include "../ApplicationArguments.h"
 #include "../CachingNetworkManagerFactory.h"
 
-// Ubuntu Gestures
-#include <TouchRegistry.h>
-
 int main(int argc, const char *argv[])
 {
     QGuiApplication *application = new QGuiApplication(argc, (char**)argv);
@@ -65,7 +62,7 @@ int main(int argc, const char *argv[])
         parser.value(windowGeometryOption).split('x').size() == 2)
     {
         QStringList geom = parser.value(windowGeometryOption).split('x');
-        qmlArgs.setSize(geom.at(0).toInt(), geom.at(1).toInt());
+        qmlArgs.setSize(QSize(geom.at(0).toInt(), geom.at(1).toInt()));
     }
 
     if (getenv("QT_LOAD_TESTABILITY")) {
@@ -90,9 +87,6 @@ int main(int argc, const char *argv[])
     view->setResizeMode(QQuickView::SizeRootObjectToView);
     view->setTitle("Scopes");
     view->rootContext()->setContextProperty("applicationArguments", &qmlArgs);
-
-    TouchRegistry touchRegistry;
-    view->installEventFilter(&touchRegistry);
 
     // You will need this if you want to interact with touch-only components using a mouse
     // Needed only when manually testing on a desktop.

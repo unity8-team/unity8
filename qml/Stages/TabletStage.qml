@@ -53,6 +53,11 @@ Rectangle {
         id: priv
 
         property string focusedAppId: ApplicationManager.focusedApplicationId
+        readonly property var focusedAppDelegate: {
+            var index = indexOf(focusedAppId);
+            return index >= 0 && index < spreadRepeater.count ? spreadRepeater.itemAt(index) : null
+        }
+
         property string oldFocusedAppId: ""
 
         property string mainStageAppId
@@ -76,19 +81,11 @@ Rectangle {
 
             appId0 = ApplicationManager.count >= 1 ? ApplicationManager.get(0).appId : "";
             appId1 = ApplicationManager.count > 1 ? ApplicationManager.get(1).appId : "";
-
-            // Update the QML focus accordingly
-            updateSpreadDelegateFocus();
         }
 
-        function updateSpreadDelegateFocus() {
-            if (priv.focusedAppId) {
-                var focusedAppIndex = priv.indexOf(priv.focusedAppId);
-                if (focusedAppIndex !== -1) {
-                    spreadRepeater.itemAt(focusedAppIndex).focus = true;
-                } else {
-                    console.warn("TabletStage: Failed to find the SpreadDelegate for appID=" + priv.focusedAppId);
-                }
+        onFocusedAppDelegateChanged: {
+            if (focusedAppDelegate) {
+                focusedAppDelegate.focus = true;
             }
         }
 
@@ -170,8 +167,7 @@ Rectangle {
     Flickable {
         id: spreadView
         anchors.fill: parent
-        interactive: (spreadDragArea.status == DirectionalDragArea.Recognized || phase > 1)
-                     && draggedDelegateCount === 0
+        interactive: (spreadDragArea.dragging || phase > 1) && draggedDelegateCount === 0
         contentWidth: spreadRow.width - shift
         contentX: -shift
 
@@ -496,6 +492,8 @@ Rectangle {
 
                 delegate: TransformedTabletSpreadDelegate {
                     id: spreadTile
+                    objectName: model.appId ? "tabletSpreadDelegate_" + model.appId
+                                            : "tabletSpreadDelegate_null";
                     height: spreadView.height
                     width: model.stage == ApplicationInfoInterface.MainStage ? spreadView.width : spreadView.sideStageWidth
                     active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
@@ -598,7 +596,7 @@ Rectangle {
         }
     }
 
-    EdgeDragArea {
+    DirectionalDragArea {
         id: spreadDragArea
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
         width: root.dragAreaWidth
@@ -624,26 +622,25 @@ Rectangle {
             if (dragging) {
                 // Gesture recognized. Start recording this gesture
                 gesturePoints = [];
-                return;
-            }
+            } else {
+                // Ok. The user released. Find out if it was a one-way movement.
+                var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
+                gesturePoints = [];
 
-            // Ok. The user released. Find out if it was a one-way movement.
-            var oneWayFlick = priv.evaluateOneWayFlick(gesturePoints);
-            gesturePoints = [];
-
-            if (oneWayFlick && spreadView.shiftedContentX < spreadView.positionMarker1 * spreadView.width) {
-                // If it was a short one-way movement, do the Alt+Tab switch
-                // no matter if we didn't cross positionMarker1 yet.
-                spreadView.snapTo(spreadView.nextInStack);
-            } else if (!dragging) {
-                if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker1) {
-                    spreadView.snap();
-                } else if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2) {
+                if (oneWayFlick && spreadView.shiftedContentX < spreadView.positionMarker1 * spreadView.width) {
+                    // If it was a short one-way movement, do the Alt+Tab switch
+                    // no matter if we didn't cross positionMarker1 yet.
                     spreadView.snapTo(spreadView.nextInStack);
                 } else {
-                    // otherwise snap to the closest snap position we can find
-                    // (might be back to start, to app 1 or to spread)
-                    spreadView.snap();
+                    if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker1) {
+                        spreadView.snap();
+                    } else if (spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2) {
+                        spreadView.snapTo(spreadView.nextInStack);
+                    } else {
+                        // otherwise snap to the closest snap position we can find
+                        // (might be back to start, to app 1 or to spread)
+                        spreadView.snap();
+                    }
                 }
             }
         }
