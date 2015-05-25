@@ -142,7 +142,7 @@ Item {
 
             var startX = dashContentList.width/2;
             var startY = dashContentList.height/2;
-            touchFlick(dashContentList, startX - units.gu(2), startY, startX, startY);
+            touchFlick(dashContentList, startX - units.gu(4), startY, startX, startY);
             tryCompare(categoryListView, "contentY", units.gu(15) - categoryListView.pageHeader.height);
         }
 
@@ -153,7 +153,7 @@ Item {
 
             tryCompare(scope, "status", Loader.Ready);
 
-            var categoryListView = findChild(dashContentList, "categoryListView");
+            var categoryListView = findChild(scope, "categoryListView");
             categoryListView.contentY = units.gu(10);
 
             compare(dashContentList.currentItem.item.objectName,  "MockScope1")
@@ -280,6 +280,38 @@ Item {
             verify(carouselLV.tileWidth / carouselLV.tileHeight == cardTool.components["art"]["aspect-ratio"]);
         }
 
+        function test_homebutton_reset_clickscope_navigation() {
+            var dashContentList = findChild(dashContent, "dashContentList");
+            dashContent.setCurrentScopeAtIndex(1,true,false);
+            tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation") != null; }, true);
+            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
+            tryCompare(dashNavigation, "visible", true);
+            var dashNavigationButton = findChild(dashContentList.currentItem, "navigationButton");
+            compare(dashNavigationButton.showList, false);
+            waitForRendering(dashNavigationButton);
+            mouseClick(dashNavigationButton);
+            compare(dashNavigationButton.showList, true);
+
+            var navigationListView = findChild(dashNavigationButton, "navigationListView");
+            tryCompareFunction(function() {
+                return navigationListView.currentItem &&
+                       navigationListView.currentItem.navigation &&
+                       navigationListView.currentItem.navigation.loaded; }, true);
+
+            waitForRendering(navigationListView);
+            waitForRendering(navigationListView.currentItem);
+
+            var allButton = findChild(dashNavigationButton, "allButton");
+            compare(allButton.visible, false);
+
+            tryCompareFunction(function() {return findChild(dashContentList.currentItem,"navigation0child3") != null;}, true);
+            var navigation = findChild(dashNavigationButton, "navigation0child3");
+            mouseClick(navigation);
+            tryCompare(dashNavigationButton.currentNavigation, "navigationId", "middle3");
+            dashContentList.currentItem.item.resetClickscopeNavigation();
+            tryCompare(dashNavigationButton.currentNavigation, "navigationId","root");
+        }
+
         function test_mainNavigation() {
             var dashContentList = findChild(dashContent, "dashContentList");
             tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation") != null; }, true);
@@ -353,6 +385,8 @@ Item {
             compare(backButton.visible, true);
 
             tryCompare(navigationList1.navigation, "loaded", true);
+            tryCompare(navigationList1, "implicitHeight", navigationList1.itemHeight * 10);
+            tryCompare(navigationList1, "height", navigationList1.implicitHeight);
             navigation = findChild(dashNavigationButton, "navigation1child2");
             mouseClick(navigation);
             compare(dashNavigationButton.showList, false);
@@ -386,6 +420,9 @@ Item {
             mouseClick(dashNavigationButton);
             compare(dashNavigationButton.showList, true);
             tryCompare(navigationListView.currentItem.navigation, "loaded", true);
+            var navigationList0 = findChild(dashNavigationButton, "navigation0");
+            tryCompare(navigationList0, "implicitHeight", navigationList0.itemHeight * 8);
+            tryCompare(navigationList0, "height", navigationList0.implicitHeight);
             navigation = findChild(dashNavigationButton, "navigation0child2");
             mouseClick(navigation);
             compare(dashNavigationButton.showList, true);

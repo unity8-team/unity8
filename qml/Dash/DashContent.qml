@@ -69,10 +69,9 @@ Item {
             set_current_index = [ index, animate, reset ]
             return;
         }
-        if (dashContentList.currentItem.scopeId == "clickscope") {
+        if (dashContent.currentScopeId == "clickscope" && dashContentList.currentItem.item) {
             dashContentList.currentItem.item.resetClickscopeNavigation()
         }
-
         var storedMoveDuration = dashContentList.highlightMoveDuration
         var storedMoveSpeed = dashContentList.highlightMoveVelocity
         if (!animate) {
@@ -126,7 +125,8 @@ Item {
             onMovementStarted: currentItem.item.showHeader();
             clip: parent.x != 0
             onCurrentIndexChanged: {
-                if (currentItem.scopeId == "clickscope") dashContentList.currentItem.item.resetClickscopeNavigation()
+                if (currentItem)
+                    if (currentItem.scopeId == "clickscope" && currentItem.item) dashContentList.currentItem.item.resetClickscopeNavigation()
             }
 
             // TODO QTBUG-40846 and QTBUG-40848

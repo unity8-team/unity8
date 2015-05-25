@@ -45,9 +45,9 @@ Item {
     height: navigationButton.currentNavigation || altNavigationButton.currentNavigation ? units.gu(5) : 0
 
     function resetClickNavigation() {
-        navigationButton.listView.currentItem.allNavigationClicked()
+        if(navigationButton.currentNavigation.navigationId !=="")
+            navigationButton.listView.currentItem.allNavigationClicked()
     }
-
     QtObject {
         id: d
         readonly property color foregroundColor: root.scopeStyle
