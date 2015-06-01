@@ -449,6 +449,27 @@ Rectangle {
         }
     }
 
+    MouseArea {
+        id: hoverspread
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+        width: root.dragAreaWidth
+        hoverEnabled: true
+        propagateComposedEvents: true
+        onContainsMouseChanged: {
+            if (containsMouse && spreadView.contentX < 0) {
+                spreadView.contentX = spreadView.width * spreadView.positionMarker2
+                spreadView.snap()
+            }
+        }
+        onPressed: mouse.accepted = false
+        MultiPointTouchArea {
+            anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+            width: root.dragAreaWidth
+            mouseEnabled: false
+            enabled: parent.enabled
+        }
+    }
+
     DirectionalDragArea {
         id: spreadDragArea
         objectName: "spreadDragArea"

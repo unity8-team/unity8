@@ -335,6 +335,27 @@ Showable {
         }
     }
 
+    MouseArea {
+        // Eat direct presses on the overview hint so that they do not end up in the card below
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
+        height: units.gu(2)
+        enabled: parent.opacity != 0
+        hoverEnabled: true
+        propagateComposedEvents:  true
+        onContainsMouseChanged: {
+            if (containsMouse) {
+                bottomEdgeController.enableAnimation = true;
+                bottomEdgeController.progress = 1;
+            }
+        }
+        MultiPointTouchArea {
+            id: multitouch
+            anchors.fill: parent
+            mouseEnabled: false
+            enabled: parent.enabled
+        }
+    }
+
     DirectionalDragArea {
         id: overviewDragHandle
         objectName: "overviewDragHandle"
