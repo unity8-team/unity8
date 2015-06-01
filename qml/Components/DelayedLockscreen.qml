@@ -37,11 +37,10 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: units.gu(2)
 
-        Label {
+        DropShadowText {
             id: deviceLockedLabel
             objectName: "deviceLockedLabel"
-            anchors.left: parent.left
-            anchors.right: parent.right
+            labelWidth: parent.width
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             fontSize: "x-large"
@@ -54,9 +53,8 @@ Item {
             height: units.gu(1)
         }
 
-        Label {
-            anchors.left: parent.left
-            anchors.right: parent.right
+        DropShadowText {
+            labelWidth: parent.width
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             color: "#f3f3e7"
@@ -65,9 +63,8 @@ Item {
                   i18n.tr("You have been locked out due to too many failed passcode attempts.")
         }
 
-        Label {
-            anchors.left: parent.left
-            anchors.right: parent.right
+        DropShadowText {
+            labelWidth: parent.width
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             color: "#f3f3e7"

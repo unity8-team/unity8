@@ -33,7 +33,7 @@ AbstractButton {
         }
     }
 
-    Label {
+    DropShadowText {
         id: label
         anchors.centerIn: parent
         horizontalAlignment: Text.AlignHCenter

@@ -50,7 +50,7 @@ Item {
         width: parent.width
         spacing: units.gu(2)
 
-        Label {
+        DropShadowText {
             id: infoField
             objectName: "infoTextLabel"
             fontSize: "x-large"
@@ -128,7 +128,7 @@ Item {
                 }
             }
 
-            Label {
+            DropShadowText {
                 id: wrongNoticeLabel
                 objectName: "wrongNoticeLabel"
                 fontSize: "large"

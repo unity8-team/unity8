@@ -60,7 +60,7 @@ Item {
             width: parent.width
             spacing: units.gu(1)
 
-            Label {
+            DropShadowText {
                 id: infoField
                 objectName: "infoTextLabel"
                 fontSize: "large"
@@ -111,7 +111,7 @@ Item {
                         pinentryField.text = pinentryField.text.substring(0, pinentryField.text.length-1)
                     }
                 }
-                Label {
+                DropShadowText {
                     id: wrongNoticeLabel
                     objectName: "wrongNoticeLabel"
                     fontSize: "x-large"
@@ -145,7 +145,7 @@ Item {
                 }
             }
 
-            Label {
+            DropShadowText {
                 objectName: "retryLabel"
                 fontSize: "x-small"
                 color: root.foregroundColor

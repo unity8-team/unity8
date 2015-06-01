@@ -97,7 +97,7 @@ Showable {
         }
     }
 
-    Label {
+    DropShadowText {
         id: swipeHint
         property real baseOpacity: 0.5
         opacity: 0.0

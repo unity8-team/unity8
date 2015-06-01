@@ -150,7 +150,7 @@ Item {
                 return 1 - Math.min(1, (Math.abs(highlightDist) + root.cellHeight) / ((root.numAboveBelow + 1) * root.cellHeight))
             }
 
-            Label {
+            DropShadowText {
                 objectName: "username" + index
 
                 anchors {
@@ -195,7 +195,7 @@ Item {
         }
     }
 
-    Label {
+    DropShadowText {
         id: infoLabel
         objectName: "infoLabel"
         anchors {
@@ -208,7 +208,7 @@ Item {
         }
 
         color: "white"
-        width: root.width - anchors.leftMargin - anchors.rightMargin
+        labelWidth: root.width - anchors.leftMargin - anchors.rightMargin
         fontSize: "small"
         textFormat: Text.StyledText
         clip: true

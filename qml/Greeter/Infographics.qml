@@ -356,7 +356,7 @@ Item {
             }
         }
 
-        Label {
+        DropShadowText {
             id: notification
             objectName: "label"
 
@@ -366,8 +366,8 @@ Item {
             property real baseOpacity: 0.6
             property real duration: dotShowAnimTimer.interval * 5
 
-            height: 0.7 * backgroundCircle.width
-            width: notification.height
+            labelHeight: 0.7 * backgroundCircle.width
+            labelWidth: notification.labelHeight
             anchors.centerIn: parent
 
             text: infographic.model.label

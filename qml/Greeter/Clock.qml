@@ -17,6 +17,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import "../Panel/Indicators"
+import "../Components"
 import Unity.Indicators 0.1 as Indicators
 
 Item {
@@ -66,7 +67,7 @@ Item {
     Column {
         spacing: units.gu(0.5)
 
-        Label {
+        DropShadowText {
             id: timeLabel
             objectName: "timeLabel"
 
@@ -78,7 +79,7 @@ Item {
             font.weight: Font.Light
         }
 
-        Label {
+        DropShadowText {
             id: dateLabel
             objectName: "dateLabel"
 

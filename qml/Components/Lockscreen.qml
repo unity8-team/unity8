@@ -237,7 +237,7 @@ Showable {
             right: parent.right
         }
 
-        Label {
+        DropShadowText {
             id: emergencyCallLabel
             objectName: "emergencyCallLabel"
             anchors.horizontalCenter: parent.horizontalCenter
