@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Ubuntu.Components 0.1
 import "../Components"
 
@@ -78,14 +79,26 @@ Item {
             height: units.gu(1)
         }
 
-        Icon {
-            // It would be nice to use a less network-specific name,
-            // but this is the only lock icon we have.
-            name: "network-secure"
-            color: "#f3f3e7"
+        Item {
             height: units.gu(4)
             width: units.gu(4)
             anchors.horizontalCenter: parent.horizontalCenter
+            Icon {
+                // It would be nice to use a less network-specific name,
+                // but this is the only lock icon we have.
+                id: deviceLockedIcon
+                name: "network-secure"
+                anchors.fill: parent
+                color: "#f3f3e7"
+            }
+
+            DropShadow {
+                anchors.fill: deviceLockedIcon
+                radius: 4
+                samples: 8
+                color: "#80000000"
+                source: deviceLockedIcon
+            }
         }
     }
 }

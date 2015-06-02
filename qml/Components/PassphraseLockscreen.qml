@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Ubuntu.Components 0.1
 import "../Components"
 
@@ -119,11 +120,24 @@ Item {
 
                 Repeater {
                     model: pinentryField.length
-                    delegate: Rectangle {
-                        color: root.foregroundColor
+                    delegate: Item {
                         width: dotRow.dotSize
                         height: width
-                        radius: width / 2
+                        Rectangle {
+                            id: dotItem
+                            color: root.foregroundColor
+                            anchors.fill: parent
+                            radius: width / 2
+                        }
+
+                        DropShadow {
+                            anchors.fill: dotItem
+                            radius: 4
+                            samples: 8
+                            color: "#80000000"
+                            source: dotItem
+                            transparentBorder: true
+                        }
                     }
                 }
             }

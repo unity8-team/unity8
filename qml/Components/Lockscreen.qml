@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Ubuntu.Components 1.0
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Telephony 0.1 as Telephony
@@ -254,6 +255,14 @@ Showable {
             height: emergencyCallLabel.height
             name: "call-start"
             color: root.foregroundColor
+        }
+
+        DropShadow {
+            anchors.fill: emergencyCallIcon
+            radius: 4
+            samples: 8
+            color: "#80000000"
+            source: emergencyCallIcon
         }
 
         MouseArea {

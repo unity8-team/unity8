@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Ubuntu.Components 1.1
 
 AbstractButton {
@@ -59,5 +60,14 @@ AbstractButton {
         Behavior on scale {
             UbuntuNumberAnimation { duration: UbuntuAnimation.SlowDuration }
         }
+    }
+
+    DropShadow {
+        anchors.fill: icon
+        radius: 4
+        samples: 8
+        color: "#80000000"
+        visible: icon.visible
+        source: icon
     }
 }

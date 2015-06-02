@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import "../Components"
@@ -86,11 +87,24 @@ Item {
 
                     Repeater {
                         model: pinentryField.text.length
-                        delegate: Rectangle {
-                            color: root.foregroundColor
+                        delegate: Item {
                             width: Math.min(units.gu(2), (pinContainer.width - pinContainer.height*2 ) / (root.maxPinLength >= 0 ? root.maxPinLength : 16))
                             height: width
-                            radius: width / 2
+                            Rectangle {
+                                id: pinItem
+                                color: root.foregroundColor
+                                anchors.fill: parent
+                                radius: width / 2
+                            }
+
+                            DropShadow {
+                                anchors.fill: pinItem
+                                radius: 4
+                                samples: 8
+                                color: "#80000000"
+                                source: pinItem
+                                transparentBorder: true
+                            }
                         }
                     }
 
@@ -130,9 +144,18 @@ Item {
                     enabled: root.entryEnabled
 
                     Icon {
+                        id: backspaceIcon
                         anchors.fill: parent
                         name: "erase"
                         color: root.foregroundColor
+                    }
+
+                    DropShadow {
+                        anchors.fill: backspaceIcon
+                        radius: 4
+                        samples: 8
+                        color: "#80000000"
+                        source: backspaceIcon
                     }
 
                     opacity: (pinentryField.text.length > 0 && !pinentryField.incorrectOverride) ? 1 : 0
