@@ -41,7 +41,8 @@ Item {
         DropShadowText {
             id: deviceLockedLabel
             objectName: "deviceLockedLabel"
-            labelWidth: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             fontSize: "x-large"
@@ -55,7 +56,8 @@ Item {
         }
 
         DropShadowText {
-            labelWidth: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             color: "#f3f3e7"
@@ -65,7 +67,8 @@ Item {
         }
 
         DropShadowText {
-            labelWidth: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             color: "#f3f3e7"

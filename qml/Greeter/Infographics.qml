@@ -366,8 +366,8 @@ Item {
             property real baseOpacity: 0.6
             property real duration: dotShowAnimTimer.interval * 5
 
-            labelHeight: 0.7 * backgroundCircle.width
-            labelWidth: notification.labelHeight
+            height: 0.7 * backgroundCircle.width
+            width: notification.height
             anchors.centerIn: parent
 
             text: infographic.model.label

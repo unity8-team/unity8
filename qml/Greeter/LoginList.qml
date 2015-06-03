@@ -208,7 +208,7 @@ Item {
         }
 
         color: "white"
-        labelWidth: root.width - anchors.leftMargin - anchors.rightMargin
+        width: root.width - anchors.leftMargin - anchors.rightMargin
         fontSize: "small"
         textFormat: Text.StyledText
         clip: true

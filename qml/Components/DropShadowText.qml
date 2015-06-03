@@ -30,15 +30,12 @@ Item {
     property alias wrapMode: label.wrapMode
     property alias horizontalAlignment: label.horizontalAlignment
     property alias verticalAlignment: label.verticalAlignment
-    property var labelWidth
-    property var labelHeight
-    width: label.width
-    height: label.height
+    implicitWidth:  label.implicitWidth
+    implicitHeight: label.implicitHeight
 
     Label {
         id: label
-        width: labelWidth
-        height: labelHeight
+        anchors.fill: parent
     }
 
     DropShadow {
