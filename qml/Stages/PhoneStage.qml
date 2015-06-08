@@ -452,7 +452,7 @@ Rectangle {
     MouseArea {
         id: hoverspread
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-        width: root.dragAreaWidth
+        width: units.dp(1)
         hoverEnabled: true
         propagateComposedEvents: true
         onContainsMouseChanged: {
@@ -464,7 +464,7 @@ Rectangle {
         onPressed: mouse.accepted = false
         MultiPointTouchArea {
             anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-            width: root.dragAreaWidth
+            width: units.dp(1)
             mouseEnabled: false
             enabled: parent.enabled
         }

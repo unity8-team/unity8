@@ -338,7 +338,7 @@ Showable {
     MouseArea {
         // Eat direct presses on the overview hint so that they do not end up in the card below
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-        height: units.gu(2)
+        height: units.dp(1)
         enabled: parent.opacity != 0
         hoverEnabled: true
         propagateComposedEvents:  true
@@ -348,9 +348,11 @@ Showable {
                 bottomEdgeController.progress = 1;
             }
         }
+        onPressed: mouse.accepted = false
         MultiPointTouchArea {
             id: multitouch
-            anchors.fill: parent
+            anchors {left: parent.left; right: parent.right; bottom: parent.bottom}
+            height: units.dp(1)
             mouseEnabled: false
             enabled: parent.enabled
         }
