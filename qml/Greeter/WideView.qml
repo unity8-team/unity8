@@ -69,9 +69,6 @@ FocusScope {
         loginList.reset();
     }
 
-    function wizardExitFocus() {
-        loginList.wizardExitFocus()
-    }
 
     function tryToUnlock(toTheRight) {
         if (root.locked) {
@@ -128,7 +125,7 @@ FocusScope {
             height: inputMethod && inputMethod.visible ? parent.height - inputMethod.keyboardRectangle.height
                                                        : parent.height
             Behavior on height { UbuntuNumberAnimation {} }
-
+            fullyShown: root.fullyShown
             locked: root.locked
 
             onSelected: root.selected(index)

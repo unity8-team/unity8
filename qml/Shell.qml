@@ -551,10 +551,6 @@ Item {
             Component.onCompleted: unlockWhenDoneWithWizard()
             onActiveChanged: unlockWhenDoneWithWizard()
         }
-        Connections {
-            target: wizard
-            onShownChanged: greeter.wizardExit();
-        }
 
         Rectangle {
             id: modalNotificationBackground

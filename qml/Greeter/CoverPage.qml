@@ -32,7 +32,6 @@ Showable {
     property alias infographics: infographics
 
     readonly property real showProgress: MathUtils.clamp((width - Math.abs(x)) / width, 0, 1)
-
     signal tease()
 
     function hideRight() {

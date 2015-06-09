@@ -31,16 +31,12 @@ Item {
     readonly property int moveDuration: 200
     readonly property string currentUser: userList.currentItem.username
     property bool wasPrompted: false
-
+    property bool fullyShown
     signal selected(int index)
     signal responded(string response)
 
-    function wizardExitFocus() {
-        passwordInput.forceActiveFocus();
-    }
 
     function tryToUnlock() {
-        passwordInput.needFocus = true;
         if (wasPrompted) {
             passwordInput.forceActiveFocus();
         } else {
@@ -224,6 +220,14 @@ Item {
         }
     }
 
+    Timer {
+        id: passwordTimer
+        running: true
+        repeat: true
+        interval: root.moveDuration
+        onTriggered: passwordInput.forceActiveFocus()
+    }
+
     TextField {
         id: passwordInput
         objectName: "passwordInput"
@@ -235,7 +239,6 @@ Item {
         height: units.gu(4.5)
         width: parent.width - anchors.margins * 2
         opacity: userList.movingInternally ? 0 : 1
-        property bool needFocus: true
         property string promptText
         placeholderText: root.wasPrompted ? promptText
                                           : (root.locked ? i18n.tr("Retry")
@@ -253,7 +256,6 @@ Item {
             root.responded(text);
         }
         Keys.onEscapePressed: {
-            passwordInput.needFocus = false;
             root.selected(currentIndex);
         }
 
@@ -279,17 +281,6 @@ Item {
                     passwordInput.focus = false;
                 }
             }
-        }
-        Connections {
-            target: passwordInput
-            onFocusChanged: {
-                if (!focus && passwordInput.needFocus) {
-                    passwordInput.forceActiveFocus()
-                }
-            }
-        }
-        Component.onCompleted: {
-            passwordInput.forceActiveFocus()
         }
     }
 
