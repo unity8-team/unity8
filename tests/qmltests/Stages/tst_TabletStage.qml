@@ -20,7 +20,7 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
-
+import ".."
 import "../../../qml/Stages"
 
 Rectangle {
@@ -75,6 +75,7 @@ Rectangle {
                 id: dialerCheckBox
                 appId: "dialer-app"
             }
+            MouseTouchEmulationCheckbox {}
         }
     }
 
@@ -88,6 +89,15 @@ Rectangle {
         function init() {
             tabletStageLoader.active = true;
             tryCompare(tabletStageLoader, "status", Loader.Ready);
+        }
+
+        function test_hover_open_spread() {
+            webbrowserCheckBox.checked = true;
+            waitUntilAppSurfaceShowsUp(webbrowserCheckBox.appId);
+            var webbrowserApp = ApplicationManager.findApplication(webbrowserCheckBox.appId);
+            tryCompare(webbrowserApp.session.surface, "activeFocus", true);
+            mouseMove(tabletStage,tabletStageLoader.width,tabletStageLoader.height /2);
+            tryCompare(webbrowserApp.session.surface, "activeFocus", false);
         }
 
         function cleanup() {
@@ -150,5 +160,4 @@ Rectangle {
             tryCompare(webbrowserApp.session.surface, "activeFocus", false);
         }
     }
-
 }

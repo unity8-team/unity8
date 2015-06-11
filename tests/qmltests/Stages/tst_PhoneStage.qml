@@ -16,7 +16,8 @@
 
 import QtQuick 2.0
 import QtTest 1.0
-import Unity.Test 0.1 as UT
+import Unity.Test 0.1
+import QtQuick.Layouts 1.1
 import ".."
 import "../../../qml/Stages"
 import Ubuntu.Components 0.1
@@ -45,7 +46,7 @@ Item {
     Rectangle {
         anchors { fill: parent; leftMargin: phoneStage.width }
 
-        Column {
+        ColumnLayout {
             id: buttons
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
             spacing: units.gu(1)
@@ -88,6 +89,7 @@ Item {
                     }
                 }
             }
+                MouseTouchEmulationCheckbox {}
         }
         ListView {
             id: appList
@@ -108,7 +110,7 @@ Item {
         }
     }
 
-    UT.UnityTestCase {
+    UnityTestCase {
         id: testCase
         name: "PhoneStage"
         when: windowShown
@@ -122,6 +124,17 @@ Item {
                 tryCompare(spreadView, "contentX", -spreadView.shift);
                 waitForRendering(phoneStage)
             }
+        }
+        function init() {
+            mouseMove(phoneStage, phoneStage.width /2, phoneStage.height /2);
+        }
+
+        function test_hoverToOpenSpread() {
+            var spreadView = findChild(phoneStage, "spreadView");
+            verify(spreadView !== undefined);
+            mouseMove(phoneStage, phoneStage.width,phoneStage.height /2);
+            waitForRendering(phoneStage);
+            tryCompare(spreadView, "phase",2);
         }
 
         function goToSpread() {
@@ -140,6 +153,7 @@ Item {
             tryCompare(spreadView, "phase", 2);
             waitForRendering(phoneStage);
         }
+
 
         function test_shortFlick() {
             addApps(2)

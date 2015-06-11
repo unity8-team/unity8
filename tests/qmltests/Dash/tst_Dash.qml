@@ -94,6 +94,13 @@ Item {
             tryCompare(bottomEdgeController, "progress", 0);
         }
 
+        function test_hover_open_dash() {
+            var scopesList = findChild(dash, "scopesList");
+            tryCompare(scopesList, "visible",false);
+            mouseMove(dash, dash.width / 2, dash.height);
+            tryCompare(scopesList, "visible",true);
+        }
+
         function test_manage_dash_select_same_favorite() {
             // Show the manage dash
             touchFlick(dash, dash.width / 2, dash.height - 1, dash.width / 2, units.gu(2));
