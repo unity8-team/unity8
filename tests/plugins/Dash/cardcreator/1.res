@@ -3,7 +3,7 @@ AbstractButton {
                 property var template; 
                 property var components; 
                 property var cardData; 
-                property var artShapeBorderSource: undefined; 
+                property string artShapeStyle: "inset"; 
                 property real fontScale: 1.0; 
                 property var scopeStyle: null; 
                 property int titleAlignment: Text.AlignLeft; 
@@ -15,7 +15,6 @@ AbstractButton {
                 implicitWidth: childrenRect.width; 
                 enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true);
 
-onArtShapeBorderSourceChanged: { if (artShapeBorderSource !== undefined && artShapeLoader.item) artShapeLoader.item.borderSource = artShapeBorderSource; } 
 readonly property size artShapeSize: artShapeLoader.item ? Qt.size(artShapeLoader.item.width, artShapeLoader.item.height) : Qt.size(-1, -1);
 Item  { 
                             id: artShapeHolder; 
@@ -31,7 +30,8 @@ Item  {
                                 sourceComponent: Item {
                                     id: artShape;
                                     objectName: "artShape";
-                                    property bool doShapeItem: components["art"]["conciergeMode"] !== true;
+                                    readonly property bool doShadow: !root.pressed && root.artShapeStyle === "shadow"; 
+                                    readonly property bool doShapeItem: components["art"]["conciergeMode"] !== true;
                                     visible: image.status == Image.Ready;
                                     readonly property alias image: artImage.image;
                                     ShaderEffectSource {
@@ -47,10 +47,11 @@ Item  {
                                         anchors.fill: parent;
                                         visible: doShapeItem;
                                         radius: "medium";
+                                        borderSource: root.artShapeStyle === "inset" ? "radius_idle.sci" : "none"; 
                                     }
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1;
                                     readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : components !== undefined ? components["art"]["aspect-ratio"] : 1; 
-                                    Component.onCompleted: { updateWidthHeightBindings(); if (artShapeBorderSource !== undefined) borderSource = artShapeBorderSource; }
+                                    Component.onCompleted: { updateWidthHeightBindings(); }
                                     Connections { target: root; onFixedArtShapeSizeChanged: updateWidthHeightBindings(); } 
                                     function updateWidthHeightBindings() { 
                                         if (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) { 
@@ -68,6 +69,23 @@ Item  {
                                         asynchronous: root.asynchronous; 
                                         width: root.width; 
                                         height: width / artShape.aspect; 
+                                    } 
+                                    Image { 
+                                        anchors.centerIn: parent; 
+                                        source: "shadow.png"; 
+                                        width: parent.width + units.gu(1); 
+                                        height: parent.height + units.gu(1); 
+                                        fillMode: Image.PreserveAspectCrop; 
+                                        visible: doShadow; 
+                                        z: -1; 
+                                    } 
+                                    BorderImage { 
+                                        anchors.centerIn: parent; 
+                                        source: "bevel.png"; 
+                                        width: parent.width; 
+                                        height: parent.height; 
+                                        visible: doShadow; 
+                                        z: 1; 
                                     } 
                                 } 
                             } 

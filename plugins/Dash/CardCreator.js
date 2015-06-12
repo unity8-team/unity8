@@ -67,7 +67,8 @@ var kArtShapeHolderCode = 'Item  { \n\
                                 sourceComponent: Item { \n\
                                     id: artShape; \n\
                                     objectName: "artShape"; \n\
-                                    property bool doShapeItem: components["art"]["conciergeMode"] !== true; \n\
+                                    readonly property bool doShadow: !root.pressed && root.artShapeStyle === "shadow"; \n\
+                                    readonly property bool doShapeItem: components["art"]["conciergeMode"] !== true; \n\
                                     visible: image.status == Image.Ready; \n\
                                     readonly property alias image: artImage.image; \n\
                                     ShaderEffectSource { \n\
@@ -83,10 +84,11 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         anchors.fill: parent; \n\
                                         visible: doShapeItem; \n\
                                         radius: "medium"; \n\
+                                        borderSource: root.artShapeStyle === "inset" ? "radius_idle.sci" : "none"; \n\
                                     } \n\
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; \n\
                                     readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : components !== undefined ? components["art"]["aspect-ratio"] : 1; \n\
-                                    Component.onCompleted: { updateWidthHeightBindings(); if (artShapeBorderSource !== undefined) borderSource = artShapeBorderSource; } \n\
+                                    Component.onCompleted: { updateWidthHeightBindings(); } \n\
                                     Connections { target: root; onFixedArtShapeSizeChanged: updateWidthHeightBindings(); } \n\
                                     function updateWidthHeightBindings() { \n\
                                         if (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) { \n\
@@ -105,6 +107,23 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         width: %2; \n\
                                         height: %3; \n\
                                     } \n\
+                                    Image { \n\
+                                        anchors.centerIn: parent; \n\
+                                        source: "shadow.png"; \n\
+                                        width: parent.width + units.gu(1); \n\
+                                        height: parent.height + units.gu(1); \n\
+                                        fillMode: Image.PreserveAspectCrop; \n\
+                                        visible: doShadow; \n\
+                                        z: -1; \n\
+                                    } \n\
+                                    BorderImage { \n\
+                                        anchors.centerIn: parent; \n\
+                                        source: "bevel.png"; \n\
+                                        width: parent.width; \n\
+                                        height: parent.height; \n\
+                                        visible: doShadow; \n\
+                                        z: 1; \n\
+                                    } \n
                                 } \n\
                             } \n\
                         }\n';
@@ -320,7 +339,7 @@ function cardString(template, components) {
                 property var template; \n\
                 property var components; \n\
                 property var cardData; \n\
-                property var artShapeBorderSource: undefined; \n\
+                property string artShapeStyle: "inset"; \n\
                 property real fontScale: 1.0; \n\
                 property var scopeStyle: null; \n\
                 property int titleAlignment: Text.AlignLeft; \n\
@@ -352,7 +371,6 @@ function cardString(template, components) {
     }
 
     if (hasArt) {
-        code += 'onArtShapeBorderSourceChanged: { if (artShapeBorderSource !== undefined && artShapeLoader.item) artShapeLoader.item.borderSource = artShapeBorderSource; } \n';
         code += 'readonly property size artShapeSize: artShapeLoader.item ? Qt.size(artShapeLoader.item.width, artShapeLoader.item.height) : Qt.size(-1, -1);\n';
 
         var widthCode, heightCode;
