@@ -25,7 +25,7 @@ DashRenderer {
         return cardTool.template["collapsed-rows"];
     }
 
-    // hackish, relies on GenericScopeView.qml:336 tweak to detect application icons in click scope
+    // hackish, relies on GenericScopeView.qml:335 tweak to detect application icons in click scope
     readonly property var artShapeStyle: cardTool.artShapeSize === Qt.size(units.gu(8), units.gu(7.5)) ? "shadow" : "inset";
     
     expandedHeight: grid.totalContentHeight
