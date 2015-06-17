@@ -15,7 +15,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import "dateExt.js" as DateExt
 
 ListView {
@@ -203,8 +203,8 @@ ListView {
                     property var dayStart: gridStart.addDays(index)
 
                     // Styling properties
-                    property color color: Theme.palette.selected.backgroundText
-                    property color todayColor: Theme.palette.selected.foreground
+                    property color color: theme.palette.selected.backgroundText
+                    property color todayColor: theme.palette.selected.foreground
                     property string fontSize: "large"
                     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
                     property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)

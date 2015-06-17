@@ -16,7 +16,7 @@
 
 import QtQuick 2.1
 import QtQuick.Layouts 1.1
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItem
 import Ubuntu.Settings.Components 0.1
 
@@ -56,7 +56,7 @@ ListItem.Empty {
 
                 color: {
                     if (String(source).match(/^image:\/\/theme/)) {
-                        return Theme.palette.selected.backgroundText;
+                        return theme.palette.selected.backgroundText;
                     }
                     return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }

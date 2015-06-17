@@ -19,7 +19,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItem
 
 StandardMenu {
@@ -36,7 +36,7 @@ StandardMenu {
             height: label.implicitHeight + units.gu(2)
             width: label.implicitWidth + units.gu(2)
 
-            color: Theme.palette.normal.backgroundText
+            color: theme.palette.normal.backgroundText
             radius: "medium"
 
             Label {
@@ -52,7 +52,7 @@ StandardMenu {
                 fontSize: "medium"
                 text: menu.count
 
-                color: Theme.palette.normal.foregroundText
+                color: theme.palette.normal.foregroundText
             }
         }
     }
