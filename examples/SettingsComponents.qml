@@ -17,7 +17,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Settings.Components 0.1
 import Ubuntu.Settings.Menus 0.1
 
