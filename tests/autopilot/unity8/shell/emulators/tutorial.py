@@ -38,6 +38,13 @@ class TutorialPage(
                         b'TutorialLeftFinish', b'TutorialRight',
                         b'TutorialBottom', b'TutorialBottomFinish')
 
+    @classmethod
+    def get_type_query_name(cls):
+        # Tutorial page name can be different, validate_dbus_object will remove
+        # the chaff.
+        # Note. this is not a very efficient query
+        return '*'
+
     @autopilot.logging.log_action(logger.info)
     def short_swipe_right(self):
         self.shown.wait_for(True)

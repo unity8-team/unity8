@@ -24,8 +24,7 @@ from unity8.shell import (
     fixture_setup,
     tests
 )
-# unused import to load the tutorial emulators custom proxy objects.
-from unity8.shell.emulators import tutorial as tutorial_emulator  # NOQA
+from unity8.shell.emulators.tutorial import TutorialPage
 
 
 class TutorialTestCase(tests.UnityTestCase):
@@ -43,15 +42,30 @@ class TutorialTestCase(tests.UnityTestCase):
         tutorial = self.unity.select_single('Tutorial')
         self.assertThat(tutorial.running, Eventually(Equals(True)))
         greeter.swipe()
-        page = self.unity.wait_select_single(objectName='tutorialLeft')
+        page = self.unity.wait_select_single(
+            TutorialPage,
+            objectName='tutorialLeft'
+        )
         page.short_swipe_right()
-        page = self.unity.wait_select_single(objectName='tutorialLeftFinish')
+        page = self.unity.wait_select_single(
+            TutorialPage,
+            objectName='tutorialLeftFinish'
+        )
         page.tap()
-        page = self.unity.wait_select_single(objectName='tutorialRight')
+        page = self.unity.wait_select_single(
+            TutorialPage,
+            objectName='tutorialRight'
+        )
         page.swipe_left()
         page.tap()
-        page = self.unity.wait_select_single(objectName='tutorialBottom')
+        page = self.unity.wait_select_single(
+            TutorialPage,
+            objectName='tutorialBottom'
+        )
         page.swipe_up()
-        page = self.unity.wait_select_single(objectName='tutorialBottomFinish')
+        page = self.unity.wait_select_single(
+            TutorialPage,
+            objectName='tutorialBottomFinish'
+        )
         page.tap()
         self.assertThat(tutorial.running, Eventually(Equals(False)))
