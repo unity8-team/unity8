@@ -100,7 +100,7 @@ class Dash(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
                 'No scope found with id {0}'.format(scope_id))
 
     def _get_scope_from_loader(self, loader):
-        return loader.wait_select_single('GenericScopeView')
+        return loader.wait_select_single(GenericScopeView)
 
     def _open_scope_scrolling(self, scope_loader):
         scroll = self._get_scroll_direction(scope_loader)
@@ -173,7 +173,10 @@ class Dash(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
 
     def _get_search_text_field(self):
         page_header = self._get_current_page_header()
-        return page_header.select_single(objectName='searchTextField')
+        return page_header.select_single(
+            ubuntuuitoolkit.TextField,
+            objectName='searchTextField'
+        )
 
     def _get_current_page_header(self):
         dashContentList = self.select_single(objectName="dashContentList")

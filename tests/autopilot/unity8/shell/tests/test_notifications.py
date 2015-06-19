@@ -28,7 +28,10 @@ import subprocess
 from autopilot.matchers import Eventually
 from gi.repository import Notify
 from testtools.matchers import Equals, NotEquals
-from ubuntuuitoolkit import ubuntu_scenarios
+from ubuntuuitoolkit import (
+    UbuntuUIToolkitCustomProxyObjectBase,
+    ubuntu_scenarios
+)
 
 from unity8 import shell
 from unity8.process_helpers import unlock_unity
@@ -36,6 +39,11 @@ from unity8.shell.tests import UnityTestCase
 
 
 logger = logging.getLogger(__name__)
+
+
+# CPO to assist during testing (gives it a pointing_device)
+class Notification(UbuntuUIToolkitCustomProxyObjectBase):
+    pass
 
 
 class NotificationsBase(UnityTestCase):
@@ -143,7 +151,7 @@ class InteractiveNotificationBase(NotificationsBase):
         )
 
         get_notification = lambda: notify_list.wait_select_single(
-            'Notification', objectName='notification1')
+            Notification, objectName='notification1')
         notification = get_notification()
 
         notification.pointing_device.click_object(
@@ -185,7 +193,7 @@ class InteractiveNotificationBase(NotificationsBase):
         # verify and interact with the triggered snap-decision notification
         notify_list = self._get_notifications_list()
         get_notification = lambda: notify_list.wait_select_single(
-            'Notification', objectName='notification1')
+            Notification, objectName='notification1')
         notification = get_notification()
         self._assert_notification(
             notification, summary, body, False, False, 1.0)
@@ -234,7 +242,7 @@ class InteractiveNotificationBase(NotificationsBase):
         # verify and interact with the triggered snap-decision notification
         notify_list = self._get_notifications_list()
         get_notification = lambda: notify_list.wait_select_single(
-            'Notification', objectName='notification1')
+            Notification, objectName='notification1')
         notification = get_notification()
         self._assert_notification(
             notification, summary, body, True, False, 1.0)
@@ -282,7 +290,7 @@ class InteractiveNotificationBase(NotificationsBase):
         # verify and interact with the triggered snap-decision notification
         notify_list = self._get_notifications_list()
         get_notification = lambda: notify_list.wait_select_single(
-            'Notification', objectName='notification1')
+            Notification, objectName='notification1')
         notification = get_notification()
         self._assert_notification(
             notification, summary, body, True, False, 1.0)

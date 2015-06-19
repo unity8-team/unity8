@@ -25,6 +25,7 @@ from autopilot import input
 
 from unity8.shell.emulators.greeter import Greeter
 from unity8.shell.emulators.launcher import Launcher
+from unity8.indicators import IndicatorPage
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class QQuickView(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
 
     def _get_indicator_page(self, indicator_name):
         return self.select_single(
-            'IndicatorPage',
+            IndicatorPage,
             objectName=indicator_name+'-page'
         )
 

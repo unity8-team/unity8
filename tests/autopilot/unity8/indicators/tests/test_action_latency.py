@@ -22,7 +22,10 @@ from unity8 import (
     fixture_setup,
     indicators,
 )
-from unity8.indicators import tests
+from unity8.indicators import (
+    TestIndicatorPage,
+    tests
+)
 
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals, NotEquals
@@ -43,7 +46,11 @@ class TestIndicatorBaseTestCase(tests.IndicatorTestCase):
             self.indicator.is_indicator_icon_visible(),
             Eventually(Equals(True), timeout=20)
         )
-        self.indicator_page = self.indicator.open()
+        # Force to be TestIndicatorPage as CPOs need to be explicit, can't just
+        # select using objectName.
+        self.indicator_page = TestIndicatorPage.from_proxy_object(
+            self.indicator.open()
+        )
 
     def launch_indicator_service(self):
         launch_service_fixture = \

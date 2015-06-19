@@ -61,8 +61,9 @@ class Indicator():
         indicator_rotation_icon = self._main_window.select_single(
             objectName=self._name+'-panelItem')
         self._main_window.pointing_device.click_object(indicator_rotation_icon)
-        return self._main_window.wait_select_single(
-            objectName=self._name+'-page')
+        return DisplayIndicatorPage.from_proxy_object(
+            self._main_window.wait_select_single(objectName=self._name+'-page')
+        )
 
     def _make_indicator_icon_visible(self):
         indicators_bar = self._main_window.select_single('IndicatorsBar')
@@ -158,7 +159,7 @@ class TestIndicatorPage(IndicatorPage):
             'SwitchMenu', objectName='indicator.action.switch')
 
     def get_slider(self):
-        return self.select_single(objectName='slider')
+        return self.select_single(Slider, objectName='slider')
 
     def get_slider_menu(self):
         return self.select_single(objectName='indicator.action.slider')
