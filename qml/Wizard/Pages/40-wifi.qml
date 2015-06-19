@@ -20,6 +20,7 @@ import QtSystemInfo 5.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 import Ubuntu.Settings.Menus 0.1 as Menus
+import Ubuntu.Components.Popups 0.1
 import ".." as LocalComponents
 
 LocalComponents.Page {
@@ -43,6 +44,17 @@ LocalComponents.Page {
         busName: "com.canonical.indicator.network"
         actions: { "indicator": "/com/canonical/indicator/network" }
         menuObjectPath: "/com/canonical/indicator/network/phone_wifi_settings"
+    }
+
+    QMenuModel.QDBusActionGroup {
+        id: actionGroup
+        busType: 1
+        busName: "com.canonical.indicator.network"
+        objectPath: "/com/canonical/indicator/network"
+        property variant actionObject: action("wifi.enable")
+        Component.onCompleted: {
+            start()
+        }
     }
 
     NetworkInfo {
@@ -204,6 +216,25 @@ LocalComponents.Page {
                             item.menuIndex = Qt.binding(function() { return index; });
                         }
                     }
+                }
+
+                ListItem.ThinDivider {}
+
+                ListItem.SingleValue {
+                    id: connectToHiddenNetwork
+                    objectName: "connectToHiddenNetwork"
+                    text: i18n.tr("Connect to hidden network")
+                            visible : (actionGroup.actionObject.valid ?
+                                       actionGroup.actionObject.state : false)
+                    onClicked: {
+                        otherNetworkLoader.source = "OtherNetwork.qml";
+                        PopupUtils.open(otherNetworkLoader.item);
+                    }
+                }
+
+                Loader {
+                    id: otherNetworkLoader
+                    asynchronous: false
                 }
             }
         }
