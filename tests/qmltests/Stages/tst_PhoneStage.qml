@@ -76,22 +76,7 @@ Item {
                     ApplicationManager.get(appList.selectedAppIndex).setState(ApplicationInfoInterface.Stopped);
                 }
             }
-            Button {
-                anchors { left: parent.left; right: parent.right }
-                text: "Rotate device \u27F3"
-                onClicked: {
-                    if (phoneStage.orientation == Qt.PortraitOrientation) {
-                        phoneStage.orientation = Qt.LandscapeOrientation;
-                    } else if (phoneStage.orientation == Qt.LandscapeOrientation) {
-                        phoneStage.orientation = Qt.InvertedPortraitOrientation;
-                    } else if (phoneStage.orientation == Qt.InvertedPortraitOrientation) {
-                        phoneStage.orientation = Qt.InvertedLandscapeOrientation;
-                    } else {
-                        phoneStage.orientation = Qt.PortraitOrientation;
-                    }
-                }
-            }
-                MouseTouchEmulationCheckbox {}
+            MouseTouchEmulationCheckbox {}
         }
         ListView {
             id: appList
