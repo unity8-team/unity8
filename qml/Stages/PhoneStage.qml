@@ -548,18 +548,15 @@ Rectangle {
         }
     }
 
-<<<<<<< TREE
-=======
     //eat touch events during the right edge gesture
->>>>>>> MERGE-SOURCE
     MouseArea {
-<<<<<<< TREE
         id: hoverspread
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
         width: units.dp(1)
         hoverEnabled: true
         propagateComposedEvents: true
         onContainsMouseChanged: {
+			console.log("spreadhover")
             if (containsMouse && spreadView.contentX < 0) {
                 spreadView.contentX = spreadView.width * spreadView.positionMarker2
                 spreadView.snap()
@@ -572,12 +569,15 @@ Rectangle {
             mouseEnabled: false
             enabled: parent.enabled
         }
-=======
+    }
+
+	    //eat touch events during the right edge gesture
+    MouseArea {
         objectName: "eventEaterArea"
         anchors.fill: parent
         enabled: spreadDragArea.dragging
->>>>>>> MERGE-SOURCE
     }
+
 
     DirectionalDragArea {
         id: spreadDragArea

@@ -723,13 +723,8 @@ Rectangle {
             }
         }
     }
-
-<<<<<<< TREE
-=======
     //eat touch events during the right edge gesture
->>>>>>> MERGE-SOURCE
     MouseArea {
-<<<<<<< TREE
         id: hoverspread
         anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
         width: units.dp(1)
@@ -748,10 +743,13 @@ Rectangle {
             mouseEnabled: false
             enabled: parent.enabled
         }
-=======
+    }
+
+    //eat touch events during the right edge gesture
+    MouseArea {
+        objectName: "eventEaterArea"
         anchors.fill: parent
         enabled: spreadDragArea.dragging
->>>>>>> MERGE-SOURCE
     }
 
     DirectionalDragArea {

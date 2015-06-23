@@ -76,7 +76,6 @@ Item {
                     ApplicationManager.get(appList.selectedAppIndex).setState(ApplicationInfoInterface.Stopped);
                 }
             }
-<<<<<<< TREE
             Button {
                 anchors { left: parent.left; right: parent.right }
                 text: "Rotate device \u27F3"
@@ -93,8 +92,6 @@ Item {
                 }
             }
                 MouseTouchEmulationCheckbox {}
-=======
->>>>>>> MERGE-SOURCE
         }
         ListView {
             id: appList
