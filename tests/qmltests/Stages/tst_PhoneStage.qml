@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Canonical Ltd.
+ * Copyright 2014-2015 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@ Item {
         dragAreaWidth: units.gu(2)
         maximizedAppTopMargin: units.gu(3) + units.dp(2)
         interactive: true
-        orientation: Qt.PortraitOrientation
+        shellOrientation: Qt.PortraitOrientation
+        shellPrimaryOrientation: Qt.PortraitOrientation
+        nativeOrientation: Qt.PortraitOrientation
     }
 
     Binding {
@@ -74,6 +76,7 @@ Item {
                     ApplicationManager.get(appList.selectedAppIndex).setState(ApplicationInfoInterface.Stopped);
                 }
             }
+<<<<<<< TREE
             Button {
                 anchors { left: parent.left; right: parent.right }
                 text: "Rotate device \u27F3"
@@ -90,6 +93,8 @@ Item {
                 }
             }
                 MouseTouchEmulationCheckbox {}
+=======
+>>>>>>> MERGE-SOURCE
         }
         ListView {
             id: appList
@@ -297,46 +302,6 @@ Item {
             compare(ApplicationManager.focusedApplicationId, selectedApp.appId);
         }
 
-        function test_orientationChangeSentToFocusedApp() {
-            phoneStage.orientation = Qt.PortraitOrientation;
-            addApps(1);
-
-            var spreadView = findChild(phoneStage, "spreadView");
-            var app = findChild(spreadView, "appDelegate0");
-            tryCompare(app, "orientation", Qt.PortraitOrientation);
-
-            phoneStage.orientation = Qt.LandscapeOrientation;
-            tryCompare(app, "orientation", Qt.LandscapeOrientation);
-        }
-
-        function test_orientationChangeNotSentToAppsWhileSpreadOpen() {
-            phoneStage.orientation = Qt.PortraitOrientation;
-            addApps(1);
-
-            var spreadView = findChild(phoneStage, "spreadView");
-            var app = findChild(spreadView, "appDelegate0");
-            tryCompare(app, "orientation", Qt.PortraitOrientation);
-
-            goToSpread();
-            phoneStage.orientation = Qt.LandscapeOrientation;
-            tryCompare(app, "orientation", Qt.PortraitOrientation);
-        }
-
-        function test_orientationChangeNotSentToUnfocusedAppUntilItFocused() {
-            phoneStage.orientation = Qt.PortraitOrientation;
-            addApps(1);
-
-            var spreadView = findChild(phoneStage, "spreadView");
-            var app = findChild(spreadView, "appDelegate0");
-
-            goToSpread();
-            phoneStage.orientation = Qt.LandscapeOrientation;
-            tryCompare(app, "orientation", Qt.PortraitOrientation);
-
-            phoneStage.select(app.application.appId);
-            tryCompare(app, "orientation", Qt.LandscapeOrientation);
-        }
-
         function test_backgroundClickCancelsSpread() {
             addApps(3);
 
@@ -361,7 +326,7 @@ Item {
                 ApplicationManager.stopApplication(ApplicationManager.get(closingIndex).appId)
                 tryCompare(ApplicationManager, "count", oldCount - 1)
             }
-            phoneStage.orientation = Qt.PortraitOrientation;
+            phoneStage.shellOrientationAngle = 0;
         }
 
         function test_focusNewTopMostAppAfterFocusedOneClosesItself() {
@@ -411,6 +376,25 @@ Item {
             compare(dragArea2.enabled, false);
 
             tryCompare(spreadView, "contentX", -spreadView.shift)
+        }
+
+        function test_cantAccessPhoneStageWhileRightEdgeGesture() {
+            var spreadView = findChild(phoneStage, "spreadView");
+            var eventEaterArea = findChild(phoneStage, "eventEaterArea")
+
+            var startX = phoneStage.width - 2;
+            var startY = phoneStage.height / 2;
+            var endY = startY;
+            var endX = phoneStage.width / 2;
+
+            touchFlick(phoneStage, startX, startY, endX, endY,
+                       true /* beginTouch */, false /* endTouch */, units.gu(10), 50);
+
+            compare(eventEaterArea.enabled, true);
+
+            touchRelease(phoneStage, endX, endY);
+
+            compare(eventEaterArea.enabled, false);
         }
 
         function test_leftEdge_data() {
