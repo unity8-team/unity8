@@ -69,9 +69,6 @@ Item {
             set_current_index = [ index, animate, reset ]
             return;
         }
-        if (dashContent.currentScopeId == "clickscope" && dashContentList.currentItem.item) {
-            dashContentList.currentItem.item.resetClickscopeNavigation()
-        }
         var storedMoveDuration = dashContentList.highlightMoveDuration
         var storedMoveSpeed = dashContentList.highlightMoveVelocity
         if (!animate) {
@@ -124,11 +121,6 @@ Item {
             cacheBuffer: 1073741823
             onMovementStarted: currentItem.item.showHeader();
             clip: parent.x != 0
-            onCurrentIndexChanged: {
-                if (currentItem)
-                    if (currentItem.scopeId == "clickscope" && currentItem.item) dashContentList.currentItem.item.resetClickscopeNavigation()
-            }
-
             // TODO QTBUG-40846 and QTBUG-40848
             // The remove transition doesn't happen when removing the last item
             // And can't work around it because index is reset to -1 regardless of

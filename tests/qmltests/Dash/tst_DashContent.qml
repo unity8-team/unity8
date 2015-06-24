@@ -280,38 +280,6 @@ Item {
             verify(carouselLV.tileWidth / carouselLV.tileHeight == cardTool.components["art"]["aspect-ratio"]);
         }
 
-        function test_homebutton_reset_clickscope_navigation() {
-            var dashContentList = findChild(dashContent, "dashContentList");
-            dashContent.setCurrentScopeAtIndex(1,true,false);
-            tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation") != null; }, true);
-            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
-            tryCompare(dashNavigation, "visible", true);
-            var dashNavigationButton = findChild(dashContentList.currentItem, "navigationButton");
-            compare(dashNavigationButton.showList, false);
-            waitForRendering(dashNavigationButton);
-            mouseClick(dashNavigationButton);
-            compare(dashNavigationButton.showList, true);
-
-            var navigationListView = findChild(dashNavigationButton, "navigationListView");
-            tryCompareFunction(function() {
-                return navigationListView.currentItem &&
-                       navigationListView.currentItem.navigation &&
-                       navigationListView.currentItem.navigation.loaded; }, true);
-
-            waitForRendering(navigationListView);
-            waitForRendering(navigationListView.currentItem);
-
-            var allButton = findChild(dashNavigationButton, "allButton");
-            compare(allButton.visible, false);
-
-            tryCompareFunction(function() {return findChild(dashContentList.currentItem,"navigation0child3") != null;}, true);
-            var navigation = findChild(dashNavigationButton, "navigation0child3");
-            mouseClick(navigation);
-            tryCompare(dashNavigationButton.currentNavigation, "navigationId", "middle3");
-            dashContentList.currentItem.item.resetClickscopeNavigation();
-            tryCompare(dashNavigationButton.currentNavigation, "navigationId","root");
-        }
-
         function test_mainNavigation() {
             var dashContentList = findChild(dashContent, "dashContentList");
             tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation") != null; }, true);

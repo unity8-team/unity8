@@ -144,6 +144,36 @@ Item {
                 tryCompare(genericScopeView.scope, "searchQuery", "test2");
             }
 
+            function test_swipe_to_reset_navigation() {
+                tryCompareFunction(function() {return findChild(genericScopeView, "dashNavigation") != null;},true);
+                var dashNavigation = findChild(genericScopeView, "dashNavigation");
+                tryCompare(dashNavigation, "visible", true);
+                var dashNavigationButton = findChild(dashNavigation, "navigationButton");
+                compare(dashNavigationButton.showList, false);
+                waitForRendering(dashNavigationButton);
+                mouseClick(dashNavigationButton);
+                compare(dashNavigationButton.showList, true);
+
+                var navigationListView = findChild(dashNavigationButton, "navigationListView");
+                tryCompareFunction(function() {
+                    return navigationListView.currentItem &&
+                           navigationListView.currentItem.navigation &&
+                           navigationListView.currentItem.navigation.loaded; }, true);
+
+                waitForRendering(navigationListView);
+                waitForRendering(navigationListView.currentItem);
+
+                var allButton = findChild(dashNavigationButton, "allButton");
+                compare(allButton.visible, false);
+
+                tryCompareFunction(function() {return findChild(dashNavigationButton,"navigation0child3") != null;}, true);
+                var navigation = findChild(dashNavigationButton, "navigation0child3");
+                mouseClick(navigation);
+                tryCompare(dashNavigationButton.currentNavigation, "navigationId", "middle3");
+                genericScopeView.resetClickNavigation();
+                tryCompare(dashNavigationButton.currentNavigation, "navigationId","root");
+            }
+
             function test_changeScope() {
                 genericScopeView.scope.searchQuery = "test"
                 var originalScopeId = genericScopeView.scope.id;
@@ -302,6 +332,7 @@ Item {
             }
 
             function closePreview() {
+                tryCompare(testCase.subPageLoader, "x", 0);
                 var closePreviewMouseArea = findChild(subPageLoader.item, "pageHeader");
                 mouseClick(closePreviewMouseArea, units.gu(2), units.gu(2));
 
@@ -616,27 +647,49 @@ Item {
                 waitForRendering(category0);
 
                 var cardTool = findChild(category0, "cardTool");
-                var cardGrid = category0.item;
-
                 cardTool.template["non-interactive"] = true;
+                cardTool.templateChanged();
+
+                var category0 = findChild(categoryListView, "dashCategory0");
+                waitForRendering(category0);
+
+                var cardGrid = category0.item;
                 compare(cardGrid.cardTool.template["non-interactive"], true);
 
                 var item0 = findChild(cardGrid, "delegate0");
                 waitForRendering(item0);
-                item0.template = cardTool.template;
-                compare(item0.template["non-interactive"], true);
                 compare(item0.enabled, false);
                 var touchdown = findChild(item0, "touchdown");
 
                 compare(touchdown.visible, false);
-                mouseClick(item0);
+                mousePress(item0);
                 compare(touchdown.visible, false);
+                mouseRelease(item0);
 
                 cardTool.template["non-interactive"] = false;
+                cardTool.templateChanged();
                 compare(cardGrid.cardTool.template["non-interactive"], false);
-                item0.template = cardTool.template;
-                compare(item0.template["non-interactive"], false);
+
+                waitForRendering(category0);
+                item0 = findChild(cardGrid, "delegate0");
                 compare(item0.enabled, true);
+                var touchdown = findChild(item0, "touchdown");
+
+                compare(touchdown.visible, false);
+                mousePress(item0);
+                compare(touchdown.visible, true);
+                mouseRelease(item0);
+                compare(touchdown.visible, false);
+                closePreview();
+            }
+
+            function test_carousel_borderSource() {
+                var category = scrollToCategory("dashCategory1");
+                var tile = findChild(category, "carouselDelegate0");
+                tryCompareFunction(function() { return findChild(tile, "artShapeLoader") !== null; }, true);
+                var artShapeLoader = findChild(tile, "artShapeLoader");
+                var shape = findChildsByType(artShapeLoader, "UCUbuntuShape");
+                compare(shape.borderSource, undefined);
             }
         }
     }

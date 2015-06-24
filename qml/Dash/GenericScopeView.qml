@@ -42,7 +42,7 @@ FocusScope {
     property alias pageHeaderTotallyVisible: categoryView.pageHeaderTotallyVisible
     property var holdingList: null
     property bool wasCurrentOnMoveStart: false
-
+    property var scopeId: scope != null ? scope.id : null
     property var scopeStyle: ScopeStyle {
         style: scope ? scope.customizations : {}
     }
@@ -67,7 +67,7 @@ FocusScope {
         subPageLoader.closeSubPage()
     }
 
-    function resetClickscopeNavigation() {
+    function resetClickNavigation() {
         scopeView.resetNavigation()
     }
 
@@ -121,6 +121,12 @@ FocusScope {
     }
 
     onIsCurrentChanged: {
+        console.log("scopeViewname & iscurrent",scopeView.scopeId,scopeView.isCurrent)
+        if (scopeView.scopeId != null && scopeView.isCurrent) {
+            if (scopeView.scopeId === "clickscope"){
+                scopeView.resetClickNavigation()
+            }
+        }
         if (!holdingList || !holdingList.moving) {
             wasCurrentOnMoveStart = scopeView.isCurrent;
         }
@@ -429,7 +435,7 @@ FocusScope {
                             //     to the next, we set the visible range to the viewport so
                             //     items are not culled (invisible) but still use no cacheBuffer
                             //     (it will be set once the scope is the current one)
-                            var displayMarginBeginning = baseItem.y;
+                            var displayMarginBeginning = baseItem.y + rendererLoader.anchors.topMargin;
                             displayMarginBeginning = -Math.max(-displayMarginBeginning, 0);
                             displayMarginBeginning = -Math.min(-displayMarginBeginning, baseItem.height);
                             displayMarginBeginning = Math.round(displayMarginBeginning);
