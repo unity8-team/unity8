@@ -1,6 +1,5 @@
 AbstractButton { 
                 id: root; 
-                property var template; 
                 property var components; 
                 property var cardData; 
                 property string artShapeStyle: "inset"; 
@@ -13,7 +12,7 @@ AbstractButton {
                 property bool asynchronous: true; 
                 property bool showHeader: true; 
                 implicitWidth: childrenRect.width; 
-                enabled: root.template == null ? true : (root.template["non-interactive"] !== undefined ? !root.template["non-interactive"] : true);
+                enabled: true;
 
 readonly property size artShapeSize: artShapeLoader.item ? Qt.size(artShapeLoader.item.width, artShapeLoader.item.height) : Qt.size(-1, -1);
 Item  { 
@@ -34,6 +33,7 @@ Item  {
                                     readonly property bool doShapeItem: components["art"]["conciergeMode"] !== true;
                                     visible: image.status == Image.Ready;
                                     readonly property alias image: artImage.image;
+                                    property alias borderSource: artShapeShape.borderSource;
                                     ShaderEffectSource {
                                         id: artShapeSource;
                                         sourceItem: artImage;
@@ -43,7 +43,7 @@ Item  {
                                         hideSource: doShapeItem;
                                     }
                                     Shape {
-                                        id: shape;
+                                        id: artShapeShape;
                                         image: artShapeSource;
                                         anchors.fill: parent;
                                         visible: doShapeItem;
@@ -89,8 +89,8 @@ Item  {
                                         z: 1; 
                                     } 
                                     BrightnessContrast { 
-                                        anchors.fill: shape; 
-                                        source: shape; 
+                                        anchors.fill: artShapeShape; 
+                                        source: artShapeShape; 
                                         brightness: doShadow && root.pressed ? 0.25 : 0; 
                                         Behavior on brightness { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } } 
                                     } 
