@@ -80,7 +80,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         hideSource: doShapeItem; \n\
                                     } \n\
                                     Shape { \n\
-                                        id: shape \n\
+                                        id: shape; \n\
                                         image: artShapeSource; \n\
                                         anchors.fill: parent; \n\
                                         visible: doShapeItem; \n\
@@ -126,9 +126,9 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         z: 1; \n\
                                     } \n
                                     BrightnessContrast { \n\
-                                        anchors.fill: shape \n\
-                                        source: shape \n\
-                                        brightness: root.pressed ? 0.2 : 0 \n\
+                                        anchors.fill: shape; \n\
+                                        source: shape; \n\
+                                        brightness: doShadow && root.pressed ? 0.25 : 0; \n\
                                         Behavior on brightness { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } } \n\
                                     } \n\
                                 } \n\

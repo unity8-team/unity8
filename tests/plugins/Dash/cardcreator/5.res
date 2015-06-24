@@ -30,7 +30,7 @@ Item  {
                                 sourceComponent: Item {
                                     id: artShape;
                                     objectName: "artShape";
-                                    readonly property bool doShadow: !root.pressed && root.artShapeStyle === "shadow"; 
+                                    readonly property bool doShadow: root.artShapeStyle === "shadow"; 
                                     readonly property bool doShapeItem: components["art"]["conciergeMode"] !== true;
                                     visible: image.status == Image.Ready;
                                     readonly property alias image: artImage.image;
@@ -43,6 +43,7 @@ Item  {
                                         hideSource: doShapeItem;
                                     }
                                     Shape {
+                                        id: shape;
                                         image: artShapeSource;
                                         anchors.fill: parent;
                                         visible: doShapeItem;
@@ -86,6 +87,12 @@ Item  {
                                         height: parent.height; 
                                         visible: doShadow; 
                                         z: 1; 
+                                    } 
+                                    BrightnessContrast { 
+                                        anchors.fill: shape; 
+                                        source: shape; 
+                                        brightness: doShadow && root.pressed ? 0.25 : 0; 
+                                        Behavior on brightness { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } } 
                                     } 
                                 } 
                             }
@@ -177,7 +184,7 @@ UbuntuShape {
     id: touchdown; 
     objectName: "touchdown"; 
     anchors { fill: artShapeHolder } 
-    visible: root.pressed;
+    visible: root.artShapeStyle != "shadow" && root.pressed;
     radius: "medium"; 
     borderSource: "radius_pressed.sci" 
 }
