@@ -121,7 +121,6 @@ FocusScope {
     }
 
     onIsCurrentChanged: {
-        console.log("scopeViewname & iscurrent",scopeView.scopeId,scopeView.isCurrent)
         if (scopeView.scopeId != null && scopeView.isCurrent) {
             if (scopeView.scopeId === "clickscope"){
                 scopeView.resetClickNavigation()
