@@ -55,7 +55,7 @@ DashRenderer {
         displayMarginEnd: root.displayMarginEnd
         cacheBuffer: root.cacheBuffer
         interactive: false
-        topMargin: root.artShapeStyle === "shadow" ? units.gu(0.1) : 0
+        topMargin: root.artShapeStyle === "shadow" ? units.gu(0.1) : 0 // otherwise when we have a shadow, its top is clipped
         delegate: Item {
             width: grid.cellWidth
             height: grid.cellHeight
