@@ -67,7 +67,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                 sourceComponent: Item { \n\
                                     id: artShape; \n\
                                     objectName: "artShape"; \n\
-                                    readonly property bool doShadow: !root.pressed && root.artShapeStyle === "shadow"; \n\
+                                    readonly property bool doShadow: root.artShapeStyle === "shadow"; \n\
                                     readonly property bool doShapeItem: components["art"]["conciergeMode"] !== true; \n\
                                     visible: image.status == Image.Ready; \n\
                                     readonly property alias image: artImage.image; \n\
@@ -80,6 +80,7 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         hideSource: doShapeItem; \n\
                                     } \n\
                                     Shape { \n\
+                                        id: shape \n\
                                         image: artShapeSource; \n\
                                         anchors.fill: parent; \n\
                                         visible: doShapeItem; \n\
@@ -124,6 +125,12 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         visible: doShadow; \n\
                                         z: 1; \n\
                                     } \n
+                                    BrightnessContrast { \n\
+                                        anchors.fill: shape \n\
+                                        source: shape \n\
+                                        brightness: root.pressed ? 0.2 : 0 \n\
+                                        Behavior on brightness { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } } \n\
+                                    } \n\
                                 } \n\
                             } \n\
                         }\n';
@@ -277,7 +284,7 @@ var kTouchdownCode = 'UbuntuShape { \n\
                         id: touchdown; \n\
                         objectName: "touchdown"; \n\
                         anchors { %1 } \n\
-                        visible: root.pressed; \n\
+                        visible: root.artShapeStyle != "shadow" && root.pressed; \n\
                         radius: "medium"; \n\
                         borderSource: "radius_pressed.sci" \n\
                     }\n';
@@ -690,6 +697,7 @@ function cardString(template, components) {
 
 function createCardComponent(parent, template, components) {
     var imports = 'import QtQuick 2.2; \n\
+                   import QtGraphicalEffects 1.0; \n\
                    import Ubuntu.Components 1.1; \n\
                    import Ubuntu.Settings.Components 0.1; \n\
                    import Dash 0.1;\n\

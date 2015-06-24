@@ -26,8 +26,8 @@ DashRenderer {
     }
 
     // hackish, relies on GenericScopeView.qml:335 tweak to detect application icons in click scope
-    readonly property var artShapeStyle: cardTool.artShapeSize === Qt.size(units.gu(8), units.gu(7.5)) ? "shadow" : "inset";
-    
+    readonly property var artShapeStyle: cardTool.artShapeSize === Qt.size(units.gu(8), units.gu(7.4)) ? "shadow" : "inset";
+
     expandedHeight: grid.totalContentHeight
     collapsedHeight: Math.min(grid.contentHeightForRows(collapsedRows, grid.cellHeight), expandedHeight)
     collapsedItemCount: collapsedRows * grid.columns

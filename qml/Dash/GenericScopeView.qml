@@ -331,8 +331,8 @@ FocusScope {
                     }
                     updateRanges();
                     if (scope && scope.id === "clickscope" && (categoryId === "predefined" || categoryId === "local")) {
-                        // Yeah, hackish :/
-                        cardTool.artShapeSize = Qt.size(units.gu(8), units.gu(7.5));
+                        // Yeah, hackish :/ This code is checked inside CardGrid.qml to add shadows in click scope apps, edit accordingly
+                        cardTool.artShapeSize = Qt.size(units.gu(8), units.gu(7.4));
                     }
                     item.cardTool = cardTool;
                 }
