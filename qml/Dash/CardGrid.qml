@@ -55,7 +55,7 @@ DashRenderer {
         displayMarginEnd: root.displayMarginEnd
         cacheBuffer: root.cacheBuffer
         interactive: false
-        topMargin: root.artShapeStyle === "shadow" ? units.gu(0.25) : 0
+        topMargin: root.artShapeStyle === "shadow" ? units.gu(0.1) : 0
         delegate: Item {
             width: grid.cellWidth
             height: grid.cellHeight
