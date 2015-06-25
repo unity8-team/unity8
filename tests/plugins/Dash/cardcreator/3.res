@@ -88,12 +88,6 @@ Item  {
                                         visible: doShadow; 
                                         z: 1; 
                                     } 
-                                    BrightnessContrast { 
-                                        anchors.fill: artShapeShape; 
-                                        source: artShapeShape; 
-                                        brightness: doShadow && root.pressed ? 0.25 : 0; 
-                                        Behavior on brightness { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } } 
-                                    } 
                                 } 
                             } 
                         }

@@ -125,12 +125,6 @@ var kArtShapeHolderCode = 'Item  { \n\
                                         visible: doShadow; \n\
                                         z: 1; \n\
                                     } \n
-                                    BrightnessContrast { \n\
-                                        anchors.fill: artShapeShape; \n\
-                                        source: artShapeShape; \n\
-                                        brightness: doShadow && root.pressed ? 0.25 : 0; \n\
-                                        Behavior on brightness { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } } \n\
-                                    } \n\
                                 } \n\
                             } \n\
                         }\n';
@@ -718,7 +712,6 @@ function cardString(template, components) {
 
 function createCardComponent(parent, template, components) {
     var imports = 'import QtQuick 2.2; \n\
-                   import QtGraphicalEffects 1.0; \n\
                    import Ubuntu.Components 1.1; \n\
                    import Ubuntu.Settings.Components 0.1; \n\
                    import Dash 0.1;\n\
