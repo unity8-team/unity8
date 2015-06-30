@@ -267,7 +267,7 @@ Item {
         // we don't trigger both, the dragArea and the hoverArea
         MultiPointTouchArea {
             anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
-            width: units.dp(1)
+            width: units.dp(1) + root.shellBorderWidth
             mouseEnabled: false
             enabled: parent.enabled
         }
