@@ -352,6 +352,11 @@ Item {
                 property: "beingResized"
                 value: shell.beingResized
             }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "shellBorderWidth"
+                value: shell.x
+            }
         }
 
         Tutorial {
@@ -588,6 +593,7 @@ Item {
                     && !greeter.hasLockedApp
             inverted: shell.usageScenario !== "desktop"
             shadeBackground: !tutorial.running
+            shellBorderWidth: shell.x
 
             onShowDashHome: showHome()
             onDash: showDash()

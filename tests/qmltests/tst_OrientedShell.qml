@@ -60,7 +60,7 @@ Rectangle {
             name: "mako"
             PropertyChanges {
                 target: orientedShellLoader
-                width: units.gu(40)
+                width: units.gu(43)
                 height: units.gu(71)
             }
             PropertyChanges {

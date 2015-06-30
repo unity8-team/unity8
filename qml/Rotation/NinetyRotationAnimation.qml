@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.3
+import Ubuntu.Components 1.2
 
 SequentialAnimation {
     id: root
@@ -33,9 +34,11 @@ SequentialAnimation {
         windowScreenshot.take();
         windowScreenshot.visible = true;
         shell.orientationAngle = root.toAngle;
-        shell.x = 0;
-        shell.width = flipShellDimensions ? orientedShell.height : orientedShell.width;
-        shell.height = flipShellDimensions ? orientedShell.width : orientedShell.height;
+        var toPortrait = orientedShell.angleToOrientation(toAngle) == Qt.PortraitOrientation;
+        var usedWidth = toPortrait ? units.gu(orientedShell.usedGuCount) : orientedShell.width
+        shell.x = toPortrait ? (orientedShell.width - usedWidth) / 2 : 0;
+        shell.width = flipShellDimensions ? orientedShell.height : (toPortrait ? usedWidth : orientedShell.width);
+        shell.height = flipShellDimensions ? (toPortrait ? usedWidth : orientedShell.width) : orientedShell.height;
         shell.transformOriginX = orientedShell.width / 2;
         shell.transformOriginY = orientedShell.width / 2;
         shell.updateFocusedAppOrientation();

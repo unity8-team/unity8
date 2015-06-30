@@ -42,6 +42,7 @@ Rectangle {
     property int nativeOrientation
     property real nativeWidth
     property real nativeHeight
+    property int shellBorderWidth: 0
     property bool beingResized: false
     onBeingResizedChanged: {
         if (beingResized) {
@@ -561,7 +562,7 @@ Rectangle {
         direction: Direction.Leftwards
         enabled: (spreadView.phase != 2 && root.spreadEnabled) || dragging
 
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; rightMargin: -root.dragAreaOverlap }
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; rightMargin: -root.dragAreaOverlap - root.shellBorderWidth }
         width: root.dragAreaWidth
 
         property var gesturePoints: new Array()
@@ -570,7 +571,7 @@ Rectangle {
             if (dragging) {
                 // Gesture recognized. Let's move the spreadView with the finger
                 var dragX = Math.min(touchX + width, width); // Prevent dragging rightwards
-                dragX = -dragX + spreadDragArea.width - spreadView.shift;
+                var dragX = -dragX + spreadDragArea.width - spreadView.shift;
                 // Don't allow dragging further than the animation crossing with phase2's animation
                 var maxMovement =  spreadView.width * spreadView.positionMarker4 - spreadView.shift;
 

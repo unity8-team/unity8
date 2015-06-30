@@ -30,6 +30,7 @@ Item {
 
     property int panelWidth: units.gu(8)
     property int dragAreaWidth: units.gu(1)
+    property int shellBorderWidth: 0
     property int minimizeDistance: units.gu(26)
     property real progress: dragArea.dragging && dragArea.touchX > panelWidth ?
                                 (width * (dragArea.touchX-panelWidth) / (width - panelWidth)) : 0
@@ -279,7 +280,7 @@ Item {
         direction: Direction.Rightwards
 
         enabled: root.available
-        x: -root.x // so if launcher is adjusted relative to screen, we stay put (like tutorial does when teasing)
+        x: -root.x - root.shellBorderWidth // so if launcher is adjusted relative to screen, we stay put (like tutorial does when teasing)
         width: root.dragAreaWidth
         height: root.height
 

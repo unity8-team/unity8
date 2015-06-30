@@ -20,6 +20,7 @@ import Unity.Session 0.1
 import GSettings 1.0
 import "Components"
 import "Rotation"
+import Ubuntu.Components 1.2
 
 Rectangle {
     id: root
@@ -27,6 +28,9 @@ Rectangle {
 
     implicitWidth: units.gu(40)
     implicitHeight: units.gu(71)
+
+    property real screenGuCount: root.width / units.gu(1)
+    property real usedGuCount: screenGuCount < 50 ? 40 : screenGuCount < 90 ? 50 : 90
 
     // NB: native and primary orientations here don't map exactly to their QScreen counterparts
     readonly property int nativeOrientation: width > height ? Qt.LandscapeOrientation : Qt.PortraitOrientation
@@ -128,8 +132,9 @@ Rectangle {
     Shell {
         id: shell
         objectName: "shell"
-        width: root.width
+        width: orientation == Qt.PortraitOrientation ? units.gu(root.usedGuCount) : root.width
         height: root.height
+        x: (root.width - width) / 2
         orientation: root.angleToOrientation(orientationAngle)
         primaryOrientation: root.primaryOrientation
         nativeOrientation: root.nativeOrientation
@@ -157,6 +162,20 @@ Rectangle {
         transform: Rotation {
             origin.x: shell.transformOriginX; origin.y: shell.transformOriginY; axis { x: 0; y: 0; z: 1 }
             angle: shell.transformRotationAngle
+        }
+
+        Rectangle {
+            id: leftBorder
+            color: "black"
+            anchors { top: shell.top; bottom: shell.bottom; right: shell.left }
+            width: shell.x
+            z: 10000
+        }
+        Rectangle {
+            id: rightBorder
+            color: "black"
+            anchors { top: shell.top; bottom: shell.bottom; left: shell.right }
+            width: shell.x
         }
     }
 

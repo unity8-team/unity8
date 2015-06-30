@@ -25,12 +25,15 @@ ScriptAction {
         shell.orientationAngle = info.requestedOrientationAngle;
         shell.transformRotationAngle = info.requestedOrientationAngle;
 
+        var toPortrait = orientedShell.angleToOrientation(info.requestedOrientationAngle) == Qt.PortraitOrientation;
+        var usedWidth = toPortrait ? units.gu(orientedShell.usedGuCount) : orientedShell.width
+
         // Making bindings as orientedShell's dimensions might wiggle during startup.
         if (info.requestedOrientationAngle === 90 || info.requestedOrientationAngle === 270) {
             shell.width = Qt.binding(function() { return orientedShell.height; });
             shell.height = Qt.binding(function() { return orientedShell.width; });
         } else {
-            shell.width = Qt.binding(function() { return orientedShell.width; });
+            shell.width = Qt.binding(function() { return usedWidth; });
             shell.height = Qt.binding(function() { return orientedShell.height; });
         }
 
