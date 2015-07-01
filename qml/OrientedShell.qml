@@ -140,6 +140,7 @@ Rectangle {
         nativeOrientation: root.nativeOrientation
         nativeWidth: root.width
         nativeHeight: root.height
+        borderWidth: Math.max(0, shell.x)
         mode: applicationArguments.mode
 
         // TODO: Factor in the connected input devices (eg: physical keyboard, mouse, touchscreen),
@@ -163,20 +164,20 @@ Rectangle {
             origin.x: shell.transformOriginX; origin.y: shell.transformOriginY; axis { x: 0; y: 0; z: 1 }
             angle: shell.transformRotationAngle
         }
+    }
 
-        Rectangle {
-            id: leftBorder
-            color: "black"
-            anchors { top: shell.top; bottom: shell.bottom; right: shell.left }
-            width: shell.x
-            z: 10000
-        }
-        Rectangle {
-            id: rightBorder
-            color: "black"
-            anchors { top: shell.top; bottom: shell.bottom; left: shell.right }
-            width: shell.x
-        }
+    Rectangle {
+        id: leftBorder
+        color: "black"
+        anchors { top: root.top; bottom: root.bottom; left: root.left }
+        width: shell.x
+        z: 10000
+    }
+    Rectangle {
+        id: rightBorder
+        color: "black"
+        anchors { top: root.top; bottom: root.bottom; right: root.right }
+        width: shell.x
     }
 
     Rectangle {

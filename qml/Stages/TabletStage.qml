@@ -42,6 +42,7 @@ Rectangle {
     property int nativeOrientation
     property real nativeWidth
     property real nativeHeight
+    property int shellBorderWidth: 0
     function updateFocusedAppOrientation() {
         var mainStageAppIndex = priv.indexOf(priv.mainStageAppId);
         if (mainStageAppIndex >= 0 && mainStageAppIndex < spreadRepeater.count) {
@@ -730,10 +731,15 @@ Rectangle {
         enabled: spreadDragArea.dragging
     }
 
+    MouseArea {
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; rightMargin: -root.shellBorderWidth }
+        width: root.shellBorderWidth
+    }
+
     DirectionalDragArea {
         id: spreadDragArea
         objectName: "spreadDragArea"
-        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom; rightMargin: -root.shellBorderWidth }
         width: root.dragAreaWidth
         direction: Direction.Leftwards
         enabled: (spreadView.phase != 2 && root.spreadEnabled) || dragging

@@ -52,6 +52,7 @@ Item {
     property int nativeOrientation
     property real nativeWidth
     property real nativeHeight
+    property int borderWidth: 0
     property alias indicatorAreaShowProgress: panel.indicatorAreaShowProgress
     property bool beingResized
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
@@ -355,7 +356,7 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "shellBorderWidth"
-                value: shell.x
+                value: shell.borderWidth
             }
         }
 
@@ -593,7 +594,7 @@ Item {
                     && !greeter.hasLockedApp
             inverted: shell.usageScenario !== "desktop"
             shadeBackground: !tutorial.running
-            shellBorderWidth: shell.x
+            shellBorderWidth: shell.borderWidth
 
             onShowDashHome: showHome()
             onDash: showDash()
