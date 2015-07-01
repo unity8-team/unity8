@@ -52,6 +52,8 @@ Showable {
     property int failedLoginsDelayAttempts: 7 // number of failed logins
     property real failedLoginsDelayMinutes: 5 // minutes of forced waiting
 
+    property int shellBorderWidth: 0
+
     readonly property bool animating: loader.item ? loader.item.animating : false
 
     signal tease()
@@ -313,6 +315,12 @@ Showable {
             target: loader.item
             property: "infographicModel"
             value: LightDM.Infographic
+        }
+
+        Binding {
+            target: loader.item
+            property: "shellBorderWidth"
+            value: root.shellBorderWidth
         }
     }
 

@@ -442,6 +442,7 @@ Item {
             launcherOffset: launcher.progress
             forcedUnlock: tutorial.running
             background: shell.background
+            shellBorderWidth: shell.borderWidth
 
             // avoid overlapping with Launcher's edge drag area
             // FIXME: Fix TouchRegistry & friends and remove this workaround

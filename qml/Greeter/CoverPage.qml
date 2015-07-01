@@ -23,6 +23,7 @@ Showable {
     id: root
 
     property real dragHandleLeftMargin
+    property int shellBorderWidth: 0
     property real launcherOffset
     property alias background: greeterBackground.source
     property real backgroundTopMargin
@@ -132,6 +133,7 @@ Showable {
         objectName: "coverPageDragHandle"
         anchors.fill: parent
         anchors.leftMargin: root.dragHandleLeftMargin
+        anchors.rightMargin: -root.shellBorderWidth
         enabled: root.draggable
         direction: Direction.Horizontal
 

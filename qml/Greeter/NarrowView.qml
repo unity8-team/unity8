@@ -22,6 +22,7 @@ FocusScope {
     id: root
 
     property alias dragHandleLeftMargin: coverPage.dragHandleLeftMargin
+    property alias shellBorderWidth: coverPage.shellBorderWidth
     property alias launcherOffset: coverPage.launcherOffset
     property int currentIndex // unused
     property alias delayMinutes: lockscreen.delayMinutes
