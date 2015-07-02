@@ -34,7 +34,7 @@ SequentialAnimation {
         windowScreenshot.take();
         windowScreenshot.visible = true;
         shell.orientationAngle = root.toAngle;
-        var toPortrait = orientedShell.angleToOrientation(toAngle) == Qt.PortraitOrientation;
+        var toPortrait = orientedShell.nativeOrientation == Qt.PortraitOrientation && orientedShell.angleToOrientation(toAngle) == Qt.PortraitOrientation;
         var usedWidth = toPortrait ? units.gu(orientedShell.usedGuCount) : orientedShell.width
         shell.x = toPortrait ? (orientedShell.width - usedWidth) / 2 : 0;
         shell.width = flipShellDimensions ? orientedShell.height : (toPortrait ? usedWidth : orientedShell.width);

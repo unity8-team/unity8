@@ -168,14 +168,14 @@ Rectangle {
 
     Rectangle {
         id: leftBorder
-        color: "black"
+        color: "khaki"
         anchors { top: root.top; bottom: root.bottom; left: root.left }
         width: shell.x
         z: 10000
     }
     Rectangle {
         id: rightBorder
-        color: "black"
+        color: "khaki"
         anchors { top: root.top; bottom: root.bottom; right: root.right }
         width: shell.x
     }
