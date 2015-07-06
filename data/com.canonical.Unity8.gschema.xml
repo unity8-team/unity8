@@ -7,7 +7,7 @@
 
   <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
     <key enum="usage-mode-enum" name="usage-mode">
-      <default>"Automatic"</default>
+      <default>"Staged"</default>
       <summary>The usage mode.</summary>
       <description>The usage mode chosen will affect the Window Management behaviour.</description>
     </key>
