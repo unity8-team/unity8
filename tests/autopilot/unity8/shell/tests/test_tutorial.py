@@ -24,7 +24,7 @@ from unity8.shell import (
     fixture_setup,
     tests
 )
-from unity8.shell.emulators.tutorial import TutorialPage
+from unity8.tutorial import TutorialPage
 
 
 class TutorialTestCase(tests.UnityTestCase):
