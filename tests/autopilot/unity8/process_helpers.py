@@ -1,7 +1,7 @@
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 #
 # Unity Autopilot Utilities
-# Copyright (C) 2013, 2014 Canonical
+# Copyright (C) 2013, 2014, 2015 Canonical
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,20 +19,12 @@
 
 import logging
 import subprocess
-import sys
-import dbus
 
-# This has to work in both python 3 (ap 1.5) and py2 (ap legacy 1.4.1) so we
-# pick the correct location in each case. Remove the py2 branch once we no
-# longer need to support python 2.
-if sys.version >= '3':
-    from autopilot.exceptions import ProcessSearchError
-else:
-    from autopilot.introspection import ProcessSearchError
+import ubuntuuitoolkit
 from autopilot.introspection import get_proxy_object_for_existing_process
 
-from unity8.shell import emulators
-from unity8.shell.emulators import main_window as main_window_emulator
+from unity8 import greeter
+
 
 logger = logging.getLogger(__name__)
 
@@ -45,71 +37,20 @@ class CannotAccessUnity(Exception):
     pass
 
 
-def unlock_unity(unity_proxy_obj=None):
+def unlock_unity():
     """Helper function that attempts to unlock the unity greeter.
 
-    If unity_proxy_object is None create a proxy object by querying for the
-    running unity process.
-    Otherwise re-use the passed proxy object.
+    """
+    greeter.wait_for_greeter()
+    greeter.hide_greeter_with_dbus()
 
-    :raises RuntimeError: if the greeter attempts and fails to be unlocked.
 
-    :raises RuntimeWarning: when the greeter cannot be found because it is
-      already unlocked.
-    :raises CannotAccessUnity: if unity is not introspectable or cannot be
-      found on dbus.
-    :raises CannotAccessUnity: if unity's upstart status is not "start" or the
-      upstart job cannot be found at all.
+def lock_unity():
+    """Helper function that attempts to lock unity greeter.
 
     """
-    if unity_proxy_obj is None:
-        try:
-            pid = _get_unity_pid()
-            unity = _get_unity_proxy_object(pid)
-            main_window = unity.select_single(main_window_emulator.QQuickView)
-        except ProcessSearchError as e:
-            raise CannotAccessUnity(
-                "Cannot introspect unity, make sure that it has been started "
-                "with testability. Perhaps use the function "
-                "'restart_unity_with_testability' this module provides."
-                "(%s)"
-                % str(e)
-            )
-    else:
-        main_window = unity_proxy_obj.select_single(
-            main_window_emulator.QQuickView)
-
-    greeter = main_window.get_greeter()
-    if greeter.created is False:
-        raise RuntimeWarning("Greeter appears to be already unlocked.")
-
-    bus = dbus.SessionBus()
-    dbus_proxy = bus.get_object("com.canonical.UnityGreeter", "/")
-    try:
-        dbus_proxy.HideGreeter()
-    except dbus.DBusException:
-        logger.info("Failed to unlock greeter")
-        raise
-    else:
-        greeter.created.wait_for(False)
-        logger.info("Greeter unlocked, continuing.")
-
-
-def lock_unity(unity_proxy_obj=None):
-    """Helper function that attempts to lock the unity greeter."""
-    import evdev
-    import time
-    uinput = evdev.UInput(name='unity8-autopilot-power-button',
-                          devnode='/dev/autopilot-uinput')
-    # One press and release to turn screen off (locking unity)
-    uinput.write(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_POWER, 1)
-    uinput.write(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_POWER, 0)
-    uinput.syn()
-    time.sleep(1)
-    # And another press and release to turn screen back on
-    uinput.write(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_POWER, 1)
-    uinput.write(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_POWER, 0)
-    uinput.syn()
+    greeter.show_greeter_with_dbus()
+    greeter.wait_for_greeter()
 
 
 def restart_unity_with_testability(*args):
@@ -245,5 +186,5 @@ def _get_unity_pid():
 def _get_unity_proxy_object(pid):
     return get_proxy_object_for_existing_process(
         pid=pid,
-        emulator_base=emulators.UnityEmulatorBase,
+        emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase
     )

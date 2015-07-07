@@ -28,26 +28,39 @@ Showable {
 
     visible: shown
 
+    Connections {
+        target: UriHandler
+        onOpened: {
+            backToDashContent()
+            dashContent.currentScope.performQuery(uris[0])
+        }
+    }
+
     DashCommunicatorService {
         objectName: "dashCommunicatorService"
         onSetCurrentScopeRequested: {
             if (!isSwipe || !window.active || bottomEdgeController.progress != 0 || scopeItem.scope || dashContent.subPageShown) {
                 if (bottomEdgeController.progress != 0 && window.active) animate = false;
                 dashContent.setCurrentScopeAtIndex(index, animate, isSwipe)
-                // Close dash overview and nested temp scopes in it
-                if (bottomEdgeController.progress != 0) {
-                    bottomEdgeController.enableAnimation = window.active;
-                    bottomEdgeController.progress = 0;
-                }
-                // Close normal temp scopes (e.g. App Store)
-                if (scopeItem.scope) {
-                    scopeItem.backClicked();
-                }
-                // Close previews
-                if (dashContent.subPageShown) {
-                    dashContent.closePreview();
-                }
+                backToDashContent()
             }
+        }
+    }
+
+    function backToDashContent()
+    {
+        // Close dash overview and nested temp scopes in it
+        if (bottomEdgeController.progress != 0) {
+            bottomEdgeController.enableAnimation = window.active;
+            bottomEdgeController.progress = 0;
+        }
+        // Close normal temp scopes (e.g. App Store)
+        if (scopeItem.scope) {
+            scopeItem.backClicked();
+        }
+        // Close previews
+        if (dashContent.subPageShown) {
+            dashContent.closePreview();
         }
     }
 
@@ -140,7 +153,7 @@ Showable {
         // (as expected) but would also cause the dash content flickable to move a bit, because
         // that flickable was getting the touch events while overviewDragHandle was still undecided
         // about whether that touch was indeed performing a directional drag gesture.
-        forceNonInteractive: overviewDragHandle.status != DirectionalDragArea.WaitingForTouch
+        forceNonInteractive: overviewDragHandle.dragging
 
         enabled: bottomEdgeController.progress == 0
     }
@@ -174,11 +187,16 @@ Showable {
         onRequestFavoriteMoveTo: {
             scopes.moveFavoriteTo(scopeId, index);
         }
+        onRequestRestore: {
+            bottomEdgeController.enableAnimation = true;
+            bottomEdgeController.progress = 0;
+            dash.setCurrentScope(scopeId, false, false);
+        }
 
         Binding {
             target: scopesList.scope
             property: "isActive"
-            value: bottomEdgeController.progress === 1
+            value: bottomEdgeController.progress === 1 && (Qt.application.state == Qt.ApplicationActive)
         }
 
         Connections {
@@ -317,7 +335,7 @@ Showable {
         }
     }
 
-    EdgeDragArea {
+    DirectionalDragArea {
         id: overviewDragHandle
         objectName: "overviewDragHandle"
         z: 1
@@ -333,21 +351,14 @@ Showable {
         height: units.gu(2)
 
         onSceneDistanceChanged: {
-            if (status == DirectionalDragArea.Recognized) {
+            if (dragging) {
                 bottomEdgeController.enableAnimation = false;
                 bottomEdgeController.progress = Math.max(0, Math.min(1, sceneDistance / fullMovement));
             }
         }
 
-        property int previousStatus: -1
-        property int currentStatus: DirectionalDragArea.WaitingForTouch
-
-        onStatusChanged: {
-            previousStatus = currentStatus;
-            currentStatus = status;
-
-            if (status == DirectionalDragArea.WaitingForTouch &&
-                    previousStatus == DirectionalDragArea.Recognized) {
+        onDraggingChanged: {
+            if (!dragging) {
                 bottomEdgeController.enableAnimation = true;
                 bottomEdgeController.progress = (bottomEdgeController.progress > 0.2)  ? 1 : 0;
             }

@@ -39,13 +39,13 @@ class MockApp: public unity::shell::application::ApplicationInfoInterface
     Q_OBJECT
 public:
     MockApp(const QString &appId, QObject *parent = 0): ApplicationInfoInterface(appId, parent), m_appId(appId), m_focused(false) { }
-    QString appId() const { return m_appId; }
-    QString name() const { return "mock"; }
-    QString comment() const { return "this is a mock"; }
-    QUrl icon() const { return QUrl(); }
-    ApplicationInfoInterface::Stage stage() const { return ApplicationInfoInterface::MainStage; }
-    ApplicationInfoInterface::State state() const { return ApplicationInfoInterface::Running; }
-    bool focused() const { return m_focused; }
+    QString appId() const override { return m_appId; }
+    QString name() const override { return "mock"; }
+    QString comment() const override { return "this is a mock"; }
+    QUrl icon() const override { return QUrl(); }
+    ApplicationInfoInterface::Stage stage() const override { return ApplicationInfoInterface::MainStage; }
+    ApplicationInfoInterface::State state() const override { return ApplicationInfoInterface::Running; }
+    bool focused() const override { return m_focused; }
     QString splashTitle() const override { return QString(); }
     QUrl splashImage() const override { return QUrl(); }
     bool splashShowHeader() const override { return true; }
@@ -68,16 +68,16 @@ class MockAppManager: public unity::shell::application::ApplicationManagerInterf
     Q_OBJECT
 public:
     MockAppManager(QObject *parent = 0): ApplicationManagerInterface(parent) {}
-    int rowCount(const QModelIndex &) const { return m_list.count(); }
-    QVariant data(const QModelIndex &, int ) const { return QVariant(); }
-    QString focusedApplicationId() const {
+    int rowCount(const QModelIndex &) const override { return m_list.count(); }
+    QVariant data(const QModelIndex &, int ) const override { return QVariant(); }
+    QString focusedApplicationId() const override {
         Q_FOREACH(MockApp *app, m_list) {
             if (app->focused()) return app->appId();
         }
         return QString();
     }
-    unity::shell::application::ApplicationInfoInterface *get(int index) const { return m_list.at(index); }
-    unity::shell::application::ApplicationInfoInterface *findApplication(const QString &appId) const {
+    unity::shell::application::ApplicationInfoInterface *get(int index) const override { return m_list.at(index); }
+    unity::shell::application::ApplicationInfoInterface *findApplication(const QString &appId) const override {
         Q_FOREACH(MockApp* app, m_list) {
             if (app->appId() == appId) {
                 return app;
@@ -85,8 +85,8 @@ public:
         }
         return nullptr;
     }
-    unity::shell::application::ApplicationInfoInterface *startApplication(const QString &, const QStringList &) { return nullptr; }
-    bool stopApplication(const QString &appId) {
+    unity::shell::application::ApplicationInfoInterface *startApplication(const QString &, const QStringList &) override { return nullptr; }
+    bool stopApplication(const QString &appId) override {
         Q_FOREACH(MockApp* app, m_list) {
             if (app->appId() == appId) {
                 removeApplication(m_list.indexOf(app));
@@ -95,7 +95,7 @@ public:
         }
         return false;
     }
-    bool focusApplication(const QString &appId) {
+    bool focusApplication(const QString &appId) override {
         Q_FOREACH(MockApp* app, m_list) {
             app->setFocused(app->appId() == appId);
         }
@@ -103,7 +103,7 @@ public:
         return true;
     }
 
-    void unfocusCurrentApplication() { }
+    void unfocusCurrentApplication() override { }
 
     void addApplication(MockApp *app) {
         beginInsertRows(QModelIndex(), count(), count());
@@ -115,11 +115,11 @@ public:
         m_list.takeAt(index)->deleteLater();
         endRemoveRows();
     }
-    bool requestFocusApplication(const QString &appId) { Q_UNUSED(appId); return true; }
-    bool suspended() const { return false; }
-    void setSuspended(bool) {}
-    bool forceDashActive() const { return false; }
-    void setForceDashActive(bool) {}
+    bool requestFocusApplication(const QString &appId) override { Q_UNUSED(appId); return true; }
+    bool suspended() const override { return false; }
+    void setSuspended(bool) override {}
+    bool forceDashActive() const override { return false; }
+    void setForceDashActive(bool) override {}
 
 private:
     QList<MockApp*> m_list;
@@ -400,6 +400,63 @@ private Q_SLOTS:
         // And make sure values have changed there as well
         QCOMPARE(launcherModel->get(index)->countVisible(), true);
         QCOMPARE(launcherModel->get(index)->count(), 55);
+    }
+
+    void testCountEmblemAddsRemovesItem_data() {
+        QTest::addColumn<bool>("isPinned");
+        QTest::addColumn<bool>("isRunning");
+        QTest::addColumn<bool>("startWhenVisible");
+        QTest::newRow("not pinned, not running") << false << false << false;
+        QTest::newRow("pinned, not running") << true << false << false;
+        QTest::newRow("not pinned, not running, starting from notification") << false << false << true;
+        QTest::newRow("pinned, not running, starting from notification") << true << false << true;
+        QTest::newRow("not pinned, running") << false << true << false;
+        QTest::newRow("pinned, running") << true << true << false;
+    }
+
+    void testCountEmblemAddsRemovesItem() {
+        QFETCH(bool, isPinned);
+        QFETCH(bool, isRunning);
+        QFETCH(bool, startWhenVisible);
+
+        // Make sure item is here as expected after init() and that count is not visible
+        int index = launcherModel->findApplication("abs-icon");
+        QCOMPARE(index == -1, false);
+        QCOMPARE(launcherModel->get(index)->countVisible(), false);
+
+        // Pin if we need to
+        if (isPinned) {
+            launcherModel->pin("abs-icon");
+        }
+        QCOMPARE(launcherModel->get(0)->pinned(), isPinned);
+
+        // Stop it if we need to
+        if (!isRunning) {
+            appManager->stopApplication("abs-icon");
+        }
+        QCOMPARE(launcherModel->findApplication("abs-icon") >= 0, isRunning || isPinned);
+
+
+        // set the count emblem to visible
+        QDBusInterface interface("com.canonical.Unity.Launcher", "/com/canonical/Unity/Launcher/abs_2Dicon", "org.freedesktop.DBus.Properties");
+        interface.call("Set", "com.canonical.Unity.Launcher.Item", "count", QVariant::fromValue(QDBusVariant(55)));
+        interface.call("Set", "com.canonical.Unity.Launcher.Item", "countVisible", QVariant::fromValue(QDBusVariant(true)));
+
+        // Make sure item is here and that count is visible
+        index = launcherModel->findApplication("abs-icon");
+        QCOMPARE(index == -1, false);
+        QCOMPARE(launcherModel->get(index)->countVisible(), true);
+
+        if (!isRunning && startWhenVisible) {
+            appManager->addApplication(new MockApp("abs-icon"));
+        }
+
+        // Hide count emblem again
+        interface.call("Set", "com.canonical.Unity.Launcher.Item", "countVisible", QVariant::fromValue(QDBusVariant(false)));
+
+        // Make sure item is shown/hidden as expected
+        index = launcherModel->findApplication("abs-icon");
+        QCOMPARE(index == -1, !isRunning && !isPinned && !startWhenVisible);
     }
 
     void testRefreshAfterDeletedDesktopFiles_data() {

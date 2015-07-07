@@ -973,9 +973,15 @@ private Q_SLOTS:
         QCOMPARE(lvwph->contentY(), 1258.);
         QCOMPARE(lvwph->m_headerItemShownHeight, 0.);
 
-        changeContentY(-1700);
-
+        changeContentY(-800);
+        QTRY_COMPARE(lvwph->m_visibleItems.count(), 5);
+        changeContentY(-400);
+        QTRY_COMPARE(lvwph->m_visibleItems.count(), 8);
+        changeContentY(-200);
+        QTRY_COMPARE(lvwph->m_visibleItems.count(), 10);
+        changeContentY(-300);
         QTRY_COMPARE(lvwph->m_visibleItems.count(), 12);
+
         QCOMPARE(lvwph->m_firstVisibleIndex, 0);
         verifyItem(0, -308., 75., true);
         verifyItem(1, -233., 75., true);
@@ -1936,6 +1942,17 @@ private Q_SLOTS:
         QCOMPARE(lvwph->m_headerItem->height(), 50.);
         QCOMPARE(lvwph->contentY(), 0.);
         QCOMPARE(lvwph->m_headerItemShownHeight, 0.);
+    }
+
+    void testFirstVisibleIndexRemove()
+    {
+        changeContentY(520);
+        QTRY_COMPARE(lvwph->m_visibleItems.count(), 4);
+        QCOMPARE(lvwph->m_firstVisibleIndex, 1);
+
+        // Remove 0 and 1, the previously visible index 2 will be 0 and visible
+        QMetaObject::invokeMethod(model, "removeItems", Q_ARG(QVariant, 0), Q_ARG(QVariant, 2));
+        QCOMPARE(lvwph->m_firstVisibleIndex, 0);
     }
 
 private:

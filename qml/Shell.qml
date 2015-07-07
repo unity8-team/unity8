@@ -23,6 +23,7 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Gestures 0.1
 import Ubuntu.Telephony 0.1 as Telephony
+import Unity.Connectivity 0.1
 import Unity.Launcher 0.1
 import Utils 0.1
 import LightDM 0.1 as LightDM
@@ -54,6 +55,7 @@ Item {
     property alias indicatorAreaShowProgress: panel.indicatorAreaShowProgress
     property bool beingResized
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
+    property string mode: "full-greeter"
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
     }
@@ -67,7 +69,9 @@ Item {
 
     readonly property bool orientationChangesEnabled: panel.indicators.fullyClosed
             && (applicationsDisplayLoader.item && applicationsDisplayLoader.item.orientationChangesEnabled)
-            && !greeter.animating
+            && (!greeter || !greeter.animating)
+
+    readonly property bool showingGreeter: greeter && greeter.shown
 
     property bool startingUp: true
     Timer { id: finishStartUpTimer; interval: 500; onTriggered: startingUp = false }
@@ -76,7 +80,7 @@ Item {
         if (startingUp) {
             // Ensure we don't rotate during start up
             return Qt.PrimaryOrientation;
-        } else if (greeter.shown) {
+        } else if (greeter && greeter.shown) {
             return Qt.PrimaryOrientation;
         } else if (mainApp) {
             return mainApp.supportedOrientations;
@@ -98,13 +102,14 @@ Item {
 
     // Disable everything while greeter is waiting, so that the user can't swipe
     // the greeter or launcher until we know whether the session is locked.
-    enabled: !greeter.waiting
+    enabled: greeter && !greeter.waiting
 
     property real edgeSize: units.gu(2)
     property url defaultBackground: Qt.resolvedUrl(shell.width >= units.gu(60) ? "graphics/tablet_background.jpg" : "graphics/phone_background.jpg")
     property url background: asImageTester.status == Image.Ready ? asImageTester.source
                              : gsImageTester.status == Image.Ready ? gsImageTester.source : defaultBackground
-    readonly property real panelHeight: panel.panelHeight
+
+    readonly property alias greeter: greeterLoader.item
 
     function activateApplication(appId) {
         if (ApplicationManager.findApplication(appId)) {
@@ -135,7 +140,6 @@ Item {
 
     GSettings {
         id: backgroundSettings
-        objectName: "backgroundSettings"
         schema.id: "org.gnome.desktop.background"
     }
 
@@ -198,12 +202,15 @@ Item {
         Keys.onReleased: physicalKeysMapper.onKeyReleased(event);
     }
 
+    HomeKeyWatcher {
+        onActivated: { launcher.fadeOut(); shell.showHome(); }
+    }
+
     Item {
         id: stages
         objectName: "stages"
         width: parent.width
         height: parent.height
-        visible: !ApplicationManager.empty
 
         Connections {
             target: ApplicationManager
@@ -213,7 +220,7 @@ Item {
             onFocusedApplicationIdChanged: {
                 var appId = ApplicationManager.focusedApplicationId;
 
-                if (tutorial.running && appId != "unity8-dash") {
+                if (tutorial.running && appId != "" && appId != "unity8-dash") {
                     // If this happens on first boot, we may be in edge
                     // tutorial or wizard while receiving a call.  But a call
                     // is more important than wizard so just bail out of those.
@@ -255,7 +262,9 @@ Item {
                                            ? "phone"
                                            : shell.usageScenario
             source: {
-                if (applicationsDisplayLoader.usageScenario === "phone") {
+                if(shell.mode === "greeter") {
+                    return "Stages/ShimStage.qml"
+                } else if (applicationsDisplayLoader.usageScenario === "phone") {
                     return "Stages/PhoneStage.qml";
                 } else if (applicationsDisplayLoader.usageScenario === "tablet") {
                     return "Stages/TabletStage.qml";
@@ -265,7 +274,7 @@ Item {
             }
 
             property bool interactive: tutorial.spreadEnabled
-                    && !greeter.shown
+                    && (!greeter || !greeter.shown)
                     && panel.indicators.fullyClosed
                     && launcher.progress == 0
                     && !notifications.useModal
@@ -296,12 +305,12 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "spreadEnabled"
-                value: tutorial.spreadEnabled && !greeter.hasLockedApp
+                value: tutorial.spreadEnabled && (!greeter || !greeter.hasLockedApp)
             }
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "inverseProgress"
-                value: greeter.locked ? 0 : launcher.progress
+                value: greeter && greeter.locked ? 0 : launcher.progress
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -344,6 +353,31 @@ Item {
                 value: shell.beingResized
             }
         }
+
+        Tutorial {
+            id: tutorial
+            objectName: "tutorial"
+            anchors.fill: parent
+            active: AccountsService.demoEdges
+            paused: LightDM.Greeter.active
+            launcher: launcher
+            panel: panel
+            edgeSize: shell.edgeSize
+
+            // EdgeDragAreas don't work with mice.  So to avoid trapping the user,
+            // we'll tell the tutorial to avoid using them on the Desktop.  The
+            // Desktop doesn't use the same spread design anyway.  The tutorial is
+            // all a bit of a placeholder on non-phone form factors right now.
+            // When the design team gives us more guidance, we can do something
+            // more clever here.
+            // TODO: use DeviceConfiguration instead of checking source
+            useEdgeDragArea: applicationsDisplayLoader.source != Qt.resolvedUrl("Stages/DesktopStage.qml")
+
+            onFinished: {
+                AccountsService.demoEdges = false;
+                active = false; // for immediate response / if AS is having problems
+            }
+        }
     }
 
     InputMethod {
@@ -382,50 +416,59 @@ Item {
         }
     }
 
-    Greeter {
-        id: greeter
-        objectName: "greeter"
-
-        hides: [launcher, panel.indicators]
-        tabletMode: shell.usageScenario !== "phone"
-        launcherOffset: launcher.progress
-        forcedUnlock: tutorial.running
-        background: shell.background
-
+    Loader {
+        id: greeterLoader
         anchors.fill: parent
         anchors.topMargin: panel.panelHeight
-
-        // avoid overlapping with Launcher's edge drag area
-        // FIXME: Fix TouchRegistry & friends and remove this workaround
-        //        Issue involves launcher's DDA getting disabled on a long
-        //        left-edge drag
-        dragHandleLeftMargin: launcher.available ? launcher.dragAreaWidth + 1 : 0
-
-        onSessionStarted: {
-            launcher.hide();
+        sourceComponent: shell.mode != "shell" ? integratedGreeter :
+            Qt.createComponent(Qt.resolvedUrl("Greeter/ShimGreeter.qml"));
+        onLoaded: {
+                item.objectName = "greeter"
         }
+    }
 
-        onTease: {
-            if (!tutorial.running) {
-                launcher.tease();
+    Component {
+        id: integratedGreeter
+        Greeter {
+
+            hides: [launcher, panel.indicators]
+            tabletMode: shell.usageScenario != "phone"
+            launcherOffset: launcher.progress
+            forcedUnlock: tutorial.running
+            background: shell.background
+
+            // avoid overlapping with Launcher's edge drag area
+            // FIXME: Fix TouchRegistry & friends and remove this workaround
+            //        Issue involves launcher's DDA getting disabled on a long
+            //        left-edge drag
+            dragHandleLeftMargin: launcher.available ? launcher.dragAreaWidth + 1 : 0
+
+            onSessionStarted: {
+                launcher.hide();
+            }
+
+            onTease: {
+                if (!tutorial.running) {
+                    launcher.tease();
+                }
+            }
+
+            onEmergencyCall: startLockedApp("dialer-app")
+
+            Binding {
+                target: ApplicationManager
+                property: "suspended"
+                value: greeter.shown
             }
         }
+    }
 
-        onEmergencyCall: startLockedApp("dialer-app")
-
-        Timer {
-            // See powerConnection for why this is useful
-            id: showGreeterDelayed
-            interval: 1
-            onTriggered: {
-                greeter.forceShow();
-            }
-        }
-
-        Binding {
-            target: ApplicationManager
-            property: "suspended"
-            value: greeter.shown
+    Timer {
+        // See powerConnection for why this is useful
+        id: showGreeterDelayed
+        interval: 1
+        onTriggered: {
+            greeter.forceShow();
         }
     }
 
@@ -505,8 +548,8 @@ Item {
             indicators {
                 hides: [launcher]
                 available: tutorial.panelEnabled
-                        && (!greeter.locked || AccountsService.enableIndicatorsWhileLocked)
-                        && !greeter.hasLockedApp
+                        && ((!greeter || !greeter.locked) || AccountsService.enableIndicatorsWhileLocked)
+                        && (!greeter || !greeter.hasLockedApp)
                 contentEnabled: tutorial.panelContentEnabled
                 width: parent.width > units.gu(60) ? units.gu(40) : parent.width
 
@@ -568,8 +611,18 @@ Item {
 
         Wizard {
             id: wizard
+            objectName: "wizard"
             anchors.fill: parent
             background: shell.background
+
+            function unlockWhenDoneWithWizard() {
+                if (!active) {
+                    Connectivity.unlockAllModems();
+                }
+            }
+
+            Component.onCompleted: unlockWhenDoneWithWizard()
+            onActiveChanged: unlockWhenDoneWithWizard()
         }
 
         Rectangle {
@@ -627,23 +680,6 @@ Item {
             shutdownFadeOutRectangle.enabled = true;
             shutdownFadeOutRectangle.visible = true;
             shutdownFadeOut.start();
-        }
-    }
-
-    Tutorial {
-        id: tutorial
-        objectName: "tutorial"
-        active: AccountsService.demoEdges
-        paused: LightDM.Greeter.active
-        launcher: launcher
-        panel: panel
-        stages: stages
-        overlay: overlay
-        edgeSize: shell.edgeSize
-
-        onFinished: {
-            AccountsService.demoEdges = false;
-            active = false; // for immediate response / if AS is having problems
         }
     }
 

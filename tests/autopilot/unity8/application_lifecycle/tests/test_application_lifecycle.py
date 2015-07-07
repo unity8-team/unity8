@@ -1,7 +1,7 @@
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 #
 # Unity Autopilot Test Suite
-# Copyright (C) 2013, 2014 Canonical
+# Copyright (C) 2013, 2014, 2015 Canonical
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,14 +19,11 @@
 
 """Tests for the application lifecycle."""
 
-from __future__ import absolute_import
-
 import logging
 import os
+import threading
 
-from autopilot.matchers import Eventually
 from autopilot.platform import model
-from testtools.matchers import Equals
 
 from unity8 import process_helpers
 from unity8.application_lifecycle import tests
@@ -40,7 +37,7 @@ class ApplicationLifecycleTests(tests.ApplicationLifeCycleTestCase):
     def setUp(self):
         if model() == 'Desktop':
             self.skipTest('Test cannot be run on the desktop.')
-        super(ApplicationLifecycleTests, self).setUp()
+        super().setUp()
 
     def swipe_screen_from_right(self):
         width = self.main_window.width
@@ -51,7 +48,7 @@ class ApplicationLifecycleTests(tests.ApplicationLifeCycleTestCase):
         end_y = start_y
 
         logger.info("Swiping screen from the right edge")
-        self.touch.drag(start_x, start_y, end_x, end_y)
+        self.main_window.pointing_device.drag(start_x, start_y, end_x, end_y)
 
     def launch_fake_app(self):
         _, desktop_file_path = self.create_test_application()
@@ -93,12 +90,22 @@ class ApplicationLifecycleTests(tests.ApplicationLifeCycleTestCase):
     def test_greeter_hides_on_app_open(self):
         """Greeter should hide when an app is opened"""
         process_helpers.lock_unity()
-        greeter = self.main_window.get_greeter()
-        self.assertThat(greeter.created, Eventually(Equals(True)))
 
+        # FIXME - this is because the device greeter uses a password.
+        # Need to be able to selectively enable mocks so that we can use the
+        # fake greeter.
+        def unlock_thread_worker(greeter):
+            greeter.wait_swiped_away()
+            process_helpers.unlock_unity()
+            greeter.created.wait_for(False)
+
+        greeter = self.main_window.get_greeter()
+        unlock_thread = threading.Thread(
+            target=unlock_thread_worker, args=(greeter,))
+        unlock_thread.start()
         application_name = self.launch_fake_app()
-        greeter.wait_swiped_away()
-        process_helpers.unlock_unity()
+        unlock_thread.join(10)
+
         self.assert_current_focused_application(application_name)
 
     def test_greeter_hides_on_app_focus(self):
@@ -110,10 +117,9 @@ class ApplicationLifecycleTests(tests.ApplicationLifeCycleTestCase):
         self.assert_current_focused_application('unity8-dash')
 
         process_helpers.lock_unity()
-        greeter = self.main_window.get_greeter()
-        self.assertThat(greeter.created, Eventually(Equals(True)))
 
         self.launch_upstart_application(application_name)
+        greeter = self.main_window.get_greeter()
         greeter.wait_swiped_away()
         process_helpers.unlock_unity()
         self.assert_current_focused_application(application_name)

@@ -27,23 +27,19 @@ class ApplicationArguments : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString deviceName READ deviceName CONSTANT)
+    Q_PROPERTY(QString mode READ mode CONSTANT)
 public:
     ApplicationArguments(QObject *parent = nullptr);
 
     void setDeviceName(QString deviceName) { m_deviceName = deviceName; }
-    void setSize(int width, int height) {
-        m_size.rwidth()  = width;
-        m_size.rheight() = height;
-    }
-
-    Q_INVOKABLE int width() const { return m_size.width(); }
-    Q_INVOKABLE int height() const { return m_size.height(); }
-
     QString deviceName() const { return m_deviceName; }
 
+    void setMode(QString mode) { m_mode = mode; }
+    QString mode() const { return m_mode; }
+
 private:
-    QSize m_size;
     QString m_deviceName;
+    QString m_mode;
 };
 
 #endif // APPLICATION_ARGUMENTS_H

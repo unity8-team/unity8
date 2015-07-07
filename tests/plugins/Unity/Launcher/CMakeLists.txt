@@ -1,10 +1,9 @@
 pkg_check_modules(GSETTINGS_QT REQUIRED gsettings-qt)
 pkg_check_modules(LAUNCHER_API REQUIRED unity-shell-launcher=6)
-pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=6)
 
 include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_SOURCE_DIR}/plugins/AccountsService
     ${CMAKE_SOURCE_DIR}/plugins/Unity/Launcher
     ${GSETTINGS_QT_INCLUDE_DIRS}
     ${libunity8-private_SOURCE_DIR}
@@ -15,11 +14,6 @@ add_definitions(-DSRCDIR="${CMAKE_CURRENT_SOURCE_DIR}")
 add_definitions(-DLAUNCHER_TESTING)
 
 ### LauncherModelTest
-set(testModelCommand dbus-test-runner --task ${CMAKE_CURRENT_BINARY_DIR}/launchermodeltestExec
-      --parameter -o --parameter ${CMAKE_BINARY_DIR}/launchermodeltest.xml,xunitxml
-      --parameter -o --parameter -,txt)
-add_test(NAME launchermodeltest COMMAND ${testModelCommand})
-add_custom_target(launchermodeltest ${testModelCommand})
 add_executable(launchermodeltestExec
     launchermodeltest.cpp
     gsettings.cpp
@@ -42,6 +36,11 @@ target_link_libraries(launchermodeltestExec
     ${GSETTINGS_QT_LDFLAGS}
     )
 qt5_use_modules(launchermodeltestExec Test Core DBus Xml Gui)
+
+add_unity8_unittest(LauncherModel dbus-test-runner
+    ARG_PREFIX "--parameter"
+    ARGS --task $<TARGET_FILE:launchermodeltestExec>
+)
 
 # copy .desktop files into build directory for shadow builds
 file(GLOB DESKTOP_FILES *.desktop)

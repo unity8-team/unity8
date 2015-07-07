@@ -21,7 +21,7 @@ import Ubuntu.Components 1.1
 import Unity.Application 0.1
 import "../Components/PanelState"
 
-Item {
+Rectangle {
     id: root
 
     anchors.fill: parent
@@ -78,7 +78,16 @@ Item {
         id: priv
 
         readonly property string focusedAppId: ApplicationManager.focusedApplicationId
-        readonly property var focusedAppDelegate: focusedAppId ? appRepeater.itemAt(indexOf(focusedAppId)) : null
+        readonly property var focusedAppDelegate: {
+            var index = indexOf(focusedAppId);
+            return index >= 0 && index < appRepeater.count ? appRepeater.itemAt(index) : null
+        }
+
+        onFocusedAppDelegateChanged: {
+            if (focusedAppDelegate) {
+                focusedAppDelegate.focus = true;
+            }
+        }
 
         function indexOf(appId) {
             for (var i = 0; i < ApplicationManager.count; i++) {
@@ -109,12 +118,18 @@ Item {
         id: appRepeater
         model: ApplicationManager
 
-        delegate: Item {
+        delegate: FocusScope {
             id: appDelegate
             z: ApplicationManager.count - index
             y: units.gu(3)
             width: units.gu(60)
             height: units.gu(50)
+
+            onFocusChanged: {
+                if (focus) {
+                    ApplicationManager.requestFocusApplication(model.appId);
+                }
+            }
 
             readonly property int minWidth: units.gu(10)
             readonly property int minHeight: units.gu(10)
@@ -145,13 +160,16 @@ Item {
                 resizeHandleWidth: units.gu(0.5)
                 windowId: model.appId // FIXME: Change this to point to windowId once we have such a thing
 
-                onPressed: ApplicationManager.requestFocusApplication(model.appId)
+                onPressed: appDelegate.focus = true;
             }
 
             DecoratedWindow {
+                id: decoratedWindow
+                objectName: "decoratedWindow_" + appId
                 anchors.fill: parent
                 application: ApplicationManager.get(index)
                 active: ApplicationManager.focusedApplicationId === model.appId
+                focus: true
 
                 onClose: ApplicationManager.stopApplication(model.appId)
                 onMaximize: appDelegate.state = (appDelegate.state == "maximized" ? "normal" : "maximized")

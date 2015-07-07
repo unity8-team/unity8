@@ -1,12 +1,9 @@
-pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=6)
-
 set(FakeUnityApplicationQml_SOURCES
     plugin.cpp
     ApplicationInfo.cpp
     ApplicationManager.cpp
     ApplicationScreenshotProvider.cpp
     ApplicationTestInterface.cpp
-    GenericApp.cpp
     MirSurfaceItem.cpp
     MirSurfaceItemModel.h
     ObjectListModel.h

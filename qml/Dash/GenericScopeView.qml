@@ -19,7 +19,6 @@ import Ubuntu.Components 1.1
 import Utils 0.1
 import Unity 0.2
 import Dash 0.1
-import Powerd 0.1
 import "../Components"
 import "../Components/ListItems" as ListItems
 
@@ -68,8 +67,8 @@ FocusScope {
         subPageLoader.closeSubPage()
     }
 
-    function itemClicked(index, result, item, itemModel, resultsModel, limitedCategoryItemCount) {
-        if (itemModel.uri.indexOf("scope://") === 0 || scope.id === "clickscope") {
+    function itemClicked(index, result, item, itemModel, resultsModel, limitedCategoryItemCount, categoryId) {
+        if (itemModel.uri.indexOf("scope://") === 0 || scope.id === "clickscope" || (scope.id === "videoaggregator" && categoryId === "myvideos-getstarted")) {
             // TODO Technically it is possible that calling activate() will make the scope emit
             // previewRequested so that we show a preview but there's no scope that does that yet
             // so it's not implemented
@@ -81,8 +80,8 @@ FocusScope {
         }
     }
 
-    function itemPressedAndHeld(index, result, itemModel, resultsModel, limitedCategoryItemCount) {
-        if (itemModel.uri.indexOf("scope://") !== 0) {
+    function itemPressedAndHeld(index, result, itemModel, resultsModel, limitedCategoryItemCount, categoryId) {
+        if (itemModel.uri.indexOf("scope://") !== 0 && !(scope.id === "videoaggregator" && categoryId === "myvideos-getstarted")) {
             if (scope.preview(result)) {
                 openPreview(index, resultsModel, limitedCategoryItemCount);
             }
@@ -105,7 +104,7 @@ FocusScope {
     Binding {
         target: scope
         property: "isActive"
-        value: isCurrent && !subPageLoader.open && (Powerd.status === Powerd.On)
+        value: isCurrent && !subPageLoader.open && (Qt.application.state == Qt.ApplicationActive)
     }
 
     UnitySortFilterProxyModel {
@@ -347,11 +346,11 @@ FocusScope {
                 Connections {
                     target: rendererLoader.item
                     onClicked: {
-                        scopeView.itemClicked(index, result, item, itemModel, target.model, categoryItemCount());
+                        scopeView.itemClicked(index, result, item, itemModel, target.model, categoryItemCount(), baseItem.category);
                     }
 
                     onPressAndHold: {
-                        scopeView.itemPressedAndHeld(index, result, itemModel, target.model, categoryItemCount());
+                        scopeView.itemPressedAndHeld(index, result, itemModel, target.model, categoryItemCount(), baseItem.category);
                     }
 
                     function categoryItemCount() {
@@ -426,7 +425,7 @@ FocusScope {
                             //     to the next, we set the visible range to the viewport so
                             //     items are not culled (invisible) but still use no cacheBuffer
                             //     (it will be set once the scope is the current one)
-                            var displayMarginBeginning = baseItem.y;
+                            var displayMarginBeginning = baseItem.y + rendererLoader.anchors.topMargin;
                             displayMarginBeginning = -Math.max(-displayMarginBeginning, 0);
                             displayMarginBeginning = -Math.min(-displayMarginBeginning, baseItem.height);
                             displayMarginBeginning = Math.round(displayMarginBeginning);
@@ -592,7 +591,7 @@ FocusScope {
                     objectName: "scopePageHeader"
                     width: parent.width
                     title: scopeView.scope ? scopeView.scope.name : ""
-                    searchHint: scopeView.scope && scopeView.scope.searchHint || i18n.tr("Search")
+                    searchHint: scopeView.scope && scopeView.scope.searchHint || i18n.ctr("Label: Hint for dash search line edit", "Search")
                     showBackButton: scopeView.hasBackAction
                     searchEntryEnabled: true
                     settingsEnabled: scopeView.scope && scopeView.scope.settings && scopeView.scope.settings.count > 0 || false

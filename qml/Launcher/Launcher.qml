@@ -203,14 +203,14 @@ Item {
     LauncherPanel {
         id: panel
         objectName: "launcherPanel"
-        enabled: root.available && root.state == "visible"
+        enabled: root.available && root.state == "visible" || root.state == "visibleTemporary"
         width: root.panelWidth
         anchors {
             top: parent.top
             bottom: parent.bottom
         }
         x: -width
-        visible: root.x > 0 || x > -width || dragArea.status === DirectionalDragArea.Undecided
+        visible: root.x > 0 || x > -width || dragArea.pressed
         model: LauncherModel
 
         property bool animate: true
@@ -272,7 +272,7 @@ Item {
         }
     }
 
-    EdgeDragArea {
+    DirectionalDragArea {
         id: dragArea
         objectName: "launcherDragArea"
 
@@ -283,20 +283,11 @@ Item {
         width: root.dragAreaWidth
         height: root.height
 
-        onTouchXChanged: {
-            if (status !== DirectionalDragArea.Recognized || launcher.state == "visible")
+        onDistanceChanged: {
+            if (!dragging || launcher.state == "visible")
                 return;
 
-            // When the gesture finally gets recognized, the finger will likely be
-            // reasonably far from the edge. If we made the panel immediately
-            // follow the finger position it would be visually unpleasant as it
-            // would appear right next to the user's finger out of nowhere.
-            // Instead, we make the panel go towards the user's finger in several
-            // steps. ie., in an animated way.
-            var targetPanelX = Math.min(0, touchX - panel.width) - root.x
-            var delta = targetPanelX - panel.x
-            // the trick is not to go all the way (1.0) as it would cause a sudden jump
-            panel.x += 0.4 * delta
+            panel.x = -panel.width + Math.min(Math.max(0, distance), panel.width);
         }
 
         onDraggingChanged: {
@@ -306,7 +297,8 @@ Item {
                     if (distance > minimizeDistance) {
                         root.dash();
                     }
-                } else {
+                } else if (root.state === "") {
+                    // didn't drag far enough. rollback
                     root.switchToNextState("")
                 }
             }

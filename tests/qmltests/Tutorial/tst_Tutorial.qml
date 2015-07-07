@@ -112,6 +112,7 @@ Item {
 
         function init() {
             tryCompare(shell, "enabled", true); // enabled by greeter when ready
+
             AccountsService.demoEdges = false;
             AccountsService.demoEdges = true;
             swipeAwayGreeter();
@@ -185,17 +186,19 @@ Item {
         }
 
         function checkRightEdge() {
-            touchFlick(shell, shell.width, halfHeight, halfWidth, halfHeight);
+            if (shell.usageScenario === "phone") {
+                touchFlick(shell, shell.width, halfHeight, halfWidth, halfHeight);
 
-            var stage = findChild(shell, "stage");
-            var spreadView = findChild(stage, "spreadView");
-            tryCompare(spreadView, "phase", 0);
+                var stage = findChild(shell, "stage");
+                var spreadView = findChild(stage, "spreadView");
+                tryCompare(spreadView, "phase", 0);
+            }
         }
 
         function checkBottomEdge() {
             // Can't actually check effect of swipe, since dash isn't really loaded
             var applicationsDisplayLoader = findChild(shell, "applicationsDisplayLoader");
-            tryCompare(applicationsDisplayLoader.item, "interactive", false);
+            tryCompare(applicationsDisplayLoader, "interactive", false);
         }
 
         function checkFinished() {
@@ -226,7 +229,11 @@ Item {
             checkLeftEdge();
             checkBottomEdge();
             if (name === "tutorialRight") return page;
-            touchFlick(shell, shell.width, halfHeight, halfWidth, halfHeight);
+            touchFlick(shell,
+                shell.width, halfHeight,
+                halfWidth, halfHeight,
+                true /* beginTouch */, true /* endTouch */,
+                20 /* speed */, 50 /* iterations */);
             var overlay = findChild(page, "overlay");
             tryCompare(overlay, "shown", true);
             var tick = findChild(page, "tick");
@@ -254,6 +261,14 @@ Item {
 
         function test_walkthrough() {
             goToPage(null);
+        }
+
+        function test_walkthroughOnDesktop() {
+            shell.usageScenario = "desktop";
+            var page = goToPage("tutorialLeftFinish");
+            var tick = findChild(page, "tick");
+            tap(tick);
+            checkFinished();
         }
 
         function test_launcherShortDrag() {

@@ -30,6 +30,7 @@ FocusScope {
     signal clicked()
     signal closed()
     readonly property alias appWindowOrientationAngle: appWindowWithShadow.orientationAngle
+    readonly property alias appWindowRotation: appWindowWithShadow.rotation
     readonly property alias orientationChangesEnabled: appWindow.orientationChangesEnabled
 
     // to be set from outside
@@ -67,7 +68,7 @@ FocusScope {
         spreadDelegate: root
         background: background
         window: appWindowWithShadow
-        screenshot: appWindowScreenshot
+        screenshot: appWindowScreenshotWithShadow
     }
 
     QtObject {
@@ -109,6 +110,8 @@ FocusScope {
             property real transformOriginX
             property real transformOriginY
 
+            property var window: appWindow
+
             transform: Rotation {
                 origin.x: appWindowWithShadow.transformOriginX
                 origin.y: appWindowWithShadow.transformOriginY
@@ -126,6 +129,14 @@ FocusScope {
                 } else  {
                     return "keepSceneRotation";
                 }
+            }
+
+            // Ensures the given angle is in the form (0,90,180,270)
+            function normalizeAngle(angle) {
+                while (angle < 0) {
+                    angle += 360;
+                }
+                return angle % 360;
             }
 
             states: [
@@ -169,16 +180,16 @@ FocusScope {
                             return Screen.angleBetween(root.nativeOrientation, chosenOrientation);
                         }
 
-                        rotation: appWindowWithShadow.orientationAngle - root.shellOrientationAngle
+                        rotation: normalizeAngle(appWindowWithShadow.orientationAngle - root.shellOrientationAngle)
                         width: {
-                            if (rotation == 0 || Math.abs(rotation) == 180) {
+                            if (rotation == 0 || rotation == 180) {
                                 return root.width;
                             } else {
                                 return root.height;
                             }
                         }
                         height: {
-                            if (rotation == 0 || Math.abs(rotation) == 180)
+                            if (rotation == 0 || rotation == 180)
                                 return root.height;
                             else
                                 return root.width;
@@ -198,16 +209,16 @@ FocusScope {
                     PropertyChanges {
                         target: appWindowWithShadow
                         restoreEntryValues: false
-                        rotation: appWindowWithShadow.orientationAngle - root.shellOrientationAngle
+                        rotation: normalizeAngle(appWindowWithShadow.orientationAngle - root.shellOrientationAngle)
                         width: {
-                            if (rotation == 0 || Math.abs(rotation) == 180) {
+                            if (rotation == 0 || rotation == 180) {
                                 return root.width;
                             } else {
                                 return root.height;
                             }
                         }
                         height: {
-                            if (rotation == 0 || Math.abs(rotation) == 180)
+                            if (rotation == 0 || rotation == 180)
                                 return root.height;
                             else
                                 return root.width;
@@ -226,7 +237,7 @@ FocusScope {
                         target: appWindowWithShadow
                         width: root.shellOrientationAngle == 0 || root.shellOrientationAngle == 180 ? root.width : root.height
                         height: root.shellOrientationAngle == 0 || root.shellOrientationAngle == 180 ? root.height : root.width
-                        rotation: -root.shellOrientationAngle
+                        rotation: normalizeAngle(-root.shellOrientationAngle)
                     }
                     PropertyChanges {
                         target: appWindow
@@ -266,9 +277,10 @@ FocusScope {
         }
     }
 
-    Image {
-        id: appWindowScreenshot
-        source: ""
+    Item {
+        // mimics appWindowWithShadow. Do the positioning of screenshots of non-fullscreen
+        // app windows
+        id: appWindowScreenshotWithShadow
         visible: false
 
         property real transformRotationAngle: 0
@@ -276,21 +288,33 @@ FocusScope {
         property real transformOriginY
 
         transform: Rotation {
-            origin.x: appWindowScreenshot.transformOriginX
-            origin.y: appWindowScreenshot.transformOriginY
+            origin.x: appWindowScreenshotWithShadow.transformOriginX
+            origin.y: appWindowScreenshotWithShadow.transformOriginY
             axis { x: 0; y: 0; z: 1 }
-            angle: appWindowScreenshot.transformRotationAngle
+            angle: appWindowScreenshotWithShadow.transformRotationAngle
         }
+
+        property var window: appWindowScreenshot
 
         function take() {
             // Format: "image://application/$APP_ID/$CURRENT_TIME_MS"
             // eg: "image://application/calculator-app/123456"
             var timeMs = new Date().getTime();
-            source = "image://application/" + root.application.appId + "/" + timeMs;
+            appWindowScreenshot.source = "image://application/" + root.application.appId + "/" + timeMs;
+        }
+        function discard() {
+            appWindowScreenshot.source = "";
         }
 
-        sourceSize.width: width
-        sourceSize.height: height
+        Image {
+            id: appWindowScreenshot
+            source: ""
+
+            anchors.fill: parent
+
+            sourceSize.width: width
+            sourceSize.height: height
+        }
     }
 
     DraggingArea {
@@ -373,6 +397,7 @@ FocusScope {
                 if (!running) {
                     dragArea.moving = false;
                     if (requestClose) {
+                        appWindow.removeScreenshot();
                         root.closed();
                     } else {
                         dragArea.distance = 0;

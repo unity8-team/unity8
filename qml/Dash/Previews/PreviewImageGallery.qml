@@ -20,6 +20,7 @@ import "../../Components"
 
 /*! This preview widget shows a horizontal list of images.
  *  The URIs for the images should be an array in widgetData["sources"].
+ *  Images fall back to widgetData["fallback"] if loading fails
  */
 
 PreviewWidget {
@@ -37,6 +38,8 @@ PreviewWidget {
         cacheBuffer: width * 3
         model: root.widgetData["sources"]
         clip: true
+
+        onCurrentIndexChanged: overlay.updateInitialItem()
 
         LazyImage {
             objectName: "placeholderScreenshot"
@@ -65,11 +68,18 @@ PreviewWidget {
                 id: mouseArea
                 anchors.fill: parent
                 onClicked: {
-                    overlay.delegateItem.currentIndex = index;
-                    overlay.initialX = rootItem.mapFromItem(parent, 0, 0).x;
-                    overlay.initialY = rootItem.mapFromItem(parent, 0, 0).y;
+                    previewImageListView.currentIndex = index;
+                    overlay.updateInitialItem();
                     overlay.show();
                 }
+            }
+
+            Connections {
+                target: sourceImage
+                // If modelData would change after failing to load it would not be
+                // reloaded since the source binding is destroyed by the source = fallback
+                // But at the moment the model never changes
+                onStatusChanged: if (sourceImage.status === Image.Error) sourceImage.source = widgetData["fallback"];
             }
         }
     }
@@ -78,9 +88,14 @@ PreviewWidget {
         id: overlay
         objectName: "overlay"
         parent: rootItem
-        width: parent.width
-        height: parent.height
-        initialScale: previewImageListView.height / rootItem.height
+        anchors.fill: parent
+
+        function updateInitialItem() {
+            initialX = rootItem.mapFromItem(previewImageListView.currentItem, 0, 0).x;
+            initialY = rootItem.mapFromItem(previewImageListView.currentItem, 0, 0).y;
+            initialWidth = previewImageListView.currentItem.width;
+            initialHeight = previewImageListView.currentItem.height;
+        }
 
         delegate: ListView {
             id: overlayListView
@@ -92,6 +107,19 @@ PreviewWidget {
             snapMode: ListView.SnapOneItem
             boundsBehavior: Flickable.DragAndOvershootBounds
             model: root.widgetData["sources"]
+            currentIndex: previewImageListView.currentIndex
+
+            onCurrentIndexChanged: {
+                // if the index changed while overlay is visible, it was from user interaction,
+                // let's update the index of the original listview
+                if (overlay.visible) {
+                    previewImageListView.highlightMoveDuration = 0;
+                    previewImageListView.highlightResizeDuration = 0;
+                    previewImageListView.currentIndex = currentIndex;
+                    previewImageListView.highlightMoveDuration = -1;
+                    previewImageListView.highlightResizeDuration = -1;
+                }
+            }
 
             delegate: Image {
                 id: screenshot
@@ -103,6 +131,11 @@ PreviewWidget {
                 source: modelData ? modelData : ""
                 fillMode: Image.PreserveAspectFit
                 sourceSize { width: screenshot.width; height: screenshot.height }
+
+                // If modelData would change after failing to load it would not be
+                // reloaded since the source binding is destroyed by the source = fallback
+                // But at the moment the model never changes
+                onStatusChanged: if (status === Image.Error) source = widgetData["fallback"];
             }
 
             MouseArea {

@@ -22,8 +22,11 @@ import Ubuntu.Components.ListItems 1.0 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
 import LightDM 0.1 as LightDM
+import Powerd 0.1
+import Unity.InputInfo 0.1
 
 import "../../qml"
+import "../../qml/Components/UnityInputInfo"
 
 Rectangle {
     id: root
@@ -33,19 +36,8 @@ Rectangle {
 
     QtObject {
         id: applicationArguments
-
-        function hasGeometry() {
-            return false;
-        }
-
-        function width() {
-            return 0;
-        }
-
-        function height() {
-            return 0;
-        }
         property string deviceName: "mako"
+        property string mode: "full-greeter"
     }
 
     QtObject {
@@ -56,6 +48,11 @@ Rectangle {
     QtObject {
         id: mockUsageModeSettings
         property string usageMode: usageModeSelector.model[usageModeSelector.selectedIndex]
+    }
+
+    QtObject{
+        id: mockOskSettings
+        property bool stayHidden: false;
     }
 
     property int physicalOrientation0
@@ -129,6 +126,7 @@ Rectangle {
             OrientedShell {
                 anchors.fill: parent
                 usageModeSettings: mockUsageModeSettings
+                oskSettings: mockOskSettings
                 physicalOrientation: root.physicalOrientation0
                 orientationLocked: orientationLockedCheckBox.checked
                 orientationLock: mockOrientationLock
@@ -161,8 +159,16 @@ Rectangle {
     }
 
     Rectangle {
-        id: controls
+        width: controls.width
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: parent.right
+        }
         color: "darkgrey"
+    }
+    Flickable {
+        id: controls
         width: units.gu(30)
         anchors {
             top: parent.top
@@ -170,7 +176,11 @@ Rectangle {
             right: parent.right
         }
 
+        boundsBehavior: Flickable.StopAtBounds
+        contentHeight: controlsColumn.height
+
         Column {
+            id: controlsColumn
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
             spacing: units.gu(1)
             Button {
@@ -260,6 +270,65 @@ Rectangle {
                 onClicked: {
                     var app = ApplicationManager.findApplication(ApplicationManager.focusedApplicationId);
                     app.fullscreen = !app.fullscreen;
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                CheckBox {
+                    checked: false
+                    activeFocusOnPress: false
+                    onCheckedChanged: {
+                        var surface = SurfaceManager.inputMethodSurface();
+                        if (checked) {
+                            surface.setState(MirSurfaceItem.Restored);
+                        } else {
+                            surface.setState(MirSurfaceItem.Minimized);
+                        }
+                    }
+                }
+                Label {
+                    text: "Input Method"
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+            Button {
+                text: Powerd.status === Powerd.On ? "Display ON" : "Display OFF"
+                activeFocusOnPress: false
+                onClicked: {
+                    if (Powerd.status === Powerd.On) {
+                        Powerd.status = Powerd.Off;
+                    } else {
+                        Powerd.status = Powerd.On;
+                    }
+                }
+            }
+
+            Row {
+                Button {
+                    text: "Add mouse"
+                    onClicked: {
+                        UnityInputInfo.inputInfo.addMockMouse()
+                    }
+                }
+                Button {
+                    text: "Remove mouse"
+                    onClicked: {
+                        UnityInputInfo.inputInfo.removeMockMouse()
+                    }
+                }
+            }
+            Row {
+                Button {
+                    text: "Add kbd"
+                    onClicked: {
+                        UnityInputInfo.inputInfo.addMockKeyboard()
+                    }
+                }
+                Button {
+                    text: "Remove kbd"
+                    onClicked: {
+                        UnityInputInfo.inputInfo.removeMockKeyboard()
+                    }
                 }
             }
         }
@@ -855,6 +924,33 @@ Rectangle {
             tryCompare(shell, "transformRotationAngle", 0);
         }
 
+        function test_attachRemoveInputDevices() {
+            usageModeSelector.selectedIndex = 2;
+            tryCompare(mockUsageModeSettings, "usageMode", "Automatic")
+
+            loadShell("mako")
+            var shell = findChild(orientedShell, "shell");
+
+            tryCompare(shell, "usageScenario", "phone");
+            tryCompare(mockOskSettings, "stayHidden", false);
+
+            UnityInputInfo.inputInfo.addMockKeyboard();
+            tryCompare(shell, "usageScenario", "phone");
+            tryCompare(mockOskSettings, "stayHidden", true);
+
+            UnityInputInfo.inputInfo.addMockMouse();
+            tryCompare(shell, "usageScenario", "desktop");
+            tryCompare(mockOskSettings, "stayHidden", true);
+
+            UnityInputInfo.inputInfo.removeMockKeyboard();
+            tryCompare(shell, "usageScenario", "desktop");
+            tryCompare(mockOskSettings, "stayHidden", false);
+
+            UnityInputInfo.inputInfo.removeMockMouse();
+            tryCompare(shell, "usageScenario", "phone");
+            tryCompare(mockOskSettings, "stayHidden", false);
+        }
+
         //  angle - rotation angle in degrees clockwise, relative to the primary orientation.
         function rotateTo(angle) {
             switch (angle) {
@@ -928,16 +1024,31 @@ Rectangle {
             // If we swipe too much we will trigger the spread mode
             // and we don't want that.
             var spreadView = findChild(shell, "spreadView");
-            var swipeLength = (spreadView.positionMarker1 * spreadView.width) * 0.5;
+            verify(spreadView);
 
             verify(ApplicationManager.count >= 2);
             var previousApp = ApplicationManager.get(1);
 
             var touchStartX = shell.width - 1;
             var touchStartY = shell.height / 2;
-            touchFlick(shell,
-                       touchStartX, touchStartY,
-                       touchStartX - swipeLength, touchStartY);
+
+            var condition;
+            if (applicationArguments.deviceName === "phone") {
+                condition = function() {
+                    return spreadView.shiftedContentX > units.gu(2) &&
+                        spreadView.shiftedContentX < spreadView.positionMarker1 * spreadView.width;
+                };
+            } else {
+                condition = function() {
+                    return spreadView.shiftedContentX > spreadView.width * spreadView.positionMarker1
+                        && spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2;
+                };
+            }
+
+            touchDragUntil(shell,
+                    touchStartX, touchStartY,
+                    -units.gu(1), 0,
+                    condition);
 
             // ensure the app switch animation has ended
             tryCompare(spreadView, "shiftedContentX", 0);
@@ -1020,11 +1131,26 @@ Rectangle {
 
             waitUntilShellIsInOrientation(root.physicalOrientation0);
 
+            waitForGreeterToStabilize();
+
             swipeAwayGreeter();
 
             var spreadRepeater = findChild(shell, "spreadRepeater");
             if (spreadRepeater) {
                 spreadRepeaterConnections.target = spreadRepeater;
+            }
+        }
+
+        function waitForGreeterToStabilize() {
+            var greeter = findChild(shell, "greeter");
+            verify(greeter);
+
+            var loginList = findChild(greeter, "loginList");
+            // Only present in WideView
+            if (loginList) {
+                var userList = findChild(loginList, "userList");
+                verify(userList);
+                tryCompare(userList, "movingInternally", false);
             }
         }
 
@@ -1074,5 +1200,4 @@ Rectangle {
             return found;
         }
     }
-
 }

@@ -23,12 +23,25 @@ TestCase {
     id: testCase
     TestUtil {id:util}
 
-    ActivityIndicator {
+    // This is needed for waitForRendering calls to return
+    // if the watched element already got rendered
+    Rectangle {
+        id: rotatingRectangle
+        width: units.gu(1)
+        height: width
+        parent: testCase.parent
+        border { width: units.dp(1); color: "black" }
+        opacity: 0.6
+
         visible: testCase.running
-        anchors.centerIn: parent
-        Component.onCompleted: parent = testCase.parent
-        z: 100
-        running: visible
+
+        RotationAnimation on rotation {
+            running: rotatingRectangle.visible
+            from: 0
+            to: 360
+            loops: Animation.Infinite
+            duration: 1000
+        }
     }
 
     // Fake implementation to be provided to items under test
@@ -221,6 +234,19 @@ TestCase {
         }
     }
 
+    function flickToYEnd(item) {
+        var i = 0;
+        var x = item.width / 2;
+        var y = item.height - units.gu(1);
+        var toY = units.gu(1);
+        while (i < 5 && !item.atYEnd) {
+            touchFlick(item, x, y, x, toY);
+            tryCompare(item, "moving", false);
+            ++i;
+        }
+        tryCompare(item, "atYEnd", true);
+    }
+
     function touchEvent(item) {
         return UT.Util.touchEvent(item)
     }
@@ -244,7 +270,7 @@ TestCase {
         speed = (speed !== undefined) ? speed : units.gu(10)
 
         // Set a default iterations if not specified
-        var iterations = (iterations !== undefined) ? iterations : 5
+        var iterations = (iterations !== undefined) ? iterations : 10
 
         var distance = Math.sqrt(Math.pow(rootTo.x - rootFrom.x, 2) + Math.pow(rootTo.Y - rootFrom.y, 2))
         var totalTime = (distance / speed) * 1000 /* converting speed to pixels/ms */
@@ -283,6 +309,48 @@ TestCase {
         }
     }
 
+    // perform a drag in the given direction until the given condition is true
+    // The condition is a function to be evaluated after every step
+    function touchDragUntil(item, startX, startY, stepX, stepY, condition) {
+
+        var root = fetchRootItem(item);
+        var pos = item.mapToItem(root, startX, startY);
+
+        // convert step to scene coords
+        {
+            var stepStart = item.mapToItem(root, 0, 0);
+            var stepEnd = item.mapToItem(root, stepX, stepY);
+        }
+        stepX = stepEnd.x - stepStart.x;
+        stepY = stepEnd.y - stepStart.y;
+
+        var event = touchEvent(item)
+        event.press(0 /* touchId */, pos.x, pos.y)
+        event.commit()
+
+        // we have to stop at some point
+        var maxSteps = 100;
+        var stepsDone = 0;
+
+        while (!condition() && stepsDone < maxSteps) {
+            wait(25);
+            fakeDateTime.currentTimeMs += 25;
+
+            pos.x += stepX;
+            pos.y += stepY;
+
+            event = touchEvent(item);
+            event.move(0 /* touchId */, pos.x, pos.y);
+            event.commit();
+
+            stepsDone += 1;
+        }
+
+        event = touchEvent(item)
+        event.release(0 /* touchId */, pos.x, pos.y)
+        event.commit()
+    }
+
     function touchPinch(item, x1Start, y1Start, x1End, y1End, x2Start, y2Start, x2End, y2End) {
         // Make sure the item is rendered
         waitForRendering(item);
@@ -292,7 +360,7 @@ TestCase {
         event1.press(0, x1Start, y1Start);
         event1.commit();
         // second finger
-        event1.stationary(0);
+        event1.move(0, x1Start, y1Start);
         event1.press(1, x2Start, y2Start);
         event1.commit();
 
@@ -357,8 +425,6 @@ TestCase {
     }
 
     Component.onCompleted: {
-        UT.Util.ensureTouchRegistryInstalled();
-
         var rootItem = parent;
         while (rootItem.parent != undefined) {
             rootItem = rootItem.parent;
@@ -378,12 +444,8 @@ TestCase {
     function removeTimeConstraintsFromDirectionalDragAreas(item) {
 
         // use duck-typing to identify a DirectionalDragArea
-        if (item.minSpeed != undefined
-                && item.maxSilenceTime != undefined
-                && item.compositionTime != undefined) {
-            item.minSpeed = 0;
-            item.maxSilenceTime = 60 * 60 * 1000;
-            item.compositionTime = 0;
+        if (item.removeTimeConstraints != undefined) {
+            item.removeTimeConstraints();
         } else {
             for (var i in item.children) {
                 removeTimeConstraintsFromDirectionalDragAreas(item.children[i]);

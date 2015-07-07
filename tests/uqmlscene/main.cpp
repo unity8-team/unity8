@@ -63,11 +63,6 @@
 #include <QtCore/QTranslator>
 #include <QtCore/QLibraryInfo>
 
-#include <MouseTouchAdaptor.h>
-
-// UbuntuGestures lib
-#include <TouchRegistry.h>
-
 #define UQMLSCENE_DEBUG_ACTIVE_FOCUS 0
 
 #if UQMLSCENE_DEBUG_ACTIVE_FOCUS
@@ -436,13 +431,6 @@ int main(int argc, char ** argv)
     app.setOrganizationName("Qt Project");
     app.setOrganizationDomain("qt-project.org");
 
-    MouseTouchAdaptor mouseTouchAdaptor;
-    app.installNativeEventFilter(&mouseTouchAdaptor);
-    // Create it before loading the module, so that TestUtil
-    // doesn't create one with a fake timer factory.
-    // When interacting manually with a test we want the real deal.
-    new TouchRegistry;
-
 #ifndef QT_NO_TRANSLATION
     QTranslator translator;
     QTranslator qtTranslator;
@@ -516,8 +504,6 @@ int main(int argc, char ** argv)
                     #if UQMLSCENE_DEBUG_ACTIVE_FOCUS
                     activeFocusLogger.setWindow(qxView);
                     #endif
-                    TouchRegistry::instance()->setParent(qxView);
-                    qxView->installEventFilter(TouchRegistry::instance());
                     window = qxView;
                     // Set window default properties; the qml can still override them
                     QString oname = contentItem->objectName();

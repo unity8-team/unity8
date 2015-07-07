@@ -103,7 +103,7 @@ Item {
         function addApps(count) {
             if (count == undefined) count = 1;
             for (var i = 0; i < count; i++) {
-                var app = ApplicationManager.startApplication(ApplicationManager.availableApplications()[ApplicationManager.count])
+                var app = ApplicationManager.startApplication(ApplicationManager.availableApplications[ApplicationManager.count])
                 tryCompare(app, "state", ApplicationInfoInterface.Running)
                 var spreadView = findChild(phoneStage, "spreadView");
                 tryCompare(spreadView, "contentX", -spreadView.shift);
@@ -151,14 +151,14 @@ Item {
 
         function test_enterSpread_data() {
             return [
-                {tag: "<position1 (linear movement)", positionMarker: "positionMarker1", linear: true, offset: -1, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: "<position1 (non-linear movement)", positionMarker: "positionMarker1", linear: false, offset: -1, endPhase: 0, targetPhase: 0, newFocusedIndex: 0 },
-                {tag: ">position1", positionMarker: "positionMarker1", linear: true, offset: +1, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: "<position2 (linear)", positionMarker: "positionMarker2", linear: true, offset: -1, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: "<position2 (non-linear)", positionMarker: "positionMarker2", linear: false, offset: -1, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: ">position2", positionMarker: "positionMarker2", linear: true, offset: +1, endPhase: 1, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: "<position3", positionMarker: "positionMarker3", linear: true, offset: -1, endPhase: 1, targetPhase: 0, newFocusedIndex: 1 },
-                {tag: ">position3", positionMarker: "positionMarker3", linear: true, offset: +1, endPhase: 1, targetPhase: 2, newFocusedIndex: 2 },
+                {tag: "<position1 (linear movement)", positionMarker: "positionMarker1", linear: true, offset: 0, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
+                {tag: "<position1 (non-linear movement)", positionMarker: "positionMarker1", linear: false, offset: 0, endPhase: 0, targetPhase: 0, newFocusedIndex: 0 },
+                {tag: ">position1", positionMarker: "positionMarker1", linear: true, offset: +5, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
+                {tag: "<position2 (linear)", positionMarker: "positionMarker2", linear: true, offset: 0, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
+                {tag: "<position2 (non-linear)", positionMarker: "positionMarker2", linear: false, offset: 0, endPhase: 0, targetPhase: 0, newFocusedIndex: 1 },
+                {tag: ">position2", positionMarker: "positionMarker2", linear: true, offset: +5, endPhase: 1, targetPhase: 0, newFocusedIndex: 1 },
+                {tag: "<position3", positionMarker: "positionMarker3", linear: true, offset: 0, endPhase: 1, targetPhase: 0, newFocusedIndex: 1 },
+                {tag: ">position3", positionMarker: "positionMarker3", linear: true, offset: +5, endPhase: 1, targetPhase: 2, newFocusedIndex: 2 },
             ];
         }
 
@@ -344,6 +344,25 @@ Item {
             compare(dragArea2.enabled, false);
 
             tryCompare(spreadView, "contentX", -spreadView.shift)
+        }
+
+        function test_cantAccessPhoneStageWhileRightEdgeGesture() {
+            var spreadView = findChild(phoneStage, "spreadView");
+            var eventEaterArea = findChild(phoneStage, "eventEaterArea")
+
+            var startX = phoneStage.width - 2;
+            var startY = phoneStage.height / 2;
+            var endY = startY;
+            var endX = phoneStage.width / 2;
+
+            touchFlick(phoneStage, startX, startY, endX, endY,
+                       true /* beginTouch */, false /* endTouch */, units.gu(10), 50);
+
+            compare(eventEaterArea.enabled, true);
+
+            touchRelease(phoneStage, endX, endY);
+
+            compare(eventEaterArea.enabled, false);
         }
 
         function test_leftEdge_data() {

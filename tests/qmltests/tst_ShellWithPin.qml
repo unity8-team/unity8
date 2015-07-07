@@ -386,9 +386,6 @@ Item {
         }
 
         function test_emergencyDialerLockOut() {
-            // FIXME: fix that use case
-            skip();
-
             // This is a theoretical attack on the lockscreen: Enter emergency
             // dialer mode on a phone, then plug into a larger screen,
             // switching to a tablet interface.  This would in theory move the
@@ -413,7 +410,7 @@ Item {
             killApps()
             var greeter = findChild(shell, "greeter")
             tryCompare(greeter, "fullyShown", true)
-            tryCompare(shell, "sideStageEnabled", true)
+            compare(applicationsDisplayLoader.usageScenario, "tablet");
         }
 
         function test_emergencyDialerIncoming() {
@@ -611,14 +608,14 @@ Item {
             tryCompare(coverPage, "showProgress", 1);
 
             // Swipe cover page away
-            touchFlick(shell, 2, shell.height / 2, units.gu(27), shell.height / 2);
+            touchFlick(shell, 2, shell.height / 2, units.gu(30), shell.height / 2);
             tryCompare(launcher, "x", -launcher.width);
             tryCompare(coverPage, "showProgress", 0);
             compare(lockscreen.shown, true);
             compare(ApplicationManager.focusedApplicationId, "gallery-app");
 
             // Now attempt a swipe on lockscreen
-            touchFlick(shell, 2, shell.height / 2, units.gu(27), shell.height / 2);
+            touchFlick(shell, 2, shell.height / 2, units.gu(30), shell.height / 2);
             tryCompare(launcher, "x", 0);
             compare(lockscreen.shown, true);
             compare(ApplicationManager.focusedApplicationId, "gallery-app");

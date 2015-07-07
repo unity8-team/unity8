@@ -56,6 +56,8 @@ find_package(Qt5DBus 5.2 REQUIRED)
 find_package(Qt5Concurrent 5.2 REQUIRED)
 find_package(Qt5Sql 5.2 REQUIRED)
 
+pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=6)
+
 # Standard install paths
 include(GNUInstallDirs)
 
@@ -105,11 +107,22 @@ declare_autopilot_test(shell unity8.shell ${CMAKE_SOURCE_DIR}/tests/autopilot/)
 set(SHELL_APP unity8)
 set(DASH_APP unity8-dash)
 set(SCOPE_TOOL unity-scope-tool)
+set(INDICATORS_CLIENT_APP indicators-client)
+set(MOCK_INDICATOR_SERVICE_APP unity-mock-indicator-service)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/include
+    ${APPLICATION_API_INCLUDE_DIRS}
 )
+
+set(ARTIFACTS_DIR "" CACHE PATH "Store test artifacts in this directory.")
+
+# Quiet logger
+set(QUIET_LOGGER OFF CACHE BOOL "Disable test output on stdout.")
+if(NOT QUIET_LOGGER)
+    set(STDOUT_LOGGER "-o" "-,txt")
+endif()
 
 # add subdirectories to build
 add_subdirectory(include)
@@ -119,6 +132,7 @@ add_subdirectory(tools)
 add_subdirectory(qml)
 
 # Tests
+set(NO_TESTS OFF CACHE BOOL "Disable tests.")
 if (NOT NO_TESTS)
     include(CTest)
     enable_testing()
