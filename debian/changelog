@@ -1,3 +1,9 @@
+unity8 (8.11) UNRELEASED; urgency=medium
+
+  * Silo0 special build
+
+ -- Gerry Boland <gerry.boland@canonical.com>  Wed, 08 Jul 2015 17:14:03 +0100
+
 unity8 (8.10+15.10.20150721-0ubuntu1) wily; urgency=medium
 
   [ Albert Astals Cid ]
