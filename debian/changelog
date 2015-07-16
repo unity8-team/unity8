@@ -1,3 +1,15 @@
+ubuntu-settings-components (0.6+15.10.20150716-0ubuntu1) wily; urgency=medium
+
+  [ Michael Zanetti ]
+  * Tell the layout what size we want the icons to be
+
+  [ Nick Dedekind ]
+  * Don't use preferred values inside Standard item compoonent Loader.
+    (LP: #1448716)
+  * Multiline support for message replies (lp#1396058) (LP: #1396058)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 16 Jul 2015 09:48:43 +0000
+
 ubuntu-settings-components (0.6+15.10.20150518-0ubuntu1) wily; urgency=medium
 
   [ CI Train Bot ]
