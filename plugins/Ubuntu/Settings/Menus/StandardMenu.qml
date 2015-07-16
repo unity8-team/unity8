@@ -56,8 +56,8 @@ ListItems.Empty {
 
             readonly property real size: Math.min(units.gu(3), parent.height - menu.__contentsMargins)
 
-            height: size
-            width: size
+            Layout.preferredHeight: size
+            Layout.preferredWidth: size
             Layout.alignment: Qt.AlignVCenter
         }
 
