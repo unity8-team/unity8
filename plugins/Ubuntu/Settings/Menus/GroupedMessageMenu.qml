@@ -33,8 +33,8 @@ StandardMenu {
 
     component: Component {
         UbuntuShape {
-            height: label.implicitHeight + units.gu(2)
-            width: label.implicitWidth + units.gu(2)
+            implicitHeight: label.implicitHeight + units.gu(2)
+            implicitWidth: label.implicitWidth + units.gu(2)
 
             color: Theme.palette.normal.backgroundText
             radius: "medium"
