@@ -32,7 +32,6 @@ SimpleMessageMenu {
     signal replied(string value)
 
     footer: USC.ActionTextField {
-
         activateEnabled: menu.replyEnabled
         buttonText: menu.replyButtonText
         textHint: menu.replyHintText

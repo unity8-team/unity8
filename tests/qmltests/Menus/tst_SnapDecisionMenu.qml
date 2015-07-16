@@ -95,19 +95,41 @@ Item {
         target: messageMenuSelected
     }
 
+    SignalSpy {
+        id: signalSpyTriggered
+        signalName: "triggered"
+        target: messageMenuSelected
+    }
+
     UbuntuTestCase {
         name: "SnapDecisionMenu"
         when: windowShown
 
-        function init() {
+        function cleanup() {
+            textMessageReply = "";
+            messageMenu.replyEnabled = true;
+            messageMenuSelected.selected = false;
+
             signalSpyIconActivated.clear();
             signalSpyDismiss.clear();
             signalSpyActionActivated.clear();
             signalSpyReply.clear();
-            textMessageReply = "";
+            signalSpyTriggered.clear();
 
-            messageMenu.replyEnabled = true;
-            messageMenuSelected.selected = false;
+            messageMenu.replyExpanded = false;
+            var replyText = findChild(messageMenu, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+            replyText.text = "";
+
+            messageMenuRemovable.replyExpanded = false;
+            replyText = findChild(messageMenuRemovable, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+            replyText.text = "";
+
+            messageMenuSelected.replyExpanded = false;
+            replyText = findChild(messageMenuSelected, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+            replyText.text = "";
         }
 
         function test_title_data() {
@@ -293,6 +315,30 @@ Item {
                 { tag: 'reply2', index: 1, expected: "reply2" },
                 { tag: 'reply3', index: 2, expected: "reply3" }
             ]
+        }
+
+        function test_multipleLineReply_lp1396058() {
+            messageMenuSelected.selected = true;
+            messageMenuSelected.replyEnabled = true;
+
+            var replyText = findChild(messageMenuSelected, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+
+            var messageButton = findChild(messageMenuSelected, "messageButton");
+            verify(messageButton !== undefined, "Message button not found");
+            mouseClick(messageButton, messageButton.width / 2, messageButton.height / 2);
+
+            mouseClick(replyText, replyText.width / 2, replyText.height / 2);
+            compare(replyText.focus, true, "Reply text should have focus after mouse click");
+
+            keyClick("a"); keyClick("b");
+            keyClick(Qt.Key_Return);
+            keyClick("c"); keyClick("d");
+
+            compare(signalSpyTriggered.count, 0, "Item should not have triggered on 'return'")
+
+            compare(replyText.focus, true, "Reply text should still have focus after return pressed");
+            compare(replyText.text, "ab\ncd");
         }
     }
 }

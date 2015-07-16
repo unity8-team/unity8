@@ -92,6 +92,7 @@ Item {
                     body: model.body
                     time: model.time
                     removable: true
+                    replyHintText: "Reply"
 
                     onTriggered: {
                         selected = !selected;
@@ -108,6 +109,7 @@ Item {
                     body: model.body
                     time: model.time
                     removable: true
+                    replyHintText: "Reply"
 
                     onTriggered: {
                         selected = !selected;

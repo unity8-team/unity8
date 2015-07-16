@@ -88,18 +88,37 @@ Item {
         target: messageMenuSelected
     }
 
+    SignalSpy {
+        id: signalSpyTriggered
+        signalName: "triggered"
+        target: messageMenuSelected
+    }
+
     UbuntuTestCase {
         name: "TextMessageMenu"
         when: windowShown
 
-        function init() {
+        function cleanup() {
+            textMessageReply = "";
+            messageMenu.replyEnabled = true;
+            messageMenuSelected.selected = false;
+
             signalSpyIconActivated.clear();
             signalSpyDismiss.clear();
             signalSpyReply.clear();
-            textMessageReply = "";
+            signalSpyTriggered.clear();
 
-            messageMenu.replyEnabled = true;
-            messageMenuSelected.selected = false;
+            var replyText = findChild(messageMenu, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+            replyText.text = "";
+
+            replyText = findChild(messageMenuRemovable, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+            replyText.text = "";
+
+            replyText = findChild(messageMenuSelected, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+            replyText.text = "";
         }
 
         function test_title_data() {
@@ -247,6 +266,26 @@ Item {
             mouseClick(sendButton, sendButton.width / 2, sendButton.height / 2);
             compare(signalSpyReply.count > 0, true);
             compare(textMessageReply, "reply1", "Text message did not reply with correct text.");
+        }
+
+        function test_multipleLineReply_lp1396058() {
+            messageMenuSelected.selected = true;
+            messageMenuSelected.replyEnabled = true;
+
+            var replyText = findChild(messageMenuSelected, "replyText");
+            verify(replyText !== undefined, "Reply text not found");
+
+            mouseClick(replyText, replyText.width / 2, replyText.height / 2);
+            compare(replyText.focus, true, "Reply text should have focus after mouse click");
+
+            keyClick("a"); keyClick("b");
+            keyClick(Qt.Key_Return);
+            keyClick("c"); keyClick("d");
+
+            compare(signalSpyTriggered.count, 0, "Item should not have triggered on 'return'")
+
+            compare(replyText.focus, true, "Reply text should still have focus after return pressed");
+            compare(replyText.text, "ab\ncd");
         }
     }
 }

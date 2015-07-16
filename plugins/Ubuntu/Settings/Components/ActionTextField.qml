@@ -33,7 +33,7 @@ Item {
 
     implicitHeight: layout.implicitHeight
 
-    RowLayout {
+    Row {
         id: layout
         anchors {
             left: parent.left
@@ -41,13 +41,11 @@ Item {
         }
         spacing: units.gu(1)
 
-        TextField {
+        TextArea {
             id: replyField
             objectName: "replyText"
-
-            hasClearButton: false
-
-            Layout.fillWidth: true
+            autoSize: true
+            width: parent.width - layout.spacing - sendButton.width
 
             onEnabledChanged: {
                 //Make sure that the component lost focus when enabled = false,

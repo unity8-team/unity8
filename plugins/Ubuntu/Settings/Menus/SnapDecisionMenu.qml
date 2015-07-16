@@ -31,6 +31,8 @@ SimpleMessageMenu {
 
     property bool replyEnabled: true
     property string replyButtonText: i18n.tr("Send")
+    property string replyHintText
+    property bool replyExpanded: false
 
     signal actionActivated
     signal replied(string value)
@@ -57,11 +59,7 @@ SimpleMessageMenu {
                     Layout.fillWidth: true
 
                     onClicked: {
-                        if (reply.state === "") {
-                            reply.state = "expanded";
-                        } else {
-                            reply.state = "";
-                        }
+                        menu.replyExpanded = !menu.replyExpanded;
                     }
                 }
 
@@ -84,10 +82,11 @@ SimpleMessageMenu {
 
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                visible: state == "expanded"
+                visible: menu.replyExpanded
 
                 activateEnabled: menu.replyEnabled
                 buttonText: menu.replyButtonText
+                textHint: menu.replyHintText
 
                 onActivated: {
                     menu.replied(value);
