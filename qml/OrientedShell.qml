@@ -16,6 +16,7 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.0
+import Unity.Screens 0.1
 import Unity.Session 0.1
 import GSettings 1.0
 import "Components"
@@ -35,6 +36,9 @@ Rectangle {
     readonly property int primaryOrientation:
             deviceConfiguration.primaryOrientation == deviceConfiguration.useNativeOrientation
                    ? nativeOrientation : deviceConfiguration.primaryOrientation
+
+    Screens { id: screens }
+    readonly property bool multiMonitor: screens.count > 1
 
     DeviceConfiguration {
         id: deviceConfiguration
@@ -88,6 +92,10 @@ Rectangle {
     readonly property int supportedOrientations: shell.supportedOrientations
                                                & deviceConfiguration.supportedOrientations
     property int acceptedOrientationAngle: {
+        if (multiMonitor) {
+            return Screen.angleBetween(nativeOrientation, deviceConfiguration.multiMonitorOrientation);
+        }
+
         if (orientation & supportedOrientations) {
             return Screen.angleBetween(nativeOrientation, orientation);
         } else if (shell.orientation & supportedOrientations) {
@@ -160,7 +168,7 @@ Rectangle {
         // TODO: Factor in the connected input devices (eg: physical keyboard, mouse, touchscreen),
         //       what's the output device (eg: big TV, desktop monitor, phone display), etc.
         usageScenario: {
-            if (root.usageModeSettings.usageMode === "Windowed") {
+            if (root.usageModeSettings.usageMode === "Windowed" || multiMonitor) {
                 return "desktop";
             } else if (root.usageModeSettings.usageMode === "Staged") {
                 if (deviceConfiguration.category === "phone") {

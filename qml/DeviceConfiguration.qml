@@ -28,6 +28,7 @@ StateGroup {
                                       | Qt.LandscapeOrientation
                                       | Qt.InvertedLandscapeOrientation
 
+    property int multiMonitorOrientation: Qt.InvertedLandscapeOrientation
     // Supported values so far:
     // "phone", "tablet" or "desktop"
     property string category: "phone"
@@ -86,6 +87,7 @@ StateGroup {
             PropertyChanges {
                 target: root
                 category: "desktop"
+                multiMonitorOrientation: Qt.PortraitOrientation
             }
         }
     ]

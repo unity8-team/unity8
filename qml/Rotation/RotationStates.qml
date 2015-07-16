@@ -83,9 +83,11 @@ StateGroup {
         }
 
         function tryUpdateState() {
-            if (d.transitioning || (!d.startingUp && !root.shell.orientationChangesEnabled)) {
+            if (d.transitioning || (!d.startingUp && !root.shell.orientationChangesEnabled
+                                    && d.cachedMultiMonitorState === root.orientedShell.multiMonitor)) {
                 return;
             }
+            d.cachedMultiMonitorState = root.orientedShell.multiMonitor
 
             var requestedState = d.requestedOrientationAngle.toString();
             if (requestedState !== root.state) {
@@ -110,6 +112,7 @@ StateGroup {
         readonly property int fullAnimation: 0
         readonly property int indicatorsBarAnimation: 1
         readonly property int noAnimation: 2
+        property bool cachedMultiMonitorState: false
 
         property int animationType
 
