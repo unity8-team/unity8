@@ -245,6 +245,10 @@ class QQuickView(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
     def get_shell_native_orientation(self):
         return self._get_shell().nativeOrientation
 
+    def get_number_of_sessions(self):
+        application_window = self.select_single('ApplicationWindow')
+        return len(application_window.select_many('SessionContainer'))
+
     @autopilot_logging.log_action(logger.info)
     def wait_for_notification(self):
         """Wait for a notification dialog to appear.
