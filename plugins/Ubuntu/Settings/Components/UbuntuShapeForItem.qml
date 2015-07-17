@@ -15,7 +15,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.2
 
 /* FIXME: This component is duplicating the UbuntuShape from the SDK, but shapes more
  * general (Item-based) components. This ability should be incorporated into the SDK's
@@ -24,20 +24,18 @@ import Ubuntu.Components 0.1
  */
 Item {
     property alias radius: shape.radius
-    property alias image: source.sourceItem
+    property alias image: shaderEffectSource.sourceItem
 
     ShaderEffectSource {
-        id: source
+        id: shaderEffectSource
         anchors.centerIn: parent // Placed under shape, so it's hidden
-        width: 1
-        height: 1
         hideSource: true
     }
 
     UbuntuShape {
         id: shape
-        image: source
-
+        source: shaderEffectSource
         anchors.fill: parent
+        sourceFillMode: UbuntuShape.PreserveAspectCrop
     }
 }
