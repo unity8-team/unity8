@@ -509,6 +509,18 @@ Item {
                 // its animations.  So this is simpler.
                 showGreeterDelayed.start();
             }
+
+            if (Powerd.status === Powerd.Off && reason == Powerd.PowerKey) {
+                print("-------------------------------")
+                print("- Power-button pressed... off -")
+                print("-------------------------------")
+            }
+
+            if (Powerd.status === Powerd.On && reason == Powerd.PowerKey) {
+                print("------------------------------")
+                print("- Power-button pressed... on -")
+                print("------------------------------")
+            }
         }
     }
 
