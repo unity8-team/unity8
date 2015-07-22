@@ -138,6 +138,8 @@ function(add_executable_test COMPONENT_NAME TARGET)
             ${args}
     )
 
+    set(record_wrapper ${CMAKE_SOURCE_DIR}/tools/record.py )
+
     add_qmltest_target(test${COMPONENT_NAME} ${TARGET}
         COMMAND ${qmltest_command}
         ${depends}
@@ -147,11 +149,20 @@ function(add_executable_test COMPONENT_NAME TARGET)
     )
 
     if(TARGET xvfb-run)
+        set(temp_rxvfb_targets ${rxvfb_targets})
+
         add_qmltest_target(xvfbtest${COMPONENT_NAME} ${TARGET}
             COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${qmltest_command}
             ${depends}
             ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
             TARGETS ${xvfb_targets}
+        )
+
+        add_qmltest_target(rxvfbtest${COMPONENT_NAME} ${TARGET}
+            COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${record_wrapper} ${qmltest_command}
+            ${depends}
+            ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
+            TARGETS ${temp_rxvfb_targets}
         )
     endif()
 
@@ -289,6 +300,14 @@ macro(mangle_arguments)
         endif()
     endforeach()
     set(xvfb_targets "${xvfb_targets}" PARENT_SCOPE)
+
+    set(rxvfb_targets "")
+    foreach(target ${QMLTEST_TARGETS})
+        if(TARGET rxvfb${target})
+            list(APPEND rxvfb_targets rxvfb${target})
+        endif()
+    endforeach()
+    set(rxvfb_targets "${rxvfb_targets}" PARENT_SCOPE)
 endmacro()
 
 

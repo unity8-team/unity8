@@ -6,12 +6,17 @@ add_custom_target(unittests)
 # QML tests that require graphical capabilities.
 add_custom_target(uitests)
 add_custom_target(xvfbuitests)
+add_custom_target(rxvfbuitests)
 
 add_custom_target(alltests)
 add_dependencies(alltests unittests uitests)
 
 add_custom_target(xvfballtests)
 add_dependencies(xvfballtests unittests xvfbuitests)
+
+add_custom_target(rxvfballtests)
+add_dependencies(rxvfballtests unittests rxvfbuitests)
+
 
 # Support libraries and plugins
 add_subdirectory(mocks)
