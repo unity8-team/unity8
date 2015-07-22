@@ -32,10 +32,6 @@ if __name__ == "__main__":
 
     argv = sys.argv[1:]
 
-    print("==== Record wrapper ====")
-    print(os.getenv('RECORD_TEST_FAILURES', 0))
-    print(argv)
-
     outfile = os.path.join(os.curdir, "qmltest.ogv")
     returncode = 0
 
