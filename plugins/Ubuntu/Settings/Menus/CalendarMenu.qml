@@ -54,7 +54,9 @@ ListItem.Empty {
                 right: parent.right
             }
             fontSize: "large"
-            text: Qt.formatDate(calendar.currentDate, "MMMM") + " " + calendar.currentDate.getFullYear()
+            text: i18n.ctr("%1=month name, %2=4-digit year", "%1 %2")
+                      .arg(Qt.locale().standaloneMonthName(calendar.currentDate.getMonth(), Locale.LongFormat))
+                      .arg(calendar.currentDate.getFullYear())
         }
 
         Calendar {
