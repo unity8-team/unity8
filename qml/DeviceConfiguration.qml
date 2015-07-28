@@ -77,7 +77,7 @@ StateGroup {
             name: "flo"
             PropertyChanges {
                 target: root
-                primaryOrientation: Qt.InvertedLandscapeOrientation
+                primaryOrientation: Qt.LandscapeOrientation
                 category: "tablet"
             }
         },
