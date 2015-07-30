@@ -514,12 +514,14 @@ Item {
                 print("-------------------------------")
                 print("- Power-button pressed... off -")
                 print("-------------------------------")
+                SurfaceManager.displayOff()
             }
 
             if (Powerd.status === Powerd.On && reason == Powerd.PowerKey) {
                 print("------------------------------")
                 print("- Power-button pressed... on -")
                 print("------------------------------")
+                SurfaceManager.displayOn()
             }
         }
     }
