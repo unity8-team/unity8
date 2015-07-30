@@ -252,15 +252,15 @@ FocusScope {
             x: (parent.width - width) / 2
             y: (parent.height - height) / 2
 
-            BorderImage {
-                anchors {
-                    fill: appWindow
-                    margins: -units.gu(2)
-                }
-                source: "graphics/dropshadow2gu.sci"
-                opacity: root.dropShadow ? .3 : 0
-                Behavior on opacity { UbuntuNumberAnimation {} }
-            }
+//            BorderImage {
+//                anchors {
+//                    fill: appWindow
+//                    margins: -units.gu(2)
+//                }
+//                source: "graphics/dropshadow2gu.sci"
+//                opacity: root.dropShadow ? .3 : 0
+//                Behavior on opacity { UbuntuNumberAnimation {} }
+//            }
 
             ApplicationWindow {
                 id: appWindow
