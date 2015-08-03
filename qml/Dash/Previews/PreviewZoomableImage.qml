@@ -23,6 +23,9 @@ import "../../Components"
     This widget shows image contained in widgetData["source"],
     and falls back to widgetData["fallback"] if loading fails
     can be zoomable accordingly with widgetData["zoomable"].
+    
+    It will popup a overlay when widgetData["interactive"] == true
+    and it's enabled by default.
  */
 
 PreviewWidget {
@@ -30,6 +33,9 @@ PreviewWidget {
     implicitHeight: units.gu(22)
 
     property Item rootItem: QuickUtils.rootItem(root)
+
+    property bool interactive: root.widgetData["interactive"] === undefined ?
+                                    true: root.widgetData["interactive"];
 
     LazyImage {
         id: lazyImage
@@ -48,6 +54,8 @@ PreviewWidget {
         MouseArea {
             id: mouseArea
             anchors.fill: parent
+            enabled: root.interactive;
+
             onClicked: {
                 overlay.initialX = rootItem.mapFromItem(parent, 0, 0).x;
                 overlay.initialY = rootItem.mapFromItem(parent, 0, 0).y;

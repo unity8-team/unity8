@@ -20,7 +20,10 @@ import "../../Components"
 
 /*! This preview widget shows a horizontal list of images.
  *  The URIs for the images should be an array in widgetData["sources"].
- *  Images fall back to widgetData["fallback"] if loading fails
+ *  Images fall back to widgetData["fallback"] if loading fails.
+ * 
+ *  It will popup a slideview when widgetData["interactive"] == true
+ *  and it's enabled by default.
  */
 
 PreviewWidget {
@@ -28,6 +31,9 @@ PreviewWidget {
     implicitHeight: units.gu(22)
 
     property Item rootItem: QuickUtils.rootItem(root)
+
+    property bool interactive: root.widgetData["interactive"] === undefined ? 
+                                        true: root.widgetData["interactive"];
 
     ListView {
         id: previewImageListView
@@ -67,6 +73,8 @@ PreviewWidget {
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
+                enabled: root.interactive;
+                
                 onClicked: {
                     previewImageListView.currentIndex = index;
                     overlay.updateInitialItem();
