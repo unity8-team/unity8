@@ -27,10 +27,10 @@ SimpleMessageMenu {
     id: menu
 
     property bool actionEnabled: true
-    property string actionButtonText: i18n.tr("Call back")
+    property string actionButtonText: i18n.dtr("ubuntu-settings-components", "Call back")
 
     property bool replyEnabled: true
-    property string replyButtonText: i18n.tr("Send")
+    property string replyButtonText: i18n.dtr("ubuntu-settings-components", "Send")
     property string replyHintText
     property bool replyExpanded: false
 
@@ -55,7 +55,7 @@ SimpleMessageMenu {
 
                 Button {
                     objectName: "messageButton"
-                    text: i18n.tr("Message")
+                    text: i18n.dtr("ubuntu-settings-components", "Message")
                     Layout.fillWidth: true
 
                     onClicked: {

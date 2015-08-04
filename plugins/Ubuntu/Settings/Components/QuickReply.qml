@@ -60,7 +60,7 @@ Item {
                 height: parent.height
                 verticalAlignment: Text.AlignVCenter
                 fontSize: "small"
-                text: i18n.tr("Quick reply with:")
+                text: i18n.dtr("ubuntu-settings-components", "Quick reply with:")
             }
         }
 

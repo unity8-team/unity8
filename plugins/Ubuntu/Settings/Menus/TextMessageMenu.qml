@@ -26,7 +26,7 @@ SimpleMessageMenu {
     id: menu
 
     property bool replyEnabled: true
-    property string replyButtonText: i18n.tr("Send")
+    property string replyButtonText: i18n.dtr("ubuntu-settings-components", "Send")
     property string replyHintText
 
     signal replied(string value)

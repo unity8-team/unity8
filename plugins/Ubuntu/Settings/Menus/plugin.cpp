@@ -21,12 +21,7 @@
 // Qt
 #include <QtQml/qqml.h>
 
-// other
-#include <libintl.h>
-
 void UbuntuSettingsMenusPlugin::registerTypes(const char *uri)
 {
-    textdomain("ubuntu-settings-components");
-
     qmlRegisterUncreatableType<TransferState>(uri, 0, 1, "TransferState", "Can't create TransferState class");
 }

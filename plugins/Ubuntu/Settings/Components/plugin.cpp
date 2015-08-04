@@ -21,12 +21,7 @@
 // Qt
 #include <QtQml/qqml.h>
 
-// other
-#include <libintl.h>
-
 void UbuntuSettingsComponentsPlugin::registerTypes(const char *uri)
 {
-    textdomain("ubuntu-settings-components");
-
     qmlRegisterType<ServerPropertySynchroniser>(uri, 0, 1, "ServerPropertySynchroniser");
 }
