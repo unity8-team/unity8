@@ -36,24 +36,24 @@ Item {
 
         Item {
             id: fakeWindow
-            property alias minWidth: moveResizeArea.minWidth
-            property alias minHeight: moveResizeArea.minHeight
+            property alias minWidth: windowResizeArea.minWidth
+            property alias minHeight: windowResizeArea.minHeight
             x: units.gu(20)
             y: units.gu(20)
             height: units.gu(20)
             width: units.gu(20)
 
-            WindowMoveResizeArea {
-                id: moveResizeArea
+            WindowResizeArea {
+                id: windowResizeArea
                 target: fakeWindow
-                resizeHandleWidth: units.gu(0.5)
+                borderThickness: units.gu(0.5)
                 minWidth: units.gu(15)
                 minHeight: units.gu(10)
                 windowId: "test-window-id"
             }
 
             Rectangle {
-                anchors.fill: moveResizeArea
+                anchors.fill: windowResizeArea
                 color: "red"
             }
 
@@ -78,34 +78,6 @@ Item {
             fakeWindow.y = units.gu(20)
             fakeWindow.width = units.gu(20)
             fakeWindow.height = units.gu(20)
-        }
-
-        function test_dragWindow_data() {
-            return [
-                { tag: "up", dx: 0, dy: units.gu(-10) },
-                { tag: "down", dx: 0, dy: units.gu(10) },
-                { tag: "left", dx: units.gu(-10), dy: 0 },
-                { tag: "right", dx: units.gu(10), dy: 0 },
-                { tag: "right/down", dx: units.gu(10), dy: units.gu(10) },
-                { tag: "left/down", dx: units.gu(-10), dy: units.gu(10) }
-            ]
-        }
-
-        function test_dragWindow(data) {
-            var initialWindowX = fakeWindow.x;
-            var initialWindowY = fakeWindow.y;
-            var initialWindowWidth = fakeWindow.width
-            var initialWindowHeight = fakeWindow.height
-
-            var startDragX = initialWindowX + fakeWindow.width / 2;
-            var startDragY = initialWindowY + fakeWindow.height / 2;
-            mouseFlick(root, startDragX, startDragY, startDragX + data.dx, startDragY + data.dy, true, true, units.gu(.5), 10)
-
-            tryCompare(fakeWindow, "x", initialWindowX + data.dx)
-            tryCompare(fakeWindow, "y", initialWindowX + data.dy)
-
-            compare(fakeWindow.height, initialWindowHeight);
-            compare(fakeWindow.width, initialWindowWidth);
         }
 
         function test_resizeWindowRightBottom_data() {

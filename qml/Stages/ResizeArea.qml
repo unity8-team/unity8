@@ -89,11 +89,15 @@ MouseArea {
         var pos = mapToItem(target.parent, mouseX, mouseY);
 
         if (leftBorder) {
-            if (startX + startWidth - pos.x > target.minWidth) {
+            if (startX + startWidth > pos.x + target.minWidth) {
                 target.x = pos.x;
                 target.width = startX + startWidth - target.x;
                 startX = target.x;
                 startWidth = target.width;
+            } else if (startX + startWidth < pos.x + target.minWidth) {
+                // don't let it get thinner than minWidth
+                target.x = startX + startWidth - target.minWidth;
+                target.width = target.minWidth;
             }
 
         } else if (rightBorder) {
@@ -115,11 +119,15 @@ MouseArea {
 
         if (topBorder) {
 
-            if (startY + startHeight - pos.y > target.minHeight) {
+            if (startY + startHeight > pos.y + target.minHeight) {
                 target.y = pos.y;
                 target.height = startY + startHeight - target.y;
                 startY = target.y;
                 startHeight = target.height;
+            } else if (startY + startHeight < pos.y + target.minHeight) {
+                // don't let it get shorter than minHeight
+                target.y = startY + startHeight - target.minHeight;
+                target.height = target.minHeight;
             }
 
         } else if (bottomBorder) {
