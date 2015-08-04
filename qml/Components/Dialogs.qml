@@ -167,14 +167,14 @@ Item {
                     unitySessionService.reboot();
                     powerDialog.hide();
                 }
-                color: UbuntuColors.green
+                color: UbuntuColors.lightGrey
             }
             Button {
                 text: i18n.tr("Cancel")
                 onClicked: {
                     powerDialog.hide();
                 }
-                color: UbuntuColors.coolGrey
+                color: UbuntuColors.lightGrey
             }
         }
     }
