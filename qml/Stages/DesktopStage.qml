@@ -208,12 +208,6 @@ Rectangle {
                 onFocusChanged: {
                     if (focus && ApplicationManager.focusedApplicationId !== model.appId) {
                         ApplicationManager.requestFocusApplication(model.appId);
-                        decoratedWindow.forceActiveFocus();
-                    }
-                }
-                Component.onCompleted: {
-                    if (ApplicationManager.focusedApplicationId == model.appId) {
-                        decoratedWindow.forceActiveFocus();
                     }
                 }
 
@@ -292,7 +286,7 @@ Rectangle {
                             enabled: true
                         }
                         PropertyChanges {
-                            target: windowMoveResizeArea
+                            target: windowResizeArea
                             enabled: false
                         }
                     }
@@ -318,12 +312,12 @@ Rectangle {
                     itemHeight: appDelegate.height
                 }
 
-                WindowMoveResizeArea {
-                    id: windowMoveResizeArea
+                WindowResizeArea {
+                    id: windowResizeArea
                     target: appDelegate
                     minWidth: appDelegate.minWidth
                     minHeight: appDelegate.minHeight
-                    resizeHandleWidth: units.gu(2)
+                    borderThickness: units.gu(2)
                     windowId: model.appId // FIXME: Change this to point to windowId once we have such a thing
 
                     onPressed: appDelegate.focus = true;
@@ -338,11 +332,12 @@ Rectangle {
                     windowHeight: appDelegate.height
                     application: ApplicationManager.get(index)
                     active: ApplicationManager.focusedApplicationId === model.appId
-                    focus: false
+                    focus: true
 
                     onClose: ApplicationManager.stopApplication(model.appId)
                     onMaximize: appDelegate.maximize()
                     onMinimize: appDelegate.minimize()
+                    onDecorationPressed: appDelegate.focus = true;
 
                     transform: [
                         Scale {

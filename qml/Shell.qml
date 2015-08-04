@@ -188,7 +188,6 @@ Item {
 
     ScreenGrabber {
         id: screenGrabber
-        z: dialogs.z + 10
     }
 
     WindowKeysFilter {
@@ -672,9 +671,14 @@ Item {
         onShowHome: showHome()
     }
 
+    Cursor {
+        id: cursor
+        z: dialogs.z + 1
+    }
+
     Rectangle {
         id: shutdownFadeOutRectangle
-        z: screenGrabber.z + 10
+        z: cursor.z + 1
         enabled: false
         visible: false
         color: "black"
