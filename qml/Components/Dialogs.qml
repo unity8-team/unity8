@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
 
 import Unity.Application 0.1
 import Unity.Session 0.1
@@ -149,32 +150,61 @@ Item {
         id: powerDialogComponent
         ShellDialog {
             id: powerDialog
-            title: i18n.ctr("Title: Power off/Restart dialog", "Power")
-            text: i18n.tr("Are you sure you would like\nto power off?")
-            Button {
-                text: i18n.ctr("Button: Power off the system", "Power off")
-                onClicked: {
-                    root.closeAllApps();
-                    powerDialog.hide();
-                    root.powerOffClicked();
-                }
-                color: UbuntuColors.red
+            Label {
+                horizontalAlignment: Text.AlignLeft
+                text: i18n.ctr("Title: Power off/Restart dialog", "Power")
+                wrapMode: Text.Wrap
+                maximumLineCount: 2
+                elide: Text.ElideRight
+                fontSize: "large"
+                color: UbuntuColors.darkGrey
+                visible: (text !== "")
             }
-            Button {
-                text: i18n.ctr("Button: Restart the system", "Restart")
-                onClicked: {
-                    root.closeAllApps();
-                    unitySessionService.reboot();
-                    powerDialog.hide();
-                }
-                color: UbuntuColors.lightGrey
+
+            Label {
+                horizontalAlignment: Text.AlignLeft
+                text: i18n.tr("Are you sure you would like to power off?")
+                fontSize: "medium"
+                color: UbuntuColors.darkGrey
+                wrapMode: Text.Wrap
+                visible: (text !== "")
             }
-            Button {
+
+            RowLayout {
+                spacing: units.gu(2)
+
+                Button {
+                    Layout.fillWidth: true
+                    text: i18n.ctr("Button: Power off the system", "Power off")
+                    onClicked: {
+                        root.closeAllApps();
+                        powerDialog.hide();
+                        root.powerOffClicked();
+                    }
+                    color: UbuntuColors.red
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    text: i18n.ctr("Button: Restart the system", "Restart")
+                    onClicked: {
+                        root.closeAllApps();
+                        unitySessionService.reboot();
+                        powerDialog.hide();
+                    }
+                    color: UbuntuColors.lightGrey
+                }
+            }
+
+            Label {
                 text: i18n.tr("Cancel")
-                onClicked: {
-                    powerDialog.hide();
+                color: UbuntuColors.coolGrey
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        powerDialog.hide();
+                    }
                 }
-                color: UbuntuColors.lightGrey
             }
         }
     }
