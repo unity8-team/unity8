@@ -56,6 +56,7 @@ Item {
     property bool beingResized
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
     property string mode: "full-greeter"
+    property bool cursorVisible: false
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
     }
@@ -188,7 +189,6 @@ Item {
 
     ScreenGrabber {
         id: screenGrabber
-        z: dialogs.z + 10
     }
 
     WindowKeysFilter {
@@ -672,9 +672,15 @@ Item {
         onShowHome: showHome()
     }
 
+    Cursor {
+        id: cursor
+        visible: shell.cursorVisible
+        z: dialogs.z + 1
+    }
+
     Rectangle {
         id: shutdownFadeOutRectangle
-        z: screenGrabber.z + 10
+        z: cursor.z + 1
         enabled: false
         visible: false
         color: "black"
