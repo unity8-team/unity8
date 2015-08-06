@@ -178,6 +178,7 @@ Item {
 
     PhysicalKeysMapper {
         id: physicalKeysMapper
+        objectName: "physicalKeysMapper"
 
         onPowerKeyLongPressed: dialogs.showPowerDialog()
         onVolumeDownTriggered: volumeControl.volumeDown();
@@ -188,13 +189,6 @@ Item {
     ScreenGrabber {
         id: screenGrabber
         z: dialogs.z + 10
-        enabled: Powerd.status === Powerd.On
-    }
-
-    Binding {
-        target: ApplicationManager
-        property: "forceDashActive"
-        value: launcher.shown || launcher.dashSwipe
     }
 
     WindowKeysFilter {
@@ -352,6 +346,21 @@ Item {
                 property: "beingResized"
                 value: shell.beingResized
             }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "keepDashRunning"
+                value: launcher.shown || launcher.dashSwipe
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "suspended"
+                value: greeter.shown
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "altTabPressed"
+                value: physicalKeysMapper.altTabPressed
+            }
         }
 
         Tutorial {
@@ -387,25 +396,6 @@ Item {
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
-    Connections {
-        target: SurfaceManager
-        onSurfaceCreated: {
-            if (surface.type == MirSurfaceItem.InputMethod) {
-                inputMethod.surface = surface;
-            }
-        }
-
-        onSurfaceDestroyed: {
-            if (inputMethod.surface == surface) {
-                inputMethod.surface = null;
-                surface.parent = null;
-            }
-            if (!surface.parent) {
-                // there's no one displaying it. delete it right away
-                surface.release();
-            }
-        }
-    }
     Connections {
         target: SessionManager
         onSessionStopping: {
@@ -454,12 +444,6 @@ Item {
             }
 
             onEmergencyCall: startLockedApp("dialer-app")
-
-            Binding {
-                target: ApplicationManager
-                property: "suspended"
-                value: greeter.shown
-            }
         }
     }
 

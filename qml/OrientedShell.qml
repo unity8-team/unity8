@@ -47,7 +47,7 @@ Rectangle {
 
 
     // to be overwritten by tests
-    property var usageModeSettings: GSettings { schema.id: "com.canonical.Unity8" }
+    property var unity8Settings: Unity8Settings {}
     property var oskSettings: GSettings { schema.id: "com.canonical.keyboard.maliit" }
 
     property int physicalOrientation: Screen.orientation
@@ -168,9 +168,9 @@ Rectangle {
         // TODO: Factor in the connected input devices (eg: physical keyboard, mouse, touchscreen),
         //       what's the output device (eg: big TV, desktop monitor, phone display), etc.
         usageScenario: {
-            if (root.usageModeSettings.usageMode === "Windowed" || multiMonitor) {
+            if (root.unity8Settings.usageMode === "Windowed" || multiMonitor) {
                 return "desktop";
-            } else if (root.usageModeSettings.usageMode === "Staged") {
+            } else if (root.unity8Settings.usageMode === "Staged") {
                 if (deviceConfiguration.category === "phone") {
                     return "phone";
                 } else {
