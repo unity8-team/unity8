@@ -5,7 +5,7 @@
     <value nick="Automatic" value="2" />
   </enum>
 
-  <enum id="mouse-primary-button-enum">
+  <enum id="primary-button-enum">
     <value nick="Left" value="0" />
     <value nick="Middle" value="1" />
     <value nick="Right" value="2" />
@@ -16,14 +16,6 @@
       <default>"Automatic"</default>
       <summary>The usage mode.</summary>
       <description>The usage mode chosen will affect the Window Management behaviour.</description>
-    </key>
-  </schema>
-
-  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
-    <key enum="mouse-primary-button-enum" name="mouse-primary-button">
-      <default>"Left"</default>
-      <summary>Primary Mouse Button.</summary>
-      <description>The primary mouse button.</description>
     </key>
   </schema>
 
