@@ -5,6 +5,12 @@
     <value nick="Automatic" value="2" />
   </enum>
 
+  <enum id="mouse-primary-button-enum">
+    <value nick="Left" value="0" />
+    <value nick="Middle" value="1" />
+    <value nick="Right" value="2" />
+  </enum>
+
   <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
     <key enum="usage-mode-enum" name="usage-mode">
       <default>"Automatic"</default>
@@ -12,4 +18,109 @@
       <description>The usage mode chosen will affect the Window Management behaviour.</description>
     </key>
   </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key enum="mouse-primary-button-enum" name="mouse-primary-button">
+      <default>"Left"</default>
+      <summary>Primary Mouse Button.</summary>
+      <description>The primary mouse button.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key enum="primary-button-enum" name="mouse-primary-button">
+      <default>"Left"</default>
+      <summary>Primary Mouse Button.</summary>
+      <description>The primary mouse button.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="mouse-cursor-speed" type="f">
+      <default>0.5</default>
+      <summary>Mouse cursor speed.</summary>
+      <description>Mouse cursor speed.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="mouse-double-click-speed" type="i">
+      <default>100</default>
+      <summary>Mouse double click speed.</summary>
+      <description>Mouse double click speed in milliseconds.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="mouse-scroll-speed" type="f">
+      <default>0.5</default>
+      <summary>Mouse scroll speed.</summary>
+      <description>Mouse scroll speed.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key enum="primary-button-enum" name="touchpad-primary-button">
+      <default>"Left"</default>
+      <summary>Primary Touchpad Button.</summary>
+      <description>The primary touchpad button.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-cursor-speed" type="f">
+      <default>0.5</default>
+      <summary>Touchpad cursor speed.</summary>
+      <description>Touchpad cursor speed.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-double-click-speed" type="i">
+      <default>100</default>
+      <summary>Touchpad double click speed.</summary>
+      <description>Touchpad double click speed in milliseconds.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-scroll-speed" type="f">
+      <default>0.5</default>
+      <summary>Touchpad scroll speed.</summary>
+      <description>Touchpad scroll speed.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-disable-while-typing" type="b">
+      <default>false</default>
+      <summary>Ignore Touchpad while typing.</summary>
+      <description>Disable touchpad while typing.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-tap-to-click" type="b">
+      <default>false</default>
+      <summary>Tap to click.</summary>
+      <description>Touchpad tap to click.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-two-finger-scroll" type="b">
+      <default>false</default>
+      <summary>Two finger scrolling.</summary>
+      <description>Touchpad two finger scrolling.</description>
+    </key>
+  </schema>
+
+  <schema path="/com/canonical/unity8/" id="com.canonical.Unity8" gettext-domain="unity8">
+    <key name="touchpad-disable-with-mouse" type="b">
+      <default>true</default>
+      <summary>Ignore touchpad when a mouse is connected.</summary>
+      <description>Disable touchpad when a mouse is connected.</description>
+    </key>
+  </schema>
+
 </schemalist>
