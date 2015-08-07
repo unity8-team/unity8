@@ -103,7 +103,7 @@ public Q_SLOTS:
     Q_INVOKABLE void destroySession();
 
 private Q_SLOTS:
-    void onSessionSurfaceChanged(MirSurface*);
+    void onSessionSurfaceAdded(MirSurface*);
 
 private:
     void setIcon(const QUrl &value);
