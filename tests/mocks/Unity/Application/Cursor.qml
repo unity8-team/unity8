@@ -14,26 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIRTUALKEYBOARD_H
-#define VIRTUALKEYBOARD_H
+import QtQuick 2.4
 
-#include "MirSurface.h"
-
-#include <QQuickItem>
-
-class VirtualKeyboard : public MirSurface
-{
-    Q_OBJECT
-public:
-    explicit VirtualKeyboard();
-    ~VirtualKeyboard();
-
-/*
-protected:
-    void touchEvent(QTouchEvent * event) override;
-*/
-};
-
-Q_DECLARE_METATYPE(VirtualKeyboard*)
-
-#endif // VIRTUALKEYBOARD_H
+Item {
+}

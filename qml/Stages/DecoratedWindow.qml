@@ -34,9 +34,10 @@ FocusScope {
     property int windowWidth: width
     property int windowHeight: height
 
-    signal close();
-    signal maximize();
-    signal minimize();
+    signal close()
+    signal maximize()
+    signal minimize()
+    signal decorationPressed()
 
     state: "normal"
     states: [
@@ -88,6 +89,7 @@ FocusScope {
 
     WindowDecoration {
         id: decoration
+        target: root.parent
         objectName: application ? "appWindowDecoration_" + application.appId : "appWindowDecoration_null"
         anchors { left: parent.left; top: parent.top; right: parent.right }
         height: units.gu(3)
@@ -95,6 +97,7 @@ FocusScope {
         onClose: root.close();
         onMaximize: root.maximize();
         onMinimize: root.minimize();
+        onPressed: root.decorationPressed();
         visible: decorationShown
     }
 

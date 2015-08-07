@@ -39,6 +39,8 @@ Rectangle {
     property int shellPrimaryOrientation
     property int nativeOrientation
     property bool beingResized: false
+    property bool keepDashRunning: true
+    property bool suspended: false
 
     // functions to be called from outside
     function updateFocusedAppOrientation() { /* TODO */ }
@@ -206,13 +208,18 @@ Rectangle {
                 onFocusChanged: {
                     if (focus && ApplicationManager.focusedApplicationId !== model.appId) {
                         ApplicationManager.requestFocusApplication(model.appId);
-                        decoratedWindow.forceActiveFocus();
                     }
                 }
-                Component.onCompleted: {
-                    if (ApplicationManager.focusedApplicationId == model.appId) {
-                        decoratedWindow.forceActiveFocus();
-                    }
+
+                Binding {
+                    target: ApplicationManager.get(index)
+                    property: "requestedState"
+                    // TODO: figure out some lifecycle policy, like suspending minimized apps
+                    //       if running on a tablet or something.
+                    // TODO: If the device has a dozen suspended apps because it was running
+                    //       in staged mode, when it switches to Windowed mode it will suddenly
+                    //       resume all those apps at once. We might want to avoid that.
+                    value: ApplicationInfoInterface.RequestedRunning // Always running for now
                 }
 
                 function maximize() {
@@ -279,7 +286,7 @@ Rectangle {
                             enabled: true
                         }
                         PropertyChanges {
-                            target: windowMoveResizeArea
+                            target: windowResizeArea
                             enabled: false
                         }
                     }
@@ -305,12 +312,12 @@ Rectangle {
                     itemHeight: appDelegate.height
                 }
 
-                WindowMoveResizeArea {
-                    id: windowMoveResizeArea
+                WindowResizeArea {
+                    id: windowResizeArea
                     target: appDelegate
                     minWidth: appDelegate.minWidth
                     minHeight: appDelegate.minHeight
-                    resizeHandleWidth: units.gu(2)
+                    borderThickness: units.gu(2)
                     windowId: model.appId // FIXME: Change this to point to windowId once we have such a thing
 
                     onPressed: appDelegate.focus = true;
@@ -325,11 +332,12 @@ Rectangle {
                     windowHeight: appDelegate.height
                     application: ApplicationManager.get(index)
                     active: ApplicationManager.focusedApplicationId === model.appId
-                    focus: false
+                    focus: true
 
                     onClose: ApplicationManager.stopApplication(model.appId)
                     onMaximize: appDelegate.maximize()
                     onMinimize: appDelegate.minimize()
+                    onDecorationPressed: appDelegate.focus = true;
 
                     transform: [
                         Scale {

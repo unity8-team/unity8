@@ -56,6 +56,7 @@ Item {
     property bool beingResized
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
     property string mode: "full-greeter"
+    property bool cursorVisible: false
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
     }
@@ -188,13 +189,6 @@ Item {
 
     ScreenGrabber {
         id: screenGrabber
-        z: dialogs.z + 10
-    }
-
-    Binding {
-        target: ApplicationManager
-        property: "forceDashActive"
-        value: launcher.shown || launcher.dashSwipe
     }
 
     WindowKeysFilter {
@@ -354,6 +348,16 @@ Item {
             }
             Binding {
                 target: applicationsDisplayLoader.item
+                property: "keepDashRunning"
+                value: launcher.shown || launcher.dashSwipe
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "suspended"
+                value: greeter.shown
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
                 property: "altTabPressed"
                 value: physicalKeysMapper.altTabPressed
             }
@@ -392,25 +396,6 @@ Item {
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
-    Connections {
-        target: SurfaceManager
-        onSurfaceCreated: {
-            if (surface.type == MirSurfaceItem.InputMethod) {
-                inputMethod.surface = surface;
-            }
-        }
-
-        onSurfaceDestroyed: {
-            if (inputMethod.surface == surface) {
-                inputMethod.surface = null;
-                surface.parent = null;
-            }
-            if (!surface.parent) {
-                // there's no one displaying it. delete it right away
-                surface.release();
-            }
-        }
-    }
     Connections {
         target: SessionManager
         onSessionStopping: {
@@ -459,12 +444,6 @@ Item {
             }
 
             onEmergencyCall: startLockedApp("dialer-app")
-
-            Binding {
-                target: ApplicationManager
-                property: "suspended"
-                value: greeter.shown
-            }
         }
     }
 
@@ -693,9 +672,15 @@ Item {
         onShowHome: showHome()
     }
 
+    Cursor {
+        id: cursor
+        visible: shell.cursorVisible
+        z: dialogs.z + 1
+    }
+
     Rectangle {
         id: shutdownFadeOutRectangle
-        z: screenGrabber.z + 10
+        z: cursor.z + 1
         enabled: false
         visible: false
         color: "black"
