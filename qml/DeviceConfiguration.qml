@@ -21,6 +21,10 @@ StateGroup {
 
     readonly property int useNativeOrientation: -1
 
+    // Allows overriding for inverted devices
+    property int landscapeOrientation: Qt.LandscapeOrientation
+    property int portraitOrientation: Qt.PortraitOrientation
+
     property int primaryOrientation: useNativeOrientation
 
     property int supportedOrientations: Qt.PortraitOrientation
@@ -77,6 +81,7 @@ StateGroup {
             name: "flo"
             PropertyChanges {
                 target: root
+                landscapeOrientation: Qt.InvertedLandscapeOrientation
                 primaryOrientation: Qt.InvertedLandscapeOrientation
                 category: "tablet"
             }

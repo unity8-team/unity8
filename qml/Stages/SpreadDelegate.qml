@@ -42,6 +42,8 @@ FocusScope {
     property alias application: appWindow.application
     property int shellOrientationAngle
     property int shellOrientation
+    property int shellLandscapeOrientation
+    property int shellPortraitOrientation
     property int shellPrimaryOrientation
     property int nativeOrientation
 
@@ -160,32 +162,15 @@ FocusScope {
                                 supportedOrientations = root.shellPrimaryOrientation;
                             }
 
-
                             // If it doesn't support shell's current orientation
                             // then simply pick some arbitraty one that it does support
                             var chosenOrientation = 0;
-                            var anyPortrait = Qt.PortraitOrientation | Qt.InvertedPortraitOrientation
-                            var anyLandscape = Qt.LandscapeOrientation | Qt.InvertedLandscapeOrientation
-
                             if (supportedOrientations & root.shellOrientation) {
                                 chosenOrientation = root.shellOrientation;
-
-                            // If the app is simply requesting to be upside down, force it to be the
-                            // same orientation as the shell
-                            } else if ((supportedOrientations & anyLandscape) &&
-                                (root.shellOrientation & anyLandscape))
-                            {
-                                chosenOrientation = root.shellOrientation
-                            } else if ((supportedOrientations & anyPortrait) &&
-                                (root.shellOrientation & anyPortrait))
-                            {
-                                chosenOrientation = root.shellOrientation
-                            }
-
-                            else if (supportedOrientations & (Qt.PortraitOrientation)) {
-                                chosenOrientation = Qt.PortraitOrientation;
+                            } else if (supportedOrientations & Qt.PortraitOrientation) {
+                                chosenOrientation = shellPortraitOrientation;
                             } else if (supportedOrientations & Qt.LandscapeOrientation) {
-                                chosenOrientation = Qt.LandscapeOrientation;
+                                chosenOrientation = shellLandscapeOrientation;
                             } else if (supportedOrientations & Qt.InvertedPortraitOrientation) {
                                 chosenOrientation = Qt.InvertedPortraitOrientation;
                             } else if (supportedOrientations & Qt.InvertedLandscapeOrientation) {

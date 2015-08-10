@@ -48,6 +48,8 @@ Item {
     // to be set from outside
     property int orientationAngle: 0
     property int orientation
+    property int landscapeOrientation
+    property int portraitOrientation
     property int primaryOrientation
     property int nativeOrientation
     property real nativeWidth
@@ -326,6 +328,16 @@ Item {
                 target: applicationsDisplayLoader.item
                 property: "background"
                 value: shell.background
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "shellLandscapeOrientation"
+                value: shell.landscapeOrientation
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "shellPortraitOrientation"
+                value: shell.portraitOrientation
             }
             Binding {
                 target: applicationsDisplayLoader.item

@@ -32,6 +32,9 @@ Rectangle {
     // NB: native and primary orientations here don't map exactly to their QScreen counterparts
     readonly property int nativeOrientation: width > height ? Qt.LandscapeOrientation : Qt.PortraitOrientation
 
+    readonly property int landscapeOrientation: deviceConfiguration.landscapeOrientation
+    readonly property int portraitOrientation: deviceConfiguration.portraitOrientation
+
     readonly property int primaryOrientation:
             deviceConfiguration.primaryOrientation == deviceConfiguration.useNativeOrientation
                    ? nativeOrientation : deviceConfiguration.primaryOrientation
@@ -151,6 +154,8 @@ Rectangle {
         width: root.width
         height: root.height
         orientation: root.angleToOrientation(orientationAngle)
+        landscapeOrientation: root.landscapeOrientation
+        portraitOrientation: root.portraitOrientation
         primaryOrientation: root.primaryOrientation
         nativeOrientation: root.nativeOrientation
         nativeWidth: root.width
