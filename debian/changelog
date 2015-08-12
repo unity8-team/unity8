@@ -1,3 +1,9 @@
+unity8 (8.12) UNRELEASED; urgency=medium
+
+  * Silo0 special build
+
+ -- Gerry Boland <gerry.boland@canonical.com>  Wed, 12 Aug 2015 17:14:03 +0100
+
 unity8 (8.11+15.04.20150811-0ubuntu1) vivid; urgency=medium
 
   [ Albert Astals Cid ]
@@ -8,12 +14,6 @@ unity8 (8.11+15.04.20150811-0ubuntu1) vivid; urgency=medium
   * Resync trunk.
 
  -- CI Train Bot <ci-train-bot@canonical.com>  Tue, 11 Aug 2015 14:45:12 +0000
-
-unity8 (8.11) UNRELEASED; urgency=medium
-
-  * Silo0 special build
-
- -- Gerry Boland <gerry.boland@canonical.com>  Wed, 08 Jul 2015 17:14:03 +0100
 
 unity8 (8.10+15.10.20150804-0ubuntu1) wily; urgency=medium
 
