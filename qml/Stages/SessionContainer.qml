@@ -30,7 +30,7 @@ FocusScope {
     SurfaceContainer {
         id: _surfaceContainer
         anchors.fill: parent
-        surface: session ? session.surface : null
+        surface: session ? session.lastSurface : null
     }
 
     Repeater {

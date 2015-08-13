@@ -187,6 +187,7 @@ Item {
             bottom: parent.bottom
         }
         enabled: root.shadeBackground && root.state == "visible"
+        visible: enabled // otherwise it will get in the way of cursor selection for some reason
         onPressed: {
             root.state = ""
         }
