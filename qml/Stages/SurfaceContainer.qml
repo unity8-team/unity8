@@ -31,7 +31,7 @@ FocusScope {
         if (surface) {
             // Set the surface focus *after* it is added to the scene to
             // ensure an update to the scene's active focus.
-            surface.focus = false;
+            // surface.focus = false;
             surface.parent = root;
             surface.focus = true;
         } else {
