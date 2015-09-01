@@ -188,7 +188,7 @@ Item {
 
     ScreenGrabber {
         id: screenGrabber
-        z: dialogs.z + 10
+        z: externalDisplayBlock.z + 10
     }
 
     WindowKeysFilter {
@@ -669,6 +669,15 @@ Item {
     Connections {
         target: SessionBroadcast
         onShowHome: showHome()
+    }
+
+    ExternalDisplayBlock {
+        id: externalDisplayBlock
+        anchors.fill: parent
+        background: shell.background
+        backgroundTopMargin: panel.panelHeight
+        z: dialogs.z + 10
+        //visible: false
     }
 
     Rectangle {
