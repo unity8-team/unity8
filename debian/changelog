@@ -1,3 +1,14 @@
+ubuntu-settings-components (0.6+15.10.20150903-0ubuntu1) wily; urgency=medium
+
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Lukáš Tinkl ]
+  * Setup message extraction, load the catalog from the plugins (LP:
+    #1436912)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 03 Sep 2015 08:46:09 +0000
+
 ubuntu-settings-components (0.6+15.10.20150716-0ubuntu1) wily; urgency=medium
 
   [ Michael Zanetti ]
