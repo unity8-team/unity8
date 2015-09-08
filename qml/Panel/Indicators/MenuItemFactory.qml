@@ -783,6 +783,10 @@ Item {
             }
 
             stateText: {
+                var customState = transferState["state-label"]
+                if (customState)
+                    return customState;
+
                 switch (runningState) {
                     case Menus.TransferState.Queued:
                         return i18n.tr("In queue…");
