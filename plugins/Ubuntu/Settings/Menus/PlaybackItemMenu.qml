@@ -17,7 +17,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItem
 import QtQuick.Layouts 1.1
 
@@ -51,8 +51,8 @@ ListItem.Empty {
             source: "image://theme/media-skip-backward"
             color: {
                 if (!enabled)
-                    return Theme.palette.normal.backgroundText;
-                return prevMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+                    return theme.palette.normal.backgroundText;
+                return prevMA.pressed ? theme.palette.selected.foreground : theme.palette.normal.foregroundText;
             }
             enabled: canGoPrevious
 
@@ -72,8 +72,8 @@ ListItem.Empty {
             source: playing ? "image://theme/media-playback-pause" : "image://theme/media-playback-start"
             color: {
                 if (!enabled)
-                    return Theme.palette.normal.backgroundText;
-                return playMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+                    return theme.palette.normal.backgroundText;
+                return playMA.pressed ? theme.palette.selected.foreground : theme.palette.normal.foregroundText;
             }
             enabled: canPlay
 
@@ -93,8 +93,8 @@ ListItem.Empty {
             source: "image://theme/media-skip-forward"
             color: {
                 if (!enabled)
-                    return Theme.palette.normal.backgroundText;
-                return nextMA.pressed ? Theme.palette.selected.foreground : Theme.palette.normal.foregroundText;
+                    return theme.palette.normal.backgroundText;
+                return nextMA.pressed ? theme.palette.selected.foreground : theme.palette.normal.foregroundText;
             }
             enabled: canGoNext
 

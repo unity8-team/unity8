@@ -19,7 +19,7 @@ import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1 as USC
 import Ubuntu.Settings.Menus 0.1 as USM
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.3
 
 Item {
     id: root

@@ -19,7 +19,7 @@
  */
 
 import QtQuick 2.1
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import QtQuick.Layouts 1.1
 
 Item {
@@ -59,7 +59,7 @@ Item {
 
                 color: {
                     if (String(source).match(/^image:\/\/theme/)) {
-                        return Theme.palette.selected.backgroundText;
+                        return theme.palette.selected.backgroundText;
                     }
                     return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }
@@ -116,7 +116,7 @@ Item {
             Layout.preferredHeight: units.gu(3)
             Layout.preferredWidth: units.gu(3)
             Layout.alignment: Qt.AlignRight
-            color: Theme.palette.selected.backgroundText
+            color: theme.palette.selected.backgroundText
 
             MouseArea {
                 anchors.fill: parent
