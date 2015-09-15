@@ -24,20 +24,18 @@ import Ubuntu.Components 1.3
  */
 Item {
     property alias radius: shape.radius
-    property alias image: source.sourceItem
+    property alias image: shaderEffectSource.sourceItem
 
     ShaderEffectSource {
-        id: source
+        id: shaderEffectSource
         anchors.centerIn: parent // Placed under shape, so it's hidden
-        width: 1
-        height: 1
         hideSource: true
     }
 
     UbuntuShape {
         id: shape
-        image: source
-
+        source: shaderEffectSource
         anchors.fill: parent
+        sourceFillMode: UbuntuShape.PreserveAspectCrop
     }
 }

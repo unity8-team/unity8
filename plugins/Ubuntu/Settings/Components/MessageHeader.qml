@@ -56,7 +56,6 @@ Item {
             Icon {
                 id: avatarImage
                 objectName: "avatar"
-                anchors.fill: parent
 
                 color: {
                     if (String(source).match(/^image:\/\/theme/)) {
