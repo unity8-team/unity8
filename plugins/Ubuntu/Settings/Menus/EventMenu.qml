@@ -17,7 +17,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 ListItems.Empty {
@@ -32,7 +32,7 @@ ListItems.Empty {
         id: iconVisual
         source: "image://theme/calendar"
         visible: source != ""
-        color: Theme.palette.selected.backgroundText
+        color: theme.palette.selected.backgroundText
 
         height: Math.min(units.gu(3), parent.height - units.gu(1))
         width: height

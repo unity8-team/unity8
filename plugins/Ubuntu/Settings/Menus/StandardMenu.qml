@@ -15,7 +15,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItems
 import QtQuick.Layouts 1.1
 
@@ -52,7 +52,7 @@ ListItems.Empty {
         Icon {
             id: iconVisual
             visible: source != ""
-            color: Theme.palette.selected.backgroundText
+            color: theme.palette.selected.backgroundText
 
             readonly property real size: Math.min(units.gu(3), parent.height - menu.__contentsMargins)
 

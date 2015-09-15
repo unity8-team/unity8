@@ -17,7 +17,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItem
 
 StandardMenu {
@@ -34,7 +34,7 @@ StandardMenu {
             implicitHeight: checkMark.height + units.gu(1.5)
             radius: width / 2
             antialiasing: true
-            color: Theme.palette.normal.backgroundText
+            color: theme.palette.normal.backgroundText
             visible: userSessionMenu.active
 
             Image {

@@ -17,7 +17,7 @@
  */
 
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.0 as ListItem
 
 ListItem.Empty {
@@ -133,7 +133,7 @@ ListItem.Empty {
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: Theme.palette.selected.backgroundText
+                color: theme.palette.selected.backgroundText
 
                 MouseArea {
                     anchors.fill: parent
@@ -189,7 +189,7 @@ ListItem.Empty {
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: Theme.palette.selected.backgroundText
+                color: theme.palette.selected.backgroundText
 
                 MouseArea {
                     anchors.fill: parent
