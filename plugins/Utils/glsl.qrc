@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>glsl/content.vert</file>
+        <file>glsl/content.frag</file>
+        <file>glsl/shadow.vert</file>
+        <file>glsl/shadowtexture.frag</file>
+        <file>glsl/shadow.frag</file>
+    </qresource>
+</RCC>

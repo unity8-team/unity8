@@ -20,6 +20,7 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0
 import Ubuntu.Components 1.1
+import Utils 0.1
 import "../Components"
 
 FocusScope {
@@ -100,7 +101,7 @@ FocusScope {
             return k * (1 - Math.pow((k - 1) / k, distance))
         }
 
-        Item {
+        SpreadItem {
             id: appWindowWithShadow
             objectName: "appWindowWithShadow"
 
@@ -111,6 +112,9 @@ FocusScope {
             property real transformOriginY
 
             property var window: appWindow
+
+            width: parent.width
+            height: parent.height
 
             transform: Rotation {
                 origin.x: appWindowWithShadow.transformOriginX
@@ -241,7 +245,7 @@ FocusScope {
                     }
                     PropertyChanges {
                         target: appWindow
-                        surfaceOrientationAngle: orientationAngle
+                        surfaceOrientationAngle: shellOrientationAngle
                     }
                 },
                 State {
@@ -252,20 +256,17 @@ FocusScope {
             x: (parent.width - width) / 2
             y: (parent.height - height) / 2
 
-            BorderImage {
-                anchors {
-                    fill: appWindow
-                    margins: -units.gu(2)
-                }
-                source: "graphics/dropshadow2gu.sci"
-                opacity: root.dropShadow ? .3 : 0
-                Behavior on opacity { UbuntuNumberAnimation {} }
+            shadowSize: 50
+            shadowOpacity: 0.5
+            content: ShaderEffectSource {
+                sourceItem: appWindow
+                hideSource: true
             }
-
             ApplicationWindow {
                 id: appWindow
                 objectName: application ? "appWindow_" + application.appId : "appWindow_null"
                 focus: true
+                opacity: 0
                 anchors {
                     fill: parent
                     topMargin: appWindow.fullscreen || application.rotatesWindowContents

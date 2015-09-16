@@ -22,11 +22,17 @@ set(QMLPLUGIN_SRC
     windowscreenshotprovider.cpp
     easingcurve.cpp
     windowstatestorage.cpp
+    spreaditem.cpp
+    contentnode.cpp
+    shadownode.cpp
     plugin.cpp
     )
 
+qt5_add_resources(QMLPLUGIN_RC glsl.qrc)
+
 add_library(Utils-qml SHARED
     ${QMLPLUGIN_SRC}
+    ${QMLPLUGIN_RC}
     )
 
 target_link_libraries(Utils-qml ${GIO_LDFLAGS})

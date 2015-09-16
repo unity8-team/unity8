@@ -44,6 +44,7 @@
 #include <windowkeysfilter.h>
 #include <windowscreenshotprovider.h>
 #include <easingcurve.h>
+#include <spreaditem.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -74,6 +75,7 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<WindowStateStorage>(uri, 0, 1, "WindowStateStorage", createWindowStateStorage);
     qmlRegisterType<InputWatcher>(uri, 0, 1, "InputWatcher");
     qmlRegisterSingletonType<Constants>(uri, 0, 1, "Constants", createConstants);
+    qmlRegisterType<SpreadItem>(uri, 0, 1, "SpreadItem");
 }
 
 void FakeUtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

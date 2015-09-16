@@ -19,14 +19,20 @@ set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/windowscreenshotprovider.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/easingcurve.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/inputwatcher.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/spreaditem.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/contentnode.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/shadownode.cpp
     constants.cpp
     plugin.cpp
     windowstatestorage.cpp
     plugin.cpp
     )
 
+qt5_add_resources(QMLPLUGIN_RC ${CMAKE_SOURCE_DIR}/plugins/Utils/glsl.qrc)
+
 add_library(FakeUtils-qml SHARED
     ${QMLPLUGIN_SRC}
+    ${QMLPLUGIN_RC}
     )
 
 target_link_libraries(FakeUtils-qml ${GIO_LDFLAGS})
