@@ -101,7 +101,7 @@ FocusScope {
             return k * (1 - Math.pow((k - 1) / k, distance))
         }
 
-        SpreadItem {
+        Item {
             id: appWindowWithShadow
             objectName: "appWindowWithShadow"
 
@@ -256,17 +256,26 @@ FocusScope {
             x: (parent.width - width) / 2
             y: (parent.height - height) / 2
 
-            shadowSize: 50
-            shadowOpacity: 0.5
-            content: ShaderEffectSource {
-                sourceItem: appWindow
-                hideSource: true
+            SpreadItem {
+                anchors {
+                    fill: parent
+                    topMargin: appWindow.fullscreen || application.rotatesWindowContents
+                                   ? 0 : maximizedAppTopMargin
+                }
+                shadowSize: 50
+                shadowOpacity: 0.5
+                visible: root.dropShadow
+                content: ShaderEffectSource {
+                    sourceItem: appWindow
+                    visible: root.dropShadow
+                    hideSource: root.dropShadow
+                }
             }
+
             ApplicationWindow {
                 id: appWindow
                 objectName: application ? "appWindow_" + application.appId : "appWindow_null"
                 focus: true
-                opacity: 0
                 anchors {
                     fill: parent
                     topMargin: appWindow.fullscreen || application.rotatesWindowContents
