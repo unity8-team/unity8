@@ -12,10 +12,6 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Ying-Chun Liu (PaulLiu) <paul.liu@canonical.com>
- *      Lukáš Tinkl <lukas.tinkl@canonical.com>
  */
 
 #include <QtTest>
@@ -50,7 +46,7 @@ private Q_SLOTS:
         dbusUnitySession = new QDBusInterface ("com.canonical.Unity",
                                                "/com/canonical/Unity/Session",
                                                "com.canonical.Unity.Session",
-                                               QDBusConnection::sessionBus());
+                                               QDBusConnection::sessionBus(), this);
     }
 
     void testUnitySessionLogoutRequested_data() {
@@ -148,17 +144,41 @@ private Q_SLOTS:
         }
     }
 
+    void testLogin1Capabilities_data() {
+        QTest::addColumn<QString>("method");
+
+        QTest::newRow("CanHibernate") << "CanHibernate";
+        QTest::newRow("CanSuspend") << "CanSuspend";
+        QTest::newRow("CanReboot") << "CanReboot";
+        QTest::newRow("CanPowerOff") << "CanPowerOff";
+        QTest::newRow("CanHybridSleep") << "CanHybridSleep";
+    }
+
     void testLogin1Capabilities() {
+        QFETCH(QString, method);
+
         DBusUnitySessionService dbusUnitySessionService;
         QDBusInterface login1face("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", QDBusConnection::systemBus());
         QCoreApplication::processEvents(); // to let the services register on DBus
 
         if (login1face.isValid()) {
-            QCOMPARE(dbusUnitySessionService.CanHibernate(), (login1face.call("CanHibernate").arguments().first().toString() != "no"));
-            QCOMPARE(dbusUnitySessionService.CanSuspend(), (login1face.call("CanSuspend").arguments().first().toString() != "no"));
-            QCOMPARE(dbusUnitySessionService.CanReboot(), (login1face.call("CanReboot").arguments().first().toString() != "no"));
-            QCOMPARE(dbusUnitySessionService.CanShutdown(), (login1face.call("CanPowerOff").arguments().first().toString() != "no"));
-            QCOMPARE(dbusUnitySessionService.CanHybridSleep(), (login1face.call("CanHybridSleep").arguments().first().toString() != "no"));
+            QDBusReply<QString> reply;
+            if (method == "CanHibernate") {
+                reply = login1face.call(method);
+                QCOMPARE(dbusUnitySessionService.CanHibernate(), reply != "no" && reply != "na");
+            } else if (method == "CanSuspend") {
+                reply = login1face.call(method);
+                QCOMPARE(dbusUnitySessionService.CanSuspend(), reply != "no" && reply != "na");
+            } else if (method == "CanReboot") {
+                reply = login1face.call(method);
+                QCOMPARE(dbusUnitySessionService.CanReboot(), reply != "no" && reply != "na");
+            } else if (method == "CanPowerOff") {
+                reply = login1face.call(method);
+                QCOMPARE(dbusUnitySessionService.CanShutdown(), reply != "no" && reply != "na");
+            } else if (method == "CanHybridSleep") {
+                reply = login1face.call(method);
+                QCOMPARE(dbusUnitySessionService.CanHybridSleep(), reply != "no" && reply != "na");
+            }
         }
     }
 
