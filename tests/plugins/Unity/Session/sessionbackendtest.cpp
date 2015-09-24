@@ -63,6 +63,8 @@ private Q_SLOTS:
         QDBusReply<QString> fakeSession = m_logindMockIface->call("AddSession", "fakesession", "fakeseat", (quint32) getuid(),
                                                                   "fakeuser", true);
 
+        qDebug() << "Using a fake login1 session:" << fakeSession;
+
         if (!fakeSession.isValid()) {
             qWarning() << "Fake session error:" << fakeSession.error().name() << ":" << fakeSession.error().message();
             QFAIL("Fake session could not be found");
@@ -173,41 +175,28 @@ private Q_SLOTS:
     }
 
     void testLogin1Capabilities_data() {
-        QTest::addColumn<QString>("method");
+        QTest::addColumn<QString>("dbusMethod"); // dbus method on the login1 iface
+        QTest::addColumn<QString>("method");     // our method
 
-        QTest::newRow("CanHibernate") << "CanHibernate";
-        QTest::newRow("CanSuspend") << "CanSuspend";
-        QTest::newRow("CanReboot") << "CanReboot";
-        QTest::newRow("CanPowerOff") << "CanPowerOff";
-        QTest::newRow("CanHybridSleep") << "CanHybridSleep";
+        QTest::newRow("CanHibernate") << "CanHibernate" << "CanHibernate";
+        QTest::newRow("CanSuspend") << "CanSuspend" << "CanSuspend";
+        QTest::newRow("CanReboot") << "CanReboot" << "CanReboot";
+        QTest::newRow("CanPowerOff") << "CanPowerOff" << "CanShutdown";
+        QTest::newRow("CanHybridSleep") << "CanHybridSleep" << "CanHybridSleep";
     }
 
     void testLogin1Capabilities() {
+        QFETCH(QString, dbusMethod);
         QFETCH(QString, method);
 
         DBusUnitySessionService dbusUnitySessionService;
         QDBusInterface login1face("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", QDBusConnection::SM_BUSNAME());
         QCoreApplication::processEvents(); // to let the services register on DBus
 
-        if (login1face.isValid()) {
-            QDBusReply<QString> reply;
-            if (method == "CanHibernate") {
-                reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanHibernate(), (reply == "yes" || reply == "challenge"));
-            } else if (method == "CanSuspend") {
-                reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanSuspend(), (reply == "yes" || reply == "challenge"));
-            } else if (method == "CanReboot") {
-                reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanReboot(), (reply == "yes" || reply == "challenge"));
-            } else if (method == "CanPowerOff") {
-                reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanShutdown(), (reply == "yes" || reply == "challenge"));
-            } else if (method == "CanHybridSleep") {
-                reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanHybridSleep(), (reply == "yes" || reply == "challenge"));
-            }
-        }
+        QDBusReply<QString> dbusReply = login1face.call(dbusMethod);
+        bool reply;
+        dbusUnitySessionService.metaObject()->invokeMethod(&dbusUnitySessionService, qPrintable(method), Q_RETURN_ARG(bool, reply));
+        QCOMPARE(reply, (dbusReply == "yes" || dbusReply == "challenge"));
     }
 
 private:
