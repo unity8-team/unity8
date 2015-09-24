@@ -47,9 +47,37 @@ private Q_SLOTS:
                                                "/com/canonical/Unity/Session",
                                                "com.canonical.Unity.Session",
                                                QDBusConnection::sessionBus(), this);
+
+        m_fakeServer = new QProcess;
+        m_fakeServer->start("python3 -m dbusmock org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager");
+        m_fakeServer->waitForStarted();
+        qDebug() << "Logind DBUS mock running with pid:" << m_fakeServer->processId();
+
+        m_logindMockIface = new QDBusInterface("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.DBus.Mock",
+                                               QDBusConnection::sessionBus(), this);
+        QTRY_VERIFY(m_logindMockIface->isValid());
+
+        m_logindMockIface->call("AddTemplate", "logind", QVariant::fromValue(QVariantMap())); // load the logind template, no params
+
+        // add a fake session to make DBusUnitySessionService happy
+        QDBusReply<QString> fakeSession = m_logindMockIface->call("AddSession", "fakesession", "fakeseat", (quint32) getuid(),
+                                                                  "fakeuser", true);
+
+        if (!fakeSession.isValid()) {
+            qWarning() << "Fake session error:" << fakeSession.error().name() << ":" << fakeSession.error().message();
+            QFAIL("Fake session could not be found");
+        }
+        m_logindMockIface->call("AddMethod", "org.freedesktop.login1.Manager", "GetSessionByPID", "u", "o",
+                                QStringLiteral("ret='%1'").arg(fakeSession)); // let DBUSS find the fake session to operate on
     }
 
-    void testUnitySessionLogoutRequested_data() {
+    void cleanupTestCase() {
+        m_fakeServer->terminate();
+        m_fakeServer->waitForFinished();
+        delete m_fakeServer;
+    }
+
+    void testUnitySessionService_data() {
         QTest::addColumn<QString>("method");
         QTest::addColumn<QString>("signal");
 
@@ -59,7 +87,7 @@ private Q_SLOTS:
         QTest::newRow("PromptLock") << "PromptLock" << "LockRequested()";
     }
 
-    void testUnitySessionLogoutRequested() {
+    void testUnitySessionService() {
         QFETCH(QString, method);
         QFETCH(QString, signal);
 
@@ -158,32 +186,34 @@ private Q_SLOTS:
         QFETCH(QString, method);
 
         DBusUnitySessionService dbusUnitySessionService;
-        QDBusInterface login1face("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", QDBusConnection::systemBus());
+        QDBusInterface login1face("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", QDBusConnection::SM_BUSNAME());
         QCoreApplication::processEvents(); // to let the services register on DBus
 
         if (login1face.isValid()) {
             QDBusReply<QString> reply;
             if (method == "CanHibernate") {
                 reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanHibernate(), reply != "no" && reply != "na");
+                QCOMPARE(dbusUnitySessionService.CanHibernate(), (reply == "yes" || reply == "challenge"));
             } else if (method == "CanSuspend") {
                 reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanSuspend(), reply != "no" && reply != "na");
+                QCOMPARE(dbusUnitySessionService.CanSuspend(), (reply == "yes" || reply == "challenge"));
             } else if (method == "CanReboot") {
                 reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanReboot(), reply != "no" && reply != "na");
+                QCOMPARE(dbusUnitySessionService.CanReboot(), (reply == "yes" || reply == "challenge"));
             } else if (method == "CanPowerOff") {
                 reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanShutdown(), reply != "no" && reply != "na");
+                QCOMPARE(dbusUnitySessionService.CanShutdown(), (reply == "yes" || reply == "challenge"));
             } else if (method == "CanHybridSleep") {
                 reply = login1face.call(method);
-                QCOMPARE(dbusUnitySessionService.CanHybridSleep(), reply != "no" && reply != "na");
+                QCOMPARE(dbusUnitySessionService.CanHybridSleep(), (reply == "yes" || reply == "challenge"));
             }
         }
     }
 
 private:
     QDBusInterface *dbusUnitySession;
+    QProcess * m_fakeServer = nullptr;
+    QDBusInterface *m_logindMockIface = nullptr;
 };
 
 QTEST_GUILESS_MAIN(SessionBackendTest)

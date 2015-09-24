@@ -61,18 +61,18 @@ public:
                                                           "GetSessionByPID");
         msg << (quint32) getpid();
 
-        QDBusReply<QDBusObjectPath> reply = QDBusConnection::systemBus().asyncCall(msg);
+        QDBusReply<QDBusObjectPath> reply = QDBusConnection::SM_BUSNAME().asyncCall(msg);
         if (reply.isValid()) {
             logindSessionPath = reply.value().path();
 
             // start watching the Active property
-            QDBusConnection::systemBus().connect(LOGIN1_SERVICE, logindSessionPath, "org.freedesktop.DBus.Properties", "PropertiesChanged",
+            QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, logindSessionPath, "org.freedesktop.DBus.Properties", "PropertiesChanged",
                                                  this, SLOT(onPropertiesChanged(QString,QVariantMap,QStringList)));
 
             setupSystemdInhibition();
 
             // re-enable the inhibition upon resume from sleep
-            QDBusConnection::systemBus().connect(LOGIN1_SERVICE, LOGIN1_PATH, LOGIN1_IFACE, "PrepareForSleep",
+            QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, LOGIN1_PATH, LOGIN1_IFACE, "PrepareForSleep",
                                                  this, SLOT(onResuming(bool)));
         } else {
             qWarning() << "Failed to get logind session path" << reply.error().message();
@@ -92,7 +92,7 @@ public:
         msg << "Unity"; // who
         msg << "Unity8 handles power events"; // why
         msg << "block"; // mode
-        QDBusReply<QDBusUnixFileDescriptor> desc = QDBusConnection::systemBus().asyncCall(msg);
+        QDBusReply<QDBusUnixFileDescriptor> desc = QDBusConnection::SM_BUSNAME().asyncCall(msg);
 
         if (desc.isValid()) {
             m_systemdInhibitFd = desc.value();
@@ -105,7 +105,7 @@ public:
     bool checkLogin1Call(const QString &method) const
     {
         QDBusMessage msg = QDBusMessage::createMethodCall(LOGIN1_SERVICE, LOGIN1_PATH, LOGIN1_IFACE, method);
-        QDBusReply<QString> reply = QDBusConnection::systemBus().asyncCall(msg);
+        QDBusReply<QString> reply = QDBusConnection::SM_BUSNAME().asyncCall(msg);
         return reply.isValid() && (reply == QStringLiteral("yes") || reply == QStringLiteral("challenge"));
     }
 
@@ -116,7 +116,7 @@ public:
                                                           LOGIN1_IFACE,
                                                           method);
         msg.setArguments(args);
-        QDBusConnection::systemBus().asyncCall(msg);
+        QDBusConnection::SM_BUSNAME().asyncCall(msg);
     }
 
     void checkActive()
@@ -133,7 +133,7 @@ public:
         msg << LOGIN1_SESSION_IFACE;
         msg << ACTIVE_KEY;
 
-        QDBusReply<QVariant> reply = QDBusConnection::systemBus().asyncCall(msg);
+        QDBusReply<QVariant> reply = QDBusConnection::SM_BUSNAME().asyncCall(msg);
         if (reply.isValid()) {
             isSessionActive = reply.value().toBool();
         } else {
@@ -159,7 +159,7 @@ public:
         msg << LOGIN1_SESSION_IFACE;
         msg << IDLE_SINCE_KEY;
 
-        QDBusReply<QVariant> reply = QDBusConnection::systemBus().asyncCall(msg);
+        QDBusReply<QVariant> reply = QDBusConnection::SM_BUSNAME().asyncCall(msg);
         if (reply.isValid()) {
             return reply.value().value<quint64>();
         } else {
@@ -176,7 +176,7 @@ public:
                                                           LOGIN1_SESSION_IFACE,
                                                           "SetIdleHint");
         msg << idle;
-        QDBusConnection::systemBus().asyncCall(msg);
+        QDBusConnection::SM_BUSNAME().asyncCall(msg);
     }
 
 private Q_SLOTS:
@@ -221,10 +221,10 @@ DBusUnitySessionService::DBusUnitySessionService()
 {
     if (!d->logindSessionPath.isEmpty()) {
         // connect our Lock() slot to the logind's session Lock() signal
-        QDBusConnection::systemBus().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, "Lock", this, SLOT(Lock()));
+        QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, "Lock", this, SLOT(Lock()));
         // ... and our Unlocked() signal to the logind's session Unlock() signal
         // (lightdm handles the unlocking by calling logind's Unlock method which in turn emits this signal we connect to)
-        QDBusConnection::systemBus().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, "Unlock", this, SIGNAL(Unlocked()));
+        QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, "Unlock", this, SIGNAL(Unlocked()));
     } else {
         qWarning() << "Failed to connect to logind's session Lock/Unlock signals";
     }
@@ -324,7 +324,7 @@ void DBusUnitySessionService::Lock()
                                                       sessionPath,
                                                       "org.freedesktop.DisplayManager.Session",
                                                       "Lock");
-    QDBusReply<void> reply = QDBusConnection::systemBus().asyncCall(msg);
+    QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().asyncCall(msg);
     if (!reply.isValid()) {
         qWarning() << "Lock call failed" << reply.error().message();
     } else {
