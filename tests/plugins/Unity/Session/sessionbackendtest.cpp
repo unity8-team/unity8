@@ -48,10 +48,11 @@ private Q_SLOTS:
                                                "com.canonical.Unity.Session",
                                                QDBusConnection::sessionBus(), this);
 
-        m_fakeServer = new QProcess;
-        m_fakeServer->start("python3 -m dbusmock org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager");
-        m_fakeServer->waitForStarted();
-        qDebug() << "Logind DBUS mock running with pid:" << m_fakeServer->processId();
+        // logind mock
+        m_fakeLogindServer = new QProcess;
+        m_fakeLogindServer->start("python3 -m dbusmock org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager");
+        m_fakeLogindServer->waitForStarted();
+        qDebug() << "Logind DBUS mock started with pid:" << m_fakeLogindServer->processId();
 
         m_logindMockIface = new QDBusInterface("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.DBus.Mock",
                                                QDBusConnection::sessionBus(), this);
@@ -71,12 +72,28 @@ private Q_SLOTS:
         }
         m_logindMockIface->call("AddMethod", "org.freedesktop.login1.Manager", "GetSessionByPID", "u", "o",
                                 QStringLiteral("ret='%1'").arg(fakeSession)); // let DBUSS find the fake session to operate on
+
+        // gnome screensaver mock
+        m_fakeGnomeScreensaverServer = new QProcess;
+        m_fakeGnomeScreensaverServer->start("python3 -m dbusmock org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver");
+        m_fakeGnomeScreensaverServer->waitForStarted();
+        qDebug() << "Gnome screensaver DBUS mock started with pid:" << m_fakeGnomeScreensaverServer->processId();
+
+        m_gnomeScreensaverMockIface = new QDBusInterface("org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.freedesktop.DBus.Mock",
+                                                         QDBusConnection::sessionBus(), this);
+        QTRY_VERIFY(m_gnomeScreensaverMockIface->isValid());
+
+        m_gnomeScreensaverMockIface->call("AddTemplate", "gnome_screensaver", QVariant::fromValue(QVariantMap())); // load the gnome ss template, no params
     }
 
     void cleanupTestCase() {
-        m_fakeServer->terminate();
-        m_fakeServer->waitForFinished();
-        delete m_fakeServer;
+        m_fakeLogindServer->terminate();
+        m_fakeLogindServer->waitForFinished();
+        delete m_fakeLogindServer;
+
+        m_fakeGnomeScreensaverServer->terminate();
+        m_fakeGnomeScreensaverServer->waitForFinished();
+        delete m_fakeGnomeScreensaverServer;
     }
 
     void testUnitySessionService_data() {
@@ -227,10 +244,26 @@ private Q_SLOTS:
         }
     }
 
+    void testGnomeScreenSaverMock() {
+        QDBusInterface gnomeSaverIface("org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver",
+                                       QDBusConnection::sessionBus(), this);
+        QCoreApplication::processEvents(); // to let the service register on DBus
+
+        gnomeSaverIface.call("Lock");
+
+        QDBusReply<bool> isActive = gnomeSaverIface.call("GetActive");
+
+        QTRY_VERIFY(isActive.value()); // verify it's active (locked)
+    }
+
 private:
     QDBusInterface *dbusUnitySession;
-    QProcess * m_fakeServer = nullptr;
+
+    QProcess *m_fakeLogindServer = nullptr;
     QDBusInterface *m_logindMockIface = nullptr;
+
+    QProcess *m_fakeGnomeScreensaverServer = nullptr;
+    QDBusInterface *m_gnomeScreensaverMockIface = nullptr;
 };
 
 QTEST_GUILESS_MAIN(SessionBackendTest)
