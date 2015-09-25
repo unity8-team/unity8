@@ -199,6 +199,34 @@ private Q_SLOTS:
         QCOMPARE(reply, (dbusReply == "yes" || dbusReply == "challenge"));
     }
 
+    void testLogindMock_data() {
+        QTest::addColumn<QString>("method"); // dbus method on the login1 iface
+
+        QTest::newRow("CanHibernate") << "CanHibernate";
+        QTest::newRow("CanSuspend") << "CanSuspend";
+        QTest::newRow("CanReboot") << "CanReboot";
+        QTest::newRow("CanPowerOff") << "CanPowerOff";
+        QTest::newRow("CanHybridSleep") << "CanHybridSleep";
+    }
+
+    void testLogindMock() {
+        QFETCH(QString, method);
+
+        const QStringList replies = {"yes", "no", "na", "challenge"};
+
+        Q_FOREACH(const QString &reply, replies) {
+            m_logindMockIface->call("AddMethod", "org.freedesktop.login1.Manager", method, "", "s",
+                                    QStringLiteral("ret='%1'").arg(reply));
+
+            QDBusInterface login1face("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", QDBusConnection::SM_BUSNAME());
+            QCoreApplication::processEvents(); // to let the services register on DBus
+
+            QDBusReply<QString> dbusReply = login1face.call(method);
+
+            QCOMPARE(dbusReply.value(), reply);
+        }
+    }
+
 private:
     QDBusInterface *dbusUnitySession;
     QProcess * m_fakeServer = nullptr;
