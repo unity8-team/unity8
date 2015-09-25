@@ -52,8 +52,9 @@ Build-Depends: cmake,
                qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 1.1.1239) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 1.1.1239),
                qtdeclarative5-ubuntu-web-plugin,
                ttf-ubuntu-font-family,
+               python3-dbusmock,
 Standards-Version: 3.9.4
-Homepage: http://launchpad.net/unity
+Homepage: http://launchpad.net/unity8
 # If you aren't a member of ~unity-team but need to upload
 # packaging changes, just go ahead. ~unity-team will notice
 # and sync up the code again.
