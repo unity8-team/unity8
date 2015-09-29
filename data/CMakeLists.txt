@@ -13,7 +13,7 @@ install(FILES
 
 # install dash icon
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/unity8-dash.svg
+    unity8-dash.svg
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mobile/apps/scalable
     )
 
