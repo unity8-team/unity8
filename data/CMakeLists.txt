@@ -13,8 +13,8 @@ install(FILES
 
 # install dash icon
 install(FILES
-    unity8-dash.svg
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/suru/apps/scalable
+    unity8-dash.png
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/suru/apps/256
     )
 
 install(FILES com.canonical.Unity8.gschema.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas)
