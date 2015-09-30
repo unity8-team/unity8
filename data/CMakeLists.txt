@@ -14,7 +14,7 @@ install(FILES
 # install dash icon
 install(FILES
     unity8-dash.svg
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mobile/apps/scalable
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/suru/apps/scalable
     )
 
 install(FILES com.canonical.Unity8.gschema.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas)
