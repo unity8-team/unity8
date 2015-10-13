@@ -18,6 +18,7 @@
  */
 
 import QtQuick 2.0
+import GSettings 1.0
 import Powerd 0.1
 import Lights 0.1
 import QMenuModel 0.1 as QMenuModel
@@ -26,7 +27,11 @@ import Unity.Indicators 0.1 as Indicators
 QtObject {
     id: root
 
-    property color color: "darkgreen"
+    property var settings: GSettings {
+        schema.id: "com.canonical.Unity8"
+    }
+
+    property color color: settings.ledColor
 
     property var _actionGroup: QMenuModel.QDBusActionGroup {
         busType: 1

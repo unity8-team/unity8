@@ -11,6 +11,12 @@
       <summary>The usage mode.</summary>
       <description>The usage mode chosen will affect the Window Management behaviour.</description>
     </key>
+
+    <key type="s" name="led-color">
+      <default>"green"</default>
+      <summary>Color of the notification LED.</summary>
+      <description>Color of the notification LED.</description>
+    </key>
   </schema>
 
   <schema path="/com/canonical/unity8/greeter/" id="com.canonical.Unity8.Greeter" gettext-domain="unity8">
