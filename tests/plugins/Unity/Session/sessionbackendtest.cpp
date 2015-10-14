@@ -87,12 +87,10 @@ private Q_SLOTS:
     }
 
     void cleanupTestCase() {
-        m_fakeLogindServer->terminate();
-        m_fakeLogindServer->waitForFinished();
+        m_fakeLogindServer->kill();
         delete m_fakeLogindServer;
 
-        m_fakeGnomeScreensaverServer->terminate();
-        m_fakeGnomeScreensaverServer->waitForFinished();
+        m_fakeGnomeScreensaverServer->kill();
         delete m_fakeGnomeScreensaverServer;
     }
 
