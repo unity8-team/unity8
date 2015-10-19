@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-07-17 10:10+0200\n"
+"POT-Creation-Date: 2015-09-16 00:49+0200\n"
 "PO-Revision-Date: 2015-07-04 05:53+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -16,19 +16,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2015-07-25 05:39+0000\n"
-"X-Generator: Launchpad (build 17628)\n"
+"X-Launchpad-Export-Date: 2015-10-16 05:58+0000\n"
+"X-Generator: Launchpad (build 17812)\n"
 
-#: plugins/LightDM/Greeter.cpp:112
+#: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
 msgstr "Пароль: "
 
-#: plugins/Unity/Launcher/launcheritem.cpp:45
-#: plugins/Unity/Launcher/launcheritem.cpp:100
+#: plugins/Unity/Launcher/launcheritem.cpp:47
+#: plugins/Unity/Launcher/launcheritem.cpp:106
 msgid "Pin shortcut"
 msgstr "Заблокувати кнопку"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:100
+#: plugins/Unity/Launcher/launcheritem.cpp:52
+msgid "Quit"
+msgstr "Вийти"
+
+#: plugins/Unity/Launcher/launcheritem.cpp:106
 msgid "Unpin shortcut"
 msgstr "Розблокувати кнопку"
 
@@ -136,72 +140,72 @@ msgstr[0] "Зачекайте %1 хвилину і повторіть спроб
 msgstr[1] "Зачекайте %1 хвилини і повторіть спробу…"
 msgstr[2] "Зачекайте %1 хвилин і повторіть спробу…"
 
-#: qml/Components/Dialogs.qml:69
+#: qml/Components/Dialogs.qml:115
 msgctxt "Title: Lock/Log out dialog"
 msgid "Log out"
 msgstr "Вийти"
 
-#: qml/Components/Dialogs.qml:70
+#: qml/Components/Dialogs.qml:116
 msgid "Are you sure you want to log out?"
 msgstr "Ви справді хочете вийти?"
 
-#: qml/Components/Dialogs.qml:72
+#: qml/Components/Dialogs.qml:118
 msgctxt "Button: Lock the system"
 msgid "Lock"
 msgstr "Заблокувати"
 
-#: qml/Components/Dialogs.qml:79
+#: qml/Components/Dialogs.qml:125
 msgctxt "Button: Log out from the system"
 msgid "Log Out"
 msgstr "Вийти"
 
-#: qml/Components/Dialogs.qml:86 qml/Components/Dialogs.qml:117
-#: qml/Components/Dialogs.qml:173
+#: qml/Components/Dialogs.qml:132 qml/Components/Dialogs.qml:165
+#: qml/Components/Dialogs.qml:224
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: qml/Components/Dialogs.qml:98
+#: qml/Components/Dialogs.qml:144
 msgctxt "Title: Reboot/Shut down dialog"
 msgid "Shut down"
 msgstr "Вимкнути"
 
-#: qml/Components/Dialogs.qml:99
+#: qml/Components/Dialogs.qml:145
 msgid "Are you sure you want to shut down?"
 msgstr "Ви справді хочете вимкнути пристрій?"
 
-#: qml/Components/Dialogs.qml:101
+#: qml/Components/Dialogs.qml:147
 msgctxt "Button: Reboot the system"
 msgid "Reboot"
 msgstr "Перезавантажити"
 
-#: qml/Components/Dialogs.qml:109
+#: qml/Components/Dialogs.qml:156
 msgctxt "Button: Shut down the system"
 msgid "Shut down"
 msgstr "Вимкнути"
 
-#: qml/Components/Dialogs.qml:129
+#: qml/Components/Dialogs.qml:178
 msgctxt "Title: Reboot dialog"
 msgid "Reboot"
 msgstr "Перезавантажити"
 
-#: qml/Components/Dialogs.qml:130
+#: qml/Components/Dialogs.qml:179
 msgid "Are you sure you want to reboot?"
 msgstr "Ви справді хочете перезавантажити пристрій?"
 
-#: qml/Components/Dialogs.qml:132
+#: qml/Components/Dialogs.qml:181
 msgid "No"
 msgstr "Ні"
 
-#: qml/Components/Dialogs.qml:138
+#: qml/Components/Dialogs.qml:188
 msgid "Yes"
 msgstr "Так"
 
-#: qml/Components/Dialogs.qml:152
+#: qml/Components/Dialogs.qml:203
 msgctxt "Title: Power off/Restart dialog"
 msgid "Power"
 msgstr "Живлення"
 
-#: qml/Components/Dialogs.qml:153
+#: qml/Components/Dialogs.qml:204
 msgid ""
 "Are you sure you would like\n"
 "to power off?"
@@ -209,12 +213,12 @@ msgstr ""
 "Ви справді хочете вимкнути\n"
 "живлення?"
 
-#: qml/Components/Dialogs.qml:155
+#: qml/Components/Dialogs.qml:206
 msgctxt "Button: Power off the system"
 msgid "Power off"
 msgstr "Вимкнути"
 
-#: qml/Components/Dialogs.qml:164
+#: qml/Components/Dialogs.qml:215
 msgctxt "Button: Restart the system"
 msgid "Restart"
 msgstr "Перезапустити"
@@ -231,15 +235,15 @@ msgstr "Терміновий виклик"
 msgid "OK"
 msgstr "Гаразд"
 
-#: qml/Dash/GenericScopeView.qml:539 qml/Dash/GenericScopeView.qml:697
+#: qml/Dash/GenericScopeView.qml:569 qml/Dash/GenericScopeView.qml:727
 msgid "See less"
 msgstr "Стисліше"
 
-#: qml/Dash/GenericScopeView.qml:539
+#: qml/Dash/GenericScopeView.qml:569
 msgid "See all"
 msgstr "Детальніше"
 
-#: qml/Dash/GenericScopeView.qml:601
+#: qml/Dash/GenericScopeView.qml:631
 msgctxt "Label: Hint for dash search line edit"
 msgid "Search"
 msgstr "Пошук"
@@ -275,6 +279,13 @@ msgstr "Більше…"
 msgid "Less..."
 msgstr "Менше..."
 
+#: qml/Dash/Previews/PreviewCommentInput.qml:68
+#: qml/Dash/Previews/PreviewRatingInput.qml:174
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:148
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:205
+msgid "Send"
+msgstr "Надіслати"
+
 #: qml/Dash/Previews/PreviewRatingInput.qml:84
 msgid "Rate this"
 msgstr "Оцінити"
@@ -282,10 +293,6 @@ msgstr "Оцінити"
 #: qml/Dash/Previews/PreviewRatingInput.qml:129
 msgid "Add a review"
 msgstr "Додати рецензію"
-
-#: qml/Dash/Previews/PreviewRatingInput.qml:169
-msgid "Send"
-msgstr "Надіслати"
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:55
 msgid "Pull to refresh…"
@@ -376,7 +383,7 @@ msgstr "Вибачте, помилковий пароль"
 #: qml/Greeter/NarrowView.qml:121
 msgctxt "passphrase"
 msgid "Please re-enter"
-msgstr ""
+msgstr "Введіть ще раз"
 
 #: qml/Greeter/NarrowView.qml:122
 msgid "Sorry, incorrect passcode"
@@ -394,11 +401,11 @@ msgstr "Торкніться, щоб повернутися до дзвінка�
 msgid "Conference"
 msgstr "Конференція"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:639
+#: qml/Panel/Indicators/MenuItemFactory.qml:718
 msgid "Nothing is playing"
 msgstr "Нічого не відтворюється"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:768
+#: qml/Panel/Indicators/MenuItemFactory.qml:847
 #, qt-format
 msgid "%1 hour"
 msgid_plural "%1 hours"
@@ -406,7 +413,7 @@ msgstr[0] "%1 година"
 msgstr[1] "%1 години"
 msgstr[2] "%1 годин"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:772
+#: qml/Panel/Indicators/MenuItemFactory.qml:851
 #, qt-format
 msgid "%1 minute"
 msgid_plural "%1 minutes"
@@ -414,7 +421,7 @@ msgstr[0] "%1 хвилина"
 msgstr[1] "%1 хвилини"
 msgstr[2] "%1 хвилин"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:777
+#: qml/Panel/Indicators/MenuItemFactory.qml:856
 #, qt-format
 msgid "%1 second"
 msgid_plural "%1 seconds"
@@ -422,37 +429,37 @@ msgstr[0] "%1 секунда"
 msgstr[1] "%1 секунди"
 msgstr[2] "%1 секунд"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:780
+#: qml/Panel/Indicators/MenuItemFactory.qml:859
 msgid "0 seconds"
 msgstr "0 секунд"
 
 #. Translators: String like "1 hour, 2 minutes, 3 seconds remaining"
-#: qml/Panel/Indicators/MenuItemFactory.qml:782
+#: qml/Panel/Indicators/MenuItemFactory.qml:861
 #, qt-format
 msgid "%1 remaining"
 msgstr "Залишилося %1"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:788
+#: qml/Panel/Indicators/MenuItemFactory.qml:867
 msgid "In queue…"
 msgstr "У черзі…"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:792
+#: qml/Panel/Indicators/MenuItemFactory.qml:871
 msgid "Downloading"
 msgstr "Отримуємо"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:794
+#: qml/Panel/Indicators/MenuItemFactory.qml:873
 msgid "Paused, tap to resume"
 msgstr "Призупинено, торкніться, щоб поновити"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:796
+#: qml/Panel/Indicators/MenuItemFactory.qml:875
 msgid "Canceled"
 msgstr "Скасовано"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:798
+#: qml/Panel/Indicators/MenuItemFactory.qml:877
 msgid "Finished"
 msgstr "Завершено"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:800
+#: qml/Panel/Indicators/MenuItemFactory.qml:879
 msgid "Failed, tap to retry"
 msgstr "Помилка, торкніться, щоб повторити спробу"
 
@@ -460,6 +467,10 @@ msgstr "Помилка, торкніться, щоб повторити спро
 msgctxt "Label: Hint in message indicator line edit"
 msgid "Reply"
 msgstr "Відповісти"
+
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:204
+msgid "Call back"
+msgstr "Зворотний виклик"
 
 #: qml/Panel/Indicators/ModemInfoItem.qml:105
 msgid "Unlock SIM"
@@ -485,14 +496,10 @@ msgstr "Відкрити спеціальні меню"
 msgid "Swipe up from the bottom edge."
 msgstr "Провести вгору від нижнього кразу."
 
-#: qml/Tutorial/TutorialContent.qml:81 qml/Tutorial/TutorialLeftFinish.qml:25
+#: qml/Tutorial/TutorialContent.qml:80 qml/Tutorial/TutorialLeftFinish.qml:25
 #: qml/Tutorial/TutorialRight.qml:144
 msgid "Tap here to continue."
 msgstr "Натисніть тут, щоб продовжити."
-
-#: qml/Tutorial/TutorialContent.qml:81
-msgid "Click here to finish."
-msgstr "Натисніть тут, щоб завершити."
 
 #: qml/Tutorial/TutorialLeftFinish.qml:24
 msgid "These are the shortcuts to favorite apps"
@@ -531,6 +538,38 @@ msgctxt "Button: Go back one page in the Wizard"
 msgid "Back"
 msgstr "Назад"
 
+#: qml/Wizard/Pages/here-terms.qml:27
+msgid "Terms & Conditions"
+msgstr "Умови користування"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:49
+msgid "Confirm passphrase"
+msgstr "Підтвердіть пароль"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:50
+msgid "Confirm passcode"
+msgstr "Підтвердіть код-пароль"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:53
+#: qml/Wizard/Pages/passwd-confirm.qml:54
+msgid "Please try again."
+msgstr "Будь ласка, спробуйте ще раз!"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:82 qml/Wizard/Pages/passwd-set.qml:90
+#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
+#: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
+#: qml/Wizard/Pages/60-reporting.qml:50
+msgid "Continue"
+msgstr "Продовжити"
+
+#: qml/Wizard/Pages/passwd-set.qml:61
+msgid "Choose your passcode"
+msgstr "Виберіть ваш код-пароль"
+
+#: qml/Wizard/Pages/passwd-set.qml:68
+msgid "Passphrase must be 4 characters long"
+msgstr "Пароль має складатися принаймні з 4 символів"
+
 #: qml/Wizard/Pages/10-welcome.qml:27
 msgid "Hi!"
 msgstr "Привіт!"
@@ -542,13 +581,6 @@ msgstr "Вітаємо вас у системі телефону Ubuntu."
 #: qml/Wizard/Pages/10-welcome.qml:52
 msgid "Let’s get started."
 msgstr "Почнімо."
-
-#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
-#: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
-#: qml/Wizard/Pages/60-reporting.qml:50 qml/Wizard/Pages/passwd-confirm.qml:82
-#: qml/Wizard/Pages/passwd-set.qml:90
-msgid "Continue"
-msgstr "Продовжити"
 
 #: qml/Wizard/Pages/20-sim.qml:25
 msgid "Add a SIM card and restart your device"
@@ -683,31 +715,6 @@ msgstr "Тепер вашим телефоном можна користуват
 #: qml/Wizard/Pages/80-finished.qml:53
 msgid "Finish"
 msgstr "Завершити"
-
-#: qml/Wizard/Pages/here-terms.qml:27
-msgid "Terms & Conditions"
-msgstr "Умови користування"
-
-#: qml/Wizard/Pages/passwd-confirm.qml:49
-msgid "Confirm passphrase"
-msgstr "Підтвердіть пароль"
-
-#: qml/Wizard/Pages/passwd-confirm.qml:50
-msgid "Confirm passcode"
-msgstr "Підтвердіть код-пароль"
-
-#: qml/Wizard/Pages/passwd-confirm.qml:53
-#: qml/Wizard/Pages/passwd-confirm.qml:54
-msgid "Please try again."
-msgstr "Будь ласка, спробуйте ще раз!"
-
-#: qml/Wizard/Pages/passwd-set.qml:61
-msgid "Choose your passcode"
-msgstr "Виберіть ваш код-пароль"
-
-#: qml/Wizard/Pages/passwd-set.qml:68
-msgid "Passphrase must be 4 characters long"
-msgstr "Пароль має складатися принаймні з 4 символів"
 
 #. Translators: This is the arrow for "Back" buttons
 #: qml/Wizard/StackButton.qml:39

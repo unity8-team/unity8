@@ -17,13 +17,10 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "SurfaceManager.h"
-#include "MirSurfaceItemModel.h"
-
 #include <QObject>
 
-class QQuickItem;
-class MirSurfaceItem;
+class MirSurface;
+class Session;
 
 // unity-api
 #include <unity/shell/application/ApplicationInfoInterface.h>
@@ -45,6 +42,9 @@ public:
     ApplicationInfo(QObject *parent = nullptr);
     ApplicationInfo(const QString &appId, QObject *parent = nullptr);
     ~ApplicationInfo();
+
+    RequestedState requestedState() const override;
+    void setRequestedState(RequestedState) override;
 
     void setIconId(const QString &iconId);
     void setScreenshotId(const QString &screenshotId);
@@ -100,6 +100,10 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     Q_INVOKABLE void createSession();
+    Q_INVOKABLE void destroySession();
+
+private Q_SLOTS:
+    void onSessionSurfaceChanged(MirSurface*);
 
 private:
     void setIcon(const QUrl &value);
@@ -116,6 +120,7 @@ private:
     Session* m_session;
     Qt::ScreenOrientations m_supportedOrientations;
     bool m_rotatesWindowContents;
+    RequestedState m_requestedState;
 
     bool m_manualSurfaceCreation;
 };

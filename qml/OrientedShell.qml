@@ -21,6 +21,9 @@ import GSettings 1.0
 import "Components"
 import "Components/UnityInputInfo"
 import "Rotation"
+// Backup Workaround https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1473471
+// in case we remove the UnityInputInfo import
+import Ubuntu.Components 1.2
 
 Rectangle {
     id: root
@@ -43,7 +46,7 @@ Rectangle {
 
 
     // to be overwritten by tests
-    property var usageModeSettings: GSettings { schema.id: "com.canonical.Unity8" }
+    property var unity8Settings: Unity8Settings {}
     property var oskSettings: GSettings { schema.id: "com.canonical.keyboard.maliit" }
 
     property int physicalOrientation: Screen.orientation
@@ -100,7 +103,7 @@ Rectangle {
             // TODO: Choose the closest to the current one
             if (supportedOrientations & Qt.PortraitOrientation) {
                 return Screen.angleBetween(nativeOrientation, Qt.PortraitOrientation);
-            } else if (supportedOrientations & Qt.LandcscapeOrientation) {
+            } else if (supportedOrientations & Qt.LandscapeOrientation) {
                 return Screen.angleBetween(nativeOrientation, Qt.LandscapeOrientation);
             } else if (supportedOrientations & Qt.InvertedPortraitOrientation) {
                 return Screen.angleBetween(nativeOrientation, Qt.InvertedPortraitOrientation);
@@ -117,19 +120,15 @@ Rectangle {
         switch (angle) {
         case 0:
             return nativeOrientation;
-            break;
         case 90:
             return nativeOrientation === Qt.PortraitOrientation ? Qt.InvertedLandscapeOrientation
                                                                 : Qt.PortraitOrientation;
-            break;
         case 180:
             return nativeOrientation === Qt.PortraitOrientation ? Qt.InvertedPortraitOrientation
                                                                 : Qt.InvertedLandscapeOrientation;
-            break;
         case 270:
             return nativeOrientation === Qt.PortraitOrientation ? Qt.LandscapeOrientation
                                                                 : Qt.InvertedPortraitOrientation;
-            break;
         default:
             console.warn("angleToOrientation: Invalid orientation angle: " + angle);
             return primaryOrientation;
@@ -156,13 +155,14 @@ Rectangle {
         nativeWidth: root.width
         nativeHeight: root.height
         mode: applicationArguments.mode
+        hasMouse: UnityInputInfo.mice > deviceConfiguration.ignoredMice
 
         // TODO: Factor in the connected input devices (eg: physical keyboard, mouse, touchscreen),
         //       what's the output device (eg: big TV, desktop monitor, phone display), etc.
         usageScenario: {
-            if (root.usageModeSettings.usageMode === "Windowed") {
+            if (root.unity8Settings.usageMode === "Windowed") {
                 return "desktop";
-            } else if (root.usageModeSettings.usageMode === "Staged") {
+            } else if (root.unity8Settings.usageMode === "Staged") {
                 if (deviceConfiguration.category === "phone") {
                     return "phone";
                 } else {

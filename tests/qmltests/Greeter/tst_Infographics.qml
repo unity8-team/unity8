@@ -20,7 +20,7 @@ import ".."
 import "../../../qml/Greeter"
 import Ubuntu.Components 0.1
 import Unity.Test 0.1 as UT
-import LightDM 0.1 as LightDM
+import IntegratedLightDM 0.1 as LightDM
 
 Item {
     Binding {
@@ -74,15 +74,16 @@ Item {
 
         function test_set_username_data() {
             return [
-                { username: "has-password", label: "<b>19</b> minutes talk time" },
-                { username: "two-factor", label: "No data" },
-                { username: "", label: "No data" },
+                { username: "has-password", label: "<b>19</b> minutes talk time", visible: true },
+                { username: "two-factor", label: "", visible: true },
+                { username: "", label: "", visible: false },
             ]
         }
 
         function test_set_username(data) {
             infographicModel.username = data.username
             tryCompare(label, "text", data.label)
+            compare(infographic.visible, data.visible);
         }
     }
 

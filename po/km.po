@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-07-17 10:10+0200\n"
+"POT-Creation-Date: 2015-09-16 00:49+0200\n"
 "PO-Revision-Date: 2014-08-20 02:48+0000\n"
 "Last-Translator: Sophea Sok <sksophea@gmail.com>\n"
 "Language-Team: Khmer <km@li.org>\n"
@@ -15,19 +15,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2015-07-25 05:39+0000\n"
-"X-Generator: Launchpad (build 17628)\n"
+"X-Launchpad-Export-Date: 2015-10-16 05:57+0000\n"
+"X-Generator: Launchpad (build 17812)\n"
 
-#: plugins/LightDM/Greeter.cpp:112
+#: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
 msgstr "ពាក្យសម្ងាត់៖ "
 
-#: plugins/Unity/Launcher/launcheritem.cpp:45
-#: plugins/Unity/Launcher/launcheritem.cpp:100
+#: plugins/Unity/Launcher/launcheritem.cpp:47
+#: plugins/Unity/Launcher/launcheritem.cpp:106
 msgid "Pin shortcut"
 msgstr "ភ្ជាប់​ផ្លូវកាត់"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:100
+#: plugins/Unity/Launcher/launcheritem.cpp:52
+msgid "Quit"
+msgstr ""
+
+#: plugins/Unity/Launcher/launcheritem.cpp:106
 msgid "Unpin shortcut"
 msgstr "មិន​ភ្ជាប់ផ្លូវកាត់"
 
@@ -130,72 +134,72 @@ msgid_plural "Please wait %1 minutes and then try again…"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Components/Dialogs.qml:69
+#: qml/Components/Dialogs.qml:115
 msgctxt "Title: Lock/Log out dialog"
 msgid "Log out"
-msgstr ""
+msgstr "ចេញ"
 
-#: qml/Components/Dialogs.qml:70
+#: qml/Components/Dialogs.qml:116
 msgid "Are you sure you want to log out?"
 msgstr "តើ​អ្នក​ពិតជា​ចង់​ចេញ​មែន​ឬ?"
 
-#: qml/Components/Dialogs.qml:72
+#: qml/Components/Dialogs.qml:118
 msgctxt "Button: Lock the system"
 msgid "Lock"
-msgstr ""
+msgstr "ចាក់សោ"
 
-#: qml/Components/Dialogs.qml:79
+#: qml/Components/Dialogs.qml:125
 msgctxt "Button: Log out from the system"
 msgid "Log Out"
-msgstr ""
+msgstr "ចេញ"
 
-#: qml/Components/Dialogs.qml:86 qml/Components/Dialogs.qml:117
-#: qml/Components/Dialogs.qml:173
+#: qml/Components/Dialogs.qml:132 qml/Components/Dialogs.qml:165
+#: qml/Components/Dialogs.qml:224
 msgid "Cancel"
 msgstr "បោះបង់"
 
-#: qml/Components/Dialogs.qml:98
+#: qml/Components/Dialogs.qml:144
 msgctxt "Title: Reboot/Shut down dialog"
 msgid "Shut down"
-msgstr ""
+msgstr "បិទ"
 
-#: qml/Components/Dialogs.qml:99
+#: qml/Components/Dialogs.qml:145
 msgid "Are you sure you want to shut down?"
 msgstr "តើ​អ្នក​ពិតជា​ចង់​បិទ​មែន​ឬ?"
 
-#: qml/Components/Dialogs.qml:101
+#: qml/Components/Dialogs.qml:147
 msgctxt "Button: Reboot the system"
 msgid "Reboot"
-msgstr ""
+msgstr "ចាប់ផ្ដើម​ឡើងវិញ"
 
-#: qml/Components/Dialogs.qml:109
+#: qml/Components/Dialogs.qml:156
 msgctxt "Button: Shut down the system"
 msgid "Shut down"
-msgstr ""
+msgstr "បិទ"
 
-#: qml/Components/Dialogs.qml:129
+#: qml/Components/Dialogs.qml:178
 msgctxt "Title: Reboot dialog"
 msgid "Reboot"
-msgstr ""
+msgstr "ចាប់ផ្ដើម​ឡើងវិញ"
 
-#: qml/Components/Dialogs.qml:130
+#: qml/Components/Dialogs.qml:179
 msgid "Are you sure you want to reboot?"
 msgstr "តើ​អ្នក​ពិតជា​ចង់​ចាប់ផ្ដើម​ឡើងវិញ​មែន​ឬ?"
 
-#: qml/Components/Dialogs.qml:132
+#: qml/Components/Dialogs.qml:181
 msgid "No"
 msgstr "ទេ"
 
-#: qml/Components/Dialogs.qml:138
+#: qml/Components/Dialogs.qml:188
 msgid "Yes"
 msgstr "បាទ/ចាស"
 
-#: qml/Components/Dialogs.qml:152
+#: qml/Components/Dialogs.qml:203
 msgctxt "Title: Power off/Restart dialog"
 msgid "Power"
-msgstr ""
+msgstr "ថាមពល"
 
-#: qml/Components/Dialogs.qml:153
+#: qml/Components/Dialogs.qml:204
 msgid ""
 "Are you sure you would like\n"
 "to power off?"
@@ -203,15 +207,15 @@ msgstr ""
 "តើ​អ្នក​ពិតជា​ចង់\n"
 "បិទ​មែន​ឬ?"
 
-#: qml/Components/Dialogs.qml:155
+#: qml/Components/Dialogs.qml:206
 msgctxt "Button: Power off the system"
 msgid "Power off"
-msgstr ""
+msgstr "បិទ"
 
-#: qml/Components/Dialogs.qml:164
+#: qml/Components/Dialogs.qml:215
 msgctxt "Button: Restart the system"
 msgid "Restart"
-msgstr ""
+msgstr "ចាប់ផ្ដើម​ឡើងវិញ"
 
 #: qml/Components/Lockscreen.qml:245
 msgid "Return to Call"
@@ -225,33 +229,33 @@ msgstr "ការ​ហៅ​ពេល​អាសន្ន"
 msgid "OK"
 msgstr "យល់ព្រម"
 
-#: qml/Dash/GenericScopeView.qml:539 qml/Dash/GenericScopeView.qml:697
+#: qml/Dash/GenericScopeView.qml:569 qml/Dash/GenericScopeView.qml:727
 msgid "See less"
 msgstr "មើល​តិច​ជាង"
 
-#: qml/Dash/GenericScopeView.qml:539
+#: qml/Dash/GenericScopeView.qml:569
 msgid "See all"
 msgstr "មើល​ទាំងអស់"
 
-#: qml/Dash/GenericScopeView.qml:601
+#: qml/Dash/GenericScopeView.qml:631
 msgctxt "Label: Hint for dash search line edit"
 msgid "Search"
-msgstr ""
+msgstr "ស្វែងរក"
 
 #: qml/Dash/PageHeader.qml:269
 msgctxt "Button: Open the Ubuntu Store"
 msgid "Store"
-msgstr ""
+msgstr "រក្សាទុក"
 
 #: qml/Dash/PageHeader.qml:276
 msgctxt "Button: Start a search in the current dash scope"
 msgid "Search"
-msgstr ""
+msgstr "ស្វែងរក"
 
 #: qml/Dash/PageHeader.qml:286
 msgctxt "Button: Show the current dash scope settings"
 msgid "Settings"
-msgstr ""
+msgstr "ការ​កំណត់"
 
 #: qml/Dash/PageHeader.qml:293
 msgid "Remove from Favorites"
@@ -269,6 +273,13 @@ msgstr "ច្រើនជាង​..."
 msgid "Less..."
 msgstr "តិច​ជាង..."
 
+#: qml/Dash/Previews/PreviewCommentInput.qml:68
+#: qml/Dash/Previews/PreviewRatingInput.qml:174
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:148
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:205
+msgid "Send"
+msgstr "ផ្ញើ"
+
 #: qml/Dash/Previews/PreviewRatingInput.qml:84
 msgid "Rate this"
 msgstr "វាយតម្លៃ​វា"
@@ -276,10 +287,6 @@ msgstr "វាយតម្លៃ​វា"
 #: qml/Dash/Previews/PreviewRatingInput.qml:129
 msgid "Add a review"
 msgstr "បន្ថែម​ការ​ពិនិត្យ"
-
-#: qml/Dash/Previews/PreviewRatingInput.qml:169
-msgid "Send"
-msgstr "ផ្ញើ"
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:55
 msgid "Pull to refresh…"
@@ -295,11 +302,11 @@ msgstr ""
 
 #: qml/Dash/ScopesList.qml:67
 msgid "Manage"
-msgstr ""
+msgstr "គ្រប់គ្រង"
 
 #: qml/Dash/ScopesList.qml:113
 msgid "Home"
-msgstr ""
+msgstr "ផ្ទះ"
 
 #: qml/Dash/ScopesList.qml:114
 msgid "Also installed"
@@ -307,11 +314,11 @@ msgstr ""
 
 #: qml/Greeter/CoverPage.qml:107
 msgid "Unlock"
-msgstr ""
+msgstr "ដោះ​សោ"
 
 #: qml/Greeter/LoginList.qml:236
 msgid "Retry"
-msgstr ""
+msgstr "ព្យាយាម​ម្ដងទៀត"
 
 #: qml/Greeter/LoginList.qml:237
 msgid "Tap to unlock"
@@ -390,68 +397,72 @@ msgstr "ប៉ះ​ដើម្បី​ត្រឡប់​ទៅ​ការ
 msgid "Conference"
 msgstr "សន្និសីទ"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:639
+#: qml/Panel/Indicators/MenuItemFactory.qml:718
 msgid "Nothing is playing"
 msgstr ""
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:768
+#: qml/Panel/Indicators/MenuItemFactory.qml:847
 #, qt-format
 msgid "%1 hour"
 msgid_plural "%1 hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:772
+#: qml/Panel/Indicators/MenuItemFactory.qml:851
 #, qt-format
 msgid "%1 minute"
 msgid_plural "%1 minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:777
+#: qml/Panel/Indicators/MenuItemFactory.qml:856
 #, qt-format
 msgid "%1 second"
 msgid_plural "%1 seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:780
+#: qml/Panel/Indicators/MenuItemFactory.qml:859
 msgid "0 seconds"
 msgstr ""
 
 #. Translators: String like "1 hour, 2 minutes, 3 seconds remaining"
-#: qml/Panel/Indicators/MenuItemFactory.qml:782
+#: qml/Panel/Indicators/MenuItemFactory.qml:861
 #, qt-format
 msgid "%1 remaining"
 msgstr ""
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:788
+#: qml/Panel/Indicators/MenuItemFactory.qml:867
 msgid "In queue…"
 msgstr "ក្នុងជួរ…"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:792
+#: qml/Panel/Indicators/MenuItemFactory.qml:871
 msgid "Downloading"
 msgstr "ទាញយក"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:794
+#: qml/Panel/Indicators/MenuItemFactory.qml:873
 msgid "Paused, tap to resume"
 msgstr "បាន​ផ្អាក, ប៉ះ ដើម្បីបន្ត"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:796
+#: qml/Panel/Indicators/MenuItemFactory.qml:875
 msgid "Canceled"
 msgstr "បាន​បោះបង់"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:798
+#: qml/Panel/Indicators/MenuItemFactory.qml:877
 msgid "Finished"
 msgstr "បាន​បញ្ចប់"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:800
+#: qml/Panel/Indicators/MenuItemFactory.qml:879
 msgid "Failed, tap to retry"
 msgstr "បាន​បរាជ័យ ប៉ះ​ ដើម្បី​ព្យាយាម​ម្ដង​ទៀត"
 
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:149
 msgctxt "Label: Hint in message indicator line edit"
 msgid "Reply"
+msgstr "ឆ្លើយតប"
+
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:204
+msgid "Call back"
 msgstr ""
 
 #: qml/Panel/Indicators/ModemInfoItem.qml:105
@@ -478,13 +489,9 @@ msgstr ""
 msgid "Swipe up from the bottom edge."
 msgstr ""
 
-#: qml/Tutorial/TutorialContent.qml:81 qml/Tutorial/TutorialLeftFinish.qml:25
+#: qml/Tutorial/TutorialContent.qml:80 qml/Tutorial/TutorialLeftFinish.qml:25
 #: qml/Tutorial/TutorialRight.qml:144
 msgid "Tap here to continue."
-msgstr ""
-
-#: qml/Tutorial/TutorialContent.qml:81
-msgid "Click here to finish."
 msgstr ""
 
 #: qml/Tutorial/TutorialLeftFinish.qml:24
@@ -522,26 +529,51 @@ msgstr ""
 #: qml/Wizard/Page.qml:89
 msgctxt "Button: Go back one page in the Wizard"
 msgid "Back"
+msgstr "ថយក្រោយ"
+
+#: qml/Wizard/Pages/here-terms.qml:27
+msgid "Terms & Conditions"
+msgstr "លក្ខខណ្ឌ​ប្រើប្រាស់"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:49
+msgid "Confirm passphrase"
+msgstr "បញ្ជាក់​ឃ្លា​សម្ងាត់"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:50
+msgid "Confirm passcode"
+msgstr ""
+
+#: qml/Wizard/Pages/passwd-confirm.qml:53
+#: qml/Wizard/Pages/passwd-confirm.qml:54
+msgid "Please try again."
+msgstr "សូម​ព្យាយាម​ម្ដងទៀត។"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:82 qml/Wizard/Pages/passwd-set.qml:90
+#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
+#: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
+#: qml/Wizard/Pages/60-reporting.qml:50
+msgid "Continue"
+msgstr "បន្ត"
+
+#: qml/Wizard/Pages/passwd-set.qml:61
+msgid "Choose your passcode"
+msgstr ""
+
+#: qml/Wizard/Pages/passwd-set.qml:68
+msgid "Passphrase must be 4 characters long"
 msgstr ""
 
 #: qml/Wizard/Pages/10-welcome.qml:27
 msgid "Hi!"
-msgstr ""
+msgstr "សួស្ដី!"
 
 #: qml/Wizard/Pages/10-welcome.qml:44
 msgid "Welcome to your Ubuntu phone."
-msgstr ""
+msgstr "សូម​ស្វាគមន៍​មកកាន់​ទូរស័ព្ទ Ubuntu ។"
 
 #: qml/Wizard/Pages/10-welcome.qml:52
 msgid "Let’s get started."
-msgstr ""
-
-#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
-#: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
-#: qml/Wizard/Pages/60-reporting.qml:50 qml/Wizard/Pages/passwd-confirm.qml:82
-#: qml/Wizard/Pages/passwd-set.qml:90
-msgid "Continue"
-msgstr ""
+msgstr "តោះ​ចាប់ផ្ដើម។"
 
 #: qml/Wizard/Pages/20-sim.qml:25
 msgid "Add a SIM card and restart your device"
@@ -553,11 +585,11 @@ msgstr ""
 
 #: qml/Wizard/Pages/20-sim.qml:73 qml/Wizard/Pages/40-wifi.qml:215
 msgid "Skip"
-msgstr ""
+msgstr "រំលង"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:39
 msgid "Lock security"
-msgstr ""
+msgstr "ចាក់សោ​សុវត្ថិភាព"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:74
 msgid "Please select how you’d like to unlock your phone."
@@ -566,7 +598,7 @@ msgstr ""
 #: qml/Wizard/Pages/30-passwd-type.qml:97
 msgctxt "Label: Type of security method"
 msgid "Swipe"
-msgstr ""
+msgstr "រុញ"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:98
 msgctxt "Label: Description of security method"
@@ -586,7 +618,7 @@ msgstr ""
 #: qml/Wizard/Pages/30-passwd-type.qml:103
 msgctxt "Label: Type of security method"
 msgid "Passphrase"
-msgstr ""
+msgstr "ឃ្លាសម្ងាត់"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:104
 msgctxt "Label: Description of security method"
@@ -607,7 +639,7 @@ msgstr ""
 
 #: qml/Wizard/Pages/50-location.qml:27
 msgid "Location"
-msgstr ""
+msgstr "ទីតាំង"
 
 #: qml/Wizard/Pages/50-location.qml:62
 msgid "Let the phone detect your location:"
@@ -654,56 +686,31 @@ msgstr ""
 
 #: qml/Wizard/Pages/80-finished.qml:24
 msgid "All done"
-msgstr ""
+msgstr "ធ្វើ​រួច​ទាំងអស់"
 
 #: qml/Wizard/Pages/80-finished.qml:39
 msgid "Nice work!"
-msgstr ""
+msgstr "ដំណើរការ​ល្អ!"
 
 #: qml/Wizard/Pages/80-finished.qml:46
 msgid "Your phone is now ready to use."
-msgstr ""
+msgstr "ទូរស័ព្ទ​របស់​អ្នក​ឥឡូវ​អាច​ប្រើ​បាន។"
 
 #: qml/Wizard/Pages/80-finished.qml:53
 msgid "Finish"
-msgstr ""
-
-#: qml/Wizard/Pages/here-terms.qml:27
-msgid "Terms & Conditions"
-msgstr ""
-
-#: qml/Wizard/Pages/passwd-confirm.qml:49
-msgid "Confirm passphrase"
-msgstr ""
-
-#: qml/Wizard/Pages/passwd-confirm.qml:50
-msgid "Confirm passcode"
-msgstr ""
-
-#: qml/Wizard/Pages/passwd-confirm.qml:53
-#: qml/Wizard/Pages/passwd-confirm.qml:54
-msgid "Please try again."
-msgstr ""
-
-#: qml/Wizard/Pages/passwd-set.qml:61
-msgid "Choose your passcode"
-msgstr ""
-
-#: qml/Wizard/Pages/passwd-set.qml:68
-msgid "Passphrase must be 4 characters long"
-msgstr ""
+msgstr "បញ្ចប់"
 
 #. Translators: This is the arrow for "Back" buttons
 #: qml/Wizard/StackButton.qml:39
 #, qt-format
 msgid "〈  %1"
-msgstr ""
+msgstr "〈  %1"
 
 #. Translators: This is the arrow for "Forward" buttons
 #: qml/Wizard/StackButton.qml:42
 #, qt-format
 msgid "%1  〉"
-msgstr ""
+msgstr "%1  〉"
 
 #~ msgid "Try swiping from the right edge to unlock the phone"
 #~ msgstr "សាកល្បង​​អូស​ពី​គែម​ស្ដាំ​ ដើម្បី​ដោះ​សោ​ទូរស័ព្ទ"

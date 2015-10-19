@@ -25,8 +25,8 @@ import Ubuntu.Gestures 0.1
 import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Connectivity 0.1
 import Unity.Launcher 0.1
+import GlobalShortcut 1.0 // has to be before Utils, because of WindowKeysFilter
 import Utils 0.1
-import LightDM 0.1 as LightDM
 import Powerd 0.1
 import SessionBroadcast 0.1
 import "Greeter"
@@ -41,6 +41,7 @@ import Unity.Notifications 1.0 as NotificationBackend
 import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
 import Unity.Indicators 0.1 as Indicators
+
 
 Item {
     id: shell
@@ -62,6 +63,7 @@ Item {
     function updateFocusedAppOrientationAnimated() {
         applicationsDisplayLoader.item.updateFocusedAppOrientationAnimated();
     }
+    property bool hasMouse
 
     // to be read from outside
     readonly property int mainAppWindowOrientationAngle:
@@ -146,7 +148,7 @@ Item {
     // This is a dummy image to detect if the custom GSettings set wallpaper loads successfully.
     Image {
         id: gsImageTester
-        source: backgroundSettings.pictureUri != undefined && backgroundSettings.pictureUri.length > 0 ? backgroundSettings.pictureUri : ""
+        source: backgroundSettings.pictureUri && backgroundSettings.pictureUri.length > 0 ? backgroundSettings.pictureUri : ""
         height: 0
         width: 0
         sourceSize.height: 0
@@ -167,8 +169,10 @@ Item {
         finishStartUpTimer.start();
     }
 
+    LightDM{id: lightDM} // Provide backend access
     VolumeControl {
         id: volumeControl
+        indicators: panel.indicators
     }
 
     DashCommunicator {
@@ -180,7 +184,7 @@ Item {
         id: physicalKeysMapper
         objectName: "physicalKeysMapper"
 
-        onPowerKeyLongPressed: dialogs.showPowerDialog()
+        onPowerKeyLongPressed: dialogs.showPowerDialog();
         onVolumeDownTriggered: volumeControl.volumeDown();
         onVolumeUpTriggered: volumeControl.volumeUp();
         onScreenshotTriggered: screenGrabber.capture();
@@ -191,10 +195,8 @@ Item {
         z: dialogs.z + 10
     }
 
-    Binding {
-        target: ApplicationManager
-        property: "forceDashActive"
-        value: launcher.shown || launcher.dashSwipe
+    GlobalShortcut {
+        // dummy shortcut to force creation of GlobalShortcutRegistry before WindowKeyFilter
     }
 
     WindowKeysFilter {
@@ -354,6 +356,16 @@ Item {
             }
             Binding {
                 target: applicationsDisplayLoader.item
+                property: "keepDashRunning"
+                value: launcher.shown || launcher.dashSwipe
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "suspended"
+                value: greeter.shown
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
                 property: "altTabPressed"
                 value: physicalKeysMapper.altTabPressed
             }
@@ -363,20 +375,19 @@ Item {
             id: tutorial
             objectName: "tutorial"
             anchors.fill: parent
-            active: AccountsService.demoEdges
-            paused: LightDM.Greeter.active
-            launcher: launcher
-            panel: panel
-            edgeSize: shell.edgeSize
 
             // EdgeDragAreas don't work with mice.  So to avoid trapping the user,
-            // we'll tell the tutorial to avoid using them on the Desktop.  The
+            // we skip the tutorial on the Desktop to avoid using them.  The
             // Desktop doesn't use the same spread design anyway.  The tutorial is
             // all a bit of a placeholder on non-phone form factors right now.
             // When the design team gives us more guidance, we can do something
             // more clever here.
-            // TODO: use DeviceConfiguration instead of checking source
-            useEdgeDragArea: applicationsDisplayLoader.source != Qt.resolvedUrl("Stages/DesktopStage.qml")
+            active: usageScenario != "desktop" && AccountsService.demoEdges
+
+            paused: lightDM.greeter.active
+            launcher: launcher
+            panel: panel
+            edgeSize: shell.edgeSize
 
             onFinished: {
                 AccountsService.demoEdges = false;
@@ -392,25 +403,6 @@ Item {
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
-    Connections {
-        target: SurfaceManager
-        onSurfaceCreated: {
-            if (surface.type == MirSurfaceItem.InputMethod) {
-                inputMethod.surface = surface;
-            }
-        }
-
-        onSurfaceDestroyed: {
-            if (inputMethod.surface == surface) {
-                inputMethod.surface = null;
-                surface.parent = null;
-            }
-            if (!surface.parent) {
-                // there's no one displaying it. delete it right away
-                surface.release();
-            }
-        }
-    }
     Connections {
         target: SessionManager
         onSessionStopping: {
@@ -428,7 +420,7 @@ Item {
         sourceComponent: shell.mode != "shell" ? integratedGreeter :
             Qt.createComponent(Qt.resolvedUrl("Greeter/ShimGreeter.qml"));
         onLoaded: {
-                item.objectName = "greeter"
+            item.objectName = "greeter"
         }
     }
 
@@ -459,12 +451,6 @@ Item {
             }
 
             onEmergencyCall: startLockedApp("dialer-app")
-
-            Binding {
-                target: ApplicationManager
-                property: "suspended"
-                value: greeter.shown
-            }
         }
     }
 
@@ -524,7 +510,7 @@ Item {
 
         greeter.notifyAboutToFocusApp("unity8-dash");
 
-        var animate = !LightDM.Greeter.active && !stages.shown
+        var animate = !lightDM.greeter.active && !stages.shown
         dash.setCurrentScope(0, animate, false)
         ApplicationManager.requestFocusApplication("unity8-dash")
     }
@@ -572,8 +558,11 @@ Item {
                 greeterShown: greeter.shown
             }
 
-            property bool mainAppIsFullscreen: shell.mainApp && shell.mainApp.fullscreen
-            fullscreenMode: (mainAppIsFullscreen && !LightDM.Greeter.active && launcher.progress == 0)
+            property bool topmostApplicationIsFullscreen:
+                ApplicationManager.focusedApplicationId &&
+                    ApplicationManager.findApplication(ApplicationManager.focusedApplicationId).fullscreen
+
+            fullscreenMode: (topmostApplicationIsFullscreen && !lightDM.greeter.active && launcher.progress == 0)
                             || greeter.hasLockedApp
         }
 
@@ -648,6 +637,7 @@ Item {
 
             model: NotificationBackend.Model
             margin: units.gu(1)
+            hasMouse: shell.hasMouse
 
             y: topmostIsFullscreen ? 0 : panel.panelHeight
             height: parent.height - (topmostIsFullscreen ? 0 : panel.panelHeight)
@@ -681,6 +671,7 @@ Item {
         objectName: "dialogs"
         anchors.fill: parent
         z: overlay.z + 10
+        usageScenario: shell.usageScenario
         onPowerOffClicked: {
             shutdownFadeOutRectangle.enabled = true;
             shutdownFadeOutRectangle.visible = true;
@@ -707,7 +698,7 @@ Item {
             to: 1.0
             onStopped: {
                 if (shutdownFadeOutRectangle.enabled && shutdownFadeOutRectangle.visible) {
-                    DBusUnitySessionService.Shutdown();
+                    DBusUnitySessionService.shutdown();
                 }
             }
         }

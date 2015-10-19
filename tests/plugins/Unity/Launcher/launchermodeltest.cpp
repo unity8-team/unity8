@@ -39,6 +39,9 @@ class MockApp: public unity::shell::application::ApplicationInfoInterface
     Q_OBJECT
 public:
     MockApp(const QString &appId, QObject *parent = 0): ApplicationInfoInterface(appId, parent), m_appId(appId), m_focused(false) { }
+
+    RequestedState requestedState() const override { return RequestedRunning; }
+    void setRequestedState(RequestedState) override {}
     QString appId() const override { return m_appId; }
     QString name() const override { return "mock"; }
     QString comment() const override { return "this is a mock"; }
@@ -117,10 +120,6 @@ public:
         endRemoveRows();
     }
     bool requestFocusApplication(const QString &appId) override { Q_UNUSED(appId); return true; }
-    bool suspended() const override { return false; }
-    void setSuspended(bool) override {}
-    bool forceDashActive() const override { return false; }
-    void setForceDashActive(bool) override {}
 
 private:
     QList<MockApp*> m_list;
@@ -188,7 +187,7 @@ private Q_SLOTS:
     }
 
     void testPinning() {
-        QSignalSpy spy(launcherModel, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)));
+        QSignalSpy spy(launcherModel, &LauncherModel::dataChanged);
         QCOMPARE(launcherModel->get(0)->pinned(), false);
         QCOMPARE(launcherModel->get(1)->pinned(), false);
         launcherModel->pin(launcherModel->get(0)->appId());
@@ -297,6 +296,22 @@ private Q_SLOTS:
         appManager->removeApplication(0);
         // Now it needs to go away
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
+    }
+
+    void testApplicationRunning() {
+        launcherModel->pin("abs-icon");
+        launcherModel->pin("no-icon");
+
+        QCOMPARE(launcherModel->get(0)->running(), true);
+        QCOMPARE(launcherModel->get(1)->running(), true);
+
+        appManager->stopApplication("abs-icon");
+        QCOMPARE(launcherModel->get(0)->running(), false);
+        QCOMPARE(launcherModel->get(1)->running(), true);
+
+        appManager->stopApplication("no-icon");
+        QCOMPARE(launcherModel->get(0)->running(), false);
+        QCOMPARE(launcherModel->get(1)->running(), false);
     }
 
     void testApplicationFocused() {
@@ -409,7 +424,7 @@ private Q_SLOTS:
     }
 
     void testCountEmblems() {
-        QSignalSpy spy(launcherModel, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)));
+        QSignalSpy spy(launcherModel, &LauncherModel::dataChanged);
 
         // Call GetAll on abs-icon
         QDBusInterface interface("com.canonical.Unity.Launcher", "/com/canonical/Unity/Launcher/abs_2Dicon", "org.freedesktop.DBus.Properties");
@@ -555,7 +570,7 @@ private Q_SLOTS:
 
     void testSettings() {
         GSettings *settings = launcherModel->m_settings;
-        QSignalSpy spy(launcherModel, SIGNAL(hint()));
+        QSignalSpy spy(launcherModel, &LauncherModel::hint);
 
         // Nothing pinned at startup
         QCOMPARE(settings->storedApplications().count(), 0);

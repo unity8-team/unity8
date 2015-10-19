@@ -20,6 +20,8 @@ import Unity.Application 0.1
 
 FocusScope {
     id: root
+    implicitWidth: sessionContainer.implicitWidth
+    implicitHeight: sessionContainer.implicitHeight
 
     // to be read from outside
     readonly property bool fullscreen: application ? application.fullscreen : false
@@ -29,6 +31,7 @@ FocusScope {
     // to be set from outside
     property QtObject application
     property int surfaceOrientationAngle
+    property alias resizeSurface: sessionContainer.resizeSurface
 
     QtObject {
         id: d
@@ -50,7 +53,8 @@ FocusScope {
         property bool hadSurface: sessionContainer.surfaceContainer.hadSurface
 
         property bool needToTakeScreenshot:
-            sessionContainer.surface && d.surfaceInitialized && screenshotImage.status === Image.Null
+            ((sessionContainer.surface && d.surfaceInitialized) || d.hadSurface)
+            && screenshotImage.status === Image.Null
             && d.applicationState === ApplicationInfoInterface.Stopped
         onNeedToTakeScreenshotChanged: {
             if (needToTakeScreenshot) {
@@ -94,15 +98,16 @@ FocusScope {
         antialiasing: !root.interactive
 
         function take() {
+            // Save memory by using a half-resolution (thus quarter size) screenshot.
+            // Do not make this a binding, we can only take the screenshot once!
+            sourceSize.width = root.width / 2;
+            sourceSize.height = root.height / 2;
+
             // Format: "image://application/$APP_ID/$CURRENT_TIME_MS"
             // eg: "image://application/calculator-app/123456"
             var timeMs = new Date().getTime();
             source = "image://application/" + root.application.appId + "/" + timeMs;
         }
-
-        // Save memory by using a half-resolution (thus quarter size) screenshot
-        sourceSize.width: root.width / 2
-        sourceSize.height: root.height / 2
     }
 
     Loader {
@@ -135,9 +140,6 @@ FocusScope {
         onSurfaceChanged: {
             if (sessionContainer.surface) {
                 surfaceInitTimer.start();
-                if (ApplicationManager.focusedApplicationId == application.appId) {
-                    root.forceActiveFocus();
-                }
             } else {
                 d.surfaceInitialized = false;
             }

@@ -41,7 +41,7 @@ void ScopesOverview::setSearchQuery(const QString& search_query)
         Q_EMIT categoriesChanged();
 }
 
-Q_INVOKABLE void ScopesOverview::activate(QVariant const& result)
+Q_INVOKABLE void ScopesOverview::activate(QVariant const& result, QString const& /*categoryId*/)
 {
     Scopes *scopes = dynamic_cast<Scopes*>(parent());
     if (scopes->getScope(result.toString())) {
@@ -308,7 +308,7 @@ QVariant ScopesOverviewResultsModel::data(const QModelIndex& index, int role) co
         case RoleSubtitle:
             return scope && scope->name() == "Videos this is long ab cd ef gh ij kl" ? "tube, movies, cinema, pictures, art, moving images, magic in a box" : QString();
         case RoleArt:
-            return qmlDirectory() + "graphics/applicationIcons/dash.png";
+            return qmlDirectory() + "/graphics/applicationIcons/dash.png";
         case RoleMascot:
         case RoleEmblem:
         case RoleSummary:

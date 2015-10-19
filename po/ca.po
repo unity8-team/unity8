@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-07-17 10:10+0200\n"
+"POT-Creation-Date: 2015-09-16 00:49+0200\n"
 "PO-Revision-Date: 2015-07-04 09:48+0000\n"
 "Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
@@ -15,19 +15,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2015-07-25 05:38+0000\n"
-"X-Generator: Launchpad (build 17628)\n"
+"X-Launchpad-Export-Date: 2015-10-16 05:57+0000\n"
+"X-Generator: Launchpad (build 17812)\n"
 
-#: plugins/LightDM/Greeter.cpp:112
+#: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
 msgstr "Contrasenya: "
 
-#: plugins/Unity/Launcher/launcheritem.cpp:45
-#: plugins/Unity/Launcher/launcheritem.cpp:100
+#: plugins/Unity/Launcher/launcheritem.cpp:47
+#: plugins/Unity/Launcher/launcheritem.cpp:106
 msgid "Pin shortcut"
 msgstr "Enganxa la drecera"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:100
+#: plugins/Unity/Launcher/launcheritem.cpp:52
+msgid "Quit"
+msgstr ""
+
+#: plugins/Unity/Launcher/launcheritem.cpp:106
 msgid "Unpin shortcut"
 msgstr "Desenganxa la drecera"
 
@@ -134,72 +138,72 @@ msgid_plural "Please wait %1 minutes and then try again…"
 msgstr[0] "Espereu %1 minut i torneu-ho a intentar..."
 msgstr[1] "Espereu %1 minuts i torneu-ho a intentar..."
 
-#: qml/Components/Dialogs.qml:69
+#: qml/Components/Dialogs.qml:115
 msgctxt "Title: Lock/Log out dialog"
 msgid "Log out"
 msgstr "Surt"
 
-#: qml/Components/Dialogs.qml:70
+#: qml/Components/Dialogs.qml:116
 msgid "Are you sure you want to log out?"
 msgstr "Segur que voleu sortir?"
 
-#: qml/Components/Dialogs.qml:72
+#: qml/Components/Dialogs.qml:118
 msgctxt "Button: Lock the system"
 msgid "Lock"
 msgstr "Bloca"
 
-#: qml/Components/Dialogs.qml:79
+#: qml/Components/Dialogs.qml:125
 msgctxt "Button: Log out from the system"
 msgid "Log Out"
 msgstr "Surt"
 
-#: qml/Components/Dialogs.qml:86 qml/Components/Dialogs.qml:117
-#: qml/Components/Dialogs.qml:173
+#: qml/Components/Dialogs.qml:132 qml/Components/Dialogs.qml:165
+#: qml/Components/Dialogs.qml:224
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: qml/Components/Dialogs.qml:98
+#: qml/Components/Dialogs.qml:144
 msgctxt "Title: Reboot/Shut down dialog"
 msgid "Shut down"
 msgstr "Apaga"
 
-#: qml/Components/Dialogs.qml:99
+#: qml/Components/Dialogs.qml:145
 msgid "Are you sure you want to shut down?"
 msgstr "Segur que voleu apagar?"
 
-#: qml/Components/Dialogs.qml:101
+#: qml/Components/Dialogs.qml:147
 msgctxt "Button: Reboot the system"
 msgid "Reboot"
 msgstr "Reinicia"
 
-#: qml/Components/Dialogs.qml:109
+#: qml/Components/Dialogs.qml:156
 msgctxt "Button: Shut down the system"
 msgid "Shut down"
 msgstr "Apaga"
 
-#: qml/Components/Dialogs.qml:129
+#: qml/Components/Dialogs.qml:178
 msgctxt "Title: Reboot dialog"
 msgid "Reboot"
 msgstr "Reinicia"
 
-#: qml/Components/Dialogs.qml:130
+#: qml/Components/Dialogs.qml:179
 msgid "Are you sure you want to reboot?"
 msgstr "Segur que voleu reiniciar?"
 
-#: qml/Components/Dialogs.qml:132
+#: qml/Components/Dialogs.qml:181
 msgid "No"
 msgstr "No"
 
-#: qml/Components/Dialogs.qml:138
+#: qml/Components/Dialogs.qml:188
 msgid "Yes"
 msgstr "Sí"
 
-#: qml/Components/Dialogs.qml:152
+#: qml/Components/Dialogs.qml:203
 msgctxt "Title: Power off/Restart dialog"
 msgid "Power"
 msgstr "Energia"
 
-#: qml/Components/Dialogs.qml:153
+#: qml/Components/Dialogs.qml:204
 msgid ""
 "Are you sure you would like\n"
 "to power off?"
@@ -207,12 +211,12 @@ msgstr ""
 "Segur que voleu\n"
 "apagar?"
 
-#: qml/Components/Dialogs.qml:155
+#: qml/Components/Dialogs.qml:206
 msgctxt "Button: Power off the system"
 msgid "Power off"
 msgstr "Apaga"
 
-#: qml/Components/Dialogs.qml:164
+#: qml/Components/Dialogs.qml:215
 msgctxt "Button: Restart the system"
 msgid "Restart"
 msgstr "Reinicia"
@@ -229,15 +233,15 @@ msgstr "Trucada d'emergència"
 msgid "OK"
 msgstr "D'acord"
 
-#: qml/Dash/GenericScopeView.qml:539 qml/Dash/GenericScopeView.qml:697
+#: qml/Dash/GenericScopeView.qml:569 qml/Dash/GenericScopeView.qml:727
 msgid "See less"
 msgstr "Mostra'n menys"
 
-#: qml/Dash/GenericScopeView.qml:539
+#: qml/Dash/GenericScopeView.qml:569
 msgid "See all"
 msgstr "Mostra-ho tot"
 
-#: qml/Dash/GenericScopeView.qml:601
+#: qml/Dash/GenericScopeView.qml:631
 msgctxt "Label: Hint for dash search line edit"
 msgid "Search"
 msgstr "Cerca"
@@ -273,6 +277,13 @@ msgstr "Més..."
 msgid "Less..."
 msgstr "Menys..."
 
+#: qml/Dash/Previews/PreviewCommentInput.qml:68
+#: qml/Dash/Previews/PreviewRatingInput.qml:174
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:148
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:205
+msgid "Send"
+msgstr "Envia"
+
 #: qml/Dash/Previews/PreviewRatingInput.qml:84
 msgid "Rate this"
 msgstr "Puntueu-ho"
@@ -280,10 +291,6 @@ msgstr "Puntueu-ho"
 #: qml/Dash/Previews/PreviewRatingInput.qml:129
 msgid "Add a review"
 msgstr "Afegiu una ressenya"
-
-#: qml/Dash/Previews/PreviewRatingInput.qml:169
-msgid "Send"
-msgstr "Envia"
 
 #: qml/Dash/PullToRefreshScopeStyle.qml:55
 msgid "Pull to refresh…"
@@ -376,7 +383,7 @@ msgstr "La contrasenya no és correcta"
 #: qml/Greeter/NarrowView.qml:121
 msgctxt "passphrase"
 msgid "Please re-enter"
-msgstr ""
+msgstr "Torneu-ho a introduir"
 
 #: qml/Greeter/NarrowView.qml:122
 msgid "Sorry, incorrect passcode"
@@ -394,62 +401,62 @@ msgstr "Feu un toc per tornar a la trucada..."
 msgid "Conference"
 msgstr "Conferència"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:639
+#: qml/Panel/Indicators/MenuItemFactory.qml:718
 msgid "Nothing is playing"
 msgstr "No s'està reproduint res"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:768
+#: qml/Panel/Indicators/MenuItemFactory.qml:847
 #, qt-format
 msgid "%1 hour"
 msgid_plural "%1 hours"
 msgstr[0] "%1 hora"
 msgstr[1] "%1 hores"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:772
+#: qml/Panel/Indicators/MenuItemFactory.qml:851
 #, qt-format
 msgid "%1 minute"
 msgid_plural "%1 minutes"
 msgstr[0] "%1 minut"
 msgstr[1] "%1 minuts"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:777
+#: qml/Panel/Indicators/MenuItemFactory.qml:856
 #, qt-format
 msgid "%1 second"
 msgid_plural "%1 seconds"
 msgstr[0] "%1 segon"
 msgstr[1] "%1 segons"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:780
+#: qml/Panel/Indicators/MenuItemFactory.qml:859
 msgid "0 seconds"
 msgstr "0 segons"
 
 #. Translators: String like "1 hour, 2 minutes, 3 seconds remaining"
-#: qml/Panel/Indicators/MenuItemFactory.qml:782
+#: qml/Panel/Indicators/MenuItemFactory.qml:861
 #, qt-format
 msgid "%1 remaining"
 msgstr "Resta %1"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:788
+#: qml/Panel/Indicators/MenuItemFactory.qml:867
 msgid "In queue…"
 msgstr "A la cua..."
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:792
+#: qml/Panel/Indicators/MenuItemFactory.qml:871
 msgid "Downloading"
 msgstr "S'està baixant"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:794
+#: qml/Panel/Indicators/MenuItemFactory.qml:873
 msgid "Paused, tap to resume"
 msgstr "En pausa, feu un toc per continuar"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:796
+#: qml/Panel/Indicators/MenuItemFactory.qml:875
 msgid "Canceled"
 msgstr "S'ha cancel·lat"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:798
+#: qml/Panel/Indicators/MenuItemFactory.qml:877
 msgid "Finished"
 msgstr "S'ha finalitzat"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:800
+#: qml/Panel/Indicators/MenuItemFactory.qml:879
 msgid "Failed, tap to retry"
 msgstr "Ha fallat, feu un toc per tornar-ho a intentar"
 
@@ -457,6 +464,10 @@ msgstr "Ha fallat, feu un toc per tornar-ho a intentar"
 msgctxt "Label: Hint in message indicator line edit"
 msgid "Reply"
 msgstr "Respon"
+
+#: qml/Panel/Indicators/MessageMenuItemFactory.qml:204
+msgid "Call back"
+msgstr ""
 
 #: qml/Panel/Indicators/ModemInfoItem.qml:105
 msgid "Unlock SIM"
@@ -482,14 +493,10 @@ msgstr "Obre els menús especials"
 msgid "Swipe up from the bottom edge."
 msgstr "Llisqueu el dit des de la vora inferior."
 
-#: qml/Tutorial/TutorialContent.qml:81 qml/Tutorial/TutorialLeftFinish.qml:25
+#: qml/Tutorial/TutorialContent.qml:80 qml/Tutorial/TutorialLeftFinish.qml:25
 #: qml/Tutorial/TutorialRight.qml:144
 msgid "Tap here to continue."
 msgstr "Feu un toc per continuar."
-
-#: qml/Tutorial/TutorialContent.qml:81
-msgid "Click here to finish."
-msgstr "Feu un toc aquí per finalitzar"
 
 #: qml/Tutorial/TutorialLeftFinish.qml:24
 msgid "These are the shortcuts to favorite apps"
@@ -528,6 +535,38 @@ msgctxt "Button: Go back one page in the Wizard"
 msgid "Back"
 msgstr "Enrere"
 
+#: qml/Wizard/Pages/here-terms.qml:27
+msgid "Terms & Conditions"
+msgstr "Condicions generals"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:49
+msgid "Confirm passphrase"
+msgstr "Confirmeu la contrasenya"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:50
+msgid "Confirm passcode"
+msgstr "Confirmeu el codi d'accés"
+
+#: qml/Wizard/Pages/passwd-confirm.qml:53
+#: qml/Wizard/Pages/passwd-confirm.qml:54
+msgid "Please try again."
+msgstr "Torneu-ho a intentar."
+
+#: qml/Wizard/Pages/passwd-confirm.qml:82 qml/Wizard/Pages/passwd-set.qml:90
+#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
+#: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
+#: qml/Wizard/Pages/60-reporting.qml:50
+msgid "Continue"
+msgstr "Continua"
+
+#: qml/Wizard/Pages/passwd-set.qml:61
+msgid "Choose your passcode"
+msgstr "Trieu el codi d'accés"
+
+#: qml/Wizard/Pages/passwd-set.qml:68
+msgid "Passphrase must be 4 characters long"
+msgstr "La contrasenya ha de tenir 4 caràcters com a mínim"
+
 #: qml/Wizard/Pages/10-welcome.qml:27
 msgid "Hi!"
 msgstr "Hola!"
@@ -539,13 +578,6 @@ msgstr "Us donem la benvinguda al vostre telèfon Ubuntu."
 #: qml/Wizard/Pages/10-welcome.qml:52
 msgid "Let’s get started."
 msgstr "Comencem."
-
-#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
-#: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
-#: qml/Wizard/Pages/60-reporting.qml:50 qml/Wizard/Pages/passwd-confirm.qml:82
-#: qml/Wizard/Pages/passwd-set.qml:90
-msgid "Continue"
-msgstr "Continua"
 
 #: qml/Wizard/Pages/20-sim.qml:25
 msgid "Add a SIM card and restart your device"
@@ -680,31 +712,6 @@ msgstr "Ja podeu utilitzar el vostre telèfon."
 #: qml/Wizard/Pages/80-finished.qml:53
 msgid "Finish"
 msgstr "Finalitza"
-
-#: qml/Wizard/Pages/here-terms.qml:27
-msgid "Terms & Conditions"
-msgstr "Condicions generals"
-
-#: qml/Wizard/Pages/passwd-confirm.qml:49
-msgid "Confirm passphrase"
-msgstr "Confirmeu la contrasenya"
-
-#: qml/Wizard/Pages/passwd-confirm.qml:50
-msgid "Confirm passcode"
-msgstr "Confirmeu el codi d'accés"
-
-#: qml/Wizard/Pages/passwd-confirm.qml:53
-#: qml/Wizard/Pages/passwd-confirm.qml:54
-msgid "Please try again."
-msgstr "Torneu-ho a intentar."
-
-#: qml/Wizard/Pages/passwd-set.qml:61
-msgid "Choose your passcode"
-msgstr "Trieu el codi d'accés"
-
-#: qml/Wizard/Pages/passwd-set.qml:68
-msgid "Passphrase must be 4 characters long"
-msgstr "La contrasenya ha de tenir 4 caràcters com a mínim"
 
 #. Translators: This is the arrow for "Back" buttons
 #: qml/Wizard/StackButton.qml:39

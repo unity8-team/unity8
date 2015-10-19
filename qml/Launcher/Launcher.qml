@@ -136,6 +136,7 @@ Item {
         id: fadeOutAnimation
         ScriptAction {
             script: {
+                animateTimer.stop(); // Don't change the state behind our back
                 panel.layer.enabled = true
             }
         }
@@ -177,7 +178,8 @@ Item {
         }
 
     }
-    MouseArea {
+
+    MultiPointTouchArea {
         id: closeMouseArea
         anchors {
             left: launcherDragArea.right

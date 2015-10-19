@@ -24,8 +24,11 @@ Item {
     id: root
 
     property int initialIndex: -1
+    property var initialIndexPreviewStack: null
     property var scope: null
     property var scopeStyle: null
+    property string categoryId
+    property bool usedInitialIndex: false
 
     property alias showSignatureLine: header.showSignatureLine
 
@@ -83,10 +86,10 @@ Item {
             }
         }
 
-        onCountChanged: {
-            if (count > 0 && initialIndex >= 0) {
-                currentIndex = initialIndex;
-                initialIndex = -1;
+        onModelChanged: {
+            if (count > 0 && initialIndex >= 0 && !usedInitialIndex) {
+                usedInitialIndex = true;
+                previewListView.positionViewAtIndex(initialIndex, ListView.SnapPosition);
             }
         }
 
@@ -98,10 +101,26 @@ Item {
 
             isCurrent: ListView.isCurrentItem
 
-            previewModel: {
-                var previewStack = root.scope.preview(result);
-                return previewStack.getPreviewModel(0);
+            readonly property var previewStack: {
+                if (root.open) {
+                    if (index === root.initialIndex) {
+                        return root.initialIndexPreviewStack;
+                    } else {
+                        return root.scope.preview(result, root.categoryId);
+                    }
+                } else {
+                    return null;
+                }
             }
+
+            previewModel: {
+                if (previewStack) {
+                    return previewStack.getPreviewModel(0);
+                } else {
+                    return null;
+                }
+            }
+
             scopeStyle: root.scopeStyle
         }
     }

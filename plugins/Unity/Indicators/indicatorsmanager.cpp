@@ -44,7 +44,7 @@ public:
 IndicatorsManager::IndicatorsManager(QObject* parent)
     : QObject(parent)
     , m_loaded(false)
-    , m_profile("phone")
+    , m_profile(QStringLiteral("phone"))
 {
 }
 
@@ -75,8 +75,8 @@ void IndicatorsManager::load()
         }
     }
 
-    QObject::connect(m_fsWatcher.data(), SIGNAL(directoryChanged(const QString&)), this, SLOT(onDirectoryChanged(const QString&)));
-    QObject::connect(m_fsWatcher.data(), SIGNAL(fileChanged(const QString&)), this, SLOT(onFileChanged(const QString&)));
+    QObject::connect(m_fsWatcher.data(), &QFileSystemWatcher::directoryChanged, this, &IndicatorsManager::onDirectoryChanged);
+    QObject::connect(m_fsWatcher.data(), &QFileSystemWatcher::fileChanged, this, &IndicatorsManager::onFileChanged);
     setLoaded(true);
 }
 
@@ -115,7 +115,7 @@ void IndicatorsManager::loadDir(const QDir& dir)
 void IndicatorsManager::loadFile(const QFileInfo& file_info)
 {
     QSettings indicator_settings(file_info.absoluteFilePath(), QSettings::IniFormat, this);
-    QString name = indicator_settings.value("Indicator Service/Name").toString();
+    QString name = indicator_settings.value(QStringLiteral("Indicator Service/Name")).toString();
 
     auto iter = m_indicatorsData.find(name);
     if (iter != m_indicatorsData.end())
@@ -282,13 +282,13 @@ Indicator::Ptr IndicatorsManager::indicator(const QString& indicator_name)
     QSettings settings(data->m_fileInfo.absoluteFilePath(), QSettings::IniFormat, this);
     new_indicator->init(data->m_fileInfo.fileName(), settings);
     new_indicator->setProfile(m_profile);
-    QObject::connect(this, SIGNAL(profileChanged(const QString&)), new_indicator.data(), SLOT(setProfile(const QString&)));
+    QObject::connect(this, &IndicatorsManager::profileChanged, new_indicator.data(), &Indicator::setProfile);
     return new_indicator;
 }
 
-QList<Indicator::Ptr> IndicatorsManager::indicators()
+QVector<Indicator::Ptr> IndicatorsManager::indicators()
 {
-    QList<Indicator::Ptr> list;
+    QVector<Indicator::Ptr> list;
     Q_FOREACH(IndicatorData* data, m_indicatorsData)
     {
         Indicator::Ptr ret = indicator(data->m_name);
