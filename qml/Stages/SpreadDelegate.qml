@@ -20,6 +20,7 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0
 import Ubuntu.Components 1.1
+import Utils 0.1
 import "../Components"
 
 FocusScope {
@@ -252,14 +253,11 @@ FocusScope {
             x: (parent.width - width) / 2
             y: (parent.height - height) / 2
 
-            BorderImage {
-                anchors {
-                    fill: appWindow
-                    margins: -units.gu(2)
-                }
-                source: "graphics/dropshadow2gu.sci"
-                opacity: root.dropShadow ? .3 : 0
+            DropShadow {
+                anchors.fill: appWindow
+                opacity: root.dropShadow ? 0.3 : 0
                 Behavior on opacity { UbuntuNumberAnimation {} }
+                size: units.gu(2)
             }
 
             ApplicationWindow {

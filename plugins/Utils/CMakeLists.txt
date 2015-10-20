@@ -8,6 +8,8 @@ include_directories(
     ${GIO_INCLUDE_DIRS}
 )
 
+qt5_add_resources(SHADERS_QRC shaders.qrc)
+
 set(QMLPLUGIN_SRC
     activefocuslogger.cpp
     constants.cpp
@@ -24,7 +26,9 @@ set(QMLPLUGIN_SRC
     easingcurve.cpp
     windowstatestorage.cpp
     timezoneFormatter.cpp
+    dropshadow.cpp
     plugin.cpp
+    ${SHADERS_QRC}
     )
 
 add_library(Utils-qml SHARED

@@ -37,6 +37,7 @@
 #include "windowstatestorage.h"
 #include "constants.h"
 #include "timezoneFormatter.h"
+#include "dropshadow.h"
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -71,6 +72,7 @@ void UtilsPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<TimezoneFormatter>(uri, 0, 1, "TimezoneFormatter",
                                                 [](QQmlEngine*, QJSEngine*) -> QObject* { return new TimezoneFormatter; });
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
+    qmlRegisterType<QuickPlusDropShadow>(uri, 0, 1, "DropShadow");
 }
 
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

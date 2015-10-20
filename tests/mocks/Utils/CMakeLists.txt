@@ -9,6 +9,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/plugins/Utils
 )
 
+qt5_add_resources(SHADERS_QRC ${CMAKE_SOURCE_DIR}/plugins/Utils/shaders.qrc)
+
 set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/activefocuslogger.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/qlimitproxymodelqml.cpp
@@ -20,6 +22,7 @@ set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/windowscreenshotprovider.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/easingcurve.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/inputwatcher.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/dropshadow.cpp
     constants.cpp
     plugin.cpp
     windowstatestorage.cpp
@@ -28,6 +31,7 @@ set(QMLPLUGIN_SRC
 
 add_library(FakeUtils-qml SHARED
     ${QMLPLUGIN_SRC}
+    ${SHADERS_QRC}
     )
 
 target_link_libraries(FakeUtils-qml ${GIO_LDFLAGS})

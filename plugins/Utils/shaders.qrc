@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource>
+    <file>shaders/dropshadow.vert</file>
+    <file>shaders/dropshadow.frag</file>
+    <file>shaders/dropshadow_core.vert</file>
+    <file>shaders/dropshadow_core.frag</file>
+  </qresource>
+</RCC>
