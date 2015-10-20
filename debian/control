@@ -20,6 +20,7 @@ Homepage: https://launchpad.net/ubuntu-settings-components
 # directly to Ubuntu, don't worry: your changes will be merged back into the
 # upstream branch
 Vcs-Bzr: lp:ubuntu-settings-components
+X-Ubuntu-Use-Langpack: yes
 
 Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
