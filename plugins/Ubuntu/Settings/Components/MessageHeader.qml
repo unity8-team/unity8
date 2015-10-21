@@ -103,10 +103,10 @@ Item {
         Label {
             id: timeText
             objectName: "time"
-            elide: Text.ElideRight
+            anchors.right: parent.right
+
             fontSize: "x-small"
             maximumLineCount: 1
-            horizontalAlignment: Text.AlignRight
         }
         spacing: units.gu(0.5)
 
