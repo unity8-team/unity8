@@ -264,14 +264,22 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
     }
 
-    void testQuickListActionsParser_data() {
+    void testDesktopFileHandler_data() {
         QTest::addColumn<QString>("desktop_file");
-        QTest::newRow("Thunderbird") << "thunderbird"; // uses the current Actions= list
-        QTest::newRow("Google Chrome") << "google-chrome"; // uses the obsolete X-Ayatana-Desktop-Shortcuts= list
+        QTest::addColumn<QString>("display_name");
+        QTest::addColumn<QString>("icon_name");
+        QTest::newRow("Thunderbird") << "thunderbird" // uses the current Actions= list
+                                     << "Thunderbird Mail"
+                                     << "image://theme/thunderbird";
+        QTest::newRow("Google Chrome") << "google-chrome" // uses the obsolete X-Ayatana-Desktop-Shortcuts= list
+                                       << "Google Chrome"
+                                       << "image://theme/google-chrome";
     }
 
-    void testQuickListActionsParser() {
+    void testDesktopFileHandler() {
         QFETCH(QString, desktop_file);
+        QFETCH(QString, display_name);
+        QFETCH(QString, icon_name);
 
         // clear the model
         cleanup();
@@ -285,10 +293,12 @@ private Q_SLOTS:
         QVERIFY(launcherModel->rowCount() == 1);
         LauncherItem * item = static_cast<LauncherItem *>(launcherModel->get(0));
         QVERIFY(item);
-        QVERIFY(!item->name().isEmpty()); // verify we parse the Name correctly
-        QVERIFY(!item->icon().isEmpty()); // verify we parse the Icon correctly
+        QCOMPARE(item->name(), display_name);
+        QCOMPARE(item->icon(), icon_name);
+        qDebug() << "Application:" << desktop_file << ", name:" << item->name() << ", icon:" << item->icon();
 
         QuickListModel *quickList = qobject_cast<QuickListModel*>(item->quickList());
+        QVERIFY(quickList);
         const uint extraEntries = quickList->rowCount() - builtinEntries;
         QVERIFY(extraEntries > 0); // each tested app has some extra actions
 

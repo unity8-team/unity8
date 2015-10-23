@@ -114,8 +114,8 @@ void DesktopFileHandler::readActionList()
     }
 
     QString tmp;
-    if (hasKey("Actions")) {
-        tmp = readString("Actions");
+    if (hasKey(G_KEY_FILE_DESKTOP_KEY_ACTIONS)) {
+        tmp = readString(G_KEY_FILE_DESKTOP_KEY_ACTIONS);
     } else if (hasKey("X-Ayatana-Desktop-Shortcuts")) { // fallback for an old standard
         m_usingFallbackActions = true;
         tmp = readString("X-Ayatana-Desktop-Shortcuts");
@@ -141,9 +141,9 @@ QList<QuickListEntry> DesktopFileHandler::actions() const
         const char * groupName = qstrdup(groupTemplate.arg(action).toUtf8().constData());
 
         entry.setActionId(QStringLiteral("exec_%1").arg(action));
-        entry.setText(readTranslatedString("Name", groupName));
-        entry.setIcon(readString("Icon", groupName));
-        entry.setExec(readString("Exec", groupName));
+        entry.setText(readTranslatedString(G_KEY_FILE_DESKTOP_KEY_NAME, groupName));
+        entry.setIcon(readString(G_KEY_FILE_DESKTOP_KEY_ICON, groupName));
+        entry.setExec(readString(G_KEY_FILE_DESKTOP_KEY_EXEC, groupName));
         result.append(entry);
         delete [] groupName;
 
@@ -163,7 +163,7 @@ QString DesktopFileHandler::readTranslatedString(const char * key, const char * 
     const QString original = readString(key, groupname);
     const QString translated = g_key_file_get_locale_string(m_keyFile, groupname, key, nullptr, nullptr);
 
-    if (original != translated) {
+    if (!translated.isEmpty() && original != translated) {
         return translated;
     } else if (hasKey("X-Ubuntu-Gettext-Domain")) {
         // No translation found in desktop file. Get the untranslated one and have a go with gettext.
@@ -187,7 +187,7 @@ bool DesktopFileHandler::hasKey(const char *key, const char *groupname) const
 
 QString DesktopFileHandler::displayName() const
 {
-    return readTranslatedString("Name");
+    return readTranslatedString(G_KEY_FILE_DESKTOP_KEY_NAME);
 }
 
 QString DesktopFileHandler::icon() const
@@ -196,8 +196,8 @@ QString DesktopFileHandler::icon() const
         return QString();
     }
 
-    const QString iconString = readString("Icon");
-    const QString pathString = readString("Path");
+    const QString iconString = readString(G_KEY_FILE_DESKTOP_KEY_ICON);
+    const QString pathString = readString(G_KEY_FILE_DESKTOP_KEY_PATH);
 
     if (QFileInfo(iconString).exists()) {
         return QFileInfo(iconString).absoluteFilePath();
