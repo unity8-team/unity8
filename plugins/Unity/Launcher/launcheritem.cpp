@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Canonical Ltd.
+ * Copyright 2013-2015 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,8 +13,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
  */
 
 #include "launcheritem.h"
@@ -22,7 +20,8 @@
 
 #include <libintl.h>
 
-LauncherItem::LauncherItem(const QString &appId, const QString &name, const QString &icon, QObject *parent) :
+LauncherItem::LauncherItem(const QString &appId, const QString &name, const QString &icon,
+                           const QList<QuickListEntry> &actions, QObject *parent) :
     LauncherItemInterface(parent),
     m_appId(appId),
     m_name(name),
@@ -37,6 +36,12 @@ LauncherItem::LauncherItem(const QString &appId, const QString &name, const QStr
     m_alerting(false),
     m_quickList(new QuickListModel(this))
 {
+    if (!actions.isEmpty()) {
+        Q_FOREACH(const QuickListEntry &action, actions) {
+            m_quickList->appendAction(action);
+        }
+    }
+
     QuickListEntry nameAction;
     nameAction.setActionId(QStringLiteral("launch_item"));
     nameAction.setText(m_name);

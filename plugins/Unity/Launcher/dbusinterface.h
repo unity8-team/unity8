@@ -29,7 +29,7 @@ public:
     DBusInterface(LauncherModel *parent);
     ~DBusInterface() = default;
 
-    // QDBusVirtualObject implementaition
+    // QDBusVirtualObject implementation
     QString introspect (const QString &path) const override;
     bool handleMessage(const QDBusMessage& message, const QDBusConnection& connection) override;
 

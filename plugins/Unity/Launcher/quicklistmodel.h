@@ -13,8 +13,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
  */
 
 #ifndef QUICKLISTMODEL_H
@@ -33,7 +31,7 @@ class QuickListModel: public QuickListModelInterface
 public:
     explicit QuickListModel(QObject *parent = 0);
 
-    ~QuickListModel();
+    ~QuickListModel() = default;
 
     void appendAction(const QuickListEntry &entry);
 

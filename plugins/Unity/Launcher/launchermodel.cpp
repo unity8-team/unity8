@@ -28,6 +28,7 @@
 
 #include <QDesktopServices>
 #include <QDebug>
+#include <QProcess>
 
 using namespace unity::shell::application;
 
@@ -103,7 +104,7 @@ void LauncherModel::setAlerting(const QString &appId, bool alerting) {
         LauncherItem *item = m_list.at(index);
         if (!item->focused()) {
             item->setAlerting(alerting);
-            Q_EMIT dataChanged(modelIndex, modelIndex, QVector<int>() << RoleAlerting);
+            Q_EMIT dataChanged(modelIndex, modelIndex, {RoleAlerting});
         }
     }
 }
@@ -176,6 +177,7 @@ void LauncherModel::pin(const QString &appId, int index)
         LauncherItem *item = new LauncherItem(appId,
                                               desktopFile.displayName(),
                                               desktopFile.icon(),
+                                              desktopFile.actions(),
                                               this);
         item->setPinned(true);
         m_list.insert(index, item);
@@ -215,6 +217,11 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
         } else if (actionId == QLatin1String("stop_item")) { // Quit
             if (m_appManager) {
                 m_appManager->stopApplication(appId);
+            }
+        } else if (actionId.startsWith(QLatin1String("exec_"))) {
+            const QString exec = model->get(actionIndex).exec();
+            if (!exec.isEmpty()) {
+                QProcess::startDetached(exec);
             }
         // Nope, we don't know this action, let the backend forward it to the application
         } else {
@@ -389,7 +396,9 @@ void LauncherModel::countVisibleChanged(const QString &appId, bool countVisible)
         if (countVisible && desktopFile.isValid()) {
             LauncherItem *item = new LauncherItem(appId,
                                                   desktopFile.displayName(),
-                                                  desktopFile.icon());
+                                                  desktopFile.icon(),
+                                                  desktopFile.actions(),
+                                                  this);
             item->setCountVisible(true);
             beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
             m_list.append(item);
@@ -456,6 +465,7 @@ void LauncherModel::refresh()
             LauncherItem *item = new LauncherItem(entry,
                                                   desktopFile.displayName(),
                                                   desktopFile.icon(),
+                                                  desktopFile.actions(),
                                                   this);
             item->setPinned(true);
             beginInsertRows(QModelIndex(), addedIndex, addedIndex);
@@ -489,7 +499,7 @@ void LauncherModel::alert(const QString &appId)
     if (idx >= 0) {
         LauncherItem *item = m_list.at(idx);
         setAlerting(item->appId(), true);
-        Q_EMIT dataChanged(index(idx), index(idx), QVector<int>() << RoleAlerting);
+        Q_EMIT dataChanged(index(idx), index(idx), {RoleAlerting});
     }
 }
 
@@ -517,7 +527,8 @@ void LauncherModel::applicationAdded(const QModelIndex &parent, int row)
         }
         item->setRunning(true);
     } else {
-        LauncherItem *item = new LauncherItem(app->appId(), app->name(), app->icon().toString(), this);
+        DesktopFileHandler handler(app->appId(), this);
+        LauncherItem *item = new LauncherItem(handler.appId(), handler.displayName(), handler.icon(), handler.actions(), this);
         item->setRecent(true);
         item->setRunning(true);
         item->setFocused(app->focused());

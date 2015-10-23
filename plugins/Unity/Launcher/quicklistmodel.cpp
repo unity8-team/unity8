@@ -12,9 +12,6 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
  */
 
 #include "quicklistmodel.h"
@@ -22,12 +19,6 @@
 QuickListModel::QuickListModel(QObject *parent) :
     QuickListModelInterface(parent)
 {
-
-}
-
-QuickListModel::~QuickListModel()
-{
-
 }
 
 void QuickListModel::appendAction(const QuickListEntry &entry)

@@ -72,7 +72,7 @@ MockLauncherModel::MockLauncherModel(QObject* parent): LauncherModelInterface(pa
     item->setFocused(true);
     item->setPinned(true);
     m_list.append(item);
-    item = new MockLauncherItem("calendar-app", "/usr/share/applications/calendar-app.desktop","Calendar", "calendar", this);
+    item = new MockLauncherItem("calendar-app", "/usr/share/applications/calendar-app.desktop", "Calendar", "calendar", this);
     item->setPinned(true);
     m_list.append(item);
 }
@@ -184,7 +184,8 @@ void MockLauncherModel::pin(const QString &appId, int index)
         m_list.insert(index, new MockLauncherItem(appId,
                                                   appId + ".desktop",
                                                   appId,
-                                                  appId + ".png"));
+                                                  appId + ".png",
+                                                  this));
         m_list.at(index)->setPinned(true);
         endInsertRows();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Canonical Ltd.
+ * Copyright 2014-2015 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,8 +13,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
  */
 
 #include "desktopfilehandler.h"
@@ -22,8 +20,8 @@
 #include <QStringList>
 #include <QStandardPaths>
 #include <QDir>
-#include <QSettings>
 #include <QLocale>
+#include <QDebug>
 
 #include <libintl.h>
 
@@ -31,7 +29,13 @@ DesktopFileHandler::DesktopFileHandler(const QString &appId, QObject *parent):
     QObject(parent),
     m_appId(appId)
 {
+    m_keyFile = g_key_file_new();
     load();
+}
+
+DesktopFileHandler::~DesktopFileHandler()
+{
+    g_key_file_free(m_keyFile);
 }
 
 QString DesktopFileHandler::appId() const
@@ -70,7 +74,7 @@ void DesktopFileHandler::load()
 
     QStringList searchDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
 #ifdef LAUNCHER_TESTING
-    searchDirs << QStringLiteral(".");
+    searchDirs.prepend(QStringLiteral("."));
 #endif
 
     QString path;
@@ -91,6 +95,8 @@ void DesktopFileHandler::load()
                 if (desktopFile.startsWith(helper)) {
                     QFileInfo fileInfo(searchDir, desktopFile);
                     m_filename = fileInfo.absoluteFilePath();
+                    g_key_file_load_from_file(m_keyFile, QFile::encodeName(m_filename), G_KEY_FILE_NONE, nullptr);
+                    readActionList();
                     return;
                 }
             }
@@ -100,37 +106,88 @@ void DesktopFileHandler::load()
     } while (dashPos != -1);
 }
 
-QString DesktopFileHandler::displayName() const
+void DesktopFileHandler::readActionList()
+{
+    if (!isValid()) {
+        m_actions.clear();
+        return;
+    }
+
+    QString tmp;
+    if (hasKey("Actions")) {
+        tmp = readString("Actions");
+    } else if (hasKey("X-Ayatana-Desktop-Shortcuts")) { // fallback for an old standard
+        m_usingFallbackActions = true;
+        tmp = readString("X-Ayatana-Desktop-Shortcuts");
+    }
+    if (!tmp.isEmpty()) {
+        m_actions = tmp.split(';', QString::SkipEmptyParts);
+        qWarning() << "ACTIONS:" << m_actions;
+    }
+}
+
+QList<QuickListEntry> DesktopFileHandler::actions() const
+{
+    if (!isValid() || m_actions.isEmpty()) {
+        return {};
+    }
+
+    const QString groupTemplate = m_usingFallbackActions ? QStringLiteral("%1 Shortcut Group") : QStringLiteral("Desktop Action %1");
+
+    QList<QuickListEntry> result;
+
+    Q_FOREACH(const QString &action, m_actions) {
+        QuickListEntry entry;
+        const char * groupName = qstrdup(groupTemplate.arg(action).toUtf8().constData());
+
+        entry.setActionId(QStringLiteral("exec_%1").arg(action));
+        entry.setText(readTranslatedString("Name", groupName));
+        entry.setIcon(readString("Icon", groupName));
+        entry.setExec(readString("Exec", groupName));
+        result.append(entry);
+        delete [] groupName;
+
+        qWarning() << "Extra action:" << entry.actionId() << ", text:" << entry.text() << ", icon:" << entry.icon() <<
+                      ", exec:" << entry.exec();
+    }
+
+    return result;
+}
+
+QString DesktopFileHandler::readTranslatedString(const char * key, const char * groupname) const
 {
     if (!isValid()) {
         return QString();
     }
 
-    QSettings settings(m_filename, QSettings::IniFormat);
-    settings.setIniCodec("UTF-8");
-    settings.beginGroup(QStringLiteral("Desktop Entry"));
+    const QString original = readString(key, groupname);
+    const QString translated = g_key_file_get_locale_string(m_keyFile, groupname, key, nullptr, nullptr);
 
-    // First try to find Name[xx_YY] and Name[xx] in .desktop file
-    QString locale = QLocale().name();
-    QString shortLocale = locale.split('_').first();
-
-    if (locale != shortLocale && settings.contains(QStringLiteral("Name[%1]").arg(locale))) {
-        return settings.value(QStringLiteral("Name[%1]").arg(locale)).toString();
+    if (original != translated) {
+        return translated;
+    } else if (hasKey("X-Ubuntu-Gettext-Domain")) {
+        // No translation found in desktop file. Get the untranslated one and have a go with gettext.
+        return QString::fromUtf8(dgettext(qPrintable(readString("X-Ubuntu-Gettext-Domain")), qPrintable(original)));
     }
 
-    if (settings.contains(QStringLiteral("Name[%1]").arg(shortLocale))) {
-        return settings.value(QStringLiteral("Name[%1]").arg(shortLocale)).toString();
-    }
+    return original;
+}
 
-    // No translation found in desktop file. Get the untranslated one and have a go with gettext.
-    QString displayName = settings.value(QStringLiteral("Name")).toString();
+QString DesktopFileHandler::readString(const char *key, const char *groupname) const
+{
+    Q_ASSERT(m_keyFile);
+    return QString::fromUtf8(g_key_file_get_string(m_keyFile, groupname, key, nullptr));
+}
 
-    if (settings.contains(QStringLiteral("X-Ubuntu-Gettext-Domain"))) {
-        const QString domain = settings.value(QStringLiteral("X-Ubuntu-Gettext-Domain")).toString();
-        return dgettext(domain.toUtf8().constData(), displayName.toUtf8().constData());
-    }
+bool DesktopFileHandler::hasKey(const char *key, const char *groupname) const
+{
+    Q_ASSERT(m_keyFile);
+    return g_key_file_has_key(m_keyFile, groupname, key, nullptr);
+}
 
-    return displayName;
+QString DesktopFileHandler::displayName() const
+{
+    return readTranslatedString("Name");
 }
 
 QString DesktopFileHandler::icon() const
@@ -139,11 +196,8 @@ QString DesktopFileHandler::icon() const
         return QString();
     }
 
-    QSettings settings(m_filename, QSettings::IniFormat);
-    settings.setIniCodec("UTF-8");
-    settings.beginGroup(QStringLiteral("Desktop Entry"));
-    QString iconString = settings.value(QStringLiteral("Icon")).toString();
-    QString pathString = settings.value(QStringLiteral("Path")).toString();
+    const QString iconString = readString("Icon");
+    const QString pathString = readString("Path");
 
     if (QFileInfo(iconString).exists()) {
         return QFileInfo(iconString).absoluteFilePath();

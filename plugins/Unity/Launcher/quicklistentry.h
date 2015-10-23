@@ -1,8 +1,5 @@
 /* Copyright (C) 2013, 2015 Canonical, Ltd.
  *
- * Authors:
- *  Michael Zanetti <michael.zanetti@canonical.com>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3.
@@ -37,12 +34,16 @@ public:
 
     bool clickable() const;
 
+    QString exec() const;
+    void setExec(const QString &exec);
+
     bool operator==(const QuickListEntry & other);
 
 private:
     QString m_actionId;
     QString m_text;
     QString m_icon;
+    QString m_exec;
 };
 
 #endif // QUICKLISTENTRY

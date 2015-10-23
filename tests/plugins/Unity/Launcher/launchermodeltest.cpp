@@ -151,10 +151,10 @@ private Q_SLOTS:
 
     // Adding 2 apps to the mock appmanager. Both should appear in the launcher.
     void init() {
-        appManager->addApplication(new MockApp("abs-icon"));
+        appManager->addApplication(new MockApp("abs-icon", this));
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
 
-        appManager->addApplication(new MockApp("no-icon"));
+        appManager->addApplication(new MockApp("no-icon", this));
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 2);
 
         launcherModel->m_settings->setStoredApplications(QStringList());
@@ -262,6 +262,42 @@ private Q_SLOTS:
 
         // It needs to go away in any case now
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
+    }
+
+    void testQuickListActionsParser_data() {
+        QTest::addColumn<QString>("desktop_file");
+        QTest::newRow("Thunderbird") << "thunderbird"; // uses the current Actions= list
+        QTest::newRow("Google Chrome") << "google-chrome"; // uses the obsolete X-Ayatana-Desktop-Shortcuts= list
+    }
+
+    void testQuickListActionsParser() {
+        QFETCH(QString, desktop_file);
+
+        // clear the model
+        cleanup();
+        QCOMPARE(launcherModel->rowCount(), 0);
+
+        const uint builtinEntries = 3; // launch, pin, stop
+        const QString execPrefix = QStringLiteral("exec_");
+
+        // add our test app .desktop file
+        appManager->addApplication(new MockApp(desktop_file, this));
+        QVERIFY(launcherModel->rowCount() == 1);
+        LauncherItem * item = static_cast<LauncherItem *>(launcherModel->get(0));
+        QVERIFY(item);
+        QVERIFY(!item->name().isEmpty()); // verify we parse the Name correctly
+        QVERIFY(!item->icon().isEmpty()); // verify we parse the Icon correctly
+
+        QuickListModel *quickList = qobject_cast<QuickListModel*>(item->quickList());
+        const uint extraEntries = quickList->rowCount() - builtinEntries;
+        QVERIFY(extraEntries > 0); // each tested app has some extra actions
+
+        for (uint i = 0; i < extraEntries; ++i) { // verify each extra action (ID, Text, and Exec)
+            QuickListEntry entry = quickList->get(i);
+            QVERIFY(entry.actionId().startsWith(execPrefix) && entry.actionId().length() > execPrefix.length());
+            QVERIFY(!entry.text().isEmpty());
+            QVERIFY(!entry.exec().isEmpty());
+        }
     }
 
     void testQuickListPinningRemoving() {
@@ -396,7 +432,7 @@ private Q_SLOTS:
         QStringList nodes = extractNodes(reply.value());
         QCOMPARE(nodes.count(), launcherModel->rowCount());
 
-        appManager->addApplication(new MockApp("foobar"));
+        appManager->addApplication(new MockApp("foobar", this));
         reply = interface.call("Introspect");
         nodes = extractNodes(reply.value());
         QCOMPARE(nodes.contains("foobar"), true);
@@ -506,7 +542,7 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->get(index)->countVisible(), true);
 
         if (!isRunning && startWhenVisible) {
-            appManager->addApplication(new MockApp("abs-icon"));
+            appManager->addApplication(new MockApp("abs-icon", this));
         }
 
         // Hide count emblem again
@@ -611,7 +647,7 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->rowCount(), getASConfig().count());
 
         int oldCount = launcherModel->rowCount();
-        appManager->addApplication(new MockApp("rel-icon"));
+        appManager->addApplication(new MockApp("rel-icon", this));
         QCOMPARE(launcherModel->rowCount(), oldCount + 1);
         QCOMPARE(launcherModel->rowCount(), getASConfig().count());
     }
