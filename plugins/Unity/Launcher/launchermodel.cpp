@@ -195,6 +195,7 @@ void LauncherModel::requestRemove(const QString &appId)
 
 void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex)
 {
+    qDebug() << Q_FUNC_INFO;
     const int index = findApplication(appId);
     if (index < 0) {
         return;
@@ -221,7 +222,11 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
         } else if (actionId.startsWith(QLatin1String("exec_"))) {
             const QString exec = model->get(actionIndex).exec();
             if (!exec.isEmpty()) {
-                QProcess::startDetached(exec);
+                const QString args = exec.mid(exec.indexOf(' ') + 1); // split the args from the exec name
+                qDebug() << "launch args:" << args;
+                if (m_appManager) {
+                    m_appManager->startApplication(appId, {args});
+                }
             }
         // Nope, we don't know this action, let the backend forward it to the application
         } else {
