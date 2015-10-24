@@ -252,9 +252,9 @@ QString LauncherModel::getUrlForAppId(const QString &appId) const
         return "application:///" + appId + ".desktop";
     }
 
-    QStringList parts = appId.split('_');
-    QString package = parts.value(0);
-    QString app = parts.value(1, QStringLiteral("first-listed-app"));
+    const QStringList parts = appId.split('_');
+    const QString package = parts.value(0);
+    const QString app = parts.value(1, QStringLiteral("first-listed-app"));
     return "appid://" + package + "/" + app + "/current-user-version";
 }
 
