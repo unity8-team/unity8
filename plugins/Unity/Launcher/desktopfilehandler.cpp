@@ -187,8 +187,6 @@ bool DesktopFileHandler::hasKey(const char *key, const char *groupname) const
 
 QString DesktopFileHandler::displayName() const
 {
-    if (hasKey(G_KEY_FILE_DESKTOP_KEY_GENERIC_NAME)) // prefer GenericName to Name
-        return readTranslatedString(G_KEY_FILE_DESKTOP_KEY_GENERIC_NAME);
     return readTranslatedString(G_KEY_FILE_DESKTOP_KEY_NAME);
 }
 
