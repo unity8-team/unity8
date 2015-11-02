@@ -1,3 +1,13 @@
+ubuntu-settings-components (0.6+16.04.20151102-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Lukáš Tinkl ]
+  * Add a forgotten "X-Ubuntu-Use-Langpack: yes"
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Mon, 02 Nov 2015 11:23:22 +0000
+
 ubuntu-settings-components (0.6+15.10.20151021-0ubuntu1) wily; urgency=medium
 
   [ CI Train Bot ]
