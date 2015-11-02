@@ -28,7 +28,6 @@
 
 #include <QDesktopServices>
 #include <QDebug>
-#include <QProcess>
 
 using namespace unity::shell::application;
 
@@ -195,7 +194,6 @@ void LauncherModel::requestRemove(const QString &appId)
 
 void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex)
 {
-    qDebug() << Q_FUNC_INFO;
     const int index = findApplication(appId);
     if (index < 0) {
         return;
@@ -223,7 +221,6 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
             const QString exec = model->get(actionIndex).exec();
             if (!exec.isEmpty()) {
                 const QString args = exec.mid(exec.indexOf(' ') + 1); // split the args from the exec name
-                qDebug() << "launch args:" << args;
                 if (m_appManager) {
                     m_appManager->startApplication(appId, {args});
                 }
