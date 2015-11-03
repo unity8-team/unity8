@@ -62,6 +62,7 @@ void UtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<EasingCurve>(uri, 0, 1, "EasingCurve");
     qmlRegisterSingletonType<WindowStateStorage>(uri, 0, 1, "WindowStateStorage", createWindowStateStorage);
     qmlRegisterType<InputWatcher>(uri, 0, 1, "InputWatcher");
+    qmlRegisterUncreatableType<InputWatcherTouchPoint>(uri, 0, 1, "TouchPoint", "Cannot create this type");
     qmlRegisterSingletonType<Constants>(uri, 0, 1, "Constants", createConstants);
     qmlRegisterSingletonType<TimezoneFormatter>(uri, 0, 1, "TimezoneFormatter",
                                                 [](QQmlEngine*, QJSEngine*) -> QObject* { return new TimezoneFormatter; });

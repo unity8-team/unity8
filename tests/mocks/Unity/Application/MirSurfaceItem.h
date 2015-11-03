@@ -105,6 +105,7 @@ private:
 
     int m_touchPressCount;
     int m_touchReleaseCount;
+    QVariantMap m_touchTrail;
 
     friend class SurfaceManager;
 };

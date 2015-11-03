@@ -6,8 +6,7 @@ import "../Components"
 
 Showable {
     id: root
-    readonly property bool dragging: showSideStageDragArea.dragging || hideSideStageDragArea.dragging
-    property bool enableDragShow: true
+    readonly property alias dragging: hideSideStageDragArea.dragging
     property int panelWidth: units.gu(40)
     readonly property real progress: width / panelWidth
 
@@ -23,12 +22,12 @@ Showable {
         }
         width: units.gu(2)
 
-        opacity: root.enableDragShow || root.shown ? 1 : 0
+        opacity: root.shown ? 1 : 0
         Behavior on opacity { UbuntuNumberAnimation {} }
 
         Image {
             anchors.centerIn: parent
-            width: showSideStageDragArea.pressed || hideSideStageDragArea.pressed ? parent.width * 2 : parent.width
+            width: hideSideStageDragArea.pressed ? parent.width * 2 : parent.width
             height: parent.height
             source: "graphics/sidestage_handle@20.png"
             Behavior on width { UbuntuNumberAnimation {} }
@@ -53,28 +52,6 @@ Showable {
         to: 0
         duration: UbuntuAnimation.BriskDuration
         easing.type: Easing.OutCubic
-    }
-
-    DragHandle {
-        id: showSideStageDragArea
-        objectName: "showSideStageDragArea"
-
-        direction: Direction.Rightwards
-        rotation: 180
-        enabled: root.enableDragShow && !root.shown
-        anchors.right: root.left
-        width: sideStageDragHandle.width
-        height: root.height
-        stretch: true
-
-        maxTotalDragDistance: panelWidth
-        autoCompleteDragThreshold: panelWidth / 2
-
-//        Rectangle {
-//            color: "red"
-//            anchors.fill: parent
-//            visible: enabled
-//        }
     }
 
     DragHandle {

@@ -43,8 +43,8 @@ FocusScope {
     InputWatcher {
         id: _inputWatcher
         target: surfaceItem
-        onTargetPressedChanged: {
-            if (targetPressed && root.interactive) {
+        onPressed: {
+            if (root.interactive) {
                 root.focus = true;
                 root.forceActiveFocus();
             }

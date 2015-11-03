@@ -100,9 +100,9 @@ bool MouseTouchAdaptor::handleButtonPress(xcb_button_press_event_t *pressEvent)
 {
     Qt::MouseButton button = translateMouseButton(pressEvent->detail);
 
-    // Just eat the event if it wasn't a left mouse press
+    // Don't eat the event if it wasn't a left mouse press
     if (button != Qt::LeftButton)
-        return true;
+        return false;
 
     QWindow *targetWindow = findQWindowWithXWindowID(static_cast<WId>(pressEvent->event));
 
@@ -121,9 +121,9 @@ bool MouseTouchAdaptor::handleButtonRelease(xcb_button_release_event_t *releaseE
 {
     Qt::MouseButton button = translateMouseButton(releaseEvent->detail);
 
-    // Just eat the event if it wasn't a left mouse release
+    // Don't eat the event if it wasn't a left mouse press
     if (button != Qt::LeftButton)
-        return true;
+        return false;
 
     QWindow *targetWindow = findQWindowWithXWindowID(static_cast<WId>(releaseEvent->event));
 

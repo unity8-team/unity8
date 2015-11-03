@@ -74,8 +74,12 @@ Rectangle {
             spacing: units.gu(1)
 
             Button {
-                text: "Hint Sidestage"
-                onClicked: tabletStageLoader.item.hintSideStage()
+                text: testCase.sideStage ? testCase.sideStage.shown ? "Hide Side-stage" : "Show Side-stage" : ""
+                enabled: testCase.sideStage
+                onClicked: {
+                    if (testCase.sideStage.shown) testCase.sideStage.hide();
+                    else testCase.sideStage.show();
+                }
             }
 
             ApplicationCheckBox {
@@ -103,6 +107,7 @@ Rectangle {
         when: windowShown
 
         property Item tabletStage: tabletStageLoader.status === Loader.Ready ? tabletStageLoader.item : null
+        property Item sideStage: tabletStage ? findChild(tabletStage, "sideStage") : null
 
         function init() {
             tabletStageLoader.active = true;

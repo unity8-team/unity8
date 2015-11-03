@@ -85,9 +85,6 @@ Rectangle {
             }
         }
     }
-    function hintSideStage() {
-        sideStageTimer.restart();
-    }
 
     // To be read from outside
     property var mainApp: null
@@ -104,16 +101,7 @@ Rectangle {
         if (shellOrientation == Qt.PortraitOrientation || shellOrientation == Qt.InvertedPortraitOrientation) {
             ApplicationManager.focusApplication(priv.mainStageAppId);
             priv.sideStageAppId = "";
-            sideStageTimer.stop();
-        } else if (shellOrientation == Qt.LandscapeOrientation || shellOrientation == Qt.InvertedLandscapeOrientation) {
-            sideStageTimer.restart();
         }
-    }
-
-    Timer {
-        id: sideStageTimer
-        interval: 5000
-        running: false
     }
 
     onInverseProgressChanged: {
@@ -159,6 +147,12 @@ Rectangle {
         property string appId1
 
         property int oldInverseProgress: 0
+
+        property QtObject activeMainStageInputWatcher: {
+            if (priv.mainStageAppId == "") return null;
+            var mainStageAppIndex = priv.indexOf(priv.mainStageAppId);
+            return spreadRepeater.itemAt(mainStageAppIndex).surfaceInputWatcher
+        }
 
         onFocusedAppIdChanged: {
             if (priv.focusedAppId.length > 0) {
@@ -550,6 +544,7 @@ Rectangle {
 
             SideStage {
                 id: sideStage
+                objectName: "sideStage"
                 height: priv.landscapeHeight
                 x: spreadView.width - width
                 z: {
@@ -557,14 +552,6 @@ Rectangle {
                         return spreadView.indexToZIndex(priv.indexOf(priv.sideStageAppId));
                     }
                     return ApplicationManager.count;
-                }
-                enableDragShow: sideStageTimer.running && spreadView.shiftedContentX == 0
-                onShownChanged: {
-                    if (!shown) {
-                        sideStageTimer.restart();
-                    } else {
-                        sideStageTimer.stop();
-                    }
                 }
 
                 opacity: spreadView.phase <= 0 ? 1 : 0
@@ -581,7 +568,6 @@ Rectangle {
                     onPressed: {
                         // just watching, don't eat!
                         mouse.accepted = false;
-                        sideStageTimer.stop();
                     }
                 }
             }
@@ -621,11 +607,23 @@ Rectangle {
                     application: ApplicationManager.get(index)
                     closeable: !isDash
 
-                    Connections {
+//                    MultiPointTouchArea {
+//                        anchors.fill: parent
+//                        minimumTouchPoints: 3
+//                        maximumTouchPoints: 3
+//                        onPressed: {
+//                            console.log("PRESSED!");
+//                        }
+//                        onGestureStarted: {
+//                            console.log("GESTURE STARTED!");
+//                        }
+//                        onTouchUpdated: console.log(touchPoints)
+//                    }
+
+                    Binding {
                         target: spreadTile.surfaceInputWatcher
-                        onTouchCountChanged: {
-                            console.log("surface touch", spreadTile.surfaceInputWatcher.touchCount);
-                        }
+                        property: "eatMoveEvents"
+                        value: spreadTile.surfaceInputWatcher.touchPoints.length === 3
                     }
 
                     readonly property bool wantsMainStage: true /* STAGE_FIXME model.stage == ApplicationInfoInterface.MainStage */
@@ -771,20 +769,88 @@ Rectangle {
         }
     }
 
+    Connections {
+        id: triDragInputSurfaceConnector
+        target: priv.activeMainStageInputWatcher
+
+        property bool triPress: false
+        property bool wasDragging: false
+        property bool wasShown: false
+        onTargetChanged: {
+            triPress = false;
+            wasDragging = false;
+        }
+
+        onPressed: {
+            wasShown = false;
+            if (target.touchPoints.length === 3) {
+                if (!sideStage.shown) {
+                    sideStage.show();
+                    wasShown = true;
+                }
+                triPress = true;
+                console.log("PRESSED", triPress)
+            } else {
+                triPress = false;
+            }
+        }
+        onUpdated: {
+            for (var i = 0; i < target.touchPoints.length; i++) {
+                var tp = target.touchPoints[i];
+//                console.log("updated: (x=" + tp.x + ", y="+tp.y + ") - dragging=" + tp.dragging);
+            }
+        }
+        onDraggingChanged: {
+            console.log("dragging", target.dragging)
+            if (dragging) {
+                wasDragging = true;
+            }
+        }
+        onReleased: {
+            if (target.touchPoints.length === 0) {
+                if (triPress && !wasDragging) {
+                    if (sideStage.shown && !wasShown) {
+                        sideStage.hide();
+                        wasShown = false;
+                    }
+                }
+                triPress = false;
+                wasDragging = false;
+                console.log("RELEASED", triPress)
+            }
+        }
+    }
+
+    Rectangle {
+        color: "red"
+        visible: triDragInputSurfaceConnector.triPress
+        x: {
+            if (priv.activeMainStageInputWatcher == null) return 0;
+
+            var sum = 0
+            for (var i = 0; i < priv.activeMainStageInputWatcher.touchPoints.length; i++) {
+                sum += root.mapFromItem(priv.activeMainStageInputWatcher.target, priv.activeMainStageInputWatcher.touchPoints[i].x, 0).x;
+            }
+            return sum/priv.activeMainStageInputWatcher.touchPoints.length - width/2;
+        }
+        y: {
+            if (priv.activeMainStageInputWatcher == null) return 0;
+
+            var sum = 0
+            for (var i = 0; i < priv.activeMainStageInputWatcher.touchPoints.length; i++) {
+                sum += root.mapFromItem(priv.activeMainStageInputWatcher.target, 0, priv.activeMainStageInputWatcher.touchPoints[i].y).y;
+            }
+            return sum/priv.activeMainStageInputWatcher.touchPoints.length - height/2;
+        }
+
+        width: units.gu(5)
+        height: units.gu(5)
+    }
+
     //eat touch events during the right edge gesture
     MouseArea {
         anchors.fill: parent
         enabled: spreadDragArea.dragging
-    }
-
-    InputWatcher {
-        target: spreadDragArea
-        onTouchCountChanged: {
-            console.log("spread watcher", touchCount)
-            if (touchCount === 3) {
-                sideStageTimer.restart();
-            }
-        }
     }
 
     DirectionalDragArea {
@@ -794,7 +860,7 @@ Rectangle {
         anchors { top: parent.top; bottom: parent.bottom }
         width: root.dragAreaWidth
         direction: Direction.Leftwards
-        enabled: !sideStageTimer.running && ((spreadView.phase != 2 && root.spreadEnabled) || dragging)
+        enabled: (spreadView.phase != 2 && root.spreadEnabled) || dragging
 
         property var gesturePoints: new Array()
 
