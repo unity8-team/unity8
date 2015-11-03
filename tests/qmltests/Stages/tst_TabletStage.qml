@@ -72,6 +72,12 @@ Rectangle {
         Column {
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
             spacing: units.gu(1)
+
+            Button {
+                text: "Hint Sidestage"
+                onClicked: tabletStageLoader.item.hintSideStage()
+            }
+
             ApplicationCheckBox {
                 id: webbrowserCheckBox
                 appId: "webbrowser-app"

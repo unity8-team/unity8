@@ -16,13 +16,15 @@
  */
 
 #include "inputwatcher.h"
+#include "UnownedTouchEvent.h"
 
 #include <QMouseEvent>
+#include <QDebug>
 
 InputWatcher::InputWatcher(QObject *parent)
     : QObject(parent)
     , m_mousePressed(false)
-    , m_touchPressed(false)
+    , m_touchCount(0)
 {
 }
 
@@ -42,7 +44,7 @@ void InputWatcher::setTarget(QObject *value)
     }
 
     setMousePressed(false);
-    setTouchPressed(false);
+    setTouchCount(0);
 
     m_target = value;
     if (m_target) {
@@ -54,17 +56,24 @@ void InputWatcher::setTarget(QObject *value)
 
 bool InputWatcher::targetPressed() const
 {
-    return m_mousePressed || m_touchPressed;
+    return m_mousePressed || m_touchCount > 0;
+}
+
+int InputWatcher::touchCount() const
+{
+    return m_touchCount;
 }
 
 bool InputWatcher::eventFilter(QObject* /*watched*/, QEvent *event)
 {
     switch (event->type()) {
     case QEvent::TouchBegin:
-        setTouchPressed(true);
-        break;
     case QEvent::TouchEnd:
-        setTouchPressed(false);
+    case QEvent::TouchUpdate:
+        {
+            QTouchEvent *touchEvent = static_cast<QTouchEvent*>(event);
+            processTouchEvent(touchEvent);
+        }
         break;
     case QEvent::MouseButtonPress:
         {
@@ -83,12 +92,35 @@ bool InputWatcher::eventFilter(QObject* /*watched*/, QEvent *event)
         }
         break;
     default:
+        // Process unowned touch events (handles update/release for incomplete gestures)
+        if (event->type() == UnownedTouchEvent::unownedTouchEventType()) {
+            QTouchEvent* UTE = static_cast<UnownedTouchEvent*>(event)->touchEvent();
+            if (UTE) processTouchEvent(UTE);
+        }
         // Not interested
         break;
     }
 
     // We never filter them out. We are just watching.
     return false;
+}
+
+void InputWatcher::processTouchEvent(QTouchEvent* event)
+{
+    int newCount = 0;
+    Q_FOREACH(const QTouchEvent::TouchPoint& point, event->touchPoints()) {
+        switch(point.state()) {
+            case Qt::TouchPointReleased:
+                break;
+            case Qt::TouchPointPressed:
+            case Qt::TouchPointMoved:
+            case Qt::TouchPointStationary:
+            default:
+                newCount++;
+                break;
+        }
+    }
+    setTouchCount(newCount);
 }
 
 void InputWatcher::setMousePressed(bool value)
@@ -104,15 +136,15 @@ void InputWatcher::setMousePressed(bool value)
     }
 }
 
-void InputWatcher::setTouchPressed(bool value)
+void InputWatcher::setTouchCount(int value)
 {
-    if (value == m_touchPressed) {
-        return;
-    }
+    if (m_touchCount != value) {
+        bool oldPressed = targetPressed();
+        m_touchCount = value;
+        Q_EMIT touchCountChanged(m_touchCount);
 
-    bool oldPressed = targetPressed();
-    m_touchPressed = value;
-    if (targetPressed() != oldPressed) {
-        Q_EMIT targetPressedChanged(targetPressed());
+        if (targetPressed() != oldPressed) {
+            Q_EMIT targetPressedChanged(targetPressed());
+        }
     }
 }

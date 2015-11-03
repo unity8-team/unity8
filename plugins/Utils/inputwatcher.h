@@ -20,6 +20,8 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QQmlListProperty>
+class QTouchEvent;
 
 /*
   Monitors the target object for input events to figure out whether it's pressed
@@ -32,6 +34,8 @@ class InputWatcher : public QObject
 
     // Whether the target object is pressed (by either touch or mouse)
     Q_PROPERTY(bool targetPressed READ targetPressed NOTIFY targetPressedChanged)
+
+    Q_PROPERTY(int touchCount READ touchCount NOTIFY touchCountChanged DESIGNABLE false)
 public:
     InputWatcher(QObject *parent = nullptr);
 
@@ -40,18 +44,25 @@ public:
 
     bool targetPressed() const;
 
+    int touchCount() const;
+
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 Q_SIGNALS:
     void targetChanged(QObject *value);
     void targetPressedChanged(bool value);
+    void touchCountChanged(int touchCount);
 
 private:
+    void processTouchEvent(QTouchEvent *event);
     void setMousePressed(bool value);
-    void setTouchPressed(bool value);
+    void setTouchCount(int value);
+
+    static int touchPoint_count(QQmlListProperty<QPointF> *prop);
+    static QPointF* touchPoint_at(QQmlListProperty<QPointF> *prop, int index);
 
     bool m_mousePressed;
-    bool m_touchPressed;
+    int m_touchCount;
     QPointer<QObject> m_target;
 };
 

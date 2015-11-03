@@ -30,6 +30,8 @@ FocusScope {
     property int surfaceOrientationAngle: 0
     property bool resizeSurface: true
 
+    readonly property alias inputWatcher: _inputWatcher
+
     onSurfaceChanged: {
         if (surface) {
             surfaceItem.surface = surface;
@@ -38,6 +40,7 @@ FocusScope {
     }
 
     InputWatcher {
+        id: _inputWatcher
         target: surfaceItem
         onTargetPressedChanged: {
             if (targetPressed && root.interactive) {

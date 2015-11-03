@@ -32,6 +32,7 @@ FocusScope {
     readonly property alias appWindowOrientationAngle: appWindowWithShadow.orientationAngle
     readonly property alias appWindowRotation: appWindowWithShadow.rotation
     readonly property alias orientationChangesEnabled: appWindow.orientationChangesEnabled
+    readonly property alias surfaceInputWatcher: appWindow.surfaceInputWatcher
 
     // to be set from outside
     property bool interactive: true

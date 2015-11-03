@@ -58,7 +58,7 @@ Rectangle {
 
             anchors.centerIn: parent
 
-            state: "phone"
+            state: "tablet"
             states: [
                 State {
                     name: "phone"
@@ -97,8 +97,10 @@ Rectangle {
                     id: __shell
                     usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
                     orientation: Qt.PortraitOrientation
-                    primaryOrientation: Qt.PortraitOrientation
-                    nativeOrientation: Qt.PortraitOrientation
+                    nativeWidth: __shell.width
+                    nativeHeight: __shell.height
+                    primaryOrientation: nativeOrientation
+                    nativeOrientation: width > height ? Qt.LandscapeOrientation : Qt.PortraitOrientation
                     Component.onDestruction: {
                         shellLoader.itemDestroyed = true;
                     }
@@ -187,7 +189,7 @@ Rectangle {
                     anchors { left: parent.left; right: parent.right }
                     activeFocusOnPress: false
                     text: "Usage scenario"
-                    model: ["phone", "tablet", "desktop"]
+                    model: ["tablet", "phone", "desktop"]
                 }
                 MouseTouchEmulationCheckbox {
                     id: mouseEmulation

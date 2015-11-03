@@ -51,7 +51,7 @@ SpreadDelegate {
 
     dropShadow: spreadView.active ||
                 (active
-                 && (model.stage == ApplicationInfoInterface.MainStage || !priv.shellIsLandscape)
+                 && (/* STAGE_FIXME model.stage == ApplicationInfoInterface.MainStage ||*/ !priv.shellIsLandscape)
                  && priv.xTranslate != 0)
 
     onSelectedChanged: {
@@ -140,9 +140,9 @@ SpreadDelegate {
             enabled: !spreadView.active &&
                      !snapAnimation.running &&
                      model.appId !== "unity8-dash" &&
-                     !spreadView.sideStageDragging &&
                      spreadView.animateX &&
-                     !spreadView.beingResized
+                     !spreadView.beingResized &&
+                     priv.state !== "sideStage"
             UbuntuNumberAnimation {
                 duration: UbuntuAnimation.FastDuration
             }
@@ -151,22 +151,33 @@ SpreadDelegate {
         property real xTranslate: {
             var newTranslate = 0;
 
-            if (otherSelected) {
-                return priv.selectedXTranslate;
+            if (isSelected || (otherSelected && root.active && spreadView.selectedApplication /* STAGE_FIXME && spreadView.selectedApplication.stage !== model.stage*/)) {
+                // STAGE_FIXME
+//                if (model.stage == ApplicationInfoInterface.MainStage) {
+                    return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.width, root.progress);
+//                } else {
+//                    return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.sideStageWidth, root.progress);
+//                }
+            } else if (otherSelected) {
+                return selectedXTranslate;
             }
 
-            if (isSelected) {
-                if (model.stage == ApplicationInfoInterface.MainStage) {
+            if (root.active && (isSelected || otherSelected)) {
+                // STAGE_FIXME
+//                if (model.stage == ApplicationInfoInterface.MainStage) {
                     return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.width, root.progress);
-                } else {
-                    return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.sideStageWidth, root.progress);
-                }
+//                } else {
+//                    return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.sideStageWidth, root.progress);
+//                }
+            } else if (otherSelected) {
+                return selectedXTranslate;
             }
 
             // The tile should move a bit to the left if a new one comes on top of it, but not for the Side Stage and not
             // when we're only dragging the side stage in on top of a main stage app
-            var shouldMoveAway = spreadView.nextInStack >= 0 && priv.movedActive && model.stage === ApplicationInfoInterface.MainStage &&
-                    ApplicationManager.get(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage;
+            // STAGE_FIXME
+            var shouldMoveAway = spreadView.nextInStack >= 0 && priv.movedActive// && model.stage === ApplicationInfoInterface.MainStage &&
+                    //ApplicationManager.get(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage;
 
             if (active) {
                 newTranslate -= root.width
@@ -175,40 +186,40 @@ SpreadDelegate {
                     newTranslate += linearAnimation(0, spreadView.positionMarker2, 0, -units.gu(4), root.animatedProgress);
                 }
                 newTranslate += root.dragOffset;
-            }
-            if (!spreadView.active && model.appId == "unity8-dash" && !root.active) {
+            } else if (!spreadView.active && model.appId == "unity8-dash") {
                 newTranslate -= root.width;
             }
 
             if (nextInStack && spreadView.phase == 0) {
-                if (model.stage == ApplicationInfoInterface.MainStage) {
+                // STAGE_FIXME
+//                if (model.stage == ApplicationInfoInterface.MainStage) {
                     if (spreadView.sideStageVisible && root.progress > 0) {
                         // Move it so it appears from behind the side stage immediately
                         newTranslate += -spreadView.sideStageWidth;
                     }
-                }
+//                }
 
-                if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+//                if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
                     // This is when we only drag the side stage in, without rotation or snapping
-                    newTranslate = linearAnimation(0, spreadView.positionMarker2, 0, -spreadView.sideStageWidth, root.progress);
-                } else {
+//                    newTranslate = linearAnimation(0, spreadView.positionMarker2, 0, -spreadView.sideStageWidth, root.progress);
+//                } else {
                     newTranslate += linearAnimation(0, spreadView.positionMarker2, 0, -spreadView.sideStageWidth * spreadView.snapPosition, root.animatedProgress);
-                }
+//                }
             }
 
             if (spreadView.phase == 1) {
                 if (nextInStack) {
-                    if (model.stage == ApplicationInfoInterface.MainStage) {
+//                    if (model.stage == ApplicationInfoInterface.MainStage) {
                         var startValue = -spreadView.sideStageWidth * spreadView.snapPosition + (spreadView.sideStageVisible ? -spreadView.sideStageWidth : 0);
                         newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, startValue, priv.phase2StartTranslate, root.animatedProgress);
-                    } else {
-                        var endValue = -spreadView.width + spreadView.width * root.zIndex / 6;
-                        if (!spreadView.sideStageVisible) {
-                            newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth, priv.phase2StartTranslate, root.progress);
-                        } else {
-                            newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth * spreadView.snapPosition, priv.phase2StartTranslate, root.animatedProgress);
-                        }
-                    }
+//                    } else {
+//                        var endValue = -spreadView.width + spreadView.width * root.zIndex / 6;
+//                        if (!spreadView.sideStageVisible) {
+//                            newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth, priv.phase2StartTranslate, root.progress);
+//                        } else {
+//                            newTranslate += linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, -spreadView.sideStageWidth * spreadView.snapPosition, priv.phase2StartTranslate, root.animatedProgress);
+//                        }
+//                    }
                 } else if (root.active) {
                     var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2);
                     var endProgress = spreadView.positionMarker4 - (zIndex * spreadView.tileDistance / spreadView.width);
@@ -222,7 +233,7 @@ SpreadDelegate {
             }
 
             if (spreadView.phase == 2) {
-                newTranslate = -easingCurve.value * (spreadView.width - root.zIndex * animatedEndDistance);
+                return -easingCurve.value * (spreadView.width - root.zIndex * animatedEndDistance);
             }
 
             return newTranslate;
@@ -233,22 +244,21 @@ SpreadDelegate {
                 return 1;
             }
 
-            if (otherSelected) {
-                return selectedScale;
-            }
-
-            if (isSelected) {
+            // selected app or opposite stage active app.
+            if (isSelected || (otherSelected && root.active && spreadView.selectedApplication/* && spreadView.selectedApplication.stage !== model.stage*/)) {
                 return linearAnimation(selectedProgress, negativeProgress, selectedScale, 1, root.progress);
+            } else if (otherSelected) {
+                return selectedScale;
             }
 
             if (spreadView.phase == 0) {
                 if (nextInStack) {
-                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
-                        return 1;
-                    } else {
+//                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+//                        return 1;
+//                    } else {
                         var targetScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
                         return linearAnimation(0, spreadView.positionMarker2, root.dragStartScale, targetScale, root.animatedProgress);
-                    }
+//                    }
                 } else if (active) {
                     return 1;
                 } else {
@@ -259,9 +269,9 @@ SpreadDelegate {
             if (spreadView.phase == 1) {
                 if (nextInStack) {
                     var startScale = 1;
-                    if (model.stage !== ApplicationInfoInterface.SideStage || spreadView.sideStageVisible) {
-                        startScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
-                    }
+//                    if (model.stage !== ApplicationInfoInterface.SideStage || spreadView.sideStageVisible) {
+//                        startScale = root.dragStartScale - ((root.dragStartScale - 1) * spreadView.snapPosition);
+//                    }
                     return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, startScale, priv.phase2StartScale, root.animatedProgress);
                 }
                 var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2);
@@ -281,25 +291,25 @@ SpreadDelegate {
                 return 0;
             }
 
-            if (otherSelected) {
-                return selectedAngle;
-            }
-            if (isSelected) {
+            // selected app or opposite stage active app.
+            if (isSelected || (otherSelected && root.active && spreadView.selectedApplication /*&& spreadView.selectedApplication.stage !== model.stage*/)) {
                 return linearAnimation(selectedProgress, negativeProgress, selectedAngle, 0, root.progress);
+            } else if (otherSelected) {
+                return selectedAngle;
             }
 
             // The tile should rotate a bit when another one comes on top, but not when only dragging the side stage in
-            var shouldMoveAway = spreadView.nextInStack >= 0 && movedActive &&
-                    (ApplicationManager.get(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage ||
-                     model.stage == ApplicationInfoInterface.SideStage);
+            var shouldMoveAway = spreadView.nextInStack >= 0 && movedActive //&&
+//                    (ApplicationManager.get(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage ||
+//                     model.stage == ApplicationInfoInterface.SideStage);
 
             if (spreadView.phase == 0) {
                 if (nextInStack) {
-                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
-                        return 0;
-                    } else {
+//                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+//                        return 0;
+//                    } else {
                         return linearAnimation(0, spreadView.positionMarker2, root.startAngle, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress);
-                    }
+//                    }
                 }
                 if (shouldMoveAway) {
                     return linearAnimation(0, spreadView.positionMarker2, 0, root.startAngle * (1-spreadView.snapPosition), root.animatedProgress);
@@ -307,11 +317,11 @@ SpreadDelegate {
             }
             if (spreadView.phase == 1) {
                 if (nextInStack) {
-                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
-                        return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, 0, priv.phase2StartAngle, root.animatedProgress);
-                    } else {
+//                    if (model.stage == ApplicationInfoInterface.SideStage && !spreadView.sideStageVisible) {
+//                        return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, 0, priv.phase2StartAngle, root.animatedProgress);
+//                    } else {
                         return linearAnimation(spreadView.positionMarker2, spreadView.positionMarker4, root.startAngle * (1-spreadView.snapPosition), priv.phase2StartAngle, root.animatedProgress);
-                    }
+//                    }
                 }
                 var startProgress = spreadView.positionMarker2 - (zIndex * spreadView.positionMarker2 / 2);
                 var endProgress = spreadView.positionMarker4 - (zIndex * spreadView.tileDistance / spreadView.width);
@@ -326,15 +336,21 @@ SpreadDelegate {
         }
 
         property real opacityTransform: {
-            if (otherSelected && spreadView.phase == 2) {
+            // animate opacity for items not snapping into view.
+            if (spreadView.phase !== 2) return 1;
+            if (root.isSelected) return 1;
+
+            if (otherSelected) {
+                if (root.active && spreadView.selectedApplication/* && spreadView.selectedApplication.stage !== model.stage*/) {
+                    return 1;
+                }
                 return linearAnimation(selectedProgress, negativeProgress, selectedOpacity, 0, root.progress);
             }
-
             return 1;
         }
 
         property real topMarginProgress: {
-            if (priv.isSelected) {
+            if (isSelected || (otherSelected && root.active && spreadView.selectedApplication /*&& spreadView.selectedApplication.stage !== model.stage*/)) {
                 return linearAnimation(selectedProgress, negativeProgress, selectedTopMarginProgress, 0, root.progress);
             }
             switch (spreadView.phase) {
@@ -349,8 +365,12 @@ SpreadDelegate {
 
         states: [
             State {
-                name: "sideStageDragging"; when: spreadView.sideStageDragging && root.isInSideStage
-                PropertyChanges { target: priv; xTranslate: -spreadView.sideStageWidth + spreadView.sideStageWidth * spreadView.sideStageDragProgress }
+                name: "sideStage";
+                when: root.isInSideStage && spreadView.shiftedContentX == 0 && spreadView.phase == 0
+                PropertyChanges {
+                    target: priv;
+                    xTranslate: -spreadView.sideStageWidth + spreadView.sideStageWidth * (1-spreadView.sideStageDragProgress)
+                }
             }
         ]
     }

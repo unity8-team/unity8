@@ -7,6 +7,7 @@ include_directories(
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
     ${GIO_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/plugins/Utils
+    ${CMAKE_SOURCE_DIR}/libs/UbuntuGestures
 )
 
 set(QMLPLUGIN_SRC
@@ -30,7 +31,10 @@ add_library(FakeUtils-qml SHARED
     ${QMLPLUGIN_SRC}
     )
 
-target_link_libraries(FakeUtils-qml ${GIO_LDFLAGS})
+target_link_libraries(FakeUtils-qml
+    ${GIO_LDFLAGS}
+    UbuntuGestures
+)
 
 # Because this is an internal support library, we want
 # to expose all symbols in it. Consider changing this
