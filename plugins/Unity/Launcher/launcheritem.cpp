@@ -36,10 +36,8 @@ LauncherItem::LauncherItem(const QString &appId, const QString &name, const QStr
     m_alerting(false),
     m_quickList(new QuickListModel(this))
 {
-    if (!actions.isEmpty()) {
-        Q_FOREACH(const QuickListEntry &action, actions) {
-            m_quickList->appendAction(action);
-        }
+    Q_FOREACH(const QuickListEntry &action, actions) {
+        m_quickList->appendAction(action);
     }
 
     QuickListEntry nameAction;

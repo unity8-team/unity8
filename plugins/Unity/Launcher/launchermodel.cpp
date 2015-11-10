@@ -221,9 +221,12 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
             const QString exec = model->get(actionIndex).exec();
             if (!exec.isEmpty()) {
                 const QString args = exec.mid(exec.indexOf(' ') + 1); // split the args from the exec name
+                gchar * quotedArgs = g_shell_quote(args.toUtf8().constData());
                 if (m_appManager) {
-                    m_appManager->startApplication(appId, {args});
+                    // because of our security model, we just forward the args to our own binary
+                    m_appManager->startApplication(appId, {QString::fromUtf8(quotedArgs)});
                 }
+                g_free(quotedArgs);
             }
         // Nope, we don't know this action, let the backend forward it to the application
         } else {

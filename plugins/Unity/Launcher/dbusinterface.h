@@ -45,5 +45,4 @@ private:
     static QString encodeAppId(const QString& appId);
 
     LauncherModel *m_launcherModel;
-
 };

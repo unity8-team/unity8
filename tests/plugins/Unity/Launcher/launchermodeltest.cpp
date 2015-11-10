@@ -296,7 +296,6 @@ private Q_SLOTS:
         QVERIFY(item);
         QCOMPARE(item->name(), display_name);
         QCOMPARE(item->icon(), icon_name);
-        qDebug() << "Application:" << desktop_file << ", name:" << item->name() << ", icon:" << item->icon();
 
         QuickListModel *quickList = qobject_cast<QuickListModel*>(item->quickList());
         QVERIFY(quickList);

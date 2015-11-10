@@ -64,6 +64,11 @@ bool DesktopFileHandler::isValid() const
 void DesktopFileHandler::load()
 {
     m_filename.clear();
+    if (!m_keyFile) {
+        g_key_file_free(m_keyFile);
+        m_keyFile = nullptr;
+    }
+    m_actions.clear();
 
     if (m_appId.isEmpty()) {
         return;
@@ -108,8 +113,8 @@ void DesktopFileHandler::load()
 
 void DesktopFileHandler::readActionList()
 {
+    m_actions.clear();
     if (!isValid()) {
-        m_actions.clear();
         return;
     }
 
@@ -122,7 +127,6 @@ void DesktopFileHandler::readActionList()
     }
     if (!tmp.isEmpty()) {
         m_actions = tmp.split(';', QString::SkipEmptyParts);
-        qWarning() << "ACTIONS:" << m_actions;
     }
 }
 
@@ -146,9 +150,6 @@ QList<QuickListEntry> DesktopFileHandler::actions() const
         entry.setExec(readString(G_KEY_FILE_DESKTOP_KEY_EXEC, groupName));
         result.append(entry);
         delete [] groupName;
-
-        qWarning() << "Extra action:" << entry.actionId() << ", text:" << entry.text() << ", icon:" << entry.icon() <<
-                      ", exec:" << entry.exec();
     }
 
     return result;
@@ -156,10 +157,7 @@ QList<QuickListEntry> DesktopFileHandler::actions() const
 
 QString DesktopFileHandler::readTranslatedString(const char * key, const char * groupname) const
 {
-    if (!isValid()) {
-        return QString();
-    }
-
+    Q_ASSERT(m_keyFile);
     const QString original = readString(key, groupname);
     const QString translated = g_key_file_get_locale_string(m_keyFile, groupname, key, nullptr, nullptr);
 
