@@ -28,6 +28,7 @@
 
 #include <QDesktopServices>
 #include <QDebug>
+#include <QFile>
 
 using namespace unity::shell::application;
 
@@ -217,16 +218,22 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
             if (m_appManager) {
                 m_appManager->stopApplication(appId);
             }
-        } else if (actionId.startsWith(QLatin1String("exec_"))) {
-            const QString exec = model->get(actionIndex).exec();
-            if (!exec.isEmpty()) {
-                const QString args = exec.mid(exec.indexOf(' ') + 1); // split the args from the exec name
-                gchar * quotedArgs = g_shell_quote(args.toUtf8().constData());
-                if (m_appManager) {
+        } else if (actionId.startsWith(QLatin1String("exec_"))) { // extra .desktop actions
+            const QString exec = model->get(actionIndex).exec().trimmed();
+            if (!exec.isEmpty() && m_appManager) {
+                gint argc;
+                gchar **argv = NULL;
+                if (g_shell_parse_argv(QFile::encodeName(exec).constData(), &argc, &argv, nullptr)) {
+                    QStringList arguments;
+                    for (gint i = 1; i < argc; ++i) { // split the args from the exec name
+                        gchar * arg = g_strdup(argv[i]);
+                        arguments << QString::fromUtf8(arg);
+                        g_free(arg);
+                    }
                     // because of our security model, we just forward the args to our own binary
-                    m_appManager->startApplication(appId, {QString::fromUtf8(quotedArgs)});
+                    m_appManager->startApplication(appId, arguments);
                 }
-                g_free(quotedArgs);
+                g_strfreev(argv);
             }
         // Nope, we don't know this action, let the backend forward it to the application
         } else {
