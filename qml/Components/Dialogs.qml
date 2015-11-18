@@ -41,9 +41,22 @@ Item {
     property string usageScenario
 
     signal powerOffClicked();
+    signal startApp(string appId)
 
     function showPowerDialog() {
         d.showPowerDialog();
+    }
+
+    function showLegacyAppLaunchDialog(appId) {
+        if (usageScenario != "desktop" && !d.legacyAppLaunchWarningPopup) {
+            var comp = Qt.createComponent(Qt.resolvedUrl("LegacyAppLaunchWarningDialog.qml"))
+            d.legacyAppLaunchWarningPopup = comp.createObject(root, {appId: appId});
+            d.legacyAppLaunchWarningPopup.cancel.connect(function() {
+                d.legacyAppLaunchWarningPopup.hide();
+                d.legacyAppLaunchWarningPopup.destroy();
+                d.legacyAppLaunchWarningPopup = null;
+            });
+        }
     }
 
     onUsageScenarioChanged: {
@@ -58,10 +71,18 @@ Item {
                 d.modeSwitchWarningPopup.destroy();
                 d.modeSwitchWarningPopup = null;
             })
-        } else if (usageScenario == "desktop" && d.modeSwitchWarningPopup) {
-            d.modeSwitchWarningPopup.hide();
-            d.modeSwitchWarningPopup.destroy();
-            d.modeSwitchWarningPopup = null;
+        } else if (usageScenario == "desktop") {
+            if (d.modeSwitchWarningPopup) {
+                d.modeSwitchWarningPopup.hide();
+                d.modeSwitchWarningPopup.destroy();
+                d.modeSwitchWarningPopup = null;
+            }
+            if (d.legacyAppLaunchWarningPopup) {
+                startApp(d.legacyAppLaunchWarningPopup.appId);
+                d.legacyAppLaunchWarningPopup.hide();
+                d.legacyAppLaunchWarningPopup.destroy();
+                d.legacyAppLaunchWarningPopup = null;
+            }
         }
     }
 
@@ -118,6 +139,7 @@ Item {
         objectName: "dialogsPrivate"
 
         property var modeSwitchWarningPopup: null
+        property var legacyAppLaunchWarningPopup: null
 
         function showPowerDialog() {
             if (!dialogLoader.active) {

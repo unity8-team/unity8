@@ -45,6 +45,7 @@ public:
     bool countVisible() const override;
     bool focused() const override;
     bool alerting() const override;
+    bool isTouchApp() const override;
 
     unity::shell::launcher::QuickListModelInterface *quickList() const override;
 
@@ -59,6 +60,7 @@ private:
     void setCountVisible(bool countVisible);
     void setFocused(bool focused);
     void setAlerting(bool alerting);
+    void setIsTouchApp(bool isTouchApp);
 
 private:
     QString m_appId;
@@ -72,6 +74,7 @@ private:
     bool m_countVisible;
     bool m_focused;
     bool m_alerting;
+    bool m_isTouchApp;
     QuickListModel *m_quickList;
     QuickListEntry m_quitAction;
 

@@ -76,18 +76,22 @@ QVariant LauncherModel::data(const QModelIndex &index, int role) const
             return item->icon();
         case RolePinned:
             return item->pinned();
+        case RoleRunning:
+            return item->running();
+        case RoleRecent:
+            return item->recent();
+        case RoleProgress:
+            return item->progress();
         case RoleCount:
             return item->count();
         case RoleCountVisible:
             return item->countVisible();
-        case RoleProgress:
-            return item->progress();
         case RoleFocused:
             return item->focused();
         case RoleAlerting:
             return item->alerting();
-        case RoleRunning:
-            return item->running();
+        case RoleIsTouchApp:
+            return item->isTouchApp();
         default:
             qWarning() << Q_FUNC_INFO << "missing role, implement me";
             return QVariant();
@@ -147,6 +151,21 @@ void LauncherModel::move(int oldIndex, int newIndex)
     }
 }
 
+LauncherItem *LauncherModel::loadLauncherItem(const QString &appId)
+{
+    DesktopFileHandler desktopFile(appId);
+    if (!desktopFile.isValid()) {
+        return nullptr;
+    }
+
+    LauncherItem *item = new LauncherItem(appId,
+                                          desktopFile.displayName(),
+                                          desktopFile.icon(),
+                                          this);
+    item->setIsTouchApp(desktopFile.isTouchApp());
+    return item;
+}
+
 void LauncherModel::pin(const QString &appId, int index)
 {
     int currentIndex = findApplication(appId);
@@ -166,17 +185,13 @@ void LauncherModel::pin(const QString &appId, int index)
             index = m_list.count();
         }
 
-        DesktopFileHandler desktopFile(appId);
-        if (!desktopFile.isValid()) {
+        LauncherItem *item = loadLauncherItem(appId);
+        if (!item) {
             qWarning() << "Can't pin this application, there is no .desktop file available.";
             return;
         }
 
         beginInsertRows(QModelIndex(), index, index);
-        LauncherItem *item = new LauncherItem(appId,
-                                              desktopFile.displayName(),
-                                              desktopFile.icon(),
-                                              this);
         item->setPinned(true);
         m_list.insert(index, item);
         endInsertRows();
@@ -385,11 +400,8 @@ void LauncherModel::countVisibleChanged(const QString &appId, bool countVisible)
         }
     } else {
         // Need to create a new LauncherItem and show the highlight
-        DesktopFileHandler desktopFile(appId);
-        if (countVisible && desktopFile.isValid()) {
-            LauncherItem *item = new LauncherItem(appId,
-                                                  desktopFile.displayName(),
-                                                  desktopFile.icon());
+        LauncherItem *item = loadLauncherItem(appId);
+        if (countVisible && item) {
             item->setCountVisible(true);
             beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
             m_list.append(item);
@@ -447,16 +459,12 @@ void LauncherModel::refresh()
         if (itemIndex == -1) {
             // Need to add it. Just add it into the addedIndex to keep same ordering as the list
             // in the settings.
-            DesktopFileHandler desktopFile(entry);
-            if (!desktopFile.isValid()) {
+            LauncherItem *item = loadLauncherItem(entry);
+            if (!item) {
                 qWarning() << "Couldn't find a .desktop file for" << entry << ". Skipping...";
                 continue;
             }
 
-            LauncherItem *item = new LauncherItem(entry,
-                                                  desktopFile.displayName(),
-                                                  desktopFile.icon(),
-                                                  this);
             item->setPinned(true);
             beginInsertRows(QModelIndex(), addedIndex, addedIndex);
             m_list.insert(addedIndex, item);
@@ -521,7 +529,7 @@ void LauncherModel::applicationAdded(const QModelIndex &parent, int row)
         item->setRecent(true);
         item->setRunning(true);
         item->setFocused(app->focused());
-
+        item->setIsTouchApp(app->isTouchApp());
         beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
         m_list.append(item);
         endInsertRows();

@@ -35,6 +35,7 @@ LauncherItem::LauncherItem(const QString &appId, const QString &name, const QStr
     m_countVisible(false),
     m_focused(false),
     m_alerting(false),
+    m_isTouchApp(false),
     m_quickList(new QuickListModel(this))
 {
     QuickListEntry nameAction;
@@ -209,6 +210,19 @@ void LauncherItem::setAlerting(bool alerting)
     if (m_alerting != alerting) {
         m_alerting = alerting;
         Q_EMIT alertingChanged(alerting);
+    }
+}
+
+bool LauncherItem::isTouchApp() const
+{
+    return m_isTouchApp;
+}
+
+void LauncherItem::setIsTouchApp(bool isTouchApp)
+{
+    if (m_isTouchApp != isTouchApp) {
+        m_isTouchApp = isTouchApp;
+        Q_EMIT isTouchAppChanged(isTouchApp);
     }
 }
 

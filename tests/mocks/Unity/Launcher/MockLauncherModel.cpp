@@ -117,6 +117,8 @@ QVariant MockLauncherModel::data(const QModelIndex& index, int role) const
         return item->focused();
     case RoleAlerting:
         return item->alerting();
+    case RoleIsTouchApp:
+        return item->isTouchApp();
     }
 
     return QVariant();

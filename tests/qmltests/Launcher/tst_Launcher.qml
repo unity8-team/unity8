@@ -45,7 +45,7 @@ Item {
                 property string lastSelectedApplication
 
                 onLauncherApplicationSelected: {
-                    lastSelectedApplication = appId
+                    lastSelectedApplication = appInfo.appId
                 }
 
                 property int showDashHome_count: 0

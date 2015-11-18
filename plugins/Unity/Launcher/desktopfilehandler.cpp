@@ -57,6 +57,18 @@ bool DesktopFileHandler::isValid() const
     return !m_filename.isEmpty();
 }
 
+bool DesktopFileHandler::isTouchApp() const
+{
+    if (isValid()) {
+        QSettings settings(m_filename, QSettings::IniFormat);
+        settings.setIniCodec("UTF-8");
+        settings.beginGroup(QStringLiteral("Desktop Entry"));
+        return settings.value(QStringLiteral("X-Ubuntu-Touch")).toBool(); // false for empty or "false"
+    } else {
+        return false;
+    }
+}
+
 void DesktopFileHandler::load()
 {
     m_filename.clear();

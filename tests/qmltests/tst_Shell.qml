@@ -25,6 +25,7 @@ import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Application 0.1
 import Unity.Connectivity 0.1
 import Unity.Indicators 0.1
+import Unity.Launcher 0.1
 import Unity.Notifications 1.0
 import Unity.Test 0.1
 import Powerd 0.1
@@ -1909,6 +1910,47 @@ Rectangle {
                 // Libreoffice must be gone now
                 compare(ApplicationManager.findApplication("libreoffice") === null, true);
             }
+        }
+
+        function test_preventOpeningLegacyAppsWithoutDesktop_data() {
+            return [
+                {tag: "cancel", plug: false },
+                {tag: "dock", plug: true }
+            ];
+        }
+
+        function test_preventOpeningLegacyAppsWithoutDesktop(data) {
+            loadShell("phone");
+
+            // Start a legacy app by pretending the user clicked the launcher button for it
+            var launcher = findChild(shell, "launcher");
+            var launcherListView = findChild(launcher, "launcherListView");
+            for (var i = 0; i < launcherListView.count; ++i) {
+                if (LauncherModel.get(i).appId == "libreoffice") {
+                    launcher.launcherApplicationSelected(LauncherModel.get(i));
+                    break;
+                }
+            }
+
+            // The popup should appear
+            var popup = findChild(root, "legacyAppLaunchWarningDialog");
+            verify(popup !== null);
+
+            if (data.plug) {
+                shell.usageScenario = "desktop";
+                waitForRendering(shell);
+            } else {
+                var cancelButton = findChild(popup, "cancelButton");
+                mouseClick(cancelButton);
+                waitForRendering(root);
+            }
+
+            // Popup must be gone now
+            popup = findChild(root, "legacyAppLaunchWarningDialog");
+            verify(popup === null);
+
+            // And libreoffice will be started or not depending on user action
+            compare(ApplicationManager.findApplication("libreoffice") !== null, data.plug);
         }
     }
 }

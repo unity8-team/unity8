@@ -59,16 +59,22 @@ QVariant LauncherModel::data(const QModelIndex &index, int role) const
             return item->icon();
         case RolePinned:
             return item->pinned();
+        case RoleRunning:
+            return item->running();
+        case RoleRecent:
+            return item->recent();
+        case RoleProgress:
+            return item->progress();
         case RoleCount:
             return item->count();
         case RoleCountVisible:
             return item->countVisible();
-        case RoleProgress:
-            return item->progress();
         case RoleFocused:
             return item->focused();
-        case RoleRunning:
-            return item->running();
+        case RoleAlerting:
+            return item->alerting();
+        case RoleIsTouchApp:
+            return item->isTouchApp();
     }
 
     return QVariant();

@@ -559,9 +559,15 @@ Item {
                 }
             }
             onLauncherApplicationSelected: {
-                if (!tutorial.running) {
-                    greeter.notifyAboutToFocusApp(appId);
-                    shell.activateApplication(appId)
+                if (tutorial.running) {
+                    return;
+                }
+
+                if (!appInfo.isTouchApp && shell.usageScenario !== "desktop") {
+                    dialogs.showLegacyAppLaunchDialog(appInfo.appId);
+                } else {
+                    greeter.notifyAboutToFocusApp(appInfo.appId);
+                    shell.activateApplication(appInfo.appId);
                 }
             }
             onShownChanged: {
@@ -645,6 +651,10 @@ Item {
             shutdownFadeOutRectangle.enabled = true;
             shutdownFadeOutRectangle.visible = true;
             shutdownFadeOut.start();
+        }
+        onStartApp: {
+            greeter.notifyAboutToFocusApp(appId);
+            shell.activateApplication(appId);
         }
     }
 

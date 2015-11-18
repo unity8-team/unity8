@@ -68,8 +68,8 @@ public Q_SLOTS:
 
 private:
     void storeAppList();
-
     void unpin(const QString &appId);
+    LauncherItem *loadLauncherItem(const QString &appId);
 
 private Q_SLOTS:
     void countChanged(const QString &appId, int count);

@@ -182,6 +182,19 @@ void MockLauncherItem::setAlerting(bool alerting)
     }
 }
 
+bool MockLauncherItem::isTouchApp() const
+{
+    return m_isTouchApp;
+}
+
+void MockLauncherItem::setIsTouchApp(bool isTouchApp)
+{
+    if (m_isTouchApp != isTouchApp) {
+        m_isTouchApp = isTouchApp;
+        Q_EMIT isTouchAppChanged(isTouchApp);
+    }
+}
+
 unity::shell::launcher::QuickListModelInterface *MockLauncherItem::quickList() const
 {
     return m_quickList;

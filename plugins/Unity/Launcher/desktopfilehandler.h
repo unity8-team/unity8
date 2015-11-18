@@ -42,6 +42,7 @@ public:
     void setAppId(const QString &appId);
 
     bool isValid() const;
+    bool isTouchApp() const;
     QString filename() const;
     QString displayName() const;
     QString icon() const;

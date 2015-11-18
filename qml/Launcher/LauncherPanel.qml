@@ -35,7 +35,7 @@ Rectangle {
     property bool preventHiding: moving || dndArea.draggedIndex >= 0 || quickList.state === "open" || dndArea.pressed
     property int highlightIndex: -1
 
-    signal applicationSelected(string appId)
+    signal applicationSelected(var appInfo)
     signal showDashHome()
 
     onXChanged: {
@@ -406,7 +406,7 @@ Rectangle {
                                 } else if (clickedItem.angle < -12) {
                                     launcherListView.flick(0, launcherListView.clickFlickSpeed);
                                 } else {
-                                    root.applicationSelected(LauncherModel.get(index).appId);
+                                    root.applicationSelected(LauncherModel.get(index));
                                 }
                                 return;
                             }
@@ -417,7 +417,7 @@ Rectangle {
                             } else if (clickedItem.angle < -30) {
                                 launcherListView.flick(0, launcherListView.clickFlickSpeed);
                             } else {
-                                root.applicationSelected(LauncherModel.get(index).appId);
+                                root.applicationSelected(LauncherModel.get(index));
                             }
                         }
 
