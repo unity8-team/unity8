@@ -84,8 +84,6 @@ Rectangle {
 
             var i = 0;
             for (var prop in touchTrail) {
-                console.log("draw prop", prop)
-
                 var trail = touchTrail[prop];
 
                 if (trail.length > 0) {

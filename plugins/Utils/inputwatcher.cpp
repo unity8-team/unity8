@@ -201,6 +201,7 @@ bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touc
     bool added = false;
     bool ended = false;
     bool moved = false;
+    bool wantsDrag = false;
 
     const int dragThreshold = qApp->styleHints()->startDragDistance();
 
@@ -233,7 +234,8 @@ bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touc
                 if (qAbs(currentPos.x() - startPos.x()) > dragThreshold ||
                     qAbs(currentPos.y() - startPos.y()) > dragThreshold) {
                     iwtp->setDragging(true);
-                    setDragging(true);
+
+                    wantsDrag = true;
                 }
                 eatEvent = m_eatMoveEvents;
             }
@@ -241,6 +243,10 @@ bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touc
                 updateTouchPoint(iwtp, &touchPoint);
             }
         }
+    }
+
+    if (wantsDrag && !dragging()) {
+        setDragging(true);
     }
 
     if (ended) Q_EMIT released(m_releasedTouchPoints);

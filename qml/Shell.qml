@@ -235,17 +235,21 @@ Item {
             property string usageScenario: shell.usageScenario === "phone" || greeter.hasLockedApp
                                            ? "phone"
                                            : shell.usageScenario
-            source: {
-                if(shell.mode === "greeter") {
-                    return "Stages/ShimStage.qml"
-                } else if (applicationsDisplayLoader.usageScenario === "phone") {
-                    return "Stages/PhoneStage.qml";
-                } else if (applicationsDisplayLoader.usageScenario === "tablet") {
-                    return "Stages/TabletStage.qml";
-                } else {
-                    return "Stages/DesktopStage.qml";
-                }
+
+            sourceComponent: TabletStage {
             }
+
+//            source: {
+//                if(shell.mode === "greeter") {
+//                    return "Stages/ShimStage.qml"
+//                } else if (applicationsDisplayLoader.usageScenario === "phone") {
+//                    return "Stages/PhoneStage.qml";
+//                } else if (applicationsDisplayLoader.usageScenario === "tablet") {
+//                    return "Stages/TabletStage.qml";
+//                } else {
+//                    return "Stages/DesktopStage.qml";
+//                }
+//            }
 
             property bool interactive: tutorial.spreadEnabled
                     && (!greeter || !greeter.shown)

@@ -540,17 +540,18 @@ AbstractStage {
                 opacity: spreadView.phase <= 0 ? 1 : 0
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
-                InverseMouseArea {
-                    anchors {
-                        right: parent.right
-                        top: parent.top
-                        bottom: parent.bottom
+                DropArea {
+                    anchors.fill: parent
+
+                    onDropped: {
+                        console.log("DROPPED", drag.source)
                     }
-                    width: parent.width + units.gu(2)
-                    enabled: sideStage.enableDragShow
-                    onPressed: {
-                        // just watching, don't eat!
-                        mouse.accepted = false;
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "green"
+
+                        visible: parent.containsDrag
                     }
                 }
             }
@@ -589,19 +590,6 @@ AbstractStage {
                     dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 && spreadView.phase === 0 ? root.inverseProgress : 0
                     application: ApplicationManager.get(index)
                     closeable: !isDash
-
-//                    MultiPointTouchArea {
-//                        anchors.fill: parent
-//                        minimumTouchPoints: 3
-//                        maximumTouchPoints: 3
-//                        onPressed: {
-//                            console.log("PRESSED!");
-//                        }
-//                        onGestureStarted: {
-//                            console.log("GESTURE STARTED!");
-//                        }
-//                        onTouchUpdated: console.log(touchPoints)
-//                    }
 
                     Binding {
                         target: spreadTile.surfaceInputWatcher
@@ -713,11 +701,6 @@ AbstractStage {
                         }
                         return "Native";
                     }
-                    onShellOrientationAngleChanged: console.log("SHELL ORIENTATION ANGLE", model.appId, root.shellOrientationAngle)
-                    onShellOrientationChanged: console.log("SHELL ORIENTATION", model.appId, getOrientationString(root.shellOrientation))
-                    onShellPrimaryOrientationChanged: console.log("SHELL PRIMARY ORIENTATION", model.appId, getOrientationString(root.shellPrimaryOrientation))
-                    onNativeOrientationChanged: console.log("NATIVE ORIENTATION", model.appId, getOrientationString(root.nativeOrientation))
-
 
                     onClicked: {
                         if (spreadView.phase == 2) {
@@ -798,12 +781,6 @@ AbstractStage {
                 triPress = false;
             }
         }
-        onUpdated: {
-            for (var i = 0; i < target.touchPoints.length; i++) {
-                var tp = target.touchPoints[i];
-//                console.log("updated: (x=" + tp.x + ", y="+tp.y + ") - dragging=" + tp.dragging);
-            }
-        }
         onDraggingChanged: {
             console.log("dragging", target.dragging)
             if (dragging) {
@@ -811,9 +788,11 @@ AbstractStage {
             }
         }
         onReleased: {
-            if (target.touchPoints.length === 0) {
-                if (triPress && !wasDragging) {
-                    if (sideStage.shown && !wasShown) {
+            if (target.touchPoints.length !== 3) {
+                if (triPress) {
+                    if (wasDragging) {
+                        triDragArea.Drag.drop();
+                    } else if (sideStage.shown && !wasShown) {
                         sideStage.hide();
                         wasShown = false;
                     }
@@ -825,9 +804,10 @@ AbstractStage {
         }
     }
 
-    Rectangle {
-        color: "red"
-        visible: triDragInputSurfaceConnector.triPress
+    Loader {
+        id: triDragArea
+        enabled: triDragInputSurfaceConnector.triPress && triDragInputSurfaceConnector.wasDragging
+
         x: {
             if (priv.activeMainStageInputWatcher == null) return 0;
 
@@ -847,8 +827,28 @@ AbstractStage {
             return sum/priv.activeMainStageInputWatcher.touchPoints.length - height/2;
         }
 
-        width: units.gu(5)
-        height: units.gu(5)
+        width: units.gu(40)
+        height: (parent.height / parent.width) * units.gu(40)
+
+        sourceComponent: enabled ? dragComponent : undefined
+
+        Component {
+            id: dragComponent
+            SessionContainer {
+                property var application: {
+                    if (priv.mainStageAppId == "") return null;
+                    return ApplicationManager.findApplication(priv.mainStageAppId);
+                }
+                session: application ? application.session : null
+                interactive: false
+                resizeSurface: false
+                focus: false
+
+                Drag.active: true
+                Drag.hotSpot.x: width/2
+                Drag.hotSpot.y: height/2
+            }
+        }
     }
 
     //eat touch events during the right edge gesture
