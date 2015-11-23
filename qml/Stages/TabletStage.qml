@@ -46,7 +46,7 @@ AbstractStage {
             if (delta < 0) { delta += 360; }
             delta = delta % 360;
 
-            var supportedOrientations = spreadDelegate.application.supportedOrientations;
+            var supportedOrientations = spreadDelegate.supportedOrientations;
             if (supportedOrientations === Qt.PrimaryOrientation) {
                 supportedOrientations = spreadDelegate.orientations.primary;
             }
@@ -71,6 +71,19 @@ AbstractStage {
     }
 
     orientationChangesEnabled: priv.mainAppOrientationChangesEnabled
+
+    supportedOrientations: {
+        if (mainApp) {
+            return orientations.map(mainApp.supportedOrientations) |
+                   orientations.map(Qt.LandscapeOrientation | Qt.InvertedLandscapeOrientation);
+        } else {
+            // we just don't care
+            return Qt.PortraitOrientation |
+                   Qt.LandscapeOrientation |
+                   Qt.InvertedPortraitOrientation |
+                   Qt.InvertedLandscapeOrientation;
+        }
+    }
 
     onWidthChanged: {
         spreadView.selectedIndex = -1;
@@ -129,22 +142,15 @@ AbstractStage {
 
         property int oldInverseProgress: 0
 
-        property QtObject activeMainStageInputWatcher: {
-            if (priv.mainStageAppId == "") return null;
-            var mainStageAppIndex = priv.indexOf(priv.mainStageAppId);
-            return spreadRepeater.itemAt(mainStageAppIndex).surfaceInputWatcher
-        }
-
         onFocusedAppIdChanged: {
             if (priv.focusedAppId.length > 0) {
                 var focusedApp = ApplicationManager.findApplication(focusedAppId);
-                // STAGE_FIXME
-//                if (focusedApp.stage == ApplicationInfoInterface.SideStage) {
-//                    priv.sideStageAppId = focusedAppId;
-//                } else {
+                if (focusedApp.stage == ApplicationInfoInterface.SideStage) {
+                    priv.sideStageAppId = focusedAppId;
+                } else {
                     priv.mainStageAppId = focusedAppId;
                     root.mainApp = focusedApp;
-//                }
+                }
             }
 
             appId0 = ApplicationManager.count >= 1 ? ApplicationManager.get(0).appId : "";
@@ -193,16 +199,33 @@ AbstractStage {
         }
 
         function getTopApp(stage) {
-            // STAGE_FIXME
-//            for (var i = 0; i < ApplicationManager.count; i++) {
-//                var app = ApplicationManager.get(i)
-//                if (app.stage === stage) {
-//                    return app;
-//                }
-//            }
+            for (var i = 0; i < ApplicationManager.count; i++) {
+                var app = ApplicationManager.get(i)
+                if (app.stage === stage) {
+                    return app;
+                }
+            }
             return null;
-
         }
+
+        function setAppStage(appId, stage) {
+
+            var app = ApplicationManager.findApplication(appId);
+            if (app) {
+                app.stage = stage;
+
+                // update the stage apps.
+                app = priv.getTopApp(ApplicationInfoInterface.MainStage);
+                mainStageAppId = app ? app.appId : ""
+
+                if (sideStage.shown) {
+                    app = priv.getTopApp(ApplicationInfoInterface.SideStage);
+                    sideStageAppId = app ? app.appId : ""
+                }
+            }
+        }
+
+        property int stagDragTouchCount: 1
     }
 
     Connections {
@@ -277,6 +300,7 @@ AbstractStage {
         // 1: The app has reached the first snap position.
         // 2: The list is dragged further and snaps into the spread view when entering phase 2
         property int phase
+        onPhaseChanged: console.log("PHASE", phase)
 
         readonly property int phase0Width: sideStageWidth
         readonly property int phase1Width: sideStageWidth
@@ -421,9 +445,6 @@ AbstractStage {
             }
         }
         function snapTo(index) {
-
-            console.log("snapTo", index)
-
             snapAnimation.stop();
             spreadView.selectedIndex = index;
             snapAnimation.targetContentX = -shift;
@@ -440,48 +461,47 @@ AbstractStage {
             }
 
             var active = app.appId == priv.mainStageAppId || app.appId == priv.sideStageAppId;
-            if (active) /* STAGE_FIXME && app.stage == ApplicationInfoInterface.MainStage) */ {
+            if (active && app.stage == ApplicationInfoInterface.MainStage) {
                 // if this app is active, and its the MainStage, always put it to index 0
                 return 0;
             }
-            // STAGE_FIXME
-//            if (active && app.stage == ApplicationInfoInterface.SideStage) {
-//                if (!priv.mainStageAppId) {
-//                    // Only have SS apps running. Put the active one at 0
-//                    return 0;
-//                }
+            if (active && app.stage == ApplicationInfoInterface.SideStage) {
+                if (!priv.mainStageAppId) {
+                    // Only have SS apps running. Put the active one at 0
+                    return 0;
+                }
 
-//                // Precondition now: There's an active MS app and this is SS app:
-//                if (spreadView.nextInStack >= 0 && ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
-//                    // If the next app coming from the right is a MS app, we need to elevate this SS ap above it.
-//                    // Put it to at least level 2, or higher if there's more apps coming in before this one.
-//                    return Math.max(index, 2);
-//                } else {
-//                    // if this is no next app to come in from the right, place this one at index 1, just on top the active MS app.
-//                    return 1;
-//                }
-//            }
-//            if (index <= 2 && app.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
-//                // Ok, this is an inactive MS app. If there's an active SS app around, we need to place this one
-//                // in between the active MS app and the active SS app, so that it comes in from there when dragging from the right.
-//                // If there's now active SS app, just leave it where it is.
-//                return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
-//            }
-//            if (index == spreadView.nextInStack && app.stage == ApplicationInfoInterface.SideStage) {
-//                // This is a SS app and the next one to come in from the right:
-//                if (priv.sideStageAppId && priv.mainStageAppId) {
-//                    // If there's both, an active MS and an active SS app, put this one right on top of that
-//                    return 2;
-//                }
-//                // Or if there's only one other active app, put it on top of that.
-//                // The case that there isn't any other active app is already handled above.
-//                return 1;
-//            }
-//            if (index == 2 && spreadView.nextInStack == 1 && priv.sideStageAppId) {
-//                // If its index 2 but not the next one to come in, it means
-//                // we've pulled another one down to index 2. Move this one up to 2 instead.
-//                return 3;
-//            }
+                // Precondition now: There's an active MS app and this is SS app:
+                if (spreadView.nextInStack >= 0 && ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
+                    // If the next app coming from the right is a MS app, we need to elevate this SS ap above it.
+                    // Put it to at least level 2, or higher if there's more apps coming in before this one.
+                    return Math.max(index, 2);
+                } else {
+                    // if this is no next app to come in from the right, place this one at index 1, just on top the active MS app.
+                    return 1;
+                }
+            }
+            if (index <= 2 && app.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
+                // Ok, this is an inactive MS app. If there's an active SS app around, we need to place this one
+                // in between the active MS app and the active SS app, so that it comes in from there when dragging from the right.
+                // If there's now active SS app, just leave it where it is.
+                return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
+            }
+            if (index == spreadView.nextInStack && app.stage == ApplicationInfoInterface.SideStage) {
+                // This is a SS app and the next one to come in from the right:
+                if (priv.sideStageAppId && priv.mainStageAppId) {
+                    // If there's both, an active MS and an active SS app, put this one right on top of that
+                    return 2;
+                }
+                // Or if there's only one other active app, put it on top of that.
+                // The case that there isn't any other active app is already handled above.
+                return 1;
+            }
+            if (index == 2 && spreadView.nextInStack == 1 && priv.sideStageAppId) {
+                // If its index 2 but not the next one to come in, it means
+                // we've pulled another one down to index 2. Move this one up to 2 instead.
+                return 3;
+            }
             // don't touch all others... (mostly index > 3 + simple cases where the above doesn't shuffle much)
             return index;
         }
@@ -502,10 +522,9 @@ AbstractStage {
                     if (spreadView.selectedIndex >= 0) {
                         var newIndex = spreadView.selectedIndex;
                         var application = ApplicationManager.get(newIndex);
-                        // STAGE_FIXME
-//                        if (application.stage === ApplicationInfoInterface.SideStage) {
-//                            sideStage.showNow()
-//                        }
+                        if (application.stage === ApplicationInfoInterface.SideStage) {
+                            sideStage.showNow()
+                        }
                         spreadView.selectedIndex = -1;
                         ApplicationManager.focusApplication(application.appId);
                         spreadView.phase = 0;
@@ -523,6 +542,20 @@ AbstractStage {
 
             onClicked: {
                 spreadView.snapTo(0);
+            }
+
+            DropArea {
+                anchors {
+                    left: parent.left
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                width: spreadView.width - sideStage.width
+
+                onDropped: {
+                    priv.setAppStage(drag.source.appId, ApplicationInfoInterface.MainStage);
+                }
+                keys: "SideStage"
             }
 
             SideStage {
@@ -544,15 +577,9 @@ AbstractStage {
                     anchors.fill: parent
 
                     onDropped: {
-                        console.log("DROPPED", drag.source)
+                        priv.setAppStage(drag.source.appId, ApplicationInfoInterface.SideStage);
                     }
-
-                    Rectangle {
-                        anchors.fill: parent
-                        color: "green"
-
-                        visible: parent.containsDrag
-                    }
+                    keys: "MainStage"
                 }
             }
 
@@ -579,38 +606,52 @@ AbstractStage {
                             return priv.landscapeHeight;
                         }
                     }
-                    active: model.appId == priv.mainStageAppId || model.appId == priv.sideStageAppId
+                    active: appId == priv.mainStageAppId || appId == priv.sideStageAppId
                     zIndex: selected && wantsMainStage ? 0 : spreadView.indexToZIndex(index)
                     selected: spreadView.selectedIndex == index
                     otherSelected: spreadView.selectedIndex >= 0 && !selected
-                    isInSideStage: priv.sideStageAppId === model.appId
+                    isInSideStage: priv.sideStageAppId === appId
                     interactive: !spreadView.interactive && spreadView.phase === 0 && root.interactive
                     swipeToCloseEnabled: spreadView.interactive && !snapAnimation.running
                     maximizedAppTopMargin: root.maximizedAppTopMargin
-                    dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 && spreadView.phase === 0 ? root.inverseProgress : 0
+                    dragOffset: !isDash && appId == priv.mainStageAppId && root.inverseProgress > 0 && spreadView.phase === 0 ? root.inverseProgress : 0
                     application: ApplicationManager.get(index)
                     closeable: !isDash
+                    stage: model.stage
+
+                    supportedOrientations: {
+                        if (application) {
+                            return application.supportedOrientations |
+                                   Qt.LandscapeOrientation |
+                                   Qt.InvertedLandscapeOrientation;
+                        } else {
+                            // we just don't care
+                            return Qt.PortraitOrientation |
+                                   Qt.LandscapeOrientation |
+                                   Qt.InvertedPortraitOrientation |
+                                   Qt.InvertedLandscapeOrientation;
+                        }
+                    }
 
                     Binding {
                         target: spreadTile.surfaceInputWatcher
                         property: "eatMoveEvents"
-                        value: spreadTile.surfaceInputWatcher.touchPoints.length === 3
+                        value: spreadTile.surfaceInputWatcher.touchPoints.length === priv.stagDragTouchCount
                     }
 
-                    readonly property bool wantsMainStage: true /* STAGE_FIXME model.stage == ApplicationInfoInterface.MainStage */
-
-                    readonly property bool isDash: model.appId == "unity8-dash"
-
+                    readonly property string appId: model.appId
+                    readonly property bool wantsMainStage: stage == ApplicationInfoInterface.MainStage
+                    readonly property bool isDash: appId == "unity8-dash"
                     readonly property bool canSuspend: model.isTouchApp
-                            && !isExemptFromLifecycle(model.appId)
+                            && !isExemptFromLifecycle(appId)
 
                     Binding {
                         target: spreadTile.application
                         property: "requestedState"
                         value: !canSuspend
                                    || (isDash && root.keepDashRunning)
-                                   || (!root.suspended && (model.appId == priv.mainStageAppId
-                                                           || model.appId == priv.sideStageAppId))
+                                   || (!root.suspended && (appId == priv.mainStageAppId
+                                                           || appId == priv.sideStageAppId))
                                ? ApplicationInfoInterface.RequestedRunning
                                : ApplicationInfoInterface.RequestedSuspended
                     }
@@ -628,6 +669,13 @@ AbstractStage {
                     Behavior on behavioredZIndex {
                         enabled: spreadView.closingIndex >= 0
                         UbuntuNumberAnimation {}
+                    }
+
+                    Component.onCompleted: {
+                        priv.setAppStage(appId, WindowStateStorage.getStage(appId));
+                    }
+                    Component.onDestruction: {
+                        WindowStateStorage.saveStage(appId, spreadTile.stage);
                     }
 
                     // This is required because none of the bindings are triggered in some cases:
@@ -722,14 +770,13 @@ AbstractStage {
                     }
 
                     onFocusChanged: {
-                        if (focus && ApplicationManager.focusedApplicationId !== model.appId) {
-                            ApplicationManager.focusApplication(model.appId);
+                        if (focus && ApplicationManager.focusedApplicationId !== appId) {
+                            ApplicationManager.focusApplication(appId);
                         }
 
-                        // STAGE_FIXME
-//                        if (focus && model.stage === ApplicationInfoInterface.SideStage) {
-//                            sideStage.show();
-//                        }
+                        if (focus && stage === ApplicationInfoInterface.SideStage) {
+                            sideStage.show();
+                        }
                     }
 
                     Binding {
@@ -751,102 +798,111 @@ AbstractStage {
                         period: (spreadView.positionMarker2 - spreadView.positionMarker1) / 3
                         progress: spreadTile.progress - spreadView.positionMarker1
                     }
-                }
-            }
-        }
-    }
 
-    Connections {
-        id: triDragInputSurfaceConnector
-        target: priv.activeMainStageInputWatcher
+                    Connections {
+                        id: triDragInputSurfaceConnector
+                        target: spreadTile.surfaceInputWatcher
 
-        property bool triPress: false
-        property bool wasDragging: false
-        property bool wasShown: false
-        onTargetChanged: {
-            triPress = false;
-            wasDragging = false;
-        }
+                        property bool triPress: false
+                        property bool wasDragging: false
+                        onTargetChanged: {
+                            triPress = false;
+                            wasDragging = false;
+                        }
 
-        onPressed: {
-            wasShown = false;
-            if (target.touchPoints.length === 3) {
-                if (!sideStage.shown) {
-                    sideStage.show();
-                    wasShown = true;
-                }
-                triPress = true;
-                console.log("PRESSED", triPress)
-            } else {
-                triPress = false;
-            }
-        }
-        onDraggingChanged: {
-            console.log("dragging", target.dragging)
-            if (dragging) {
-                wasDragging = true;
-            }
-        }
-        onReleased: {
-            if (target.touchPoints.length !== 3) {
-                if (triPress) {
-                    if (wasDragging) {
-                        triDragArea.Drag.drop();
-                    } else if (sideStage.shown && !wasShown) {
-                        sideStage.hide();
-                        wasShown = false;
+                        onPressed: {;
+                            if (target.touchPoints.length === priv.stagDragTouchCount) {
+                                triPress = true;
+                                console.log("PRESSED", triPress)
+                            } else {
+                                triPress = false;
+                            }
+                        }
+                        onDraggingChanged: {
+                            if (triPress && dragging) {
+                                wasDragging = true;
+                                if (!sideStage.shown) {
+                                    sideStage.show();
+                                }
+                            }
+                        }
+                        onReleased: {
+                            if (target.touchPoints.length === 0) {
+                                if (triPress && wasDragging) {
+                                    dragObject.Drag.drop();
+                                }
+                                triPress = false;
+                                wasDragging = false;
+                                console.log("RELEASED", triPress)
+                            }
+                        }
+                        onClicked: {
+                            if (target.touchPoints.length === 0) {
+                                if (triPress) {
+                                    if (sideStage.shown) {
+                                        sideStage.hide();
+                                    } else  {
+                                        sideStage.show();
+                                    }
+                                }
+                                triPress = false;
+                                wasDragging = false;
+                                console.log("CLICKED", triPress)
+                            }
+                        }
+                    }
+
+                    property var dragObject: null
+                    property bool dragging: triDragInputSurfaceConnector.triPress && triDragInputSurfaceConnector.wasDragging
+                    onDraggingChanged: {
+                        if (dragging) {
+                            dragObject = dragComponent.createObject(spreadRow)
+                        } else if (dragObject) {
+                            dragObject.destroy();
+                            dragObject = null;
+                        }
+                    }
+
+                    Component {
+                        id: dragComponent
+                        SessionContainer {
+                            property string appId: model.appId
+
+                            session: spreadTile.application ? spreadTile.application.session : null
+                            interactive: false
+                            resizeSurface: false
+                            focus: false
+                            z: ApplicationManager.count+1
+
+                            x: {
+                                if (spreadTile.surfaceInputWatcher == null) return 0;
+
+                                var sum = 0
+                                for (var i = 0; i < spreadTile.surfaceInputWatcher.touchPoints.length; i++) {
+                                    sum += root.mapFromItem(spreadTile.surfaceInputWatcher.target, spreadTile.surfaceInputWatcher.touchPoints[i].x, 0).x;
+                                }
+                                return sum/spreadTile.surfaceInputWatcher.touchPoints.length - width/2;
+                            }
+                            y: {
+                                if (spreadTile.surfaceInputWatcher == null) return 0;
+
+                                var sum = 0
+                                for (var i = 0; i < spreadTile.surfaceInputWatcher.touchPoints.length; i++) {
+                                    sum += root.mapFromItem(spreadTile.surfaceInputWatcher.target, 0, spreadTile.surfaceInputWatcher.touchPoints[i].y).y;
+                                }
+                                return sum/spreadTile.surfaceInputWatcher.touchPoints.length - height/2;
+                            }
+
+                            width: units.gu(40)
+                            height: units.gu(40)
+
+                            Drag.active: true
+                            Drag.hotSpot.x: width/2
+                            Drag.hotSpot.y: height/2
+                            Drag.keys: spreadTile.stage === ApplicationInfo.MainStage ? "MainStage" : "SideStage"
+                        }
                     }
                 }
-                triPress = false;
-                wasDragging = false;
-                console.log("RELEASED", triPress)
-            }
-        }
-    }
-
-    Loader {
-        id: triDragArea
-        enabled: triDragInputSurfaceConnector.triPress && triDragInputSurfaceConnector.wasDragging
-
-        x: {
-            if (priv.activeMainStageInputWatcher == null) return 0;
-
-            var sum = 0
-            for (var i = 0; i < priv.activeMainStageInputWatcher.touchPoints.length; i++) {
-                sum += root.mapFromItem(priv.activeMainStageInputWatcher.target, priv.activeMainStageInputWatcher.touchPoints[i].x, 0).x;
-            }
-            return sum/priv.activeMainStageInputWatcher.touchPoints.length - width/2;
-        }
-        y: {
-            if (priv.activeMainStageInputWatcher == null) return 0;
-
-            var sum = 0
-            for (var i = 0; i < priv.activeMainStageInputWatcher.touchPoints.length; i++) {
-                sum += root.mapFromItem(priv.activeMainStageInputWatcher.target, 0, priv.activeMainStageInputWatcher.touchPoints[i].y).y;
-            }
-            return sum/priv.activeMainStageInputWatcher.touchPoints.length - height/2;
-        }
-
-        width: units.gu(40)
-        height: (parent.height / parent.width) * units.gu(40)
-
-        sourceComponent: enabled ? dragComponent : undefined
-
-        Component {
-            id: dragComponent
-            SessionContainer {
-                property var application: {
-                    if (priv.mainStageAppId == "") return null;
-                    return ApplicationManager.findApplication(priv.mainStageAppId);
-                }
-                session: application ? application.session : null
-                interactive: false
-                resizeSurface: false
-                focus: false
-
-                Drag.active: true
-                Drag.hotSpot.x: width/2
-                Drag.hotSpot.y: height/2
             }
         }
     }

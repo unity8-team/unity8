@@ -117,6 +117,7 @@ Q_SIGNALS:
     void pressed(const QList<InputWatcherTouchPoint*>& points);
     void released(const QList<InputWatcherTouchPoint*>& points);
     void updated(const QList<InputWatcherTouchPoint*>& points);
+    void clicked();
 
 private:
     bool processTouchPoints(const QList<QTouchEvent::TouchPoint>& points);

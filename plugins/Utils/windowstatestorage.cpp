@@ -23,6 +23,7 @@
 #include <QSqlError>
 #include <QSqlResult>
 #include <QRect>
+#include <unity/shell/application/ApplicationInfoInterface.h>
 
 QMutex WindowStateStorage::s_mutex;
 
@@ -81,19 +82,6 @@ void WindowStateStorage::saveGeometry(const QString &windowId, const QRect &rect
     saveValue(queryString);
 }
 
-void WindowStateStorage::executeAsyncQuery(const QString &queryString)
-{
-    QMutexLocker l(&s_mutex);
-    QSqlQuery query;
-
-    bool ok = query.exec(queryString);
-    if (!ok) {
-        qWarning() << "Error executing query" << queryString
-                   << "Driver error:" << query.lastError().driverText()
-                   << "Database error:" << query.lastError().databaseText();
-    }
-}
-
 QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defaultValue) const
 {
     QString queryString = QStringLiteral("SELECT * FROM geometry WHERE windowId = '%1';")
@@ -105,6 +93,41 @@ QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defa
         return defaultValue;
     }
     return QRect(query.value(QStringLiteral("x")).toInt(), query.value(QStringLiteral("y")).toInt(), query.value(QStringLiteral("width")).toInt(), query.value(QStringLiteral("height")).toInt());
+}
+
+void WindowStateStorage::saveStage(const QString &appId, int stage)
+{
+    const QString queryString = QStringLiteral("INSERT OR REPLACE INTO stage (appId, stage) values ('%1', '%2');")
+            .arg(appId)
+            .arg((int)stage);
+
+    saveValue(queryString);
+}
+
+int WindowStateStorage::getStage(const QString &appId) const
+{
+    const QString queryString = QStringLiteral("SELECT * FROM stage WHERE appId = '%1';")
+            .arg(appId);
+
+    QSqlQuery query = getValue(queryString);
+
+    if (!query.first()) {
+        return unity::shell::application::ApplicationInfoInterface::MainStage;
+    }
+    return query.value("stage").toInt();
+}
+
+void WindowStateStorage::executeAsyncQuery(const QString &queryString)
+{
+    QMutexLocker l(&s_mutex);
+    QSqlQuery query;
+
+    bool ok = query.exec(queryString);
+    if (!ok) {
+        qWarning() << "Error executing query" << queryString
+                   << "Driver error:" << query.lastError().driverText()
+                   << "Database error:" << query.lastError().databaseText();
+    }
 }
 
 void WindowStateStorage::initdb()
@@ -120,9 +143,14 @@ void WindowStateStorage::initdb()
         query.exec(QStringLiteral("CREATE TABLE geometry(windowId TEXT UNIQUE, x INTEGER, y INTEGER, width INTEGER, height INTEGER);"));
     }
 
-    if (!m_db.tables().contains("state")) {
+    if (!m_db.tables().contains(QStringLiteral("state"))) {
         QSqlQuery query;
-        query.exec("CREATE TABLE state(windowId TEXT UNIQUE, state INTEGER);");
+        query.exec(QStringLiteral("CREATE TABLE state(windowId TEXT UNIQUE, state INTEGER);"));
+    }
+
+    if (!m_db.tables().contains(QStringLiteral("stage"))) {
+        QSqlQuery query;
+        query.exec(QStringLiteral("CREATE TABLE stage(appId TEXT UNIQUE, stage INTEGER);"));
     }
 }
 

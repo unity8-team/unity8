@@ -76,7 +76,19 @@ Item {
     readonly property bool showingGreeter: greeter && greeter.shown
 
     property bool startingUp: true
-    Timer { id: finishStartUpTimer; interval: 500; onTriggered: startingUp = false }
+    Timer { id: finishStartUpTimer; interval: 500;
+        onTriggered: {
+            startingUp = false;
+
+            console.log("\n")
+            console.log("SHELL ORIENTATION ANGLE", orientationAngle)
+            console.log("SHELL ORIENTATION", orientationsToStr(orientation))
+            console.log("PRIMARY ORIENTATION", orientationsToStr(orientations.primary))
+            console.log("NATIVE ORIENTATION", orientationsToStr(orientations.native_))
+            console.log("SUPPORTED ORIENTATIONS", orientationsToStr(supportedOrientations))
+            console.log("\n")
+        }
+    }
 
     property int supportedOrientations: {
         if (startingUp) {
@@ -84,16 +96,51 @@ Item {
             return Qt.PrimaryOrientation;
         } else if (greeter && greeter.shown) {
             return Qt.PrimaryOrientation;
-        } else if (mainApp) {
-            return shell.orientations.map(mainApp.supportedOrientations);
         } else {
-            // we just don't care
-            return Qt.PortraitOrientation
-                 | Qt.LandscapeOrientation
-                 | Qt.InvertedPortraitOrientation
-                 | Qt.InvertedLandscapeOrientation;
+            return applicationsDisplayLoader.item ? applicationsDisplayLoader.item.supportedOrientations :
+                                                    Qt.PortraitOrientation |
+                                                    Qt.LandscapeOrientation |
+                                                    Qt.InvertedPortraitOrientation |
+                                                    Qt.InvertedLandscapeOrientation;
         }
     }
+
+
+
+    function orientationsToStr(orientations) {
+        if (orientations === Qt.PrimaryOrientation) {
+            return "Primary";
+        } else {
+            var str = "";
+            if (orientations & Qt.PortraitOrientation) {
+                str += " Portrait";
+            }
+            if (orientations & Qt.InvertedPortraitOrientation) {
+                str += " InvertedPortrait";
+            }
+            if (orientations & Qt.LandscapeOrientation) {
+                str += " Landscape";
+            }
+            if (orientations & Qt.InvertedLandscapeOrientation) {
+                str += " InvertedLandscape";
+            }
+            return str;
+        }
+    }
+
+    onOrientationAngleChanged: console.log("SHELL ORIENTATION ANGLE", orientationAngle)
+    onOrientationChanged: console.log("SHELL ORIENTATION", orientationsToStr(orientation))
+
+    Connections {
+        target: orientations
+        onPrimaryChanged: {
+            console.log("PRIMARY ORIENTATION", orientationsToStr(orientations.primary))
+        }
+        onNative_Changed: {
+            console.log("NATIVE ORIENTATION", orientationsToStr(orientations.native_))
+        }
+    }
+    onSupportedOrientationsChanged: console.log("SUPPORTED ORIENTATIONS", orientationsToStr(supportedOrientations))
 
     // For autopilot consumption
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
@@ -119,9 +166,7 @@ Item {
         if (ApplicationManager.findApplication(appId)) {
             ApplicationManager.requestFocusApplication(appId);
         } else {
-            var execFlags = shell.usageScenario === "phone" ? ApplicationManager.ForceMainStage
-                                                            : ApplicationManager.NoFlag;
-            ApplicationManager.startApplication(appId, execFlags);
+            ApplicationManager.startApplication(appId);
         }
     }
 

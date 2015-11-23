@@ -75,4 +75,9 @@ Showable {
 //            visible: enabled
 //        }
     }
+
+    // SideStage mouse event eater
+    MouseArea {
+        anchors.fill: parent
+    }
 }

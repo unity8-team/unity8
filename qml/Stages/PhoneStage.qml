@@ -82,6 +82,17 @@ AbstractStage {
                                && !priv.focusedAppDelegateIsDislocated
                                && !(priv.focusedAppDelegate && priv.focusedAppDelegate.xBehavior.running)
                                && spreadView.phase === 0
+    supportedOrientations: {
+        if (mainApp) {
+            return shell.orientations.map(mainApp.supportedOrientations);
+        } else {
+            // we just don't care
+            return Qt.PortraitOrientation
+                 | Qt.LandscapeOrientation
+                 | Qt.InvertedPortraitOrientation
+                 | Qt.InvertedLandscapeOrientation;
+        }
+    }
 
     // How far left the stage has been dragged
     readonly property real dragProgress: spreadRepeater.count > 0 ? -spreadRepeater.itemAt(0).xTranslate : 0

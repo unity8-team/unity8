@@ -164,6 +164,7 @@ void ApplicationInfo::setStage(Stage value)
 {
     if (value != m_stage) {
         m_stage = value;
+        qDebug() << "SET STAGE" << value;
         Q_EMIT stageChanged(value);
     }
 }

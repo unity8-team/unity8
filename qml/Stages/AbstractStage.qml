@@ -42,8 +42,12 @@ Rectangle {
 
     // To be read from outside
     property var mainApp: null
-    property int mainAppWindowOrientationAngle
+    property int mainAppWindowOrientationAngle: 0
     property bool orientationChangesEnabled
+    property int supportedOrientations: Qt.PortraitOrientation
+                                         | Qt.LandscapeOrientation
+                                         | Qt.InvertedPortraitOrientation
+                                         | Qt.InvertedLandscapeOrientation
 
     // Shared code for use in stage implementations
     GSettings {

@@ -249,6 +249,7 @@ bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touc
         setDragging(true);
     }
 
+    if (!dragging() && m_touchPoints.isEmpty()) Q_EMIT clicked();
     if (ended) Q_EMIT released(m_releasedTouchPoints);
     if (added) Q_EMIT pressed(m_pressedTouchPoints);
     if (moved) Q_EMIT updated(m_movedTouchPoints);
