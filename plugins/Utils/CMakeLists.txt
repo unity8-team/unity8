@@ -16,6 +16,7 @@ set(QMLPLUGIN_SRC
     constants.cpp
     HomeKeyWatcher.cpp
     inputwatcher.cpp
+    multitouchinputwatcher.cpp
     qlimitproxymodelqml.cpp
     unitysortfilterproxymodelqml.cpp
     Timer.cpp

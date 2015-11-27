@@ -52,12 +52,10 @@ QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defa
 void WindowStateStorage::saveStage(const QString &appId, int stage)
 {
     m_stage[appId] = stage;
-    qDebug() << "WindowStateStorage::saveStage" << appId << stage;
 }
 
 int WindowStateStorage::getStage(const QString &appId) const
 {
-    qDebug() << "WindowStateStorage::getStage" << appId << m_stage.contains(appId);
     return m_stage.value(appId, unity::shell::application::ApplicationInfoInterface::MainStage);
 }
 

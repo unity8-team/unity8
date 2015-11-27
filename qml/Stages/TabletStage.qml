@@ -74,8 +74,14 @@ AbstractStage {
 
     supportedOrientations: {
         if (mainApp) {
-            return orientations.map(mainApp.supportedOrientations) |
-                   orientations.map(Qt.LandscapeOrientation | Qt.InvertedLandscapeOrientation);
+            var orientations = mainApp.supportedOrientations;
+            orientations |= Qt.LandscapeOrientation | Qt.InvertedLandscapeOrientation;
+            if (priv.sideStageAppId && !spreadView.surfaceDragging) {
+                // If we have a sidestage app, support Portrait orientation
+                // so that it will switch the sidestage app to mainstage on rotate
+                orientations |= Qt.PortraitOrientation|Qt.InvertedPortraitOrientation;
+            }
+            return orientations;
         } else {
             // we just don't care
             return Qt.PortraitOrientation |
@@ -89,13 +95,6 @@ AbstractStage {
         spreadView.selectedIndex = -1;
         spreadView.phase = 0;
         spreadView.contentX = -spreadView.shift;
-    }
-
-    onShellOrientationChanged: {
-        if (shellOrientation == Qt.PortraitOrientation || shellOrientation == Qt.InvertedPortraitOrientation) {
-            ApplicationManager.focusApplication(priv.mainStageAppId);
-            priv.sideStageAppId = "";
-        }
     }
 
     onInverseProgressChanged: {
@@ -133,8 +132,8 @@ AbstractStage {
         property string mainStageAppId
         property string sideStageAppId
 
-        onMainStageAppIdChanged: console.log("MAIN STAGE", mainStageAppId)
-        onSideStageAppIdChanged: console.log("SIDE STAGE", sideStageAppId)
+        onMainStageAppIdChanged: console.log("MAINSTAGE APP", mainStageAppId)
+        onSideStageAppIdChanged: console.log("SIDESTAGE APP", sideStageAppId)
 
         // For convenience, keep properties of the first two apps in the model
         property string appId0
@@ -208,15 +207,19 @@ AbstractStage {
             return null;
         }
 
-        function setAppStage(appId, stage) {
+        function setAppStage(appId, stage, save) {
 
             var app = ApplicationManager.findApplication(appId);
             if (app) {
                 app.stage = stage;
+                if (save) {
+                    WindowStateStorage.saveStage(appId, stage);
+                }
 
                 // update the stage apps.
                 app = priv.getTopApp(ApplicationInfoInterface.MainStage);
                 mainStageAppId = app ? app.appId : ""
+                root.mainApp = app;
 
                 if (sideStage.shown) {
                     app = priv.getTopApp(ApplicationInfoInterface.SideStage);
@@ -225,7 +228,13 @@ AbstractStage {
             }
         }
 
-        property int stagDragTouchCount: 1
+        readonly property bool sideStageEnabled: root.shellOrientation == Qt.LandscapeOrientation ||
+                                                 root.shellOrientation == Qt.InvertedLandscapeOrientation
+        onSideStageEnabledChanged: {
+            if (!sideStageEnabled && sideStage.shown) {
+                sideStage.hide();
+            }
+        }
     }
 
     Connections {
@@ -300,7 +309,6 @@ AbstractStage {
         // 1: The app has reached the first snap position.
         // 2: The list is dragged further and snaps into the spread view when entering phase 2
         property int phase
-        onPhaseChanged: console.log("PHASE", phase)
 
         readonly property int phase0Width: sideStageWidth
         readonly property int phase1Width: sideStageWidth
@@ -344,8 +352,8 @@ AbstractStage {
             }
         }
 
-        property bool sideStageDragging: sideStage.dragging
         property real sideStageDragProgress: sideStage.progress
+        property bool surfaceDragging: false
 
         onSideStageDragProgressChanged: {
             if (sideStageDragProgress == 0) {
@@ -406,7 +414,7 @@ AbstractStage {
             }
         ]
         state: {
-            if (priv.mainStageAppId && !priv.sideStageAppId) {
+            if ((priv.mainStageAppId && !priv.sideStageAppId) || !priv.sideStageEnabled) {
                 return "main";
             }
             if (!priv.mainStageAppId && priv.sideStageAppId) {
@@ -423,12 +431,26 @@ AbstractStage {
                 // Flickabe.contentX wiggles during resizes. Don't react to it.
                 return;
             }
-            if (spreadView.phase == 0 && spreadView.shiftedContentX > spreadView.width * spreadView.positionMarker2) {
-                spreadView.phase = 1;
-            } else if (spreadView.phase == 1 && spreadView.shiftedContentX > spreadView.width * spreadView.positionMarker4) {
-                spreadView.phase = 2;
-            } else if (spreadView.phase == 1 && spreadView.shiftedContentX < spreadView.width * spreadView.positionMarker2) {
-                spreadView.phase = 0;
+
+            switch (phase) {
+            case 0:
+                // the "spreadEnabled" part is because when code does "phase = 0; contentX = -shift" to
+                // dismiss the spread because spreadEnabled went to false, for some reason, during tests,
+                // Flickable might jump in and change contentX value back, causing the code below to do
+                // "phase = 1" which will make the spread stay.
+                // It sucks that we have no control whatsoever over whether or when Flickable animates its
+                // contentX.
+                if (root.spreadEnabled && shiftedContentX > width * positionMarker2) {
+                    phase = 1;
+                }
+                break;
+            case 1:
+                if (shiftedContentX < width * positionMarker2) {
+                    phase = 0;
+                } else if (shiftedContentX >= width * positionMarker4 && !spreadDragArea.dragging) {
+                    phase = 2;
+                }
+                break;
             }
         }
 
@@ -455,55 +477,41 @@ AbstractStage {
         // We don't want to really reorder them in the model because that allows us to keep track
         // of the last focused order.
         function indexToZIndex(index) {
+            // only shuffle when we've got a main and overlay
+            if (state !== "mainAndOverlay") return index;
+
             var app = ApplicationManager.get(index);
             if (!app) {
                 return index;
             }
 
-            var active = app.appId == priv.mainStageAppId || app.appId == priv.sideStageAppId;
-            if (active && app.stage == ApplicationInfoInterface.MainStage) {
-                // if this app is active, and its the MainStage, always put it to index 0
+            // don't shuffle indexes greater than "actives or next"
+            if (index > 2) return index;
+
+            if (app.appId === priv.mainStageAppId) {
+                // Active main stage always at 0
                 return 0;
             }
-            if (active && app.stage == ApplicationInfoInterface.SideStage) {
-                if (!priv.mainStageAppId) {
-                    // Only have SS apps running. Put the active one at 0
-                    return 0;
-                }
 
-                // Precondition now: There's an active MS app and this is SS app:
-                if (spreadView.nextInStack >= 0 && ApplicationManager.get(spreadView.nextInStack).stage == ApplicationInfoInterface.MainStage) {
-                    // If the next app coming from the right is a MS app, we need to elevate this SS ap above it.
-                    // Put it to at least level 2, or higher if there's more apps coming in before this one.
-                    return Math.max(index, 2);
-                } else {
-                    // if this is no next app to come in from the right, place this one at index 1, just on top the active MS app.
+            if (spreadView.nextInStack > 0) {
+                var nextAppInStack = ApplicationManager.get(spreadView.nextInStack);
+
+                if (index === spreadView.nextInStack) {
+                    // this is the next app in stack.
+
+                    if (app.stage ===  ApplicationInfoInterface.SideStage) {
+                        // if the next app in stack is a sidestage app, it must order on top of other side stage app
+                        return 2;
+                    }
                     return 1;
                 }
-            }
-            if (index <= 2 && app.stage == ApplicationInfoInterface.MainStage && priv.sideStageAppId) {
-                // Ok, this is an inactive MS app. If there's an active SS app around, we need to place this one
-                // in between the active MS app and the active SS app, so that it comes in from there when dragging from the right.
-                // If there's now active SS app, just leave it where it is.
-                return priv.indexOf(priv.sideStageAppId) < index ? index - 1 : index;
-            }
-            if (index == spreadView.nextInStack && app.stage == ApplicationInfoInterface.SideStage) {
-                // This is a SS app and the next one to come in from the right:
-                if (priv.sideStageAppId && priv.mainStageAppId) {
-                    // If there's both, an active MS and an active SS app, put this one right on top of that
-                    return 2;
+                if (nextAppInStack.stage ===  ApplicationInfoInterface.SideStage) {
+                    // if the next app in stack is a sidestage app, it must order on top of other side stage app
+                    return 1;
                 }
-                // Or if there's only one other active app, put it on top of that.
-                // The case that there isn't any other active app is already handled above.
-                return 1;
+                return 2;
             }
-            if (index == 2 && spreadView.nextInStack == 1 && priv.sideStageAppId) {
-                // If its index 2 but not the next one to come in, it means
-                // we've pulled another one down to index 2. Move this one up to 2 instead.
-                return 3;
-            }
-            // don't touch all others... (mostly index > 3 + simple cases where the above doesn't shuffle much)
-            return index;
+            return index+1;
         }
 
         SequentialAnimation {
@@ -551,9 +559,10 @@ AbstractStage {
                     bottom: parent.bottom
                 }
                 width: spreadView.width - sideStage.width
+                enabled: priv.sideStageEnabled
 
                 onDropped: {
-                    priv.setAppStage(drag.source.appId, ApplicationInfoInterface.MainStage);
+                    priv.setAppStage(drag.source.appId, ApplicationInfoInterface.MainStage, true);
                 }
                 keys: "SideStage"
             }
@@ -564,22 +573,55 @@ AbstractStage {
                 height: priv.landscapeHeight
                 x: spreadView.width - width
                 z: {
-                    if (priv.sideStageAppId !== "") {
-                        return spreadView.indexToZIndex(priv.indexOf(priv.sideStageAppId));
-                    }
-                    return ApplicationManager.count;
-                }
+                    if (!priv.mainStageAppId) return 0;
 
+                    if (priv.sideStageAppId && spreadView.nextInStack > 0) {
+                        var nextAppInStack = ApplicationManager.get(spreadView.nextInStack);
+
+                        if (nextAppInStack.stage ===  ApplicationInfoInterface.MainStage) {
+                            // if the next app in stack is a main stage app, put the sidestage on top of it.
+                            return 2;
+                        }
+                        return 1;
+                    }
+
+                    return 1;
+                }
+                enabled: priv.sideStageEnabled
                 opacity: spreadView.phase <= 0 ? 1 : 0
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
                 DropArea {
                     anchors.fill: parent
+                    enabled: priv.sideStageEnabled
 
-                    onDropped: {
-                        priv.setAppStage(drag.source.appId, ApplicationInfoInterface.SideStage);
+                    onEntered: {
+                        sideStageOverlay.visible = drag.keys == "Disabled";
                     }
-                    keys: "MainStage"
+                    onExited: {
+                        sideStageOverlay.visible = false;
+                    }
+                    onDropped: {
+                        console.log("DROPPED ON SIDESTAGE")
+                        if (drop.keys == "MainStage") {
+                            priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
+                        }
+                        sideStageOverlay.visible = false;
+                    }
+                }
+            }
+
+            Item {
+                id: sideStageOverlay
+                anchors.fill: sideStage
+                visible: false
+                z: ApplicationManager.count+1
+                Icon {
+                    anchors.centerIn: parent
+                    height: parent.width
+                    width: parent.width
+                    name: "cancel"
+                    color: Qt.rgba(1,0,0,0.8)
                 }
             }
 
@@ -592,22 +634,10 @@ AbstractStage {
                     id: spreadTile
                     objectName: model.appId ? "tabletSpreadDelegate_" + model.appId
                                             : "tabletSpreadDelegate_null";
-                    width: {
-                        if (wantsMainStage) {
-                            return spreadView.width;
-                        } else {
-                            return spreadView.sideStageWidth;
-                        }
-                    }
-                    height: {
-                        if (wantsMainStage) {
-                            return spreadView.height;
-                        } else {
-                            return priv.landscapeHeight;
-                        }
-                    }
+                    width: spreadView.width
+                    height: spreadView.height
                     active: appId == priv.mainStageAppId || appId == priv.sideStageAppId
-                    zIndex: selected && wantsMainStage ? 0 : spreadView.indexToZIndex(index)
+                    zIndex: selected && stage == ApplicationInfoInterface.MainStage ? 0 : spreadView.indexToZIndex(index)
                     selected: spreadView.selectedIndex == index
                     otherSelected: spreadView.selectedIndex >= 0 && !selected
                     isInSideStage: priv.sideStageAppId === appId
@@ -621,9 +651,12 @@ AbstractStage {
 
                     supportedOrientations: {
                         if (application) {
-                            return application.supportedOrientations |
-                                   Qt.LandscapeOrientation |
-                                   Qt.InvertedLandscapeOrientation;
+                            var orientations = application.supportedOrientations;
+                            if (stage == ApplicationInfoInterface.MainStage) {
+                                // All mainstage apps support landscape orientations so that we can load into sidestage.
+                                orientations |= Qt.LandscapeOrientation | Qt.InvertedLandscapeOrientation;
+                            }
+                            return orientations;
                         } else {
                             // we just don't care
                             return Qt.PortraitOrientation |
@@ -633,14 +666,7 @@ AbstractStage {
                         }
                     }
 
-                    Binding {
-                        target: spreadTile.surfaceInputWatcher
-                        property: "eatMoveEvents"
-                        value: spreadTile.surfaceInputWatcher.touchPoints.length === priv.stagDragTouchCount
-                    }
-
                     readonly property string appId: model.appId
-                    readonly property bool wantsMainStage: stage == ApplicationInfoInterface.MainStage
                     readonly property bool isDash: appId == "unity8-dash"
                     readonly property bool canSuspend: model.isTouchApp
                             && !isExemptFromLifecycle(appId)
@@ -671,11 +697,23 @@ AbstractStage {
                         UbuntuNumberAnimation {}
                     }
 
-                    Component.onCompleted: {
-                        priv.setAppStage(appId, WindowStateStorage.getStage(appId));
+                    Connections {
+                        target: priv
+                        onSideStageEnabledChanged: refreshStage()
                     }
-                    Component.onDestruction: {
-                        WindowStateStorage.saveStage(appId, spreadTile.stage);
+                    Component.onCompleted: refreshStage()
+
+                    function refreshStage() {
+                        var stage = ApplicationInfoInterface.MainStage;
+                        if (priv.sideStageEnabled) {
+                            if (application && application.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) {
+                                stage = WindowStateStorage.getStage(appId);
+                            }
+                        }
+
+                        if (model.stage !== stage) {
+                            priv.setAppStage(appId, stage, false);
+                        }
                     }
 
                     // This is required because none of the bindings are triggered in some cases:
@@ -725,30 +763,83 @@ AbstractStage {
                         return progress;
                     }
 
-                    shellOrientationAngle: wantsMainStage ? root.shellOrientationAngle : 0
-                    shellOrientation: wantsMainStage ? root.shellOrientation : Qt.PortraitOrientation
-                    orientations: Orientations {
-                        primary: spreadTile.wantsMainStage ? root.orientations.primary : Qt.PortraitOrientation
-                        native_: spreadTile.wantsMainStage ? root.orientations.native_ : Qt.PortraitOrientation
+                    shellOrientationAngle: root.shellOrientationAngle
+                    shellOrientation: root.shellOrientation
+                    orientations: root.orientations
+
+                    states: [
+                        State {
+                            name: "MainStage"
+                            when: spreadTile.stage == ApplicationInfoInterface.MainStage
+                        },
+                        State {
+                            name: "SideStage"
+                            when: spreadTile.stage == ApplicationInfoInterface.SideStage
+
+                            PropertyChanges {
+                                target: spreadTile
+                                width: spreadView.sideStageWidth
+                                height: priv.landscapeHeight
+
+                                supportedOrientations: Qt.PortraitOrientation
+                                shellOrientationAngle: 0
+                                shellOrientation: Qt.PortraitOrientation
+                                orientations: sideStageOrientations
+                            }
+                        }
+                    ]
+
+                    Orientations {
+                        id: sideStageOrientations
+                        primary: Qt.PortraitOrientation
+                        native_: Qt.PortraitOrientation
                         portrait: root.orientations.portrait
                         invertedPortrait: root.orientations.invertedPortrait
                         landscape: root.orientations.landscape
                         invertedLandscape: root.orientations.invertedLandscape
                     }
 
-
-                    function getOrientationString(orient) {
-                        if (orient==Qt.PortraitOrientation) {
-                            return "Portrait";
-                        } else if (orient==Qt.LandscapeOrientation) {
-                            return "Landscape";
-                        } else if (orient==Qt.InvertedLandscapeOrientation) {
-                            return "InvertedLandscape";
-                        } else if (orient==Qt.InvertedPortraitOrientation) {
-                            return "InvertedPortrait";
+                    transitions: [
+                        Transition {
+                            to: "SideStage"
+                            SequentialAnimation {
+                                PropertyAction {
+                                    target: spreadTile
+                                    properties: "width,height,supportedOrientations,shellOrientationAngle,shellOrientation,orientations"
+                                }
+                                ScriptAction {
+                                    script: {
+                                        // rotate immediately.
+                                        spreadTile.matchShellOrientation();
+                                        if (ApplicationManager.focusedApplicationId === spreadTile.appId &&
+                                                priv.sideStageEnabled && !sideStage.shown) {
+                                            // Sidestage was focused, so show the side stage.
+                                            sideStage.show();
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Transition {
+                            from: "SideStage"
+                            SequentialAnimation {
+                                ScriptAction {
+                                    script: {
+                                        if (priv.sideStageAppId === spreadTile.appId &&
+                                                mainApp && (mainApp.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) == 0) {
+                                            // The mainstage app did not natively support portrait orientation, so focus the sidestage.
+                                            ApplicationManager.focusApplication(spreadTile.appId);
+                                        }
+                                    }
+                                }
+                                PropertyAction {
+                                    target: spreadTile
+                                    properties: "width,height,supportedOrientations,shellOrientationAngle,shellOrientation,orientations"
+                                }
+                                ScriptAction { script: { spreadTile.matchShellOrientation(); } }
+                            }
                         }
-                        return "Native";
-                    }
+                    ]
 
                     onClicked: {
                         if (spreadView.phase == 2) {
@@ -774,7 +865,7 @@ AbstractStage {
                             ApplicationManager.focusApplication(appId);
                         }
 
-                        if (focus && stage === ApplicationInfoInterface.SideStage) {
+                        if (focus && priv.sideStageEnabled && stage === ApplicationInfoInterface.SideStage) {
                             sideStage.show();
                         }
                     }
@@ -799,67 +890,42 @@ AbstractStage {
                         progress: spreadTile.progress - spreadView.positionMarker1
                     }
 
-                    Connections {
-                        id: triDragInputSurfaceConnector
-                        target: spreadTile.surfaceInputWatcher
+                    MultiTouchInputWatcher2 {
+                        id: stagDragInputWatcher
+                        target: priv.sideStageEnabled ? spreadTile.surfaceItem : null
+                        multiTouchCount: 1
 
-                        property bool triPress: false
-                        property bool wasDragging: false
-                        onTargetChanged: {
-                            triPress = false;
-                            wasDragging = false;
-                        }
+                        property var dragObject: null
 
-                        onPressed: {;
-                            if (target.touchPoints.length === priv.stagDragTouchCount) {
-                                triPress = true;
-                                console.log("PRESSED", triPress)
-                            } else {
-                                triPress = false;
+                        onClicked: {
+                            console.log("CLICKED")
+                            if (sideStage.shown) {
+                                sideStage.hide();
+                            } else  {
+                                sideStage.show();
                             }
                         }
+                        onDropped: {
+                            console.log("DROPPED")
+                            if (dragObject) dragObject.Drag.drop();
+                        }
+
                         onDraggingChanged: {
-                            if (triPress && dragging) {
-                                wasDragging = true;
-                                if (!sideStage.shown) {
+                            spreadView.surfaceDragging = dragging;
+                            console.log("DRAG CHANGED", dragging)
+
+                            if (dragging && priv.sideStageEnabled) {
+                                dragObject = dragComponent.createObject(spreadRow)
+
+                                // If we're dragging to the sidestage.
+                                if (spreadTile.stage === ApplicationInfo.MainStage) {
                                     sideStage.show();
                                 }
                             }
-                        }
-                        onReleased: {
-                            if (target.touchPoints.length === 0) {
-                                if (triPress && wasDragging) {
-                                    dragObject.Drag.drop();
-                                }
-                                triPress = false;
-                                wasDragging = false;
-                                console.log("RELEASED", triPress)
+                            else if (dragObject) {
+                                dragObject.destroy();
+                                dragObject = null;
                             }
-                        }
-                        onClicked: {
-                            if (target.touchPoints.length === 0) {
-                                if (triPress) {
-                                    if (sideStage.shown) {
-                                        sideStage.hide();
-                                    } else  {
-                                        sideStage.show();
-                                    }
-                                }
-                                triPress = false;
-                                wasDragging = false;
-                                console.log("CLICKED", triPress)
-                            }
-                        }
-                    }
-
-                    property var dragObject: null
-                    property bool dragging: triDragInputSurfaceConnector.triPress && triDragInputSurfaceConnector.wasDragging
-                    onDraggingChanged: {
-                        if (dragging) {
-                            dragObject = dragComponent.createObject(spreadRow)
-                        } else if (dragObject) {
-                            dragObject.destroy();
-                            dragObject = null;
                         }
                     }
 
@@ -872,26 +938,26 @@ AbstractStage {
                             interactive: false
                             resizeSurface: false
                             focus: false
-                            z: ApplicationManager.count+1
 
                             x: {
-                                if (spreadTile.surfaceInputWatcher == null) return 0;
+                                if (stagDragInputWatcher.target == null) return 0;
 
                                 var sum = 0
-                                for (var i = 0; i < spreadTile.surfaceInputWatcher.touchPoints.length; i++) {
-                                    sum += root.mapFromItem(spreadTile.surfaceInputWatcher.target, spreadTile.surfaceInputWatcher.touchPoints[i].x, 0).x;
+                                for (var i = 0; i < stagDragInputWatcher.touchPoints.length; i++) {
+                                    sum += root.mapFromItem(stagDragInputWatcher.target, stagDragInputWatcher.touchPoints[i].x, 0).x;
                                 }
-                                return sum/spreadTile.surfaceInputWatcher.touchPoints.length - width/2;
+                                return sum/stagDragInputWatcher.touchPoints.length - width/2;
                             }
                             y: {
-                                if (spreadTile.surfaceInputWatcher == null) return 0;
+                                if (stagDragInputWatcher.target == null) return 0;
 
                                 var sum = 0
-                                for (var i = 0; i < spreadTile.surfaceInputWatcher.touchPoints.length; i++) {
-                                    sum += root.mapFromItem(spreadTile.surfaceInputWatcher.target, 0, spreadTile.surfaceInputWatcher.touchPoints[i].y).y;
+                                for (var i = 0; i < stagDragInputWatcher.touchPoints.length; i++) {
+                                    sum += root.mapFromItem(stagDragInputWatcher.target, 0, stagDragInputWatcher.touchPoints[i].y).y;
                                 }
-                                return sum/spreadTile.surfaceInputWatcher.touchPoints.length - height/2;
+                                return sum/stagDragInputWatcher.touchPoints.length - height/2;
                             }
+                            z: ApplicationManager.count+1
 
                             width: units.gu(40)
                             height: units.gu(40)
@@ -899,7 +965,16 @@ AbstractStage {
                             Drag.active: true
                             Drag.hotSpot.x: width/2
                             Drag.hotSpot.y: height/2
-                            Drag.keys: spreadTile.stage === ApplicationInfo.MainStage ? "MainStage" : "SideStage"
+                            // only accept opposite stage.
+                            Drag.keys: {
+                                if (spreadTile.stage === ApplicationInfo.MainStage) {
+                                    if (spreadTile.application.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) {
+                                        return "MainStage";
+                                    }
+                                    return "Disabled";
+                                }
+                                return "SideStage";
+                            }
                         }
                     }
                 }

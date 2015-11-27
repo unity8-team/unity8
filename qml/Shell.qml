@@ -79,14 +79,6 @@ Item {
     Timer { id: finishStartUpTimer; interval: 500;
         onTriggered: {
             startingUp = false;
-
-            console.log("\n")
-            console.log("SHELL ORIENTATION ANGLE", orientationAngle)
-            console.log("SHELL ORIENTATION", orientationsToStr(orientation))
-            console.log("PRIMARY ORIENTATION", orientationsToStr(orientations.primary))
-            console.log("NATIVE ORIENTATION", orientationsToStr(orientations.native_))
-            console.log("SUPPORTED ORIENTATIONS", orientationsToStr(supportedOrientations))
-            console.log("\n")
         }
     }
 
@@ -97,50 +89,13 @@ Item {
         } else if (greeter && greeter.shown) {
             return Qt.PrimaryOrientation;
         } else {
-            return applicationsDisplayLoader.item ? applicationsDisplayLoader.item.supportedOrientations :
+            return applicationsDisplayLoader.item ? orientations.map(applicationsDisplayLoader.item.supportedOrientations) :
                                                     Qt.PortraitOrientation |
                                                     Qt.LandscapeOrientation |
                                                     Qt.InvertedPortraitOrientation |
                                                     Qt.InvertedLandscapeOrientation;
         }
     }
-
-
-
-    function orientationsToStr(orientations) {
-        if (orientations === Qt.PrimaryOrientation) {
-            return "Primary";
-        } else {
-            var str = "";
-            if (orientations & Qt.PortraitOrientation) {
-                str += " Portrait";
-            }
-            if (orientations & Qt.InvertedPortraitOrientation) {
-                str += " InvertedPortrait";
-            }
-            if (orientations & Qt.LandscapeOrientation) {
-                str += " Landscape";
-            }
-            if (orientations & Qt.InvertedLandscapeOrientation) {
-                str += " InvertedLandscape";
-            }
-            return str;
-        }
-    }
-
-    onOrientationAngleChanged: console.log("SHELL ORIENTATION ANGLE", orientationAngle)
-    onOrientationChanged: console.log("SHELL ORIENTATION", orientationsToStr(orientation))
-
-    Connections {
-        target: orientations
-        onPrimaryChanged: {
-            console.log("PRIMARY ORIENTATION", orientationsToStr(orientations.primary))
-        }
-        onNative_Changed: {
-            console.log("NATIVE ORIENTATION", orientationsToStr(orientations.native_))
-        }
-    }
-    onSupportedOrientationsChanged: console.log("SUPPORTED ORIENTATIONS", orientationsToStr(supportedOrientations))
 
     // For autopilot consumption
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
@@ -281,20 +236,17 @@ Item {
                                            ? "phone"
                                            : shell.usageScenario
 
-            sourceComponent: TabletStage {
+            source: {
+                if(shell.mode === "greeter") {
+                    return "Stages/ShimStage.qml"
+                } else if (applicationsDisplayLoader.usageScenario === "phone") {
+                    return "Stages/PhoneStage.qml";
+                } else if (applicationsDisplayLoader.usageScenario === "tablet") {
+                    return "Stages/TabletStage.qml";
+                } else {
+                    return "Stages/DesktopStage.qml";
+                }
             }
-
-//            source: {
-//                if(shell.mode === "greeter") {
-//                    return "Stages/ShimStage.qml"
-//                } else if (applicationsDisplayLoader.usageScenario === "phone") {
-//                    return "Stages/PhoneStage.qml";
-//                } else if (applicationsDisplayLoader.usageScenario === "tablet") {
-//                    return "Stages/TabletStage.qml";
-//                } else {
-//                    return "Stages/DesktopStage.qml";
-//                }
-//            }
 
             property bool interactive: tutorial.spreadEnabled
                     && (!greeter || !greeter.shown)

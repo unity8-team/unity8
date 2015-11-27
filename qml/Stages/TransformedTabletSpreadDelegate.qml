@@ -154,17 +154,8 @@ SpreadDelegate {
         property real xTranslate: {
             var newTranslate = 0;
 
+            // selected app or opposite stage active app.
             if (isSelected || (otherSelected && root.active && spreadView.selectedApplication && spreadView.selectedApplication.stage !== stage)) {
-                if (stage == ApplicationInfoInterface.MainStage) {
-                    return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.width, root.progress);
-                } else {
-                    return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.sideStageWidth, root.progress);
-                }
-            } else if (otherSelected) {
-                return selectedXTranslate;
-            }
-
-            if (root.active && (isSelected || otherSelected)) {
                 if (stage == ApplicationInfoInterface.MainStage) {
                     return linearAnimation(selectedProgress, negativeProgress, selectedXTranslate, -spreadView.width, root.progress);
                 } else {

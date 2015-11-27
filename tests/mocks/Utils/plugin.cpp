@@ -36,6 +36,7 @@
 #include <windowscreenshotprovider.h>
 #include <easingcurve.h>
 #include <applicationsfiltermodel.h>
+#include <multitouchinputwatcher.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -66,6 +67,7 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<Constants>(uri, 0, 1, "Constants", createConstants);
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
+    qmlRegisterType<MultiTouchInputWatcher>(uri, 0, 1, "MultiTouchInputWatcher2");
 }
 
 void FakeUtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

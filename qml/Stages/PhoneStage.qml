@@ -84,7 +84,7 @@ AbstractStage {
                                && spreadView.phase === 0
     supportedOrientations: {
         if (mainApp) {
-            return shell.orientations.map(mainApp.supportedOrientations);
+            return mainApp.supportedOrientations;
         } else {
             // we just don't care
             return Qt.PortraitOrientation

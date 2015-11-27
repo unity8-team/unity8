@@ -178,6 +178,11 @@ InputWatcherTouchPoint *InputWatcher::touchPoint_at(QQmlListProperty<InputWatche
     return static_cast<InputWatcherTouchPoint*>((q->m_touchPoints.begin()+index).value());
 }
 
+QList<InputWatcherTouchPoint *> InputWatcher::touchPointList() const
+{
+    return m_touchPoints.values();
+}
+
 void InputWatcher::addTouchPoint(QTouchEvent::TouchPoint const* tp)
 {
     InputWatcherTouchPoint* iwtp = new InputWatcherTouchPoint();

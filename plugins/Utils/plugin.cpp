@@ -36,6 +36,7 @@
 #include "constants.h"
 #include "timezoneFormatter.h"
 #include "applicationsfiltermodel.h"
+#include "multitouchinputwatcher.h"
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -69,6 +70,7 @@ void UtilsPlugin::registerTypes(const char *uri)
                                                 [](QQmlEngine*, QJSEngine*) -> QObject* { return new TimezoneFormatter; });
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
+    qmlRegisterType<MultiTouchInputWatcher>(uri, 0, 1, "MultiTouchInputWatcher2");
 }
 
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

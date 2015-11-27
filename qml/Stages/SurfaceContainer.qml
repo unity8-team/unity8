@@ -31,7 +31,7 @@ FocusScope {
     property string name: surface ? surface.name : ""
     property bool resizeSurface: true
 
-    readonly property alias inputWatcher: _inputWatcher
+    readonly property alias surfaceItem: surfaceItem
 
     onSurfaceChanged: {
         if (surface) {

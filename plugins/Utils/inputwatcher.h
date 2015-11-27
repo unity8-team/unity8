@@ -42,6 +42,16 @@ public:
     {
     }
 
+    InputWatcherTouchPoint(const InputWatcherTouchPoint& other)
+    : QObject(nullptr)
+    {
+        m_id = other.pointId();
+        m_pressed = other.pressed();
+        m_x = other.x();
+        m_y = other.y();
+        m_dragging = other.dragging();
+    }
+
     int pointId() const { return m_id; }
     void setPointId(int id);
 
@@ -103,9 +113,9 @@ public:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     QQmlListProperty<InputWatcherTouchPoint> touchPoints();
+    QList<InputWatcherTouchPoint*> touchPointList() const;
 
     static int touchPoint_count(QQmlListProperty<InputWatcherTouchPoint> *list);
-
     static InputWatcherTouchPoint* touchPoint_at(QQmlListProperty<InputWatcherTouchPoint> *list, int index);
 
 Q_SIGNALS:

@@ -347,11 +347,11 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Facebook");
     application->setScreenshotId("facebook");
     application->setIconId("facebook");
+    application->setSupportedOrientations(Qt::PrimaryOrientation);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("webbrowser-app");
-    application->setStage(ApplicationInfo::SideStage);
     application->setFullscreen(true);
     application->setName("Browser");
     application->setScreenshotId("browser");
