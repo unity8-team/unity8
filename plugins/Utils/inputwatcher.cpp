@@ -21,10 +21,10 @@
 #include <QDebug>
 #include <QGuiApplication>
 #include <QStyleHints>
+#include <private/qquickwindow_p.h>
 
 InputWatcher::InputWatcher(QObject *parent)
     : QObject(parent)
-    , m_eatMoveEvents(false)
     , m_dragging(false)
 {
 }
@@ -73,19 +73,6 @@ bool InputWatcher::dragging() const
     return m_dragging;
 }
 
-bool InputWatcher::eatMoveEvents() const
-{
-    return m_eatMoveEvents;
-}
-
-void InputWatcher::setEatMoveEvents(bool eatMoveEvents)
-{
-    if (m_eatMoveEvents == eatMoveEvents)
-        return;
-    m_eatMoveEvents = eatMoveEvents;
-    Q_EMIT eatMoveEventsChanged();
-}
-
 bool InputWatcher::targetPressed() const
 {
     return m_touchPoints.count() > 0;
@@ -93,15 +80,13 @@ bool InputWatcher::targetPressed() const
 
 bool InputWatcher::eventFilter(QObject* /*watched*/, QEvent *event)
 {
-    bool eatEvent = false;
-
     switch (event->type()) {
     case QEvent::TouchBegin:
     case QEvent::TouchEnd:
     case QEvent::TouchUpdate:
         {
             QTouchEvent *touchEvent = static_cast<QTouchEvent*>(event);
-            eatEvent = processTouchPoints(touchEvent->touchPoints());
+            processTouchPoints(event, touchEvent->touchPoints());
 
             if (event->type() == QEvent::TouchEnd) {
                 setDragging(false);
@@ -130,7 +115,7 @@ bool InputWatcher::eventFilter(QObject* /*watched*/, QEvent *event)
             else { // QEvent::MouseButtonPress
                 m_mouseTouchPoint.setState(Qt::TouchPointPressed);
             }
-            eatEvent = processTouchPoints(QList<QTouchEvent::TouchPoint>() << m_mouseTouchPoint);
+            processTouchPoints(mouseEvent, QList<QTouchEvent::TouchPoint>() << m_mouseTouchPoint);
 
             if (event->type() == QEvent::MouseButtonRelease) {
                 setDragging(false);
@@ -142,7 +127,7 @@ bool InputWatcher::eventFilter(QObject* /*watched*/, QEvent *event)
         if (event->type() == UnownedTouchEvent::unownedTouchEventType()) {
             QTouchEvent* UTE = static_cast<UnownedTouchEvent*>(event)->touchEvent();
             if (UTE) {
-                eatEvent = processTouchPoints(UTE->touchPoints());
+                processTouchPoints(UTE, UTE->touchPoints());
 
                 if (UTE->type() == QEvent::TouchEnd) {
                     setDragging(false);
@@ -153,7 +138,7 @@ bool InputWatcher::eventFilter(QObject* /*watched*/, QEvent *event)
         break;
     }
 
-    return eatEvent;
+    return false;
 }
 
 QQmlListProperty<InputWatcherTouchPoint> InputWatcher::touchPoints()
@@ -200,15 +185,15 @@ void InputWatcher::updateTouchPoint(InputWatcherTouchPoint* iwtp, QTouchEvent::T
 }
 
 
-bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touchPoints)
+void InputWatcher::processTouchPoints(QEvent* event, const QList<QTouchEvent::TouchPoint>& touchPoints)
 {
-    bool eatEvent = false;
     bool added = false;
     bool ended = false;
     bool moved = false;
     bool wantsDrag = false;
 
     const int dragThreshold = qApp->styleHints()->startDragDistance();
+    const int dragVelocity = qApp->styleHints()->startDragVelocity();
 
     Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, touchPoints) {
         Qt::TouchPointState touchPointState = touchPoint.state();
@@ -236,13 +221,42 @@ bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touc
 
                 const QPointF &currentPos = touchPoint.scenePos();
                 const QPointF &startPos = touchPoint.startScenePos();
-                if (qAbs(currentPos.x() - startPos.x()) > dragThreshold ||
-                    qAbs(currentPos.y() - startPos.y()) > dragThreshold) {
-                    iwtp->setDragging(true);
 
+                bool overDragThreshold = false;
+
+                switch(event->type()) {
+                    case QEvent::TouchBegin:
+                    case QEvent::TouchEnd:
+                    case QEvent::TouchUpdate:
+                    {
+                        QTouchEvent* touchEvent = static_cast<QTouchEvent*>(event);
+                        bool supportsVelocity = (touchEvent->device()->capabilities() & QTouchDevice::Velocity) && dragVelocity;
+
+                        overDragThreshold |= qAbs(currentPos.x() - startPos.x()) > dragThreshold ||
+                                             qAbs(currentPos.y() - startPos.y()) > dragThreshold;
+                        if (supportsVelocity) {
+                            QVector2D velocityVec = touchPoint.velocity();
+                            overDragThreshold |= qAbs(velocityVec.x()) > dragVelocity;
+                            overDragThreshold |= qAbs(velocityVec.y()) > dragVelocity;
+                        }
+
+                    } break;
+                    case QEvent::MouseButtonPress:
+                    case QEvent::MouseButtonRelease:
+                    case QEvent::MouseMove:
+                    {
+                        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+                        overDragThreshold |= QQuickWindowPrivate::dragOverThreshold(currentPos.x() - startPos.x(), Qt::XAxis, mouseEvent, dragThreshold);
+                        overDragThreshold |= QQuickWindowPrivate::dragOverThreshold(currentPos.y() - startPos.y(), Qt::YAxis, mouseEvent, dragThreshold);
+                    } break;
+                    default:
+                        break;
+                }
+
+                if (overDragThreshold) {
+                    iwtp->setDragging(true);
                     wantsDrag = true;
                 }
-                eatEvent = m_eatMoveEvents;
             }
             else {
                 updateTouchPoint(iwtp, &touchPoint);
@@ -259,8 +273,6 @@ bool InputWatcher::processTouchPoints(const QList<QTouchEvent::TouchPoint>& touc
     if (added) Q_EMIT pressed(m_pressedTouchPoints);
     if (moved) Q_EMIT updated(m_movedTouchPoints);
     if (added || ended || moved) Q_EMIT touchPointsUpdated(m_touchPoints.values());
-
-    return eatEvent;
 }
 
 void InputWatcher::clearTouchLists()

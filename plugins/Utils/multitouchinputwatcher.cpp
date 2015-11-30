@@ -17,18 +17,70 @@
 
 #include "multitouchinputwatcher.h"
 #include "inputwatcher.h"
+#include "UnownedTouchEvent.h"
 
 #include <QTimer>
+#include <QTouchEvent>
+
+class InputWatcherWrapped : public InputWatcher
+{
+public:
+    InputWatcherWrapped(MultiTouchInputWatcher* multiTouchInputWatcher)
+        : InputWatcher(multiTouchInputWatcher)
+        , m_multiTouchInputWatcher(multiTouchInputWatcher)
+    {
+    }
+
+    bool eventFilter(QObject* watched, QEvent *event)
+    {
+        bool ret = InputWatcher::eventFilter(watched, event);
+
+        switch (event->type()) {
+        case QEvent::TouchBegin:
+        case QEvent::TouchEnd:
+        case QEvent::TouchUpdate:
+            {
+                QTouchEvent *touchEvent = static_cast<QTouchEvent*>(event);
+                if (touchEvent->touchPointStates() & (Qt::TouchPointMoved|Qt::TouchPointPressed)) {
+                    return m_multiTouchInputWatcher->isPressed();
+                }
+            }
+            break;
+        case QEvent::MouseButtonRelease:
+            break;
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseMove:
+            {
+                return m_multiTouchInputWatcher->isPressed();
+            }
+            break;
+        default:
+            // Process unowned touch events (handles update/release for incomplete gestures)
+            if (event->type() == UnownedTouchEvent::unownedTouchEventType()) {
+                QTouchEvent* UTE = static_cast<UnownedTouchEvent*>(event)->touchEvent();
+                if (UTE && UTE->touchPointStates() & (Qt::TouchPointMoved|Qt::TouchPointPressed)) {
+                    return true;
+                }
+            }
+            // Not interested
+            break;
+        }
+
+        return ret;
+    }
+
+private:
+    MultiTouchInputWatcher* m_multiTouchInputWatcher;
+};
 
 MultiTouchInputWatcher::MultiTouchInputWatcher(QObject *parent)
     : QObject(parent)
-    , m_inputWatcher(new InputWatcher(this))
+    , m_inputWatcher(new InputWatcherWrapped(this))
     , m_multiTouchCount(1)
     , m_pressed(false)
     , m_dragging(false)
     , m_releaseTimer(new QTimer(this))
 {
-    m_inputWatcher->setEatMoveEvents(true);
     connect(m_inputWatcher, &InputWatcher::targetChanged, this, [this](QObject* value) {
         setDragging(false);
         setPressed(false);
@@ -36,16 +88,18 @@ MultiTouchInputWatcher::MultiTouchInputWatcher(QObject *parent)
     });
 
     connect(m_inputWatcher, &InputWatcher::touchPointsUpdated, this, [this](const QList<InputWatcherTouchPoint*> &touchPoints) {
+
+        qDebug() << "TOUCH POINTS" << touchPoints;
+
         if (m_releaseTimer->isActive()) {
             m_touchUpdated = true;
+            updateTouchPoints(touchPoints);
+            Q_EMIT touchPointsUpdated(m_cachedPoints);
         } else {
             // cache the last updated points.
             qDeleteAll(m_cachedPoints);
             m_cachedPoints.clear();
-            Q_FOREACH(InputWatcherTouchPoint* point, touchPoints) {
-                m_cachedPoints.append(new InputWatcherTouchPoint(*point));
-            }
-
+            updateTouchPoints(touchPoints);
             Q_EMIT touchPointsUpdated(m_cachedPoints);
         }
     });
@@ -71,6 +125,7 @@ MultiTouchInputWatcher::MultiTouchInputWatcher(QObject *parent)
 
     connect(m_inputWatcher, &InputWatcher::clicked, this, [this]() {
         auto touchPoints = m_inputWatcher->touchPoints();
+        qDebug() << "InputWatcher::clicked";
         int count = m_inputWatcher->touchPoint_count(&touchPoints);
         if (count == 0) {
             if (isPressed()) {
@@ -169,4 +224,24 @@ void MultiTouchInputWatcher::setMultiTouchCount(int count)
         return;
     m_multiTouchCount = count;
     Q_EMIT multiTouchCountChanged(count);
+}
+
+void MultiTouchInputWatcher::updateTouchPoints(const QList<InputWatcherTouchPoint*> &touchPoints)
+{
+    QList<InputWatcherTouchPoint*> newPoints;
+    Q_FOREACH(InputWatcherTouchPoint* existingPoint, touchPoints) {
+        bool found = false;
+        Q_FOREACH(InputWatcherTouchPoint* updatedPoint, m_cachedPoints) {
+            if (existingPoint->pointId() == updatedPoint->pointId()) {
+                existingPoint->setX(updatedPoint->x());
+                existingPoint->setY(updatedPoint->y());
+                existingPoint->setDragging(updatedPoint->dragging());
+                found = true;
+            }
+        }
+        if (!found) {
+            newPoints.append(new InputWatcherTouchPoint(*existingPoint));
+        }
+    }
+    m_cachedPoints.append(newPoints);
 }

@@ -95,7 +95,6 @@ class InputWatcher : public QObject
     // Whether the target object is pressed (by either touch or mouse)
     Q_PROPERTY(QQmlListProperty<InputWatcherTouchPoint> touchPoints READ touchPoints NOTIFY touchPointsUpdated)
     Q_PROPERTY(bool dragging READ dragging NOTIFY draggingChanged)
-    Q_PROPERTY(bool eatMoveEvents READ eatMoveEvents WRITE setEatMoveEvents NOTIFY eatMoveEventsChanged)
 public:
     InputWatcher(QObject *parent = nullptr);
     virtual ~InputWatcher();
@@ -104,9 +103,6 @@ public:
     void setTarget(QObject *value);
 
     bool dragging() const;
-
-    bool eatMoveEvents() const;
-    void setEatMoveEvents(bool eatMoveEvents);
 
     bool targetPressed() const;
 
@@ -122,7 +118,6 @@ Q_SIGNALS:
     void targetChanged(QObject *value);
     void touchPointsUpdated(const QList<InputWatcherTouchPoint*> &touchPoints);
     void draggingChanged(bool dragging);
-    void eatMoveEventsChanged();
 
     void pressed(const QList<InputWatcherTouchPoint*>& points);
     void released(const QList<InputWatcherTouchPoint*>& points);
@@ -130,7 +125,7 @@ Q_SIGNALS:
     void clicked();
 
 private:
-    bool processTouchPoints(const QList<QTouchEvent::TouchPoint>& points);
+    void processTouchPoints(QEvent* event, const QList<QTouchEvent::TouchPoint>& points);
     void addTouchPoint(const QTouchEvent::TouchPoint *tp);
     void updateTouchPoint(InputWatcherTouchPoint *iwtp, const QTouchEvent::TouchPoint *tp);
     void clearTouchLists();
@@ -139,7 +134,6 @@ private:
     QHash<int, InputWatcherTouchPoint*> m_touchPoints;
     QTouchEvent::TouchPoint m_mouseTouchPoint;
     QPointer<QObject> m_target;
-    bool m_eatMoveEvents;
     bool m_dragging;
 
     QList<InputWatcherTouchPoint*> m_releasedTouchPoints;

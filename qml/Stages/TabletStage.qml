@@ -132,8 +132,8 @@ AbstractStage {
         property string mainStageAppId
         property string sideStageAppId
 
-        onMainStageAppIdChanged: console.log("MAINSTAGE APP", mainStageAppId)
-        onSideStageAppIdChanged: console.log("SIDESTAGE APP", sideStageAppId)
+//        onMainStageAppIdChanged: console.log("MAINSTAGE APP", mainStageAppId)
+//        onSideStageAppIdChanged: console.log("SIDESTAGE APP", sideStageAppId)
 
         // For convenience, keep properties of the first two apps in the model
         property string appId0
@@ -602,7 +602,7 @@ AbstractStage {
                         sideStageOverlay.visible = false;
                     }
                     onDropped: {
-                        console.log("DROPPED ON SIDESTAGE")
+//                        console.log("DROPPED ON SIDESTAGE")
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
                         }
@@ -890,10 +890,10 @@ AbstractStage {
                         progress: spreadTile.progress - spreadView.positionMarker1
                     }
 
-                    MultiTouchInputWatcher2 {
+                    MultiTouchInputWatcher {
                         id: stagDragInputWatcher
                         target: priv.sideStageEnabled ? spreadTile.surfaceItem : null
-                        multiTouchCount: 1
+                        multiTouchCount: 3
 
                         property var dragObject: null
 
@@ -906,8 +906,11 @@ AbstractStage {
                             }
                         }
                         onDropped: {
-                            console.log("DROPPED")
+//                            console.log("DROPPED")
                             if (dragObject) dragObject.Drag.drop();
+                        }
+                        onPressedChanged: {
+                            console.log("PRESSED CHANGED", pressed);
                         }
 
                         onDraggingChanged: {

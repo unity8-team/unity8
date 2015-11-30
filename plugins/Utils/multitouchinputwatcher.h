@@ -67,6 +67,7 @@ Q_SIGNALS:
 private:
     void setPressed(bool pressed);
     void setDragging(bool dragging);
+    void updateTouchPoints(const QList<InputWatcherTouchPoint *> &touchPoints);
 
     InputWatcher* m_inputWatcher;
     int m_multiTouchCount;
