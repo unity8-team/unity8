@@ -67,10 +67,10 @@ WindowStateStorage::WindowState WindowStateStorage::getState(const QString &wind
     if (!query.first()) {
         return defaultValue;
     }
-    return (WindowState)query.value("state").toInt();
+    return (WindowState)query.value(QStringLiteral("state")).toInt();
 }
 
-void WindowStateStorage::saveGeometry(const QString &windowId, const QRect &rect)
+void WindowStateStorage::saveGeometry(const QString &windowId, const QRect rect)
 {
     const QString queryString = QStringLiteral("INSERT OR REPLACE INTO geometry (windowId, x, y, width, height) values ('%1', '%2', '%3', '%4', '%5');")
             .arg(windowId)
@@ -80,19 +80,6 @@ void WindowStateStorage::saveGeometry(const QString &windowId, const QRect &rect
             .arg(rect.height());
 
     saveValue(queryString);
-}
-
-QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defaultValue) const
-{
-    QString queryString = QStringLiteral("SELECT * FROM geometry WHERE windowId = '%1';")
-            .arg(windowId);
-
-    QSqlQuery query = getValue(queryString);
-
-    if (!query.first()) {
-        return defaultValue;
-    }
-    return QRect(query.value(QStringLiteral("x")).toInt(), query.value(QStringLiteral("y")).toInt(), query.value(QStringLiteral("width")).toInt(), query.value(QStringLiteral("height")).toInt());
 }
 
 void WindowStateStorage::saveStage(const QString &appId, int stage)
@@ -128,6 +115,19 @@ void WindowStateStorage::executeAsyncQuery(const QString &queryString)
                    << "Driver error:" << query.lastError().driverText()
                    << "Database error:" << query.lastError().databaseText();
     }
+}
+
+QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect defaultValue) const
+{
+    QString queryString = QStringLiteral("SELECT * FROM geometry WHERE windowId = '%1';")
+            .arg(windowId);
+
+    QSqlQuery query = getValue(queryString);
+
+    if (!query.first()) {
+        return defaultValue;
+    }
+    return QRect(query.value(QStringLiteral("x")).toInt(), query.value(QStringLiteral("y")).toInt(), query.value(QStringLiteral("width")).toInt(), query.value(QStringLiteral("height")).toInt());
 }
 
 void WindowStateStorage::initdb()

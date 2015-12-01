@@ -88,9 +88,6 @@ MultiTouchInputWatcher::MultiTouchInputWatcher(QObject *parent)
     });
 
     connect(m_inputWatcher, &InputWatcher::touchPointsUpdated, this, [this](const QList<InputWatcherTouchPoint*> &touchPoints) {
-
-        qDebug() << "TOUCH POINTS" << touchPoints;
-
         if (m_releaseTimer->isActive()) {
             m_touchUpdated = true;
             updateTouchPoints(touchPoints);
