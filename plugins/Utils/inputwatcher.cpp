@@ -32,8 +32,6 @@ InputWatcher::InputWatcher(QObject *parent)
 InputWatcher::~InputWatcher()
 {
     clearTouchLists();
-    qDeleteAll(m_touchPoints);
-    m_touchPoints.clear();
 }
 
 QObject *InputWatcher::target() const
@@ -53,8 +51,6 @@ void InputWatcher::setTarget(QObject *value)
 
     if (!m_touchPoints.isEmpty()) {
         clearTouchLists();
-        qDeleteAll(m_touchPoints);
-        m_touchPoints.clear();
         setDragging(false);
 
         Q_EMIT touchPointsUpdated(QList<InputWatcherTouchPoint*>());
@@ -280,6 +276,8 @@ void InputWatcher::clearTouchLists()
     Q_FOREACH (InputWatcherTouchPoint *iwtp, m_releasedTouchPoints) {
         delete iwtp;
     }
+    qDeleteAll(m_touchPoints);
+    m_touchPoints.clear();
     m_releasedTouchPoints.clear();
     m_pressedTouchPoints.clear();
     m_movedTouchPoints.clear();

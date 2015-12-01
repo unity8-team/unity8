@@ -890,96 +890,107 @@ AbstractStage {
                         progress: spreadTile.progress - spreadView.positionMarker1
                     }
 
-                    MultiTouchInputWatcher {
-                        id: stagDragInputWatcher
-                        target: priv.sideStageEnabled ? spreadTile.surfaceItem : null
-                        multiTouchCount: 3
+                    TouchGestureArea {
+                        anchors.fill: parent
 
-                        property var dragObject: null
-
-                        onClicked: {
-                            console.log("CLICKED")
-                            if (sideStage.shown) {
-                                sideStage.hide();
-                            } else  {
-                                sideStage.show();
-                            }
-                        }
-                        onDropped: {
-//                            console.log("DROPPED")
-                            if (dragObject) dragObject.Drag.drop();
-                        }
-                        onPressedChanged: {
-                            console.log("PRESSED CHANGED", pressed);
-                        }
-
-                        onDraggingChanged: {
-                            spreadView.surfaceDragging = dragging;
-                            console.log("DRAG CHANGED", dragging)
-
-                            if (dragging && priv.sideStageEnabled) {
-                                dragObject = dragComponent.createObject(spreadRow)
-
-                                // If we're dragging to the sidestage.
-                                if (spreadTile.stage === ApplicationInfo.MainStage) {
-                                    sideStage.show();
-                                }
-                            }
-                            else if (dragObject) {
-                                dragObject.destroy();
-                                dragObject = null;
-                            }
-                        }
+                        onTouchPointsUpdated: console.log("TOUCH POINTS UPDATED", touchPoints)
+                        onPressed: console.log("PRESSED", points)
+                        onReleased: console.log("PRESSED", points)
+                        onClicked: console.log("CLICKED", points)
+                        onDraggingChanged: console.log("DRAGGING", dragging)
                     }
 
-                    Component {
-                        id: dragComponent
-                        SessionContainer {
-                            property string appId: model.appId
 
-                            session: spreadTile.application ? spreadTile.application.session : null
-                            interactive: false
-                            resizeSurface: false
-                            focus: false
+//                    MultiTouchInputWatcher {
+//                        id: stagDragInputWatcher
+//                        target: priv.sideStageEnabled ? spreadTile.surfaceItem : null
+//                        multiTouchCount: 3
 
-                            x: {
-                                if (stagDragInputWatcher.target == null) return 0;
+//                        property var dragObject: null
 
-                                var sum = 0
-                                for (var i = 0; i < stagDragInputWatcher.touchPoints.length; i++) {
-                                    sum += root.mapFromItem(stagDragInputWatcher.target, stagDragInputWatcher.touchPoints[i].x, 0).x;
-                                }
-                                return sum/stagDragInputWatcher.touchPoints.length - width/2;
-                            }
-                            y: {
-                                if (stagDragInputWatcher.target == null) return 0;
+//                        onClicked: {
+//                            console.log("CLICKED")
+//                            if (sideStage.shown) {
+//                                sideStage.hide();
+//                            } else  {
+//                                sideStage.show();
+//                            }
+//                        }
+//                        onDropped: {
+////                            console.log("DROPPED")
+//                            if (dragObject) dragObject.Drag.drop();
+//                        }
+//                        onPressedChanged: {
+//                            console.log("PRESSED CHANGED", pressed);
+//                        }
 
-                                var sum = 0
-                                for (var i = 0; i < stagDragInputWatcher.touchPoints.length; i++) {
-                                    sum += root.mapFromItem(stagDragInputWatcher.target, 0, stagDragInputWatcher.touchPoints[i].y).y;
-                                }
-                                return sum/stagDragInputWatcher.touchPoints.length - height/2;
-                            }
-                            z: ApplicationManager.count+1
+//                        onDraggingChanged: {
+//                            spreadView.surfaceDragging = dragging;
+//                            console.log("DRAG CHANGED", dragging)
 
-                            width: units.gu(40)
-                            height: units.gu(40)
+//                            if (dragging && priv.sideStageEnabled) {
+//                                dragObject = dragComponent.createObject(spreadRow)
 
-                            Drag.active: true
-                            Drag.hotSpot.x: width/2
-                            Drag.hotSpot.y: height/2
-                            // only accept opposite stage.
-                            Drag.keys: {
-                                if (spreadTile.stage === ApplicationInfo.MainStage) {
-                                    if (spreadTile.application.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) {
-                                        return "MainStage";
-                                    }
-                                    return "Disabled";
-                                }
-                                return "SideStage";
-                            }
-                        }
-                    }
+//                                // If we're dragging to the sidestage.
+//                                if (spreadTile.stage === ApplicationInfo.MainStage) {
+//                                    sideStage.show();
+//                                }
+//                            }
+//                            else if (dragObject) {
+//                                dragObject.destroy();
+//                                dragObject = null;
+//                            }
+//                        }
+//                    }
+
+//                    Component {
+//                        id: dragComponent
+//                        SessionContainer {
+//                            property string appId: model.appId
+
+//                            session: spreadTile.application ? spreadTile.application.session : null
+//                            interactive: false
+//                            resizeSurface: false
+//                            focus: false
+
+//                            x: {
+//                                if (stagDragInputWatcher.target == null) return 0;
+
+//                                var sum = 0
+//                                for (var i = 0; i < stagDragInputWatcher.touchPoints.length; i++) {
+//                                    sum += root.mapFromItem(stagDragInputWatcher.target, stagDragInputWatcher.touchPoints[i].x, 0).x;
+//                                }
+//                                return sum/stagDragInputWatcher.touchPoints.length - width/2;
+//                            }
+//                            y: {
+//                                if (stagDragInputWatcher.target == null) return 0;
+
+//                                var sum = 0
+//                                for (var i = 0; i < stagDragInputWatcher.touchPoints.length; i++) {
+//                                    sum += root.mapFromItem(stagDragInputWatcher.target, 0, stagDragInputWatcher.touchPoints[i].y).y;
+//                                }
+//                                return sum/stagDragInputWatcher.touchPoints.length - height/2;
+//                            }
+//                            z: ApplicationManager.count+1
+
+//                            width: units.gu(40)
+//                            height: units.gu(40)
+
+//                            Drag.active: true
+//                            Drag.hotSpot.x: width/2
+//                            Drag.hotSpot.y: height/2
+//                            // only accept opposite stage.
+//                            Drag.keys: {
+//                                if (spreadTile.stage === ApplicationInfo.MainStage) {
+//                                    if (spreadTile.application.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) {
+//                                        return "MainStage";
+//                                    }
+//                                    return "Disabled";
+//                                }
+//                                return "SideStage";
+//                            }
+//                        }
+//                    }
                 }
             }
         }
