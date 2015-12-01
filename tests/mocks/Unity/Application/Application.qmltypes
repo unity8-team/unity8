@@ -164,6 +164,11 @@ Module {
             type: "bool"
             Parameter { name: "appId"; type: "string" }
         }
+        Method {
+            name: "approveApplicationStart"
+            Parameter { name: "appId"; type: "string" }
+            Parameter { name: "approved"; type: "bool" }
+        }
         Method { name: "availableApplications"; type: "QStringList" }
         Method {
             name: "add"

@@ -41,7 +41,7 @@ Item {
     readonly property bool shown: panel.x > -panel.width
 
     // emitted when an application is selected
-    signal launcherApplicationSelected(var appInfo)
+    signal launcherApplicationSelected(string appId)
 
     // emitted when the apps dash should be shown because of a swipe gesture
     signal dash()
@@ -247,7 +247,7 @@ Item {
 
         onApplicationSelected: {
             root.state = ""
-            launcherApplicationSelected(appInfo)
+            launcherApplicationSelected(appId)
         }
         onShowDashHome: {
             root.state = ""

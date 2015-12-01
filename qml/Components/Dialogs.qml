@@ -41,7 +41,6 @@ Item {
     property string usageScenario
 
     signal powerOffClicked();
-    signal startApp(string appId)
 
     function showPowerDialog() {
         d.showPowerDialog();
@@ -52,6 +51,7 @@ Item {
             var comp = Qt.createComponent(Qt.resolvedUrl("LegacyAppLaunchWarningDialog.qml"))
             d.legacyAppLaunchWarningPopup = comp.createObject(root, {appId: appId});
             d.legacyAppLaunchWarningPopup.cancel.connect(function() {
+                ApplicationManager.approveApplicationStart(d.legacyAppLaunchWarningPopup.appId, false);
                 d.legacyAppLaunchWarningPopup.hide();
                 d.legacyAppLaunchWarningPopup.destroy();
                 d.legacyAppLaunchWarningPopup = null;
@@ -78,7 +78,7 @@ Item {
                 d.modeSwitchWarningPopup = null;
             }
             if (d.legacyAppLaunchWarningPopup) {
-                startApp(d.legacyAppLaunchWarningPopup.appId);
+                ApplicationManager.approveApplicationStart(d.legacyAppLaunchWarningPopup, true);
                 d.legacyAppLaunchWarningPopup.hide();
                 d.legacyAppLaunchWarningPopup.destroy();
                 d.legacyAppLaunchWarningPopup = null;

@@ -219,6 +219,8 @@ ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
     }
     application->setState(ApplicationInfo::Starting);
 
+    Q_EMIT applicationStartApprovalRequested(appId);
+
     return application;
 }
 
@@ -250,6 +252,18 @@ bool ApplicationManager::stopApplication(const QString &appId)
     }
     application->setState(ApplicationInfo::Stopped);
     remove(application);
+    return true;
+}
+
+bool ApplicationManager::approveApplicationStart(const QString &appId, bool approved)
+{
+    ApplicationInfo *application = findApplication(appId);
+    if (application == nullptr)
+        return false;
+
+    if (!approved) {
+        remove(application);
+    }
     return true;
 }
 

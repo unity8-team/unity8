@@ -1959,15 +1959,8 @@ Rectangle {
         function test_preventOpeningLegacyAppsWithoutDesktop(data) {
             loadShell("phone");
 
-            // Start a legacy app by pretending the user clicked the launcher button for it
-            var launcher = findChild(shell, "launcher");
-            var launcherListView = findChild(launcher, "launcherListView");
-            for (var i = 0; i < launcherListView.count; ++i) {
-                if (LauncherModel.get(i).appId == "libreoffice") {
-                    launcher.launcherApplicationSelected(LauncherModel.get(i));
-                    break;
-                }
-            }
+            // Start a legacy app
+            ApplicationManager.startApplication("libreoffice");
 
             // The popup should appear
             var popup = findChild(root, "legacyAppLaunchWarningDialog");

@@ -216,6 +216,15 @@ Item {
             onApplicationAdded: {
                 launcher.hide();
             }
+
+            onApplicationStartApprovalRequested: {
+                var app = ApplicationManager.findApplication(appId);
+                if (!app.isTouchApp && shell.usageScenario !== "desktop") {
+                    dialogs.showLegacyAppLaunchDialog(appId);
+                } else {
+                    ApplicationManager.approveApplicationStart(appId, true);
+                }
+            }
         }
 
         Loader {
@@ -559,15 +568,9 @@ Item {
                 }
             }
             onLauncherApplicationSelected: {
-                if (tutorial.running) {
-                    return;
-                }
-
-                if (!appInfo.isTouchApp && shell.usageScenario !== "desktop") {
-                    dialogs.showLegacyAppLaunchDialog(appInfo.appId);
-                } else {
-                    greeter.notifyAboutToFocusApp(appInfo.appId);
-                    shell.activateApplication(appInfo.appId);
+                if (!tutorial.running) {
+                    greeter.notifyAboutToFocusApp(appId);
+                    shell.activateApplication(appId)
                 }
             }
             onShownChanged: {
@@ -651,10 +654,6 @@ Item {
             shutdownFadeOutRectangle.enabled = true;
             shutdownFadeOutRectangle.visible = true;
             shutdownFadeOut.start();
-        }
-        onStartApp: {
-            greeter.notifyAboutToFocusApp(appId);
-            shell.activateApplication(appId);
         }
     }
 

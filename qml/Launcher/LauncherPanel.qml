@@ -36,7 +36,7 @@ Rectangle {
                               || mouseEventEater.containsMouse || dashItem.hovered
     property int highlightIndex: -1
 
-    signal applicationSelected(var appInfo)
+    signal applicationSelected(string appId)
     signal showDashHome()
 
     onXChanged: {
@@ -413,7 +413,7 @@ Rectangle {
                                 } else if (clickedItem.angle < -12) {
                                     launcherListView.flick(0, launcherListView.clickFlickSpeed);
                                 } else {
-                                    root.applicationSelected(LauncherModel.get(index));
+                                    root.applicationSelected(LauncherModel.get(index).appId);
                                 }
                                 return;
                             }
@@ -424,7 +424,7 @@ Rectangle {
                             } else if (clickedItem.angle < -30) {
                                 launcherListView.flick(0, launcherListView.clickFlickSpeed);
                             } else {
-                                root.applicationSelected(LauncherModel.get(index));
+                                root.applicationSelected(LauncherModel.get(index).appId);
                             }
                         }
 

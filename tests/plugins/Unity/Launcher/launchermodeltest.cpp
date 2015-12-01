@@ -101,6 +101,9 @@ public:
         }
         return false;
     }
+    bool approveApplicationStart(const QString &, bool) override {
+        return true;
+    }
     bool focusApplication(const QString &appId) override {
         Q_FOREACH(MockApp* app, m_list) {
             app->setFocused(app->appId() == appId);
