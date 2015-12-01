@@ -26,6 +26,9 @@ class ShellView : public QQuickView
 public:
     ShellView(QQmlEngine *engine, QObject *qmlArgs);
 
+    bool secondaryScreenAvailable() const;
+    void setSecondaryScreenAvailable(bool secondaryScreenAvailable);
+
 private Q_SLOTS:
     void onWidthChanged(int);
     void onHeightChanged(int);

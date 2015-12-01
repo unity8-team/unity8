@@ -368,6 +368,7 @@ Item {
         objectName: "inputMethod"
         anchors { fill: parent; topMargin: panel.panelHeight }
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
+        visible: !secondaryScreenAvailable
     }
 
     Connections {

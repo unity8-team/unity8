@@ -31,12 +31,23 @@ ShellView::ShellView(QQmlEngine *engine, QObject *qmlArgs)
     setTitle(QStringLiteral("Unity8"));
 
     rootContext()->setContextProperty(QStringLiteral("applicationArguments"), qmlArgs);
+    setSecondaryScreenAvailable(false);
 
     QUrl source(::qmlDirectory() + "/OrientedShell.qml");
     setSource(source);
 
     connect(this, &QWindow::widthChanged, this, &ShellView::onWidthChanged);
     connect(this, &QWindow::heightChanged, this, &ShellView::onHeightChanged);
+}
+
+bool ShellView::secondaryScreenAvailable() const
+{
+    return rootContext()->contextProperty(QStringLiteral("secondaryScreenAvailable")).toBool();
+}
+
+void ShellView::setSecondaryScreenAvailable(bool secondaryScreenAvailable)
+{
+    rootContext()->setContextProperty(QStringLiteral("secondaryScreenAvailable"), secondaryScreenAvailable);
 }
 
 void ShellView::onWidthChanged(int w)

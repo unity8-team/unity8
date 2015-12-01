@@ -111,6 +111,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
         m_secondaryWindow->setWindowState(Qt::WindowFullScreen);
         m_secondaryWindow->setVisible(true);
     }
+    m_shellView->setSecondaryScreenAvailable(isMirServer && screens().count() == 2);
 
     if (isMirServer || parser.hasFullscreen()) {
         m_shellView->showFullScreen();
@@ -176,6 +177,7 @@ void ShellApplication::onScreenAdded(QScreen * /*screen*/)
         m_secondaryWindow->setWindowState(Qt::WindowFullScreen);
         m_secondaryWindow->setVisible(true);
     }
+    m_shellView->setSecondaryScreenAvailable(screens().count() == 2);
 }
 
 void ShellApplication::onScreenAboutToBeRemoved(QScreen *screen)
@@ -195,4 +197,5 @@ void ShellApplication::onScreenAboutToBeRemoved(QScreen *screen)
         // its backing QPlatformWindow recreated). So lets refocus it.
         m_shellView->requestActivate();
     }
+    m_shellView->setSecondaryScreenAvailable(screens().count() == 2);
 }
