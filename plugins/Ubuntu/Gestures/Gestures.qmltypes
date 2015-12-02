@@ -125,6 +125,18 @@ Module {
         Property { name: "direction"; type: "Direction::Type" }
     }
     Component {
+        name: "GestureTouchPoint"
+        prototype: "QObject"
+        exports: ["Ubuntu.Gestures/GestureTouchPoint 0.1"]
+        isCreatable: false
+        exportMetaObjectRevisions: [0]
+        Property { name: "pointId"; type: "int"; isReadonly: true }
+        Property { name: "pressed"; type: "bool"; isReadonly: true }
+        Property { name: "x"; type: "double"; isReadonly: true }
+        Property { name: "y"; type: "double"; isReadonly: true }
+        Property { name: "dragging"; type: "bool"; isReadonly: true }
+    }
+    Component {
         name: "PressedOutsideNotifier"
         defaultProperty: "data"
         prototype: "QQuickItem"
@@ -150,31 +162,47 @@ Module {
         prototype: "QQuickItem"
         exports: ["Ubuntu.Gestures/TouchGestureArea 0.1"]
         exportMetaObjectRevisions: [0]
+        Enum {
+            name: "Status"
+            values: {
+                "WaitingForTouch": 0,
+                "Undecided": 1,
+                "Recognized": 2,
+                "Rejected": 3
+            }
+        }
         Property { name: "touchPoints"; type: "GestureTouchPoint"; isList: true; isReadonly: true }
         Property { name: "dragging"; type: "bool"; isReadonly: true }
+        Property { name: "minimumTouchPoints"; type: "int" }
+        Property { name: "maximumTouchPoints"; type: "int" }
         Signal {
             name: "statusChanged"
             Parameter { name: "status"; type: "Status" }
         }
-        Signal {
-            name: "touchPointsUpdated"
-            Parameter { name: "touchPoints"; type: "QList<GestureTouchPoint*>" }
-        }
+        Signal { name: "touchPointsUpdated" }
         Signal {
             name: "draggingChanged"
             Parameter { name: "dragging"; type: "bool" }
         }
         Signal {
+            name: "minimumTouchPointsChanged"
+            Parameter { name: "value"; type: "bool" }
+        }
+        Signal {
+            name: "maximumTouchPointsChanged"
+            Parameter { name: "value"; type: "bool" }
+        }
+        Signal {
             name: "pressed"
-            Parameter { name: "points"; type: "QList<GestureTouchPoint*>" }
+            Parameter { name: "points"; type: "QList<QObject*>" }
         }
         Signal {
             name: "released"
-            Parameter { name: "points"; type: "QList<GestureTouchPoint*>" }
+            Parameter { name: "points"; type: "QList<QObject*>" }
         }
         Signal {
             name: "updated"
-            Parameter { name: "points"; type: "QList<GestureTouchPoint*>" }
+            Parameter { name: "points"; type: "QList<QObject*>" }
         }
         Signal { name: "clicked" }
     }

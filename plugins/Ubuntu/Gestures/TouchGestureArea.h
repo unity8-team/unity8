@@ -71,9 +71,15 @@ private:
 class TouchGestureArea : public QQuickItem
 {
     Q_OBJECT
+    Q_ENUMS(Status)
 
-    Q_PROPERTY(QQmlListProperty<GestureTouchPoint> touchPoints READ touchPoints NOTIFY touchPointsUpdated)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(bool dragging READ dragging NOTIFY draggingChanged)
+    Q_PROPERTY(QQmlListProperty<GestureTouchPoint> touchPoints READ touchPoints NOTIFY touchPointsUpdated)
+
+    Q_PROPERTY(int minimumTouchPoints READ minimumTouchPoints WRITE setMinimumTouchPoints NOTIFY minimumTouchPointsChanged)
+    Q_PROPERTY(int maximumTouchPoints READ maximumTouchPoints WRITE setMaximumTouchPoints NOTIFY maximumTouchPointsChanged)
+
 public:
     // Describes the state of the directional drag gesture.
     enum Status {
@@ -89,18 +95,27 @@ public:
 
     void setRecognitionTimer(UbuntuGestures::AbstractTimer *timer);
 
+    int status() const;
     bool dragging() const;
     QQmlListProperty<GestureTouchPoint> touchPoints();
+
+    int minimumTouchPoints() const;
+    void setMinimumTouchPoints(int value);
+
+    int maximumTouchPoints() const;
+    void setMaximumTouchPoints(int value);
 
 Q_SIGNALS:
     void statusChanged(Status status);
 
-    void touchPointsUpdated(const QList<GestureTouchPoint*> &touchPoints);
+    void touchPointsUpdated();
     void draggingChanged(bool dragging);
+    void minimumTouchPointsChanged(bool value);
+    void maximumTouchPointsChanged(bool value);
 
-    void pressed(const QList<GestureTouchPoint*>& points);
-    void released(const QList<GestureTouchPoint*>& points);
-    void updated(const QList<GestureTouchPoint*>& points);
+    void pressed(const QList<QObject*>& points);
+    void released(const QList<QObject*>& points);
+    void updated(const QList<QObject*>& points);
     void clicked();
 
 private Q_SLOTS:
@@ -120,7 +135,7 @@ private:
     void unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent);
 
     void processTouchEvents(QTouchEvent *event);
-    void addTouchPoint(const QTouchEvent::TouchPoint *tp);
+    GestureTouchPoint* addTouchPoint(const QTouchEvent::TouchPoint *tp);
     void updateTouchPoint(GestureTouchPoint *iwtp, const QTouchEvent::TouchPoint *tp);
     void clearTouchLists();
     void setDragging(bool dragging);
@@ -135,9 +150,11 @@ private:
 
     bool m_dragging;
     QHash<int, GestureTouchPoint*> m_touchPoints;
-    QList<GestureTouchPoint*> m_releasedTouchPoints;
-    QList<GestureTouchPoint*> m_pressedTouchPoints;
-    QList<GestureTouchPoint*> m_movedTouchPoints;
+    QList<QObject*> m_releasedTouchPoints;
+    QList<QObject*> m_pressedTouchPoints;
+    QList<QObject*> m_movedTouchPoints;
+    int m_minimumTouchPoints;
+    int m_maximumTouchPoints;
 };
 
 QML_DECLARE_TYPE(GestureTouchPoint)

@@ -40,4 +40,5 @@ void UbuntuGesturesQmlPlugin::registerTypes(const char *uri)
     qmlRegisterType<PressedOutsideNotifier>(uri, 0, 1, "PressedOutsideNotifier");
     qmlRegisterType<TouchGate>(uri, 0, 1, "TouchGate");
     qmlRegisterType<TouchGestureArea>(uri, 0, 1, "TouchGestureArea");
+    qmlRegisterUncreatableType<GestureTouchPoint>(uri, 0, 1, "GestureTouchPoint", "Cannot create GestureTouchPoints");
 }
