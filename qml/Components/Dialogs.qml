@@ -78,7 +78,7 @@ Item {
                 d.modeSwitchWarningPopup = null;
             }
             if (d.legacyAppLaunchWarningPopup) {
-                ApplicationManager.approveApplicationStart(d.legacyAppLaunchWarningPopup, true);
+                ApplicationManager.approveApplicationStart(d.legacyAppLaunchWarningPopup.appId, true);
                 d.legacyAppLaunchWarningPopup.hide();
                 d.legacyAppLaunchWarningPopup.destroy();
                 d.legacyAppLaunchWarningPopup = null;
