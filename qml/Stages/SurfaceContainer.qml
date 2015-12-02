@@ -31,7 +31,6 @@ FocusScope {
     property string name: surface ? surface.name : ""
     property bool resizeSurface: true
 
-    readonly property alias surfaceItem: surfaceItem
     property int requestedWidth: -1
     property int requestedHeight: -1
 
@@ -43,10 +42,9 @@ FocusScope {
     }
 
     InputWatcher {
-        id: _inputWatcher
         target: surfaceItem
-        onPressed: {
-            if (root.interactive) {
+        onTargetPressedChanged: {
+            if (targetPressed && root.interactive) {
                 root.focus = true;
                 root.forceActiveFocus();
             }

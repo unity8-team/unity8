@@ -64,33 +64,4 @@ Rectangle {
         }
         return false;
     }
-
-    onSupportedOrientationsChanged: console.log("SUPPORTED ORIENTATIONS", getOrientationString(supportedOrientations))
-    onShellOrientationAngleChanged: console.log("SHELL ANGLE", shellOrientationAngle)
-    onShellOrientationChanged: console.log("SHELL ORIENTATION", getOrientationString(shellOrientation))
-    function getOrientationString(orient) {
-        var string = "";
-        if (orient & Qt.PortraitOrientation) {
-            string += "Portrait";
-        }
-        if (orient & Qt.LandscapeOrientation) {
-            string += " Landscape";
-        }
-        if (orient&Qt.InvertedLandscapeOrientation) {
-            string += " InvertedLandscape";
-        }
-        if (orient&Qt.InvertedPortraitOrientation) {
-            string += " InvertedPortrait";
-        }
-        if (orient === 0) {
-            string = "Primary"
-        }
-
-        return string;
-    }
-    Component.onCompleted: {
-        console.log("SHELL ANGLE", shellOrientationAngle)
-        console.log("SHELL ORIENTATION", getOrientationString(shellOrientation))
-    }
-
 }

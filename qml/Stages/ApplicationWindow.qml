@@ -29,7 +29,6 @@ FocusScope {
     property bool orientationChangesEnabled: d.supportsSurfaceResize ? d.surfaceOldEnoughToBeResized : true
     readonly property string title: sessionContainer.surface && sessionContainer.surface.name !== "" ?
                                         sessionContainer.surface.name : d.name
-    readonly property var surfaceItem: sessionContainer.surfaceContainer.surfaceItem
 
     // to be set from outside
     property QtObject application
