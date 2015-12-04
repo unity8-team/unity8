@@ -46,6 +46,9 @@ install_dependencies() {
                          qmenumodel-qml \
                          qml-module-qtquick-layouts \
                          qml-module-qtquick-xmllistmodel \
+                         qtbase5-dev \
+						 qtdeclarative5-dev \
+						 libunity-api-dev \
                          qtdeclarative5-gsettings1.0 \
                          qtdeclarative5-ubuntu-ui-toolkit-plugin \
                          qtdeclarative5-ubuntu-settings-components \
