@@ -59,6 +59,8 @@ void TouchGestureArea::touchEvent(QTouchEvent *event)
         return;
     }
 
+    processTouchEvents(event);
+
     switch (m_status) {
         case WaitingForTouch:
             touchEvent_absent(event);
@@ -73,8 +75,6 @@ void TouchGestureArea::touchEvent(QTouchEvent *event)
             touchEvent_recognized(event);
             break;
     }
-
-    processTouchEvents(event);
 }
 
 void TouchGestureArea::touchEvent_absent(QTouchEvent *event)
@@ -225,6 +225,8 @@ void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTou
     QTouchEvent* event = unownedTouchEvent->touchEvent();
     tgaDebug("unownedTouchEvent_undecided" << event << m_touchCandidates.count());
 
+    processTouchEvents(event);
+
     Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
         int touchId = touchPoint.id();
 
@@ -240,14 +242,14 @@ void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTou
     } else if (m_touchCandidates.count() > m_maximumTouchPoints && event->touchPointStates() &  Qt::TouchPointPressed) {
         setStatus(Rejected);
     }
-
-    processTouchEvents(event);
 }
 
 void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent)
 {
     QTouchEvent* event = unownedTouchEvent->touchEvent();
     tgaDebug("unownedTouchEvent_rejected" << event << m_touchCandidates.count());
+
+    processTouchEvents(event);
 
     Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
         if (touchPoint.state() & Qt::TouchPointReleased) {
@@ -258,8 +260,6 @@ void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouc
     if (m_touchCandidates.count() == 0) {
         setStatus(WaitingForTouch);
     }
-
-    processTouchEvents(event);
 }
 
 void TouchGestureArea::processTouchEvents(QTouchEvent *touchEvent)

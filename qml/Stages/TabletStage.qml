@@ -132,9 +132,6 @@ AbstractStage {
         property string mainStageAppId
         property string sideStageAppId
 
-//        onMainStageAppIdChanged: console.log("MAINSTAGE APP", mainStageAppId)
-//        onSideStageAppIdChanged: console.log("SIDESTAGE APP", sideStageAppId)
-
         // For convenience, keep properties of the first two apps in the model
         property string appId0
         property string appId1
@@ -602,7 +599,6 @@ AbstractStage {
                         sideStageOverlay.visible = false;
                     }
                     onDropped: {
-//                        console.log("DROPPED ON SIDESTAGE")
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
                         }
@@ -893,29 +889,39 @@ AbstractStage {
                     TouchGestureArea {
                         id: triGestureArea
                         anchors.fill: parent
-                        minimumTouchPoints: 2
-                        maximumTouchPoints: 2
+                        minimumTouchPoints: 3
+                        maximumTouchPoints: 3
 
                         property var dragObject: null
-                        readonly property bool recognisedPress: status === TouchGestureArea.Recognized &&
-                                                     touchPoints.length === minimumTouchPoints
-                        readonly property bool recognisedDrag: recognisedPress && dragging
                         property bool wasRecognisedPress: false
                         property bool wasRecognisedDrag: false
+                        readonly property bool recognisedDrag: wasRecognisedPress && dragging
 
-                        onRecognisedPressChanged: {
-                            if (recognisedPress) {
+                        onStatusChanged: {
+                            if (status == TouchGestureArea.Recognized) {
                                 wasRecognisedPress = true;
-                            } else if (wasRecognisedPress) {
-                                if (!wasRecognisedDrag) {
+                            }
+                        }
 
+                        onPressed: {
+                            // too many presses now.
+                            if (touchPoints.length > maximumTouchPoints) {
+                                wasRecognisedPress = false
+                            }
+                        }
+
+                        onReleased: {
+                            if (touchPoints.length === 0 && wasRecognisedPress) {
+                                if (!wasRecognisedDrag) {
                                     if (sideStage.shown) {
                                         sideStage.hide();
                                     } else  {
                                         sideStage.show();
                                     }
-
+                                } else if (dragObject) {
+                                    dragObject.Drag.drop();
                                 }
+
                                 wasRecognisedDrag = false;
                                 wasRecognisedPress = false;
                             }
@@ -936,12 +942,7 @@ AbstractStage {
                             else if (dragObject) {
                                 dragObject.destroy();
                                 dragObject = null;
-                            }
-                        }
-
-                        onReleased: {
-                            if (wasRecognisedDrag && dragObject) {
-                                dragObject.Drag.drop();
+                                wasRecognisedDrag = false;
                             }
                         }
                     }
