@@ -891,6 +891,7 @@ AbstractStage {
                         anchors.fill: parent
                         minimumTouchPoints: 3
                         maximumTouchPoints: 3
+                        enabled: priv.sideStageEnabled
 
                         property var dragObject: null
                         property bool wasRecognisedPress: false
@@ -906,7 +907,7 @@ AbstractStage {
                         onPressed: {
                             // too many presses now.
                             if (touchPoints.length > maximumTouchPoints) {
-                                wasRecognisedPress = false
+                                wasRecognisedPress = false;
                             }
                         }
 
@@ -920,6 +921,8 @@ AbstractStage {
                                     }
                                 } else if (dragObject) {
                                     dragObject.Drag.drop();
+                                    dragObject.destroy();
+                                    dragObject = null;
                                 }
 
                                 wasRecognisedDrag = false;
@@ -938,11 +941,6 @@ AbstractStage {
                                 if (spreadTile.stage === ApplicationInfo.MainStage) {
                                     sideStage.show();
                                 }
-                            }
-                            else if (dragObject) {
-                                dragObject.destroy();
-                                dragObject = null;
-                                wasRecognisedDrag = false;
                             }
                         }
                     }
