@@ -498,7 +498,7 @@ AbstractStage {
 
                     if (app.stage ===  ApplicationInfoInterface.SideStage) {
                         // if the next app in stack is a sidestage app, it must order on top of other side stage app
-                        return 2;
+                        return Math.min(2, ApplicationManager.count-1);
                     }
                     return 1;
                 }
@@ -506,9 +506,9 @@ AbstractStage {
                     // if the next app in stack is a sidestage app, it must order on top of other side stage app
                     return 1;
                 }
-                return 2;
+                return Math.min(2, ApplicationManager.count-1);
             }
-            return index+1;
+            return Math.min(index+1, ApplicationManager.count-1);
         }
 
         SequentialAnimation {
@@ -589,6 +589,7 @@ AbstractStage {
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
                 DropArea {
+                    id: sideStageDropArea
                     anchors.fill: parent
                     enabled: priv.sideStageEnabled
 
@@ -602,7 +603,13 @@ AbstractStage {
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
                         }
-                        sideStageOverlay.visible = false;
+                    }
+                    drag {
+                        onSourceChanged: {
+                            if (!sideStageDropArea.drag.source) {
+                                sideStageOverlay.visible = false;
+                            }
+                        }
                     }
                 }
             }
@@ -889,14 +896,25 @@ AbstractStage {
                     TouchGestureArea {
                         id: triGestureArea
                         anchors.fill: parent
-                        minimumTouchPoints: 3
-                        maximumTouchPoints: 3
-                        enabled: priv.sideStageEnabled
+                        minimumTouchPoints: 1
+                        maximumTouchPoints: 1
+                        enabled: priv.sideStageEnabled && !spreadView.active
 
                         property var dragObject: null
                         property bool wasRecognisedPress: false
                         property bool wasRecognisedDrag: false
                         readonly property bool recognisedDrag: wasRecognisedPress && dragging
+
+                        onEnabledChanged: {
+                            if (!enabled) {
+                                wasRecognisedDrag = false;
+                                wasRecognisedPress = false;
+                                if (dragObject) {
+                                    dragObject.destroy();
+                                    dragObject = null;
+                                }
+                            }
+                        }
 
                         onStatusChanged: {
                             if (status == TouchGestureArea.Recognized) {
