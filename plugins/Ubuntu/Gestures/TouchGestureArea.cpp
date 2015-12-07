@@ -207,7 +207,7 @@ void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
             // do nothing
             break;
         case Undecided:
-            Q_ASSERT(q->isEnabled() && q->isVisible());
+            Q_ASSERT(isEnabled() && isVisible());
             unownedTouchEvent_undecided(unownedTouchEvent);
             break;
         case Rejected:
