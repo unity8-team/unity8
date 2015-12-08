@@ -896,8 +896,8 @@ AbstractStage {
                     TouchGestureArea {
                         id: triGestureArea
                         anchors.fill: parent
-                        minimumTouchPoints: 1
-                        maximumTouchPoints: 1
+                        minimumTouchPoints: 3
+                        maximumTouchPoints: 3
                         enabled: priv.sideStageEnabled && !spreadView.active
 
                         property var dragObject: null
