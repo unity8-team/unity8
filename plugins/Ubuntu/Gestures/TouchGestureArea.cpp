@@ -9,12 +9,37 @@
 #include <QStyleHints>
 #include <private/qquickwindow_p.h>
 
+#define TOUCHGESTUREAREA_DEBUG 1
+
+
 #if TOUCHGESTUREAREA_DEBUG
 #define tgaDebug(params) qDebug().nospace() << "[TGA(" << qPrintable(objectName()) << ")] " << params
 #include "DebugHelpers.h"
 
 namespace {
-const char *statusToString(TouchGestureArea::Status status)
+
+struct InternalStatus {
+    enum Status {
+        WaitingForTouch,
+        Undecided, //Recognizing,
+        Recognized,
+        WaitingForRejection,
+        Rejected
+    };
+};
+
+TouchGestureArea::Status intenralStatusToGestureStatus(int internalStatus) {
+    switch (internalStatus) {
+        case InternalStatus::WaitingForTouch: return TouchGestureArea::WaitingForTouch;
+        case InternalStatus::Undecided: return TouchGestureArea::Undecided;
+        case InternalStatus::Recognized: return TouchGestureArea::Recognized;
+        case InternalStatus::WaitingForRejection: return TouchGestureArea::Recognized;
+        case InternalStatus::Rejected: return TouchGestureArea::Rejected;
+    }
+    return TouchGestureArea::WaitingForTouch;
+}
+
+const char *statusToString(int status)
 {
     if (status == TouchGestureArea::WaitingForTouch) {
         return "WaitingForTouch";
@@ -22,6 +47,8 @@ const char *statusToString(TouchGestureArea::Status status)
         return "Undecided";
     } else if (status == TouchGestureArea::Rejected) {
         return "Rejected";
+    } else if (status == TouchGestureArea::WaitingForRejection) {
+        return "WaitingForRejection";
     } else {
         return "Recognized";
     }
@@ -32,6 +59,7 @@ const char *statusToString(TouchGestureArea::Status status)
 #define tgaDebug(params) ((void)0)
 #endif // TOUCHGESTUREAREA_DEBUG
 
+
 TouchGestureArea::TouchGestureArea(QQuickItem* parent)
     : QQuickItem(parent)
     , m_status(WaitingForTouch)
@@ -41,7 +69,7 @@ TouchGestureArea::TouchGestureArea(QQuickItem* parent)
     , m_maximumTouchPoints(INT_MAX)
 {
     setRecognitionTimer(new UbuntuGestures::Timer(this));
-    m_recognitionTimer->setInterval(50);
+    m_recognitionTimer->setInterval(5000);
     m_recognitionTimer->setSingleShot(true);
 }
 
@@ -59,22 +87,22 @@ void TouchGestureArea::touchEvent(QTouchEvent *event)
         return;
     }
 
-    processTouchEvents(event);
-
     switch (m_status) {
-        case WaitingForTouch:
+        case InternalStatus::WaitingForTouch:
             touchEvent_absent(event);
             break;
-        case Undecided:
+        case InternalStatus::Undecided:
             touchEvent_undecided(event);
             break;
-        case Rejected:
+        case InternalStatus::Rejected:
             touchEvent_rejected(event);
             break;
         default: // Recognized:
             touchEvent_recognized(event);
             break;
     }
+
+    processTouchEvents(event);
 }
 
 void TouchGestureArea::touchEvent_absent(QTouchEvent *event)
@@ -91,14 +119,17 @@ void TouchGestureArea::touchEvent_absent(QTouchEvent *event)
         }
     }
 
-    if (m_touchCandidates.count() >= m_minimumTouchPoints) {
+    if (m_touchCandidates.count() > m_maximumTouchPoints) {
+        rejectGesture();
+        event->ignore();
+    } else if (m_touchCandidates.count() >= m_minimumTouchPoints) {
         Q_FOREACH(int candidateTouchId, m_touchCandidates) {
             TouchRegistry::instance()->requestTouchOwnership(candidateTouchId, this);
         }
-        setStatus(Recognized);
+        setInternalStatus(InternalStatus::Recognized);
         event->accept();
     } else if (m_touchCandidates.count() > 0 ) {
-        setStatus(Undecided);
+        setInternalStatus(InternalStatus::Undecided);
         event->ignore();
     } else {
         event->ignore();
@@ -119,11 +150,14 @@ void TouchGestureArea::touchEvent_undecided(QTouchEvent *event)
         }
     }
 
-    if (m_touchCandidates.count() >= m_minimumTouchPoints) {
+    if (m_touchCandidates.count() > m_maximumTouchPoints) {
+        rejectGesture();
+        event->ignore();
+    } else if (m_touchCandidates.count() >= m_minimumTouchPoints) {
         Q_FOREACH(int candidateTouchId, m_touchCandidates) {
             TouchRegistry::instance()->requestTouchOwnership(candidateTouchId, this);
         }
-        setStatus(Recognized);
+        setInternalStatus(InternalStatus::Recognized);
         event->accept();
     } else {
         event->ignore();
@@ -144,11 +178,15 @@ void TouchGestureArea::touchEvent_recognized(QTouchEvent *event)
         }
     }
 
-    if (m_touchCandidates.count() > m_maximumTouchPoints) {
-        setStatus(Rejected);
-    } else if (m_touchCandidates.count() == 0) {
-        setStatus(WaitingForTouch);
-    // released or too many
+    if (m_touchCandidates.count() == 0) {
+        setInternalStatus(InternalStatus::WaitingForTouch);
+    } else if (m_touchCandidates.count() > m_maximumTouchPoints) {
+        rejectGesture();
+        event->ignore();
+    } else if (m_touchCandidates.count() < m_minimumTouchPoints) {
+        setInternalStatus(InternalStatus::WaitingForRejection);
+    } else if (m_status==InternalStatus::WaitingForRejection) {
+        setInternalStatus(InternalStatus::Recognized);
     }
     event->accept();
 }
@@ -167,7 +205,7 @@ void TouchGestureArea::touchEvent_rejected(QTouchEvent *event)
     }
 
     if (m_touchCandidates.count() == 0) {
-        setStatus(WaitingForTouch);
+        setInternalStatus(InternalStatus::WaitingForTouch);
     }
     event->accept();
 }
@@ -193,24 +231,21 @@ void TouchGestureArea::touchOwnershipEvent(TouchOwnershipEvent *event)
     if (event->gained()) {
         grabTouchPoints(m_touchCandidates);
     } else {
-        m_touchCandidates.removeAll(event->touchId());
-        if (m_touchCandidates.count() == 0) {
-            setStatus(WaitingForTouch);
-        }
+        rejectGesture();
     }
 }
 
 void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
 {
     switch (m_status) {
-        case WaitingForTouch:
+        case InternalStatus::WaitingForTouch:
             // do nothing
             break;
-        case Undecided:
+        case InternalStatus::Undecided:
             Q_ASSERT(isEnabled() && isVisible());
             unownedTouchEvent_undecided(unownedTouchEvent);
             break;
-        case Rejected:
+        case InternalStatus::Rejected:
             unownedTouchEvent_rejected(unownedTouchEvent);
             break;
         default: // Recognized:
@@ -218,14 +253,15 @@ void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
             // do nothing
             break;
     }
+
+    QTouchEvent* event = unownedTouchEvent->touchEvent();
+    processTouchEvents(event);
 }
 
 void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTouchEvent)
 {
     QTouchEvent* event = unownedTouchEvent->touchEvent();
     tgaDebug("unownedTouchEvent_undecided" << event << m_touchCandidates.count());
-
-    processTouchEvents(event);
 
     Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
         int touchId = touchPoint.id();
@@ -238,9 +274,7 @@ void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTou
     }
 
     if (m_touchCandidates.count() == 0) {
-        setStatus(WaitingForTouch);
-    } else if (m_touchCandidates.count() > m_maximumTouchPoints && event->touchPointStates() &  Qt::TouchPointPressed) {
-        setStatus(Rejected);
+        setInternalStatus(InternalStatus::WaitingForTouch);
     }
 }
 
@@ -249,8 +283,6 @@ void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouc
     QTouchEvent* event = unownedTouchEvent->touchEvent();
     tgaDebug("unownedTouchEvent_rejected" << event << m_touchCandidates.count());
 
-    processTouchEvents(event);
-
     Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
         if (touchPoint.state() & Qt::TouchPointReleased) {
             m_touchCandidates.removeAll(touchPoint.id());
@@ -258,7 +290,7 @@ void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouc
     }
 
     if (m_touchCandidates.count() == 0) {
-        setStatus(WaitingForTouch);
+        setInternalStatus(InternalStatus::WaitingForTouch);
     }
 }
 
@@ -354,34 +386,37 @@ void TouchGestureArea::clearTouchLists()
     m_movedTouchPoints.clear();
 }
 
-void TouchGestureArea::setStatus(Status newStatus)
+void TouchGestureArea::setInternalStatus(uint newStatus)
 {
     if (newStatus == m_status)
         return;
 
-    Status oldStatus = m_status;
+    uint oldStatus = m_status;
 
-    if (oldStatus == Undecided) {
+    if (oldStatus == InternalStatus::Undecided || oldStatus == InternalStatus::WaitingForRejection) {
         m_recognitionTimer->stop();
     }
 
     m_status = newStatus;
-    Q_EMIT statusChanged(m_status);
+    Q_EMIT statusChanged(status());
 
     switch (newStatus) {
-        case WaitingForTouch:
-            tgaDebug("setStatus(WaitingForTouch)");
+        case InternalStatus::WaitingForTouch:
+            tgaDebug("setInternalStatus(WaitingForTouch)");
             clearTouchLists();
             break;
-        case Undecided:
-            tgaDebug("setStatus(Undecided)");
+        case InternalStatus::Undecided:
+            tgaDebug("setInternalStatus(Undecided)");
             m_recognitionTimer->start();
             break;
-        case Recognized:
-            tgaDebug("setStatus(Recognised)");
+        case InternalStatus::Recognized:
+            tgaDebug("setInternalStatus(Recognised)");
             break;
-        case Rejected:
-            tgaDebug("setStatus(Rejected)");
+        case InternalStatus::WaitingForRejection:
+            tgaDebug("setInternalStatus(WaitingForRejection)");
+            m_recognitionTimer->start();
+        case InternalStatus::Rejected:
+            tgaDebug("setInternalStatus(Rejected)");
             break;
         default:
             // no-op
@@ -416,7 +451,7 @@ void TouchGestureArea::setRecognitionTimer(UbuntuGestures::AbstractTimer *timer)
 
 int TouchGestureArea::status() const
 {
-    return m_status;
+    return intenralStatusToGestureStatus(m_status);
 }
 
 bool TouchGestureArea::dragging() const
@@ -462,16 +497,19 @@ void TouchGestureArea::setMaximumTouchPoints(int value)
 
 void TouchGestureArea::rejectGesture()
 {
-    if (m_status == Undecided) {
+    if (m_status == InternalStatus::Undecided || m_status == InternalStatus::WaitingForTouch) {
         tgaDebug("rejectGesture()");
 
         Q_FOREACH(int touchId, m_touchCandidates) {
             TouchRegistry::instance()->removeCandidateOwnerForTouch(touchId, this);
-
             TouchRegistry::instance()->addTouchWatcher(touchId, this);
         }
-        setStatus(Rejected);
+    } else if (m_status == InternalStatus::Recognized || m_status == InternalStatus::WaitingForRejection) {
+        Q_FOREACH(int touchId, m_touchCandidates) {
+            TouchRegistry::instance()->addTouchWatcher(touchId, this);
+        }
     }
+    setInternalStatus(InternalStatus::Rejected);
 }
 
 int TouchGestureArea::touchPoint_count(QQmlListProperty<GestureTouchPoint> *list)

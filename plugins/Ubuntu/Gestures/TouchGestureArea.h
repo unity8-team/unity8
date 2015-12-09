@@ -86,6 +86,7 @@ public:
         WaitingForTouch,
         Undecided, //Recognizing,
         Recognized,
+        WaitingForRejection,
         Rejected
     };
     TouchGestureArea(QQuickItem* parent = NULL);
@@ -106,7 +107,7 @@ public:
     void setMaximumTouchPoints(int value);
 
 Q_SIGNALS:
-    void statusChanged(Status status);
+    void statusChanged(int status);
 
     void touchPointsUpdated();
     void draggingChanged(bool dragging);
@@ -139,12 +140,12 @@ private:
     void updateTouchPoint(GestureTouchPoint *iwtp, const QTouchEvent::TouchPoint *tp);
     void clearTouchLists();
     void setDragging(bool dragging);
-    void setStatus(Status newStatus);
+    void setInternalStatus(uint status);
 
     static int touchPoint_count(QQmlListProperty<GestureTouchPoint> *list);
     static GestureTouchPoint* touchPoint_at(QQmlListProperty<GestureTouchPoint> *list, int index);
 
-    Status m_status;
+    uint m_status;
     QVector<int> m_touchCandidates;
     UbuntuGestures::AbstractTimer *m_recognitionTimer;
 

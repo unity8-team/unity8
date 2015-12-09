@@ -559,6 +559,7 @@ AbstractStage {
                 enabled: priv.sideStageEnabled
 
                 onDropped: {
+                    console.log("DROP ON MAINSTAGE", drag.source.appId);
                     priv.setAppStage(drag.source.appId, ApplicationInfoInterface.MainStage, true);
                 }
                 keys: "SideStage"
@@ -591,15 +592,16 @@ AbstractStage {
                 DropArea {
                     id: sideStageDropArea
                     anchors.fill: parent
-                    enabled: priv.sideStageEnabled
 
                     onEntered: {
+                        console.log("ENTERED");
                         sideStageOverlay.visible = drag.keys == "Disabled";
                     }
                     onExited: {
                         sideStageOverlay.visible = false;
                     }
                     onDropped: {
+                        console.log("DROP ON SIDESTAGE", drag.source.appId, drop.keys);
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
                         }
@@ -896,8 +898,8 @@ AbstractStage {
                     TouchGestureArea {
                         id: triGestureArea
                         anchors.fill: parent
-                        minimumTouchPoints: 3
-                        maximumTouchPoints: 3
+                        minimumTouchPoints: 1
+                        maximumTouchPoints: 1
                         enabled: priv.sideStageEnabled && !spreadView.active
 
                         property var dragObject: null
@@ -907,42 +909,38 @@ AbstractStage {
 
                         onEnabledChanged: {
                             if (!enabled) {
-                                wasRecognisedDrag = false;
-                                wasRecognisedPress = false;
                                 if (dragObject) {
-                                    dragObject.destroy();
+                                    dragObject.cancel();
                                     dragObject = null;
                                 }
+                                wasRecognisedDrag = false;
+                                wasRecognisedPress = false;
                             }
                         }
 
                         onStatusChanged: {
                             if (status == TouchGestureArea.Recognized) {
                                 wasRecognisedPress = true;
-                            }
-                        }
-
-                        onPressed: {
-                            // too many presses now.
-                            if (touchPoints.length > maximumTouchPoints) {
-                                wasRecognisedPress = false;
-                            }
-                        }
-
-                        onReleased: {
-                            if (touchPoints.length === 0 && wasRecognisedPress) {
-                                if (!wasRecognisedDrag) {
-                                    if (sideStage.shown) {
-                                        sideStage.hide();
-                                    } else  {
-                                        sideStage.show();
+                            } else {
+                                if (status == TouchGestureArea.Rejected) {
+                                    if (dragObject) {
+                                        dragObject.cancel();
+                                        dragObject = null;
                                     }
-                                } else if (dragObject) {
-                                    dragObject.Drag.drop();
-                                    dragObject.destroy();
-                                    dragObject = null;
+                                } else if (status == TouchGestureArea.WaitingForTouch) {
+                                    if (wasRecognisedPress) {
+                                        if (!wasRecognisedDrag) {
+                                            if (sideStage.shown) {
+                                               sideStage.hide();
+                                            } else  {
+                                               sideStage.show();
+                                            }
+                                        } else if (dragObject) {
+                                            dragObject.drop();
+                                            dragObject = null;
+                                        }
+                                    }
                                 }
-
                                 wasRecognisedDrag = false;
                                 wasRecognisedPress = false;
                             }
@@ -953,7 +951,7 @@ AbstractStage {
 
                             if (recognisedDrag && priv.sideStageEnabled) {
                                 wasRecognisedDrag = true;
-                                dragObject = dragComponent.createObject(spreadRow)
+                                dragObject = dragComponent.createObject(spreadRow);
 
                                 // If we're dragging to the sidestage.
                                 if (spreadTile.stage === ApplicationInfo.MainStage) {
@@ -967,6 +965,18 @@ AbstractStage {
                         id: dragComponent
                         SessionContainer {
                             property string appId: model.appId
+
+                            function drop() {
+                                console.log("DROP DRAG")
+                                Drag.drop();
+                                destroy();
+                            }
+
+                            function cancel() {
+                                console.log("CANCEL DRAG")
+                                Drag.cancel();
+                                destroy();
+                            }
 
                             session: spreadTile.application ? spreadTile.application.session : null
                             interactive: false
