@@ -102,7 +102,6 @@ public:
         WaitingForTouch,
         Undecided, //Recognizing,
         Recognized,
-        WaitingForRejection,
         Rejected
     };
     TouchGestureArea(QQuickItem* parent = NULL);
@@ -136,11 +135,11 @@ Q_SIGNALS:
     void clicked();
 
 private Q_SLOTS:
-    void rejectGesture();
+    void rejectGesture(bool lostOwnership = false);
 
 private:
     void touchEvent(QTouchEvent *event) override;
-    void touchEvent_absent(QTouchEvent *event);
+    void touchEvent_waitingForTouch(QTouchEvent *event);
     void touchEvent_undecided(QTouchEvent *event);
     void touchEvent_recognized(QTouchEvent *event);
     void touchEvent_rejected(QTouchEvent *event);
@@ -164,7 +163,8 @@ private:
     static GestureTouchPoint* touchPoint_at(QQmlListProperty<GestureTouchPoint> *list, int index);
 
     uint m_status;
-    QVector<int> m_touchCandidates;
+    QSet<int> m_touchCandidates;
+    QSet<int> m_ownedTouches;
     UbuntuGestures::AbstractTimer *m_recognitionTimer;
 
     bool m_dragging;

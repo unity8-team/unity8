@@ -615,13 +615,14 @@ AbstractStage {
 
             Item {
                 id: sideStageOverlay
-                anchors.fill: sideStage
+                anchors.centerIn: sideStage
+                width: sideStage.panelWidth*.75
+                height: sideStage.panelWidth*.75
                 visible: false
                 z: ApplicationManager.count+1
                 Icon {
-                    anchors.centerIn: parent
-                    height: parent.width
                     width: parent.width
+                    height: parent.height
                     name: "cancel"
                     color: Qt.rgba(1,0,0,0.8)
                 }

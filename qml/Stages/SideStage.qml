@@ -68,12 +68,6 @@ Showable {
 
         maxTotalDragDistance: panelWidth
         autoCompleteDragThreshold: panelWidth / 2
-
-//        Rectangle {
-//            color: "green"
-//            anchors.fill: parent
-//            visible: enabled
-//        }
     }
 
     // SideStage mouse event eater

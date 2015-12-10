@@ -540,7 +540,7 @@ void TouchRegistry::TouchInfo::notifyCandidatesOfOwnershipResolution()
     TouchOwnershipEvent lostOwnershipEvent(id, false /*gained*/);
     for (int i = 1; i < candidates.count(); ++i) {
         #if TOUCHREGISTRY_DEBUG
-        UG_DEBUG << "sending TouchWonershipEvent(id =" << id << " lost) to candidate"
+        UG_DEBUG << "sending TouchOwnershipEvent(id =" << id << " lost) to candidate"
             << candidates[i].item;
         #endif
         QCoreApplication::sendEvent(candidates[i].item, &lostOwnershipEvent);
