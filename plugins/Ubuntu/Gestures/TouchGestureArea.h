@@ -12,7 +12,7 @@ class UnownedTouchEvent;
 class GestureTouchPoint : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int pointId READ pointId NOTIFY pointIdChanged)
+    Q_PROPERTY(int id READ id NOTIFY idChanged)
     Q_PROPERTY(bool pressed READ pressed NOTIFY pressedChanged)
     Q_PROPERTY(qreal x READ x NOTIFY xChanged)
     Q_PROPERTY(qreal y READ y NOTIFY yChanged)
@@ -30,15 +30,11 @@ public:
     GestureTouchPoint(const GestureTouchPoint& other)
     : QObject(nullptr)
     {
-        m_id = other.pointId();
-        m_pressed = other.pressed();
-        m_x = other.x();
-        m_y = other.y();
-        m_dragging = other.dragging();
+        operator=(other);
     }
 
-    int pointId() const { return m_id; }
-    void setPointId(int id);
+    int id() const { return m_id; }
+    void setId(int id);
 
     bool pressed() const { return m_pressed; }
     void setPressed(bool pressed);
@@ -52,9 +48,29 @@ public:
     bool dragging() const { return m_dragging; }
     void setDragging(bool dragging);
 
+    GestureTouchPoint& operator=(const GestureTouchPoint& rhs) {
+        if (&rhs == this) return *this;
+        m_id = rhs.m_id;
+        m_pressed = rhs.m_pressed;
+        m_x = rhs.m_x;
+        m_y = rhs.m_y;
+        m_dragging = rhs.m_dragging;
+        return *this;
+    }
+
+    bool operator=(const GestureTouchPoint& rhs) const {
+        if (&rhs == this) return true;
+        return m_id == rhs.m_id &&
+                m_pressed == rhs.m_pressed &&
+                m_x == rhs.m_x &&
+                m_y == rhs.m_y &&
+                m_dragging == rhs.m_dragging;
+    }
+    bool operator!=(const GestureTouchPoint& rhs) const { return !operator=(rhs); }
+
 
 Q_SIGNALS:
-    void pointIdChanged();
+    void idChanged();
     void pressedChanged();
     void xChanged();
     void yChanged();
@@ -133,6 +149,7 @@ private:
 
     void unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_undecided(UnownedTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_recognised(UnownedTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent);
 
     void processTouchEvents(QTouchEvent *event);
@@ -141,6 +158,7 @@ private:
     void clearTouchLists();
     void setDragging(bool dragging);
     void setInternalStatus(uint status);
+    void resyncWithCachedTouchPoints();
 
     static int touchPoint_count(QQmlListProperty<GestureTouchPoint> *list);
     static GestureTouchPoint* touchPoint_at(QQmlListProperty<GestureTouchPoint> *list, int index);
@@ -150,7 +168,8 @@ private:
     UbuntuGestures::AbstractTimer *m_recognitionTimer;
 
     bool m_dragging;
-    QHash<int, GestureTouchPoint*> m_touchPoints;
+    QHash<int, GestureTouchPoint*> m_liveTouchPoints;
+    QHash<int, GestureTouchPoint*> m_cachedTouchPoints;
     QList<QObject*> m_releasedTouchPoints;
     QList<QObject*> m_pressedTouchPoints;
     QList<QObject*> m_movedTouchPoints;

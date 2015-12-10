@@ -559,7 +559,6 @@ AbstractStage {
                 enabled: priv.sideStageEnabled
 
                 onDropped: {
-                    console.log("DROP ON MAINSTAGE", drag.source.appId);
                     priv.setAppStage(drag.source.appId, ApplicationInfoInterface.MainStage, true);
                 }
                 keys: "SideStage"
@@ -594,14 +593,12 @@ AbstractStage {
                     anchors.fill: parent
 
                     onEntered: {
-                        console.log("ENTERED");
                         sideStageOverlay.visible = drag.keys == "Disabled";
                     }
                     onExited: {
                         sideStageOverlay.visible = false;
                     }
                     onDropped: {
-                        console.log("DROP ON SIDESTAGE", drag.source.appId, drop.keys);
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
                         }
@@ -897,9 +894,10 @@ AbstractStage {
 
                     TouchGestureArea {
                         id: triGestureArea
+                        objectName: "triDrag-"+spreadTile.appId
                         anchors.fill: parent
-                        minimumTouchPoints: 1
-                        maximumTouchPoints: 1
+                        minimumTouchPoints: 3
+                        maximumTouchPoints: 3
                         enabled: priv.sideStageEnabled && !spreadView.active
 
                         property var dragObject: null
@@ -959,6 +957,34 @@ AbstractStage {
                                 }
                             }
                         }
+
+                        Binding {
+                            target: triGestureArea.dragObject
+                            when: triGestureArea.dragObject && triGestureArea.wasRecognisedDrag
+                            property: "x"
+                            value: {
+                                if (!triGestureArea.dragObject) return 0;
+                                var sum = 0;
+                                for (var i = 0; i < triGestureArea.touchPoints.length; i++) {
+                                    sum += spreadRow.mapFromItem(triGestureArea, triGestureArea.touchPoints[i].x, 0).x;
+                                }
+                                return sum/triGestureArea.touchPoints.length - triGestureArea.dragObject.width/2;
+                            }
+                        }
+
+                        Binding {
+                            target: triGestureArea.dragObject
+                            when: triGestureArea.dragObject && triGestureArea.wasRecognisedDrag
+                            property: "y"
+                            value: {
+                                if (!triGestureArea.dragObject) return 0;
+                                var sum = 0;
+                                for (var i = 0; i < triGestureArea.touchPoints.length; i++) {
+                                    sum += spreadRow.mapFromItem(triGestureArea, 0, triGestureArea.touchPoints[i].y).y;
+                                }
+                                return sum/triGestureArea.touchPoints.length - triGestureArea.dragObject.height/2;
+                            }
+                        }
                     }
 
                     Component {
@@ -967,13 +993,11 @@ AbstractStage {
                             property string appId: model.appId
 
                             function drop() {
-                                console.log("DROP DRAG")
                                 Drag.drop();
                                 destroy();
                             }
 
                             function cancel() {
-                                console.log("CANCEL DRAG")
                                 Drag.cancel();
                                 destroy();
                             }
@@ -982,21 +1006,6 @@ AbstractStage {
                             interactive: false
                             resizeSurface: false
                             focus: false
-
-                            x: {
-                                var sum = 0;
-                                for (var i = 0; i < triGestureArea.touchPoints.length; i++) {
-                                    sum += root.mapFromItem(triGestureArea, triGestureArea.touchPoints[i].x, 0).x;
-                                }
-                                return sum/triGestureArea.touchPoints.length - width/2;
-                            }
-                            y: {
-                                var sum = 0;
-                                for (var i = 0; i < triGestureArea.touchPoints.length; i++) {
-                                    sum += root.mapFromItem(triGestureArea, 0, triGestureArea.touchPoints[i].y).y;
-                                }
-                                return sum/triGestureArea.touchPoints.length - height/2;
-                            }
                             z: ApplicationManager.count+1
 
                             width: units.gu(40)
