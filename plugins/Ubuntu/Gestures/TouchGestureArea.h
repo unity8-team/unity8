@@ -96,6 +96,8 @@ class TouchGestureArea : public QQuickItem
     Q_PROPERTY(int minimumTouchPoints READ minimumTouchPoints WRITE setMinimumTouchPoints NOTIFY minimumTouchPointsChanged)
     Q_PROPERTY(int maximumTouchPoints READ maximumTouchPoints WRITE setMaximumTouchPoints NOTIFY maximumTouchPointsChanged)
 
+    Q_PROPERTY(int recognitionPeriod READ recognitionPeriod WRITE setRecognitionPeriod NOTIFY recognitionPeriodChanged)
+
 public:
     // Describes the state of the directional drag gesture.
     enum Status {
@@ -121,6 +123,9 @@ public:
     int maximumTouchPoints() const;
     void setMaximumTouchPoints(int value);
 
+    int recognitionPeriod() const;
+    void setRecognitionPeriod(int value);
+
 Q_SIGNALS:
     void statusChanged(int status);
 
@@ -128,6 +133,7 @@ Q_SIGNALS:
     void draggingChanged(bool dragging);
     void minimumTouchPointsChanged(bool value);
     void maximumTouchPointsChanged(bool value);
+    void recognitionPeriodChanged(bool value);
 
     void pressed(const QList<QObject*>& points);
     void released(const QList<QObject*>& points);
@@ -148,8 +154,9 @@ private:
 
     void unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_undecided(UnownedTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_recognised(UnownedTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent);
+
+    void touchUngrabEvent() override;
 
     void processTouchEvents(QTouchEvent *event);
     GestureTouchPoint* addTouchPoint(const QTouchEvent::TouchPoint *tp);
@@ -175,6 +182,7 @@ private:
     QList<QObject*> m_movedTouchPoints;
     int m_minimumTouchPoints;
     int m_maximumTouchPoints;
+    int m_recognitionPeriod;
 };
 
 QML_DECLARE_TYPE(GestureTouchPoint)

@@ -9,7 +9,7 @@
 #include <QStyleHints>
 #include <private/qquickwindow_p.h>
 
-#define TOUCHGESTUREAREA_DEBUG 0
+#define TOUCHGESTUREAREA_DEBUG 1
 
 namespace {
 
@@ -117,10 +117,18 @@ TouchGestureArea::TouchGestureArea(QQuickItem* parent)
     , m_dragging(false)
     , m_minimumTouchPoints(1)
     , m_maximumTouchPoints(INT_MAX)
+    , m_recognitionPeriod(50)
 {
     setRecognitionTimer(new UbuntuGestures::Timer(this));
-    m_recognitionTimer->setInterval(50);
+    m_recognitionTimer->setInterval(m_recognitionPeriod);
     m_recognitionTimer->setSingleShot(true);
+
+    connect(this, &TouchGestureArea::recognitionPeriodChanged, this, [this]() {
+        if (m_recognitionTimer) {
+            m_recognitionTimer->setInterval(m_recognitionPeriod);
+        }
+    });
+    setKeepTouchGrab(true);
 }
 
 TouchGestureArea::~TouchGestureArea()
@@ -135,6 +143,7 @@ TouchGestureArea::~TouchGestureArea()
 void TouchGestureArea::touchEvent(QTouchEvent *event)
 {
     if (!isEnabled() || !isVisible()) {
+        tgaDebug(QString("NOT ENABLED touchEvent(%1) %2").arg(statusToString(m_status)).arg(touchEventString(event)));
         QQuickItem::touchEvent(event);
         return;
     }
@@ -158,8 +167,8 @@ void TouchGestureArea::touchEvent(QTouchEvent *event)
             break;
     }
 
-    qDebug() << "TOUCH CANDIDATES: " << m_touchCandidates;
-    qDebug() << "TOUCH OWNERS: " << m_ownedTouches;
+    tgaDebug("TOUCH CANDIDATES: " << m_touchCandidates);
+    tgaDebug("TOUCH OWNERS: " << m_ownedTouches);
 
     processTouchEvents(event);
 }
@@ -211,9 +220,7 @@ void TouchGestureArea::touchEvent_undecided(QTouchEvent *event)
     } else if (m_touchCandidates.count() >= m_minimumTouchPoints) {
         setInternalStatus(InternalStatus::WaitingForOwnership);
 
-        QSetIterator<int> candidateIterator(m_touchCandidates);
-        while(candidateIterator.hasNext()) {
-            int candidateTouchId = candidateIterator.next();
+        Q_FOREACH(int candidateTouchId, m_touchCandidates) {
             TouchRegistry::instance()->requestTouchOwnership(candidateTouchId, this);
         }
         event->accept();
@@ -251,7 +258,10 @@ void TouchGestureArea::touchEvent_rejected(QTouchEvent *event)
         Qt::TouchPointState touchPointState = touchPoint.state();
         int touchId = touchPoint.id();
 
-        if (touchPointState & Qt::TouchPointReleased) {
+        if (touchPointState & Qt::TouchPointPressed && !m_touchCandidates.contains(touchId)) {
+            TouchRegistry::instance()->addTouchWatcher(touchId, this);
+            m_touchCandidates.insert(touchId);
+        } else  if (touchPointState & Qt::TouchPointReleased) {
             m_ownedTouches.remove(touchId);
         }
     }
@@ -259,7 +269,7 @@ void TouchGestureArea::touchEvent_rejected(QTouchEvent *event)
     if (m_ownedTouches.count() + m_touchCandidates.count() == 0) {
         setInternalStatus(InternalStatus::WaitingForTouch);
     }
-    event->accept();
+    event->ignore();
 }
 
 bool TouchGestureArea::event(QEvent *event)
@@ -311,7 +321,6 @@ void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
             unownedTouchEvent_rejected(unownedTouchEvent);
             break;
         default: // Recognized:
-            unownedTouchEvent_recognised(unownedTouchEvent);
             // do nothing
             break;
     }
@@ -319,8 +328,8 @@ void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
     QTouchEvent* event = unownedTouchEvent->touchEvent();
     processTouchEvents(event);
 
-    qDebug() << "TOUCH CANDIDATES: " << m_touchCandidates;
-    qDebug() << "TOUCH OWNERS: " << m_ownedTouches;
+    tgaDebug("TOUCH CANDIDATES: " << m_touchCandidates);
+    tgaDebug("TOUCH OWNERS: " << m_ownedTouches);
 }
 
 void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTouchEvent)
@@ -342,11 +351,6 @@ void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTou
     }
 }
 
-void TouchGestureArea::unownedTouchEvent_recognised(UnownedTouchEvent *unownedTouchEvent)
-{
-}
-
-
 void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent)
 {
     QTouchEvent* event = unownedTouchEvent->touchEvent();
@@ -360,6 +364,11 @@ void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouc
     if (m_ownedTouches.count() + m_touchCandidates.count() == 0) {
         setInternalStatus(InternalStatus::WaitingForTouch);
     }
+}
+
+void TouchGestureArea::touchUngrabEvent()
+{
+    qDebug() << "UNGRAB EVENT";
 }
 
 void TouchGestureArea::processTouchEvents(QTouchEvent *touchEvent)
@@ -588,6 +597,19 @@ void TouchGestureArea::setMaximumTouchPoints(int value)
     if (m_maximumTouchPoints != value) {
         m_maximumTouchPoints = value;
         Q_EMIT maximumTouchPointsChanged(value);
+    }
+}
+
+int TouchGestureArea::recognitionPeriod() const
+{
+    return m_recognitionPeriod;
+}
+
+void TouchGestureArea::setRecognitionPeriod(int value)
+{
+    if (value != m_recognitionPeriod) {
+        m_recognitionPeriod = value;
+        Q_EMIT recognitionPeriodChanged(value);
     }
 }
 

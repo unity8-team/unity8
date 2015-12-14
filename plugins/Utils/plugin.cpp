@@ -36,6 +36,7 @@
 #include "constants.h"
 #include "timezoneFormatter.h"
 #include "applicationsfiltermodel.h"
+#include "globalfunctions.h"
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -49,6 +50,13 @@ static QObject *createConstants(QQmlEngine *engine, QJSEngine *scriptEngine)
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
     return new Constants();
+}
+
+static QObject *createGlobal(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new GlobalFunctions();
 }
 
 void UtilsPlugin::registerTypes(const char *uri)
@@ -68,6 +76,7 @@ void UtilsPlugin::registerTypes(const char *uri)
                                                 [](QQmlEngine*, QJSEngine*) -> QObject* { return new TimezoneFormatter; });
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
+    qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobal);
 }
 
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

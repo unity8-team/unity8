@@ -36,6 +36,7 @@
 #include <windowscreenshotprovider.h>
 #include <easingcurve.h>
 #include <applicationsfiltermodel.h>
+#include <globalfunctions.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -49,6 +50,13 @@ static QObject *createConstants(QQmlEngine *engine, QJSEngine *scriptEngine)
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
     return new Constants();
+}
+
+static QObject *createGlobal(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new GlobalFunctions();
 }
 
 void FakeUtilsPlugin::registerTypes(const char *uri)
@@ -65,6 +73,7 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<Constants>(uri, 0, 1, "Constants", createConstants);
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
+    qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobal);
 }
 
 void FakeUtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

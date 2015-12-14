@@ -29,7 +29,7 @@
 #include "TouchOwnershipEvent.h"
 #include "UnownedTouchEvent.h"
 
-#define TOUCHREGISTRY_DEBUG 0
+#define TOUCHREGISTRY_DEBUG 1
 
 #if TOUCHREGISTRY_DEBUG
     #include "DebugHelpers.h"
@@ -234,6 +234,7 @@ bool TouchRegistry::eventFilter(QObject *watched, QEvent *event)
     case QEvent::TouchEnd:
     case QEvent::TouchCancel:
         update(static_cast<QTouchEvent*>(event));
+        qDebug() << "FILTERed FOR " << watched << event;
         break;
     default:
         // do nothing
@@ -359,10 +360,6 @@ void TouchRegistry::removeCandidateOwnerForTouchByIndex(Pool<TouchRegistry::Touc
 
 void TouchRegistry::requestTouchOwnership(int id, QQuickItem *candidate)
 {
-    #if TOUCHREGISTRY_DEBUG
-    UG_DEBUG << "requestTouchOwnership id " << id << "candidate" << candidate;
-    #endif
-
     Pool<TouchInfo>::Iterator touchInfo = findTouchInfo(id);
     if (!touchInfo) { qFatal("TouchRegistry: Failed to find TouchInfo"); }
 
@@ -379,6 +376,9 @@ void TouchRegistry::requestTouchOwnership(int id, QQuickItem *candidate)
             break;
         }
     }
+    #if TOUCHREGISTRY_DEBUG
+    UG_DEBUG << "requestTouchOwnership id " << id << "candidate" << candidate << "index: " << candidateIndex;
+    #endif
 
     // add it as a candidate if not present yet
     if (candidateIndex < 0) {
