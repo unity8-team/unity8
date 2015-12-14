@@ -322,3 +322,11 @@ void MirSurfaceItem::updateSurfaceSize()
         m_qmlSurface->resize(m_surfaceWidth, m_surfaceHeight);
     }
 }
+
+void MirSurfaceItem::setFillMode(FillMode value)
+{
+    if (value != m_fillMode) {
+        m_fillMode = value;
+        Q_EMIT fillModeChanged(m_fillMode);
+    }
+}

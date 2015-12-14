@@ -671,16 +671,19 @@ AbstractStage {
 
                     readonly property string appId: model.appId
                     readonly property bool isDash: appId == "unity8-dash"
-                    readonly property bool canSuspend: model.isTouchApp
-                            && !isExemptFromLifecycle(appId)
+
+                    Binding {
+                        target: spreadTile.application
+                        property: "exemptFromLifecycle"
+                        value: !model.isTouchApp || isExemptFromLifecycle(model.appId)
+                    }
 
                     Binding {
                         target: spreadTile.application
                         property: "requestedState"
-                        value: !canSuspend
-                                   || (isDash && root.keepDashRunning)
-                                   || (!root.suspended && (appId == priv.mainStageAppId
-                                                           || appId == priv.sideStageAppId))
+                        value: (isDash && root.keepDashRunning)
+                                   || (!root.suspended && (model.appId == priv.mainStageAppId
+                                                           || model.appId == priv.sideStageAppId))
                                ? ApplicationInfoInterface.RequestedRunning
                                : ApplicationInfoInterface.RequestedSuspended
                     }
@@ -699,7 +702,6 @@ AbstractStage {
                         enabled: spreadView.closingIndex >= 0
                         UbuntuNumberAnimation {}
                     }
-
                     Connections {
                         target: priv
                         onSideStageEnabledChanged: refreshStage()

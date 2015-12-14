@@ -62,6 +62,9 @@ public:
     int surfaceHeight() const override;
     void setSurfaceHeight(int value) override;
 
+    FillMode fillMode() const override { return m_fillMode; }
+    void setFillMode(FillMode value) override;
+
     /////
     // For use in qml tests
 
@@ -107,6 +110,8 @@ private:
     int m_touchPressCount;
     int m_touchReleaseCount;
     QVariantMap m_touchTrail;
+
+    FillMode m_fillMode{Stretch};
 
     friend class SurfaceManager;
 };
