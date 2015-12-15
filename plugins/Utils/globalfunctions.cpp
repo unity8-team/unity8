@@ -54,4 +54,3 @@ QQuickItem *GlobalFunctions::itemAt(QQuickItem* parent, int x, int y, QJSValue m
     }
     return nullptr;
 }
-
