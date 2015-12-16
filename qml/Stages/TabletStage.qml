@@ -561,6 +561,7 @@ AbstractStage {
 
                 onDropped: {
                     priv.setAppStage(drag.source.appId, ApplicationInfoInterface.MainStage, true);
+                    ApplicationManager.focusApplication(drag.source.appId);
                 }
                 keys: "SideStage"
             }
@@ -603,6 +604,7 @@ AbstractStage {
                     onDropped: {
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
+                            ApplicationManager.focusApplication(drop.source.appId);
                         }
                     }
                     drag {
