@@ -9,7 +9,7 @@
 #include <QStyleHints>
 #include <private/qquickwindow_p.h>
 
-#define TOUCHGESTUREAREA_DEBUG 1
+#define TOUCHGESTUREAREA_DEBUG 0
 
 namespace {
 
