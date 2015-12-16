@@ -128,7 +128,6 @@ TouchGestureArea::TouchGestureArea(QQuickItem* parent)
             m_recognitionTimer->setInterval(m_recognitionPeriod);
         }
     });
-    setKeepTouchGrab(true);
 }
 
 TouchGestureArea::~TouchGestureArea()
@@ -158,12 +157,16 @@ void TouchGestureArea::touchEvent(QTouchEvent *event)
             touchEvent_undecided(event);
             break;
         case InternalStatus::WaitingForOwnership:
-                break;
+            touchEvent_waitingForOwnership(event);
+            break;
+        case InternalStatus::Recognized:
+        case InternalStatus::WaitingForRejection:
+            touchEvent_recognized(event);
+            break;
         case InternalStatus::Rejected:
             touchEvent_rejected(event);
             break;
         default: // Recognized:
-            touchEvent_recognized(event);
             break;
     }
 
@@ -227,6 +230,17 @@ void TouchGestureArea::touchEvent_undecided(QTouchEvent *event)
     }
 }
 
+void TouchGestureArea::touchEvent_waitingForOwnership(QTouchEvent *event)
+{
+    Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
+        int touchId = touchPoint.id();
+
+        if (touchPoint.state() & Qt::TouchPointReleased) {
+            m_ownedTouches.remove(touchId);
+        }
+    }
+}
+
 void TouchGestureArea::touchEvent_recognized(QTouchEvent *event)
 {
     Q_ASSERT(m_touchCandidates.count() == 0);
@@ -272,37 +286,6 @@ void TouchGestureArea::touchEvent_rejected(QTouchEvent *event)
     event->ignore();
 }
 
-bool TouchGestureArea::event(QEvent *event)
-{
-    // Process unowned touch events (handles update/release for incomplete gestures)
-    if (event->type() == TouchOwnershipEvent::touchOwnershipEventType()) {
-        touchOwnershipEvent(static_cast<TouchOwnershipEvent *>(event));
-        return true;
-    } else if (event->type() == UnownedTouchEvent::unownedTouchEventType()) {
-        unownedTouchEvent(static_cast<UnownedTouchEvent *>(event));
-        return true;
-    }
-
-    return QQuickItem::event(event);
-}
-
-void TouchGestureArea::touchOwnershipEvent(TouchOwnershipEvent *event)
-{
-    tgaDebug("touchOwnershipEvent - id:" << event->touchId() << ", gained:" << event->gained());
-
-    if (event->gained()) {
-        grabTouchPoints(QVector<int>() << event->touchId());
-        m_ownedTouches.insert(event->touchId());
-        m_touchCandidates.remove(event->touchId());
-
-        if (m_ownedTouches.count() >= m_minimumTouchPoints) {
-            setInternalStatus(InternalStatus::Recognized);
-        }
-    } else {
-        rejectGesture(true);
-    }
-}
-
 void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
 {
     tgaDebug(QString("unownedTouchEvent(%1) %2").arg(statusToString(m_status)).arg(touchEventString(unownedTouchEvent->touchEvent())));
@@ -316,12 +299,16 @@ void TouchGestureArea::unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent)
             unownedTouchEvent_undecided(unownedTouchEvent);
             break;
         case InternalStatus::WaitingForOwnership:
-                break;
+            unownedTouchEvent_waitingForOwnership(unownedTouchEvent);
+            break;
+        case InternalStatus::Recognized:
+        case InternalStatus::WaitingForRejection:
+            unownedTouchEvent_recognised(unownedTouchEvent);
+            break;
         case InternalStatus::Rejected:
             unownedTouchEvent_rejected(unownedTouchEvent);
             break;
-        default: // Recognized:
-            // do nothing
+        default:
             break;
     }
 
@@ -351,18 +338,68 @@ void TouchGestureArea::unownedTouchEvent_undecided(UnownedTouchEvent *unownedTou
     }
 }
 
+void TouchGestureArea::unownedTouchEvent_waitingForOwnership(UnownedTouchEvent *unownedTouchEvent)
+{
+    QTouchEvent* event = unownedTouchEvent->touchEvent();
+
+    Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
+        if (touchPoint.state() & Qt::TouchPointReleased) {
+            TouchRegistry::instance()->removeCandidateOwnerForTouch(touchId, q);
+            m_touchCandidates.remove(touchPoint.id());
+        }
+    }
+}
+
+void TouchGestureArea::unownedTouchEvent_recognised(UnownedTouchEvent */*unownedTouchEvent*/)
+{
+
+}
+
 void TouchGestureArea::unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent)
 {
     QTouchEvent* event = unownedTouchEvent->touchEvent();
 
     Q_FOREACH(const QTouchEvent::TouchPoint& touchPoint, event->touchPoints()) {
         if (touchPoint.state() & Qt::TouchPointReleased) {
+            TouchRegistry::instance()->removeCandidateOwnerForTouch(touchId, q);
             m_touchCandidates.remove(touchPoint.id());
         }
     }
 
     if (m_ownedTouches.count() + m_touchCandidates.count() == 0) {
         setInternalStatus(InternalStatus::WaitingForTouch);
+    }
+}
+
+
+bool TouchGestureArea::event(QEvent *event)
+{
+    // Process unowned touch events (handles update/release for incomplete gestures)
+    if (event->type() == TouchOwnershipEvent::touchOwnershipEventType()) {
+        touchOwnershipEvent(static_cast<TouchOwnershipEvent *>(event));
+        return true;
+    } else if (event->type() == UnownedTouchEvent::unownedTouchEventType()) {
+        unownedTouchEvent(static_cast<UnownedTouchEvent *>(event));
+        return true;
+    }
+
+    return QQuickItem::event(event);
+}
+
+void TouchGestureArea::touchOwnershipEvent(TouchOwnershipEvent *event)
+{
+    tgaDebug("touchOwnershipEvent - id:" << event->touchId() << ", gained:" << event->gained());
+
+    if (event->gained()) {
+        grabTouchPoints(QVector<int>() << event->touchId());
+        m_touchCandidates.remove(event->touchId());
+        m_ownedTouches.insert(event->touchId());
+
+        if (m_ownedTouches.count() >= m_minimumTouchPoints) {
+            setInternalStatus(InternalStatus::Recognized);
+        }
+    } else {
+        rejectGesture(true);
     }
 }
 
@@ -618,9 +655,23 @@ void TouchGestureArea::rejectGesture(bool lostOwnership)
     tgaDebug("rejectGesture");
 
     Q_FOREACH(int touchId, m_touchCandidates) {
-        if (!lostOwnership) {
-            TouchRegistry::instance()->removeCandidateOwnerForTouch(touchId, this);
+        TouchRegistry::instance()->removeCandidateOwnerForTouch(touchId, this);
+    }
+
+    // If we've lost the ownership, we need to monitor the touches we owned,
+    // since we won't get updates for them anymore.
+    if (lostOwnership) {
+        QMutableSetIterator<int> ownedIter(m_ownedTouches);
+        while(ownedIter.hasNext()) {
+            int touchId = ownedIter.next();
+            ownedIter.remove();
+            m_touchCandidates.insert(touchId);
         }
+        ungrabTouchPoints();
+    }
+
+    // Monitor the candidates
+    Q_FOREACH(int touchId, m_touchCandidates) {
         TouchRegistry::instance()->addTouchWatcher(touchId, this);
     }
 

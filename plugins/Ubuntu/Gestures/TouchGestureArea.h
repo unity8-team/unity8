@@ -147,6 +147,7 @@ private:
     void touchEvent(QTouchEvent *event) override;
     void touchEvent_waitingForTouch(QTouchEvent *event);
     void touchEvent_undecided(QTouchEvent *event);
+    void touchEvent_waitingForOwnership(QTouchEvent *event);
     void touchEvent_recognized(QTouchEvent *event);
     void touchEvent_rejected(QTouchEvent *event);
 
@@ -154,6 +155,8 @@ private:
 
     void unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_undecided(UnownedTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_waitingForOwnership(UnownedTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_recognised(UnownedTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent);
 
     void touchUngrabEvent() override;

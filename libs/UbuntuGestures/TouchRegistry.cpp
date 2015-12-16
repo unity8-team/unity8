@@ -533,16 +533,22 @@ void TouchRegistry::TouchInfo::notifyCandidatesOfOwnershipResolution()
         << " gained) to candidate" << candidates[0].item;
     #endif
 
-    TouchOwnershipEvent gainedOwnershipEvent(id, true /*gained*/);
-    QCoreApplication::sendEvent(candidates[0].item, &gainedOwnershipEvent);
+    // need to take a copy of the item list in case
+    // we call back in during the lost ownership event.
+    QList<QPointer<QQuickItem>> items;
+    Q_FOREACH(const CandidateInfo& info, candidates) {
+        items << info.item;
+    }
 
+    TouchOwnershipEvent gainedOwnershipEvent(id, true /*gained*/);
+    QCoreApplication::sendEvent(items[0], &gainedOwnershipEvent);
 
     TouchOwnershipEvent lostOwnershipEvent(id, false /*gained*/);
-    for (int i = 1; i < candidates.count(); ++i) {
+    for (int i = 1; i < items.count(); ++i) {
         #if TOUCHREGISTRY_DEBUG
         UG_DEBUG << "sending TouchOwnershipEvent(id =" << id << " lost) to candidate"
-            << candidates[i].item;
+            << items[i];
         #endif
-        QCoreApplication::sendEvent(candidates[i].item, &lostOwnershipEvent);
+        QCoreApplication::sendEvent(items[i], &lostOwnershipEvent);
     }
 }
