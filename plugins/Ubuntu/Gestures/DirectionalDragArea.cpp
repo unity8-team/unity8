@@ -15,7 +15,7 @@
  */
 
 #define ACTIVETOUCHESINFO_DEBUG 0
-#define DIRECTIONALDRAGAREA_DEBUG 1
+#define DIRECTIONALDRAGAREA_DEBUG 0
 
 #include "DirectionalDragArea.h"
 

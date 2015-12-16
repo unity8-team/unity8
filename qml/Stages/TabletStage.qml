@@ -550,6 +550,7 @@ AbstractStage {
             }
 
             DropArea {
+                objectName: "MainStageDropArea"
                 anchors {
                     left: parent.left
                     top: parent.top
@@ -590,6 +591,7 @@ AbstractStage {
 
                 DropArea {
                     id: sideStageDropArea
+                    objectName: "SideStageDropArea"
                     anchors.fill: parent
 
                     onEntered: {
@@ -905,7 +907,6 @@ AbstractStage {
         anchors.fill: parent
         minimumTouchPoints: 3
         maximumTouchPoints: 3
-        recognitionPeriod: 50
         enabled: priv.sideStageEnabled && !spreadView.active
 
         property var dragObject: null
@@ -981,12 +982,13 @@ AbstractStage {
 
             if (recognisedDrag && priv.sideStageEnabled) {
                 wasRecognisedDrag = true;
-                dragObject = dragComponent.createObject(root, { "appId": appId });
-
                 // If we're dragging to the sidestage.
                 if (!sideStage.shown) {
                     sideStage.show();
                 }
+
+                dragObject = dragComponent.createObject(root, { "appId": appId });
+                dragObject.Drag.start();
             }
         }
 
@@ -1043,7 +1045,6 @@ AbstractStage {
             width: units.gu(40)
             height: units.gu(40)
 
-            Drag.active: true
             Drag.hotSpot.x: width/2
             Drag.hotSpot.y: height/2
             // only accept opposite stage.

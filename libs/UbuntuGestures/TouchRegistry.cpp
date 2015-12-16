@@ -29,7 +29,7 @@
 #include "TouchOwnershipEvent.h"
 #include "UnownedTouchEvent.h"
 
-#define TOUCHREGISTRY_DEBUG 1
+#define TOUCHREGISTRY_DEBUG 0
 
 #if TOUCHREGISTRY_DEBUG
     #include "DebugHelpers.h"
@@ -234,7 +234,6 @@ bool TouchRegistry::eventFilter(QObject *watched, QEvent *event)
     case QEvent::TouchEnd:
     case QEvent::TouchCancel:
         update(static_cast<QTouchEvent*>(event));
-        qDebug() << "FILTERed FOR " << watched << event;
         break;
     default:
         // do nothing
@@ -534,7 +533,7 @@ void TouchRegistry::TouchInfo::notifyCandidatesOfOwnershipResolution()
     #endif
 
     // need to take a copy of the item list in case
-    // we call back in during the lost ownership event.
+    // we call back in to remove candidate during the lost ownership event.
     QList<QPointer<QQuickItem>> items;
     Q_FOREACH(const CandidateInfo& info, candidates) {
         items << info.item;

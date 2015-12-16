@@ -102,7 +102,7 @@ public:
     // Describes the state of the directional drag gesture.
     enum Status {
         WaitingForTouch,
-        Undecided, //Recognizing,
+        Undecided,
         Recognized,
         Rejected
     };
@@ -141,7 +141,7 @@ Q_SIGNALS:
     void clicked();
 
 private Q_SLOTS:
-    void rejectGesture(bool lostOwnership = false);
+    void rejectGesture();
 
 private:
     void touchEvent(QTouchEvent *event) override;
@@ -151,30 +151,28 @@ private:
     void touchEvent_recognized(QTouchEvent *event);
     void touchEvent_rejected(QTouchEvent *event);
 
+    void unownedTouchEvent(QTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_undecided(QTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_waitingForOwnership(QTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_recognised(QTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_rejected(QTouchEvent *unownedTouchEvent);
+
     void touchOwnershipEvent(TouchOwnershipEvent *event);
+    void updateTouchPoints(QTouchEvent *event);
 
-    void unownedTouchEvent(UnownedTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_undecided(UnownedTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_waitingForOwnership(UnownedTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_recognised(UnownedTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_rejected(UnownedTouchEvent *unownedTouchEvent);
-
-    void touchUngrabEvent() override;
-
-    void processTouchEvents(QTouchEvent *event);
     GestureTouchPoint* addTouchPoint(const QTouchEvent::TouchPoint *tp);
     void updateTouchPoint(GestureTouchPoint *iwtp, const QTouchEvent::TouchPoint *tp);
     void clearTouchLists();
     void setDragging(bool dragging);
     void setInternalStatus(uint status);
-    void resyncWithCachedTouchPoints();
+    void resyncCachedTouchPoints();
 
     static int touchPoint_count(QQmlListProperty<GestureTouchPoint> *list);
     static GestureTouchPoint* touchPoint_at(QQmlListProperty<GestureTouchPoint> *list, int index);
 
     uint m_status;
-    QSet<int> m_touchCandidates;
-    QSet<int> m_ownedTouches;
+    QSet<int> m_candidateTouches;
+    QSet<int> m_watchedTouches;
     UbuntuGestures::AbstractTimer *m_recognitionTimer;
 
     bool m_dragging;
