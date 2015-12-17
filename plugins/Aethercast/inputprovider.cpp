@@ -39,7 +39,7 @@ void InputProvider::setMousePosition(int x, int y)
     struct input_event event;
     memset(&event, 0, sizeof(event));
     clock_gettime(CLOCK_MONOTONIC, (timespec*)&event.time);
-    event.type = EV_REL;
+    event.type = EV_ABS;
     event.code = ABS_X;
     event.value = m_x;
     write(m_file.handle(), &event, sizeof(event));
@@ -82,7 +82,7 @@ void InputProvider::NewConnection(const QDBusUnixFileDescriptor &fd, const QVari
     struct input_event event;
     memset(&event, 0, sizeof(event));
     clock_gettime(CLOCK_MONOTONIC, (timespec*)&event.time);
-    event.type = EV_REL;
+    event.type = EV_ABS;
     event.code = ABS_X;
     event.value = m_x;
     write(m_file.handle(), &event, sizeof(event));
