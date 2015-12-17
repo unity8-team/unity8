@@ -41,6 +41,7 @@ import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
 import Unity.Indicators 0.1 as Indicators
 import Cursor 1.0
+import Aethercast 0.1
 
 
 Item {
@@ -178,6 +179,13 @@ Item {
 
     HomeKeyWatcher {
         onActivated: { launcher.fadeOut(); shell.showHome(); }
+    }
+
+    Aethercast {
+        id: aethercast
+        cursorX: cursor.x
+        cursorY: cursor.y
+        cursor: "image://cursor/" + mousePointer.themeName + "/" + mousePointer.cursorName
     }
 
     Item {
