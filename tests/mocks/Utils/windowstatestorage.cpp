@@ -47,8 +47,6 @@ QRect WindowStateStorage::getGeometry(const QString &windowId, const QRect &defa
     return m_geometry.value(windowId).toRect();
 }
 
-#include <QDebug>
-
 void WindowStateStorage::saveStage(const QString &appId, int stage)
 {
     m_stage[appId] = stage;

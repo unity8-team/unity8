@@ -20,6 +20,7 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
+import Utils 0.1
 
 import "../../../qml/Stages"
 import "../../../qml/Components"
@@ -98,6 +99,7 @@ Rectangle {
             ApplicationCheckBox {
                 id: dialerCheckBox
                 appId: "dialer-app"
+                Component.onCompleted: WindowStateStorage.saveStage("dialer-app", ApplicationInfoInterface.SideStage)
             }
             ApplicationCheckBox {
                 id: facebookCheckBox
