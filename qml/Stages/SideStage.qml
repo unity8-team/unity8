@@ -6,8 +6,9 @@ import "../Components"
 
 Showable {
     id: root
-    readonly property alias dragging: hideSideStageDragArea.dragging
+    property bool showHint: true
     property int panelWidth: units.gu(40)
+    readonly property alias dragging: hideSideStageDragArea.dragging
     readonly property real progress: width / panelWidth
 
     width: 0
@@ -46,6 +47,7 @@ Showable {
         x: panelWidth/2 - width/2
         spacing: units.gu(3)
         opacity: 0.8
+        visible: showHint
 
         Icon {
             width: units.gu(30)

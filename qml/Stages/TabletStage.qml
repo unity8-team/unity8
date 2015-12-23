@@ -345,7 +345,7 @@ AbstractStage {
         }
 
         property real sideStageDragProgress: sideStage.progress
-        property bool surfaceDragging: false
+        property bool surfaceDragging: triGestureArea.recognisedDrag
 
         onSideStageDragProgressChanged: {
             if (sideStageDragProgress == 0) {
@@ -885,163 +885,67 @@ AbstractStage {
         }
     }
 
-    TouchGestureArea {
+    TabletSideStageTouchGesture {
         id: triGestureArea
-        objectName: "stageTriDragArea"
         anchors.fill: parent
-        minimumTouchPoints: 3
-        maximumTouchPoints: 3
         enabled: priv.sideStageEnabled && !spreadView.active
-
         property var dragObject: null
-        property bool wasRecognisedPress: false
-        property bool wasRecognisedDrag: false
-        readonly property bool recognisedPress: status == TouchGestureArea.Recognized &&
-                                                touchPoints.length >= minimumTouchPoints &&
-                                                touchPoints.length <= maximumTouchPoints
-        readonly property bool recognisedDrag: wasRecognisedPress && dragging
         property string appId: ""
+        dragComponent: dragComponent
+        dragComponentProperties: { "appId": appId }
 
-        onEnabledChanged: {
-            if (!enabled) {
-                if (dragObject) {
-                    dragObject.cancel();
-                    dragObject = null;
-                }
-                wasRecognisedDrag = false;
-                wasRecognisedPress = false;
+        onPressed: {
+            function matchDelegate(obj) { return String(obj.objectName).indexOf("tabletSpreadDelegate") >= 0; }
+
+            var delegateAtCenter = Functions.itemAt(spreadRow, x, y, matchDelegate);
+            if (!delegateAtCenter) return;
+
+            appId = delegateAtCenter.appId;
+        }
+
+        onClicked: {
+            if (sideStage.shown) {
+               sideStage.hide();
+            } else  {
+               sideStage.show();
             }
         }
 
-        onRecognisedPressChanged: {
-            if (recognisedPress) {
-                // get the app at the center of the gesture
-                var centerX = 0;
-                var centerY = 0;
-                for (var i = 0; i < touchPoints.length; i++) {
-                    centerX += touchPoints[i].x;
-                    centerY += touchPoints[i].y;
-                }
-                centerX = centerX/touchPoints.length;
-                centerY = centerY/touchPoints.length;
-
-                function matchDelegate(obj) { return String(obj.objectName).indexOf("tabletSpreadDelegate") >= 0; }
-
-                var delegateAtCenter = Functions.itemAt(spreadRow, centerX, centerY, matchDelegate);
-                if (!delegateAtCenter) return;
-
-                appId = delegateAtCenter.appId;
-                wasRecognisedPress = true;
+        onDrag: {
+            // If we're dragging to the sidestage.
+            if (!sideStage.shown) {
+                sideStage.show();
             }
         }
 
-        onStatusChanged: {
-            if (status != TouchGestureArea.Recognized) {
-                if (status == TouchGestureArea.Rejected) {
-                    if (dragObject) {
-                        dragObject.cancel();
-                        dragObject = null;
-                    }
-                } else if (status == TouchGestureArea.WaitingForTouch) {
-                    if (wasRecognisedPress) {
-                        if (!wasRecognisedDrag) {
-                            if (sideStage.shown) {
-                               sideStage.hide();
-                            } else  {
-                               sideStage.show();
-                            }
-                        } else if (dragObject) {
-                            dragObject.drop();
-                            dragObject = null;
+        Component {
+            id: dragComponent
+            SessionContainer {
+                property string appId: ""
+                property var application: ApplicationManager.findApplication(appId)
+
+                session: application ? application.session : null
+                interactive: false
+                resizeSurface: false
+                focus: false
+
+                width: units.gu(40)
+                height: units.gu(40)
+
+                Drag.hotSpot.x: width/2
+                Drag.hotSpot.y: height/2
+                // only accept opposite stage.
+                Drag.keys: {
+                    if (!application) return "Disabled";
+
+                    if (application.stage === ApplicationInfo.MainStage) {
+                        if (application.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) {
+                            return "MainStage";
                         }
+                        return "Disabled";
                     }
+                    return "SideStage";
                 }
-                wasRecognisedDrag = false;
-                wasRecognisedPress = false;
-            }
-        }
-
-        onRecognisedDragChanged: {
-            spreadView.surfaceDragging = recognisedDrag;
-
-            if (recognisedDrag && priv.sideStageEnabled) {
-                wasRecognisedDrag = true;
-                // If we're dragging to the sidestage.
-                if (!sideStage.shown) {
-                    sideStage.show();
-                }
-
-                dragObject = dragComponent.createObject(root, { "appId": appId });
-                dragObject.Drag.start();
-            }
-        }
-
-        Binding {
-            target: triGestureArea.dragObject
-            when: triGestureArea.dragObject && triGestureArea.wasRecognisedDrag
-            property: "x"
-            value: {
-                if (!triGestureArea.dragObject) return 0;
-                var sum = 0;
-                for (var i = 0; i < triGestureArea.touchPoints.length; i++) {
-                    sum += triGestureArea.touchPoints[i].x;
-                }
-                return sum/triGestureArea.touchPoints.length - triGestureArea.dragObject.width/2;
-            }
-        }
-
-        Binding {
-            target: triGestureArea.dragObject
-            when: triGestureArea.dragObject && triGestureArea.wasRecognisedDrag
-            property: "y"
-            value: {
-                if (!triGestureArea.dragObject) return 0;
-                var sum = 0;
-                for (var i = 0; i < triGestureArea.touchPoints.length; i++) {
-                    sum += triGestureArea.touchPoints[i].y;
-                }
-                return sum/triGestureArea.touchPoints.length - triGestureArea.dragObject.height/2;
-            }
-        }
-    }
-
-    Component {
-        id: dragComponent
-        SessionContainer {
-            property string appId: ""
-            property var application: ApplicationManager.findApplication(appId)
-
-            function drop() {
-                Drag.drop();
-                destroy();
-            }
-
-            function cancel() {
-                Drag.cancel();
-                destroy();
-            }
-
-            session: application ? application.session : null
-            interactive: false
-            resizeSurface: false
-            focus: false
-
-            width: units.gu(40)
-            height: units.gu(40)
-
-            Drag.hotSpot.x: width/2
-            Drag.hotSpot.y: height/2
-            // only accept opposite stage.
-            Drag.keys: {
-                if (!application) return "Disabled";
-
-                if (application.stage === ApplicationInfo.MainStage) {
-                    if (application.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) {
-                        return "MainStage";
-                    }
-                    return "Disabled";
-                }
-                return "SideStage";
             }
         }
     }
