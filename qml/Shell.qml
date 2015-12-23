@@ -343,6 +343,7 @@ Item {
             id: tutorial
             objectName: "tutorial"
             anchors.fill: parent
+            usageScenario: shell.usageScenario
 
             // EdgeDragAreas don't work with mice.  So to avoid trapping the user,
             // we skip the tutorial on the Desktop to avoid using them.  The

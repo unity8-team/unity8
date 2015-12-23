@@ -22,6 +22,7 @@ Item {
 
     property Item launcher
     property Item panel
+    property string usageScenario
 
     readonly property bool launcherEnabled: !running ||
                                             (!paused && tutorialLeft.shown)
@@ -112,6 +113,22 @@ Item {
         anchors.fill: parent
         backgroundFadesOut: true
         paused: !shown || root.paused
+
+        onFinished: {
+            if (usageScenario == "tablet") {
+                tutorialSideStage.show();
+            } else {
+                root.finish();
+            }
+        }
+    }
+
+    TutorialSideStage {
+        id: tutorialSideStage
+        objectName: "tutorialSideStage"
+        anchors.fill: parent
+        paused: !shown || root.paused
+        panel: root.panel
 
         onFinished: root.finish()
     }

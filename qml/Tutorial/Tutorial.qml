@@ -23,6 +23,7 @@ Item {
     property alias active: loader.active
     property bool paused
     property real edgeSize
+    property string usageScenario
 
     property Item launcher
     property Item panel
@@ -68,6 +69,12 @@ Item {
             target: loader.item
             property: "panel"
             value: root.panel
+        }
+
+        Binding {
+            target: loader.item
+            property: "usageScenario"
+            value: root.usageScenario
         }
 
         Connections {
