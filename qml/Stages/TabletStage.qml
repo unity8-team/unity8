@@ -227,11 +227,6 @@ AbstractStage {
 
         readonly property bool sideStageEnabled: root.shellOrientation == Qt.LandscapeOrientation ||
                                                  root.shellOrientation == Qt.InvertedLandscapeOrientation
-        onSideStageEnabledChanged: {
-            if (!sideStageEnabled && sideStage.shown) {
-                sideStage.hide();
-            }
-        }
     }
 
     Connections {
@@ -586,8 +581,8 @@ AbstractStage {
 
                     return 1;
                 }
-                enabled: priv.sideStageEnabled
-                opacity: spreadView.phase <= 0 ? 1 : 0
+                enabled: priv.sideStageEnabled && sideStageDropArea.dropAllowed
+                opacity: priv.sideStageEnabled && spreadView.phase <= 0 ? 1 : 0
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
                 DropArea {
@@ -595,11 +590,13 @@ AbstractStage {
                     objectName: "SideStageDropArea"
                     anchors.fill: parent
 
+                    property bool dropAllowed: true
+
                     onEntered: {
-                        sideStageOverlay.visible = drag.keys == "Disabled";
+                        dropAllowed = drag.keys != "Disabled";
                     }
                     onExited: {
-                        sideStageOverlay.visible = false;
+                        dropAllowed = true;
                     }
                     onDropped: {
                         if (drop.keys == "MainStage") {
@@ -610,25 +607,10 @@ AbstractStage {
                     drag {
                         onSourceChanged: {
                             if (!sideStageDropArea.drag.source) {
-                                sideStageOverlay.visible = false;
+                                dropAllowed = true;
                             }
                         }
                     }
-                }
-            }
-
-            Item {
-                id: sideStageOverlay
-                anchors.centerIn: sideStage
-                width: sideStage.panelWidth*.75
-                height: sideStage.panelWidth*.75
-                visible: false
-                z: ApplicationManager.count+1
-                Icon {
-                    width: parent.width
-                    height: parent.height
-                    name: "cancel"
-                    color: Qt.rgba(1,0,0,0.8)
                 }
             }
 

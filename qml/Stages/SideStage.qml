@@ -40,6 +40,29 @@ Showable {
         color: Qt.rgba(0,0,0,0.95)
     }
 
+    Column {
+        anchors.verticalCenter: parent.verticalCenter
+        width: panelWidth - units.gu(6)
+        x: panelWidth/2 - width/2
+        spacing: units.gu(3)
+        opacity: 0.8
+
+        Icon {
+            width: units.gu(30)
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "graphics/sidestage_drag.svg"
+            color: enabled ? Qt.rgba(1,1,1,1) : Qt.rgba(1,0,0,1)
+            keyColor: Qt.rgba(1,1,1,1)
+        }
+
+        Label {
+            text: "Drag using 3 fingers any application from one window to the other"
+            width: parent.width
+            wrapMode: Text.WordWrap
+            color: enabled ? Qt.rgba(1,1,1,1) : Qt.rgba(1,0,0,1)
+        }
+    }
+
     showAnimation: NumberAnimation {
         property: "width"
         to: panelWidth
