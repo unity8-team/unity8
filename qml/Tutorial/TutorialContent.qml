@@ -111,7 +111,7 @@ Item {
         id: tutorialBottomFinish
         objectName: "tutorialBottomFinish"
         anchors.fill: parent
-        backgroundFadesOut: true
+        backgroundFadesOut: usageScenario !== "tablet"
         paused: !shown || root.paused
 
         onFinished: {
@@ -126,6 +126,7 @@ Item {
     TutorialSideStage {
         id: tutorialSideStage
         objectName: "tutorialSideStage"
+        backgroundFadesOut: true
         anchors.fill: parent
         paused: !shown || root.paused
         panel: root.panel

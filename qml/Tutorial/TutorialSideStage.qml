@@ -58,24 +58,44 @@ TutorialPage {
         id: internalState
         states: [
             State {
+                name: "initial"
+                when: !overlayGesture.shown && !overlayTap.shown
+                StateChangeScript {
+                    script: {
+                        sideStage.hide();
+                    }
+                }
+            },
+            State {
                 name: "overlayGesture"
+                when: overlayGesture.shown && !overlayTap.shown
                 PropertyChanges {
                     target: root
                     title: i18n.tr("Load the sidestage")
                     text: i18n.tr("3 finger drag from one window to the other")
                 }
-                PropertyChanges { target: root; textYOffset: -units.gu(15); restoreEntryValues: false }
-                PropertyChanges { target: tapIcon; visible: false; restoreEntryValues: false }
-                StateChangeScript { script: overlayGesture.show() }
+                PropertyChanges { target: root; textYOffset: -units.gu(15); }
+                PropertyChanges { target: tapIcon; visible: false; }
+                StateChangeScript {
+                    script: {
+                        sideStage.show();
+                    }
+                }
             },
             State {
                 name: "overlayTap"
+                when: overlayTap.shown && !overlayGesture.shown
                 PropertyChanges {
                     target: root
                     title: i18n.tr("This is the loaded side stage")
                     text: i18n.tr("Tap here to continue.")
                 }
-                StateChangeScript { script: overlayTap.show() }
+                PropertyChanges { target: tapIcon; visible: false; }
+                StateChangeScript {
+                    script: {
+                        root.hideError();
+                    }
+                }
                 PropertyChanges { target: gestureArea; enabled: false }
             }
         ]
@@ -96,25 +116,21 @@ TutorialPage {
                 height: parent.height
                 x: parent.width - width
                 showHint: false
-
-                onProgressChanged: {
-                    if (progress > 0.5) {
-                        internalState.state = "overlayGesture";
-                    }
-                }
+                enableDrag: false
 
                 Icon {
                     name: "tick"
                     anchors.verticalCenter: parent.verticalCenter
                     x: Math.max(parent.width / 2 - width / 2, 0)
                     width: units.gu(8)
-                    visible: internalState.state == "overlayTap";
+                    visible: overlayTap.shown
                 }
 
                 DropArea {
                     anchors.fill: parent
                     onDropped: {
-                        internalState.state = "overlayTap";
+                        root.hideError();
+                        overlayTap.show();
                     }
                 }
             },
@@ -122,23 +138,22 @@ TutorialPage {
                 id: overlayGesture
                 objectName: "overlayGesture"
                 anchors.fill: parent
+                hides: [ overlayTap ]
 
                 opacity: 0
                 shown: false
-                showAnimation: UbuntuNumberAnimation { property: "opacity"; to: 1 }
-
-                Column {
-                    id: dragHint
-
-                    anchors.centerIn: parent
-                    spacing: units.gu(3)
-
-                    Icon {
-                        width: units.gu(40)
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        source: "../Stages/graphics/sidestage_drag.svg"
-                        scale: teaseAnimation.scale
+                showAnimation: SequentialAnimation {
+                    PropertyAction { target: overlayGesture; property: "opacity"; value: 0 }
+                    ParallelAnimation {
+                        PropertyAction { target: overlayGesture; property: "visible"; value: true }
+                        UbuntuNumberAnimation { target: overlayGesture; property: "opacity"; to: 1 }
                     }
+                }
+                Icon {
+                    width: units.gu(40)
+                    anchors.centerIn: parent
+                    source: "../Stages/graphics/sidestage_drag.svg"
+                    scale: teaseAnimation.scale
                 }
             },
             Showable {
@@ -149,7 +164,13 @@ TutorialPage {
 
                 opacity: 0
                 shown: false
-                showAnimation: UbuntuNumberAnimation { property: "opacity"; to: 1 }
+                showAnimation: SequentialAnimation {
+                    PropertyAction { target: overlayTap; property: "opacity"; value: 0 }
+                    ParallelAnimation {
+                        PropertyAction { target: overlayTap; property: "visible"; value: true }
+                        UbuntuNumberAnimation { target: overlayTap; property: "opacity"; to: 1 }
+                    }
+                }
 
                 LocalComponents.Tick {
                     objectName: "tickTap"
@@ -173,13 +194,15 @@ TutorialPage {
             bottom: parent.bottom
         }
         width: parent.width - sideStage.width
-        enableDrag: internalState.state === "overlayGesture"
+        enableDrag: overlayGesture.shown
 
         onClicked: {
-            if (sideStage.shown) {
-               sideStage.hide();
-            } else  {
-               sideStage.show();
+            root.hideError();
+            if (!overlayGesture.shown) {
+                overlayGesture.show();
+            } else {
+                overlayTap.hide();
+                overlayGesture.hide();
             }
         }
 
@@ -194,7 +217,7 @@ TutorialPage {
 
         onDrop: {
             // still in the gesture state after dropping?
-            if (internalState.state == "overlayGesture") {
+            if (overlayGesture.shown) {
                 root.showError();
             }
         }

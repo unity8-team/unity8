@@ -64,6 +64,10 @@ Showable {
         errorTimer.start();
     }
 
+    function hideError() {
+        errorTimer.stop();
+    }
+
     ////
 
     visible: false
