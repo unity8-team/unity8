@@ -16,8 +16,8 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-import QtQuick 2.3
-import Ubuntu.Components 1.1
+import QtQuick 2.4
+import Ubuntu.Components 1.3
 import Unity.Application 0.1
 
 Item {
@@ -29,8 +29,8 @@ Item {
     property bool highlightShown: false
     property real shadowOpacity: 1
 
-    property int windowWidth: application.session && application.session.surface ? application.session.surface.size.width : 0
-    property int windowHeight: application.session && application.session.surface ? application.session.surface.size.height : 0
+    property int windowWidth: application && application.session && application.session.lastSurface ? application.session.lastSurface.size.width : 0
+    property int windowHeight: application && application.session && application.session.lastSurface ? application.session.lastSurface.size.height : 0
 
     state: "normal"
     states: [

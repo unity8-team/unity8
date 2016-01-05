@@ -10,13 +10,13 @@ include_directories(
 
 set(QMLPLUGIN_SRC
     activefocuslogger.cpp
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
+    applicationsfiltermodel.cpp
     constants.cpp
     HomeKeyWatcher.cpp
     inputwatcher.cpp
     qlimitproxymodelqml.cpp
     unitysortfilterproxymodelqml.cpp
-    relativetimeformatter.cpp
-    timeformatter.cpp
     Timer.cpp
     unitymenumodelpaths.cpp
     windowkeysfilter.cpp

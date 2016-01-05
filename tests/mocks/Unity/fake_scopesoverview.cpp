@@ -74,11 +74,6 @@ int ScopesOverviewCategories::rowCount(const QModelIndex& /*parent*/) const
     return 2;
 }
 
-void ScopesOverviewCategories::addSpecialCategory(QString const&, QString const&, QString const&, QString const&, QObject*)
-{
-    qFatal("Using un-implemented ScopesOverviewCategories::addSpecialCategory");
-}
-
 bool ScopesOverviewCategories::overrideCategoryJson(QString const& /* categoryId */, QString const& /* json */)
 {
     qFatal("Using un-implemented ScopesOverviewCategories::overrideCategoryJson");
@@ -173,11 +168,6 @@ ScopesOverviewSearchCategories::ScopesOverviewSearchCategories(Scopes *scopes, Q
 int ScopesOverviewSearchCategories::rowCount(const QModelIndex& /*parent*/) const
 {
     return 2;
-}
-
-void ScopesOverviewSearchCategories::addSpecialCategory(QString const&, QString const&, QString const&, QString const&, QObject*)
-{
-    qFatal("Using un-implemented ScopesOverviewSearchCategories::addSpecialCategory");
 }
 
 bool ScopesOverviewSearchCategories::overrideCategoryJson(QString const& /* categoryId */, QString const& /* json */)
@@ -308,7 +298,7 @@ QVariant ScopesOverviewResultsModel::data(const QModelIndex& index, int role) co
         case RoleSubtitle:
             return scope && scope->name() == "Videos this is long ab cd ef gh ij kl" ? "tube, movies, cinema, pictures, art, moving images, magic in a box" : QString();
         case RoleArt:
-            return qmlDirectory() + "/graphics/applicationIcons/dash.png";
+            return QString("../../tests/graphics/applicationIcons/dash.png");
         case RoleMascot:
         case RoleEmblem:
         case RoleSummary:

@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import QtTest 1.0
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
+import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
 import IntegratedLightDM 0.1 as LightDM
@@ -26,7 +26,6 @@ import Powerd 0.1
 import Unity.InputInfo 0.1
 
 import "../../qml"
-import "../../qml/Components/UnityInputInfo"
 
 Rectangle {
     id: root
@@ -52,7 +51,21 @@ Rectangle {
 
     QtObject{
         id: mockOskSettings
-        property bool stayHidden: false;
+        property bool stayHidden: false
+        property bool disableHeight: false
+    }
+
+    InputDeviceModel {
+        id: miceModel
+        deviceFilter: InputInfo.Mouse
+    }
+    InputDeviceModel {
+        id: touchpadModel
+        deviceFilter: InputInfo.TouchPad
+    }
+    InputDeviceModel {
+        id: keyboardsModel
+        deviceFilter: InputInfo.Keyboard
     }
 
     property int physicalOrientation0
@@ -109,6 +122,22 @@ Rectangle {
                 physicalOrientation90: Qt.InvertedPortraitOrientation
                 physicalOrientation180: Qt.LandscapeOrientation
                 primaryOrientationAngle: 90
+            }
+        },
+        State {
+            name: "desktop"
+            PropertyChanges {
+                target: orientedShellLoader
+                width: units.gu(100)
+                height: units.gu(56)
+            }
+            PropertyChanges {
+                target: root
+                physicalOrientation270: Qt.InvertedPortraitOrientation
+                physicalOrientation0:  Qt.LandscapeOrientation
+                physicalOrientation90: Qt.PortraitOrientation
+                physicalOrientation180: Qt.InvertedLandscapeOrientation
+                primaryOrientationAngle: 0
             }
         }
     ]
@@ -250,7 +279,7 @@ Rectangle {
                 anchors { left: parent.left; right: parent.right }
                 activeFocusOnPress: false
                 text: "Device Name"
-                model: ["mako", "manta", "flo"]
+                model: ["mako", "manta", "flo", "desktop"]
                 onSelectedIndexChanged: {
                     testCase.tearDown();
                     applicationArguments.deviceName = model[selectedIndex];
@@ -263,6 +292,10 @@ Rectangle {
                 activeFocusOnPress: false
                 text: "Usage Mode"
                 model: ["Staged", "Windowed", "Automatic"]
+            }
+            MouseTouchEmulationCheckbox {
+                checked: true
+                color: "white"
             }
             Button {
                 text: "Switch fullscreen"
@@ -306,28 +339,67 @@ Rectangle {
             Row {
                 Button {
                     text: "Add mouse"
+                    activeFocusOnPress: false
                     onClicked: {
-                        UnityInputInfo.inputInfo.addMockMouse()
+                        MockInputDeviceBackend.addMockDevice("/mouse" + miceModel.count, InputInfo.Mouse)
                     }
                 }
                 Button {
                     text: "Remove mouse"
+                    activeFocusOnPress: false
                     onClicked: {
-                        UnityInputInfo.inputInfo.removeMockMouse()
+                        MockInputDeviceBackend.removeDevice("/mouse" + (miceModel.count - 1))
                     }
                 }
             }
             Row {
                 Button {
-                    text: "Add kbd"
+                    text: "Add touchpad"
+                    activeFocusOnPress: false
                     onClicked: {
-                        UnityInputInfo.inputInfo.addMockKeyboard()
+                        MockInputDeviceBackend.addMockDevice("/touchpad" + touchpadModel.count, InputInfo.TouchPad)
                     }
                 }
                 Button {
+                    text: "Remove touchpad"
+                    activeFocusOnPress: false
+                    onClicked: {
+                        MockInputDeviceBackend.removeDevice("/touchpad" + (touchpadModel.count - 1))
+                    }
+                }
+            }
+
+            Row {
+                Button {
+                    text: "Add kbd"
+                    activeFocusOnPress: false
+                    onClicked: {
+                        MockInputDeviceBackend.addMockDevice("/kbd" + keyboardsModel.count, InputInfo.Keyboard)
+                    }
+                }
+                Button {
+                    activeFocusOnPress: false
                     text: "Remove kbd"
                     onClicked: {
-                        UnityInputInfo.inputInfo.removeMockKeyboard()
+                        MockInputDeviceBackend.removeDevice("/kbd" + (keyboardsModel.count - 1))
+                    }
+                }
+            }
+
+            // Simulates what happens when the shell is moved to an external monitor and back
+            Button {
+                id: moveToFromMonitorButton
+                text: applicationArguments.deviceName === "desktop" ? "Move to " + prevDevName + " screen" : "Move to desktop screen"
+                activeFocusOnPress: false
+                property string prevDevName: "mako"
+                onClicked: {
+                    usageModeSelector.selectedIndex = 2; // "Automatic"
+
+                    if (applicationArguments.deviceName === "desktop") {
+                        applicationArguments.deviceName = prevDevName;
+                    } else {
+                        prevDevName = applicationArguments.deviceName;
+                        applicationArguments.deviceName = "desktop"
                     }
                 }
             }
@@ -414,7 +486,7 @@ Rectangle {
             compare(dashApp.supportedOrientations, Qt.PrimaryOrientation);
             compare(dashApp.stage, ApplicationInfoInterface.MainStage);
 
-            tryCompareFunction(function(){return dashApp.session.surface != null;}, true);
+            tryCompareFunction(function(){return dashApp.session.lastSurface != null;}, true);
             verify(checkAppSurfaceOrientation(dashAppWindow, dashApp, root.primaryOrientationAngle));
 
             compare(shell.transformRotationAngle, root.primaryOrientationAngle);
@@ -491,7 +563,7 @@ Rectangle {
 
             waitUntilAppSurfaceShowsUp("camera-app")
 
-            var cameraSurface = cameraApp.session.surface;
+            var cameraSurface = cameraApp.session.lastSurface;
             verify(cameraSurface);
 
             var focusChangedSpy = signalSpy;
@@ -798,7 +870,7 @@ Rectangle {
             // shell should remain in its primery orientation as the app in the main stage
             // is the one that dictates its orientation. In this case it's unity8-dash
             // which supports only primary orientation
-            compare(shell.orientation, orientedShell.primaryOrientation);
+            compare(shell.orientation, orientedShell.orientations.primary);
         }
 
         function test_sideStageAppsRemainPortraitInSpread_data() {
@@ -892,9 +964,9 @@ Rectangle {
             verify(gmailApp);
             waitUntilAppSurfaceShowsUp("gmail-webapp")
 
-            verify(gmailApp.session.surface);
+            verify(gmailApp.session.lastSurface);
 
-            tryCompare(gmailApp.session.surface, "activeFocus", true);
+            tryCompare(gmailApp.session.lastSurface, "activeFocus", true);
         }
 
         function test_launchLandscapeOnlyAppOverPortraitOnlyDashThenSwitchToDash() {
@@ -934,21 +1006,27 @@ Rectangle {
             tryCompare(shell, "usageScenario", "phone");
             tryCompare(mockOskSettings, "stayHidden", false);
 
-            UnityInputInfo.inputInfo.addMockKeyboard();
+            MockInputDeviceBackend.addMockDevice("/kbd0", InputInfo.Keyboard);
             tryCompare(shell, "usageScenario", "phone");
             tryCompare(mockOskSettings, "stayHidden", true);
 
-            UnityInputInfo.inputInfo.addMockMouse();
+            MockInputDeviceBackend.addMockDevice("/mouse0", InputInfo.Mouse);
             tryCompare(shell, "usageScenario", "desktop");
             tryCompare(mockOskSettings, "stayHidden", true);
 
-            UnityInputInfo.inputInfo.removeMockKeyboard();
+            MockInputDeviceBackend.removeDevice("/kbd0");
             tryCompare(shell, "usageScenario", "desktop");
             tryCompare(mockOskSettings, "stayHidden", false);
 
-            UnityInputInfo.inputInfo.removeMockMouse();
+            MockInputDeviceBackend.removeDevice("/mouse0");
             tryCompare(shell, "usageScenario", "phone");
             tryCompare(mockOskSettings, "stayHidden", false);
+
+            MockInputDeviceBackend.addMockDevice("/touchpad0", InputInfo.TouchPad);
+            tryCompare(shell, "usageScenario", "desktop");
+
+            MockInputDeviceBackend.removeDevice("/touchpad0");
+            tryCompare(shell, "usageScenario", "phone");
         }
 
         /*
@@ -1048,6 +1126,18 @@ Rectangle {
 
             // shell shouldn't have change its orientation at any moment
             compare(signalSpy.count, 0);
+        }
+
+        function test_moveToExternalMonitor() {
+            loadShell("flo");
+
+            compare(orientedShell.orientation, Qt.InvertedLandscapeOrientation);
+            compare(shell.transformRotationAngle, 90);
+
+            moveToFromMonitorButton.clicked();
+
+            tryCompare(orientedShell, "orientation", Qt.LandscapeOrientation);
+            tryCompare(shell, "transformRotationAngle" , 0);
         }
 
         //  angle - rotation angle in degrees clockwise, relative to the primary orientation.
@@ -1261,7 +1351,7 @@ Rectangle {
 
         // expectedAngle is in orientedShell's coordinate system
         function checkAppSurfaceOrientation(item, app, expectedAngle) {
-            var surface = app.session.surface;
+            var surface = app.session.lastSurface;
             if (!surface) {
                 console.warn("no surface");
                 return false;
@@ -1349,7 +1439,7 @@ Rectangle {
             var app = ApplicationManager.findApplication(appId);
             verify(app);
 
-            var surface = app.session.surface;
+            var surface = app.session.lastSurface;
             verify(surface);
 
             var surfaceItem = findSurfaceItem(appWindow, surface);

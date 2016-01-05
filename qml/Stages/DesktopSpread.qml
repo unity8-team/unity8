@@ -16,7 +16,7 @@
 
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
-import Ubuntu.Components 1.2
+import Ubuntu.Components 1.3
 import Ubuntu.Gestures 0.1
 import Unity.Application 0.1
 
@@ -27,6 +27,11 @@ FocusScope {
     property Item workspace: null
 
     readonly property alias highlightedIndex: spreadRepeater.highlightedIndex
+
+    function show() {
+        spreadContainer.animateIn = true;
+        root.state = "altTab";
+    }
 
     onFocusChanged: {
         // When the spread comes active, we want to keep focus to the input handler below
@@ -87,7 +92,7 @@ FocusScope {
     function focusSelected() {
         if (spreadRepeater.highlightedIndex != -1) {
             var application = ApplicationManager.get(spreadRepeater.highlightedIndex);
-            ApplicationManager.focusApplication(application.appId);
+            ApplicationManager.requestFocusApplication(application.appId);
         }
     }
 
@@ -515,23 +520,4 @@ FocusScope {
         }
 
     ]
-
-    MouseArea {
-        id: rightEdgePushArea
-        anchors {
-            top: parent.top
-            right: parent.right
-            bottom: parent.bottom
-        }
-        // TODO: Make this a push to edge thing like the launcher when we can,
-        // for now, yes, we want 1 pixel, regardless of the scaling
-        width: 1
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            if (containsMouse) {
-                spreadContainer.animateIn = true;
-                root.state = "altTab";
-            }
-        }
-    }
 }

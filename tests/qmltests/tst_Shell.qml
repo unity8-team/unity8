@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
 import AccountsService 0.1
 import GSettings 1.0
 import IntegratedLightDM 0.1 as LightDM
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
+import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItem
 import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Application 0.1
 import Unity.Connectivity 0.1
@@ -29,8 +29,11 @@ import Unity.Notifications 1.0
 import Unity.Test 0.1
 import Powerd 0.1
 import Wizard 0.1 as Wizard
+import Utils 0.1
 
 import "../../qml"
+import "../../qml/Components"
+import "../../qml/Components/PanelState"
 import "Stages"
 
 Rectangle {
@@ -58,6 +61,10 @@ Rectangle {
 
             anchors.centerIn: parent
 
+            property int shellOrientation: Qt.PortraitOrientation
+            property int nativeOrientation: Qt.PortraitOrientation
+            property int primaryOrientation: Qt.PortraitOrientation
+
             state: "phone"
             states: [
                 State {
@@ -74,6 +81,9 @@ Rectangle {
                         target: shellLoader
                         width: units.gu(100)
                         height: units.gu(71)
+                        shellOrientation: Qt.LandscapeOrientation
+                        nativeOrientation: Qt.LandscapeOrientation
+                        primaryOrientation: Qt.LandscapeOrientation
                     }
                 },
                 State {
@@ -96,9 +106,13 @@ Rectangle {
                 Shell {
                     id: __shell
                     usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
-                    orientation: Qt.PortraitOrientation
-                    primaryOrientation: Qt.PortraitOrientation
-                    nativeOrientation: Qt.PortraitOrientation
+                    nativeWidth: width
+                    nativeHeight: height
+                    orientation: shellLoader.shellOrientation
+                    orientations: Orientations {
+                        native_: shellLoader.nativeOrientation
+                        primary: shellLoader.primaryOrientation
+                    }
                     Component.onDestruction: {
                         shellLoader.itemDestroyed = true;
                     }
@@ -299,9 +313,11 @@ Rectangle {
         }
 
         function cleanup() {
+            waitForRendering(shell);
             mouseEmulation.checked = true;
             tryCompare(shell, "enabled", true); // make sure greeter didn't leave us in disabled state
             tearDown();
+            WindowStateStorage.clear();
         }
 
         function loadShell(formFactor) {
@@ -329,9 +345,9 @@ Rectangle {
             var app2 = ApplicationManager.startApplication("webbrowser-app")
             var app3 = ApplicationManager.startApplication("camera-app")
             var app4 = ApplicationManager.startApplication("facebook-webapp")
-            var app5 = ApplicationManager.startApplication("calendar-app")
+            var app5 = ApplicationManager.startApplication("camera-app")
             var app6 = ApplicationManager.startApplication("gallery-app")
-            var app7 = ApplicationManager.startApplication("camera-app")
+            var app7 = ApplicationManager.startApplication("calendar-app")
             waitUntilAppWindowIsFullyLoaded(app7);
         }
 
@@ -377,6 +393,8 @@ Rectangle {
             LightDM.Greeter.authenticate(""); // reset greeter
 
             sessionSpy.clear();
+
+            GSettingsController.setLifecycleExemptAppids([]);
         }
 
         function killApps() {
@@ -396,7 +414,7 @@ Rectangle {
             // Open an application and focus
             waitUntilApplicationWindowIsFullyVisible(app);
             ApplicationManager.focusApplication(app);
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
 
             notifications.model = mockNotificationsModel;
 
@@ -418,7 +436,7 @@ Rectangle {
             waitForRendering(notification);
 
             // Make sure activeFocus went away from the app window
-            tryCompare(app.session.surface, "activeFocus", false);
+            tryCompare(app.session.lastSurface, "activeFocus", false);
             tryCompare(stage, "interactive", false);
 
             // Clicking the button should dismiss the notification and return focus
@@ -426,7 +444,7 @@ Rectangle {
             mouseClick(buttonAccept);
 
             // Make sure we're back to normal
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
             compare(stage.interactive, true, "Stages not interactive again after modal notification has closed");
         }
 
@@ -436,8 +454,8 @@ Rectangle {
                 hints: {"x-canonical-private-affirmative-tint": "true"},
                 summary: "Tom Ato",
                 body: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-                icon: "../graphics/avatars/funky.png",
-                secondaryIcon: "../graphics/applicationIcons/facebook.png",
+                icon: "../../tests/graphics/avatars/funky.png",
+                secondaryIcon: "../../tests/graphics/applicationIcons/facebook.png",
                 actions: [{ id: "ok_id", label: "Ok"},
                     { id: "cancel_id", label: "Cancel"},
                     { id: "notreally_id", label: "Not really"},
@@ -758,7 +776,7 @@ Rectangle {
             var app = ApplicationManager.startApplication("dialer-app");
             waitUntilAppWindowIsFullyLoaded(app);
 
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
 
             // Drag the indicators panel half-open
             var touchX = shell.width / 2;
@@ -769,7 +787,7 @@ Rectangle {
                     true /* beginTouch */, false /* endTouch */);
             verify(indicators.partiallyOpened);
 
-            tryCompare(app.session.surface, "activeFocus", false);
+            tryCompare(app.session.lastSurface, "activeFocus", false);
 
             // And finish getting it open
             touchFlick(indicators,
@@ -778,11 +796,11 @@ Rectangle {
                     false /* beginTouch */, true /* endTouch */);
             tryCompare(indicators, "fullyOpened", true);
 
-            tryCompare(app.session.surface, "activeFocus", false);
+            tryCompare(app.session.lastSurface, "activeFocus", false);
 
             dragToCloseIndicatorsPanel();
 
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
         }
 
         function test_launchedAppHasActiveFocus_data() {
@@ -803,9 +821,9 @@ Rectangle {
             verify(webApp);
             waitUntilAppSurfaceShowsUp("webbrowser-app")
 
-            verify(webApp.session.surface);
+            verify(webApp.session.lastSurface);
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
         }
 
         function test_launchedAppKeepsActiveFocusOnUsageModeChange() {
@@ -816,9 +834,9 @@ Rectangle {
             verify(webApp);
             waitUntilAppSurfaceShowsUp("webbrowser-app")
 
-            verify(webApp.session.surface);
+            verify(webApp.session.lastSurface);
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
 
             shell.usageScenario = "desktop";
 
@@ -828,7 +846,7 @@ Rectangle {
                 verify(desktopWindow);
             }
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
 
             shell.usageScenario = "tablet";
 
@@ -838,7 +856,7 @@ Rectangle {
                 verify(desktopWindow);
             }
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
         }
 
         function waitUntilAppSurfaceShowsUp(appId) {
@@ -936,6 +954,22 @@ Rectangle {
             removeTimeConstraintsFromDirectionalDragAreas(greeter);
         }
 
+        function revealLauncherByEdgePushWithMouse() {
+            var launcher = findChild(shell, "launcher");
+            verify(launcher);
+
+            // Place the mouse against the window/screen edge and push beyond the barrier threshold
+            mouseMove(shell, 0, shell.height / 2);
+            launcher.pushEdge(EdgeBarrierSettings.pushThreshold * 1.1);
+
+            var panel = findChild(launcher, "launcherPanel");
+            verify(panel);
+
+            // wait until it gets fully extended
+            tryCompare(panel, "x", 0);
+            tryCompare(launcher, "state", "visibleTemporary");
+        }
+
         function test_focusRequestedHidesGreeter() {
             loadShell("phone");
             swipeAwayGreeter();
@@ -943,7 +977,7 @@ Rectangle {
 
             var app = ApplicationManager.startApplication("dialer-app");
             // wait until the app is fully loaded (ie, real surface replaces splash screen)
-            tryCompareFunction(function() { return app.session !== null && app.session.surface !== null }, true);
+            tryCompareFunction(function() { return app.session !== null && app.session.lastSurface !== null }, true);
 
             // Minimize the application we just launched
             swipeFromLeftEdge(shell.width * 0.75);
@@ -1240,30 +1274,6 @@ Rectangle {
             tryCompare(launcherPanel, "x", -launcherPanel.width);
         }
 
-        function test_background_data() {
-            return [
-                {tag: "color", accounts: Qt.resolvedUrl("data:image/svg+xml,<svg><rect width='100%' height='100%' fill='#dd4814'/></svg>"), gsettings: "", output: Qt.resolvedUrl("data:image/svg+xml,<svg><rect width='100%' height='100%' fill='#dd4814'/></svg>")},
-                {tag: "empty", accounts: "", gsettings: "", output: "defaultBackground"},
-                {tag: "as-specified", accounts: Qt.resolvedUrl("../data/unity/backgrounds/blue.png"), gsettings: "", output: Qt.resolvedUrl("../data/unity/backgrounds/blue.png")},
-                {tag: "gs-specified", accounts: "", gsettings: Qt.resolvedUrl("../data/unity/backgrounds/red.png"), output: Qt.resolvedUrl("../data/unity/backgrounds/red.png")},
-                {tag: "both-specified", accounts: Qt.resolvedUrl("../data/unity/backgrounds/blue.png"), gsettings: Qt.resolvedUrl("../data/unity/backgrounds/red.png"), output: Qt.resolvedUrl("../data/unity/backgrounds/blue.png")},
-                {tag: "invalid-as", accounts: Qt.resolvedUrl("../data/unity/backgrounds/nope.png"), gsettings: Qt.resolvedUrl("../data/unity/backgrounds/red.png"), output: Qt.resolvedUrl("../data/unity/backgrounds/red.png")},
-                {tag: "invalid-both", accounts: Qt.resolvedUrl("../data/unity/backgrounds/nope.png"), gsettings: Qt.resolvedUrl("../data/unity/backgrounds/stillnope.png"), output: "defaultBackground"},
-            ]
-        }
-        function test_background(data) {
-            loadShell("phone");
-            swipeAwayGreeter();
-            AccountsService.backgroundFile = data.accounts;
-            GSettingsController.setPictureUri(data.gsettings);
-
-            if (data.output === "defaultBackground") {
-                tryCompare(shell, "background", shell.defaultBackground);
-            } else {
-                tryCompare(shell, "background", data.output);
-            }
-        }
-
         function test_tabletLogin_data() {
             return [
                 {tag: "auth error", user: "auth-error", loggedIn: false, password: ""},
@@ -1404,9 +1414,9 @@ Rectangle {
             waitUntilAppWindowIsFullyLoaded(app3);
 
             // Do a quick alt-tab and see if focus changes
-            tryCompare(app3.session.surface, "activeFocus", true)
+            tryCompare(app3.session.lastSurface, "activeFocus", true)
             keyClick(Qt.Key_Tab, Qt.ControlModifier)
-            tryCompare(app2.session.surface, "activeFocus", true)
+            tryCompare(app2.session.lastSurface, "activeFocus", true)
 
             var desktopSpread = findChild(shell, "spread")
 
@@ -1422,7 +1432,7 @@ Rectangle {
             tryCompare(desktopSpread, "state", "")
 
             // Focus should have switched back now
-            tryCompare(app3.session.surface, "activeFocus", true)
+            tryCompare(app3.session.lastSurface, "activeFocus", true)
         }
 
         function test_altTabWrapAround() {
@@ -1471,7 +1481,7 @@ Rectangle {
             tryCompare(desktopSpread, "state", "")
 
             // Make sure that after wrapping around once, we have the same one focused as at the beginning
-            tryCompare(focused.session.surface, "activeFocus", true)
+            tryCompare(focused.session.lastSurface, "activeFocus", true)
         }
 
         function test_altBackTabNavigation() {
@@ -1717,11 +1727,11 @@ Rectangle {
             keyPress(Qt.Key_Control)
             keyClick(Qt.Key_Tab);
 
-
             tryCompare(desktopSpread, "state", "altTab")
 
-            mouseMove(shell, 0, 0);
-            tryCompare(launcher, "state", "visibleTemporary")
+            revealLauncherByEdgePushWithMouse();
+            tryCompare(launcher, "x", 0);
+            waitForRendering(shell)
 
             mouseClick(bfb, bfb.width / 2, bfb.height / 2)
             tryCompare(launcher, "state", "")
@@ -1730,6 +1740,226 @@ Rectangle {
             tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash")
 
             keyRelease(Qt.Key_Control);
+        }
+
+        // regression test for http://pad.lv/1443319
+        function test_closeMaximizedAndRestart() {
+            loadDesktopShellWithApps();
+
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+            var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
+
+            tryCompare(appDelegate, "state", "normal");
+            tryCompare(PanelState, "buttonsVisible", false)
+
+            mouseClick(maximizeButton, maximizeButton.width / 2, maximizeButton.height / 2);
+            tryCompare(appDelegate, "state", "maximized");
+            tryCompare(PanelState, "buttonsVisible", true)
+
+            ApplicationManager.stopApplication(appId);
+            tryCompare(PanelState, "buttonsVisible", false)
+
+            ApplicationManager.startApplication(appId);
+            tryCompare(PanelState, "buttonsVisible", true)
+        }
+
+        function test_newAppHasValidGeometry() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater");
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+
+            var resizeArea = findChild(appDelegate, "windowResizeArea");
+            var priv = findInvisibleChild(resizeArea, "priv");
+
+            // Make sure windows are at 0,0 or greater and they have a size that's > 0
+            compare(priv.normalX >= 0, true)
+            compare(priv.normalY >= 0, true)
+            compare(priv.normalWidth > 0, true)
+            compare(priv.normalHeight > 0, true)
+        }
+
+        // bug http://pad.lv/1431566
+        function test_switchToStagedHidesPanelButtons() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+            var panelButtons = findChild(shell, "panelWindowControlButtons")
+
+            tryCompare(appDelegate, "state", "normal");
+            tryCompare(panelButtons, "visible", false);
+
+            appDelegate.maximize(false);
+
+            shell.usageScenario = "phone";
+            waitForRendering(shell);
+            tryCompare(panelButtons, "visible", false);
+        }
+
+        function test_lockingGreeterHidesPanelButtons() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+            var panelButtons = findChild(shell, "panelWindowControlButtons")
+
+            tryCompare(appDelegate, "state", "normal");
+            tryCompare(panelButtons, "visible", false);
+
+            appDelegate.maximize(false);
+
+            LightDM.Greeter.showGreeter();
+            waitForRendering(shell);
+            tryCompare(panelButtons, "visible", false);
+        }
+
+        function test_cantMoveWindowUnderPanel() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appDelegate = appRepeater.itemAt(0);
+
+            mousePress(appDelegate, appDelegate.width / 2, units.gu(1))
+            mouseMove(appDelegate, appDelegate.width / 2, -units.gu(100))
+
+            compare(appDelegate.y >= PanelState.panelHeight, true);
+        }
+
+        function test_restoreWindowStateFixesIfUnderPanel() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+
+            // Move it under the panel programmatically (might happen later with an alt+drag)
+            appDelegate.y = -units.gu(10)
+
+            ApplicationManager.stopApplication(appId)
+            ApplicationManager.startApplication(appId)
+            waitForRendering(shell)
+
+            // Make sure the newly started one is at index 0 again
+            tryCompare(ApplicationManager.get(0), "appId", appId);
+
+            appDelegate = appRepeater.itemAt(0);
+            compare(appDelegate.y >= PanelState.panelHeight, true);
+        }
+
+        function test_lifecyclePolicyForNonTouchApp_data() {
+            return [
+                {tag: "phone", formFactor: "phone", usageScenario: "phone"},
+                {tag: "tablet", formFactor: "tablet", usageScenario: "tablet"}
+            ]
+        }
+
+        function test_lifecyclePolicyForNonTouchApp(data) {
+            loadShell(data.formFactor);
+            shell.usageScenario = data.usageScenario;
+
+            // Add two main stage apps, the second in order to suspend the first.
+            // LibreOffice has isTouchApp set to false by our mocks.
+            var app1 = ApplicationManager.startApplication("libreoffice");
+            waitUntilAppWindowIsFullyLoaded(app1);
+            var app2 = ApplicationManager.startApplication("gallery-app");
+            waitUntilAppWindowIsFullyLoaded(app2);
+
+            // Sanity checking
+            compare(app1.stage, ApplicationInfoInterface.MainStage);
+            compare(app2.stage, ApplicationInfoInterface.MainStage);
+            verify(!app1.isTouchApp);
+            verify(!app1.session.lastSurface.activeFocus);
+
+            // Make sure app1 is exempt with a requested suspend
+            verify(app1.exemptFromLifecycle);
+            compare(app1.requestedState, ApplicationInfoInterface.RequestedSuspended);
+        }
+
+        function test_lifecyclePolicyExemption_data() {
+            return [
+                {tag: "phone", formFactor: "phone", usageScenario: "phone"},
+                {tag: "tablet", formFactor: "tablet", usageScenario: "tablet"}
+            ]
+        }
+
+        function test_lifecyclePolicyExemption(data) {
+            loadShell(data.formFactor);
+            shell.usageScenario = data.usageScenario;
+
+            GSettingsController.setLifecycleExemptAppids(["webbrowser-app"]);
+
+            // Add two main stage apps, the second in order to suspend the first
+            var app1 = ApplicationManager.startApplication("webbrowser-app");
+            waitUntilAppWindowIsFullyLoaded(app1);
+            var app2 = ApplicationManager.startApplication("gallery-app");
+            waitUntilAppWindowIsFullyLoaded(app2);
+
+            // Sanity checking
+            compare(app1.stage, ApplicationInfoInterface.MainStage);
+            compare(app2.stage, ApplicationInfoInterface.MainStage);
+            verify(!app1.session.lastSurface.activeFocus);
+
+            // Make sure app1 is exempt with a requested suspend
+            verify(app1.exemptFromLifecycle);
+            compare(app1.requestedState, ApplicationInfoInterface.RequestedSuspended);
+        }
+
+        function test_switchToStagedForcesLegacyAppClosing_data() {
+            return [
+                {tag: "forceClose", replug: false },
+                {tag: "replug", replug: true }
+            ];
+        }
+
+        function test_switchToStagedForcesLegacyAppClosing(data) {
+            loadShell("desktop")
+            shell.usageScenario = "desktop"
+            waitForRendering(shell);
+
+            ApplicationManager.startApplication("camera-app")
+
+            shell.usageScenario = "phone"
+            waitForRendering(shell);
+
+            // No legacy app running yet... Popup must *not* show.
+            var popup = findChild(root, "modeSwitchWarningDialog");
+            compare(popup, null);
+
+            shell.usageScenario = "desktop"
+            waitForRendering(shell);
+
+            // Now start a legacy app
+            ApplicationManager.startApplication("libreoffice")
+
+            shell.usageScenario = "phone"
+            waitForRendering(shell);
+
+            // The popup must appear now
+            popup = findChild(root, "modeSwitchWarningDialog");
+            compare(popup !== null, true);
+
+            if (data.replug) {
+                shell.usageScenario = "desktop"
+                waitForRendering(shell);
+
+            } else {
+                var forceCloseButton = findChild(popup, "forceCloseButton");
+                mouseClick(forceCloseButton, forceCloseButton.width / 2, forceCloseButton.height / 2);
+                waitForRendering(root);
+            }
+
+            // Popup must be gone now
+            popup = findChild(root, "modeSwitchWarningDialog");
+            compare(popup === null, true);
+
+            if (data.replug) {
+                // Libreoffice must still be running
+                compare(ApplicationManager.findApplication("libreoffice") !== null, true);
+            } else {
+                // Libreoffice must be gone now
+                compare(ApplicationManager.findApplication("libreoffice") === null, true);
+            }
         }
     }
 }

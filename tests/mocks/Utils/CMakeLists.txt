@@ -13,13 +13,13 @@ set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/activefocuslogger.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/qlimitproxymodelqml.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/unitysortfilterproxymodelqml.cpp
-    ${CMAKE_SOURCE_DIR}/plugins/Utils/relativetimeformatter.cpp
-    ${CMAKE_SOURCE_DIR}/plugins/Utils/timeformatter.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/unitymenumodelpaths.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/windowkeysfilter.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/windowscreenshotprovider.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/easingcurve.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/inputwatcher.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/applicationsfiltermodel.cpp
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
     constants.cpp
     plugin.cpp
     windowstatestorage.cpp

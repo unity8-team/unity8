@@ -44,6 +44,8 @@ MirSurfaceItem::MirSurfaceItem(QQuickItem *parent)
         Qt::ExtraButton5 | Qt::ExtraButton6 | Qt::ExtraButton7 | Qt::ExtraButton8 |
         Qt::ExtraButton9 | Qt::ExtraButton10 | Qt::ExtraButton11 |
         Qt::ExtraButton12 | Qt::ExtraButton13);
+
+    connect(this, &QQuickItem::visibleChanged, this, &MirSurfaceItem::updateMirSurfaceVisibility);
 }
 
 MirSurfaceItem::~MirSurfaceItem()
@@ -194,17 +196,18 @@ void MirSurfaceItem::setSurface(MirSurfaceInterface* surface)
         m_qmlContentComponent = nullptr;
 
         disconnect(m_qmlSurface, nullptr, this, nullptr);
-        m_qmlSurface->decrementViewCount();
+        m_qmlSurface->unregisterView((qintptr)this);
     }
 
     m_qmlSurface = static_cast<MirSurface*>(surface);
 
     if (m_qmlSurface) {
-        m_qmlSurface->incrementViewCount();
+        m_qmlSurface->registerView((qintptr)this);
 
         m_qmlSurface->setActiveFocus(hasActiveFocus());
 
         updateSurfaceSize();
+        updateMirSurfaceVisibility();
 
         connect(m_qmlSurface, &MirSurface::orientationAngleChanged, this, &MirSurfaceItem::orientationAngleChanged);
         connect(m_qmlSurface, &MirSurface::screenshotUrlChanged, this, &MirSurfaceItem::updateScreenshot);
@@ -253,6 +256,13 @@ void MirSurfaceItem::itemChange(ItemChange change, const ItemChangeData & value)
     }
 }
 
+void MirSurfaceItem::updateMirSurfaceVisibility()
+{
+    if (!m_qmlSurface) return;
+
+    m_qmlSurface->setViewVisibility((qintptr)this, isVisible());
+}
+
 void MirSurfaceItem::setConsumesInput(bool value)
 {
     if (m_consumesInput != value) {
@@ -293,5 +303,13 @@ void MirSurfaceItem::updateSurfaceSize()
 {
     if (m_qmlSurface && m_surfaceWidth > 0 && m_surfaceHeight > 0) {
         m_qmlSurface->resize(m_surfaceWidth, m_surfaceHeight);
+    }
+}
+
+void MirSurfaceItem::setFillMode(FillMode value)
+{
+    if (value != m_fillMode) {
+        m_fillMode = value;
+        Q_EMIT fillModeChanged(m_fillMode);
     }
 }

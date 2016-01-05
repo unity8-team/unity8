@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
 
 TestCase {
@@ -239,7 +239,8 @@ TestCase {
         var x = item.width / 2;
         var y = item.height - units.gu(1);
         var toY = units.gu(1);
-        while (i < 5 && !item.atYEnd) {
+        var maxIterations = 5 + item.contentHeight / item.height;
+        while (i < maxIterations && !item.atYEnd) {
             touchFlick(item, x, y, x, toY);
             tryCompare(item, "moving", false);
             ++i;

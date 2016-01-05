@@ -89,6 +89,12 @@ public:
     bool manualSurfaceCreation() const { return m_manualSurfaceCreation; }
     void setManualSurfaceCreation(bool value);
 
+    bool isTouchApp() const override;
+    void setIsTouchApp(bool isTouchApp); // only in mock
+
+    bool exemptFromLifecycle() const override;
+    void setExemptFromLifecycle(bool) override;
+
 public:
     void setSession(Session* session);
     Session* session() const { return m_session; }
@@ -103,7 +109,7 @@ public Q_SLOTS:
     Q_INVOKABLE void destroySession();
 
 private Q_SLOTS:
-    void onSessionSurfaceChanged(MirSurface*);
+    void onSessionSurfaceAdded(MirSurface*);
 
 private:
     void setIcon(const QUrl &value);
@@ -121,6 +127,8 @@ private:
     Qt::ScreenOrientations m_supportedOrientations;
     bool m_rotatesWindowContents;
     RequestedState m_requestedState;
+    bool m_isTouchApp;
+    bool m_exemptFromLifecycle;
 
     bool m_manualSurfaceCreation;
 };
