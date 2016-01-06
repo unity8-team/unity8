@@ -167,7 +167,7 @@ void MirSurfaceItem::touchEvent(QTouchEvent * event)
     }
 
     Q_FOREACH(QTouchEvent::TouchPoint touchPoint, event->touchPoints()) {
-        QString id(QString("%1").arg(touchPoint.id()));
+        QString id(touchPoint.id());
         QVariantList list =  m_touchTrail[id].toList();
         list.append(QVariant::fromValue(touchPoint.pos()));
         if (list.count() > 100) list.pop_front();

@@ -201,7 +201,7 @@ Rectangle {
                     anchors { left: parent.left; right: parent.right }
                     activeFocusOnPress: false
                     text: "Usage scenario"
-                    model: ["tablet", "phone", "desktop"]
+                    model: ["phone", "tablet", "desktop"]
                 }
                 MouseTouchEmulationCheckbox {
                     id: mouseEmulation
