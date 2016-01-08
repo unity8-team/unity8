@@ -349,7 +349,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Facebook");
     application->setScreenshotId("facebook");
     application->setIconId("facebook");
-    application->setSupportedOrientations(Qt::PrimaryOrientation);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);

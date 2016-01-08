@@ -73,21 +73,15 @@ QString touchState(Qt::TouchPointState state) {
     return "unknown";
 }
 
-QString touchesString(QList<QObject*> touches) {
+QString touchesString(const QList<QObject*> touches) {
     QString str;
     Q_FOREACH(QObject* object, touches) {
         GestureTouchPoint* touchPoint = qobject_cast<GestureTouchPoint*>(object);
         if (touchPoint) {
-            str += QString("[%1 @ (%2, %3)], ").arg(touchPoint->id()).arg(touchPoint->x()).arg(touchPoint->y());
+            str += QStringLiteral("[%1 @ (%2, %3)], ").arg(touchPoint->id())
+                                                      .arg(touchPoint->x())
+                                                      .arg(touchPoint->y());
         }
-    }
-    return str;
-}
-
-QString touchesString(QList<GestureTouchPoint*> touches) {
-    QString str;
-    Q_FOREACH(GestureTouchPoint* touchPoint, touches) {
-        str += QString("[%1 @ (%2, %3)], ").arg(touchPoint->id()).arg(touchPoint->x()).arg(touchPoint->y());
     }
     return str;
 }
@@ -96,10 +90,10 @@ QString touchEventString(QTouchEvent* event) {
     if (!event) return QString();
     QString str;
     Q_FOREACH(const auto& touchPoint, event->touchPoints()) {
-        str += QString("[%1:%2 @ (%3, %4)], ").arg(touchPoint.id())
-                                              .arg(touchState(touchPoint.state()))
-                                              .arg(touchPoint.pos().x())
-                                              .arg(touchPoint.pos().y());
+        str += QStringLiteral("[%1:%2 @ (%3, %4)], ").arg(touchPoint.id())
+                                                     .arg(touchState(touchPoint.state()))
+                                                     .arg(touchPoint.pos().x())
+                                                     .arg(touchPoint.pos().y());
     }
     return str;
 }
@@ -751,9 +745,6 @@ void TouchGestureArea::resyncCachedTouchPoints()
         Q_EMIT updated(m_movedTouchPoints);
     }
     if (added || ended || moved) Q_EMIT touchPointsUpdated();
-
-//    tgaDebug("Resync LiveTouches " << touchesString(m_liveTouchPoints.values()));
-//    tgaDebug("Resync CachedTouches " << touchesString(m_cachedTouchPoints.values()));
 }
 
 int TouchGestureArea::touchPoint_count(QQmlListProperty<GestureTouchPoint> *list)

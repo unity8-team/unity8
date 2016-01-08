@@ -59,7 +59,7 @@ Showable {
         }
 
         Label {
-            text: "Drag using 3 fingers any application from one window to the other"
+            text: i18n.tr("Drag using 3 fingers any application from one window to the other")
             width: parent.width
             wrapMode: Text.WordWrap
             color: enabled ? Qt.rgba(1,1,1,1) : Qt.rgba(1,0,0,1)
