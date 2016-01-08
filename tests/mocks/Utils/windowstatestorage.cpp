@@ -61,6 +61,7 @@ void WindowStateStorage::clear()
 {
     m_state.clear();
     m_geometry.clear();
+    m_stage.clear();
 }
 
 void WindowStateStorage::saveState(const QString &windowId, WindowState state)
