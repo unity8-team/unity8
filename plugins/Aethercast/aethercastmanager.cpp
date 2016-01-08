@@ -32,6 +32,8 @@ AethercastManager::AethercastManager(QObject *parent):
     m_manager->RegisterInputProvider(QDBusObjectPath(MANAGER_PATH), QVariantMap());
 
     connect(m_inputProvider, &InputProvider::cursorChanged, this, &AethercastManager::cursorChanged);
+    connect(m_inputProvider, &InputProvider::mouseXChanged, this, &AethercastManager::mouseXChanged);
+    connect(m_inputProvider, &InputProvider::mouseYChanged, this, &AethercastManager::mouseYChanged);
 }
 
 AethercastManager::~AethercastManager()
@@ -39,24 +41,28 @@ AethercastManager::~AethercastManager()
     m_manager->UnregisterInputProvider(QDBusObjectPath(MANAGER_PATH));
 }
 
-int AethercastManager::cursorX() const
+int AethercastManager::mouseX() const
 {
-    return m_inputProvider->cursorY();
+    return m_inputProvider->mouseX();
 }
 
-void AethercastManager::setCursorX(int cursorX)
+void AethercastManager::setMouseX(int mouseX)
 {
-    m_inputProvider->setCursorX(cursorX);
+    if (mouseX != m_inputProvider->mouseX()) {
+        m_inputProvider->setMouseX(mouseX);
+    }
 }
 
-int AethercastManager::cursorY() const
+int AethercastManager::mouseY() const
 {
-    return m_inputProvider->cursorY();
+    return m_inputProvider->mouseY();
 }
 
-void AethercastManager::setCursorY(int cursorY)
+void AethercastManager::setMouseY(int mouseY)
 {
-    m_inputProvider->setCursorX(cursorY)
+    if (mouseY != m_inputProvider->mouseY()) {
+        m_inputProvider->setMouseY(mouseY);
+    }
 }
 
 QString AethercastManager::cursor() const
@@ -66,10 +72,5 @@ QString AethercastManager::cursor() const
 
 void AethercastManager::setCursor(const QString &cursor)
 {
-    m_inputProvider->setCursor(cursor);
-}
-
-void AethercastManager::sendMousePosition(int x, int y)
-{
-    m_inputProvider->setMousePosition(x, y);
+    m_inputProvider->setCursorSource(cursor);
 }

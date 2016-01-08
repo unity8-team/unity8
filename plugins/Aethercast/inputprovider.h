@@ -31,10 +31,16 @@ class InputProvider: public QObject
 public:
     InputProvider(QObject *parent = nullptr);
 
-    void setMousePosition(int x, int y);
+    // exposed to Shell
+    void setMouseX(int x);
+    void setMouseY(int y);
+    int mouseX() const;
+    int mouseY() const;
+    void setCursorSource(const QString &cursor);
+    QString cursorSource() const;
 
+    // exposed on D-Bus
     QString cursor() const;
-    void setCursor(const QString &cursor);
 
 public Q_SLOTS:
     void NewConnection(const QDBusUnixFileDescriptor &fd, const QVariantMap &options);
@@ -42,11 +48,14 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void cursorChanged();
+    void mouseXChanged();
+    void mouseYChanged();
     void PropertiesChanged(const QString &interface, const QVariantMap &changed, const QStringList &invalid);
 
 private:
     int m_x = 0;
     int m_y = 0;
+    QString m_cursorSource;
     QString m_cursor;
     QFile m_file;
     InputProviderAdaptor *m_adaptor;

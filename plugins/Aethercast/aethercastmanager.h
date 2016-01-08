@@ -26,28 +26,30 @@ class InputProvider;
 class AethercastManager: public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int cursorX READ cursorX WRITE setCursorX NOTIFY cursorXChanged)
-    Q_PROPERTY(int cursorY READ cursorY WRITE setCursorY NOTIFY cursorYChanged)
+    Q_PROPERTY(int mouseX READ mouseX WRITE setMouseX NOTIFY mouseXChanged)
+    Q_PROPERTY(int mouseY READ mouseY WRITE setMouseY NOTIFY mouseYChanged)
     Q_PROPERTY(QString cursor READ cursor WRITE setCursor NOTIFY cursorChanged)
 
 public:
     explicit AethercastManager(QObject *parent = 0);
     ~AethercastManager();
 
-    int cursorX() const;
-    void setCursorX(int cursorX);
+    int mouseX() const;
+    void setMouseX(int mouseX);
 
-    int cursorY() const;
-    void setCursorY(int cursorY);
+    int mouseY() const;
+    void setMouseY(int mouseY);
 
     QString cursor() const;
     void setCursor(const QString &cursor);
 
-public Q_SLOTS:
-    void sendMousePosition(int x, int y);
+//public Q_SLOTS:
+//    void sendMousePosition(int x, int y);
 
 Q_SIGNALS:
     void cursorChanged();
+    void mouseXChanged();
+    void mouseYChanged();
 
 private:
     ManagerInterface *m_manager;

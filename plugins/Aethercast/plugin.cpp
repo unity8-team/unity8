@@ -18,16 +18,18 @@
 #include "aethercastmanager.h"
 
 #include <QtQml/qqml.h>
+#include <QDebug>
 
 static QObject *manager_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
+    qDebug() << "imageprovider is" << engine->imageProvider("cursor");
     return new AethercastManager();
 }
 
 void LightsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(uri == QLatin1String("Lights"));
+    Q_ASSERT(uri == QLatin1String("Aethercast"));
     qmlRegisterSingletonType<AethercastManager>(uri, 0, 1, "AethercastManager", manager_provider);
 }

@@ -181,12 +181,19 @@ Item {
         onActivated: { launcher.fadeOut(); shell.showHome(); }
     }
 
-    Aethercast {
-        id: aethercast
-        cursorX: cursor.x
-        cursorY: cursor.y
-        cursor: "image://cursor/" + mousePointer.themeName + "/" + mousePointer.cursorName
+    CursorImageHelper {
+        id: cursorImageHelper
     }
+
+    Binding { target: AethercastManager; property: "x"; value: cursor.x }
+    Binding { target: AethercastManager; property: "cursorImage"; value: cursorImageHelper.cursorImage(cursor.themeName + "/" + cursor.cursorName) }
+
+//    AethercastManager {
+//        id: aethercast
+//        cursorX: cursor.x
+//        cursorY: cursor.y
+//        cursor: mousePointer.themeName + "/" + mousePointer.cursorName
+//    }
 
     Item {
         id: stages

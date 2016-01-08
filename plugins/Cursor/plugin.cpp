@@ -29,11 +29,12 @@ void CursorPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("Cursor"));
     qmlRegisterType<MousePointer>(uri, 1, 0, "MousePointer");
+    qmlRegisterType<CursorImageHelper>(uri, 1, 0, "CursorImageHelper");
 }
 
 void CursorPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
 
-    engine->addImageProvider(QStringLiteral("cursor"), new CursorImageProvider());
+    engine->addImageProvider(QStringLiteral("cursor"), CursorImageProvider::instance());
 }
