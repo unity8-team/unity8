@@ -138,20 +138,7 @@ AbstractStage {
 
         property int oldInverseProgress: 0
 
-        onFocusedAppIdChanged: {
-            if (priv.focusedAppId.length > 0) {
-                var focusedApp = ApplicationManager.findApplication(focusedAppId);
-                if (focusedApp.stage == ApplicationInfoInterface.SideStage) {
-                    priv.sideStageAppId = focusedAppId;
-                } else {
-                    priv.mainStageAppId = focusedAppId;
-                    root.mainApp = focusedApp;
-                }
-            }
-
-            appId0 = ApplicationManager.count >= 1 ? ApplicationManager.get(0).appId : "";
-            appId1 = ApplicationManager.count > 1 ? ApplicationManager.get(1).appId : "";
-        }
+        onFocusedAppIdChanged: updateStageApps()
 
         onFocusedAppDelegateChanged: {
             if (focusedAppDelegate) {
@@ -205,28 +192,33 @@ AbstractStage {
         }
 
         function setAppStage(appId, stage, save) {
-
             var app = ApplicationManager.findApplication(appId);
             if (app) {
                 app.stage = stage;
                 if (save) {
                     WindowStateStorage.saveStage(appId, stage);
                 }
-
-                // update the stage apps.
-                app = priv.getTopApp(ApplicationInfoInterface.MainStage);
-                mainStageAppId = app ? app.appId : ""
-                root.mainApp = app;
-
-                if (sideStage.shown) {
-                    app = priv.getTopApp(ApplicationInfoInterface.SideStage);
-                    sideStageAppId = app ? app.appId : ""
-                }
             }
+        }
+
+        function updateStageApps() {
+            var app = priv.getTopApp(ApplicationInfoInterface.MainStage);
+            priv.mainStageAppId = app ? app.appId : ""
+            root.mainApp = app;
+
+            if (sideStage.shown) {
+                app = priv.getTopApp(ApplicationInfoInterface.SideStage);
+                priv.sideStageAppId = app ? app.appId : ""
+            }
+
+            appId0 = ApplicationManager.count >= 1 ? ApplicationManager.get(0).appId : "";
+            appId1 = ApplicationManager.count > 1 ? ApplicationManager.get(1).appId : "";
         }
 
         readonly property bool sideStageEnabled: root.shellOrientation == Qt.LandscapeOrientation ||
                                                  root.shellOrientation == Qt.InvertedLandscapeOrientation
+
+        Component.onCompleted: updateStageApps();
     }
 
     Connections {
@@ -692,7 +684,11 @@ AbstractStage {
                         target: priv
                         onSideStageEnabledChanged: refreshStage()
                     }
-                    Component.onCompleted: refreshStage()
+
+                    Component.onCompleted: {
+                        refreshStage()
+                        stageChanged.connect(priv.updateStageApps);
+                    }
 
                     function refreshStage() {
                         var stage = ApplicationInfoInterface.MainStage;
