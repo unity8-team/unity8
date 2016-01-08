@@ -73,7 +73,7 @@ Showable {
     visible: false
     shown: false
 
-    property real _foregroundHideOpacity
+    property real _foregroundHideOpacity: 1.0
 
     showAnimation: StandardAnimation {
         property: root.backgroundFadesIn ? "opacity" : "_foregroundHideOpacity"

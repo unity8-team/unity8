@@ -22,7 +22,6 @@ TouchGestureArea {
     minimumTouchPoints: 3
     maximumTouchPoints: 3
 
-    property bool enableDrag: true
     property Component dragComponent
     property var dragComponentProperties: undefined
 
@@ -83,7 +82,7 @@ TouchGestureArea {
     }
 
     onRecognisedDragChanged: {
-        if (enableDrag && recognisedDrag) {
+        if (recognisedDrag) {
             wasRecognisedDrag = true;
             root.drag()
         }
@@ -105,6 +104,8 @@ TouchGestureArea {
     }
 
     onDrag: {
+        if (!dragComponent) return;
+
         if (dragComponentProperties) {
             priv.dragObject = dragComponent.createObject(root, dragComponentProperties);
         } else {

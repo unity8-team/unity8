@@ -339,7 +339,7 @@ Item {
             }
         }
 
-        Tutorial {
+        EdgesTutorial {
             id: tutorial
             objectName: "tutorial"
             anchors.fill: parent

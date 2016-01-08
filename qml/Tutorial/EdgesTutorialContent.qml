@@ -62,7 +62,7 @@ Item {
         }
     }
 
-    TutorialLeft {
+    LeftEdgeTutorialPage {
         id: tutorialLeft
         objectName: "tutorialLeft"
         anchors.fill: parent
@@ -72,7 +72,7 @@ Item {
         onFinished: tutorialLeftFinish.show()
     }
 
-    TutorialLeftFinish {
+    LeftEdgeFinishTutorialPage {
         id: tutorialLeftFinish
         objectName: "tutorialLeftFinish"
         anchors.fill: parent
@@ -86,7 +86,7 @@ Item {
         }
     }
 
-    TutorialRight {
+    RightEdgeTutorialPage {
         id: tutorialRight
         objectName: "tutorialRight"
         anchors.fill: parent
@@ -97,7 +97,7 @@ Item {
         onFinished: tutorialBottom.show()
     }
 
-    TutorialBottom {
+    BottomEdgeTutorialPage {
         id: tutorialBottom
         objectName: "tutorialBottom"
         anchors.fill: parent
@@ -107,29 +107,12 @@ Item {
         onFinished: tutorialBottomFinish.show()
     }
 
-    TutorialBottomFinish {
+    BottomEdgeFinishTutorialPage {
         id: tutorialBottomFinish
         objectName: "tutorialBottomFinish"
         anchors.fill: parent
         backgroundFadesOut: usageScenario !== "tablet"
         paused: !shown || root.paused
-
-        onFinished: {
-            if (usageScenario == "tablet") {
-                tutorialSideStage.show();
-            } else {
-                root.finish();
-            }
-        }
-    }
-
-    TutorialSideStage {
-        id: tutorialSideStage
-        objectName: "tutorialSideStage"
-        backgroundFadesOut: true
-        anchors.fill: parent
-        paused: !shown || root.paused
-        panel: root.panel
 
         onFinished: root.finish()
     }

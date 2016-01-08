@@ -45,7 +45,7 @@ Item {
     Loader {
         id: loader
         anchors.fill: parent
-        source: "TutorialContent.qml"
+        source: "EdgesTutorialContent.qml"
 
         Binding {
             target: loader.item

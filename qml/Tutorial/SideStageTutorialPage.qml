@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,7 +194,6 @@ TutorialPage {
             bottom: parent.bottom
         }
         width: parent.width - sideStage.width
-        enableDrag: overlayGesture.shown
 
         onClicked: {
             root.hideError();
@@ -206,7 +205,7 @@ TutorialPage {
             }
         }
 
-        dragComponent: dragComponent
+        dragComponent: overlayGesture.shown ? dragComponent : null
         Component {
             id: dragComponent
             Icon {
@@ -217,7 +216,7 @@ TutorialPage {
 
         onDrop: {
             // still in the gesture state after dropping?
-            if (overlayGesture.shown) {
+            if (!overlayTap.shown) {
                 root.showError();
             }
         }

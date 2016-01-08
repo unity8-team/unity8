@@ -21,6 +21,7 @@ import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
 import Utils 0.1
+import AccountsService 0.1
 
 import "../../../qml/Stages"
 import "../../../qml/Components"
@@ -33,6 +34,11 @@ Rectangle {
 
     property var greeter: { fullyShown: true }
 
+    Component.onCompleted: {
+        theme.name = "Ubuntu.Components.Themes.SuruGradient"
+        tabletStageLoader.active = true;
+    }
+
     Loader {
         id: tabletStageLoader
 
@@ -42,6 +48,7 @@ Rectangle {
         height: units.gu(100*0.7)
 
         focus: true
+        active: false
 
         property bool itemDestroyed: false
         sourceComponent: Component {
@@ -78,6 +85,11 @@ Rectangle {
         Column {
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
             spacing: units.gu(1)
+
+            Button {
+                text: "Show Tutorial"
+                onClicked: AccountsService.demoEdges = true
+            }
 
             Button {
                 text: testCase.sideStage ? testCase.sideStage.shown ? "Hide Side-stage" : "Show Side-stage" : ""
