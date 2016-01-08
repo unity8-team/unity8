@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,8 @@ AbstractStage {
         }
 
         onFocusRequested: {
-            var appIndex = priv.indexOf(appId);
-            var appDelegate = appRepeater.itemAt(appIndex);
-            appDelegate.restore();
+            var delegate = priv.appDelegate(appId);
+            delegate.restore();
 
             if (spread.state == "altTab") {
                 spread.cancel();
@@ -68,7 +67,7 @@ AbstractStage {
     GlobalShortcut {
         id: closeWindowShortcut
         shortcut: Qt.AltModifier|Qt.Key_F4
-        onTriggered: ApplicationManager.stopApplication(priv.focusedAppId)
+        onTriggered: priv.closeApplication(priv.focusedAppDelegate, priv.focusedAppId)
         active: priv.focusedAppId !== ""
     }
 
@@ -170,12 +169,24 @@ AbstractStage {
                 }
             }
         }
+
+        function appDelegate(appId) {
+            var appIndex = indexOf(appId);
+            return appRepeater.itemAt(appIndex);
+        }
+
+        function closeApplication(delegate, appId) {
+            var del = delegate || appDelegate(appId);
+            print("!!! initial delegate state", del.state)
+            del.state = "closing";
+            print("!!! target delegate state", del.state)
+        }
     }
 
     Connections {
         target: PanelState
         onClose: {
-            ApplicationManager.stopApplication(ApplicationManager.focusedApplicationId)
+            priv.closeApplication(priv.focusedAppDelegate, ApplicationManager.focusedApplicationId)
         }
         onMinimize: priv.focusedAppDelegate && priv.focusedAppDelegate.minimize();
         onMaximize: priv.focusedAppDelegate // don't restore minimized apps when double clicking the panel
@@ -339,6 +350,9 @@ AbstractStage {
 
                 states: [
                     State {
+                        name: "closing"
+                    },
+                    State {
                         name: "fullscreen"; when: decoratedWindow.fullscreen
                         extend: "maximized"
                         PropertyChanges {
@@ -393,14 +407,30 @@ AbstractStage {
                         to: "normal"
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
-                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
+                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,requestedWidth,requestedHeight" }
+                        NumberAnimation {
+                            target: appDelegate
+                            property: 'scale'
+                            from: 0.85
+                            to: 1
+                            duration: UbuntuAnimation.SnapDuration
+                            easing: UbuntuAnimation.StandardEasing
+                        }
+                        NumberAnimation {
+                            target: appDelegate
+                            property: 'opacity'
+                            from: 0
+                            to: 1
+                            duration: UbuntuAnimation.SnapDuration
+                            easing: UbuntuAnimation.StandardEasing
+                        }
                     },
                     Transition {
                         to: "minimized"
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                         SequentialAnimation {
-                            UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
+                            UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale" }
                             PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                             ScriptAction {
                                 script: {
@@ -412,11 +442,39 @@ AbstractStage {
                         }
                     },
                     Transition {
+                        to: "closing"
+                        SequentialAnimation {
+                            ParallelAnimation {
+                                NumberAnimation {
+                                    target: appDelegate
+                                    property: 'scale'
+                                    from: 1
+                                    to: 0.85
+                                    duration: UbuntuAnimation.SnapDuration
+                                    easing: UbuntuAnimation.StandardEasingReverse
+                                }
+                                NumberAnimation {
+                                    target: appDelegate
+                                    property: 'opacity'
+                                    from: 1
+                                    to: 0
+                                    duration: UbuntuAnimation.SnapDuration
+                                    easing: UbuntuAnimation.StandardEasingReverse
+                                }
+                            }
+                            ScriptAction {
+                                script: {
+                                    ApplicationManager.stopApplication(appId);
+                                }
+                            }
+                        }
+                    },
+                    Transition {
                         to: "*" //maximized and fullscreen
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                         SequentialAnimation {
-                            UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
+                            UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale" }
                             PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                         }
                     }
@@ -452,7 +510,7 @@ AbstractStage {
                     active: ApplicationManager.focusedApplicationId === model.appId
                     focus: true
 
-                    onClose: ApplicationManager.stopApplication(model.appId)
+                    onClose: priv.closeApplication(appDelegate, model.appId)
                     onMaximize: appDelegate.maximized || appDelegate.maximizedLeft || appDelegate.maximizedRight
                                 ? appDelegate.restoreFromMaximized() : appDelegate.maximize()
                     onMinimize: appDelegate.minimize()
