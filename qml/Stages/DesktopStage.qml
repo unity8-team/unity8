@@ -177,9 +177,7 @@ AbstractStage {
 
         function closeApplication(delegate, appId) {
             var del = delegate || appDelegate(appId);
-            print("!!! initial delegate state", del.state)
             del.state = "closing";
-            print("!!! target delegate state", del.state)
         }
     }
 
@@ -351,6 +349,11 @@ AbstractStage {
                 states: [
                     State {
                         name: "closing"
+                        PropertyChanges { // freeze the values
+                            target: appDelegate; explicit: true; restoreEntryValues: false;
+                            x: appDelegate.x; y: appDelegate.y
+                            requestedWidth: appDelegate.width; requestedHeight: appDelegate.height
+                        }
                     },
                     State {
                         name: "fullscreen"; when: decoratedWindow.fullscreen
@@ -444,6 +447,7 @@ AbstractStage {
                     Transition {
                         to: "closing"
                         SequentialAnimation {
+                            PropertyAction { target: appDelegate; properties: "x,y,requestedWidth,requestedHeight" }
                             ParallelAnimation {
                                 NumberAnimation {
                                     target: appDelegate
