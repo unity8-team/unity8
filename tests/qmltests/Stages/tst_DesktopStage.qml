@@ -354,7 +354,7 @@ Item {
             verify(appDelegate);
             ApplicationManager.focusApplication(appName);
             keyClick(Qt.Key_F4, Qt.AltModifier); // Alt+F4 shortcut to close
-            verify(ApplicationManager.count == 2); // verify the app is gone
+            tryCompare(ApplicationManager, "count", 2); // verify the app is gone
             verify(ApplicationManager.findApplication(appName) === null); // and it's not in running apps
         }
 
