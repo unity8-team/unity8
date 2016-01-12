@@ -30,6 +30,7 @@ AccountsService::AccountsService(QObject* parent, const QString &user)
     m_enableLauncherWhileLocked(false),
     m_enableIndicatorsWhileLocked(false),
     m_statsWelcomeScreen(false),
+    m_lockscreenPassword(""),
     m_passwordDisplayHint(Keyboard),
     m_failedLogins(0),
     m_hereEnabled(false),
@@ -59,6 +60,7 @@ void AccountsService::setUser(const QString &user)
     updateEnableIndicatorsWhileLocked(false);
     updateBackgroundFile(false);
     updateStatsWelcomeScreen(false);
+    updateLockscreenPassword(false);
     updatePasswordDisplayHint(false);
     updateFailedLogins(false);
     updateHereEnabled(false);
@@ -102,7 +104,7 @@ bool AccountsService::statsWelcomeScreen() const
 
 AccountsService::PasswordDisplayHint AccountsService::passwordDisplayHint() const
 {
-    return m_passwordDisplayHint;
+    return m_synthesizedDisplayHint;
 }
 
 bool AccountsService::hereEnabled() const
@@ -275,6 +277,56 @@ void AccountsService::updateStatsWelcomeScreen(bool async)
     }
 }
 
+void AccountsService::synthesizeDisplayHint()
+{
+    // There are actually two properties that control whether the password
+    // prompt should be shown as a pin entry or passphrase entry and here we
+    // do the math so that the upper layers don't have to.
+
+    PasswordDisplayHint hint;
+    if (m_lockscreenPassword.startsWith("pin:")) {
+        hint = PasswordDisplayHint::Numeric;
+    } else if (m_lockscreenPassword.isEmpty()) {
+        hint = m_passwordDisplayHint;
+    } else {
+        hint = PasswordDisplayHint::Keyboard;
+    }
+
+    if (m_sythesizedDisplayHint != hint) {
+        m_sythesizedDisplayHint = hint;
+        Q_EMIT passwordDisplayHintChanged();
+    }
+}
+
+void AccountsService::updateLockscreenPassword(bool async)
+{
+    QDBusPendingCall pendingReply = m_service->getUserPropertyAsync(m_user,
+                                                                    QStringLiteral("com.ubuntu.AccountsService.SecurityPrivacy"),
+                                                                    QStringLiteral("LockscreenPassword"));
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingReply, this);
+
+    connect(watcher, &QDBusPendingCallWatcher::finished,
+            this, [this](QDBusPendingCallWatcher* watcher) {
+
+        QDBusPendingReply<QVariant> reply = *watcher;
+        watcher->deleteLater();
+        if (reply.isError()) {
+            qWarning() << "Failed to get 'LockscreenPassword' property - " << reply.error().message();
+            return;
+        }
+
+        const QString lockscreenPassword = reply.value().toString();
+        if (m_lockscreenPassword != lockscreenPassword) {
+            m_lockscreenPassword = lockscreenPassword;
+            synthesizeDisplayHint();
+        }
+    });
+    if (!async) {
+        watcher->waitForFinished();
+        delete watcher;
+    }
+}
+
 void AccountsService::updatePasswordDisplayHint(bool async)
 {
     QDBusPendingCall pendingReply = m_service->getUserPropertyAsync(m_user,
@@ -295,7 +347,7 @@ void AccountsService::updatePasswordDisplayHint(bool async)
         const PasswordDisplayHint passwordDisplayHint = (PasswordDisplayHint)reply.value().toInt();
         if (m_passwordDisplayHint != passwordDisplayHint) {
             m_passwordDisplayHint = passwordDisplayHint;
-            Q_EMIT passwordDisplayHintChanged();
+            synthesizeDisplayHint();
         }
     });
     if (!async) {
@@ -428,6 +480,9 @@ void AccountsService::onPropertiesChanged(const QString &user, const QString &in
             updateStatsWelcomeScreen();
         }
     } else if (interface == QLatin1String("com.ubuntu.AccountsService.SecurityPrivacy")) {
+        if (changed.contains(QStringLiteral("LockscreenPassword"))) {
+            updateLockscreenPassword();
+        }
         if (changed.contains(QStringLiteral("PasswordDisplayHint"))) {
             updatePasswordDisplayHint();
         }

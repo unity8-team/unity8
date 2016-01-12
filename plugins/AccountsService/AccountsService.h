@@ -113,10 +113,13 @@ private:
     void updateEnableIndicatorsWhileLocked(bool async = true);
     void updateBackgroundFile(bool async = true);
     void updateStatsWelcomeScreen(bool async = true);
+    void updateLockscreenPassword(bool async = true);
     void updatePasswordDisplayHint(bool async = true);
     void updateFailedLogins(bool async = true);
     void updateHereEnabled(bool async = true);
     void updateHereLicensePath(bool async = true);
+
+    void synthesizeDisplayHint();
 
     AccountsServiceDBusAdaptor *m_service;
     QString m_user;
@@ -125,7 +128,9 @@ private:
     bool m_enableIndicatorsWhileLocked;
     QString m_backgroundFile;
     bool m_statsWelcomeScreen;
+    QString m_lockscreenPassword;
     PasswordDisplayHint m_passwordDisplayHint;
+    PasswordDisplayHint m_synthesizedDisplayHint;
     uint m_failedLogins;
     bool m_hereEnabled;
     QString m_hereLicensePath;
