@@ -50,4 +50,3 @@ void InputProviderAdaptor::RequestDisconnection()
     // handle method call org.aethercast.InputProvider.RequestDisconnection
     QMetaObject::invokeMethod(parent(), "RequestDisconnection");
 }
-
