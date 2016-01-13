@@ -410,21 +410,17 @@ AbstractStage {
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
                         UbuntuNumberAnimation { target: appDelegate; properties: "x,y,requestedWidth,requestedHeight" }
-                        NumberAnimation {
+                        UbuntuNumberAnimation {
                             target: appDelegate
                             property: 'scale'
                             from: 0.85
                             to: 1
-                            duration: UbuntuAnimation.SnapDuration
-                            easing: UbuntuAnimation.StandardEasing
                         }
-                        NumberAnimation {
+                        UbuntuNumberAnimation {
                             target: appDelegate
                             property: 'opacity'
                             from: 0
                             to: 1
-                            duration: UbuntuAnimation.SnapDuration
-                            easing: UbuntuAnimation.StandardEasing
                         }
                     },
                     Transition {
@@ -448,20 +444,18 @@ AbstractStage {
                         SequentialAnimation {
                             PropertyAction { target: appDelegate; properties: "x,y,requestedWidth,requestedHeight" }
                             ParallelAnimation {
-                                NumberAnimation {
+                                UbuntuNumberAnimation {
                                     target: appDelegate
                                     property: 'scale'
                                     from: 1
                                     to: 0.85
-                                    duration: UbuntuAnimation.SnapDuration
                                     easing: UbuntuAnimation.StandardEasingReverse
                                 }
-                                NumberAnimation {
+                                UbuntuNumberAnimation {
                                     target: appDelegate
                                     property: 'opacity'
                                     from: 1
                                     to: 0
-                                    duration: UbuntuAnimation.SnapDuration
                                     easing: UbuntuAnimation.StandardEasingReverse
                                 }
                             }
