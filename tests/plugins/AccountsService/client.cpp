@@ -107,7 +107,7 @@ private Q_SLOTS:
         QCOMPARE(session.hereEnabled(), true);
     }
 
-    void testAsynchornousChangeForDemoEdges()
+    void testAsynchronousChangeForDemoEdges()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -119,7 +119,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.demoEdges(), true);
     }
 
-    void testAsynchornousChangeForFailedLogins()
+    void testAsynchronousChangeForFailedLogins()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -131,7 +131,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.failedLogins(), (uint)5);
     }
 
-    void testAsynchornousChangeForStatsWelcomeScreen()
+    void testAsynchronousChangeForStatsWelcomeScreen()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -143,7 +143,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.statsWelcomeScreen(), false);
     }
 
-    void testAsynchornousChangeForStatsEnableLauncherWhileLocked()
+    void testAsynchronousChangeForEnableLauncherWhileLocked()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -155,7 +155,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.enableLauncherWhileLocked(), false);
     }
 
-    void testAsynchornousChangeForStatsEnableIndicatorsWhileLocked()
+    void testAsynchronousChangeForEnableIndicatorsWhileLocked()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -167,7 +167,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.enableIndicatorsWhileLocked(), false);
     }
 
-    void testAsynchornousChangeForStatsPasswordDisplayHint()
+    void testAsynchronousChangeForPasswordDisplayHint()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -179,7 +179,38 @@ private Q_SLOTS:
         QTRY_COMPARE(session.passwordDisplayHint(), AccountsService::Numeric);
     }
 
-    void testAsynchornousChangeForStatsLicenseAccepted()
+    void testAsynchronousChangeForLockscreenPassword()
+    {
+        AccountsService session(this, QTest::currentTestFunction());
+
+        QCOMPARE(session.passwordDisplayHint(), AccountsService::Keyboard);
+        ASSERT_DBUS_CALL(m_userInterface->asyncCall("Set",
+                                                    "com.ubuntu.AccountsService.SecurityPrivacy",
+                                                    "LockscreenPassword",
+                                                    dbusVariant("pin:cryptedpassword")));
+        QTRY_COMPARE(session.passwordDisplayHint(), AccountsService::Numeric);
+    }
+
+    void testLockscreenPasswordOverridesDisplayHint()
+    {
+        AccountsService session(this, QTest::currentTestFunction());
+
+        QCOMPARE(session.passwordDisplayHint(), AccountsService::Keyboard);
+
+        ASSERT_DBUS_CALL(m_userInterface->asyncCall("Set",
+                                                    "com.ubuntu.AccountsService.SecurityPrivacy",
+                                                    "PasswordDisplayHint",
+                                                    dbusVariant(AccountsService::Numeric)));
+        QTRY_COMPARE(session.passwordDisplayHint(), AccountsService::Numeric);
+
+        ASSERT_DBUS_CALL(m_userInterface->asyncCall("Set",
+                                                    "com.ubuntu.AccountsService.SecurityPrivacy",
+                                                    "LockscreenPassword",
+                                                    dbusVariant("system")));
+        QTRY_COMPARE(session.passwordDisplayHint(), AccountsService::Keyboard);
+    }
+
+    void testAsynchronousChangeForLicenseAccepted()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -191,7 +222,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.hereEnabled(), true);
     }
 
-    void testAsynchornousChangeForLicenseBasePath()
+    void testAsynchronousChangeForLicenseBasePath()
     {
         AccountsService session(this, QTest::currentTestFunction());
 
@@ -203,7 +234,7 @@ private Q_SLOTS:
         QTRY_COMPARE(session.hereLicensePath(), QString("/"));
     }
 
-    void testAsynchornousChangeForStatsBackgroundFile()
+    void testAsynchronousChangeForBackgroundFile()
     {
         AccountsService session(this, QTest::currentTestFunction());
 

@@ -32,6 +32,7 @@ AccountsService::AccountsService(QObject* parent, const QString &user)
     m_statsWelcomeScreen(false),
     m_lockscreenPassword(""),
     m_passwordDisplayHint(Keyboard),
+    m_synthesizedDisplayHint(Keyboard),
     m_failedLogins(0),
     m_hereEnabled(false),
     m_hereLicensePath() // null means not set yet
@@ -284,7 +285,7 @@ void AccountsService::synthesizeDisplayHint()
     // do the math so that the upper layers don't have to.
 
     PasswordDisplayHint hint;
-    if (m_lockscreenPassword.startsWith("pin:")) {
+    if (m_lockscreenPassword.startsWith(QStringLiteral("pin:"))) {
         hint = PasswordDisplayHint::Numeric;
     } else if (m_lockscreenPassword.isEmpty()) {
         hint = m_passwordDisplayHint;
@@ -292,8 +293,8 @@ void AccountsService::synthesizeDisplayHint()
         hint = PasswordDisplayHint::Keyboard;
     }
 
-    if (m_sythesizedDisplayHint != hint) {
-        m_sythesizedDisplayHint = hint;
+    if (m_synthesizedDisplayHint != hint) {
+        m_synthesizedDisplayHint = hint;
         Q_EMIT passwordDisplayHintChanged();
     }
 }

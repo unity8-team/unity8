@@ -84,6 +84,7 @@ void PropertiesServer::Reset()
     m_properties["com.ubuntu.touch.AccountsService.SecurityPrivacy"]["StatsWelcomeScreen"] = true;
     m_properties["com.ubuntu.AccountsService.SecurityPrivacy"]["EnableLauncherWhileLocked"] = true;
     m_properties["com.ubuntu.AccountsService.SecurityPrivacy"]["EnableIndicatorsWhileLocked"] = true;
+    m_properties["com.ubuntu.AccountsService.SecurityPrivacy"]["LockscreenPassword"] = QStringLiteral("");
     m_properties["com.ubuntu.AccountsService.SecurityPrivacy"]["PasswordDisplayHint"] = AccountsService::Keyboard;
     m_properties["com.ubuntu.location.providers.here.AccountsService"]["LicenseAccepted"] = false;
     m_properties["com.ubuntu.location.providers.here.AccountsService"]["LicenseBasePath"] = "";
