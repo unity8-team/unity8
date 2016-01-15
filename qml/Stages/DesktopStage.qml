@@ -415,12 +415,14 @@ AbstractStage {
                             property: 'scale'
                             from: 0.85
                             to: 1
+                            duration: UbuntuAnimation.SnapDuration
                         }
                         UbuntuNumberAnimation {
                             target: appDelegate
                             property: 'opacity'
                             from: 0
                             to: 1
+                            duration: UbuntuAnimation.SnapDuration
                         }
                     },
                     Transition {
