@@ -19,8 +19,10 @@ import QtTest 1.0
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3
 import Unity.Application 0.1
+import Unity.Indicators 0.1 as Indicators
 import Unity.Test 0.1
 import Utils 0.1
+import QMenuModel 0.1
 
 import ".." // For EdgeBarrierControls
 import "../../../qml/Stages"
@@ -39,7 +41,17 @@ Item {
         value: false
     }
 
-    Component.onCompleted: resetGeometry()
+    DesktopMenuData {
+        id: appMenuData
+    }
+
+    Component.onCompleted: {
+        resetGeometry();
+
+        Indicators.UnityMenuModelCache.setCachedModelData("/dialer-app", appMenuData.dialerData);
+        Indicators.UnityMenuModelCache.setCachedModelData("/camera-app", appMenuData.cameraData);
+        Indicators.UnityMenuModelCache.setCachedModelData("/gallery-app", appMenuData.galleryData);
+    }
 
     function resetGeometry() {
         // ensures apps which are tested decorations are in view.

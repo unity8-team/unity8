@@ -19,6 +19,11 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
+import Unity.Indicators 0.1 as Indicators
+import GlobalShortcut 1.0
+import "../Components/PanelState"
+
+import QMenuModel 0.1 as MenuModel
 
 FocusScope {
     id: root
@@ -69,22 +74,6 @@ FocusScope {
         enabled: !fullscreen
     }
 
-    WindowDecoration {
-        id: decoration
-        target: root.parent
-        objectName: application ? "appWindowDecoration_" + application.appId : "appWindowDecoration_null"
-        anchors { left: parent.left; top: parent.top; right: parent.right }
-        height: units.gu(3)
-        width: root.width
-        title: window.title
-        visible: root.decorationShown
-
-        onClose: root.close();
-        onMaximize: { root.decorationPressed(); root.maximize(); }
-        onMinimize: root.minimize();
-        onPressed: root.decorationPressed();
-    }
-
     ApplicationWindow {
         id: applicationWindow
         objectName: application ? "appWindow_" + application.appId : "appWindow_null"
@@ -94,5 +83,50 @@ FocusScope {
         requestedHeight: root.requestedHeight - (root.decorationShown ? decoration.height : 0)
         interactive: true
         focus: true
+    }
+
+    MouseArea {
+        anchors { left: parent.left; top: parent.top; right: parent.right }
+        height: units.gu(3)
+
+        drag.target: root.parent
+        drag.filterChildren: true
+        drag.threshold: 0
+        drag.minimumY: PanelState.panelHeight
+        drag.onActiveChanged: {
+            Mir.cursorName = active ? "grabbing" : ""
+        }
+
+        // Parent is handling drag, this handles clicks.
+        MouseArea {
+            anchors.fill: parent
+            onPressed: root.decorationPressed()
+            onDoubleClicked: root.maximize()
+        }
+
+        WindowDecoration {
+            id: decoration
+            objectName: application ? "appWindowDecoration_" + application.appId : "appWindowDecoration_null"
+            anchors.fill: parent
+            appId: application ? application.appId : ""
+            title: window.title
+            visible: root.decorationShown
+
+            onClose: root.close();
+            onMaximize: { root.decorationPressed(); root.maximize(); }
+            onMinimize: root.minimize();
+
+            menu: sharedAppModel.model
+            target: applicationWindow
+
+            Indicators.SharedUnityMenuModel {
+                id: sharedAppModel
+                property var surface: application ? application.session ? application.session.lastSurface : null : null
+
+                busName: surface ? surface.dbusMenuName : ""
+                menuObjectPath: surface ? surface.dbusMenuObjectPath : ""
+                actions: surface && surface.dbusMenuObjectPath ? { "unity": surface.dbusMenuObjectPath } : {}
+            }
+        }
     }
 }

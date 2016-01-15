@@ -48,7 +48,7 @@ Q_SIGNALS:
     void currentEventTimestampChanged();
 
 private Q_SLOTS:
-    void setupFilterOnWindow(QQuickWindow *window);
+    void setupFilter();
 
 private:
     QPointer<QQuickWindow> m_filteredWindow;

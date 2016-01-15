@@ -53,6 +53,7 @@ quick_pat = re.compile(r'.*import QtQuick.*$')
 quick_good_pat = re.compile(r'.*import QtQuick 2\.4.*$')
 quick_layouts_good_pat = re.compile(r'.*import QtQuick.Layouts 1\.1.*$')
 quick_window_good_pat = re.compile(r'.*import QtQuick.Window 2\.2.*$')
+quick_controls_good_pat = re.compile(r'.*import QtQuick.Controls 1\.4.*$')
 
 # Ubuntu Components patterns
 ubuntu_components_pat = re.compile(r'.*import Ubuntu.Components.*')
@@ -111,7 +112,7 @@ try:
         for file in files:
             path = os.path.join(root, file)
             if not (ignore and path.startswith(ignore)) and pat.match(file):
-                quick_good_pats = [quick_good_pat, quick_layouts_good_pat, quick_window_good_pat]
+                quick_good_pats = [quick_good_pat, quick_layouts_good_pat, quick_window_good_pat, quick_controls_good_pat]
                 if scan_for_bad_import(path, quick_pat, quick_good_pats):
                     found_bad_import = True
                 if scan_for_bad_import(path, ubuntu_components_pat, [ubuntu_good_components_pat]):

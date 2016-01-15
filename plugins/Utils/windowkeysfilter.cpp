@@ -24,12 +24,14 @@ WindowKeysFilter::WindowKeysFilter(QQuickItem *parent)
     : QQuickItem(parent),
       m_currentEventTimestamp(0)
 {
-    connect(this, &QQuickItem::windowChanged,
-            this, &WindowKeysFilter::setupFilterOnWindow);
+    connect(this, &QQuickItem::windowChanged, this, &WindowKeysFilter::setupFilter);
+    connect(this, &QQuickItem::enabledChanged, this, &WindowKeysFilter::setupFilter);
 }
 
 bool WindowKeysFilter::eventFilter(QObject *watched, QEvent *event)
 {
+    if (!isEnabled()) return false;
+
     Q_ASSERT(!m_filteredWindow.isNull());
     Q_ASSERT(watched == static_cast<QObject*>(m_filteredWindow.data()));
     Q_UNUSED(watched);
@@ -53,16 +55,19 @@ bool WindowKeysFilter::eventFilter(QObject *watched, QEvent *event)
     }
 }
 
-void WindowKeysFilter::setupFilterOnWindow(QQuickWindow *window)
+void WindowKeysFilter::setupFilter()
 {
+    if (!m_filteredWindow.isNull() == isEnabled() && m_filteredWindow.data() == window()) return;
+
     if (!m_filteredWindow.isNull()) {
         m_filteredWindow->removeEventFilter(this);
         m_filteredWindow.clear();
     }
 
-    if (window) {
-        window->installEventFilter(this);
-        m_filteredWindow = window;
+    QQuickWindow *wnd = window();
+    if (wnd && isEnabled()) {
+        wnd->installEventFilter(this);
+        m_filteredWindow = wnd;
     }
 }
 

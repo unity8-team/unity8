@@ -30,6 +30,7 @@ import Unity.Test 0.1
 import Powerd 0.1
 import Wizard 0.1 as Wizard
 import Utils 0.1
+import Unity.Indicators 0.1 as Indicators
 
 import "../../qml"
 import "../../qml/Components"
@@ -47,6 +48,14 @@ Rectangle {
         LightDM.Greeter.mockMode = "single";
         LightDM.Users.mockMode = "single";
         shellLoader.active = true;
+
+        Indicators.UnityMenuModelCache.setCachedModelData("/dialer-app", appMenuData.dialerData);
+        Indicators.UnityMenuModelCache.setCachedModelData("/camera-app", appMenuData.cameraData);
+        Indicators.UnityMenuModelCache.setCachedModelData("/gallery-app", appMenuData.galleryData);
+    }
+
+    DesktopMenuData {
+        id: appMenuData
     }
 
     Item {
@@ -1752,17 +1761,17 @@ Rectangle {
             var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
 
             tryCompare(appDelegate, "state", "normal");
-            tryCompare(PanelState, "buttonsVisible", false)
+            tryCompare(PanelState, "decorationsVisible", false)
 
             mouseClick(maximizeButton, maximizeButton.width / 2, maximizeButton.height / 2);
             tryCompare(appDelegate, "state", "maximized");
-            tryCompare(PanelState, "buttonsVisible", true)
+            tryCompare(PanelState, "decorationsVisible", true)
 
             ApplicationManager.stopApplication(appId);
-            tryCompare(PanelState, "buttonsVisible", false)
+            tryCompare(PanelState, "decorationsVisible", false)
 
             ApplicationManager.startApplication(appId);
-            tryCompare(PanelState, "buttonsVisible", true)
+            tryCompare(PanelState, "decorationsVisible", true)
         }
 
         function test_newAppHasValidGeometry() {

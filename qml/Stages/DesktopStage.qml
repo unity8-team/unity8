@@ -183,9 +183,16 @@ AbstractStage {
 
     Binding {
         target: PanelState
-        property: "buttonsVisible"
-        value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
+        property: "decorationsVisible"
+        value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized
                && spread.state == ""
+    }
+
+    Binding {
+        target: PanelState
+        property: "maximizedApplication"
+        value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized
+               && spread.state == "" ? priv.focusedAppId : ""
     }
 
     Binding {
@@ -211,7 +218,7 @@ AbstractStage {
 
     Component.onDestruction: {
         PanelState.title = "";
-        PanelState.buttonsVisible = false;
+        PanelState.decorationsVisible = false;
         PanelState.dropShadow = false;
     }
 

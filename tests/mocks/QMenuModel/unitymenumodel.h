@@ -88,6 +88,8 @@ Q_SIGNALS:
     // Internal mock usage
     void modelDataChanged();
 
+    void activated(const QString& action);
+
 private:
     QVariantMap rowData(int row) const;
     QVariant subMenuData(int row) const;

@@ -66,6 +66,9 @@ public:
     Mir::OrientationAngle orientationAngle() const override;
     void setOrientationAngle(Mir::OrientationAngle) override;
 
+    QString dbusMenuName() const override;
+    QString dbusMenuObjectPath() const override;
+
     ////
     // API for tests
 

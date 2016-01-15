@@ -15,90 +15,162 @@
  */
 
 import QtQuick 2.4
+import QtQuick.Layouts 1.1
 import Unity.Application 0.1 // For Mir singleton
 import Ubuntu.Components 1.3
+import Utils 0.1
 import "../Components"
 import "../Components/PanelState"
+import "../ApplicationMenus"
 
-MouseArea {
+Item {
     id: root
-    clip: true
 
     property Item target
+    property string appId
     property alias title: titleLabel.text
     property bool active: false
-    hoverEnabled: true
+    property var menu: undefined
 
     signal close()
     signal minimize()
     signal maximize()
-
-    onDoubleClicked: root.maximize()
 
     QtObject {
         id: priv
         property real distanceX
         property real distanceY
         property bool dragging
+
+        property var menuBar: menuBarLoader.item
+
+        property bool enableMenus: root.active &&
+                                   (!PanelState.decorationsVisible || PanelState.maximizedApplication !== appId) &&
+                                   menuBar &&
+                                   menuBar.hasChildren
+
+        property bool shouldShowMenus : enableMenus &&
+                                        (altFilter.longAltPressed || menuBarHover.containsMouse || menuBar.openItem !== undefined)
     }
 
-    onPressedChanged: {
-        if (pressed) {
-            var pos = mapToItem(root.target, mouseX, mouseY);
-            priv.distanceX = pos.x;
-            priv.distanceY = pos.y;
-            priv.dragging = true;
-        } else {
-            priv.dragging = false;
-            Mir.cursorName = "";
+    WindowKeysFilter {
+        id: altFilter
+        property bool altPressed: false
+        property bool longAltPressed: false
+        enabled: priv.enableMenus
+        Keys.onPressed: {
+            if (event.key === Qt.Key_Alt && !event.isAutoRepeat) {
+                altPressed = true;
+                longAltPressed = false;
+                menuBarShortcutTimer.start();
+                return;
+            }            
+            event.accepted = false;
+        }
+        Keys.onReleased: {
+            if (event.key === Qt.Key_Alt) {
+                menuBarShortcutTimer.stop();
+                altPressed = false;
+                longAltPressed = false;
+                return;
+            }            
+            event.accepted = false
+        }
+
+        Timer {
+            id: menuBarShortcutTimer
+            interval: 200
+            repeat: false
+            onTriggered: {
+                altFilter.longAltPressed = true;
+            }
         }
     }
 
-    onPositionChanged: {
-        if (priv.dragging) {
-            Mir.cursorName = "grabbing";
-            var pos = mapToItem(root.target.parent, mouseX, mouseY);
-            root.target.x = pos.x - priv.distanceX;
-            root.target.y = Math.max(pos.y - priv.distanceY, PanelState.panelHeight);
-        }
-    }
-
+    // non rounded for bottom of decoration
     Rectangle {
         anchors.fill: parent
-        anchors.bottomMargin: -radius
+        anchors.topMargin: units.gu(.5)
+        color: "#292929"
+    }
+
+    // rounded for top of decoration
+    Rectangle {
+        anchors.fill: parent
         radius: units.gu(.5)
         color: "#292929"
     }
 
-    Row {
+    RowLayout {
         anchors {
             fill: parent
             leftMargin: units.gu(1)
             rightMargin: units.gu(1)
-            topMargin: units.gu(0.5)
-            bottomMargin: units.gu(0.5)
         }
         spacing: units.gu(3)
 
         WindowControlButtons {
             id: buttons
-            height: parent.height
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                topMargin: units.gu(0.5)
+                bottomMargin: units.gu(0.5)
+            }
             active: root.active
             onClose: root.close();
             onMinimize: root.minimize();
             onMaximize: root.maximize();
         }
 
-        Label {
-            id: titleLabel
-            objectName: "windowDecorationTitle"
-            color: root.active ? "white" : "#5d5d5d"
-            height: parent.height
-            width: parent.width - buttons.width - parent.anchors.rightMargin - parent.anchors.leftMargin
-            verticalAlignment: Text.AlignVCenter
-            fontSize: "medium"
-            font.weight: root.active ? Font.Light : Font.Normal
-            elide: Text.ElideRight
+        Item {
+            Layout.preferredHeight: parent.height
+            Layout.fillWidth: true
+
+            MouseArea {
+                id: menuBarHover
+                hoverEnabled: true
+                anchors.fill: parent
+                onPressed: { mouse.accepted = false; } // just monitoring
+            }
+
+            Label {
+                id: titleLabel
+                objectName: "windowDecorationTitle"
+                color: root.active ? "white" : "#5d5d5d"
+                height: parent.height
+                width: parent.width
+                verticalAlignment: Text.AlignVCenter
+                fontSize: "medium"
+                font.weight: root.active ? Font.Light : Font.Normal
+                elide: Text.ElideRight
+
+                opacity: priv.shouldShowMenus ? 0 : 1
+                Behavior on opacity { UbuntuNumberAnimation { } }
+            }
+
+            Loader {
+                id: menuBarLoader
+                objectName: "windowDecorationMenuBarLoader"
+                anchors.bottom: parent.bottom
+                height: parent.height
+                width: parent.width
+                sourceComponent: root.menu ? menuBarComponent : undefined
+                Component {
+                    id: menuBarComponent
+                    MenuBar {
+                        id: menuBar
+                        height: menuBarLoader.height
+                        focusWindow: root.target
+                        menuModel: root.menu
+                        enableMnemonic: altFilter.altPressed
+                        enabled: priv.enableMenus
+                    }
+                }
+
+                opacity: priv.shouldShowMenus ? 1 : 0
+                Behavior on opacity { UbuntuNumberAnimation { } }
+            }
         }
     }
 }

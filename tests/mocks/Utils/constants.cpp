@@ -20,4 +20,11 @@ Constants::Constants(QObject *parent)
    : QObject(parent)
 {
     m_indicatorValueTimeout = 5000;
+    m_menuHoverOpenInterval = 250;
+}
+
+void Constants::setMenuHoverOpenInterval(int menuHoverOpenInterval)
+{
+    m_menuHoverOpenInterval = menuHoverOpenInterval;
+    Q_EMIT menuHoverOpenIntervalChanged();
 }

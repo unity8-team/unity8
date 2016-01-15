@@ -1,4 +1,4 @@
-import QtQuick.tooling 1.1
+import QtQuick.tooling 1.2
 
 // This file describes the plugin-supplied types contained in the library.
 // It is used for QML tooling purposes only.
@@ -57,6 +57,10 @@ Module {
         Property { name: "actionStateParser"; type: "ActionStateParser"; isPointer: true }
         Property { name: "nameOwner"; type: "string"; isReadonly: true }
         Property { name: "modelData"; type: "QVariant" }
+        Signal {
+            name: "activated"
+            Parameter { name: "action"; type: "string" }
+        }
         Method {
             name: "insertRow"
             Parameter { name: "row"; type: "int" }

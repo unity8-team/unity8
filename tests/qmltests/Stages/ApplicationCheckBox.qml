@@ -24,6 +24,8 @@ RowLayout {
     property string appId
     property bool checked: false
 
+    signal triggered
+
     enabled: appId !== "unity8-dash"
 
     onCheckedChanged: {
@@ -35,6 +37,7 @@ RowLayout {
         } else {
             ApplicationManager.stopApplication(root.appId);
         }
+        root.triggered();
         d.bindGuard = false;
     }
 
@@ -69,6 +72,7 @@ RowLayout {
             } else {
                 ApplicationManager.stopApplication(root.appId);
             }
+            root.triggered();
             d.bindGuard = false;
         }
         onCheckedChanged: {

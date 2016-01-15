@@ -24,10 +24,11 @@ import Unity.Indicators 0.1 as Indicators
 import Ubuntu.Telephony 0.1 as Telephony
 import "../../../qml/Panel"
 import "../../../qml/Components/PanelState"
+import "../Stages"
 
 IndicatorTest {
     id: root
-    width: units.gu(100)
+    width: units.gu(120)
     height: units.gu(71)
     color: "white"
 
@@ -35,6 +36,17 @@ IndicatorTest {
         target: mouseEmulation
         property: "checked"
         value: !windowControlsCB.checked
+    }
+
+    DesktopMenuData { id: appMenuData }
+
+    Component.onCompleted: {
+        Indicators.UnityMenuModelCache.setCachedModelData("/dialer-app", appMenuData.dialerData);
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "darkgrey"
     }
 
     RowLayout {
@@ -105,10 +117,11 @@ IndicatorTest {
                 Layout.fillWidth: true
                 CheckBox {
                     id: windowControlsCB
-                    onClicked: PanelState.buttonsVisible = checked
+                    onClicked: PanelState.decorationsVisible = checked
                 }
                 Label {
-                    text: "Show window controls"
+                    text: "Show window decorations"
+                    color: "white"
                 }
             }
 
@@ -124,7 +137,21 @@ IndicatorTest {
                 }
                 Label {
                     text: "Show fake window title"
+                    color: "white"
                 }
+            }
+
+            Rectangle {
+                Layout.preferredHeight: units.dp(1);
+                Layout.fillWidth: true;
+                color: "black"
+            }
+
+            ApplicationCheckBox {
+                id: applicationCheckBox
+                Layout.fillWidth: true
+                appId: "dialer-app"
+                onTriggered: PanelState.maximizedApplication = checked ? "dialer-app" : "";
             }
 
             Rectangle {
@@ -143,6 +170,7 @@ IndicatorTest {
                     Label {
                         Layout.fillWidth: true
                         text: modelData["identifier"]
+                        color: "white"
                     }
 
                     CheckBox {
@@ -151,6 +179,7 @@ IndicatorTest {
                     }
                     Label {
                         text: "visible"
+                        color: "white"
                     }
                 }
             }
@@ -161,7 +190,10 @@ IndicatorTest {
                 color: "black"
             }
 
-            MouseTouchEmulationCheckbox { id: mouseEmulation }
+            MouseTouchEmulationCheckbox {
+                id: mouseEmulation
+                color: "white"
+            }
         }
     }
 
@@ -474,6 +506,26 @@ IndicatorTest {
         }
 
         function test_openAndClosePanelWithMouseClicks() {
+            compare(panel.indicators.shown, false);
+            verify(panel.indicators.fullyClosed);
+
+            mouseClick(panel.indicators,
+                    panel.indicators.width / 2,
+                    panel.indicators.minimizedPanelHeight / 2);
+
+            compare(panel.indicators.shown, true);
+            tryCompare(panel.indicators, "fullyOpened", true);
+
+            var handle = findChild(panel.indicators, "handle");
+            verify(handle);
+
+            mouseClick(handle);
+
+            compare(panel.indicators.shown, false);
+            tryCompare(panel.indicators, "fullyClosed", true);
+        }
+
+        function test_showsDecorations() {
             compare(panel.indicators.shown, false);
             verify(panel.indicators.fullyClosed);
 

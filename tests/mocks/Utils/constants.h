@@ -30,14 +30,21 @@ class Constants: public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int indicatorValueTimeout READ indicatorValueTimeout CONSTANT)
+    Q_PROPERTY(int menuHoverOpenInterval READ menuHoverOpenInterval WRITE setMenuHoverOpenInterval NOTIFY menuHoverOpenIntervalChanged)
 
 public:
     Constants(QObject *parent = 0);
 
     int indicatorValueTimeout() const { return m_indicatorValueTimeout; }
+    int menuHoverOpenInterval() const { return m_menuHoverOpenInterval; }
+    void setMenuHoverOpenInterval(int menuHoverOpenInterval);
+
+Q_SIGNALS:
+    void menuHoverOpenIntervalChanged();
 
 private:
     int m_indicatorValueTimeout;
+    int m_menuHoverOpenInterval;
 };
 
 #endif

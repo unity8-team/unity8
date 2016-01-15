@@ -24,6 +24,7 @@ set(QMLPLUGIN_SRC
     easingcurve.cpp
     windowstatestorage.cpp
     timezoneFormatter.cpp
+    shortcutaction.cpp
     plugin.cpp
     )
 

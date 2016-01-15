@@ -24,4 +24,5 @@ Constants::Constants(QObject *parent)
     } else {
         m_indicatorValueTimeout = 5000;
     }
+    m_menuHoverOpenInterval = 250;
 }

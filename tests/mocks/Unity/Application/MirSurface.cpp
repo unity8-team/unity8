@@ -129,6 +129,16 @@ void MirSurface::setOrientationAngle(Mir::OrientationAngle angle)
     Q_EMIT orientationAngleChanged(angle);
 }
 
+QString MirSurface::dbusMenuName() const
+{
+    return name();
+}
+
+QString MirSurface::dbusMenuObjectPath() const
+{
+    return QString("/%1").arg(name());
+}
+
 
 
 void MirSurface::registerView(qintptr viewId)

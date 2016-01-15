@@ -18,6 +18,8 @@
 
 #include "unitymenumodel.h"
 
+#include <QDebug>
+
 enum MenuRoles {
     LabelRole  = Qt::DisplayRole + 1,
     SensitiveRole,
@@ -29,7 +31,9 @@ enum MenuRoles {
     ActionStateRole,
     IsCheckRole,
     IsRadioRole,
-    IsToggledRole
+    IsToggledRole,
+    ShortcutRole,
+    HasSubmenuRole
 };
 
 UnityMenuModel::UnityMenuModel(QObject *parent)
@@ -149,7 +153,10 @@ QVariantMap UnityMenuModel::rowData(int row) const
     if (m_modelData.count() <= row) {
         return QVariantMap();
     }
-    return m_modelData[row].toMap()["rowData"].toMap();
+    QVariantMap vRow = m_modelData[row].toMap();
+    QVariantMap map = vRow["rowData"].toMap();
+    map["hasSubmenu"] = vRow.contains("submenu");
+    return map;
 }
 
 QVariant UnityMenuModel::subMenuData(int row) const
@@ -182,6 +189,8 @@ QHash<int, QByteArray> UnityMenuModel::roleNames() const
     names[IsCheckRole] = "isCheck";
     names[IsRadioRole] = "isRadio";
     names[IsToggledRole] = "isToggled";
+    names[ShortcutRole] = "shortcut";
+    names[HasSubmenuRole] = "hasSubmenu";
 
     return names;
 }
@@ -201,6 +210,7 @@ QObject * UnityMenuModel::submenu(int position, QQmlComponent*)
         UnityMenuModel*& model = submenus[position];
         if (!model) {
             model = new UnityMenuModel(this);
+            connect(model, &UnityMenuModel::activated, this, &UnityMenuModel::activated);
         }
         if (model->modelData() != submenuData) {
             model->setModelData(submenuData);
@@ -228,8 +238,20 @@ QVariant UnityMenuModel::get(int row, const QByteArray &role)
     return this->data(this->index(row, 0), roles[role]);
 }
 
-void UnityMenuModel::activate(int, const QVariant&)
+void UnityMenuModel::activate(int row, const QVariant&)
 {
+    QVariantMap vModelData = m_modelData[row].toMap();
+    QVariantMap rd = vModelData["rowData"].toMap();
+
+    bool isCheckable = rd[roleNames()[IsCheckRole]].toBool() || rd[roleNames()[IsRadioRole]].toBool();
+    if (isCheckable) {
+        rd[roleNames()[IsToggledRole]] = !rd[roleNames()[IsToggledRole]].toBool();
+        vModelData["rowData"] = rd;
+        m_modelData[row] = vModelData;
+
+        dataChanged(index(row, 0), index(row, 0),  QVector<int>() << IsToggledRole);
+    }
+    Q_EMIT activated(rd[roleNames()[ActionRole]].toString());
 }
 
 void UnityMenuModel::changeState(int, const QVariant&)

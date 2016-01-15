@@ -17,6 +17,9 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
+import Unity.Indicators 0.1
+import Utils 0.1
+import "../ApplicationMenus"
 import "../Components"
 import "../Components/PanelState"
 import ".."
@@ -101,13 +104,14 @@ Item {
         }
 
         MouseArea {
+            id: decorationMouseArea
             anchors {
                 top: parent.top
                 left: parent.left
                 right: indicators.left
             }
             height: indicators.minimizedPanelHeight
-            hoverEnabled: true
+            hoverEnabled: !indicators.shown
             onClicked: callHint.visible ? callHint.showLiveCall() : PanelState.focusMaximizedApp()
             onDoubleClicked: PanelState.maximize()
 
@@ -124,11 +128,79 @@ Item {
                     bottomMargin: units.gu(0.5)
                 }
                 height: indicators.minimizedPanelHeight - anchors.topMargin - anchors.bottomMargin
-                visible: PanelState.buttonsVisible && parent.containsMouse && !root.locked && !callHint.visible
-                active: PanelState.buttonsVisible
+                visible: d.showDecorations
+                active: PanelState.decorationsVisible
                 onClose: PanelState.close()
                 onMinimize: PanelState.minimize()
                 onMaximize: PanelState.maximize()
+            }
+
+            WindowKeysFilter {
+                id: altFilter
+                property bool altPressed: false
+                property bool longAltPressed: false
+                enabled: d.enableMenus
+                Keys.onPressed: {
+                    if (event.key === Qt.Key_Alt && !event.isAutoRepeat) {
+                        altPressed = true;
+                        longAltPressed = false;
+                        menuBarShortcutTimer.start();
+                        return;
+                    }
+                    event.accepted = false;
+                }
+                Keys.onReleased: {
+                    if (event.key === Qt.Key_Alt) {
+                        menuBarShortcutTimer.stop();
+                        altPressed = false;
+                        longAltPressed = false;
+                        return;
+                    }
+                    event.accepted = false
+                }
+
+                Timer {
+                    id: menuBarShortcutTimer
+                    interval: 200
+                    repeat: false
+                    onTriggered: {
+                        altFilter.longAltPressed = true;
+                    }
+                }
+            }
+
+            Loader {
+                id: menuBarLoader
+                anchors {
+                    left: windowControlButtons.right
+                    leftMargin: units.gu(3)
+                    top: parent.top
+                }
+                height: parent.height
+                visible: d.showDecorations
+
+                sourceComponent: PanelState.maximizedApplication ? menuBarComponent : undefined
+                Component {
+                    id: menuBarComponent
+                    MenuBar {
+                        id: menuBar
+                        height: menuBarLoader.height
+                        enableMnemonic: altFilter.altPressed
+                        enabled: d.enableMenus
+                        menuModel: sharedAppModel.model
+
+                        SharedUnityMenuModel {
+                            id: sharedAppModel
+
+                            property var application: ApplicationManager.findApplication(PanelState.maximizedApplication)
+                            property var surface: application ? application.session ? application.session.lastSurface : null : null
+
+                            busName: surface ? surface.dbusMenuName : ""
+                            menuObjectPath: surface ? surface.dbusMenuObjectPath : ""
+                            actions: surface && surface.dbusMenuObjectPath ? { "unity": surface.dbusMenuObjectPath } : {}
+                        }
+                    }
+                }
             }
         }
 
@@ -162,6 +234,9 @@ Item {
                     callHint.showLiveCall();
                 }
             }
+            onShownChanged: {
+                if (d.menuBar) d.menuBar.close();
+            }
         }
 
         Label {
@@ -174,16 +249,14 @@ Item {
                 topMargin: units.gu(0.5)
                 bottomMargin: units.gu(0.5)
             }
-            color: PanelState.buttonsVisible ? "#ffffff" : "#5d5d5d"
+            color: PanelState.decorationsVisible ? "#ffffff" : "#5d5d5d"
             height: indicators.minimizedPanelHeight - anchors.topMargin - anchors.bottomMargin
-            visible: !windowControlButtons.visible && !root.locked && !callHint.visible
+            visible: !d.showDecorations
             verticalAlignment: Text.AlignVCenter
             fontSize: "medium"
             font.weight: Font.Normal
             text: PanelState.title
         }
-
-        // TODO here would the Locally integrated menus come
 
         ActiveCallHint {
             id: __callHint
@@ -200,6 +273,17 @@ Item {
         id: d
         objectName: "panelPriv"
         readonly property real indicatorHeight: indicators.minimizedPanelHeight
+
+        property var menuBar: menuBarLoader.item
+
+        property bool enableMenus: PanelState.decorationsVisible && !root.locked && !callHint.visible &&
+                                   menuBar &&
+                                   menuBar.hasChildren
+
+        property bool showDecorations : PanelState.decorationsVisible && !root.locked && !callHint.visible &&
+                                        (altFilter.longAltPressed ||
+                                         (decorationMouseArea.hoverEnabled && decorationMouseArea.containsMouse) ||
+                                         (menuBar && menuBar.openItem !== undefined))
     }
 
     states: [
