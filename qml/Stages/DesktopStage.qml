@@ -449,14 +449,16 @@ AbstractStage {
                                     property: 'scale'
                                     from: 1
                                     to: 0.85
-                                    easing: UbuntuAnimation.StandardEasingReverse
+                                    duration: UbuntuAnimation.SnapDuration
+                                    easing: UbuntuAnimation.StandardEasing
                                 }
                                 UbuntuNumberAnimation {
                                     target: appDelegate
                                     property: 'opacity'
                                     from: 1
                                     to: 0
-                                    easing: UbuntuAnimation.StandardEasingReverse
+                                    duration: UbuntuAnimation.SnapDuration
+                                    easing: UbuntuAnimation.StandardEasing
                                 }
                             }
                             ScriptAction {
