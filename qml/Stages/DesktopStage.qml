@@ -452,7 +452,7 @@ AbstractStage {
                                     from: 1
                                     to: 0.85
                                     duration: UbuntuAnimation.SnapDuration
-                                    easing: UbuntuAnimation.StandardEasing
+                                    easing: UbuntuAnimation.StandardEasingReverse
                                 }
                                 UbuntuNumberAnimation {
                                     target: appDelegate
@@ -460,9 +460,11 @@ AbstractStage {
                                     from: 1
                                     to: 0
                                     duration: UbuntuAnimation.SnapDuration
-                                    easing: UbuntuAnimation.StandardEasing
+                                    easing: UbuntuAnimation.StandardEasingReverse
                                 }
                             }
+                            // hack: make sure the animation has really finished before closing the app
+                            PauseAnimation { duration: UbuntuAnimation.SnapDuration }
                             ScriptAction {
                                 script: {
                                     ApplicationManager.stopApplication(appId);
