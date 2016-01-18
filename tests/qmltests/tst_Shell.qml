@@ -144,11 +144,13 @@ Rectangle {
                 anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
                 spacing: units.gu(1)
 
-                Row {
+                Column {
                     spacing: units.gu(1)
+                    anchors { left: parent.left; right: parent.right }
                     Button {
                         text: "Show Greeter"
                         activeFocusOnPress: false
+                        anchors { left: parent.left; right: parent.right }
                         onClicked: {
                             if (shellLoader.status !== Loader.Ready)
                                 return;
@@ -162,6 +164,7 @@ Rectangle {
                     Button {
                         text: "Hide Greeter"
                         activeFocusOnPress: false
+                        anchors { left: parent.left; right: parent.right }
                         onClicked: {
                             if (shellLoader.status !== Loader.Ready)
                                 return;
@@ -170,6 +173,17 @@ Rectangle {
                             if (greeter.shown) {
                                 greeter.hide()
                             }
+                        }
+                    }
+                    Button {
+                        text: "Restart Tutorial"
+                        anchors { left: parent.left; right: parent.right }
+                        onClicked: {
+                            if (shellLoader.status !== Loader.Ready)
+                                return;
+
+                            AccountsService.demoEdges = false;
+                            AccountsService.demoEdges = true;
                         }
                     }
                 }

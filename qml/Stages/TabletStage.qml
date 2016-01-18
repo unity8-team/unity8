@@ -560,6 +560,7 @@ AbstractStage {
                 objectName: "sideStage"
                 height: priv.landscapeHeight
                 x: spreadView.width - width
+                showHint: !priv.sideStageAppId
                 z: {
                     if (!priv.mainStageAppId) return 0;
 

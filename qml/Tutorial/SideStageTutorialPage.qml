@@ -59,16 +59,17 @@ TutorialPage {
         states: [
             State {
                 name: "initial"
-                when: !overlayGesture.shown && !overlayTap.shown
                 StateChangeScript {
                     script: {
+                        root.hideError();
+                        overlayGesture.hide();
+                        overlayFinish.hide();
                         sideStage.hide();
                     }
                 }
             },
             State {
                 name: "overlayGesture"
-                when: overlayGesture.shown && !overlayTap.shown
                 PropertyChanges {
                     target: root
                     title: i18n.tr("Load the sidestage")
@@ -78,13 +79,14 @@ TutorialPage {
                 PropertyChanges { target: tapIcon; visible: false; }
                 StateChangeScript {
                     script: {
+                        root.hideError();
+                        overlayGesture.show();
                         sideStage.show();
                     }
                 }
             },
             State {
-                name: "overlayTap"
-                when: overlayTap.shown && !overlayGesture.shown
+                name: "overlayFinish"
                 PropertyChanges {
                     target: root
                     title: i18n.tr("This is the loaded side stage")
@@ -94,6 +96,7 @@ TutorialPage {
                 StateChangeScript {
                     script: {
                         root.hideError();
+                        overlayFinish.show();
                     }
                 }
                 PropertyChanges { target: gestureArea; enabled: false }
@@ -123,14 +126,14 @@ TutorialPage {
                     anchors.verticalCenter: parent.verticalCenter
                     x: Math.max(parent.width / 2 - width / 2, 0)
                     width: units.gu(8)
-                    visible: overlayTap.shown
+                    visible: overlayFinish.shown
                 }
 
                 DropArea {
                     anchors.fill: parent
                     onDropped: {
                         root.hideError();
-                        overlayTap.show();
+                        internalState.state = "overlayFinish";
                     }
                 }
             },
@@ -138,7 +141,7 @@ TutorialPage {
                 id: overlayGesture
                 objectName: "overlayGesture"
                 anchors.fill: parent
-                hides: [ overlayTap ]
+                hides: [ overlayFinish ]
 
                 opacity: 0
                 shown: false
@@ -157,18 +160,18 @@ TutorialPage {
                 }
             },
             Showable {
-                id: overlayTap
-                objectName: "overlayTap"
+                id: overlayFinish
+                objectName: "overlayFinish"
                 anchors.fill: parent
                 hides: [ overlayGesture ]
 
                 opacity: 0
                 shown: false
                 showAnimation: SequentialAnimation {
-                    PropertyAction { target: overlayTap; property: "opacity"; value: 0 }
+                    PropertyAction { target: overlayFinish; property: "opacity"; value: 0 }
                     ParallelAnimation {
-                        PropertyAction { target: overlayTap; property: "visible"; value: true }
-                        UbuntuNumberAnimation { target: overlayTap; property: "opacity"; to: 1 }
+                        PropertyAction { target: overlayFinish; property: "visible"; value: true }
+                        UbuntuNumberAnimation { target: overlayFinish; property: "opacity"; to: 1 }
                     }
                 }
 
@@ -182,7 +185,28 @@ TutorialPage {
                     }
                     onClicked: root.hide()
                 }
+            },
+            Label {
+                anchors {
+                    left: parent.left
+                    leftMargin: root.textLeft
+                    bottom: parent.bottom
+                    bottomMargin: units.gu(3)
+                }
+
+                text: "Dismiss"
+                font.underline: true
+                fontSize: "medium"
+
+                MouseArea {
+                    anchors {
+                        fill: parent
+                        margins: -units.gu(1)
+                    }
+                    onClicked: root.finished();
+                }
             }
+
         ]
     }
 
@@ -197,11 +221,10 @@ TutorialPage {
 
         onClicked: {
             root.hideError();
-            if (!overlayGesture.shown) {
-                overlayGesture.show();
+            if (internalState.state !== "overlayGesture") {
+                internalState.state = "overlayGesture";
             } else {
-                overlayTap.hide();
-                overlayGesture.hide();
+                internalState.state = "initial";
             }
         }
 
@@ -216,7 +239,7 @@ TutorialPage {
 
         onDrop: {
             // still in the gesture state after dropping?
-            if (!overlayTap.shown) {
+            if (!overlayFinish.shown) {
                 root.showError();
             }
         }
