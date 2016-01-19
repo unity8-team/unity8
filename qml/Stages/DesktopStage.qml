@@ -379,7 +379,8 @@ AbstractStage {
                             x: 0; y: 0;
                             requestedWidth: root.width; requestedHeight: root.height;
                             visuallyMinimized: false;
-                            visuallyMaximized: true
+                            visuallyMaximized: true;
+                            opacity: 1; scale: 1
                         }
                     },
                     State {
@@ -406,6 +407,7 @@ AbstractStage {
                 ]
                 transitions: [
                     Transition {
+                        from: ",minimized"
                         to: "normal"
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
