@@ -50,6 +50,7 @@ Item {
             property real requestedWidth
             property real requestedHeight
             state: "normal"
+            readonly property bool maximized: state == "maximized"
 
             function maximize() {
                 state = "maximized"

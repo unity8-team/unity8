@@ -401,8 +401,8 @@ Item {
 
             // restore
             dialerDelegate.restoreFromMaximized();
-            compare(dashApp.session.lastSurface.visible, true);
-            compare(gmailApp.session.lastSurface.visible, true);
+            tryCompare(dashApp.session.lastSurface, "visible", true);
+            tryCompare(gmailApp.session.lastSurface, "visible", true);
         }
 
         function test_applicationsBecomeVisibleWhenOccludingAppRemoved() {
