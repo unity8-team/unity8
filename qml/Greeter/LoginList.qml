@@ -23,6 +23,7 @@ Item {
     id: root
 
     property alias model: userList.model
+    property alias paswordInput: passwordInput
     property int currentIndex
     property bool locked
 
