@@ -30,6 +30,7 @@ Item {
     readonly property int cellHeight: units.gu(5)
     readonly property int highlightedHeight: units.gu(10)
     readonly property int moveDuration: 200
+    property bool alphanumeric
     property string selectedSession
     property string currentSession: selectedSession ?
         selectedSession : userList.currentItem.userSession
@@ -276,6 +277,8 @@ Item {
         height: units.gu(4.5)
         width: parent.width - anchors.margins * 2
         opacity: userList.movingInternally ? 0 : 1
+
+        inputMethodHints: root.alphanumeric ? Qt.ImhNone : Qt.ImhDigitsOnly
 
         property string promptText
         placeholderText: root.wasPrompted ? promptText
