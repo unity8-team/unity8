@@ -49,6 +49,9 @@ FocusScope {
     property int shellOrientation
     property QtObject orientations
 
+    // overrideable from outside
+    property alias fullscreen: appWindow.fullscreen
+
     function matchShellOrientation() {
         if (!root.application)
             return;

@@ -209,6 +209,8 @@ AbstractStage {
             if (sideStage.shown) {
                 app = priv.getTopApp(ApplicationInfoInterface.SideStage);
                 priv.sideStageAppId = app ? app.appId : ""
+            } else {
+                priv.sideStageAppId = "";
             }
 
             appId0 = ApplicationManager.count >= 1 ? ApplicationManager.get(0).appId : "";
@@ -217,7 +219,6 @@ AbstractStage {
 
         readonly property bool sideStageEnabled: root.shellOrientation == Qt.LandscapeOrientation ||
                                                  root.shellOrientation == Qt.InvertedLandscapeOrientation
-
         Component.onCompleted: updateStageApps();
     }
 
@@ -338,16 +339,6 @@ AbstractStage {
 
         property real sideStageDragProgress: sideStage.progress
         property bool surfaceDragging: triGestureArea.recognisedDrag
-
-        onSideStageDragProgressChanged: {
-            if (sideStageDragProgress == 0) {
-                ApplicationManager.focusApplication(priv.mainStageAppId);
-                priv.sideStageAppId = "";
-            } else {
-                var app = priv.getTopApp(ApplicationInfoInterface.SideStage);
-                priv.sideStageAppId = app === null ? "" : app.appId;
-            }
-        }
 
         // In case the ApplicationManager already holds an app when starting up we're missing animations
         // Make sure we end up in the same state
@@ -515,7 +506,7 @@ AbstractStage {
                         var newIndex = spreadView.selectedIndex;
                         var application = ApplicationManager.get(newIndex);
                         if (application.stage === ApplicationInfoInterface.SideStage) {
-                            sideStage.showNow()
+                            sideStage.showNow();
                         }
                         spreadView.selectedIndex = -1;
                         ApplicationManager.focusApplication(application.appId);
@@ -577,6 +568,8 @@ AbstractStage {
                 opacity: priv.sideStageEnabled && spreadView.phase <= 0 ? 1 : 0
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
+                onShownChanged: priv.updateStageApps()
+
                 DropArea {
                     id: sideStageDropArea
                     objectName: "SideStageDropArea"
@@ -629,6 +622,12 @@ AbstractStage {
                     application: ApplicationManager.get(index)
                     closeable: !isDash
                     stage: model.stage
+                    fullscreen: {
+                        if (mainApp && stage === ApplicationInfoInterface.SideStage) {
+                            return mainApp.fullscreen;
+                        }
+                        return application ? application.fullscreen : false;
+                    }
 
                     supportedOrientations: {
                         if (application) {
@@ -802,6 +801,9 @@ AbstractStage {
                                                 priv.sideStageEnabled && !sideStage.shown) {
                                             // Sidestage was focused, so show the side stage.
                                             sideStage.show();
+                                        // if we've switched to a main app which doesnt support portrait, hide the side stage.
+                                        } else if (mainApp && (mainApp.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) == 0) {
+                                            sideStage.hideNow();
                                         }
                                     }
                                 }
