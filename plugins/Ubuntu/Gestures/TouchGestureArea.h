@@ -97,6 +97,7 @@ class TouchGestureArea : public QQuickItem
     Q_PROPERTY(int maximumTouchPoints READ maximumTouchPoints WRITE setMaximumTouchPoints NOTIFY maximumTouchPointsChanged)
 
     Q_PROPERTY(int recognitionPeriod READ recognitionPeriod WRITE setRecognitionPeriod NOTIFY recognitionPeriodChanged)
+    Q_PROPERTY(int releaseRejectPeriod READ releaseRejectPeriod WRITE setReleaseRejectPeriod NOTIFY releaseRejectPeriodChanged)
 
 public:
     // Describes the state of the directional drag gesture.
@@ -126,6 +127,9 @@ public:
     int recognitionPeriod() const;
     void setRecognitionPeriod(int value);
 
+    int releaseRejectPeriod() const;
+    void setReleaseRejectPeriod(int value);
+
 Q_SIGNALS:
     void statusChanged(int status);
 
@@ -134,6 +138,7 @@ Q_SIGNALS:
     void minimumTouchPointsChanged(bool value);
     void maximumTouchPointsChanged(bool value);
     void recognitionPeriodChanged(bool value);
+    void releaseRejectPeriodChanged(bool value);
 
     void pressed(const QList<QObject*>& points);
     void released(const QList<QObject*>& points);
@@ -184,6 +189,7 @@ private:
     int m_minimumTouchPoints;
     int m_maximumTouchPoints;
     int m_recognitionPeriod;
+    int m_releaseRejectPeriod;
 };
 
 QML_DECLARE_TYPE(GestureTouchPoint)

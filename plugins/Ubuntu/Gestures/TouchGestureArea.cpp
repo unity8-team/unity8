@@ -112,16 +112,11 @@ TouchGestureArea::TouchGestureArea(QQuickItem* parent)
     , m_minimumTouchPoints(1)
     , m_maximumTouchPoints(INT_MAX)
     , m_recognitionPeriod(50)
+    , m_releaseRejectPeriod(100)
 {
     setRecognitionTimer(new UbuntuGestures::Timer(this));
     m_recognitionTimer->setInterval(m_recognitionPeriod);
     m_recognitionTimer->setSingleShot(true);
-
-    connect(this, &TouchGestureArea::recognitionPeriodChanged, this, [this]() {
-        if (m_recognitionTimer) {
-            m_recognitionTimer->setInterval(m_recognitionPeriod);
-        }
-    });
 }
 
 TouchGestureArea::~TouchGestureArea()
@@ -563,13 +558,13 @@ void TouchGestureArea::setInternalStatus(uint newStatus)
             resyncCachedTouchPoints();
             break;
         case InternalStatus::Undecided:
-            m_recognitionTimer->start();
+            m_recognitionTimer->start(m_recognitionPeriod);
             break;
         case InternalStatus::Recognized:
             resyncCachedTouchPoints();
             break;
         case InternalStatus::WaitingForRejection:
-            m_recognitionTimer->start();
+            m_recognitionTimer->start(m_releaseRejectPeriod);
             break;
         case InternalStatus::Rejected:
             resyncCachedTouchPoints();
@@ -661,6 +656,19 @@ void TouchGestureArea::setRecognitionPeriod(int value)
     if (value != m_recognitionPeriod) {
         m_recognitionPeriod = value;
         Q_EMIT recognitionPeriodChanged(value);
+    }
+}
+
+int TouchGestureArea::releaseRejectPeriod() const
+{
+    return m_releaseRejectPeriod;
+}
+
+void TouchGestureArea::setReleaseRejectPeriod(int value)
+{
+    if (value != m_releaseRejectPeriod) {
+        m_releaseRejectPeriod = value;
+        Q_EMIT releaseRejectPeriodChanged(value);
     }
 }
 
