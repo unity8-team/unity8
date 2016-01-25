@@ -132,10 +132,13 @@ void Session::createSurface()
 {
     if (m_surface) return;
 
+    Mir::State state = Mir::MaximizedState;
+    if (m_application && m_application->fullscreen()) state = Mir::FullscreenState;
+    if (m_application && m_application->hideDecorations()) state = Mir::HorizMaximizedState;
+
     appendSurface(SurfaceManager::singleton()->createSurface(name(),
            Mir::NormalType,
-           m_application && m_application->fullscreen() ? Mir::FullscreenState :
-                                                          Mir::MaximizedState,
+           state,
            m_screenshot));
 }
 

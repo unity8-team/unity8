@@ -34,6 +34,7 @@ FocusScope {
     readonly property alias orientationChangesEnabled: appWindow.orientationChangesEnabled
 
     // to be set from outside
+    property bool fullscreen: false
     property bool interactive: true
     property bool dropShadow: true
     property real maximizedAppTopMargin
@@ -267,7 +268,7 @@ FocusScope {
                 focus: true
                 anchors {
                     fill: parent
-                    topMargin: appWindow.fullscreen || (application && application.rotatesWindowContents)
+                    topMargin: root.fullscreen || (application && application.rotatesWindowContents)
                                    ? 0 : maximizedAppTopMargin
                 }
 

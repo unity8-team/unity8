@@ -264,6 +264,8 @@ AbstractStage {
                 readonly property alias maximizedRight: appDelegatePrivate.maximizedRight
                 readonly property alias minimized: appDelegatePrivate.minimized
 
+                readonly property QtObject application: ApplicationManager.get(index)
+                readonly property bool fullscreen: application && application.fullscreen
                 readonly property string appId: model.appId
                 property bool animationsEnabled: true
                 property alias title: decoratedWindow.title
@@ -285,7 +287,7 @@ AbstractStage {
                          (spread.state == "altTab" && index === spread.highlightedIndex)
 
                 Binding {
-                    target: ApplicationManager.get(index)
+                    target: appDelegate.application
                     property: "requestedState"
                     // TODO: figure out some lifecycle policy, like suspending minimized apps
                     //       if running on a tablet or something.
@@ -339,7 +341,7 @@ AbstractStage {
 
                 states: [
                     State {
-                        name: "fullscreen"; when: decoratedWindow.fullscreen
+                        name: "fullscreen"; when: appDelegate.fullscreen
                         extend: "maximized"
                         PropertyChanges {
                             target: appDelegate;
@@ -448,7 +450,8 @@ AbstractStage {
                     objectName: "decoratedWindow"
                     anchors.left: appDelegate.left
                     anchors.top: appDelegate.top
-                    application: ApplicationManager.get(index)
+                    application: appDelegate.application
+                    showDecorations: application ? !application.fullscreen : true
                     active: ApplicationManager.focusedApplicationId === model.appId
                     focus: true
 

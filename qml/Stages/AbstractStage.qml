@@ -44,6 +44,7 @@ Rectangle {
     property var mainApp: null
     property int mainAppWindowOrientationAngle
     property bool orientationChangesEnabled
+    property bool mainAppIsFullscreen: mainApp ? mainApp.fullscreen : false
 
     // Shared code for use in stage implementations
     GSettings {

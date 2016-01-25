@@ -45,6 +45,7 @@ class ApplicationManager : public ApplicationManagerInterface {
     enum MoreRoles {
         RoleSession = RoleExemptFromLifecycle+1,
         RoleFullscreen,
+        RoleHideDecorations,
     };
     enum Flag {
         NoFlag = 0x0,

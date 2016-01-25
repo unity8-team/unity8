@@ -26,7 +26,7 @@ Item {
     readonly property real panelHeight: indicatorArea.y + d.indicatorHeight
     property alias indicators: __indicators
     property alias callHint: __callHint
-    property bool fullscreenMode: false
+    property bool pinned: true
     property real indicatorAreaShowProgress: 1.0
     property bool locked: false
 
@@ -153,7 +153,7 @@ Item {
                 }
                 return root.width
             }
-            enableHint: !callHint.active && !fullscreenMode
+            enableHint: !callHint.active && !pinned
             showOnClick: !callHint.visible
             panelColor: indicatorAreaBackground.color
 
@@ -204,8 +204,8 @@ Item {
 
     states: [
         State {
-            name: "onscreen" //fully opaque and visible at top edge of screen
-            when: !fullscreenMode
+            name: "pinned" //fully opaque and visible at top edge of screen
+            when: pinned
             PropertyChanges {
                 target: indicatorArea;
                 anchors.topMargin: 0
@@ -213,8 +213,8 @@ Item {
             }
         },
         State {
-            name: "offscreen" //pushed off screen
-            when: fullscreenMode
+            name: "unpinned" //pushed off screen
+            when: !pinned
             PropertyChanges {
                 target: indicatorArea;
                 anchors.topMargin: indicators.state === "initial" ? -d.indicatorHeight : 0
@@ -229,11 +229,11 @@ Item {
 
     transitions: [
         Transition {
-            to: "onscreen"
+            to: "pinned"
             UbuntuNumberAnimation { target: indicatorArea; properties: "anchors.topMargin,opacity" }
         },
         Transition {
-            to: "offscreen"
+            to: "unpinned"
             UbuntuNumberAnimation { target: indicatorArea; properties: "anchors.topMargin,opacity" }
         }
     ]

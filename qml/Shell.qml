@@ -525,12 +525,12 @@ Item {
                 greeterShown: greeter.shown
             }
 
-            readonly property bool topmostApplicationIsFullscreen:
-                ApplicationManager.focusedApplicationId &&
-                    ApplicationManager.findApplication(ApplicationManager.focusedApplicationId).fullscreen
+            readonly property bool mainAppIsFullscreen: {
+                applicationsDisplayLoader.item ? applicationsDisplayLoader.item.mainAppIsFullscreen : false
+            }
 
-            fullscreenMode: (topmostApplicationIsFullscreen && !lightDM.greeter.active && launcher.progress == 0)
-                            || greeter.hasLockedApp
+            pinned: (!mainAppIsFullscreen || lightDM.greeter.active || launcher.progress !== 0)
+                            && !greeter.hasLockedApp
             locked: greeter && greeter.active
         }
 

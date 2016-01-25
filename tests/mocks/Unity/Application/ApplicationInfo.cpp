@@ -34,6 +34,7 @@ ApplicationInfo::ApplicationInfo(const QString &appId, QObject *parent)
     , m_state(Stopped)
     , m_focused(false)
     , m_fullscreen(false)
+    , m_hideDecorations(false)
     , m_session(0)
     , m_supportedOrientations(Qt::PortraitOrientation |
             Qt::LandscapeOrientation |
@@ -53,6 +54,7 @@ ApplicationInfo::ApplicationInfo(QObject *parent)
     , m_state(Stopped)
     , m_focused(false)
     , m_fullscreen(false)
+    , m_hideDecorations(false)
     , m_session(0)
     , m_supportedOrientations(Qt::PortraitOrientation |
             Qt::LandscapeOrientation |
@@ -194,6 +196,14 @@ void ApplicationInfo::setFullscreen(bool value)
     if (value != m_fullscreen) {
         m_fullscreen = value;
         Q_EMIT fullscreenChanged(value);
+    }
+}
+
+void ApplicationInfo::setHideDecorations(bool value)
+{
+    if (value != m_hideDecorations) {
+        m_hideDecorations = value;
+        Q_EMIT hideDecorationsChanged(value);
     }
 }
 

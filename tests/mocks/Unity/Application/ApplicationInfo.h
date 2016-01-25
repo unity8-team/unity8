@@ -31,6 +31,7 @@ class ApplicationInfo : public ApplicationInfoInterface {
     Q_OBJECT
 
     Q_PROPERTY(bool fullscreen READ fullscreen WRITE setFullscreen NOTIFY fullscreenChanged)
+    Q_PROPERTY(bool hideDecorations READ hideDecorations WRITE setHideDecorations NOTIFY hideDecorationsChanged)
     Q_PROPERTY(Session* session READ session NOTIFY sessionChanged)
 
     // Only exists in this fake implementation
@@ -80,6 +81,9 @@ public:
     void setFullscreen(bool value);
     bool fullscreen() const { return m_fullscreen; }
 
+    void setHideDecorations(bool value);
+    bool hideDecorations() const { return m_hideDecorations; }
+
     Qt::ScreenOrientations supportedOrientations() const override;
     void setSupportedOrientations(Qt::ScreenOrientations orientations);
 
@@ -102,6 +106,7 @@ public:
 Q_SIGNALS:
     void sessionChanged(Session*);
     void fullscreenChanged(bool value);
+    void hideDecorationsChanged(bool value);
     void manualSurfaceCreationChanged(bool value);
 
 public Q_SLOTS:
@@ -123,6 +128,7 @@ private:
     State m_state;
     bool m_focused;
     bool m_fullscreen;
+    bool m_hideDecorations;
     Session* m_session;
     Qt::ScreenOrientations m_supportedOrientations;
     bool m_rotatesWindowContents;

@@ -297,7 +297,7 @@ Item {
             tryCompare(greeter, "lockedApp", "dialer-app")
             tryCompare(greeter, "hasLockedApp", true)
             tryCompare(greeter, "shown", false);
-            tryCompare(panel, "fullscreenMode", true)
+            tryCompare(panel, "pinned", false)
             tryCompare(indicators, "available", false)
             tryCompare(launcher, "available", false)
             tryCompare(stage, "spreadEnabled", false)
@@ -310,7 +310,7 @@ Item {
             tryCompare(greeter, "lockedApp", "")
             tryCompare(greeter, "hasLockedApp", false)
             tryCompare(greeter, "fullyShown", true);
-            tryCompare(panel, "fullscreenMode", false)
+            tryCompare(panel, "pinned", true)
             tryCompare(indicators, "available", true)
             tryCompare(launcher, "available", true)
             tryCompare(stage, "spreadEnabled", false)

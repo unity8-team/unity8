@@ -209,6 +209,26 @@ Rectangle {
                     color: "white"
                 }
 
+                Label { text: "Focused Application"; font.bold: true }
+
+                Row {
+                    anchors { left: parent.left; right: parent.right }
+                    spacing: units.gu(1)
+                    Button {
+                        property QtObject application: ApplicationManager.findApplication(ApplicationManager.focusedApplicationId)
+                        text: "Fullscreen"
+                        color: application.fullscreen ? UbuntuColors.green : UbuntuColors.lightGrey
+                        onClicked: application.fullscreen = !application.fullscreen
+                    }
+
+                    Button {
+                        property QtObject application: ApplicationManager.findApplication(ApplicationManager.focusedApplicationId)
+                        text: "Hide Decorations"
+                        color: application.hideDecorations ? UbuntuColors.green : UbuntuColors.lightGrey
+                        onClicked: application.hideDecorations = !application.hideDecorations
+                    }
+                }
+
                 Label { text: "Applications"; font.bold: true }
 
                 Button {
@@ -1031,40 +1051,40 @@ Rectangle {
             tryCompare(sessionSpy, "count", 1);
         }
 
-        function test_fullscreen() {
+        function test_unpinnedMode() {
             loadShell("phone");
             swipeAwayGreeter();
             var panel = findChild(shell, "panel");
-            compare(panel.fullscreenMode, false);
+            compare(panel.pinned, true);
             ApplicationManager.startApplication("camera-app");
-            tryCompare(panel, "fullscreenMode", true);
+            tryCompare(panel, "pinned", false);
             ApplicationManager.startApplication("dialer-app");
-            tryCompare(panel, "fullscreenMode", false);
+            tryCompare(panel, "pinned", true);
             ApplicationManager.requestFocusApplication("camera-app");
-            tryCompare(panel, "fullscreenMode", true);
+            tryCompare(panel, "pinned", false);
             ApplicationManager.requestFocusApplication("dialer-app");
-            tryCompare(panel, "fullscreenMode", false);
+            tryCompare(panel, "pinned", true);
         }
 
-        function test_leftEdgeDragFullscreen() {
+        function test_leftEdgeDragPinnedMode() {
             loadShell("phone");
             swipeAwayGreeter();
             var panel = findChild(shell, "panel");
-            tryCompare(panel, "fullscreenMode", false)
+            tryCompare(panel, "pinned", true)
 
             ApplicationManager.startApplication("camera-app");
-            tryCompare(panel, "fullscreenMode", true)
+            tryCompare(panel, "pinned", false)
 
             var touchStartX = 2;
             var touchStartY = shell.height / 2;
 
             touchFlick(shell, touchStartX, touchStartY, units.gu(2), touchStartY, true, false);
 
-            compare(panel.fullscreenMode, true);
+            compare(panel.pinned, false);
 
             touchFlick(shell, units.gu(2), touchStartY, shell.width * 0.5, touchStartY, false, false);
 
-            tryCompare(panel, "fullscreenMode", false);
+            tryCompare(panel, "pinned", true);
 
             touchRelease(shell);
         }

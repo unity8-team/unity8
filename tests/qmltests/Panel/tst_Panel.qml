@@ -84,9 +84,9 @@ IndicatorTest {
             }
 
             Button {
-                text: panel.fullscreenMode ? "Maximize" : "FullScreen"
+                text: panel.pinned ? "Unpin Panel" : "Pin Panel"
                 Layout.fillWidth: true
-                onClicked: panel.fullscreenMode = !panel.fullscreenMode
+                onClicked: panel.pinned = !panel.pinned
             }
 
             Button {
@@ -181,7 +181,7 @@ IndicatorTest {
         }
 
         function init() {
-            panel.fullscreenMode = false;
+            panel.pinned = true;
             callManager.foregroundCall = null;
 
             panel.indicators.hide();
@@ -189,7 +189,7 @@ IndicatorTest {
             tryCompare(panel.indicators.hideAnimation, "running", false);
 
             // Wait for the indicators to get into position.
-            // (switches between normal and fullscreen modes are animated)
+            // (switches between normal and off screen modes are animated)
             var indicatorArea = findChild(panel, "indicatorArea");
             tryCompare(indicatorArea, "y", 0);
 
@@ -216,13 +216,13 @@ IndicatorTest {
 
         function test_drag_show_data() {
             return [
-                { tag: "pinned", fullscreen: false, call: null,
+                { tag: "pinned", pinned: true, call: null,
                             indicatorY: 0 },
-                { tag: "fullscreen", fullscreen: true, call: null,
+                { tag: "unpinned", pinned: false, call: null,
                             indicatorY: -panel.panelAndSeparatorHeight },
-                { tag: "pinned-callActive", fullscreen: false, call: phoneCall,
+                { tag: "pinned-callActive", pinned: true, call: phoneCall,
                             indicatorY: 0},
-                { tag: "fullscreen-callActive", fullscreen: true, call: phoneCall,
+                { tag: "unpinned-callActive", pinned: false, call: phoneCall,
                             indicatorY: -panel.panelAndSeparatorHeight }
             ];
         }
@@ -232,7 +232,7 @@ IndicatorTest {
         // expose more of the panel, binding it to the selected indicator and opening it's menu.
         // Tested from first Y pixel to check for swipe from offscreen.
         function test_drag_show(data) {
-            panel.fullscreenMode = data.fullscreen;
+            panel.pinned = data.pinned;
             callManager.foregroundCall = data.call;
 
             var indicatorRow = findChild(panel.indicators, "indicatorItemRow");
@@ -245,7 +245,7 @@ IndicatorTest {
             verify(indicatorArea !== null);
 
             // Wait for the indicators to get into position.
-            // (switches between normal and fullscreen modes are animated)
+            // (switches between normal and off screen modes are animated)
             tryCompareFunction(function() { return indicatorArea.y }, data.indicatorY);
 
             for (var i = 0; i < root.originalModelData.length; i++) {
@@ -278,13 +278,13 @@ IndicatorTest {
 
         function test_drag_hide_data() {
             return [
-                { tag: "pinned", fullscreen: false, call: null,
+                { tag: "pinned", pinned: true, call: null,
                             indicatorY: 0 },
-                { tag: "fullscreen", fullscreen: true, call: null,
+                { tag: "unpinned", pinned: false, call: null,
                             indicatorY: -panel.panelAndSeparatorHeight },
-                { tag: "pinned-callActive", fullscreen: false, call: phoneCall,
+                { tag: "pinned-callActive", pinned: true, call: phoneCall,
                             indicatorY: 0},
-                { tag: "fullscreen-callActive", fullscreen: true, call: phoneCall,
+                { tag: "unpinned-callActive", pinned: false, call: phoneCall,
                             indicatorY: -panel.panelAndSeparatorHeight }
             ];
         }
@@ -292,7 +292,7 @@ IndicatorTest {
         // Dragging the shown indicators up from bottom of panel will hide the indicators
         // Tested from last Y pixel to check for swipe from offscreen.
         function test_drag_hide(data) {
-            panel.fullscreenMode = data.fullscreen;
+            panel.pinned = data.pinned;
             callManager.foregroundCall = data.call;
 
             var indicatorRow = findChild(panel.indicators, "indicatorItemRow");
@@ -305,7 +305,7 @@ IndicatorTest {
             verify(indicatorArea !== null);
 
             // Wait for the indicators to get into position.
-            // (switches between normal and fullscreen modes are animated)
+            // (switches between normal and off screen modes are animated)
             tryCompareFunction(function() { return indicatorArea.y }, data.indicatorY);
 
             panel.indicators.show();
@@ -332,19 +332,19 @@ IndicatorTest {
 
         function test_hint_data() {
             return [
-                { tag: "normal", fullscreen: false, call: null, hintExpected: true},
-                { tag: "fullscreen", fullscreen: true, call: null, hintExpected: false},
-                { tag: "call hint", fullscreen: false, call: phoneCall, hintExpected: false},
+                { tag: "pinned", pinned: true, call: null, hintExpected: true},
+                { tag: "unpinned", pinned: false, call: null, hintExpected: false},
+                { tag: "call hint", pinned: true, call: phoneCall, hintExpected: false},
             ];
         }
 
         function test_hint(data) {
-            panel.fullscreenMode = data.fullscreen;
+            panel.pinned = data.pinned;
             callManager.foregroundCall = data.call;
 
-            if (data.fullscreen) {
+            if (!data.pinned) {
                 // Wait for the indicators to get into position.
-                // (switches between normal and fullscreen modes are animated)
+                // (switches between normal and offscreen modes are animated)
                 var indicatorArea = findChild(panel, "indicatorArea");
                 tryCompare(indicatorArea, "y", -panel.panelHeight);
             }
@@ -357,7 +357,7 @@ IndicatorTest {
             // Give some time for a hint animation to change things, if any
             wait(500);
 
-            // no hint animation when fullscreen
+            // no hint animation when off screen
             compare(panel.indicators.fullyClosed, !data.hintExpected, "Indicator should be fully closed");
             compare(panel.indicators.partiallyOpened, data.hintExpected, "Indicator should be partialy opened");
             compare(panel.indicators.fullyOpened, false, "Indicator should not be fully opened");
@@ -426,17 +426,17 @@ IndicatorTest {
 
         /*
           Regression test for https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1439318
-          When the panel is in fullscreen mode and the user taps near the top edge,
+          When the panel is in off screen mode and the user taps near the top edge,
           the panel should take no action and the tap should reach the item behind the
           panel.
          */
-        function test_tapNearTopEdgeWithPanelInFullscreenMode() {
+        function test_tapNearTopEdgeWithPanelInUnPinnedMode() {
             var indicatorArea = findChild(panel, "indicatorArea");
             verify(indicatorArea);
             var panelPriv = findInvisibleChild(panel, "panelPriv");
             verify(panelPriv);
 
-            panel.fullscreenMode = true;
+            panel.pinned = true;
             // wait until if finishes hiding itself
             tryCompare(indicatorArea, "y", -panelPriv.indicatorHeight);
 

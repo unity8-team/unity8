@@ -163,6 +163,7 @@ TutorialPage {
         ListElement {
             appId: "facebook"
             fullscreen: false
+            hideDecorations: false
             name: ""
             icon: ""
             state: ApplicationInfoInterface.Stopped
@@ -178,6 +179,7 @@ TutorialPage {
         ListElement {
             appId: "camera"
             fullscreen: false
+            hideDecorations: false
             name: ""
             icon: ""
             state: ApplicationInfoInterface.Stopped
@@ -193,6 +195,7 @@ TutorialPage {
         ListElement {
             appId: "gallery"
             fullscreen: false
+            hideDecorations: false
             name: ""
             icon: ""
             state: ApplicationInfoInterface.Stopped
@@ -208,6 +211,7 @@ TutorialPage {
         ListElement {
             appId: "dialer"
             fullscreen: false
+            hideDecorations: false
             name: ""
             icon: ""
             state: ApplicationInfoInterface.Stopped

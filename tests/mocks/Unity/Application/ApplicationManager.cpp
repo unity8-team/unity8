@@ -52,6 +52,7 @@ ApplicationManager::ApplicationManager(QObject *parent)
 {
     m_roleNames.insert(RoleSession, "session");
     m_roleNames.insert(RoleFullscreen, "fullscreen");
+    m_roleNames.insert(RoleHideDecorations, "hideDecorations");
 
     buildListOfAvailableApplications();
 
@@ -113,6 +114,8 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
         return QVariant::fromValue(app->session());
     case RoleFullscreen:
         return app->fullscreen();
+    case RoleHideDecorations:
+        return app->hideDecorations();
     default:
         return QVariant();
     }
@@ -336,7 +339,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Camera");
     application->setScreenshotId("camera");
     application->setIconId("camera");
-    application->setFullscreen(true);
+    application->setHideDecorations(true);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::LandscapeOrientation
                                         | Qt::InvertedPortraitOrientation
@@ -349,7 +352,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Gallery");
     application->setScreenshotId("gallery");
     application->setIconId("gallery");
-    application->setFullscreen(true);
+    application->setHideDecorations(true);
     application->setStage(ApplicationInfo::MainStage);
     m_availableApplications.append(application);
 
@@ -363,7 +366,7 @@ void ApplicationManager::buildListOfAvailableApplications()
 
     application = new ApplicationInfo(this);
     application->setAppId("webbrowser-app");
-    application->setFullscreen(true);
+    application->setHideDecorations(true);
     application->setName("Browser");
     application->setScreenshotId("browser");
     application->setIconId("browser");
@@ -389,7 +392,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("GMail");
     application->setIconId("gmail");
     application->setScreenshotId("gmail-webapp.svg");
-    application->setFullscreen(false);
+    application->setHideDecorations(false);
     application->setStage(ApplicationInfo::MainStage);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::LandscapeOrientation
@@ -402,7 +405,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Music");
     application->setIconId("soundcloud");
     application->setScreenshotId("music");
-    application->setFullscreen(false);
+    application->setHideDecorations(false);
     application->setStage(ApplicationInfo::MainStage);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::LandscapeOrientation
