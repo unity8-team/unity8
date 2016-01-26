@@ -24,14 +24,14 @@ FocusScope {
     id: root
 
     width: applicationWindow.width
-    height: (showDecorations ? decoration.height : 0) + applicationWindow.height
+    height: (hideDecorations ? 0 : decoration.height) + applicationWindow.height
 
     property alias window: applicationWindow
     property alias application: applicationWindow.application
     property alias active: decoration.active
     property alias title: decoration.title
 
-    property bool showDecorations: true
+    property bool hideDecorations: false
     property bool highlightShown: false
     property real shadowOpacity: 1
 
@@ -65,7 +65,7 @@ FocusScope {
         }
         source: "graphics/dropshadow2gu.sci"
         opacity: root.shadowOpacity * .3
-        enabled: root.showDecorations
+        enabled: !root.hideDecorations
     }
 
     WindowDecoration {
@@ -76,7 +76,7 @@ FocusScope {
         height: units.gu(3)
         width: root.width
         title: window.title
-        visible: root.showDecorations
+        visible: !root.hideDecorations
 
         onClose: root.close();
         onMaximize: { root.decorationPressed(); root.maximize(); }
@@ -90,7 +90,7 @@ FocusScope {
         anchors.top: parent.top
         anchors.topMargin: decoration.height
         anchors.left: parent.left
-        requestedHeight: root.requestedHeight - (root.showDecorations ? decoration.height : 0)
+        requestedHeight: root.requestedHeight - (root.hideDecorations ? 0 : decoration.height)
         interactive: true
         focus: true
     }

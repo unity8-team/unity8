@@ -77,7 +77,7 @@ AbstractStage {
     mainApp: applicationManager.focusedApplicationId
             ? applicationManager.findApplication(applicationManager.focusedApplicationId)
             : null
-    mainAppIsFullscreen: mainApp ? mainApp.hideDecorations : false
+    mainAppIsFullscreen: mainApp ? (mainApp.hideDecorations !== mainApp.fullscreen) : false
 
     orientationChangesEnabled: priv.focusedAppOrientationChangesEnabled
                                && !priv.focusedAppDelegateIsDislocated
@@ -461,7 +461,7 @@ AbstractStage {
                     }
 
                     application: root.applicationManager.get(index)
-                    fullscreen: application ? application.hideDecorations : false
+                    fullscreen: application ? (mainApp.hideDecorations !== mainApp.fullscreen) : false
                     closeable: !isDash
 
                     property real behavioredIndex: index

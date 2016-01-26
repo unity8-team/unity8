@@ -71,7 +71,7 @@ AbstractStage {
     }
 
     orientationChangesEnabled: priv.mainAppOrientationChangesEnabled
-    mainAppIsFullscreen: mainApp ? mainApp.hideDecorations : false
+    mainAppIsFullscreen: mainApp ? mainApp.hideDecorations !== mainApp.fullscreen : false
 
     onWidthChanged: {
         spreadView.selectedIndex = -1;
@@ -608,7 +608,7 @@ AbstractStage {
                     dragOffset: !isDash && model.appId == priv.mainStageAppId && root.inverseProgress > 0 && spreadView.phase === 0 ? root.inverseProgress : 0
                     application: ApplicationManager.get(index)
                     closeable: !isDash
-                    fullscreen: application ? application.hideDecorations : false
+                    fullscreen: application ? application.hideDecorations !== application.fullscreen : false
 
                     readonly property bool wantsMainStage: model.stage == ApplicationInfoInterface.MainStage
 

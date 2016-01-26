@@ -451,7 +451,7 @@ AbstractStage {
                     anchors.left: appDelegate.left
                     anchors.top: appDelegate.top
                     application: appDelegate.application
-                    showDecorations: application ? !application.fullscreen : true
+                    hideDecorations: application ? application.fullscreen : false
                     active: ApplicationManager.focusedApplicationId === model.appId
                     focus: true
 
