@@ -32,7 +32,7 @@ ListItems.Empty {
         id: iconVisual
         source: "image://theme/calendar"
         visible: source != ""
-        color: theme.palette.selected.backgroundText
+        color: theme.palette.normal.backgroundText
 
         height: Math.min(units.gu(3), parent.height - units.gu(1))
         width: height

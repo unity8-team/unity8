@@ -51,8 +51,8 @@ ListItem.Empty {
             source: "image://theme/media-skip-backward"
             color: {
                 if (!enabled)
-                    return theme.palette.normal.backgroundText;
-                return prevMA.pressed ? theme.palette.selected.foreground : theme.palette.normal.foregroundText;
+                    return theme.palette.inactive.backgroundText;
+                return prevMA.pressed ? theme.palette.selected.backgroundText : theme.palette.normal.backgroundText;
             }
             enabled: canGoPrevious
 
@@ -72,8 +72,8 @@ ListItem.Empty {
             source: playing ? "image://theme/media-playback-pause" : "image://theme/media-playback-start"
             color: {
                 if (!enabled)
-                    return theme.palette.normal.backgroundText;
-                return playMA.pressed ? theme.palette.selected.foreground : theme.palette.normal.foregroundText;
+                    return theme.palette.inactive.backgroundText;
+                return playMA.pressed ? theme.palette.selected.backgroundText : theme.palette.normal.backgroundText;
             }
             enabled: canPlay
 
@@ -93,8 +93,8 @@ ListItem.Empty {
             source: "image://theme/media-skip-forward"
             color: {
                 if (!enabled)
-                    return theme.palette.normal.backgroundText;
-                return nextMA.pressed ? theme.palette.selected.foreground : theme.palette.normal.foregroundText;
+                    return theme.palette.inactive.backgroundText;
+                return nextMA.pressed ? theme.palette.selected.backgroundText : theme.palette.normal.backgroundText;
             }
             enabled: canGoNext
 

@@ -52,7 +52,7 @@ ListItems.Empty {
         Icon {
             id: iconVisual
             visible: source != ""
-            color: theme.palette.selected.backgroundText
+            color: theme.palette.normal.backgroundText
 
             readonly property real size: Math.min(units.gu(3), parent.height - menu.__contentsMargins)
 

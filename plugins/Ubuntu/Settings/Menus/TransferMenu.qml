@@ -55,7 +55,7 @@ ListItem.Empty {
 
                 color: {
                     if (String(source).match(/^image:\/\/theme/)) {
-                        return theme.palette.selected.backgroundText;
+                        return theme.palette.normal.backgroundText;
                     }
                     return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }

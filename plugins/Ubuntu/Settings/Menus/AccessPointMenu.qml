@@ -35,7 +35,7 @@ ListItem.Empty {
         id: iconSignal
         objectName: "iconSignal"
 
-        color: active ? UbuntuColors.green : theme.palette.selected.backgroundText
+        color: active ? theme.palette.normal.positive : theme.palette.normal.backgroundText
 
         width: height
         height: Math.min(units.gu(3), parent.height - units.gu(1))
@@ -73,7 +73,7 @@ ListItem.Empty {
             rightMargin: menu.__contentsMargins
         }
         elide: Text.ElideRight
-        color: active ? UbuntuColors.green : theme.palette.selected.backgroundText
+        color: active ? theme.palette.normal.positive : theme.palette.normal.backgroundText
     }
 
     Icon {
@@ -82,7 +82,7 @@ ListItem.Empty {
         visible: secure
         name: "network-secure"
 
-        color: active ? UbuntuColors.green : theme.palette.selected.backgroundText
+        color: active ? theme.palette.normal.positive : theme.palette.normal.backgroundText
 
         width: height
         height: Math.min(units.gu(3), parent.height - units.gu(1))
