@@ -68,7 +68,7 @@ SimpleMessageMenu {
                     objectName: "actionButton"
                     enabled: menu.actionEnabled
                     text: actionButtonText
-                    color: enabled ? theme.palette.normal.positive : theme.palette.inactive.positive
+                    color: enabled ? theme.palette.normal.positive : theme.palette.disabled.positive
                     Layout.fillWidth: true
 
                     onClicked: {

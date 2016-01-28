@@ -61,7 +61,7 @@ Item {
             objectName: "sendButton"
             Layout.preferredWidth: units.gu(9)
             enabled: (replyField.text !== "" || replyField.inputMethodComposing) && textField.activateEnabled
-            color: enabled ? theme.palette.normal.positive : theme.palette.inactive.positive
+            color: enabled ? theme.palette.normal.positive : theme.palette.disabled.positive
 
             onClicked: {
                 Qt.inputMethod.commit();
