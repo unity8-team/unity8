@@ -16,10 +16,19 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
+import Unity.Screens 0.1
 import "Components"
 
 Image {
     id: root
+
+    UCUnits { id: unitsContainer; onGridUnitChanged: unitsChanged(); }
+    property var units: unitsContainer // replaces units from UITK
+
+    Rectangle { width: units.gu(10); height: width; color: 'red'; z: 10;
+        Text { font.pixelSize: 30; text: units.gu(1); anchors.centerIn: parent }
+        MouseArea { anchors.fill: parent; onClicked: parent.setScaleAndFormFactor(parent.scale + 0.2, Screens.FormFactorMonitor)}
+    }
 
     WallpaperResolver {
         width: root.width

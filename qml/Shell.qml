@@ -336,6 +336,11 @@ Item {
                 property: "altTabPressed"
                 value: physicalKeysMapper.altTabPressed
             }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "units"
+                value: units
+            }
         }
 
         Tutorial {

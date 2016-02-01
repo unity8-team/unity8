@@ -18,6 +18,7 @@ import QtQuick 2.4
 import QtQuick.Window 2.2
 import Unity.InputInfo 0.1
 import Unity.Session 0.1
+import Unity.Screens 0.1
 import GSettings 1.0
 import "Components"
 import "Rotation"
@@ -27,6 +28,14 @@ import Ubuntu.Components 1.3
 Rectangle {
     id: root
     color: "black"
+
+    UCUnits { id: unitsContainer; onGridUnitChanged: unitsChanged(); }
+    readonly property var units: unitsContainer // replaces "units" from the UITK
+
+    Rectangle { width: units.gu(10); height: width; color: 'red'; z: 10;
+        Text { font.pixelSize: 30; text: units.gu(1); anchors.centerIn: parent }
+        MouseArea { anchors.fill: parent; onClicked: parent.parent.parent.parent.setScaleAndFormFactor(parent.parent.parent.parent.scale + 0.2, Screens.FormFactorMonitor)}
+    }
 
     implicitWidth: units.gu(40)
     implicitHeight: units.gu(71)

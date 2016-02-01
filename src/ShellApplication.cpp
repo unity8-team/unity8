@@ -18,6 +18,7 @@
 
 // Qt
 #include <QLibrary>
+#include <QQmlContext>
 #include <QScreen>
 
 #include <libintl.h>
@@ -35,8 +36,6 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
 {
 
     setApplicationName(QStringLiteral("unity8"));
-
-    connect(this, &QGuiApplication::screenAdded, this, &ShellApplication::onScreenAdded);
 
     setupQmlEngine(isMirServer);
 
@@ -73,17 +72,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     bindtextdomain("unity8", translationDirectory().toUtf8().data());
     textdomain("unity8");
 
-    m_shellView = new ShellView(m_qmlEngine, &m_qmlArgs);
-
-    if (parser.windowGeometry().isValid()) {
-        m_shellView->setWidth(parser.windowGeometry().width());
-        m_shellView->setHeight(parser.windowGeometry().height());
-    }
-
-    if (parser.hasFrameless()) {
-        m_shellView->setFlags(Qt::FramelessWindowHint);
-    }
-
+    m_qmlEngine->rootContext()->setContextProperty(QStringLiteral("applicationArguments"), &m_qmlArgs);
 
     #ifdef UNITY8_ENABLE_TOUCH_EMULATION
     // You will need this if you want to interact with touch-only components using a mouse
@@ -92,29 +81,6 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
         m_mouseTouchAdaptor = MouseTouchAdaptor::instance();
     }
     #endif
-
-
-    // Some hard-coded policy for now.
-    // NB: We don't support more than two screens at the moment
-    //
-    // TODO: Support an arbitrary number of screens and different policies
-    //       (eg cloned desktop, several desktops, etc)
-    if (isMirServer && screens().count() == 2) {
-        m_shellView->setScreen(screens().at(1));
-        m_qmlArgs.setDeviceName(QStringLiteral("desktop"));
-
-        m_secondaryWindow = new SecondaryWindow(m_qmlEngine);
-        m_secondaryWindow->setScreen(screens().at(0));
-        // QWindow::showFullScreen() also calls QWindow::requestActivate() and we don't want that!
-        m_secondaryWindow->setWindowState(Qt::WindowFullScreen);
-        m_secondaryWindow->setVisible(true);
-    }
-
-    if (isMirServer || parser.hasFullscreen()) {
-        m_shellView->showFullScreen();
-    } else {
-        m_shellView->show();
-    }
 }
 
 ShellApplication::~ShellApplication()
@@ -126,12 +92,6 @@ void ShellApplication::destroyResources()
 {
     // Deletion order is important. Don't use QScopedPointers and the like
     // Otherwise the process will hang on shutdown (bug somewhere I guess).
-    delete m_shellView;
-    m_shellView = nullptr;
-
-    delete m_secondaryWindow;
-    m_secondaryWindow = nullptr;
-
     #ifdef UNITY8_ENABLE_TOUCH_EMULATION
     delete m_mouseTouchAdaptor;
     m_mouseTouchAdaptor = nullptr;
@@ -143,7 +103,7 @@ void ShellApplication::destroyResources()
 
 void ShellApplication::setupQmlEngine(bool isMirServer)
 {
-    m_qmlEngine = new QQmlEngine(this);
+    m_qmlEngine = new QQmlApplicationEngine(::qmlDirectory() + "/main.qml", this);
 
     m_qmlEngine->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
 
@@ -156,43 +116,4 @@ void ShellApplication::setupQmlEngine(bool isMirServer)
     m_qmlEngine->setNetworkAccessManagerFactory(new CachingNetworkManagerFactory);
 
     QObject::connect(m_qmlEngine, &QQmlEngine::quit, this, &QGuiApplication::quit);
-}
-
-void ShellApplication::onScreenAdded(QScreen * /*screen*/)
-{
-    // TODO: Support an arbitrary number of screens and different policies
-    //       (eg cloned desktop, several desktops, etc)
-    if (screens().count() == 2) {
-        m_shellView->setScreen(screens().at(1));
-        m_qmlArgs.setDeviceName(QStringLiteral("desktop"));
-        // Changing the QScreen where a QWindow is drawn makes it also lose focus (besides having
-        // its backing QPlatformWindow recreated). So lets refocus it.
-        m_shellView->requestActivate();
-
-        m_secondaryWindow = new SecondaryWindow(m_qmlEngine);
-        m_secondaryWindow->setScreen(screens().at(0));
-
-        // QWindow::showFullScreen() also calls QWindow::requestActivate() and we don't want that!
-        m_secondaryWindow->setWindowState(Qt::WindowFullScreen);
-        m_secondaryWindow->setVisible(true);
-    }
-}
-
-void ShellApplication::onScreenAboutToBeRemoved(QScreen *screen)
-{
-    // TODO: Support an arbitrary number of screens and different policies
-    //       (eg cloned desktop, several desktops, etc)
-    if (screen == m_shellView->screen()) {
-        const QList<QScreen *> allScreens = screens();
-        Q_ASSERT(allScreens.count() > 1);
-        Q_ASSERT(allScreens.at(0) != screen);
-        Q_ASSERT(m_secondaryWindow);
-        delete m_secondaryWindow;
-        m_secondaryWindow = nullptr;
-        m_shellView->setScreen(allScreens.first());
-        m_qmlArgs.setDeviceName(m_deviceName);
-        // Changing the QScreen where a QWindow is drawn makes it also lose focus (besides having
-        // its backing QPlatformWindow recreated). So lets refocus it.
-        m_shellView->requestActivate();
-    }
 }
