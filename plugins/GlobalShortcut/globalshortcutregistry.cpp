@@ -105,7 +105,7 @@ void GlobalShortcutRegistry::setupFilterOnWindow(qulonglong wid)
     }
 
     Q_FOREACH(QWindow *window, qApp->allWindows()) {
-        if (window && window->winId() == wid) {
+        if (window && window->isVisible() && window->winId() == wid) {
             m_filteredWindow = window;
             window->installEventFilter(this);
             s_windowId = wid;
