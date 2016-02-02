@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Canonical, Ltd.
+ * Copyright (C) 2013-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Connectivity 0.1
 import Unity.Launcher 0.1
 import GlobalShortcut 1.0 // has to be before Utils, because of WindowKeysFilter
+import GSettings 1.0
 import Utils 0.1
 import Powerd 0.1
 import SessionBroadcast 0.1
@@ -56,7 +57,7 @@ Item {
     property bool beingResized
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
     property string mode: "full-greeter"
-    property bool cursorVisible: false
+    property alias oskEnabled: inputMethod.enabled
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
     }
@@ -84,8 +85,8 @@ Item {
             return Qt.PrimaryOrientation;
         } else if (greeter && greeter.shown) {
             return Qt.PrimaryOrientation;
-        } else if (mainApp) {
-            return shell.orientations.map(mainApp.supportedOrientations);
+        } else if (applicationsDisplayLoader.item) {
+            return shell.orientations.map(applicationsDisplayLoader.item.supportedOrientations);
         } else {
             // we just don't care
             return Qt.PortraitOrientation
@@ -176,8 +177,20 @@ Item {
         Keys.onReleased: physicalKeysMapper.onKeyReleased(event, currentEventTimestamp);
     }
 
-    HomeKeyWatcher {
-        onActivated: { launcher.fadeOut(); shell.showHome(); }
+    WindowInputMonitor {
+        onHomeKeyActivated: { launcher.fadeOut(); shell.showHome(); }
+        onTouchBegun: { cursor.opacity = 0; }
+        onTouchEnded: {
+            // move the (hidden) cursor to the last known touch position
+            var mappedCoords = mapFromItem(null, pos.x, pos.y);
+            cursor.x = mappedCoords.x;
+            cursor.y = mappedCoords.y;
+        }
+    }
+
+    GSettings {
+        id: settings
+        schema.id: "com.canonical.Unity8"
     }
 
     Item {
@@ -336,6 +349,11 @@ Item {
                 property: "altTabPressed"
                 value: physicalKeysMapper.altTabPressed
             }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "leftMargin"
+                value: launcher.lockedVisible ? launcher.panelWidth: 0
+            }
         }
 
         Tutorial {
@@ -366,7 +384,11 @@ Item {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
-        anchors { fill: parent; topMargin: panel.panelHeight }
+        anchors {
+            fill: parent
+            topMargin: panel.panelHeight
+            leftMargin: launcher.lockedVisible ? launcher.panelWidth : 0
+        }
         z: notifications.useModal || panel.indicators.shown || wizard.active ? overlay.z + 1 : overlay.z - 1
     }
 
@@ -550,6 +572,10 @@ Item {
                     && !greeter.hasLockedApp
             inverted: shell.usageScenario !== "desktop"
             shadeBackground: !tutorial.running
+            superPressed: physicalKeysMapper.superPressed
+            superTabPressed: physicalKeysMapper.superTabPressed
+            panelWidth: units.gu(settings.launcherWidth)
+            lockedVisible: shell.usageScenario == "desktop" && !settings.autohideLauncher && !panel.fullscreenMode
 
             onShowDashHome: showHome()
             onDash: showDash()
@@ -567,6 +593,37 @@ Item {
             onShownChanged: {
                 if (shown) {
                     panel.indicators.hide()
+                }
+            }
+            onFocusChanged: {
+                if (!focus) {
+                    applicationsDisplayLoader.focus = true;
+                }
+            }
+
+            GlobalShortcut {
+                shortcut: Qt.AltModifier | Qt.Key_F1
+                onTriggered: {
+                    launcher.openForKeyboardNavigation();
+                }
+            }
+            GlobalShortcut {
+                shortcut: Qt.MetaModifier | Qt.Key_0
+                onTriggered: {
+                    if (LauncherModel.get(9)) {
+                        activateApplication(LauncherModel.get(9).appId);
+                    }
+                }
+            }
+            Repeater {
+                model: 9
+                GlobalShortcut {
+                    shortcut: Qt.MetaModifier | (Qt.Key_1 + index)
+                    onTriggered: {
+                        if (LauncherModel.get(index)) {
+                            activateApplication(LauncherModel.get(index).appId);
+                        }
+                    }
                 }
             }
         }
@@ -676,6 +733,8 @@ Item {
                 applicationsDisplayLoader.item.pushRightEdge(amount);
             }
         }
+
+        onMouseMoved: { cursor.opacity = 1; }
     }
 
     Rectangle {
