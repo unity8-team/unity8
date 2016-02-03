@@ -22,6 +22,7 @@ import "../Components"
 import Utils 0.1
 import Ubuntu.Gestures 0.1
 import GlobalShortcut 1.0
+import AccountsService 0.1
 
 AbstractStage {
     id: root
@@ -115,6 +116,18 @@ AbstractStage {
         shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Down
         onTriggered: priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight
                      ? priv.focusedAppDelegate.restoreFromMaximized() : priv.focusedAppDelegate.minimize()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        shortcut: Qt.MetaModifier|Qt.Key_Space
+        onTriggered: priv.focusedAppDelegate.nextKeymap()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        shortcut: Qt.MetaModifier|Qt.ShiftModifier|Qt.Key_Space
+        onTriggered: priv.focusedAppDelegate.previousKeymap()
         active: priv.focusedAppDelegate !== null
     }
 
@@ -340,6 +353,13 @@ AbstractStage {
                     else if (maximizedRight)
                         maximizeRight();
                     ApplicationManager.focusApplication(appId);
+                }
+
+                function nextKeymap() {
+                    decoratedWindow.nextKeymap();
+                }
+                function previousKeymap() {
+                    decoratedWindow.previousKeymap();
                 }
 
                 states: [

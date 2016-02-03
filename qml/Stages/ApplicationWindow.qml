@@ -37,6 +37,14 @@ FocusScope {
     property int requestedWidth: -1
     property int requestedHeight: -1
 
+    function nextKeymap() {
+        sessionContainer.surfaceContainer.nextKeymap();
+    }
+
+    function previousKeymap() {
+        sessionContainer.surfaceContainer.previousKeymap();
+    }
+
     QtObject {
         id: d
 

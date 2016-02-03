@@ -19,7 +19,6 @@ import Ubuntu.Components 1.3
 import Ubuntu.Gestures 0.1 // For TouchGate
 import Utils 0.1 // for InputWatcher
 import Unity.Application 0.1 // for MirSurfaceItem
-import GlobalShortcut 1.0
 import AccountsService 0.1
 
 FocusScope {
@@ -75,18 +74,6 @@ FocusScope {
         var keymap = currentKeymap.split("+");
 
         surface.setKeymap(keymap[0], keymap[1] || "");
-    }
-
-    GlobalShortcut {
-        shortcut: Qt.MetaModifier|Qt.Key_Space
-        onTriggered: nextKeymap()
-        active: !!surface
-    }
-
-    GlobalShortcut {
-        shortcut: Qt.MetaModifier|Qt.ShiftModifier|Qt.Key_Space
-        onTriggered: previousKeymap()
-        active: !!surface
     }
 
     InputWatcher {
