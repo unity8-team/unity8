@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Ubuntu.Components 1.3
-import Ubuntu.Components.Themes.Ambiance 1.3
+#ifndef MOCKUINPUT_PLUGIN_H
+#define MOCKUINPUT_PLUGIN_H
 
-PageHeadStyle {
-    // FIXME: Don't use this but PageHeader from Ubuntu.Components 1.3.
-    id: root
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlExtensionPlugin>
 
-    property var styledItem: root
-    property string title
-    property var config: PageHeadConfiguration {}
-    property var contents: null
-}
+class MockUInputPlugin : public QQmlExtensionPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+
+public:
+    void registerTypes(const char *uri) override;
+};
+
+#endif
