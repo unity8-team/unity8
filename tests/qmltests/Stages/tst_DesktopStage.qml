@@ -123,6 +123,11 @@ Item {
         }
     }
 
+    SignalSpy {
+        id: surfaceKeymapSpy
+        signalName: "keymapChanged"
+    }
+
     UnityTestCase {
         id: testCase
         name: "DesktopStage"
@@ -528,6 +533,28 @@ Item {
 
             // verify the drop shadow is gone
             verify(PanelState.dropShadow == false);
+        }
+
+        function test_setKeymap_data() {
+            return [
+                {tag: "cz+qwerty", layout: "cz", variant: "qwerty" },
+                {tag: "fr", layout: "fr", variant: "" }
+            ]
+        }
+
+        function test_setKeymap(data) {
+            killAllRunningApps();
+            surfaceKeymapSpy.clear();
+
+            var facebookApp = startApplication("facebook-webapp");
+            var appSurface = facebookApp.session.lastSurface;
+            verify(appSurface);
+
+            surfaceKeymapSpy.target = appSurface;
+            appSurface.setKeymap(data.layout, data.variant);
+            compare(surfaceKeymapSpy.count, 1);
+            compare(surfaceKeymapSpy.signalArguments[0][0], data.layout);
+            compare(surfaceKeymapSpy.signalArguments[0][1], data.variant);
         }
     }
 }
