@@ -25,6 +25,7 @@ from functools import wraps
 import ubuntuuitoolkit
 from autopilot import logging as autopilot_logging
 from autopilot import input
+from autopilot.display import is_point_on_any_screen
 from gi.repository import Notify
 
 from unity8 import (
@@ -92,6 +93,42 @@ def _get_urgency(urgency):
                       'CRITICAL': Notify.Urgency.CRITICAL}
     return _urgency_enums.get(urgency.upper())
 
+
+def order_by_x_coord(object_list, include_off_screen=False):
+    """
+    Return an ordered list of objects ordered by x coordinate first
+    and then y coordinate second if x coordinates match.
+
+    :param object_list: List of objects containing globalRect property.
+    :param include_off_screen: Whether to include onjects that are not
+        within the bounds of any screen.
+    :return: List of sorted objects.
+    """
+    return _order_by_key(object_list, _get_x_and_y, include_off_screen)
+
+def _order_by_key(object_list, sort_key, include_off_screen):
+    """
+    Return an ordered list of objects ordered by key.
+
+    ;param object_list: List of objects containing globalRect property.
+    :param sort_key: Sorting key to use.
+    :param include_off_screen: Whether to include objects that are not
+        within the bounds of any screen.
+    :return: List of sorted objects.
+    """
+
+    objects = []
+    for obj in object_list:
+        try:
+            # If obj is no longer valid, this can cause an exception
+            point = obj.globalRect.x, obj,globalRect.y
+            if include_off_screen:
+                objects.append(obj)
+            elif is_point_on_any_screen(point):
+                objects.append(obj)
+        except StateNotFoundError:
+            pass
+        return sorted(objects, key=sort_key)
 
 class ShellView(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
     """An helper class that makes it easy to interact with the shell"""
