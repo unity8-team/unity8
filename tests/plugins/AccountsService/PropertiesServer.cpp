@@ -25,10 +25,16 @@
 #include <QDBusMessage>
 #include <QDBusMetaType>
 
+using StringMap = QMap<QString,QString>;
+using StringMapList = QList<StringMap>;
+Q_DECLARE_METATYPE(StringMapList)
+
 PropertiesServer::PropertiesServer(QObject *parent)
     : QObject(parent)
 {
     qDBusRegisterMetaType<QList<QVariantMap>>();
+    qDBusRegisterMetaType<StringMap>();
+    qDBusRegisterMetaType<StringMapList>();
     Reset();
 }
 
@@ -53,12 +59,14 @@ void PropertiesServer::Set(const QString &interface, const QString &property, co
             if (interface == QStringLiteral("com.canonical.unity.AccountsService") &&
                     property == QStringLiteral("LauncherItems")) {
                 newValue = QVariant::fromValue(qdbus_cast<QList<QVariantMap>>(newValue.value<QDBusArgument>()));
+            } else if (interface == "org.freedesktop.Accounts.User" && property == "InputSources") {
+                newValue = QVariant::fromValue(qdbus_cast<StringMapList>(newValue.value<QDBusArgument>()));
             }
 
             oldValue = newValue;
 
             // Special case for Background file.
-            if (interface == "org.freedesktop.Accounts.User" && property == "BackgroundFile") {
+            if (interface == "org.freedesktop.Accounts.User" && (property == "BackgroundFile" || property == "InputSources")) {
                 Q_EMIT Changed();
             } else {
                 QVariantMap propertyChanges;
@@ -88,4 +96,5 @@ void PropertiesServer::Reset()
     m_properties["com.ubuntu.location.providers.here.AccountsService"]["LicenseAccepted"] = false;
     m_properties["com.ubuntu.location.providers.here.AccountsService"]["LicenseBasePath"] = "";
     m_properties["org.freedesktop.Accounts.User"]["BackgroundFile"] = "";
+    m_properties["org.freedesktop.Accounts.User"]["InputSources"] = QVariant::fromValue(StringMapList());
 }
