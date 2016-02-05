@@ -392,6 +392,7 @@ Rectangle {
                         }
 
                         onClicked: {
+                            console.log("JOSH: Clicked an app: " + launcherListView.model.get(index).appId)
                             var index = Math.floor((mouseY + launcherListView.realContentY) / launcherListView.realItemHeight);
                             var clickedItem = launcherListView.itemAt(mouseX, mouseY + launcherListView.realContentY)
 

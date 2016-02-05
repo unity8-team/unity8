@@ -30,7 +30,8 @@ from gi.repository import Notify
 
 from unity8 import (
     greeter,
-    launcher as launcher_helpers
+    launcher as launcher_helpers,
+    phone_stage
 )
 
 
@@ -141,6 +142,14 @@ class ShellView(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
 
     def get_login_list(self):
         return self.select_single("LoginList")
+
+    def get_phone_stage(self):
+        return self.select_single(phone_stage.PhoneStage, objectName='stage')
+
+    def swipe_to_show_app_switcher(self):
+        stage = self.get_phone_stage()
+        stage.swipe_to_top()
+        return stage
 
     def get_bottombar(self):
         return self.select_single("Bottombar")

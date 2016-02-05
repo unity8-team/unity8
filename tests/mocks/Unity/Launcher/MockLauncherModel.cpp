@@ -27,7 +27,7 @@ MockLauncherModel::MockLauncherModel(QObject* parent): LauncherModelInterface(pa
     item->setPinned(true);
     item->setFocused(true);
     m_list.append(item);
-    item = new MockLauncherItem("camera-app", "/usr/share/applications/camera-app.desktop", "Camera", "camera", this);
+    item = new MockLauncherItem("camera-app", "/usr/share/click/preinstalled/com.ubuntu.camera/current/camera-app.desktop", "Camera", "camera", this);
     item->setProgress(10);
     item->setPinned(true);
     m_list.append(item);
