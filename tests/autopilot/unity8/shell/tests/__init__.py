@@ -185,8 +185,6 @@ class UnityTestCase(AutopilotTestCase):
         :param args: A list of aguments to pass to unity8
 
         """
-        import pdb;
-        pdb.set_trace()
         binary_path = get_binary_path()
         lib_path = get_lib_path()
 

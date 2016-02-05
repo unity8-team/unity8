@@ -22,6 +22,8 @@ class AppSwitcherTestCase(tests.UnityTestCase):
         self.main_window.launch_application("dialer-app")
         self.main_window.launch_application("webbrowser-app")
         stage = self.main_window.swipe_to_show_app_switcher()
+        stage.swipe_to_top()
+        apps = stage.get_app_window_names()
 
     def test_app_selection(self):
         """

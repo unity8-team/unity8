@@ -26,6 +26,7 @@ import ubuntuuitoolkit
 from autopilot import logging as autopilot_logging
 from autopilot import input
 from autopilot.display import is_point_on_any_screen
+from autopilot.exceptions import StateNotFoundError
 from gi.repository import Notify
 
 from unity8 import (
@@ -107,6 +108,13 @@ def order_by_x_coord(object_list, include_off_screen=False):
     """
     return _order_by_key(object_list, _get_x_and_y, include_off_screen)
 
+def _get_x_and_y(item):
+    try:
+        coords = item.globalRect.x, item.globalRect.y
+    except StateNotFoundError:
+        coords = (sys.maxsize, sys.maxsize)
+    return coords
+
 def _order_by_key(object_list, sort_key, include_off_screen):
     """
     Return an ordered list of objects ordered by key.
@@ -120,9 +128,11 @@ def _order_by_key(object_list, sort_key, include_off_screen):
 
     objects = []
     for obj in object_list:
+        import pdb
+        pdb.set_trace()
         try:
             # If obj is no longer valid, this can cause an exception
-            point = obj.globalRect.x, obj,globalRect.y
+            point = obj.globalRect.x, obj.globalRect.y
             if include_off_screen:
                 objects.append(obj)
             elif is_point_on_any_screen(point):
