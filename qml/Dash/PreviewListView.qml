@@ -71,6 +71,7 @@ Item {
         highlightMoveDuration: 250
         flickDeceleration: units.gu(625)
         maximumFlickVelocity: width * 5
+        interactive: false
         cacheBuffer: 0
 
         property bool open: false
