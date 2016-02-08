@@ -1,11 +1,22 @@
-project(UbuntuSettingsComponentsVpn)
+project(UbuntuSettingsVpn)
+
+add_subdirectory(Openvpn)
+add_subdirectory(PreviewDialog)
+
+find_package(Qt5Core REQUIRED)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    PreviewDialog
-    Openvpn
-
 )
 
-export_qmlfiles(Ubuntu.Settings.Vpn Ubuntu/Settings/Vpn DESTINATION ${QT_IMPORTS_DIR} ${ARGN})
+add_definitions(-DUBUNTUSETTINGSCOMPONENTS_LIBRARY)
+
+add_library(UbuntuSettingsVpn MODULE
+    plugin.cpp
+    ubuntusettingsvpn.cpp
+)
+
+qt5_use_modules(UbuntuSettingsVpn Core Qml Quick)
+
+add_usc_plugin(Ubuntu.Settings.Vpn 0.1 Ubuntu/Settings/Vpn TARGETS UbuntuSettingsVpn)

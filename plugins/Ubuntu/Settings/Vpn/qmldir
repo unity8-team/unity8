@@ -1,5 +1,7 @@
 module Ubuntu.Settings.Vpn
+plugin UbuntuSettingsVpn
+
+internal VpnPreviewDialog PreviewDialog/VpnPreviewDialog.qml
 
 VpnList 0.1 VpnList.qml
 VpnEditorDialog 0.1 VpnEditorDialog.qml
-VpnPreviewDialog 0.1 VpnPreviewDialog.qml
