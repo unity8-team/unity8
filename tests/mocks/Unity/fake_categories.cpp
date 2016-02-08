@@ -32,11 +32,6 @@ int Categories::rowCount(const QModelIndex& /*parent*/) const
     return m_category_count;
 }
 
-void Categories::addSpecialCategory(QString const& /*categoryId*/, QString const& /*name*/, QString const& /*icon*/, QString const& /*rawTemplate*/, QObject* /*countObject*/)
-{
-    qFatal("Using un-implemented Categories::addSpecialCategory");
-}
-
 bool Categories::overrideCategoryJson(QString const& /* categoryId */, QString const& /* json */)
 {
     qFatal("Using un-implemented Categories::overrideCategoryJson");
@@ -52,7 +47,13 @@ Categories::data(const QModelIndex& index, int role) const
     ResultsModel *resultsModel = resultModel(index.row());
     switch (role) {
         case RoleCategoryId:
-            return QString("%1").arg(index.row());
+            if (index.row() == 6) {
+                return QString("predefined");
+            } else if (index.row() == 8) {
+                return QString("local");
+            } else {
+                return QString("%1").arg(index.row());
+            }
         case RoleName:
             return QString("Category %1").arg(index.row());
         case RoleIcon:
@@ -140,7 +141,7 @@ ResultsModel* Categories::resultModel(int row) const
     ResultsModel *result = m_resultsModels[row];
     if (!result) {
         Categories *that = const_cast<Categories*>(this);
-        result = new ResultsModel(15, row, that);
+        result = new ResultsModel(25, row, that);
         m_resultsModels[row] = result;
     }
     return result;

@@ -31,6 +31,7 @@
 #include <QtTest>
 #include <QDBusInterface>
 #include <QDBusReply>
+#include <QDBusMetaType>
 #include <QDomDocument>
 
 // This is a mock, specifically to test the LauncherModel
@@ -57,6 +58,9 @@ public:
     QColor splashColorFooter() const override { return QColor(0,0,0,0); }
     Qt::ScreenOrientations supportedOrientations() const override { return Qt::PortraitOrientation; }
     bool rotatesWindowContents() const override { return false; }
+    bool isTouchApp() const override { return true; }
+    bool exemptFromLifecycle() const override { return false; }
+    void setExemptFromLifecycle(bool) override {}
 
     // Methods used for mocking (not in the interface)
     void setFocused(bool focused) { m_focused = focused; Q_EMIT focusedChanged(focused); }
@@ -135,12 +139,17 @@ private:
 
     QList<QVariantMap> getASConfig() {
         AccountsServiceDBusAdaptor *as = launcherModel->m_asAdapter->m_accounts;
-        return as->getUserProperty("", "", "LauncherItems").value<QList<QVariantMap>>();
+        QDBusReply<QVariant> reply = as->getUserPropertyAsync(QString(qgetenv("USER")),
+                                                              "com.canonical.unity.AccountsService",
+                                                              "LauncherItems");
+        return qdbus_cast<QList<QVariantMap>>(reply.value().value<QDBusArgument>());
     }
 
 private Q_SLOTS:
 
     void initTestCase() {
+        qDBusRegisterMetaType<QList<QVariantMap>>();
+
         launcherModel = new LauncherModel(this);
         QCoreApplication::processEvents(); // to let the model register on DBus
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 0);
@@ -151,6 +160,14 @@ private Q_SLOTS:
 
     // Adding 2 apps to the mock appmanager. Both should appear in the launcher.
     void init() {
+        QDBusInterface accountsInterface(QStringLiteral("org.freedesktop.Accounts"),
+                                         QStringLiteral("/org/freedesktop/Accounts"),
+                                         QStringLiteral("org.freedesktop.Accounts"));
+        QDBusReply<bool> addReply = accountsInterface.call(QStringLiteral("AddUser"),
+                                                           QString(qgetenv("USER")));
+        QVERIFY(addReply.isValid());
+        QCOMPARE(addReply.value(), true);
+
         appManager->addApplication(new MockApp("abs-icon"));
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
 
@@ -168,6 +185,14 @@ private Q_SLOTS:
         while (launcherModel->rowCount(QModelIndex()) > 0) {
             launcherModel->requestRemove(launcherModel->get(0)->appId());
         }
+
+        QDBusInterface accountsInterface(QStringLiteral("org.freedesktop.Accounts"),
+                                         QStringLiteral("/org/freedesktop/Accounts"),
+                                         QStringLiteral("org.freedesktop.Accounts"));
+        QDBusReply<bool> removeReply = accountsInterface.call(QStringLiteral("RemoveUser"),
+                                                              QString(qgetenv("USER")));
+        QVERIFY(removeReply.isValid());
+        QCOMPARE(removeReply.value(), true);
     }
 
     void testMove() {

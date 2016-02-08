@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import QtTest 1.0
 import Unity.Test 0.1
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import ".."
 import "../../../qml/Launcher"
 import Unity.Launcher 0.1
+import Utils 0.1 // For EdgeBarrierSettings
 
 /* Nothing is shown at first. If you drag from left edge you will bring up the
    launcher. */
@@ -67,6 +68,7 @@ Item {
 
                 Component.onCompleted: {
                     launcherLoader.itemDestroyed = false;
+                    edgeBarrierControls.target = testCase.findChild(this, "edgeBarrierController");
                 }
                 Component.onDestruction: {
                     launcherLoader.itemDestroyed = true;
@@ -81,6 +83,12 @@ Item {
         width: childrenRect.width
 
         MouseTouchEmulationCheckbox {}
+
+        EdgeBarrierControls {
+            id: edgeBarrierControls
+            text: "Drag here to pull out launcher"
+            onDragged: { launcherLoader.item.pushEdge(amount); }
+        }
 
         Button {
             text: "emit hinting signal"
@@ -151,6 +159,20 @@ Item {
         target: LauncherModel
     }
 
+    Item {
+        id: fakeDismissTimer
+        property bool running: false
+        signal triggered
+
+        function stop() {
+            running = false;
+        }
+
+        function restart() {
+            running = true;
+        }
+    }
+
     UnityTestCase {
         id: testCase
         name: "Launcher"
@@ -169,6 +191,11 @@ Item {
             launcherLoader.active = true;
         }
         function init() {
+            var panel = findChild(launcher, "launcherPanel");
+            verify(!!panel);
+
+            panel.dismissTimer = fakeDismissTimer;
+
             // Make sure we don't start the test with the mouse hovering the launcher
             mouseMove(root, root.width, root.height / 2);
 
@@ -187,6 +214,8 @@ Item {
 
             // Now do check that snapping is in fact enabled
             compare(listView.snapMode, ListView.SnapToItem, "Snapping is not enabled");
+
+            removeTimeConstraintsFromDirectionalDragAreas(root);
         }
 
         function dragLauncherIntoView() {
@@ -200,12 +229,17 @@ Item {
             verify(!!panel);
 
             // wait until it gets fully extended
-            tryCompare(panel, "x", 0);
+            // a tryCompare doesn't work since
+            //    compare(-0.000005917593600024418, 0);
+            // is true and in this case we want exactly 0 or will have pain later on
+            tryCompareFunction( function(){ return panel.x === 0; }, true );
             tryCompare(launcher, "state", "visible");
         }
 
-        function revealByHover() {
+        function revealByEdgePush() {
+            // Place the mouse against the window/screen edge and push beyond the barrier threshold
             mouseMove(root, 1, root.height / 2);
+            launcher.pushEdge(EdgeBarrierSettings.pushThreshold * 1.1);
 
             var panel = findChild(launcher, "launcherPanel");
             verify(!!panel);
@@ -275,7 +309,7 @@ Item {
 
         function test_clickingOnAppIconCausesSignalEmission(data) {
             if (data.mouse) {
-                revealByHover();
+                revealByEdgePush();
             } else {
                 dragLauncherIntoView();
             }
@@ -454,9 +488,12 @@ Item {
 
         function test_dragndrop_data() {
             return [
-                {tag: "startDrag", fullDrag: false },
-                {tag: "fullDrag horizontal", fullDrag: true, orientation: ListView.Horizontal },
-                {tag: "fullDrag vertical", fullDrag: true, orientation: ListView.Vertical },
+                {tag: "startDrag", fullDrag: false, releaseBeforeDrag: false },
+                {tag: "fullDrag horizontal", fullDrag: true, releaseBeforeDrag: false, orientation: ListView.Horizontal },
+                {tag: "fullDrag vertical", fullDrag: true, releaseBeforeDrag: false, orientation: ListView.Vertical },
+                {tag: "startDrag with quicklist open", fullDrag: false, releaseBeforeDrag: true },
+                {tag: "fullDrag horizontal with quicklist open", fullDrag: true, releaseBeforeDrag: true, orientation: ListView.Horizontal },
+                {tag: "fullDrag vertical with quicklist open", fullDrag: true, releaseBeforeDrag: true, orientation: ListView.Vertical },
             ];
         }
 
@@ -479,16 +516,30 @@ Item {
             tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 0)
 
             // Doing longpress
-            var currentMouseX = draggedItem.width / 2
-            var currentMouseY = draggedItem.height / 2
-            mousePress(draggedItem, currentMouseX, currentMouseY)
+            var mouseOnLauncher = launcher.mapFromItem(draggedItem, draggedItem.width / 2, draggedItem.height / 2)
+            var currentMouseX = mouseOnLauncher.x
+            var currentMouseY = mouseOnLauncher.y
+            var newMouseX = currentMouseX
+            var newMouseY = currentMouseY
+            mousePress(launcher, currentMouseX, currentMouseY)
             // DraggedItem needs to hide and fakeDragItem become visible
             tryCompare(draggedItem, "itemOpacity", 0)
             tryCompare(fakeDragItem, "visible", true)
 
+            if (data.releaseBeforeDrag) {
+                mouseRelease(launcher);
+                tryCompare(fakeDragItem, "visible", false)
+
+                mousePress(launcher, currentMouseX, currentMouseY);
+                // DraggedItem needs to hide and fakeDragItem become visible
+                tryCompare(fakeDragItem, "visible", true);
+            }
+
             // Dragging a bit (> 1.5 gu)
-            currentMouseX -= units.gu(2)
-            mouseMove(draggedItem, currentMouseX, currentMouseY)
+            newMouseX -= units.gu(2)
+            mouseFlick(launcher, currentMouseX, currentMouseY, newMouseX, newMouseY, false, false, 100)
+            currentMouseX = newMouseX
+
             // Other items need to expand and become 0.6 opaque
             tryCompare(item0, "angle", 0)
             tryCompare(item0, "itemOpacity", 0.6)
@@ -496,18 +547,21 @@ Item {
             if (data.fullDrag) {
                 // Dragging a bit more
                 if (data.orientation == ListView.Horizontal) {
-                    currentMouseX -= units.gu(15)
-                    mouseMove(draggedItem, currentMouseX, currentMouseY, 100)
+                    newMouseX += units.gu(15)
+                    mouseFlick(launcher, currentMouseX, currentMouseY, newMouseX, newMouseY, false, false, 100)
+                    currentMouseX = newMouseX
 
                     tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 1)
                     tryCompare(draggedItem, "height", units.gu(1))
 
                     // Dragging downwards. Item needs to move in the model
-                    currentMouseY -= initialItemHeight * 1.5
-                    mouseMove(draggedItem, currentMouseX, currentMouseY)
+                    newMouseY -= initialItemHeight * 1.5
+                    mouseFlick(launcher, currentMouseX, currentMouseY, newMouseX, newMouseY, false, false, 100)
+                    currentMouseY = newMouseY
                 } else if (data.orientation == ListView.Vertical) {
-                    currentMouseY -= initialItemHeight * 1.5
-                    mouseMove(draggedItem, currentMouseX, currentMouseY, 100)
+                    newMouseY -= initialItemHeight * 1.5
+                    mouseFlick(launcher, currentMouseX, currentMouseY, newMouseX, newMouseY, false, false, 100)
+                    currentMouseY = newMouseY
 
                     tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 1)
                     tryCompare(draggedItem, "height", units.gu(1))
@@ -519,7 +573,7 @@ Item {
             }
 
             // Releasing and checking if initial values are restored
-            mouseRelease(draggedItem)
+            mouseRelease(launcher)
             tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 0)
             tryCompare(draggedItem, "itemOpacity", 1)
             tryCompare(fakeDragItem, "visible", false)
@@ -531,8 +585,10 @@ Item {
 
         function test_dragndrop_cancel_data() {
             return [
-                {tag: "by mouse", mouse: true},
-                {tag: "by touch", mouse: false}
+                {tag: "by mouse", mouse: true, releaseBeforeDrag: false},
+                {tag: "by touch", mouse: false, releaseBeforeDrag: false},
+                {tag: "by mouse with quicklist open", mouse: true, releaseBeforeDrag: true},
+                {tag: "by touch with quicklist open", mouse: false, releaseBeforeDrag: true}
             ]
         }
 
@@ -556,6 +612,22 @@ Item {
             tryCompare(draggedItem, "itemOpacity", 0)
             tryCompare(fakeDragItem, "visible", true)
 
+            if (data.releaseBeforeDrag) {
+                if(data.mouse) {
+                    mouseRelease(draggedItem)
+                } else {
+                    touchRelease(draggedItem)
+                }
+                tryCompare(fakeDragItem, "visible", false)
+
+                if(data.mouse) {
+                    mousePress(draggedItem, currentMouseX, currentMouseY)
+                } else {
+                    touchPress(draggedItem, currentMouseX, currentMouseY)
+                }
+                tryCompare(fakeDragItem, "visible", true);
+            }
+
             // Dragging
             currentMouseX -= units.gu(20)
 
@@ -574,6 +646,7 @@ Item {
             if(data.mouse) {
                 mouseClick(root)
             } else {
+                touchRelease(draggedItem)
                 tap(root)
             }
 
@@ -581,6 +654,87 @@ Item {
             tryCompare(draggedItem, "dragging", false)
             tryCompare(dndArea, "draggedIndex", -1)
             tryCompare(dndArea, "drag.target", undefined)
+        }
+
+        function test_dragndrop_with_other_quicklist_open() {
+            dragLauncherIntoView();
+            var draggedItem = findChild(launcher, "launcherDelegate4")
+            var item0 = findChild(launcher, "launcherDelegate0")
+            var fakeDragItem = findChild(launcher, "fakeDragItem")
+            var initialItemHeight = draggedItem.height
+            var item4 = LauncherModel.get(4).appId
+            var item3 = LauncherModel.get(3).appId
+
+            var listView = findChild(launcher, "launcherListView");
+            listView.flick(0, units.gu(200));
+            tryCompare(listView, "flicking", false);
+
+            // Initial state
+            compare(draggedItem.itemOpacity, 1, "Item's opacity is not 1 at beginning")
+            compare(fakeDragItem.visible, false, "FakeDragItem isn't invisible at the beginning")
+            tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 0)
+
+            // Doing longpress
+            var mouseOnLauncher = launcher.mapFromItem(draggedItem, draggedItem.width / 2, draggedItem.height / 2)
+            var currentMouseX = mouseOnLauncher.x
+            var currentMouseY = mouseOnLauncher.y
+            var newMouseX = currentMouseX
+            var newMouseY = currentMouseY
+            mousePress(launcher, currentMouseX, currentMouseY)
+            // DraggedItem needs to hide and fakeDragItem become visible
+            tryCompare(draggedItem, "itemOpacity", 0)
+            tryCompare(fakeDragItem, "visible", true)
+
+            mouseRelease(launcher);
+            tryCompare(fakeDragItem, "visible", false)
+
+            // Now let's longpress and drag a different item
+
+            var draggedItem = findChild(launcher, "launcherDelegate3")
+            compare(draggedItem.itemOpacity, 1, "Item's opacity is not 1 at beginning")
+            tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 0)
+
+            // Doing longpress
+            var mouseOnLauncher = launcher.mapFromItem(draggedItem, draggedItem.width / 2, draggedItem.height / 2)
+            var currentMouseX = mouseOnLauncher.x
+            var currentMouseY = mouseOnLauncher.y
+            var newMouseX = currentMouseX
+            var newMouseY = currentMouseY
+            mousePress(launcher, currentMouseX, currentMouseY)
+            // DraggedItem needs to hide and fakeDragItem become visible
+            tryCompare(draggedItem, "itemOpacity", 0)
+            tryCompare(fakeDragItem, "visible", true)
+
+            // Dragging a bit (> 1.5 gu)
+            newMouseX -= units.gu(2)
+            mouseFlick(launcher, currentMouseX, currentMouseY, newMouseX, newMouseY, false, false, 100)
+            currentMouseX = newMouseX
+
+            // Other items need to expand and become 0.6 opaque
+            tryCompare(item0, "angle", 0)
+            tryCompare(item0, "itemOpacity", 0.6)
+
+            // Dragging a bit more
+            newMouseY += initialItemHeight * 1.5
+            mouseFlick(launcher, currentMouseX, currentMouseY, newMouseX, newMouseY, false, false, 100)
+            currentMouseY = newMouseY
+
+            tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 1)
+            tryCompare(draggedItem, "height", units.gu(1))
+
+            waitForRendering(draggedItem)
+            compare(LauncherModel.get(4).appId, item3)
+            compare(LauncherModel.get(3).appId, item4)
+
+            // Releasing and checking if initial values are restored
+            mouseRelease(launcher)
+            tryCompare(findChild(draggedItem, "dropIndicator"), "opacity", 0)
+            tryCompare(draggedItem, "itemOpacity", 1)
+            tryCompare(fakeDragItem, "visible", false)
+
+            // Click somewhere in the empty space to make it hide in case it isn't
+            mouseClick(launcher, launcher.width - units.gu(1), units.gu(1));
+            waitUntilLauncherDisappears();
         }
 
         function test_quicklist_dismiss() {
@@ -605,6 +759,21 @@ Item {
             tryCompare(quickListShape, "visible", false)
 
             mouseRelease(draggedItem);
+        }
+
+        function test_launcher_dismiss() {
+            dragLauncherIntoView();
+            verify(launcher.state == "visible");
+            mouseClick(root);
+            waitUntilLauncherDisappears();
+            verify(launcher.state == "");
+
+            // and repeat, as a test for regression in lpbug#1531339
+            dragLauncherIntoView();
+            verify(launcher.state == "visible");
+            mouseClick(root);
+            waitUntilLauncherDisappears();
+            verify(launcher.state == "");
         }
 
         function test_quicklist_positioning_data() {
@@ -737,15 +906,20 @@ Item {
             verify(quickList, "state", "")
         }
 
-        function test_revealByHover() {
+        function test_revealByEdgePush() {
             var panel = findChild(launcher, "launcherPanel");
             verify(!!panel);
 
-            revealByHover();
-            tryCompare(launcher, "state", "visibleTemporary");
+            revealByEdgePush();
+            compare(launcher.state, "visibleTemporary");
 
             // Now move the mouse away and make sure it hides in less than a second
             mouseMove(root, root.width, root.height / 2)
+
+            // trigger the hide timer
+            compare(fakeDismissTimer.running, true);
+            fakeDismissTimer.triggered();
+            tryCompare(panel, "x", 0);
 
             tryCompare(launcher, "state", "", 1000, "Launcher didn't hide after moving mouse away from it");
             waitUntilLauncherDisappears();

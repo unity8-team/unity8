@@ -29,6 +29,7 @@ macro(add_unity8_mock PLUGIN VERSION PATH)
 endmacro()
 
 add_subdirectory(AccountsService)
+add_subdirectory(Cursor)
 add_subdirectory(GSettings.1.0)
 add_subdirectory(indicator-service)
 add_subdirectory(libusermetrics)
@@ -42,6 +43,7 @@ add_subdirectory(Unity)
 add_subdirectory(QtMultimedia)
 add_subdirectory(Wizard)
 add_subdirectory(Utils)
+add_subdirectory(UInput)
 
 install(
   DIRECTORY data

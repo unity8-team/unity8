@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,73 +12,110 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
 import QtQuick 2.4
-import QtQuick.Layouts 1.1
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Unity.Application 0.1
 import "../Components/PanelState"
+import "../Components"
 import Utils 0.1
 import Ubuntu.Gestures 0.1
+import GlobalShortcut 1.0
 
-Rectangle {
+AbstractStage {
     id: root
     anchors.fill: parent
-
-    // Controls to be set from outside
-    property int dragAreaWidth // just to comply with the interface shared between stages
-    property real maximizedAppTopMargin
-    property bool interactive
-    property bool spreadEnabled // just to comply with the interface shared between stages
-    property real inverseProgress: 0 // just to comply with the interface shared between stages
-    property int shellOrientationAngle: 0
-    property int shellOrientation
-    property int shellPrimaryOrientation
-    property int nativeOrientation
-    property bool beingResized: false
-    property bool keepDashRunning: true
-    property bool suspended: false
 
     // functions to be called from outside
     function updateFocusedAppOrientation() { /* TODO */ }
     function updateFocusedAppOrientationAnimated() { /* TODO */}
+    function pushRightEdge(amount) {
+        if (spread.state === "") {
+            edgeBarrier.push(amount);
+        }
+    }
 
-    // To be read from outside
-    readonly property var mainApp: ApplicationManager.focusedApplicationId
+    mainApp: ApplicationManager.focusedApplicationId
             ? ApplicationManager.findApplication(ApplicationManager.focusedApplicationId)
             : null
-    property int mainAppWindowOrientationAngle: 0
-    readonly property bool orientationChangesEnabled: false
 
-    property alias background: wallpaper.source
-    property bool altTabPressed: false
+    // application windows never rotate independently
+    mainAppWindowOrientationAngle: shellOrientationAngle
 
-    CrossFadeImage {
-        id: wallpaper
-        anchors.fill: parent
-        sourceSize { height: root.height; width: root.width }
-        fillMode: Image.PreserveAspectCrop
-    }
+    orientationChangesEnabled: true
 
     Connections {
         target: ApplicationManager
         onApplicationAdded: {
-            if (root.state == "altTab") {
-                root.state = "";
+            if (spread.state == "altTab") {
+                spread.state = "";
             }
 
-            ApplicationManager.requestFocusApplication(appId)
+            ApplicationManager.focusApplication(appId);
+        }
+
+        onApplicationRemoved: {
+            priv.focusNext();
         }
 
         onFocusRequested: {
             var appIndex = priv.indexOf(appId);
             var appDelegate = appRepeater.itemAt(appIndex);
-            appDelegate.minimized = false;
-            appDelegate.focus = true;
+            appDelegate.restore();
+
+            if (spread.state == "altTab") {
+                spread.cancel();
+            }
         }
+    }
+
+    GlobalShortcut {
+        id: closeWindowShortcut
+        shortcut: Qt.AltModifier|Qt.Key_F4
+        onTriggered: ApplicationManager.stopApplication(priv.focusedAppId)
+        active: priv.focusedAppId !== ""
+    }
+
+    GlobalShortcut {
+        id: showSpreadShortcut
+        shortcut: Qt.MetaModifier|Qt.Key_W
+        onTriggered: spread.state = "altTab"
+    }
+
+    GlobalShortcut {
+        id: minimizeAllShortcut
+        shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_D
+        onTriggered: priv.minimizeAllWindows()
+    }
+
+    GlobalShortcut {
+        id: maximizeWindowShortcut
+        shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Up
+        onTriggered: priv.focusedAppDelegate.maximize()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        id: maximizeWindowLeftShortcut
+        shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Left
+        onTriggered: priv.focusedAppDelegate.maximizeLeft()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        id: maximizeWindowRightShortcut
+        shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Right
+        onTriggered: priv.focusedAppDelegate.maximizeRight()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        id: minimizeRestoreShortcut
+        shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Down
+        onTriggered: priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight
+                     ? priv.focusedAppDelegate.restoreFromMaximized() : priv.focusedAppDelegate.minimize()
+        active: priv.focusedAppDelegate !== null
     }
 
     QtObject {
@@ -89,6 +126,24 @@ Rectangle {
             var index = indexOf(focusedAppId);
             return index >= 0 && index < appRepeater.count ? appRepeater.itemAt(index) : null
         }
+        onFocusedAppDelegateChanged: updateForegroundMaximizedApp();
+
+        property int foregroundMaximizedAppZ: -1
+        property int foregroundMaximizedAppIndex: -1 // for stuff like drop shadow and focusing maximized app by clicking panel
+
+        function updateForegroundMaximizedApp() {
+            var tmp = -1;
+            var tmpAppId = -1;
+            for (var i = appRepeater.count - 1; i >= 0; i--) {
+                var item = appRepeater.itemAt(i);
+                if (item && item.visuallyMaximized) {
+                    tmpAppId = i;
+                    tmp = Math.max(tmp, item.normalZ);
+                }
+            }
+            foregroundMaximizedAppZ = tmp;
+            foregroundMaximizedAppIndex = tmpAppId;
+        }
 
         function indexOf(appId) {
             for (var i = 0; i < ApplicationManager.count; i++) {
@@ -98,6 +153,28 @@ Rectangle {
             }
             return -1;
         }
+
+        function minimizeAllWindows() {
+            for (var i = 0; i < appRepeater.count; i++) {
+                var appDelegate = appRepeater.itemAt(i);
+                if (appDelegate && !appDelegate.minimized) {
+                    appDelegate.minimize();
+                }
+            }
+
+            ApplicationManager.unfocusCurrentApplication(); // no app should have focus at this point
+        }
+
+        function focusNext() {
+            ApplicationManager.unfocusCurrentApplication();
+            for (var i = 0; i < appRepeater.count; i++) {
+                var appDelegate = appRepeater.itemAt(i);
+                if (appDelegate && !appDelegate.minimized) {
+                    ApplicationManager.focusApplication(appDelegate.appId);
+                    return;
+                }
+            }
+        }
     }
 
     Connections {
@@ -105,82 +182,60 @@ Rectangle {
         onClose: {
             ApplicationManager.stopApplication(ApplicationManager.focusedApplicationId)
         }
-        onMinimize: appRepeater.itemAt(0).minimize();
-        onMaximize: appRepeater.itemAt(0).unmaximize();
+        onMinimize: priv.focusedAppDelegate && priv.focusedAppDelegate.minimize();
+        onMaximize: priv.focusedAppDelegate // don't restore minimized apps when double clicking the panel
+                    && priv.focusedAppDelegate.restoreFromMaximized();
+        onFocusMaximizedApp: if (priv.foregroundMaximizedAppIndex != -1) {
+                                 ApplicationManager.focusApplication(appRepeater.itemAt(priv.foregroundMaximizedAppIndex).appId);
+                             }
     }
 
     Binding {
         target: PanelState
         property: "buttonsVisible"
-        value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.state === "maximized"
+        value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
+               && spread.state == ""
     }
 
-    Rectangle {
-        id: spreadBackground
-        anchors.fill: parent
-        color: "#55000000"
-        visible: false
+    Binding {
+        target: PanelState
+        property: "title"
+        value: {
+            if (priv.focusedAppDelegate !== null && spread.state == "") {
+                if (priv.focusedAppDelegate.maximized)
+                    return priv.focusedAppDelegate.title
+                else
+                    return priv.focusedAppDelegate.appName
+            }
+            return ""
+        }
+        when: priv.focusedAppDelegate
+    }
+
+    Binding {
+        target: PanelState
+        property: "dropShadow"
+        value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppIndex !== -1
+    }
+
+    Component.onDestruction: {
+        PanelState.title = "";
+        PanelState.buttonsVisible = false;
+        PanelState.dropShadow = false;
     }
 
     FocusScope {
         id: appContainer
         objectName: "appContainer"
         anchors.fill: parent
-        focus: true
+        focus: spread.state !== "altTab"
 
-        Keys.onPressed: {
-            switch (event.key) {
-            case Qt.Key_Left:
-            case Qt.Key_Backtab:
-                selectPrevious(event.isAutoRepeat)
-                event.accepted = true;
-                break;
-            case Qt.Key_Right:
-            case Qt.Key_Tab:
-                selectNext(event.isAutoRepeat)
-                event.accepted = true;
-                break;
-            case Qt.Key_Escape:
-                appRepeater.highlightedIndex = -1
-                event.accepted = true;
-            case Qt.Key_Enter:
-            case Qt.Key_Return:
-            case Qt.Key_Space:
-                root.state = ""
-                event.accepted = true;
-            }
-        }
-
-        function selectNext(isAutoRepeat) {
-            if (isAutoRepeat && appRepeater.highlightedIndex >= ApplicationManager.count -1) {
-                return; // AutoRepeat is not allowed to wrap around
-            }
-
-            appRepeater.highlightedIndex = (appRepeater.highlightedIndex + 1) % ApplicationManager.count;
-            var newContentX = ((spreadFlickable.contentWidth) / (ApplicationManager.count + 1)) * Math.max(0, Math.min(ApplicationManager.count - 5, appRepeater.highlightedIndex - 3));
-            if (spreadFlickable.contentX < newContentX || appRepeater.highlightedIndex == 0) {
-                spreadFlickable.snapTo(newContentX)
-            }
-        }
-
-        function selectPrevious(isAutoRepeat) {
-            if (isAutoRepeat && appRepeater.highlightedIndex == 0) {
-                return; // AutoRepeat is not allowed to wrap around
-            }
-
-            var newIndex = appRepeater.highlightedIndex - 1 >= 0 ? appRepeater.highlightedIndex - 1 : ApplicationManager.count - 1;
-            appRepeater.highlightedIndex = newIndex;
-            var newContentX = ((spreadFlickable.contentWidth) / (ApplicationManager.count + 1)) * Math.max(0, Math.min(ApplicationManager.count - 5, appRepeater.highlightedIndex - 1));
-            if (spreadFlickable.contentX > newContentX || newIndex == ApplicationManager.count -1) {
-                spreadFlickable.snapTo(newContentX)
-            }
-        }
-
-        function focusSelected() {
-            if (appRepeater.highlightedIndex != -1) {
-                var application = ApplicationManager.get(appRepeater.highlightedIndex);
-                ApplicationManager.requestFocusApplication(application.appId)
-            }
+        CrossFadeImage {
+            id: wallpaper
+            anchors.fill: parent
+            source: root.background
+            sourceSize { height: root.height; width: root.width }
+            fillMode: Image.PreserveAspectCrop
         }
 
         Repeater {
@@ -188,49 +243,51 @@ Rectangle {
             model: ApplicationManager
             objectName: "appRepeater"
 
-            property int highlightedIndex: -1
-            property int closingIndex: -1
-
-            function indexOf(delegateItem) {
-                for (var i = 0; i < appRepeater.count; i++) {
-                    if (appRepeater.itemAt(i) === delegateItem) {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-
             delegate: FocusScope {
                 id: appDelegate
-                z: ApplicationManager.count - index
-                y: units.gu(3)
-                width: units.gu(60)
-                height: units.gu(50)
+                objectName: "appDelegate_" + appId
+                // z might be overriden in some cases by effects, but we need z ordering
+                // to calculate occlusion detection
+                property int normalZ: ApplicationManager.count - index
+                z: normalZ
+                y: PanelState.panelHeight
+                focus: appId === priv.focusedAppId
+                width: decoratedWindow.width
+                height: decoratedWindow.height
+                property alias requestedWidth: decoratedWindow.requestedWidth
+                property alias requestedHeight: decoratedWindow.requestedHeight
 
-                property int windowWidth: 0
-                property int windowHeight: 0
-                // We don't want to resize the actual application when we're transforming things for the spread only
-                onWidthChanged: if (appDelegate.state !== "altTab") windowWidth = width
-                onHeightChanged: if (appDelegate.state !== "altTab") windowHeight = height
+                QtObject {
+                    id: appDelegatePrivate
+                    property bool maximized: false
+                    property bool maximizedLeft: false
+                    property bool maximizedRight: false
+                    property bool minimized: false
+                }
+                readonly property alias maximized: appDelegatePrivate.maximized
+                readonly property alias maximizedLeft: appDelegatePrivate.maximizedLeft
+                readonly property alias maximizedRight: appDelegatePrivate.maximizedRight
+                readonly property alias minimized: appDelegatePrivate.minimized
 
-                readonly property int minWidth: units.gu(10)
-                readonly property int minHeight: units.gu(10)
-
-                property bool maximized: false
-                property bool minimized: false
+                readonly property string appId: model.appId
+                property bool animationsEnabled: true
+                property alias title: decoratedWindow.title
+                readonly property string appName: model.name
+                property bool visuallyMaximized: false
+                property bool visuallyMinimized: false
 
                 onFocusChanged: {
-                    if (focus && ApplicationManager.focusedApplicationId !== model.appId) {
-                        ApplicationManager.focusApplication(model.appId);
+                    if (focus && ApplicationManager.focusedApplicationId !== appId) {
+                        ApplicationManager.focusApplication(appId);
                     }
                 }
 
-                Component.onCompleted: {
-                    // Focus the top-most or AppMan-focused application on start up.
-                    if (ApplicationManager.focusedApplicationId === model.appId && !focus) {
-                        focus = true;
-                    }
-                }
+                onVisuallyMaximizedChanged: priv.updateForegroundMaximizedApp()
+
+                visible: !visuallyMinimized &&
+                         !greeter.fullyShown &&
+                         (priv.foregroundMaximizedAppZ === -1 || priv.foregroundMaximizedAppZ <= z) ||
+                         (spread.state == "altTab" && index === spread.highlightedIndex)
 
                 Binding {
                     target: ApplicationManager.get(index)
@@ -243,120 +300,152 @@ Rectangle {
                     value: ApplicationInfoInterface.RequestedRunning // Always running for now
                 }
 
-                function maximize() {
-                    minimized = false;
-                    maximized = true;
+                function maximize(animated) {
+                    animationsEnabled = (animated === undefined) || animated;
+                    appDelegatePrivate.minimized = false;
+                    appDelegatePrivate.maximized = true;
+                    appDelegatePrivate.maximizedLeft = false;
+                    appDelegatePrivate.maximizedRight = false;
                 }
-                function minimize() {
-                    maximized = false;
-                    minimized = true;
+                function maximizeLeft() {
+                    appDelegatePrivate.minimized = false;
+                    appDelegatePrivate.maximized = false;
+                    appDelegatePrivate.maximizedLeft = true;
+                    appDelegatePrivate.maximizedRight = false;
                 }
-                function unmaximize() {
-                    minimized = false;
-                    maximized = false;
+                function maximizeRight() {
+                    appDelegatePrivate.minimized = false;
+                    appDelegatePrivate.maximized = false;
+                    appDelegatePrivate.maximizedLeft = false;
+                    appDelegatePrivate.maximizedRight = true;
                 }
-
-                Behavior on x {
-                    id: closeBehavior
-                    enabled: appRepeater.closingIndex >= 0
-                    UbuntuNumberAnimation {
-                        onRunningChanged: if (!running) appRepeater.closingIndex = -1
-                    }
+                function minimize(animated) {
+                    animationsEnabled = (animated === undefined) || animated;
+                    appDelegatePrivate.minimized = true;
+                }
+                function restoreFromMaximized(animated) {
+                    animationsEnabled = (animated === undefined) || animated;
+                    appDelegatePrivate.minimized = false;
+                    appDelegatePrivate.maximized = false;
+                    appDelegatePrivate.maximizedLeft = false;
+                    appDelegatePrivate.maximizedRight = false;
+                }
+                function restore(animated) {
+                    animationsEnabled = (animated === undefined) || animated;
+                    appDelegatePrivate.minimized = false;
+                    if (maximized)
+                        maximize();
+                    else if (maximizedLeft)
+                        maximizeLeft();
+                    else if (maximizedRight)
+                        maximizeRight();
+                    ApplicationManager.focusApplication(appId);
                 }
 
                 states: [
                     State {
-                        name: "normal"; when: !appDelegate.maximized && !appDelegate.minimized && root.state !== "altTab"
+                        name: "fullscreen"; when: decoratedWindow.fullscreen
+                        extend: "maximized"
+                        PropertyChanges {
+                            target: appDelegate;
+                            y: -PanelState.panelHeight
+                        }
                     },
                     State {
-                        name: "maximized"; when: appDelegate.maximized && (root.state !== "altTab" || (root.state == "altTab" && !root.workspacesUpdated))
-                        PropertyChanges { target: appDelegate; x: 0; y: 0; width: root.width; height: root.height }
+                        name: "normal";
+                        when: !appDelegate.maximized && !appDelegate.minimized
+                              && !appDelegate.maximizedLeft && !appDelegate.maximizedRight
+                        PropertyChanges {
+                            target: appDelegate;
+                            visuallyMinimized: false;
+                            visuallyMaximized: false
+                        }
                     },
                     State {
-                        name: "minimized"; when: appDelegate.minimized && (root.state !== "altTab" || (root.state == "altTab" && !root.workspacesUpdated))
-                        PropertyChanges { target: appDelegate; x: -appDelegate.width / 2; scale: units.gu(5) / appDelegate.width; opacity: 0 }
+                        name: "maximized"; when: appDelegate.maximized && !appDelegate.minimized
+                        PropertyChanges {
+                            target: appDelegate;
+                            x: 0; y: 0;
+                            requestedWidth: root.width; requestedHeight: root.height;
+                            visuallyMinimized: false;
+                            visuallyMaximized: true
+                        }
                     },
                     State {
-                        name: "altTab"; when: root.state == "altTab" && root.workspacesUpdated
+                        name: "maximizedLeft"; when: appDelegate.maximizedLeft && !appDelegate.minimized
+                        PropertyChanges { target: appDelegate; x: 0; y: PanelState.panelHeight;
+                            requestedWidth: root.width/2; requestedHeight: root.height - PanelState.panelHeight }
+                    },
+                    State {
+                        name: "maximizedRight"; when: appDelegate.maximizedRight && !appDelegate.minimized
+                        PropertyChanges { target: appDelegate; x: root.width/2; y: PanelState.panelHeight;
+                            requestedWidth: root.width/2; requestedHeight: root.height - PanelState.panelHeight }
+                    },
+                    State {
+                        name: "minimized"; when: appDelegate.minimized
                         PropertyChanges {
-                            target: appDelegate
-                            x: spreadMaths.animatedX
-                            y: spreadMaths.animatedY + (appDelegate.height - decoratedWindow.height) - units.gu(2)
-                            width: spreadMaths.spreadHeight
-                            height: spreadMaths.sceneHeight
-                            angle: spreadMaths.animatedAngle
-                            itemScale: spreadMaths.scale
-                            itemScaleOriginY: decoratedWindow.height / 2;
-                            z: index
-                            visible: spreadMaths.itemVisible
-                        }
-                        PropertyChanges {
-                            target: decoratedWindow
-                            decorationShown: false
-                            highlightShown: index == appRepeater.highlightedIndex
-                            state: "transformed"
-                            width: spreadMaths.spreadHeight
-                            height: spreadMaths.spreadHeight
-                            shadowOpacity: spreadMaths.shadowOpacity
-                            anchors.topMargin: units.gu(2)
-                        }
-                        PropertyChanges {
-                            target: tileInfo
-                            visible: true
-                            opacity: spreadMaths.tileInfoOpacity
-                        }
-                        PropertyChanges {
-                            target: spreadSelectArea
-                            enabled: true
-                        }
-                        PropertyChanges {
-                            target: windowMoveResizeArea
-                            enabled: false
+                            target: appDelegate;
+                            x: -appDelegate.width / 2;
+                            scale: units.gu(5) / appDelegate.width;
+                            opacity: 0
+                            visuallyMinimized: true;
+                            visuallyMaximized: false
                         }
                     }
                 ]
                 transitions: [
                     Transition {
-                        from: "maximized,minimized,normal,"
-                        to: "maximized,minimized,normal,"
-                        PropertyAnimation { target: appDelegate; properties: "x,y,opacity,width,height,scale" }
+                        to: "normal"
+                        enabled: appDelegate.animationsEnabled
+                        PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
+                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
                     },
                     Transition {
-                        from: ""
-                        to: "altTab"
-                        PropertyAction { target: appDelegate; properties: "y,angle,z,itemScale,itemScaleOriginY" }
-                        PropertyAction { target: decoratedWindow; properties: "anchors.topMargin" }
-                        PropertyAnimation {
-                            target: appDelegate; properties: "x"
-                            from: root.width
-                            duration: rightEdgePushArea.containsMouse ? UbuntuAnimation.FastDuration :0
-                            easing: UbuntuAnimation.StandardEasing
+                        to: "minimized"
+                        enabled: appDelegate.animationsEnabled
+                        PropertyAction { target: appDelegate; property: "visuallyMaximized" }
+                        SequentialAnimation {
+                            UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
+                            PropertyAction { target: appDelegate; property: "visuallyMinimized" }
+                            ScriptAction {
+                                script: {
+                                    if (appDelegate.minimized) {
+                                        priv.focusNext();
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    Transition {
+                        to: "*" //maximized and fullscreen
+                        enabled: appDelegate.animationsEnabled
+                        PropertyAction { target: appDelegate; property: "visuallyMinimized" }
+                        SequentialAnimation {
+                            UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
+                            PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                         }
                     }
                 ]
-                property real angle: 0
-                property real itemScale: 1
-                property int itemScaleOriginX: 0
-                property int itemScaleOriginY: 0
 
-                SpreadMaths {
-                    id: spreadMaths
-                    flickable: spreadFlickable
-                    itemIndex: index
-                    totalItems: Math.max(6, ApplicationManager.count)
-                    sceneHeight: root.height
-                    itemHeight: appDelegate.height
+                Binding {
+                    id: previewBinding
+                    target: appDelegate
+                    property: "z"
+                    value: ApplicationManager.count + 1
+                    when: index == spread.highlightedIndex && blurLayer.ready
                 }
 
-                WindowMoveResizeArea {
-                    id: windowMoveResizeArea
+                WindowResizeArea {
+                    objectName: "windowResizeArea"
                     target: appDelegate
-                    minWidth: appDelegate.minWidth
-                    minHeight: appDelegate.minHeight
-                    resizeHandleWidth: units.gu(2)
+                    minWidth: units.gu(10)
+                    minHeight: units.gu(10)
+                    borderThickness: units.gu(2)
                     windowId: model.appId // FIXME: Change this to point to windowId once we have such a thing
+                    screenWidth: root.width
+                    screenHeight: root.height
 
-                    onPressed: { appDelegate.focus = true; }
+                    onPressed: { ApplicationManager.focusApplication(model.appId) }
                 }
 
                 DecoratedWindow {
@@ -364,333 +453,77 @@ Rectangle {
                     objectName: "decoratedWindow"
                     anchors.left: appDelegate.left
                     anchors.top: appDelegate.top
-                    windowWidth: appDelegate.windowWidth
-                    windowHeight: appDelegate.windowHeight
                     application: ApplicationManager.get(index)
                     active: ApplicationManager.focusedApplicationId === model.appId
                     focus: true
 
                     onClose: ApplicationManager.stopApplication(model.appId)
-                    onMaximize: appDelegate.maximize()
+                    onMaximize: appDelegate.maximized || appDelegate.maximizedLeft || appDelegate.maximizedRight
+                                ? appDelegate.restoreFromMaximized() : appDelegate.maximize()
                     onMinimize: appDelegate.minimize()
-
-                    transform: [
-                        Scale {
-                            origin.x: itemScaleOriginX
-                            origin.y: itemScaleOriginY
-                            xScale: itemScale
-                            yScale: itemScale
-                        },
-                        Rotation {
-                            origin { x: 0; y: (decoratedWindow.height - (decoratedWindow.height * itemScale / 2)) }
-                            axis { x: 0; y: 1; z: 0 }
-                            angle: appDelegate.angle
-                        }
-                    ]
-
-                    MouseArea {
-                        id: spreadSelectArea
-                        anchors.fill: parent
-                        anchors.margins: -units.gu(2)
-                        enabled: false
-                        onClicked: {
-                            appRepeater.highlightedIndex = index;
-                            root.state = ""
-                        }
-                    }
-                }
-
-                Image {
-                    id: closeImage
-                    anchors { left: parent.left; top: parent.top; leftMargin: -height / 2; topMargin: -height / 2 + spreadMaths.closeIconOffset + units.gu(2) }
-                    source: "graphics/window-close.svg"
-                    readonly property var mousePos: hoverMouseArea.mapToItem(appDelegate, hoverMouseArea.mouseX, hoverMouseArea.mouseY)
-                    visible: index == appRepeater.highlightedIndex
-                             && mousePos.y < (decoratedWindow.height / 3)
-                             && mousePos.y > -units.gu(4)
-                             && mousePos.x > -units.gu(4)
-                             && mousePos.x < (decoratedWindow.width * 2 / 3)
-                    height: units.gu(1.5)
-                    width: height
-                    sourceSize.width: width
-                    sourceSize.height: height
-
-                    MouseArea {
-                        id: closeMouseArea
-                        objectName: "closeMouseArea"
-                        anchors.fill: closeImage
-                        anchors.margins: -units.gu(2)
-                        onClicked: {
-                            appRepeater.closingIndex = index;
-                            ApplicationManager.stopApplication(model.appId)
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: tileInfo
-                    objectName: "tileInfo"
-                    anchors { left: parent.left; top: decoratedWindow.bottom; topMargin: units.gu(5) }
-                    width: units.gu(30)
-                    height: titleInfoColumn.height
-                    visible: false
-                    hoverEnabled: true
-
-                    onContainsMouseChanged: {
-                        if (containsMouse) {
-                            appRepeater.highlightedIndex = index
-                        }
-                    }
-
-                    onClicked: {
-                        root.state = ""
-                    }
-
-                    ColumnLayout {
-                        id: titleInfoColumn
-                        anchors { left: parent.left; top: parent.top; right: parent.right }
-                        spacing: units.gu(1)
-
-                        UbuntuShape {
-                            Layout.preferredHeight: Math.min(units.gu(6), root.height * .05)
-                            Layout.preferredWidth: height * 8 / 7.6
-                            image: Image {
-                                anchors.fill: parent
-                                source: model.icon
-                            }
-                        }
-                        Label {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: units.gu(6)
-                            text: model.name
-                            wrapMode: Text.WordWrap
-                            maximumLineCount: 2
-                        }
-                    }
+                    onDecorationPressed: { ApplicationManager.focusApplication(model.appId) }
                 }
             }
         }
     }
 
-    MouseArea {
-        id: hoverMouseArea
-        anchors.fill: appContainer
-        propagateComposedEvents: true
-        hoverEnabled: true
-        enabled: false
-
-        property int scrollAreaWidth: root.width / 3
-        property bool progressiveScrollingEnabled: false
-
-        onMouseXChanged: {
-            mouse.accepted = false
-            if (hoverMouseArea.pressed) return;
-
-            // Find the hovered item and mark it active
-            var mapped = mapToItem(appContainer, hoverMouseArea.mouseX, hoverMouseArea.mouseY)
-            var itemUnder = appContainer.childAt(mapped.x, mapped.y)
-            if (itemUnder) {
-                mapped = mapToItem(itemUnder, hoverMouseArea.mouseX, hoverMouseArea.mouseY)
-                var delegateChild = itemUnder.childAt(mapped.x, mapped.y)
-                if (delegateChild.objectName === "decoratedWindow" || delegateChild.objectName === "tileInfo") {
-                    appRepeater.highlightedIndex = appRepeater.indexOf(itemUnder)
-                }
-            }
-
-            if (spreadFlickable.contentWidth > spreadFlickable.minContentWidth) {
-                var margins = spreadFlickable.width * 0.05;
-
-                if (!progressiveScrollingEnabled && mouseX < spreadFlickable.width - scrollAreaWidth) {
-                    progressiveScrollingEnabled = true
-                }
-
-                // do we need to scroll?
-                if (mouseX < scrollAreaWidth) {
-                    var progress = Math.min(1, (scrollAreaWidth + margins - mouseX) / (scrollAreaWidth - margins));
-                    var contentX = (1 - progress) * (spreadFlickable.contentWidth - spreadFlickable.width)
-                    spreadFlickable.contentX = Math.max(0, Math.min(spreadFlickable.contentX, contentX))
-                }
-                if (mouseX > spreadFlickable.width - scrollAreaWidth && progressiveScrollingEnabled) {
-                    var progress = Math.min(1, (mouseX - (spreadFlickable.width - scrollAreaWidth)) / (scrollAreaWidth - margins))
-                    var contentX = progress * (spreadFlickable.contentWidth - spreadFlickable.width)
-                    spreadFlickable.contentX = Math.min(spreadFlickable.contentWidth - spreadFlickable.width, Math.max(spreadFlickable.contentX, contentX))
-                }
-            }
-        }
-        onPressed: mouse.accepted = false
-    }
-
-    FloatingFlickable {
-        id: spreadFlickable
-        objectName: "spreadFlickable"
+    BlurLayer {
+        id: blurLayer
         anchors.fill: parent
-        property int minContentWidth: 6 * Math.min(height / 4, width / 5)
-        contentWidth: Math.max(6, ApplicationManager.count) * Math.min(height / 4, width / 5)
-        enabled: false
-
-        function snapTo(contentX) {
-            snapAnimation.stop();
-            snapAnimation.to = contentX
-            snapAnimation.start();
-        }
-
-        UbuntuNumberAnimation {
-            id: snapAnimation
-            target: spreadFlickable
-            property: "contentX"
-        }
-    }
-
-    Item {
-        id: workspaceSelector
-        anchors {
-            left: parent.left
-            top: parent.top
-            right: parent.right
-            topMargin: units.gu(3.5) // TODO: should be root.panelHeight
-        }
-        height: root.height * 0.25
+        source: appContainer
         visible: false
-
-        RowLayout {
-            anchors.fill: parent
-            spacing: units.gu(1)
-            Item { Layout.fillWidth: true }
-            Repeater {
-                model: 1 // TODO: will be a workspacemodel in the future
-                Item {
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: ((height - units.gu(6)) * root.width / root.height)
-                    Image {
-                        source: root.background
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                        }
-                        height: parent.height * 0.75
-
-                        // FIXME: This is temporary until we can have multiple Items per surface
-                        ShaderEffect {
-                            anchors.fill: parent
-
-                            property var source: ShaderEffectSource {
-                                id: shaderEffectSource
-                                live: false
-                                sourceItem: appContainer
-                                Connections { target: root; onUpdateWorkspaces: shaderEffectSource.scheduleUpdate() }
-                            }
-
-                            fragmentShader: "
-                                varying highp vec2 qt_TexCoord0;
-                                uniform sampler2D source;
-                                void main(void)
-                                {
-                                    highp vec4 sourceColor = texture2D(source, qt_TexCoord0);
-                                    gl_FragColor = sourceColor;
-                                }"
-                        }
-                    }
-
-                    // TODO: This is the bar for the currently selected workspace
-                    // Enable this once the workspace stuff is implemented
-//                    Rectangle {
-//                        anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-//                        height: units.dp(2)
-//                        color: UbuntuColors.orange
-//                        visible: index == 0 // TODO: should be active workspace index
-//                    }
-                }
-
-            }
-            // TODO: This is the "new workspace" button. Enable this once workspaces are implemented
-//            Item {
-//                Layout.fillHeight: true
-//                Layout.preferredWidth: ((height - units.gu(6)) * root.width / root.height)
-//                Rectangle {
-//                    anchors {
-//                        left: parent.left
-//                        right: parent.right
-//                        verticalCenter: parent.verticalCenter
-//                    }
-//                    height: parent.height * 0.75
-//                    color: "#22ffffff"
-
-//                    Label {
-//                        anchors.centerIn: parent
-//                        font.pixelSize: parent.height / 2
-//                        text: "+"
-//                    }
-//                }
-//            }
-            Item { Layout.fillWidth: true }
-        }
     }
 
-    Label {
-        id: currentSelectedLabel
-        anchors { bottom: parent.bottom; bottomMargin: root.height * 0.625; horizontalCenter: parent.horizontalCenter }
-        text: appRepeater.highlightedIndex >= 0 ? ApplicationManager.get(appRepeater.highlightedIndex).name : ""
+    Rectangle {
+        id: spreadBackground
+        anchors.fill: parent
+        color: "#55000000"
         visible: false
-        fontSize: "large"
     }
-
-    states: [
-        State {
-            name: "altTab"; when: root.altTabPressed
-            PropertyChanges { target: workspaceSelector; visible: true }
-            PropertyChanges { target: spreadFlickable; enabled: spreadFlickable.contentWidth > spreadFlickable.minContentWidth }
-            PropertyChanges { target: currentSelectedLabel; visible: true }
-            PropertyChanges { target: spreadBackground; visible: true }
-            PropertyChanges { target: hoverMouseArea; enabled: true }
-        }
-    ]
-    signal updateWorkspaces();
-    property bool workspacesUpdated: false
-    transitions: [
-        Transition {
-            from: "*"
-            to: "altTab"
-            SequentialAnimation {
-                PropertyAction { target: hoverMouseArea; property: "progressiveScrollingEnabled"; value: false }
-                PropertyAction { target: appRepeater; property: "highlightedIndex"; value: Math.min(ApplicationManager.count - 1, 1) }
-                PauseAnimation { duration: 50 }
-                PropertyAction { target: workspaceSelector; property: "visible" }
-                ScriptAction { script: root.updateWorkspaces() }
-                // FIXME: Updating of shaderEffectSource take a bit of time. This is temporary until we can paint multiple items per surface
-                PauseAnimation { duration: 10 }
-                PropertyAction { target: root; property: "workspacesUpdated"; value: true }
-                PropertyAction { target: spreadFlickable; property: "visible" }
-                PropertyAction { targets: [currentSelectedLabel,spreadBackground]; property: "visible" }
-                PropertyAction { target: spreadFlickable; property: "contentX"; value: 0 }
-            }
-        },
-        Transition {
-            from: "*"
-            to: "*"
-            PropertyAnimation { property: "opacity" }
-            PropertyAction { target: root; property: "workspacesUpdated"; value: false }
-            ScriptAction { script: { appContainer.focusSelected() } }
-            PropertyAction { target: appRepeater; property: "highlightedIndex"; value: -1 }
-        }
-
-    ]
 
     MouseArea {
-        id: rightEdgePushArea
-        anchors {
-            top: parent.top
-            right: parent.right
-            bottom: parent.bottom
-        }
-        // TODO: Make this a push to edge thing like the launcher when we can,
-        // for now, yes, we want 1 pixel, regardless of the scaling
-        width: 1
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            if (containsMouse) {
-                root.state = "altTab";
+        id: eventEater
+        anchors.fill: parent
+        visible: spreadBackground.visible
+        enabled: visible
+    }
+
+    EdgeBarrier {
+        id: edgeBarrier
+
+        // NB: it does its own positioning according to the specified edge
+        edge: Qt.RightEdge
+
+        onPassed: { spread.show(); }
+        material: Component {
+            Item {
+                Rectangle {
+                    width: parent.height
+                    height: parent.width
+                    rotation: 90
+                    anchors.centerIn: parent
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Qt.rgba(0.16,0.16,0.16,0.7)}
+                        GradientStop { position: 1.0; color: Qt.rgba(0.16,0.16,0.16,0)}
+                    }
+                }
             }
         }
+    }
+
+    DirectionalDragArea {
+        direction: Direction.Leftwards
+        anchors { top: parent.top; right: parent.right; bottom: parent.bottom }
+        width: units.gu(1)
+        onDraggingChanged: { if (dragging) { spread.show(); } }
+    }
+
+    DesktopSpread {
+        id: spread
+        objectName: "spread"
+        anchors.fill: parent
+        workspace: appContainer
+        focus: state == "altTab"
+        altTabPressed: root.altTabPressed
     }
 }

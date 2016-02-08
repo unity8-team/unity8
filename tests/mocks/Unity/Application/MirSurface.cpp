@@ -31,17 +31,21 @@ MirSurface::MirSurface(const QString& name,
     , m_screenshotUrl(screenshot)
     , m_qmlFilePath(qmlFilePath)
     , m_live(true)
-    , m_viewCount(0)
+    , m_visible(true)
     , m_activeFocus(false)
     , m_width(-1)
     , m_height(-1)
+    , m_slowToResize(false)
 {
-    qDebug() << "MirSurface::MirSurface() " << name;
+//    qDebug() << "MirSurface::MirSurface() " << name;
+    m_delayedResizeTimer.setInterval(600);
+    m_delayedResizeTimer.setSingleShot(true);
+    connect(&m_delayedResizeTimer, &QTimer::timeout, this, &MirSurface::applyDelayedResize);
 }
 
 MirSurface::~MirSurface()
 {
-    qDebug() << "MirSurface::~MirSurface() " << name();
+//    qDebug() << "MirSurface::~MirSurface() " << name();
 }
 
 QString MirSurface::name() const
@@ -73,16 +77,21 @@ bool MirSurface::live() const
     return m_live;
 }
 
+bool MirSurface::visible() const
+{
+    return m_visible;
+}
+
 void MirSurface::setLive(bool live)
 {
-    qDebug().nospace() << "MirSurface::setLive("<<live<<") " << name();
+//    qDebug().nospace() << "MirSurface::setLive("<<live<<") " << name();
     if (live == m_live)
         return;
 
     m_live = live;
     Q_EMIT liveChanged(live);
 
-    if (!m_live && m_viewCount == 0) {
+    if (!m_live && m_views.count() == 0) {
         deleteLater();
     }
 }
@@ -120,27 +129,49 @@ void MirSurface::setOrientationAngle(Mir::OrientationAngle angle)
     Q_EMIT orientationAngleChanged(angle);
 }
 
-void MirSurface::incrementViewCount()
+
+
+void MirSurface::registerView(qintptr viewId)
 {
-    ++m_viewCount;
-    qDebug().nospace() << "MirSurface::incrementViewCount() viewCount(after)=" << m_viewCount << " " << name();
+    m_views.insert(viewId, MirSurface::View{false});
+//    qDebug().nospace() << "MirSurface[" << name() << "]::registerView(" << viewId << ")"
+//                                      << " after=" << m_views.count();
 }
 
-void MirSurface::decrementViewCount()
+void MirSurface::unregisterView(qintptr viewId)
 {
-    --m_viewCount;
-    qDebug().nospace() << "MirSurface::decrementViewCount() viewCount(after)=" << m_viewCount << " " << name();
-
-    Q_ASSERT(m_viewCount >= 0);
-
-    if (!m_live && m_viewCount == 0) {
+//    qDebug().nospace() << "MirSurface[" << name() << "]::unregisterView(" << viewId << ")"
+//                                      << " after=" << m_views.count() << " live=" << m_live;
+    m_views.remove(viewId);
+    if (!m_live && m_views.count() == 0) {
         deleteLater();
     }
+    updateVisibility();
 }
 
-int MirSurface::viewCount() const
+void MirSurface::setViewVisibility(qintptr viewId, bool visible)
 {
-    return m_viewCount;
+    if (!m_views.contains(viewId)) return;
+
+    m_views[viewId].visible = visible;
+    updateVisibility();
+}
+
+void MirSurface::updateVisibility()
+{
+    bool newVisible = false;
+    QHashIterator<qintptr, View> i(m_views);
+    while (i.hasNext()) {
+        i.next();
+        newVisible |= i.value().visible;
+    }
+
+    if (newVisible != visible()) {
+//        qDebug().nospace() << "MirSurface[" << name() << "]::updateVisibility(" << newVisible << ")";
+
+        m_visible = newVisible;
+        Q_EMIT visibleChanged(m_visible);
+    }
 }
 
 bool MirSurface::activeFocus() const
@@ -170,13 +201,68 @@ int MirSurface::height() const
 
 void MirSurface::resize(int width, int height)
 {
+    if (m_slowToResize) {
+        if (!m_delayedResizeTimer.isActive()) {
+            m_delayedResize.setWidth(width);
+            m_delayedResize.setHeight(height);
+            m_delayedResizeTimer.start();
+        } else {
+            m_pendingResize.setWidth(width);
+            m_pendingResize.setHeight(height);
+        }
+    } else {
+        doResize(width, height);
+    }
+}
+
+void MirSurface::applyDelayedResize()
+{
+    doResize(m_delayedResize.width(), m_delayedResize.height());
+    m_delayedResize.setWidth(-1);
+    m_delayedResize.setHeight(-1);
+
+    if (m_pendingResize.isValid()) {
+        QSize size = m_pendingResize;
+        m_pendingResize.setWidth(-1);
+        m_pendingResize.setHeight(-1);
+        resize(size.width(), size.height());
+    }
+}
+
+void MirSurface::doResize(int width, int height)
+{
+    bool changed = false;
+
     if (width != m_width) {
         m_width = width;
         Q_EMIT widthChanged();
+        changed = true;
     }
 
     if (m_height != height) {
         m_height = height;
         Q_EMIT heightChanged();
+        changed = true;
+    }
+
+    if (changed) {
+        Q_EMIT sizeChanged(QSize(width, height));
+    }
+}
+
+bool MirSurface::isSlowToResize() const
+{
+    return m_slowToResize;
+}
+
+void MirSurface::setSlowToResize(bool value)
+{
+    if (m_slowToResize != value) {
+        m_slowToResize = value;
+        Q_EMIT slowToResizeChanged();
+        if (!m_slowToResize && m_delayedResizeTimer.isActive()) {
+            m_delayedResizeTimer.stop();
+            applyDelayedResize();
+        }
     }
 }

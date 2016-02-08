@@ -35,14 +35,14 @@ Session::Session(const QString &name,
     , m_parentSession(nullptr)
     , m_children(new SessionModel(this))
 {
-    qDebug() << "Session::Session() " << this->name();
+//    qDebug() << "Session::Session() " << this->name();
 
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 Session::~Session()
 {
-    qDebug() << "Session::~Session() " << name();
+//    qDebug() << "Session::~Session() " << name();
 
     QList<Session*> children(m_children->list());
     for (Session* child : children) {
@@ -67,7 +67,7 @@ Session::~Session()
 
 void Session::release()
 {
-    qDebug() << "Session::release " << name();
+//    qDebug() << "Session::release " << name();
     deleteLater();
 }
 
@@ -80,29 +80,25 @@ void Session::setApplication(ApplicationInfo* application)
     Q_EMIT applicationChanged(application);
 }
 
-void Session::setSurface(MirSurface* surface)
+void Session::appendSurface(MirSurface* surface)
 {
-    qDebug() << "Session::setSurface - session=" << name() << "surface=" << surface;
-    if (m_surface == surface)
-        return;
+    // qDebug() << "Session::appendSurface - session=" << name() << "surface=" << surface;
 
-    if (m_surface) {
-        disconnect(m_surface, nullptr, this, nullptr);
-    }
+    m_surfaces.insert(m_surfaces.rowCount(), surface);
 
-    m_surface = surface;
+    connect(surface, &QObject::destroyed,
+            this, [this, surface]() { this->removeSurface(surface); });
 
-    if (m_surface) {
-        connect(m_surface, &QObject::destroyed, this, &Session::onSurfaceDestroyed);
-    }
-
-    Q_EMIT surfaceChanged(m_surface);
+    Q_EMIT lastSurfaceChanged(surface);
+    Q_EMIT surfaceAdded(surface);
 }
 
-void Session::onSurfaceDestroyed()
+void Session::removeSurface(MirSurface* surface)
 {
-    m_surface = nullptr;
-    Q_EMIT surfaceChanged(nullptr);
+    disconnect(surface, nullptr, this, nullptr);
+    if (m_surfaces.contains(surface)) {
+        m_surfaces.remove(surface);
+    }
 }
 
 void Session::setScreenshot(const QUrl& screenshot)
@@ -136,7 +132,7 @@ void Session::createSurface()
 {
     if (m_surface) return;
 
-    setSurface(SurfaceManager::singleton()->createSurface(name(),
+    appendSurface(SurfaceManager::singleton()->createSurface(name(),
            Mir::NormalType,
            m_application && m_application->fullscreen() ? Mir::FullscreenState :
                                                           Mir::MaximizedState,
@@ -171,4 +167,18 @@ void Session::removeChildSession(Session* session)
 SessionModel* Session::childSessions() const
 {
     return m_children;
+}
+
+ObjectListModel<MirSurface>* Session::surfaces() const
+{
+    return const_cast<ObjectListModel<MirSurface>*>(&m_surfaces);
+}
+
+MirSurface *Session::lastSurface() const
+{
+    if (m_surfaces.rowCount() > 0) {
+        return m_surfaces.list().last();
+    } else {
+        return nullptr;
+    }
 }

@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
-import Ubuntu.Components 1.1
+import QtQuick 2.4
+import Ubuntu.Components 1.3
 import Utils 0.1
 import Unity 0.2
 import Dash 0.1
@@ -360,16 +360,16 @@ FocusScope {
                         baseItem.expand(shouldExpand, false /*animate*/);
                     }
                     updateRanges();
-                    if (scope && scope.id === "clickscope" && (categoryId === "predefined" || categoryId === "local")) {
-                        // Yeah, hackish :/
-                        if (scopeView.width > units.gu(45)) {
-                            if (scopeView.width >= units.gu(70)) {
-                                cardTool.cardWidth = units.gu(9);
-                            } else {
-                                cardTool.cardWidth = units.gu(10);
-                            }
+                    clickScopeSizingHacks();
+                    if (scope && scope.id === "clickscope") {
+                        if (categoryId === "predefined" || categoryId === "local") {
+                            cardTool.artShapeSize = Qt.size(units.gu(8), units.gu(7.5));
+                            item.artShapeStyle = "icon";
+                        } else {
+                            // Should be ubuntu store icon
+                            item.artShapeStyle = "flat";
+                            item.backgroundShapeStyle = "shadow";
                         }
-                        cardTool.artShapeSize = Qt.size(units.gu(8), units.gu(7.5));
                     }
                     item.cardTool = cardTool;
                 }
@@ -377,6 +377,23 @@ FocusScope {
                 Component.onDestruction: {
                     if (item.enableHeightBehavior !== undefined && item.enableHeightBehaviorOnNextCreation !== undefined) {
                         scopeView.enableHeightBehaviorOnNextCreation = item.enableHeightBehaviorOnNextCreation;
+                    }
+                }
+
+                function clickScopeSizingHacks() {
+                    if (scope && scope.id === "clickscope" &&
+                        (categoryId === "predefined" || categoryId === "local")) {
+                        // Yeah, hackish :/
+                        if (scopeView.width > units.gu(45)) {
+                            if (scopeView.width >= units.gu(70)) {
+                                cardTool.cardWidth = units.gu(11);
+                                item.minimumHorizontalSpacing = units.gu(5);
+                                return;
+                            } else {
+                                cardTool.cardWidth = units.gu(10);
+                            }
+                        }
+                        item.minimumHorizontalSpacing = item.defaultMinimumHorizontalSpacing;
                     }
                 }
 
@@ -409,6 +426,7 @@ FocusScope {
                     target: scopeView
                     onIsCurrentChanged: rendererLoader.updateRanges();
                     onVisibleToParentChanged: rendererLoader.updateRanges();
+                    onWidthChanged: rendererLoader.clickScopeSizingHacks();
                 }
                 Connections {
                     target: holdingList
@@ -573,7 +591,7 @@ FocusScope {
                     }
                     fontSize: "small"
                     font.weight: Font.Bold
-                    color: scopeStyle ? scopeStyle.foreground : Theme.palette.normal.baseText
+                    color: scopeStyle ? scopeStyle.foreground : theme.palette.normal.baseText
                 }
             }
 
@@ -610,7 +628,7 @@ FocusScope {
             width: categoryView.width
             height: section != "" ? units.gu(5) : 0
             text: section
-            color: scopeStyle ? scopeStyle.foreground : Theme.palette.normal.baseText
+            color: scopeStyle ? scopeStyle.foreground : theme.palette.normal.baseText
             iconName: delegate && delegate.headerLink ? "go-next" : ""
             onClicked: {
                 if (delegate.headerLink) scopeView.scope.performQuery(delegate.headerLink);
@@ -624,7 +642,7 @@ FocusScope {
             sourceComponent: scopeView.showPageHeader ? pageHeaderComponent : undefined
             Component {
                 id: pageHeaderComponent
-                PageHeader {
+                DashPageHeader {
                     objectName: "scopePageHeader"
                     width: parent.width
                     title: scopeView.scope ? scopeView.scope.name : ""
@@ -731,7 +749,7 @@ FocusScope {
             }
             fontSize: "small"
             font.weight: Font.Bold
-            color: scopeStyle ? scopeStyle.foreground : Theme.palette.normal.baseText
+            color: scopeStyle ? scopeStyle.foreground : theme.palette.normal.baseText
         }
 
         Connections {

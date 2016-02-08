@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
 import AccountsService 0.1
 import GSettings 1.0
 import IntegratedLightDM 0.1 as LightDM
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
+import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItem
 import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Application 0.1
 import Unity.Connectivity 0.1
@@ -29,8 +29,11 @@ import Unity.Notifications 1.0
 import Unity.Test 0.1
 import Powerd 0.1
 import Wizard 0.1 as Wizard
+import Utils 0.1
 
 import "../../qml"
+import "../../qml/Components"
+import "../../qml/Components/PanelState"
 import "Stages"
 
 Rectangle {
@@ -58,6 +61,10 @@ Rectangle {
 
             anchors.centerIn: parent
 
+            property int shellOrientation: Qt.PortraitOrientation
+            property int nativeOrientation: Qt.PortraitOrientation
+            property int primaryOrientation: Qt.PortraitOrientation
+
             state: "phone"
             states: [
                 State {
@@ -74,6 +81,9 @@ Rectangle {
                         target: shellLoader
                         width: units.gu(100)
                         height: units.gu(71)
+                        shellOrientation: Qt.LandscapeOrientation
+                        nativeOrientation: Qt.LandscapeOrientation
+                        primaryOrientation: Qt.LandscapeOrientation
                     }
                 },
                 State {
@@ -96,9 +106,13 @@ Rectangle {
                 Shell {
                     id: __shell
                     usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
-                    orientation: Qt.PortraitOrientation
-                    primaryOrientation: Qt.PortraitOrientation
-                    nativeOrientation: Qt.PortraitOrientation
+                    nativeWidth: width
+                    nativeHeight: height
+                    orientation: shellLoader.shellOrientation
+                    orientations: Orientations {
+                        native_: shellLoader.nativeOrientation
+                        primary: shellLoader.primaryOrientation
+                    }
                     Component.onDestruction: {
                         shellLoader.itemDestroyed = true;
                     }
@@ -282,6 +296,20 @@ Rectangle {
         phoneNumber: "+447812221111"
     }
 
+    Item {
+        id: fakeDismissTimer
+        property bool running: false
+        signal triggered
+
+        function stop() {
+            running = false;
+        }
+
+        function restart() {
+            running = true;
+        }
+    }
+
     UnityTestCase {
         id: testCase
         name: "Shell"
@@ -299,9 +327,11 @@ Rectangle {
         }
 
         function cleanup() {
+            waitForRendering(shell);
             mouseEmulation.checked = true;
             tryCompare(shell, "enabled", true); // make sure greeter didn't leave us in disabled state
             tearDown();
+            WindowStateStorage.clear();
         }
 
         function loadShell(formFactor) {
@@ -317,20 +347,26 @@ Rectangle {
             var launcher = findChild(shell, "launcher");
             launcherShowDashHomeSpy.target = launcher;
 
+            var panel = findChild(launcher, "launcherPanel");
+            verify(!!panel);
+
+            panel.dismissTimer = fakeDismissTimer;
+
             waitForGreeterToStabilize();
         }
 
         function loadDesktopShellWithApps() {
             loadShell("desktop");
+            waitForRendering(shell)
             shell.usageScenario = "desktop"
-            waitForRendering(root)
+            waitForRendering(shell)
             var app1 = ApplicationManager.startApplication("dialer-app")
             var app2 = ApplicationManager.startApplication("webbrowser-app")
             var app3 = ApplicationManager.startApplication("camera-app")
             var app4 = ApplicationManager.startApplication("facebook-webapp")
-            var app5 = ApplicationManager.startApplication("calendar-app")
+            var app5 = ApplicationManager.startApplication("camera-app")
             var app6 = ApplicationManager.startApplication("gallery-app")
-            var app7 = ApplicationManager.startApplication("camera-app")
+            var app7 = ApplicationManager.startApplication("calendar-app")
             waitUntilAppWindowIsFullyLoaded(app7);
         }
 
@@ -376,6 +412,8 @@ Rectangle {
             LightDM.Greeter.authenticate(""); // reset greeter
 
             sessionSpy.clear();
+
+            GSettingsController.setLifecycleExemptAppids([]);
         }
 
         function killApps() {
@@ -395,7 +433,7 @@ Rectangle {
             // Open an application and focus
             waitUntilApplicationWindowIsFullyVisible(app);
             ApplicationManager.focusApplication(app);
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
 
             notifications.model = mockNotificationsModel;
 
@@ -417,7 +455,7 @@ Rectangle {
             waitForRendering(notification);
 
             // Make sure activeFocus went away from the app window
-            tryCompare(app.session.surface, "activeFocus", false);
+            tryCompare(app.session.lastSurface, "activeFocus", false);
             tryCompare(stage, "interactive", false);
 
             // Clicking the button should dismiss the notification and return focus
@@ -425,7 +463,7 @@ Rectangle {
             mouseClick(buttonAccept);
 
             // Make sure we're back to normal
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
             compare(stage.interactive, true, "Stages not interactive again after modal notification has closed");
         }
 
@@ -435,8 +473,8 @@ Rectangle {
                 hints: {"x-canonical-private-affirmative-tint": "true"},
                 summary: "Tom Ato",
                 body: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-                icon: "../graphics/avatars/funky.png",
-                secondaryIcon: "../graphics/applicationIcons/facebook.png",
+                icon: "../../tests/graphics/avatars/funky.png",
+                secondaryIcon: "../../tests/graphics/applicationIcons/facebook.png",
                 actions: [{ id: "ok_id", label: "Ok"},
                     { id: "cancel_id", label: "Cancel"},
                     { id: "notreally_id", label: "Not really"},
@@ -612,7 +650,6 @@ Rectangle {
             // again before interacting with it otherwise any
             // DirectionalDragAreas in there won't be easily fooled by
             // fake swipes.
-            removeTimeConstraintsFromDirectionalDragAreas(greeter);
             swipeAwayGreeter();
 
             compare(mainApp.requestedState, ApplicationInfoInterface.RequestedRunning);
@@ -622,6 +659,7 @@ Rectangle {
         function swipeAwayGreeter() {
             var greeter = findChild(shell, "greeter");
             tryCompare(greeter, "fullyShown", true);
+            removeTimeConstraintsFromDirectionalDragAreas(greeter);
 
             var touchX = shell.width - (shell.edgeSize / 2);
             var touchY = shell.height / 2;
@@ -757,7 +795,7 @@ Rectangle {
             var app = ApplicationManager.startApplication("dialer-app");
             waitUntilAppWindowIsFullyLoaded(app);
 
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
 
             // Drag the indicators panel half-open
             var touchX = shell.width / 2;
@@ -768,7 +806,7 @@ Rectangle {
                     true /* beginTouch */, false /* endTouch */);
             verify(indicators.partiallyOpened);
 
-            tryCompare(app.session.surface, "activeFocus", false);
+            tryCompare(app.session.lastSurface, "activeFocus", false);
 
             // And finish getting it open
             touchFlick(indicators,
@@ -777,11 +815,11 @@ Rectangle {
                     false /* beginTouch */, true /* endTouch */);
             tryCompare(indicators, "fullyOpened", true);
 
-            tryCompare(app.session.surface, "activeFocus", false);
+            tryCompare(app.session.lastSurface, "activeFocus", false);
 
             dragToCloseIndicatorsPanel();
 
-            tryCompare(app.session.surface, "activeFocus", true);
+            tryCompare(app.session.lastSurface, "activeFocus", true);
         }
 
         function test_launchedAppHasActiveFocus_data() {
@@ -802,9 +840,9 @@ Rectangle {
             verify(webApp);
             waitUntilAppSurfaceShowsUp("webbrowser-app")
 
-            verify(webApp.session.surface);
+            verify(webApp.session.lastSurface);
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
         }
 
         function test_launchedAppKeepsActiveFocusOnUsageModeChange() {
@@ -815,9 +853,9 @@ Rectangle {
             verify(webApp);
             waitUntilAppSurfaceShowsUp("webbrowser-app")
 
-            verify(webApp.session.surface);
+            verify(webApp.session.lastSurface);
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
 
             shell.usageScenario = "desktop";
 
@@ -827,7 +865,7 @@ Rectangle {
                 verify(desktopWindow);
             }
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
 
             shell.usageScenario = "tablet";
 
@@ -837,7 +875,7 @@ Rectangle {
                 verify(desktopWindow);
             }
 
-            tryCompare(webApp.session.surface, "activeFocus", true);
+            tryCompare(webApp.session.lastSurface, "activeFocus", true);
         }
 
         function waitUntilAppSurfaceShowsUp(appId) {
@@ -935,6 +973,22 @@ Rectangle {
             removeTimeConstraintsFromDirectionalDragAreas(greeter);
         }
 
+        function revealLauncherByEdgePushWithMouse() {
+            var launcher = findChild(shell, "launcher");
+            verify(launcher);
+
+            // Place the mouse against the window/screen edge and push beyond the barrier threshold
+            mouseMove(shell, 0, shell.height / 2);
+            launcher.pushEdge(EdgeBarrierSettings.pushThreshold * 1.1);
+
+            var panel = findChild(launcher, "launcherPanel");
+            verify(panel);
+
+            // wait until it gets fully extended
+            tryCompare(panel, "x", 0);
+            tryCompare(launcher, "state", "visibleTemporary");
+        }
+
         function test_focusRequestedHidesGreeter() {
             loadShell("phone");
             swipeAwayGreeter();
@@ -942,7 +996,7 @@ Rectangle {
 
             var app = ApplicationManager.startApplication("dialer-app");
             // wait until the app is fully loaded (ie, real surface replaces splash screen)
-            tryCompareFunction(function() { return app.session !== null && app.session.surface !== null }, true);
+            tryCompareFunction(function() { return app.session !== null && app.session.lastSurface !== null }, true);
 
             // Minimize the application we just launched
             swipeFromLeftEdge(shell.width * 0.75);
@@ -1205,10 +1259,6 @@ Rectangle {
 
             var launcher = findChild(shell, "launcher");
 
-            // ensure the launcher dimissal timer never gets triggered during the test run
-            var dismissTimer = findInvisibleChild(launcher, "dismissTimer");
-            dismissTimer.interval = 60 * 60 * 1000;
-
             dragLauncherIntoView();
 
             // Emulate a tap with a finger, where the touch position drifts during the tap.
@@ -1237,30 +1287,6 @@ Rectangle {
             // check that the launcher got dismissed
             var launcherPanel = findChild(shell, "launcherPanel");
             tryCompare(launcherPanel, "x", -launcherPanel.width);
-        }
-
-        function test_background_data() {
-            return [
-                {tag: "color", accounts: Qt.resolvedUrl("data:image/svg+xml,<svg><rect width='100%' height='100%' fill='#dd4814'/></svg>"), gsettings: "", output: Qt.resolvedUrl("data:image/svg+xml,<svg><rect width='100%' height='100%' fill='#dd4814'/></svg>")},
-                {tag: "empty", accounts: "", gsettings: "", output: "defaultBackground"},
-                {tag: "as-specified", accounts: Qt.resolvedUrl("../data/unity/backgrounds/blue.png"), gsettings: "", output: Qt.resolvedUrl("../data/unity/backgrounds/blue.png")},
-                {tag: "gs-specified", accounts: "", gsettings: Qt.resolvedUrl("../data/unity/backgrounds/red.png"), output: Qt.resolvedUrl("../data/unity/backgrounds/red.png")},
-                {tag: "both-specified", accounts: Qt.resolvedUrl("../data/unity/backgrounds/blue.png"), gsettings: Qt.resolvedUrl("../data/unity/backgrounds/red.png"), output: Qt.resolvedUrl("../data/unity/backgrounds/blue.png")},
-                {tag: "invalid-as", accounts: Qt.resolvedUrl("../data/unity/backgrounds/nope.png"), gsettings: Qt.resolvedUrl("../data/unity/backgrounds/red.png"), output: Qt.resolvedUrl("../data/unity/backgrounds/red.png")},
-                {tag: "invalid-both", accounts: Qt.resolvedUrl("../data/unity/backgrounds/nope.png"), gsettings: Qt.resolvedUrl("../data/unity/backgrounds/stillnope.png"), output: "defaultBackground"},
-            ]
-        }
-        function test_background(data) {
-            loadShell("phone");
-            swipeAwayGreeter();
-            AccountsService.backgroundFile = data.accounts;
-            GSettingsController.setPictureUri(data.gsettings);
-
-            if (data.output === "defaultBackground") {
-                tryCompare(shell, "background", shell.defaultBackground);
-            } else {
-                tryCompare(shell, "background", data.output);
-            }
         }
 
         function test_tabletLogin_data() {
@@ -1403,24 +1429,25 @@ Rectangle {
             waitUntilAppWindowIsFullyLoaded(app3);
 
             // Do a quick alt-tab and see if focus changes
-            tryCompare(app3.session.surface, "activeFocus", true)
+            tryCompare(app3.session.lastSurface, "activeFocus", true)
             keyClick(Qt.Key_Tab, Qt.ControlModifier)
-            tryCompare(app2.session.surface, "activeFocus", true)
+            tryCompare(app2.session.lastSurface, "activeFocus", true)
 
+            var desktopSpread = findChild(shell, "spread")
 
-            tryCompare(desktopStage, "state", "")
+            tryCompare(desktopSpread, "state", "")
 
             // Just press Alt, make sure the spread comes up
             keyPress(Qt.Key_Control);
             keyClick(Qt.Key_Tab);
-            tryCompare(desktopStage, "state", "altTab")
+            tryCompare(desktopSpread, "state", "altTab")
 
             // Release control, check if spread disappears
             keyRelease(Qt.Key_Control)
-            tryCompare(desktopStage, "state", "")
+            tryCompare(desktopSpread, "state", "")
 
             // Focus should have switched back now
-            tryCompare(app3.session.surface, "activeFocus", true)
+            tryCompare(app3.session.lastSurface, "activeFocus", true)
         }
 
         function test_altTabWrapAround() {
@@ -1429,73 +1456,76 @@ Rectangle {
             var desktopStage = findChild(shell, "stage");
             verify(desktopStage !== null)
 
-            var appContainer = findInvisibleChild(shell, "appContainer")
-            verify(appContainer !== null)
+            var desktopSpread = findChild(shell, "spread");
+            verify(desktopSpread !== null)
 
-            var appRepeater = findInvisibleChild(shell, "appRepeater")
-            verify(appRepeater !== null)
+            var spreadContainer = findInvisibleChild(shell, "spreadContainer")
+            verify(spreadContainer !== null)
+
+            var spreadRepeater = findInvisibleChild(shell, "spreadRepeater")
+            verify(spreadRepeater !== null)
 
             // remember the focused appId
             var focused = ApplicationManager.get(ApplicationManager.findApplication(ApplicationManager.focusedApplicationId));
 
-            tryCompare(desktopStage, "state", "")
+            tryCompare(desktopSpread, "state", "")
 
             // Just press Alt, make sure the spread comes up
             keyPress(Qt.Key_Control);
             keyClick(Qt.Key_Tab);
-            tryCompare(desktopStage, "state", "altTab")
-            tryCompare(appRepeater, "highlightedIndex", 1)
+            tryCompare(desktopSpread, "state", "altTab")
+            tryCompare(spreadRepeater, "highlightedIndex", 1)
             waitForRendering(shell)
 
             // Now press and hold Tab, make sure the highlight moves all the way but stops at the last one
             // We can't simulate a pressed key with keyPress() currently, so let's inject the events
             // at API level. Jump for 10 times, verify that it's still at the last one and didn't wrap around.
             for (var i = 0; i < 10; i++) {
-                appContainer.selectNext(true); // true == isAutoRepeat
+                desktopSpread.selectNext(true); // true == isAutoRepeat
                 wait(0); // Trigger the event loop to make sure all the things happen
             }
-            tryCompare(appRepeater, "highlightedIndex", 6)
+            tryCompare(spreadRepeater, "highlightedIndex", 6)
 
             // Now release it once, and verify that it does wrap around with an additional Tab press
             keyRelease(Qt.Key_Tab);
             keyClick(Qt.Key_Tab);
-            tryCompare(appRepeater, "highlightedIndex", 0)
+            tryCompare(spreadRepeater, "highlightedIndex", 0)
 
             // Release control, check if spread disappears
             keyRelease(Qt.Key_Control)
-            tryCompare(desktopStage, "state", "")
+            tryCompare(desktopSpread, "state", "")
 
             // Make sure that after wrapping around once, we have the same one focused as at the beginning
-            tryCompare(focused.session.surface, "activeFocus", true)
+            tryCompare(focused.session.lastSurface, "activeFocus", true)
         }
 
         function test_altBackTabNavigation() {
             loadDesktopShellWithApps();
 
-            var appRepeater = findInvisibleChild(shell, "appRepeater");
-            verify(appRepeater !== null);
+            var spreadRepeater = findInvisibleChild(shell, "spreadRepeater");
+            verify(spreadRepeater !== null);
 
             keyPress(Qt.Key_Control)
             keyClick(Qt.Key_Tab);
-            tryCompare(appRepeater, "highlightedIndex", 1);
+            tryCompare(spreadRepeater, "highlightedIndex", 1);
 
             keyClick(Qt.Key_Tab);
-            tryCompare(appRepeater, "highlightedIndex", 2);
+            tryCompare(spreadRepeater, "highlightedIndex", 2);
 
             keyClick(Qt.Key_Tab);
-            tryCompare(appRepeater, "highlightedIndex", 3);
+            tryCompare(spreadRepeater, "highlightedIndex", 3);
 
             keyClick(Qt.Key_Tab);
-            tryCompare(appRepeater, "highlightedIndex", 4);
+            tryCompare(spreadRepeater, "highlightedIndex", 4);
 
             keyClick(Qt.Key_Backtab);
-            tryCompare(appRepeater, "highlightedIndex", 3);
+            tryCompare(spreadRepeater, "highlightedIndex", 3);
 
             keyClick(Qt.Key_Backtab);
-            tryCompare(appRepeater, "highlightedIndex", 2);
+            tryCompare(spreadRepeater, "highlightedIndex", 2);
 
             keyClick(Qt.Key_Backtab);
-            tryCompare(appRepeater, "highlightedIndex", 1);
+            tryCompare(spreadRepeater, "highlightedIndex", 1);
 
             keyRelease(Qt.Key_Control);
         }
@@ -1503,20 +1533,20 @@ Rectangle {
         function test_highlightFollowsMouse() {
             loadDesktopShellWithApps()
 
-            var appRepeater = findInvisibleChild(shell, "appRepeater");
-            verify(appRepeater !== null);
+            var spreadRepeater = findInvisibleChild(shell, "spreadRepeater");
+            verify(spreadRepeater !== null);
 
             keyPress(Qt.Key_Control)
             keyClick(Qt.Key_Tab);
 
-            tryCompare(appRepeater, "highlightedIndex", 1);
+            tryCompare(spreadRepeater, "highlightedIndex", 1);
 
             var x = 0;
             var y = shell.height * .75;
             mouseMove(shell, x, y)
 
             for (var i = 0; i < 7; i++) {
-                while (appRepeater.highlightedIndex != i && x <= 4000) {
+                while (spreadRepeater.highlightedIndex != i && x <= 4000) {
                     x+=10;
                     mouseMove(shell, x, y)
                     wait(0); // spin the loop so bindings get evaluated
@@ -1531,8 +1561,8 @@ Rectangle {
         function test_closeFromSpread() {
             loadDesktopShellWithApps()
 
-            var appRepeater = findInvisibleChild(shell, "appRepeater");
-            verify(appRepeater !== null);
+            var spreadRepeater = findInvisibleChild(shell, "spreadRepeater");
+            verify(spreadRepeater !== null);
 
             keyPress(Qt.Key_Control)
             keyClick(Qt.Key_Tab);
@@ -1540,14 +1570,14 @@ Rectangle {
             appRemovedSpy.clear();
 
             var closedAppId = ApplicationManager.get(2).appId;
-            var appDelegate2 = appRepeater.itemAt(2);
-            var closeMouseArea = findChild(appDelegate2, "closeMouseArea");
+            var spreadDelegate2 = spreadRepeater.itemAt(2);
+            var closeMouseArea = findChild(spreadDelegate2, "closeMouseArea");
 
             // Move the mosue over tile 2 and verify the close button becomes visible
             var x = 0;
             var y = shell.height * .5;
             mouseMove(shell, x, y)
-            while (appRepeater.highlightedIndex !== 2 && x <= 4000) {
+            while (spreadRepeater.highlightedIndex !== 2 && x <= 4000) {
                 x+=10;
                 mouseMove(shell, x, y)
                 wait(0); // spin the loop so bindings get evaluated
@@ -1574,32 +1604,35 @@ Rectangle {
         function test_selectFromSpreadWithMouse(data) {
             loadDesktopShellWithApps()
 
-            var appRepeater = findInvisibleChild(shell, "appRepeater");
-            verify(appRepeater !== null);
+            var stage = findChild(shell, "stage");
+            var spread = findChild(stage, "spread");
+            waitForRendering(spread)
+
+            var spreadRepeater = findInvisibleChild(shell, "spreadRepeater");
+            verify(spreadRepeater !== null);
 
             keyPress(Qt.Key_Control)
             keyClick(Qt.Key_Tab);
 
             var focusAppId = ApplicationManager.get(2).appId;
-            var appDelegate2 = appRepeater.itemAt(2);
-            var decoratedWindow = findChild(appDelegate2, "decoratedWindow");
-            var stage = findChild(shell, "stage");
+            var spreadDelegate2 = spreadRepeater.itemAt(2);
+            var clippedSpreadDelegate = findChild(spreadDelegate2, "clippedSpreadDelegate");
 
-            tryCompare(stage, "state", "altTab");
+            tryCompare(spread, "state", "altTab");
 
             // Move the mouse over tile 2 and verify the highlight becomes visible
             var x = 0;
             var y = shell.height * (data.tileInfo ? .95 : 0.5)
             mouseMove(shell, x, y)
-            while (appRepeater.highlightedIndex !== 2 && x <= 4000) {
+            while (spreadRepeater.highlightedIndex !== 2 && x <= 4000) {
                 x+=10;
                 mouseMove(shell, x, y)
                 wait(0); // spin the loop so bindings get evaluated
             }
-            tryCompare(decoratedWindow, "highlightShown", true);
+            tryCompare(clippedSpreadDelegate, "highlightShown", true);
 
             // Click the tile
-            mouseClick(decoratedWindow, decoratedWindow.width / 2, decoratedWindow.height / 2)
+            mouseClick(clippedSpreadDelegate, clippedSpreadDelegate.width / 2, clippedSpreadDelegate.height / 2)
 
             // Verify that we left the spread and app2 is the focused one now
             tryCompare(stage, "state", "");
@@ -1618,7 +1651,6 @@ Rectangle {
             keyClick(Qt.Key_Tab);
 
             var spreadFlickable = findChild(shell, "spreadFlickable")
-            print("have flickable", spreadFlickable, spreadFlickable.contentX)
 
             compare(spreadFlickable.contentX, 0);
 
@@ -1642,6 +1674,308 @@ Rectangle {
             tryCompare(spreadFlickable, "contentX", 0);
 
             keyRelease(Qt.Key_Control);
+        }
+
+        // This makes sure the hoverMouseArea is set to invisible AND disabled
+        // when not needed. Otherwise it'll eat mouse hover events for the rest of the shell/apps
+        function test_hoverMouseAreaDisabledAndInvisible() {
+            loadDesktopShellWithApps()
+
+            var hoverMouseArea = findChild(shell, "hoverMouseArea");
+            tryCompare(hoverMouseArea, "enabled", false)
+            tryCompare(hoverMouseArea, "visible", false)
+
+            keyPress(Qt.Key_Control)
+            keyClick(Qt.Key_Tab);
+
+            tryCompare(hoverMouseArea, "enabled", true)
+            tryCompare(hoverMouseArea, "visible", true)
+
+            keyRelease(Qt.Key_Control)
+
+            tryCompare(hoverMouseArea, "enabled", false)
+            tryCompare(hoverMouseArea, "visible", false)
+        }
+
+        function test_workspacePreviewsHighlightedApp() {
+            loadDesktopShellWithApps()
+
+            var targetZ = ApplicationManager.count + 1;
+
+            var spreadRepeater = findInvisibleChild(shell, "spreadRepeater");
+            verify(spreadRepeater !== null);
+
+            var appRepeater = findInvisibleChild(shell, "appRepeater");
+            verify(appRepeater !== null);
+
+            keyPress(Qt.Key_Control)
+            keyClick(Qt.Key_Tab);
+
+            tryCompare(spreadRepeater, "highlightedIndex", 1);
+            tryCompare(appRepeater.itemAt(1), "z", targetZ)
+
+            var x = 0;
+            var y = shell.height * .75;
+            mouseMove(shell, x, y)
+
+            for (var i = 0; i < 7; i++) {
+                while (spreadRepeater.highlightedIndex != i && x <= 4000) {
+                    tryCompare(appRepeater.itemAt(spreadRepeater.highlightedIndex), "z", targetZ)
+                    x+=10;
+                    mouseMove(shell, x, y)
+                    wait(0); // spin the loop so bindings get evaluated
+                }
+            }
+
+            verify(y < 4000);
+
+            keyRelease(Qt.Key_Control);
+        }
+
+        function test_focusAppFromLauncherExitsSpread() {
+            loadDesktopShellWithApps()
+
+            var desktopSpread = findChild(shell, "spread");
+            var launcher = findChild(shell, "launcher");
+            var bfb = findChild(launcher, "buttonShowDashHome");
+
+            keyPress(Qt.Key_Control)
+            keyClick(Qt.Key_Tab);
+
+            tryCompare(desktopSpread, "state", "altTab")
+
+            revealLauncherByEdgePushWithMouse();
+            tryCompare(launcher, "x", 0);
+            mouseMove(bfb, bfb.width / 2, bfb.height / 2)
+            waitForRendering(shell)
+
+            mouseClick(bfb, bfb.width / 2, bfb.height / 2)
+            tryCompare(launcher, "state", "")
+            tryCompare(desktopSpread, "state", "")
+
+            tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash")
+
+            keyRelease(Qt.Key_Control);
+        }
+
+        // regression test for http://pad.lv/1443319
+        function test_closeMaximizedAndRestart() {
+            loadDesktopShellWithApps();
+
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+            var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
+
+            tryCompare(appDelegate, "state", "normal");
+            tryCompare(PanelState, "buttonsVisible", false)
+
+            mouseClick(maximizeButton, maximizeButton.width / 2, maximizeButton.height / 2);
+            tryCompare(appDelegate, "state", "maximized");
+            tryCompare(PanelState, "buttonsVisible", true)
+
+            ApplicationManager.stopApplication(appId);
+            tryCompare(PanelState, "buttonsVisible", false)
+
+            ApplicationManager.startApplication(appId);
+            tryCompare(PanelState, "buttonsVisible", true)
+        }
+
+        function test_newAppHasValidGeometry() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater");
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+
+            var resizeArea = findChild(appDelegate, "windowResizeArea");
+            var priv = findInvisibleChild(resizeArea, "priv");
+
+            // Make sure windows are at 0,0 or greater and they have a size that's > 0
+            compare(priv.normalX >= 0, true)
+            compare(priv.normalY >= 0, true)
+            compare(priv.normalWidth > 0, true)
+            compare(priv.normalHeight > 0, true)
+        }
+
+        // bug http://pad.lv/1431566
+        function test_switchToStagedHidesPanelButtons() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+            var panelButtons = findChild(shell, "panelWindowControlButtons")
+
+            tryCompare(appDelegate, "state", "normal");
+            tryCompare(panelButtons, "visible", false);
+
+            appDelegate.maximize(false);
+
+            shell.usageScenario = "phone";
+            waitForRendering(shell);
+            tryCompare(panelButtons, "visible", false);
+        }
+
+        function test_lockingGreeterHidesPanelButtons() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+            var panelButtons = findChild(shell, "panelWindowControlButtons")
+
+            tryCompare(appDelegate, "state", "normal");
+            tryCompare(panelButtons, "visible", false);
+
+            appDelegate.maximize(false);
+
+            LightDM.Greeter.showGreeter();
+            waitForRendering(shell);
+            tryCompare(panelButtons, "visible", false);
+        }
+
+        function test_cantMoveWindowUnderPanel() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appDelegate = appRepeater.itemAt(0);
+
+            mousePress(appDelegate, appDelegate.width / 2, units.gu(1))
+            mouseMove(appDelegate, appDelegate.width / 2, -units.gu(100))
+
+            compare(appDelegate.y >= PanelState.panelHeight, true);
+        }
+
+        function test_restoreWindowStateFixesIfUnderPanel() {
+            loadDesktopShellWithApps();
+            var appRepeater = findChild(shell, "appRepeater")
+            var appId = ApplicationManager.get(0).appId;
+            var appDelegate = appRepeater.itemAt(0);
+
+            // Move it under the panel programmatically (might happen later with an alt+drag)
+            appDelegate.y = -units.gu(10)
+
+            ApplicationManager.stopApplication(appId)
+            ApplicationManager.startApplication(appId)
+            waitForRendering(shell)
+
+            // Make sure the newly started one is at index 0 again
+            tryCompare(ApplicationManager.get(0), "appId", appId);
+
+            appDelegate = appRepeater.itemAt(0);
+            compare(appDelegate.y >= PanelState.panelHeight, true);
+        }
+
+        function test_lifecyclePolicyForNonTouchApp_data() {
+            return [
+                {tag: "phone", formFactor: "phone", usageScenario: "phone"},
+                {tag: "tablet", formFactor: "tablet", usageScenario: "tablet"}
+            ]
+        }
+
+        function test_lifecyclePolicyForNonTouchApp(data) {
+            loadShell(data.formFactor);
+            shell.usageScenario = data.usageScenario;
+
+            // Add two main stage apps, the second in order to suspend the first.
+            // LibreOffice has isTouchApp set to false by our mocks.
+            var app1 = ApplicationManager.startApplication("libreoffice");
+            waitUntilAppWindowIsFullyLoaded(app1);
+            var app2 = ApplicationManager.startApplication("gallery-app");
+            waitUntilAppWindowIsFullyLoaded(app2);
+
+            // Sanity checking
+            compare(app1.stage, ApplicationInfoInterface.MainStage);
+            compare(app2.stage, ApplicationInfoInterface.MainStage);
+            verify(!app1.isTouchApp);
+            verify(!app1.session.lastSurface.activeFocus);
+
+            // Make sure app1 is exempt with a requested suspend
+            verify(app1.exemptFromLifecycle);
+            compare(app1.requestedState, ApplicationInfoInterface.RequestedSuspended);
+        }
+
+        function test_lifecyclePolicyExemption_data() {
+            return [
+                {tag: "phone", formFactor: "phone", usageScenario: "phone"},
+                {tag: "tablet", formFactor: "tablet", usageScenario: "tablet"}
+            ]
+        }
+
+        function test_lifecyclePolicyExemption(data) {
+            loadShell(data.formFactor);
+            shell.usageScenario = data.usageScenario;
+
+            GSettingsController.setLifecycleExemptAppids(["webbrowser-app"]);
+
+            // Add two main stage apps, the second in order to suspend the first
+            var app1 = ApplicationManager.startApplication("webbrowser-app");
+            waitUntilAppWindowIsFullyLoaded(app1);
+            var app2 = ApplicationManager.startApplication("gallery-app");
+            waitUntilAppWindowIsFullyLoaded(app2);
+
+            // Sanity checking
+            compare(app1.stage, ApplicationInfoInterface.MainStage);
+            compare(app2.stage, ApplicationInfoInterface.MainStage);
+            verify(!app1.session.lastSurface.activeFocus);
+
+            // Make sure app1 is exempt with a requested suspend
+            verify(app1.exemptFromLifecycle);
+            compare(app1.requestedState, ApplicationInfoInterface.RequestedSuspended);
+        }
+
+        function test_switchToStagedForcesLegacyAppClosing_data() {
+            return [
+                {tag: "forceClose", replug: false },
+                {tag: "replug", replug: true }
+            ];
+        }
+
+        function test_switchToStagedForcesLegacyAppClosing(data) {
+            loadShell("desktop")
+            shell.usageScenario = "desktop"
+            waitForRendering(shell);
+
+            ApplicationManager.startApplication("camera-app")
+
+            shell.usageScenario = "phone"
+            waitForRendering(shell);
+
+            // No legacy app running yet... Popup must *not* show.
+            var popup = findChild(root, "modeSwitchWarningDialog");
+            compare(popup, null);
+
+            shell.usageScenario = "desktop"
+            waitForRendering(shell);
+
+            // Now start a legacy app
+            ApplicationManager.startApplication("libreoffice")
+
+            shell.usageScenario = "phone"
+            waitForRendering(shell);
+
+            // The popup must appear now
+            popup = findChild(root, "modeSwitchWarningDialog");
+            compare(popup !== null, true);
+
+            if (data.replug) {
+                shell.usageScenario = "desktop"
+                waitForRendering(shell);
+
+            } else {
+                var forceCloseButton = findChild(popup, "forceCloseButton");
+                mouseClick(forceCloseButton, forceCloseButton.width / 2, forceCloseButton.height / 2);
+                waitForRendering(root);
+            }
+
+            // Popup must be gone now
+            popup = findChild(root, "modeSwitchWarningDialog");
+            compare(popup === null, true);
+
+            if (data.replug) {
+                // Libreoffice must still be running
+                compare(ApplicationManager.findApplication("libreoffice") !== null, true);
+            } else {
+                // Libreoffice must be gone now
+                compare(ApplicationManager.findApplication("libreoffice") === null, true);
+            }
         }
     }
 }

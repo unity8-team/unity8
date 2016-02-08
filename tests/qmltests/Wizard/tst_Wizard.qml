@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.3
+import QtQuick 2.4
 import QtTest 1.0
 import AccountsService 0.1
 import MeeGo.QOfono 0.2
 import QMenuModel 0.1
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.SystemSettings.SecurityPrivacy 1.0
 import Unity.Test 0.1 as UT
 import Wizard 0.1
@@ -96,7 +96,7 @@ Item {
     }
 
     Component.onCompleted: {
-        Theme.name = "Ubuntu.Components.Themes.SuruGradient";
+        theme.name = "Ubuntu.Components.Themes.SuruGradient";
         setup();
     }
 
@@ -129,6 +129,7 @@ Item {
 
             var pages = findChild(wizard, "wizardPages");
             var security = findInvisibleChild(pages, "securityPrivacy");
+            security.setSecurity("", "", UbuntuSecurityPrivacyPanel.Swipe);
             setSecuritySpy.target = security;
 
             setup();
@@ -158,12 +159,15 @@ Item {
             return stack.currentPage;
         }
 
-        function goToPage(name, skipSim, skipLocation) {
+        function goToPage(name, skipSim, skipLocation, skipReporting) {
             if (skipSim === undefined) {
                 skipSim = false;
             }
             if (skipLocation === undefined) {
                 skipLocation = false;
+            }
+            if (skipReporting === undefined) {
+                skipReporting = false;
             }
 
             var page = waitForPage("languagePage");
@@ -191,9 +195,11 @@ Item {
                 tap(findChild(page, "forwardButton"));
             }
 
-            page = waitForPage("reportingPage");
-            if (name === page.objectName) return page;
-            tap(findChild(page, "forwardButton"));
+            if (!skipReporting) {
+                page = waitForPage("reportingPage");
+                if (name === page.objectName) return page;
+                tap(findChild(page, "forwardButton"));
+            }
 
             page = waitForPage("finishedPage");
             if (name === page.objectName) return page;
@@ -310,6 +316,20 @@ Item {
             }
         }
 
+        function test_passwdSkipIfSet() {
+            var page = goToPage("simPage");
+
+            // Set password type to non-swipe
+            var pages = findChild(wizard, "wizardPages");
+            var security = findInvisibleChild(pages, "securityPrivacy");
+            security.setSecurity("", "", UbuntuSecurityPrivacyPanel.Passphrase);
+            compare(security.securityType, UbuntuSecurityPrivacyPanel.Passphrase);
+
+            // Make sure that moving from sim page lands on wifi page
+            tap(findChild(page, "forwardButton"));
+            waitForPage("wifiPage"); // thus skipping passwdPage
+        }
+
         function test_passwdPasscode() {
             var page = goToPage("passwdPage");
 
@@ -336,8 +356,6 @@ Item {
             // now finish up
             tap(findChild(page, "forwardButton"));
             page = waitForPage("locationPage");
-            tap(findChild(page, "forwardButton"));
-            page = waitForPage("reportingPage");
             tap(findChild(page, "forwardButton"));
             page = waitForPage("finishedPage");
             tap(findChild(page, "forwardButton"));
@@ -390,8 +408,6 @@ Item {
             tap(findChild(page, "forwardButton"));
             page = waitForPage("locationPage");
             tap(findChild(page, "forwardButton"));
-            page = waitForPage("reportingPage");
-            tap(findChild(page, "forwardButton"));
             page = waitForPage("finishedPage");
             tap(findChild(page, "forwardButton"));
 
@@ -402,7 +418,7 @@ Item {
         }
 
         function test_passwdSwipe() {
-            goToPage(null);
+            goToPage(null, false, false, true);
 
             tryCompare(setSecuritySpy, "count", 1);
             compare(setSecuritySpy.signalArguments[0][0], "");
@@ -412,12 +428,12 @@ Item {
 
         function test_locationSkipNoPath() {
             AccountsService.hereLicensePath = "";
-            goToPage("reportingPage", false, true);
+            goToPage("finishedPage", false, true, true);
         }
 
         function test_locationSkipNoFiles() {
             AccountsService.hereLicensePath = Qt.resolvedUrl("nolicenses");
-            goToPage("reportingPage", false, true);
+            goToPage("finishedPage", false, true, true);
         }
 
         function test_locationWaitOnPath() {
@@ -434,7 +450,7 @@ Item {
             compare(stack.currentPage.skipValid, false);
 
             AccountsService.hereLicensePath = "";
-            waitForPage("reportingPage");
+            waitForPage("finishedPage", false, false, true);
         }
 
         function test_locationGpsOnly() {

@@ -29,11 +29,12 @@ UsersModelPrivate::UsersModelPrivate(UsersModel* parent)
   : q_ptr(parent)
 {
     QSettings settings(QDir::homePath() + "/.unity8-greeter-demo", QSettings::NativeFormat);
-    QStringList users = settings.value("users", QStringList() << qgetenv("USER")).toStringList();
+    QStringList users = settings.value(QStringLiteral("users"), QStringList() << qgetenv("USER")).toStringList();
 
+    entries.reserve(users.count());
     Q_FOREACH(const QString &user, users)
     {
-        QString name = settings.value(user + "/name", user[0].toUpper() + user.mid(1)).toString();
+        QString name = settings.value(user + "/name", user).toString();
         entries.append({user, name, 0, 0, false, false, 0, 0});
     }
 }

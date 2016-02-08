@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2014-2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 
 import Unity.Application 0.1
 import Unity.Session 0.1
-import Ubuntu.Components 1.1
 import GlobalShortcut 1.0
+import Ubuntu.Components 1.3
+import Unity.Platform 1.0
+import Utils 0.1
 import "../Greeter"
 
 Item {
@@ -44,15 +46,40 @@ Item {
         d.showPowerDialog();
     }
 
+    onUsageScenarioChanged: {
+        if (usageScenario != "desktop" && legacyAppsModel.count > 0 && !d.modeSwitchWarningPopup) {
+            var comp = Qt.createComponent(Qt.resolvedUrl("ModeSwitchWarningDialog.qml"))
+            d.modeSwitchWarningPopup = comp.createObject(root, {model: legacyAppsModel});
+            d.modeSwitchWarningPopup.forceClose.connect(function() {
+                while (legacyAppsModel.count > 0) {
+                    ApplicationManager.stopApplication(legacyAppsModel.get(0).appId);
+                }
+                d.modeSwitchWarningPopup.hide();
+                d.modeSwitchWarningPopup.destroy();
+                d.modeSwitchWarningPopup = null;
+            })
+        } else if (usageScenario == "desktop" && d.modeSwitchWarningPopup) {
+            d.modeSwitchWarningPopup.hide();
+            d.modeSwitchWarningPopup.destroy();
+            d.modeSwitchWarningPopup = null;
+        }
+    }
+
+    ApplicationsFilterModel {
+        id: legacyAppsModel
+        applicationsModel: ApplicationManager
+        filterTouchApps: true
+    }
+
     GlobalShortcut { // reboot/shutdown dialog
         shortcut: Qt.Key_PowerDown
-        active: root.usageScenario === "desktop"
+        active: Platform.isPC
         onTriggered: root.unitySessionService.RequestShutdown()
     }
 
     GlobalShortcut { // reboot/shutdown dialog
         shortcut: Qt.Key_PowerOff
-        active: root.usageScenario === "desktop"
+        active: Platform.isPC
         onTriggered: root.unitySessionService.RequestShutdown()
     }
 
@@ -89,6 +116,8 @@ Item {
     QtObject {
         id: d // private stuff
         objectName: "dialogsPrivate"
+
+        property var modeSwitchWarningPopup: null
 
         function showPowerDialog() {
             if (!dialogLoader.active) {
@@ -269,5 +298,4 @@ Item {
             unitySessionService.endSession();
         }
     }
-
 }

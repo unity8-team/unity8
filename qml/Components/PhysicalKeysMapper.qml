@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import Powerd 0.1
+import Utils 0.1
 
 /*!
  \brief A mapper for the physical keys on the device
@@ -57,27 +58,35 @@ Item {
 
         property bool altPressed: false
         property bool altTabPressed: false
+
+        property var powerButtonPressStart: 0
+
+        // We need to eat ALT presses until we know what they're for (Alt+Tab or going to the app?)
+        // Once we know if an ALT keypress is for the app, we need to re-inject the pressed event for it
+        // but we must only do that once.
+        property bool altPressInjected: false
     }
 
-    Timer {
-        id: powerKeyLongPressTimer
-        interval: root.powerKeyLongPressTime
-        onTriggered: root.powerKeyLongPressed();
+    InputEventGenerator {
+        id: inputEventGenerator
     }
 
-    function onKeyPressed(event) {
-        if ((event.key == Qt.Key_PowerDown || event.key == Qt.Key_PowerOff)
-            && (!event.isAutoRepeat || !powerKeyLongPressTimer.running)) {
+    function onKeyPressed(event, currentEventTimestamp) {
+        if (d.altPressed && !d.altTabPressed && event.key !== Qt.Key_Tab && event.key !== Qt.Key_Alt && !d.altPressInjected) {
+            // ALT is pressed and another key that is not Tab has been received. Re-inject the alt pressed event
+            d.altPressInjected = true;
+            inputEventGenerator.generateKeyEvent(Qt.Key_Alt, true, Qt.NoModifier, currentEventTimestamp - 1, 56);
+        }
 
-            // FIXME: We only consider power key presses if the screen is
-            // on because of bugs 1410830/1409003.  The theory is that when
-            // those bugs are encountered, there is a >2s delay between the
-            // power press event and the power release event, which causes
-            // the shutdown dialog to appear on resume.  So to avoid that
-            // symptom while we investigate the root cause, we simply won't
-            // initiate any dialogs when the screen is off.
-            if (Powerd.status === Powerd.On) {
-                powerKeyLongPressTimer.restart();
+        if (event.key == Qt.Key_PowerDown || event.key == Qt.Key_PowerOff) {
+            if (event.isAutoRepeat) {
+                if (d.powerButtonPressStart > 0
+                        && currentEventTimestamp - d.powerButtonPressStart >= powerKeyLongPressTime) {
+                    d.powerButtonPressStart = 0;
+                    root.powerKeyLongPressed();
+                }
+            } else {
+                d.powerButtonPressStart = currentEventTimestamp;
             }
         } else if ((event.key == Qt.Key_MediaTogglePlayPause || event.key == Qt.Key_MediaPlay) && !event.isAutoRepeat) {
             event.accepted = callManager.handleMediaKey(false);
@@ -104,7 +113,12 @@ Item {
                 d.volumeUpKeyPressed = true;
             }
         } else if (event.key == Qt.Key_Alt || (root.controlInsteadOfAlt && event.key == Qt.Key_Control)) {
-            d.altPressed = true;
+            if (!d.altPressed || event.isAutoRepeat) {
+                // Only eat it if it's the first time we receive alt pressed (or if it's the autorepeat of the first press)
+                d.altPressed = true;
+                event.accepted = true;
+                d.altPressInjected = false;
+            }
         } else if (event.key == Qt.Key_Tab) {
             if (d.altPressed && !d.altTabPressed) {
                 d.altTabPressed = true;
@@ -113,9 +127,9 @@ Item {
         }
     }
 
-    function onKeyReleased(event) {
+    function onKeyReleased(event, currentEventTimestamp) {
         if (event.key == Qt.Key_PowerDown || event.key == Qt.Key_PowerOff) {
-            powerKeyLongPressTimer.stop();
+            d.powerButtonPressStart = 0;
             event.accepted = true;
         } else if (event.key == Qt.Key_VolumeDown) {
             if (!d.ignoreVolumeEvents) root.volumeDownTriggered();
@@ -126,9 +140,18 @@ Item {
             d.volumeUpKeyPressed = false;
             if (!d.volumeDownKeyPressed) d.ignoreVolumeEvents = false;
         } else if (event.key == Qt.Key_Alt || (root.controlInsteadOfAlt && event.key == Qt.Key_Control)) {
-            d.altPressed = false;
             if (d.altTabPressed) {
                 d.altTabPressed = false;
+                event.accepted = true;
+            } else if (d.altPressed && !d.altPressInjected) {
+                // Alt was released but nothing else. Let's inject a pressed event and also forward the release.
+                d.altPressInjected = true;
+                inputEventGenerator.generateKeyEvent(Qt.Key_Alt, true, Qt.AltModifer, currentEventTimestamp, 56);
+                d.altPressInjected = false;
+            }
+            d.altPressed = false;
+        } else if (event.key == Qt.Key_Tab) {
+            if (d.altTabPressed) {
                 event.accepted = true;
             }
         }

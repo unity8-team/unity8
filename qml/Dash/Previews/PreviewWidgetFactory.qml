@@ -15,7 +15,7 @@
  *
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 
 //! \brief This component loads the widgets based on widgetData["type"].
 
@@ -39,6 +39,12 @@ Loader {
 
     //! Set to true if the parent preview is displayed.
     property bool isCurrentPreview: false
+
+    //! Set margins width.
+    property real widgetMargins: status === Loader.Ready ? item.widgetMargins : units.gu(1)
+
+    /// The parent (vertical) flickable this widget is in (if any)
+    property var parentFlickable: null
 
     //! Triggered signal forwarded from the widgets.
     signal triggered(string widgetId, string actionId, var data)
@@ -79,6 +85,7 @@ Loader {
         item.isCurrentPreview = Qt.binding(function() { return root.isCurrentPreview } )
         item.expanded = Qt.binding(function() { return root.expanded } )
         item.scopeStyle = Qt.binding(function() { return root.scopeStyle } )
+        item.parentFlickable = Qt.binding(function() { return root.parentFlickable } )
     }
 
     Connections {

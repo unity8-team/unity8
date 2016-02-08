@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
 import Unity 0.2
 import ".."
 import "../../../qml/Dash"
 import "../../../qml/Components"
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
 
 Item {
@@ -70,6 +70,11 @@ Item {
             property Item header: findChild(genericScopeView, "scopePageHeader")
 
             function init() {
+                // Start from a clean scopes situation every test
+                scopes.clear();
+                scopes.load();
+                tryCompare(scopes, "loaded", true);
+
                 genericScopeView.scope = scopes.getScope(2);
                 shell.width = units.gu(120);
                 genericScopeView.categoryView.positionAtBeginning();
@@ -102,11 +107,12 @@ Item {
             {
                 var categoryListView = findChild(genericScopeView, "categoryListView");
                 waitForRendering(categoryListView);
-                while (!categoryListView.atYEnd) {
-                    mouseFlick(genericScopeView, genericScopeView.width/2, genericScopeView.height - units.gu(8),
-                               genericScopeView.width/2, genericScopeView.y)
-                    tryCompare(categoryListView, "moving", false);
-                }
+                tryCompareFunction(function() {
+                        mouseFlick(genericScopeView, genericScopeView.width/2, genericScopeView.height - units.gu(8),
+                                   genericScopeView.width/2, genericScopeView.y)
+                        tryCompare(categoryListView, "moving", false);
+                        return categoryListView.atYEnd;
+                    }, true);
             }
 
             function test_isActive() {
@@ -233,7 +239,7 @@ Item {
 
                 openPreview(4, 0);
 
-                compare(testCase.subPageLoader.count, 12, "There should only be 12 items in preview.");
+                compare(testCase.subPageLoader.count, 16, "There should only be 16 items in preview.");
 
                 closePreview();
             }
@@ -408,7 +414,7 @@ Item {
                 var previewListViewList = findChild(subPageLoader.item, "listView");
 
                 // flick to the next previews
-                tryCompare(testCase.subPageLoader, "count", 15);
+                tryCompare(testCase.subPageLoader, "count", 25);
                 for (var i = 1; i < testCase.subPageLoader.count; ++i) {
                     mouseFlick(testCase.subPageLoader.item, testCase.subPageLoader.width - units.gu(1),
                                                 testCase.subPageLoader.height / 2,
@@ -429,7 +435,7 @@ Item {
                 // open
                 tryCompare(testCase.subPageLoader, "open", false);
                 tryCompare(testCase.subPageLoader, "visible", false);
-                var settings = findChild(innerHeader, "settings_header_button");
+                var settings = findChild(innerHeader, "settings_button");
                 mouseClick(settings);
                 tryCompare(testCase.subPageLoader, "open", true);
                 tryCompareFunction(function() { return (String(subPageLoader.source)).indexOf("ScopeSettingsPage.qml") != -1; }, true);
@@ -482,7 +488,7 @@ Item {
                 mockScope.setName("Mock Scope");
                 mockScope.categories.setCount(2);
                 mockScope.categories.resultModel(0).setResultCount(50);
-                mockScope.categories.resultModel(1).setResultCount(15);
+                mockScope.categories.resultModel(1).setResultCount(25);
                 mockScope.categories.setLayout(0, "grid");
                 mockScope.categories.setLayout(1, "grid");
                 mockScope.categories.setHeaderLink(0, "");
@@ -500,7 +506,7 @@ Item {
                 mouseClick(seeAll0);
                 verify(category0.expanded);
                 tryCompare(category0, "height", category0.item.expandedHeight + seeAll0.height);
-                tryCompare(genericScopeView.categoryView, "contentY", units.gu(14));
+                tryCompare(genericScopeView.categoryView, "contentY", units.gu(13));
 
                 scrollToEnd();
 
@@ -524,7 +530,7 @@ Item {
                 mockScope.setId("mockScope");
                 mockScope.setName("Mock Scope");
                 mockScope.categories.setCount(2);
-                mockScope.categories.resultModel(0).setResultCount(15);
+                mockScope.categories.resultModel(0).setResultCount(25);
                 mockScope.categories.resultModel(1).setResultCount(50);
                 mockScope.categories.setLayout(0, "grid");
                 mockScope.categories.setLayout(1, "grid");
@@ -577,7 +583,7 @@ Item {
                 verify(innerHeader, "Could not find the inner header");
 
                 expectFail("Apps", "Click scope should not have a favorite button");
-                var favoriteAction = findChild(innerHeader, "favorite_header_button");
+                var favoriteAction = findChild(innerHeader, "favorite_button");
                 verify(favoriteAction, "Could not find the favorite action.");
                 mouseClick(favoriteAction);
 
@@ -660,6 +666,26 @@ Item {
                 var artShapeLoader = findChild(tile, "artShapeLoader");
                 var shape = findChildsByType(artShapeLoader, "UCUbuntuShape");
                 compare(shape.borderSource, undefined);
+            }
+
+            function test_clickScopeSizing() {
+                genericScopeView.scope = scopes.getScopeFromAll("clickscope");
+                waitForRendering(genericScopeView);
+
+                var categoryListView = findChild(genericScopeView, "categoryListView");
+                waitForRendering(categoryListView);
+
+                var categorypredefined = findChild(categoryListView, "dashCategorypredefined");
+                waitForRendering(categorypredefined);
+
+                var cardTool = findChild(categorypredefined, "cardTool");
+
+                compare(cardTool.cardWidth, units.gu(11));
+                shell.width = units.gu(46);
+                waitForRendering(genericScopeView);
+                compare(cardTool.cardWidth, units.gu(10));
+
+                shell.width = units.gu(120)
             }
         }
     }

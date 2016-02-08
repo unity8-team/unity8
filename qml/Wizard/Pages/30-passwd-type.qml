@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2014,2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.3
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0
+import QtQuick 2.4
+import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3
 import Ubuntu.SystemSettings.SecurityPrivacy 1.0
 import ".." as LocalComponents
 
@@ -38,6 +38,11 @@ LocalComponents.Page {
 
     title: i18n.tr("Lock security")
     forwardButtonSourceComponent: forwardButton
+
+    // If the user has set a password some other way (via ubuntu-device-flash
+    // or this isn't the first time the wizard has been run, etc).  We can't
+    // properly set the password again, so let's not pretend we can.
+    skip: securityPrivacy.securityType !== UbuntuSecurityPrivacyPanel.Swipe
 
     function indexToMethod(index) {
         if (index === 0)
@@ -111,13 +116,13 @@ LocalComponents.Page {
 
             Component.onCompleted: {
                 // A visible selected background looks bad in ListItem widgets with our theme
-                originalBackground = Theme.palette.selected.background
-                Theme.palette.selected.background = "transparent"
+                originalBackground = theme.palette.selected.background
+                theme.palette.selected.background = "transparent"
             }
 
             Component.onDestruction: {
                 // Restore original theme background
-                Theme.palette.selected.background = originalBackground
+                theme.palette.selected.background = originalBackground
             }
         }
     }

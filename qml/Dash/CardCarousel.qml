@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
-import Ubuntu.Components 0.1
+import QtQuick 2.4
+import Ubuntu.Components 1.3
 import "../Components"
 
 DashRenderer {
@@ -68,17 +68,8 @@ DashRenderer {
                 item.fontScale = Qt.binding(function() { return carousel.fontScale; });
                 item.showHeader = Qt.binding(function() { return loader.explicitlyScaled; });
                 item.titleAlignment = Qt.binding(function() { return cardTool.titleAlignment; });
-                item.artShapeBorderSource = "none";
+                item.artShapeStyle = "shadow";
                 item.scopeStyle = cardCarousel.scopeStyle;
-            }
-
-            BorderImage {
-                anchors {
-                    fill: parent
-                    margins: -units.gu(1)
-                }
-                z: -1
-                source: "graphics/carousel_dropshadow.sci"
             }
         }
     }

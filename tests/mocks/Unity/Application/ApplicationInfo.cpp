@@ -41,6 +41,8 @@ ApplicationInfo::ApplicationInfo(const QString &appId, QObject *parent)
             Qt::InvertedLandscapeOrientation)
     , m_rotatesWindowContents(false)
     , m_requestedState(RequestedRunning)
+    , m_isTouchApp(true)
+    , m_exemptFromLifecycle(false)
     , m_manualSurfaceCreation(false)
 {
 }
@@ -58,6 +60,8 @@ ApplicationInfo::ApplicationInfo(QObject *parent)
             Qt::InvertedLandscapeOrientation)
     , m_rotatesWindowContents(false)
     , m_requestedState(RequestedRunning)
+    , m_isTouchApp(true)
+    , m_exemptFromLifecycle(false)
     , m_manualSurfaceCreation(false)
 {
 }
@@ -71,8 +75,7 @@ void ApplicationInfo::createSession()
 {
     if (m_session || state() == ApplicationInfo::Stopped) { return; }
 
-    QUrl screenshotUrl = QString("file://%1").arg(m_screenshotFileName);
-    setSession(SessionManager::singleton()->createSession(appId(), screenshotUrl));
+    setSession(SessionManager::singleton()->createSession(appId(), m_screenshotFileName));
 }
 
 void ApplicationInfo::destroySession()
@@ -100,8 +103,8 @@ void ApplicationInfo::setSession(Session* session)
         m_session->setApplication(this);
         m_session->setParent(this);
         SessionManager::singleton()->registerSession(m_session);
-        connect(m_session, &Session::surfaceChanged,
-                this, &ApplicationInfo::onSessionSurfaceChanged);
+        connect(m_session, &Session::surfaceAdded,
+                this, &ApplicationInfo::onSessionSurfaceAdded);
 
         if (!m_manualSurfaceCreation) {
             QTimer::singleShot(500, m_session, &Session::createSurface);
@@ -113,8 +116,7 @@ void ApplicationInfo::setSession(Session* session)
 
 void ApplicationInfo::setIconId(const QString &iconId)
 {
-    setIcon(QString("file://%1/graphics/applicationIcons/%2@18.png")
-            .arg(qmlDirectory())
+    setIcon(QString("../../tests/graphics/applicationIcons/%2@18.png")
             .arg(iconId));
 }
 
@@ -123,21 +125,18 @@ void ApplicationInfo::setScreenshotId(const QString &screenshotId)
     QString screenshotFileName;
 
     if (screenshotId.endsWith(".svg")) {
-        screenshotFileName = QString("%1/Dash/graphics/phone/screenshots/%2")
-            .arg(qmlDirectory())
+        screenshotFileName = QString("qrc:///Unity/Application/screenshots/%2")
             .arg(screenshotId);
     } else {
-        screenshotFileName = QString("%1/Dash/graphics/phone/screenshots/%2@12.png")
-            .arg(qmlDirectory())
+        screenshotFileName = QString("qrc:///Unity/Application/screenshots/%2@12.png")
             .arg(screenshotId);
     }
 
     if (screenshotFileName != m_screenshotFileName) {
         m_screenshotFileName = screenshotFileName;
 
-        QUrl screenshotUrl = QString("file://%1").arg(m_screenshotFileName);
         if (m_session) {
-            m_session->setScreenshot(screenshotUrl);
+            m_session->setScreenshot(screenshotFileName);
         }
     }
 }
@@ -245,7 +244,17 @@ void ApplicationInfo::setRequestedState(RequestedState value)
     }
 }
 
-void ApplicationInfo::onSessionSurfaceChanged(MirSurface* surface)
+bool ApplicationInfo::isTouchApp() const
+{
+    return m_isTouchApp;
+}
+
+void ApplicationInfo::setIsTouchApp(bool isTouchApp)
+{
+    m_isTouchApp = isTouchApp;
+}
+
+void ApplicationInfo::onSessionSurfaceAdded(MirSurface* surface)
 {
     if (surface != nullptr && m_state == Starting) {
         if (m_requestedState == RequestedRunning) {
@@ -253,5 +262,19 @@ void ApplicationInfo::onSessionSurfaceChanged(MirSurface* surface)
         } else {
             setState(Suspended);
         }
+    }
+}
+
+bool ApplicationInfo::exemptFromLifecycle() const
+{
+    return m_exemptFromLifecycle;
+}
+
+void ApplicationInfo::setExemptFromLifecycle(bool exemptFromLifecycle)
+{
+    if (m_exemptFromLifecycle != exemptFromLifecycle)
+    {
+        m_exemptFromLifecycle = exemptFromLifecycle;
+        Q_EMIT exemptFromLifecycleChanged(m_exemptFromLifecycle);
     }
 }

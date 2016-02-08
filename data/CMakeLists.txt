@@ -13,9 +13,15 @@ install(FILES
 
 # install dash icon
 install(FILES
-    unity8-dash.png
+    ${CMAKE_CURRENT_SOURCE_DIR}/${DASH_APP}.png
+    DESTINATION ${SHELL_APP_DIR}/Dash/
+    )
+
+install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/${DASH_APP}.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/suru/apps/256
     )
 
 install(FILES com.canonical.Unity8.gschema.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas)
 install(FILES unity8-dash.url-dispatcher DESTINATION ${CMAKE_INSTALL_DATADIR}/url-dispatcher/urls)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version DESTINATION ${CMAKE_INSTALL_LOCALSTATEDIR}/lib/unity8)

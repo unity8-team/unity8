@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QtConcurrent>
 
 class ScreenGrabber: public QObject
 {
@@ -29,16 +30,20 @@ public:
     ~ScreenGrabber() = default;
 
 public Q_SLOTS:
-    void captureAndSave();
+    void captureAndSave(int angle = 0);
 
 Q_SIGNALS:
     void screenshotSaved(const QString &filename);
+
+private Q_SLOTS:
+    void onScreenshotSaved();
 
 private:
     QString makeFileName() const;
     QString getFormat() const;
     QString fileNamePrefix;
     int screenshotQuality = -1; // default quality for the format
+    QFutureWatcher<QString> m_watcher;
 };
 
 #endif

@@ -14,16 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import "../Components"
 
 DashRenderer {
     id: root
 
+    readonly property real defaultMinimumHorizontalSpacing: units.gu(1)
     readonly property int collapsedRows: {
         if (!cardTool || !cardTool.template || typeof cardTool.template["collapsed-rows"] != "number") return 2;
         return cardTool.template["collapsed-rows"];
     }
+    property string artShapeStyle: "inset";
+    property string backgroundShapeStyle: "inset";
+    property alias minimumHorizontalSpacing: grid.minimumHorizontalSpacing
 
     expandedHeight: grid.totalContentHeight
     collapsedHeight: Math.min(grid.contentHeightForRows(collapsedRows, grid.cellHeight), expandedHeight)
@@ -43,7 +47,7 @@ DashRenderer {
     ResponsiveGridView {
         id: grid
         anchors.fill: parent
-        minimumHorizontalSpacing: units.gu(1)
+        minimumHorizontalSpacing: root.defaultMinimumHorizontalSpacing
         delegateWidth: cardTool.cardWidth
         delegateHeight: cardTool.cardHeight
         verticalSpacing: units.gu(1)
@@ -69,6 +73,8 @@ DashRenderer {
                     item.components = Qt.binding(function() { return cardTool.components; });
                     item.titleAlignment = Qt.binding(function() { return cardTool.titleAlignment; });
                     item.scopeStyle = root.scopeStyle;
+                    item.artShapeStyle = root.artShapeStyle;
+                    item.backgroundShapeStyle = root.backgroundShapeStyle;
                 }
                 Connections {
                     target: loader.item

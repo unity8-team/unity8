@@ -614,7 +614,7 @@ void DirectionalDragAreaPrivate::setStatus(Status newStatus)
     }
 }
 
-void DirectionalDragAreaPrivate::setPublicPos(const QPointF &point)
+void DirectionalDragAreaPrivate::setPublicPos(const QPointF point)
 {
     bool xChanged = publicPos.x() != point.x();
     bool yChanged = publicPos.y() != point.y();
@@ -653,7 +653,7 @@ void DirectionalDragAreaPrivate::setPublicPos(const QPointF &point)
     }
 }
 
-void DirectionalDragAreaPrivate::setPublicScenePos(const QPointF &point)
+void DirectionalDragAreaPrivate::setPublicScenePos(const QPointF point)
 {
     bool xChanged = publicScenePos.x() != point.x();
     bool yChanged = publicScenePos.y() != point.y();
@@ -715,8 +715,14 @@ void DirectionalDragArea::itemChange(ItemChange change, const ItemChangeData &va
             value.window->installEventFilter(TouchRegistry::instance());
 
             // TODO: Handle window->screen() changes (ie window changing screens)
-            qreal pixelsPerMm = value.window->screen()->physicalDotsPerInch() / 25.4;
-            d->setPixelsPerMm(pixelsPerMm);
+
+            qreal pixelsPerInch = value.window->screen()->physicalDotsPerInch();
+            if (pixelsPerInch < 0) {
+                // It can return garbage when run in a XVFB server (Virtual Framebuffer 'fake' X server)
+                pixelsPerInch = 72;
+            }
+
+            d->setPixelsPerMm(pixelsPerInch / 25.4);
         }
     }
 }
@@ -863,7 +869,7 @@ void DirectionalDragAreaPrivate::updateSceneDirectionVector()
     sceneDirectionVector = sceneDirection - sceneOrigin;
 }
 
-qreal DirectionalDragAreaPrivate::projectOntoDirectionVector(const QPointF &sceneVector) const
+qreal DirectionalDragAreaPrivate::projectOntoDirectionVector(const QPointF sceneVector) const
 {
     // same as dot product as sceneDirectionVector is a unit vector
     return  sceneVector.x() * sceneDirectionVector.x() +

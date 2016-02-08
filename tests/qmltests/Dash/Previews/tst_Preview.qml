@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Canonical Ltd.
+ * Copyright 2014,2015 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
 import "../../../../qml/Dash/Previews"
 import Unity.Test 0.1 as UT
@@ -24,7 +24,7 @@ Rectangle {
     id: root
     width: units.gu(60)
     height: units.gu(60)
-    color: Theme.palette.selected.background
+    color: theme.palette.selected.background
 
     Item {
         id: shell
@@ -121,15 +121,14 @@ Rectangle {
             var moreLessButton = findChild(widget, "moreLessButton");
             mouseClick(moreLessButton);
 
-            // Make sure the combo is growing
-            tryCompareFunction(function () { return widget.height > 2 * initialWidgetHeight; }, true);
-
             // Wait for the combo to stop growing
-            tryCompareFunction(function () { var currentWidgetHeight = widget.height; wait(200); return currentWidgetHeight === widget.height;}, true);
+            tryCompare(widget, "height", units.gu(15));
 
             // Make sure the combo bottom is on the viewport
-            var bottomLeft = preview.mapFromItem(widget, 0, widget.height);
-            verify(bottomLeft.y <= preview.height);
+            tryCompareFunction(function () {
+                var bottomLeft = preview.mapFromItem(widget, 0, widget.height);
+                return bottomLeft.y <= preview.height
+            }, true);
         }
     }
 }

@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.3
+import QtQuick 2.4
 import AccountsService 0.1
 import GSettings 1.0
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 import Ubuntu.SystemImage 0.1
 import Unity.Launcher 0.1
 import "../Components"
@@ -33,7 +33,7 @@ Showable {
     // How far to offset the top greeter layer during a launcher left-drag
     property real launcherOffset
 
-    readonly property bool active: shown || hasLockedApp
+    readonly property bool active: required || hasLockedApp
     readonly property bool fullyShown: loader.item ? loader.item.fullyShown : false
 
     // True when the greeter is waiting for PAM or other setup process
@@ -226,14 +226,17 @@ Showable {
         }
 
         function checkForForcedDelay() {
+            if (greeterSettings.lockedOutTime === 0) {
+                return;
+            }
+
             var now = new Date();
-            delayTarget = now;
-            delayTarget.setTime(greeterSettings.lockedOutTime + failedLoginsDelayMinutes * 60000);
+            delayTarget = new Date(greeterSettings.lockedOutTime + failedLoginsDelayMinutes * 60000);
 
             // If tooEarly is true, something went very wrong.  Bug or NTP
             // misconfiguration maybe?
             var tooEarly = now.getTime() < greeterSettings.lockedOutTime;
-            var tooLate = now > delayTarget;
+            var tooLate = now >= delayTarget;
 
             // Compare stored time to system time. If a malicious actor is
             // able to manipulate time to avoid our lockout, they already have
@@ -251,7 +254,7 @@ Showable {
 
     // event eater
     // Nothing should leak to items behind the greeter
-    MouseArea { anchors.fill: parent }
+    MouseArea { anchors.fill: parent; hoverEnabled: true }
 
     Loader {
         id: loader

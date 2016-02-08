@@ -23,23 +23,27 @@
 #include <QtGui/QImage>
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickWindow>
-#include <QtConcurrent/QtConcurrentRun>
 
 #include <QDebug>
 
-bool saveScreenshot(const QImage &screenshot, const QString &filename, const QString &format, int quality)
+QString saveScreenshot(const QImage &screenshot, const QString &filename, const QString &format, int quality)
 {
-    if (!screenshot.save(filename, format.toLatin1().data(), quality)) {
+    if (screenshot.save(filename, format.toLatin1().data(), quality)) {
+        return filename;
+    } else {
         qWarning() << "ScreenGrabber: failed to save snapshot!";
-        return false;
     }
-
-    return true;
+    return QString();
 }
 
 ScreenGrabber::ScreenGrabber(QObject *parent)
     : QObject(parent)
 {
+    QObject::connect(&m_watcher,
+                     &QFutureWatcher<QString>::finished,
+                     this,
+                     &ScreenGrabber::onScreenshotSaved);
+
     QDir screenshotsDir;
     if (qEnvironmentVariableIsSet("UNITY_TESTING")) {
         qDebug() << "Using test environment";
@@ -50,8 +54,8 @@ ScreenGrabber::ScreenGrabber(QObject *parent)
         qDebug() << "Using real environment";
         screenshotsDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
     }
-    screenshotsDir.mkpath("Screenshots");
-    screenshotsDir.cd("Screenshots");
+    screenshotsDir.mkpath(QStringLiteral("Screenshots"));
+    screenshotsDir.cd(QStringLiteral("Screenshots"));
     if (screenshotsDir.exists()) {
         fileNamePrefix = screenshotsDir.absolutePath();
         fileNamePrefix.append("/screenshot");
@@ -60,7 +64,7 @@ ScreenGrabber::ScreenGrabber(QObject *parent)
     }
 }
 
-void ScreenGrabber::captureAndSave()
+void ScreenGrabber::captureAndSave(int angle)
 {
     if (fileNamePrefix.isEmpty())
     {
@@ -82,11 +86,17 @@ void ScreenGrabber::captureAndSave()
         return;
     }
 
-    const QImage screenshot = main_window->grabWindow();
+    const QImage screenshot = main_window->grabWindow().transformed(QTransform().rotate(angle));
     const QString filename = makeFileName();
     qDebug() << "Saving screenshot to" << filename;
-    auto saveOp = QtConcurrent::run(saveScreenshot, screenshot, filename, getFormat(), screenshotQuality);
-    if (saveOp.result()) {
+    QFuture<QString> saveFuture(QtConcurrent::run(saveScreenshot, screenshot, filename, getFormat(), screenshotQuality));
+    m_watcher.setFuture(saveFuture);
+}
+
+void ScreenGrabber::onScreenshotSaved()
+{
+    const QString filename = m_watcher.future().result();
+    if (!filename.isEmpty()) {
         Q_EMIT screenshotSaved(filename);
     }
 }
@@ -94,7 +104,7 @@ void ScreenGrabber::captureAndSave()
 QString ScreenGrabber::makeFileName() const
 {
     QString fileName(fileNamePrefix);
-    fileName.append(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmsszzz"));
+    fileName.append(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_hhmmsszzz")));
     fileName.append(".");
     fileName.append(getFormat());
     return fileName;
@@ -103,5 +113,5 @@ QString ScreenGrabber::makeFileName() const
 QString ScreenGrabber::getFormat() const
 {
     //TODO: This should be configurable (perhaps through gsettings?)
-    return "png";
+    return QStringLiteral("png");
 }

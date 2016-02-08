@@ -16,60 +16,33 @@
  * Authors: Michael Zanetti <michael.zanetti@canonical.com>
  */
 
-import QtQuick 2.3
-import Ubuntu.Components 1.1
+import QtQuick 2.4
+import Ubuntu.Components 1.3
 import Unity.Application 0.1
 
 FocusScope {
     id: root
 
+    width: applicationWindow.width
+    height: (decorationShown ? decoration.height : 0) + applicationWindow.height
+
     property alias window: applicationWindow
     property alias application: applicationWindow.application
     property alias active: decoration.active
+    property alias title: decoration.title
+    property alias fullscreen: applicationWindow.fullscreen
 
-    property bool decorationShown: true
+    readonly property bool decorationShown: !fullscreen
     property bool highlightShown: false
     property real shadowOpacity: 1
 
-    property int windowWidth: width
-    property int windowHeight: height
+    property alias requestedWidth: applicationWindow.requestedWidth
+    property real requestedHeight
 
-    signal close();
-    signal maximize();
-    signal minimize();
-
-    state: "normal"
-    states: [
-        State {
-            name: "normal"
-            PropertyChanges {
-                target: root
-                width: windowWidth
-                height: windowHeight
-            }
-        },
-        State {
-            name: "transformed"
-            PropertyChanges {
-                target: applicationWindow
-                itemScale: Math.max(root.width / root.windowWidth, root.height / root.windowHeight)
-                interactive: false
-            }
-            PropertyChanges {
-                target: clipper
-                clip: true
-            }
-        }
-    ]
-
-    BorderImage {
-        anchors {
-            fill: root
-            margins: -units.gu(2)
-        }
-        source: "graphics/dropshadow2gu.sci"
-        opacity: root.shadowOpacity * .3
-    }
+    signal close()
+    signal maximize()
+    signal minimize()
+    signal decorationPressed()
 
     Rectangle {
         id: selectionHighlight
@@ -83,44 +56,43 @@ FocusScope {
         anchors { left: selectionHighlight.left; right: selectionHighlight.right; bottom: selectionHighlight.bottom; }
         height: units.dp(2)
         color: UbuntuColors.orange
-        visible: root.highlightShown
+        visible: highlightShown
+    }
+
+    BorderImage {
+        anchors {
+            fill: root
+            margins: active ? -units.gu(2) : -units.gu(1.5)
+        }
+        source: "graphics/dropshadow2gu.sci"
+        opacity: root.shadowOpacity * .3
+        enabled: !fullscreen
     }
 
     WindowDecoration {
         id: decoration
+        target: root.parent
         objectName: application ? "appWindowDecoration_" + application.appId : "appWindowDecoration_null"
         anchors { left: parent.left; top: parent.top; right: parent.right }
         height: units.gu(3)
-        title: model.name
+        width: root.width
+        title: window.title
+        visible: root.decorationShown
+
         onClose: root.close();
-        onMaximize: root.maximize();
+        onMaximize: { root.decorationPressed(); root.maximize(); }
         onMinimize: root.minimize();
-        visible: decorationShown
+        onPressed: root.decorationPressed();
     }
 
-    Item {
-        id: clipper
-        anchors.fill: parent
-
-        ApplicationWindow {
-            id: applicationWindow
-            objectName: application ? "appWindow_" + application.appId : "appWindow_null"
-            anchors.top: parent.top
-            anchors.topMargin: root.decorationShown ? decoration.height : 0
-            anchors.left: parent.left
-            width: root.windowWidth
-            height: root.windowHeight - (root.decorationShown ? decoration.height : 0)
-            interactive: true
-            focus: true
-
-            property real itemScale: 1
-            transform: [
-                Scale {
-                    origin.x: 0; origin.y: 0
-                    xScale: applicationWindow.itemScale
-                    yScale: applicationWindow.itemScale
-                }
-            ]
-        }
+    ApplicationWindow {
+        id: applicationWindow
+        objectName: application ? "appWindow_" + application.appId : "appWindow_null"
+        anchors.top: parent.top
+        anchors.topMargin: decoration.height
+        anchors.left: parent.left
+        requestedHeight: root.requestedHeight - (root.decorationShown ? decoration.height : 0)
+        interactive: true
+        focus: true
     }
 }

@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
 import ".."
 import "../../../qml/Greeter"
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.3
 import AccountsService 0.1
 import GSettings 1.0
 import IntegratedLightDM 0.1 as LightDM
@@ -71,9 +71,9 @@ Item {
     }
 
     SignalSpy {
-        id: emergencyCallSpy
+        id: activeChangedSpy
         target: loader.item
-        signalName: "emergencyCall"
+        signalName: "activeChanged"
     }
 
     GSettings {
@@ -142,7 +142,7 @@ Item {
             resetLoader();
             teaseSpy.clear();
             sessionStartedSpy.clear();
-            emergencyCallSpy.clear();
+            activeChangedSpy.clear();
             viewShowMessageSpy.clear();
             viewShowPromptSpy.clear();
             viewShowLastChanceSpy.clear();
@@ -458,6 +458,20 @@ Item {
             compare(view.delayMinutes, greeter.failedLoginsDelayMinutes);
         }
 
+        function test_forcedDelayOnConstructionIgnoredIfInFuture() {
+            greeterSettings.lockedOutTime = new Date().getTime() + greeter.failedLoginsDelayMinutes * 60000 + 1;
+            resetLoader();
+            view = findChild(greeter, "testView");
+            compare(view.delayMinutes, 0);
+        }
+
+        function test_forcedDelayOnConstructionIgnoredIfInPast() {
+            greeterSettings.lockedOutTime = new Date().getTime() - greeter.failedLoginsDelayMinutes * 60000 - 1;
+            resetLoader();
+            view = findChild(greeter, "testView");
+            compare(view.delayMinutes, 0);
+        }
+
         function test_forcedDelayRoundTrip() {
             greeter.failedLoginsDelayAttempts = 1;
             greeter.failedLoginsDelayMinutes = 0.001; // make delay very short
@@ -469,6 +483,28 @@ Item {
             view.responded("wr0ng p4ssw0rd");
             compare(view.delayMinutes, 1);
             tryCompare(view, "delayMinutes", 0);
+        }
+
+        function test_activeIsConstantDuringLockedApp() {
+            // Regression test for bug 1525981: if we flicker active state even
+            // briefly, the mpt-server will allow access to the device's drive.
+
+            selectUser("has-password");
+            verify(greeter.active);
+
+            // Test opening a locked app
+            greeter.lockedApp = "test-app";
+            greeter.notifyAppFocused("test-app");
+            verify(greeter.hasLockedApp);
+            verify(!greeter.shown);
+
+            // Test going back to greeter from that locked app
+            LightDM.Greeter.showGreeter();
+            verify(!greeter.hasLockedApp);
+            verify(greeter.shown);
+
+            // Active state should never have changed
+            compare(activeChangedSpy.count, 0);
         }
 
         function test_dbusRequestAuthenticationUser() {

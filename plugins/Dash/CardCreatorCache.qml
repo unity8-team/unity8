@@ -15,7 +15,7 @@
  */
 
 pragma Singleton
-import QtQuick 2.2
+import QtQuick 2.4
 import "CardCreator.js" as CardCreator
 
 QtObject {
@@ -32,7 +32,7 @@ QtObject {
         var allString = tString + cString;
         var component = cache[allString];
         if (component === undefined) {
-            component = CardCreator.createCardComponent(root, template, components);
+            component = CardCreator.createCardComponent(root, template, components, allString);
             cache[allString] = component;
         }
         return component;

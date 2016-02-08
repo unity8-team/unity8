@@ -14,20 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
+import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
 
 import "../../../qml/Stages"
+import "../../../qml/Components"
 
 Rectangle {
     id: root
     color: "grey"
     width:  tabletStageLoader.width + controls.width
     height: tabletStageLoader.height
+
+    property var greeter: { fullyShown: true }
 
     Loader {
         id: tabletStageLoader
@@ -47,13 +50,15 @@ Rectangle {
                     tabletStageLoader.itemDestroyed = true;
                 }
                 dragAreaWidth: units.gu(2)
-                maximizedAppTopMargin: units.gu(3) + units.dp(2)
+                maximizedAppTopMargin: units.gu(3)
                 interactive: true
                 shellOrientation: Qt.LandscapeOrientation
-                shellPrimaryOrientation: Qt.LandscapeOrientation
-                nativeOrientation: Qt.LandscapeOrientation
                 nativeWidth: width
                 nativeHeight: height
+                orientations: Orientations {
+                    native_: Qt.LandscapeOrientation
+                    primary: Qt.LandscapeOrientation
+                }
                 focus: true
             }
         }
@@ -176,14 +181,14 @@ Rectangle {
             waitUntilAppSurfaceShowsUp(webbrowserCheckBox.appId);
             var webbrowserApp = ApplicationManager.findApplication(webbrowserCheckBox.appId);
             compare(webbrowserApp.stage, ApplicationInfoInterface.MainStage);
-            tryCompare(webbrowserApp.session.surface, "activeFocus", true);
+            tryCompare(webbrowserApp.session.lastSurface, "activeFocus", true);
 
             dialerCheckBox.checked = true;
             waitUntilAppSurfaceShowsUp(dialerCheckBox.appId);
             var dialerApp = ApplicationManager.findApplication(dialerCheckBox.appId);
             compare(dialerApp.stage, ApplicationInfoInterface.SideStage);
-            tryCompare(dialerApp.session.surface, "activeFocus", true);
-            tryCompare(webbrowserApp.session.surface, "activeFocus", false);
+            tryCompare(dialerApp.session.lastSurface, "activeFocus", true);
+            tryCompare(webbrowserApp.session.lastSurface, "activeFocus", false);
 
             // Tap on the main stage application and check if the focus
             // has been passed to it.
@@ -192,8 +197,8 @@ Rectangle {
             verify(webbrowserWindow);
             tap(webbrowserWindow);
 
-            tryCompare(dialerApp.session.surface, "activeFocus", false);
-            tryCompare(webbrowserApp.session.surface, "activeFocus", true);
+            tryCompare(dialerApp.session.lastSurface, "activeFocus", false);
+            tryCompare(webbrowserApp.session.lastSurface, "activeFocus", true);
 
             // Now tap on the side stage application and check if the focus
             // has been passed back to it.
@@ -202,8 +207,8 @@ Rectangle {
             verify(dialerWindow);
             tap(dialerWindow);
 
-            tryCompare(dialerApp.session.surface, "activeFocus", true);
-            tryCompare(webbrowserApp.session.surface, "activeFocus", false);
+            tryCompare(dialerApp.session.lastSurface, "activeFocus", true);
+            tryCompare(webbrowserApp.session.lastSurface, "activeFocus", false);
         }
 
         function test_closeAppInSideStage() {

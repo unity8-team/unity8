@@ -38,17 +38,19 @@ MirSurfaceItem::MirSurfaceItem(QQuickItem *parent)
     , m_touchPressCount(0)
     , m_touchReleaseCount(0)
 {
-    qDebug() << "MirSurfaceItem::MirSurfaceItem() " << (void*)(this) << name();
+//    qDebug() << "MirSurfaceItem::MirSurfaceItem() " << (void*)(this) << name();
     setAcceptedMouseButtons(Qt::LeftButton | Qt::MiddleButton | Qt::RightButton |
         Qt::ExtraButton1 | Qt::ExtraButton2 | Qt::ExtraButton3 | Qt::ExtraButton4 |
         Qt::ExtraButton5 | Qt::ExtraButton6 | Qt::ExtraButton7 | Qt::ExtraButton8 |
         Qt::ExtraButton9 | Qt::ExtraButton10 | Qt::ExtraButton11 |
         Qt::ExtraButton12 | Qt::ExtraButton13);
+
+    connect(this, &QQuickItem::visibleChanged, this, &MirSurfaceItem::updateMirSurfaceVisibility);
 }
 
 MirSurfaceItem::~MirSurfaceItem()
 {
-    qDebug() << "MirSurfaceItem::~MirSurfaceItem() " << (void*)(this) << name();
+//    qDebug() << "MirSurfaceItem::~MirSurfaceItem() " << (void*)(this) << name();
     setSurface(nullptr);
 }
 
@@ -136,7 +138,7 @@ void MirSurfaceItem::onComponentStatusChanged(QQmlComponent::Status status)
 
 void MirSurfaceItem::createQmlContentItem()
 {
-    qDebug() << "MirSurfaceItem::createQmlContentItem()";
+//    qDebug() << "MirSurfaceItem::createQmlContentItem()";
 
     m_qmlItem = qobject_cast<QQuickItem*>(m_qmlContentComponent->create());
     m_qmlItem->setParentItem(this);
@@ -178,9 +180,9 @@ void MirSurfaceItem::mouseReleaseEvent(QMouseEvent * event)
 
 void MirSurfaceItem::setSurface(MirSurfaceInterface* surface)
 {
-    qDebug().nospace() << "MirSurfaceItem::setSurface() this=" << (void*)(this)
-                                                   << " name=" << name()
-                                                   << " surface=" << surface;
+//    qDebug().nospace() << "MirSurfaceItem::setSurface() this=" << (void*)(this)
+//                                                   << " name=" << name()
+//                                                   << " surface=" << surface;
 
     if (m_qmlSurface == surface) {
         return;
@@ -194,17 +196,18 @@ void MirSurfaceItem::setSurface(MirSurfaceInterface* surface)
         m_qmlContentComponent = nullptr;
 
         disconnect(m_qmlSurface, nullptr, this, nullptr);
-        m_qmlSurface->decrementViewCount();
+        m_qmlSurface->unregisterView((qintptr)this);
     }
 
     m_qmlSurface = static_cast<MirSurface*>(surface);
 
     if (m_qmlSurface) {
-        m_qmlSurface->incrementViewCount();
+        m_qmlSurface->registerView((qintptr)this);
 
         m_qmlSurface->setActiveFocus(hasActiveFocus());
 
         updateSurfaceSize();
+        updateMirSurfaceVisibility();
 
         connect(m_qmlSurface, &MirSurface::orientationAngleChanged, this, &MirSurfaceItem::orientationAngleChanged);
         connect(m_qmlSurface, &MirSurface::screenshotUrlChanged, this, &MirSurfaceItem::updateScreenshot);
@@ -253,6 +256,13 @@ void MirSurfaceItem::itemChange(ItemChange change, const ItemChangeData & value)
     }
 }
 
+void MirSurfaceItem::updateMirSurfaceVisibility()
+{
+    if (!m_qmlSurface) return;
+
+    m_qmlSurface->setViewVisibility((qintptr)this, isVisible());
+}
+
 void MirSurfaceItem::setConsumesInput(bool value)
 {
     if (m_consumesInput != value) {
@@ -268,7 +278,7 @@ int MirSurfaceItem::surfaceWidth() const
 
 void MirSurfaceItem::setSurfaceWidth(int value)
 {
-    if (m_surfaceWidth != value) {
+    if (value != -1 && m_surfaceWidth != value) {
         m_surfaceWidth = value;
         Q_EMIT surfaceWidthChanged(m_surfaceWidth);
         updateSurfaceSize();
@@ -282,7 +292,7 @@ int MirSurfaceItem::surfaceHeight() const
 
 void MirSurfaceItem::setSurfaceHeight(int value)
 {
-    if (m_surfaceHeight != value) {
+    if (value != -1 && m_surfaceHeight != value) {
         m_surfaceHeight = value;
         Q_EMIT surfaceHeightChanged(m_surfaceHeight);
         updateSurfaceSize();
@@ -293,5 +303,13 @@ void MirSurfaceItem::updateSurfaceSize()
 {
     if (m_qmlSurface && m_surfaceWidth > 0 && m_surfaceHeight > 0) {
         m_qmlSurface->resize(m_surfaceWidth, m_surfaceHeight);
+    }
+}
+
+void MirSurfaceItem::setFillMode(FillMode value)
+{
+    if (value != m_fillMode) {
+        m_fillMode = value;
+        Q_EMIT fillModeChanged(m_fillMode);
     }
 }

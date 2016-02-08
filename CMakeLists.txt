@@ -49,15 +49,15 @@ add_custom_target(cppcheck COMMAND cppcheck --enable=all -q --error-exitcode=2
                                        ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/tests)
 
 include(FindPkgConfig)
-find_package(Qt5Core 5.2 REQUIRED)
-find_package(Qt5Qml 5.2 REQUIRED)
-find_package(Qt5Quick 5.2 REQUIRED)
-find_package(Qt5Gui 5.2 REQUIRED)
-find_package(Qt5DBus 5.2 REQUIRED)
-find_package(Qt5Concurrent 5.2 REQUIRED)
-find_package(Qt5Sql 5.2 REQUIRED)
+find_package(Qt5Core 5.4 REQUIRED)
+find_package(Qt5Qml 5.4 REQUIRED)
+find_package(Qt5Quick 5.4 REQUIRED)
+find_package(Qt5Gui 5.4 REQUIRED)
+find_package(Qt5DBus 5.4 REQUIRED)
+find_package(Qt5Concurrent 5.4 REQUIRED)
+find_package(Qt5Sql 5.4 REQUIRED)
 
-pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=8)
+pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=12)
 
 # Standard install paths
 include(GNUInstallDirs)
@@ -101,6 +101,9 @@ add_definitions(-DQT_NO_KEYWORDS)
 # Save a few container detach and conversions
 add_definitions(-DQT_STRICT_ITERATORS)
 
+# Use the fast string builder
+add_definitions(-DQT_USE_QSTRINGBUILDER)
+
 # Autopilot tests
 include(autopilot)
 declare_autopilot_test(shell unity8.shell ${CMAKE_SOURCE_DIR}/tests/autopilot/)
@@ -123,6 +126,16 @@ set(ARTIFACTS_DIR "" CACHE PATH "Store test artifacts in this directory.")
 set(QUIET_LOGGER OFF CACHE BOOL "Disable test output on stdout.")
 if(NOT QUIET_LOGGER)
     set(STDOUT_LOGGER "-o" "-,txt")
+endif()
+
+execute_process(COMMAND arch OUTPUT_VARIABLE ARCH)
+if (NOT ARCH MATCHES "arm*")
+    set(ENABLE_TOUCH_EMULATION true)
+    add_definitions(-DUNITY8_ENABLE_TOUCH_EMULATION)
+    pkg_check_modules(MOUSETOUCHADAPTOR_LIBS REQUIRED x11 xcb xi)
+else()
+    set(ENABLE_TOUCH_EMULATION false)
+    message(STATUS "Touch emulation support disabled.")
 endif()
 
 # add subdirectories to build

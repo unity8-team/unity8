@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013,2015 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
-import Ubuntu.Components 0.1
+import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
 import "../../../qml/Dash"
 import "CardHelpers.js" as Helpers
@@ -35,7 +35,8 @@ Rectangle {
       "title": "foo",
       "subtitle": "bar",
       "summary": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      "attributes": [{"value":"text1","icon":"image://theme/ok"},{"value":"text2","icon":"image://theme/cancel"}]
+      "attributes": [{"value":"text1","icon":"image://theme/ok"},{"value":"text2","icon":"image://theme/cancel"}],
+      "quickPreviewData": {"uri": "/some/file", "duration": "14"}
     }'
 
     property var cardsModel: [
@@ -106,6 +107,11 @@ Rectangle {
             "layout": { "template": { "card-layout": "horizontal" },
                         "components": JSON.parse(Helpers.fullMapping) }
         },
+        {
+            "name": "Art, title, subtitle - Audio",
+            "layout": { "template": { "card-layout": "horizontal", "quick-preview-type": "audio" },
+                        "components": { "art": "art", "title": "title", "subtitle": "subtitle", "quickPreviewData": "quickPreviewData" } }
+        },
     ]
 
     CardTool {
@@ -129,6 +135,7 @@ Rectangle {
             item.width = Qt.binding(function() { return cardTool.cardWidth || item.implicitWidth; });
             item.height = Qt.binding(function() { return cardTool.cardHeight || item.implicitHeight; });
             item.fixedHeaderHeight = Qt.binding(function() { return cardTool.headerHeight; });
+            item.fixedArtShapeSize = Qt.binding(function() { return cardTool.artShapeSize; });
         }
     }
 
@@ -225,6 +232,7 @@ Rectangle {
         function init() {
             cardTool.components = Qt.binding(function() { return Helpers.update(JSON.parse(Helpers.defaultLayout), Helpers.tryParse(layoutArea.text, layoutError))['components']; });
             loader.visible = true;
+            waitForRendering(card);
         }
 
         function cleanup() {
@@ -299,8 +307,8 @@ Rectangle {
                 { tag: "Medium", width: units.gu(18), fill: Image.PreserveAspectCrop, index: 0 },
                 { tag: "Small", width: units.gu(12), index: 1 },
                 { tag: "Large", width: units.gu(38), index: 2 },
-                { tag: "Wide", height: units.gu(19), size: "large", index: 3 },
-                { tag: "Tall", height: units.gu(38) / 0.7, size: "large", width: units.gu(38), index: 4 },
+                { tag: "Wide", height: function() { return units.gu(19) }, size: "large", index: 3 },
+                { tag: "Tall", height: function() { return units.gu(38) / 0.7 }, size: "large", width: units.gu(38), index: 4 },
                 { tag: "VerticalWidth", width: function() { return headerRow.width + units.gu(1) }, index: 0 },
                 { tag: "HorizontalHeight", height: function() { return headerRow.height + units.gu(1) * 2 }, index: 5 },
                 { tag: "HorizontalWidth", width: function() { return headerRow.x - units.gu(1) }, index: 5 },
@@ -329,9 +337,7 @@ Rectangle {
             }
 
             if (data.hasOwnProperty("height")) {
-                if (typeof data.height === "function") {
-                    tryCompareFunction(function() { return art.height === data.height() }, true);
-                } else tryCompare(art, "height", data.height);
+                tryCompareFunction(function() { return art.height.toFixed(2) === data.height().toFixed(2) }, true);
             }
 
             if (data.hasOwnProperty("fill")) {
@@ -443,11 +449,11 @@ Rectangle {
             }
 
             if (data.hasOwnProperty("color")) {
-                tryCompare(background, "color", data.color);
+                tryCompare(background, "backgroundColor", data.color);
             }
 
             if (data.hasOwnProperty("gradientColor")) {
-                tryCompare(background, "gradientColor", data.gradientColor);
+                tryCompare(background, "secondaryBackgroundColor", data.gradientColor);
             }
 
             if (data.hasOwnProperty("image")) {
@@ -520,9 +526,9 @@ Rectangle {
             waitForRendering(selector);
             waitForRendering(card);
 
-            background.color = data.tag;
+            background.backgroundColor = data.tag;
 
-            var fontColor = data.dark ? Theme.palette.normal.baseText : "white";
+            var fontColor = data.dark ? theme.palette.normal.baseText : "white";
 
             tryCompareFunction(function() { return Qt.colorEqual(summary.color, fontColor); }, true);
             tryCompareFunction(function() { return Qt.colorEqual(title.color, fontColor); }, true);
