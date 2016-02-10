@@ -357,7 +357,7 @@ FocusScope {
                     if (!panel.preventHiding) {
                         root.hide();
                     } else {
-                        dismissTimer.restart()
+                        panel.dismissTimer.restart()
                     }
                 }
             }
