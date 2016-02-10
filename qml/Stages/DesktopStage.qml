@@ -393,32 +393,21 @@ AbstractStage {
                             PropertyChanges {
                                 target: appDelegate;
                                 x: 0; y: 0;
+                                requestedWidth: appContainer.width; requestedHeight: appContainer.height;
                                 visuallyMinimized: false;
                                 visuallyMaximized: true;
                                 opacity: 1; scale: 1
-                                requestedWidth: root.width;
-                                requestedHeight: root.height;
                             }
                         },
                         State {
                             name: "maximizedLeft"; when: appDelegate.maximizedLeft && !appDelegate.minimized
-                            PropertyChanges {
-                                target: appDelegate;
-                                x: 0;
-                                y: PanelState.panelHeight;
-                                requestedWidth: root.width/2
-                                requestedHeight: root.height - PanelState.panelHeight
-                            }
+                            PropertyChanges { target: appDelegate; x: 0; y: PanelState.panelHeight;
+                                requestedWidth: appContainer.width/2; requestedHeight: appContainer.height - PanelState.panelHeight }
                         },
                         State {
                             name: "maximizedRight"; when: appDelegate.maximizedRight && !appDelegate.minimized
-                            PropertyChanges {
-                                target: appDelegate;
-                                x: root.width/2;
-                                y: PanelState.panelHeight
-                                requestedWidth: root.width/2;
-                                requestedHeight: root.height - PanelState.panelHeight
-                            }
+                            PropertyChanges { target: appDelegate; x: appContainer.width/2; y: PanelState.panelHeight;
+                                requestedWidth: appContainer.width/2; requestedHeight: appContainer.height - PanelState.panelHeight }
                         },
                         State {
                             name: "minimized"; when: appDelegate.minimized
@@ -522,7 +511,6 @@ AbstractStage {
                     }
 
                     WindowResizeArea {
-                        id: resizeArea
                         objectName: "windowResizeArea"
                         target: appDelegate
                         minWidth: units.gu(10)
