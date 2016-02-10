@@ -22,6 +22,7 @@ import os
 import os.path
 import subprocess
 import sysconfig
+import time
 
 
 class UnityException(Exception):
@@ -147,3 +148,39 @@ def get_grid_size():
             "Environment variable GRID_UNIT_PX has not been set."
         )
     return int(grid_size)
+
+def _is_match(result, validator):
+    if validator:
+        return validator(result)
+    else:
+        return bool(result)
+
+def wait_until(predicate, *args, timeout=10, period=1, stop_event=None,
+               validator=None, **kwargs):
+    """
+    Waits either until the timeout is reached, the predicate evaluation is
+    True, or the stop_event is set.
+
+    To evaluate the predicate
+     :param: predicate: The method to be evaluated
+     :param: *args: The predicate positional parameters
+     :param: timeout: The timeout for the polling
+     :param: period: The retry period of time
+     :param: stop_event: Event object to indicate whether to stop waiting
+                         before the timeout period is over. This will be
+                         ignored if not set.
+     :param: validator: Validation method used to evaluate result of predicate.
+                        This will be ignored if not set.
+     :param: **kwargs: The predicate optional parameters
+     :return: Result of predicate if evaluated as True before the
+              timeout is reached, False otherwise.
+    """
+    end = time.time() + timeout
+    while time.time() < end:
+        if stop_event and stop_event.is_set():
+            return False
+        result = predicate(*args, **kwargs)
+        if _is_match(result, validator):
+            return result
+        time.sleep(period)
+    return False
