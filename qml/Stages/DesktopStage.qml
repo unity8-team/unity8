@@ -385,7 +385,8 @@ AbstractStage {
                             PropertyChanges {
                                 target: appDelegate;
                                 visuallyMinimized: false;
-                                visuallyMaximized: false
+                                visuallyMaximized: false;
+                                opacity: 1; scale: 1
                             }
                         },
                         State {
@@ -462,8 +463,7 @@ AbstractStage {
                         Transition {
                             to: "closing"
                             SequentialAnimation {
-                                PropertyAction { target: appDelegate; properties: "x,y" }
-                                PropertyAction { target: appDelegate; properties: "requestedWidth,requestedHeight" }
+                                PropertyAction { target: appDelegate; properties: "x,y,requestedWidth,requestedHeight" }
                                 ParallelAnimation {
                                     UbuntuNumberAnimation {
                                         target: appDelegate
