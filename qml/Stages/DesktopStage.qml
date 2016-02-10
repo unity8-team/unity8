@@ -267,8 +267,14 @@ AbstractStage {
                     focus: appId === priv.focusedAppId
                     width: decoratedWindow.width
                     height: decoratedWindow.height
-                    property int requestedWidth: -1
-                    property int requestedHeight: -1
+                    property alias requestedWidth: decoratedWindow.requestedWidth
+                    property alias requestedHeight: decoratedWindow.requestedHeight
+                    property alias minimumWidth: decoratedWindow.minimumWidth
+                    property alias minimumHeight: decoratedWindow.minimumHeight
+                    property alias maximumWidth: decoratedWindow.maximumWidth
+                    property alias maximumHeight: decoratedWindow.maximumHeight
+                    property alias widthIncrement: decoratedWindow.widthIncrement
+                    property alias heightIncrement: decoratedWindow.heightIncrement
 
                     QtObject {
                         id: appDelegatePrivate
