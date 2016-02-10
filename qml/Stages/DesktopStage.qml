@@ -267,8 +267,8 @@ AbstractStage {
                     focus: appId === priv.focusedAppId
                     width: decoratedWindow.width
                     height: decoratedWindow.height
-                    property alias requestedWidth: decoratedWindow.requestedWidth
-                    property alias requestedHeight: decoratedWindow.requestedHeight
+                    property int requestedWidth: -1
+                    property int requestedHeight: -1
                     property alias minimumWidth: decoratedWindow.minimumWidth
                     property alias minimumHeight: decoratedWindow.minimumHeight
                     property alias maximumWidth: decoratedWindow.maximumWidth
@@ -367,11 +367,7 @@ AbstractStage {
                             PropertyChanges { // freeze the values
                                 target: appDelegate; explicit: true; restoreEntryValues: false;
                                 x: appDelegate.x; y: appDelegate.y
-                            }
-                            PropertyChanges {
-                                target: decoratedWindow
-                                explicit: true; restoreEntryValues: false;
-                                requestedWidth: decoratedWindow.width; requestedHeight: decoratedWindow.height
+                                requestedWidth: appDelegate.width; requestedHeight: appDelegate.height
                             }
                         },
                         State {
@@ -400,9 +396,6 @@ AbstractStage {
                                 visuallyMinimized: false;
                                 visuallyMaximized: true;
                                 opacity: 1; scale: 1
-                            }
-                            PropertyChanges {
-                                target: decoratedWindow
                                 requestedWidth: root.width;
                                 requestedHeight: root.height;
                             }
@@ -413,9 +406,6 @@ AbstractStage {
                                 target: appDelegate;
                                 x: 0;
                                 y: PanelState.panelHeight;
-                            }
-                            PropertyChanges {
-                                target: decoratedWindow
                                 requestedWidth: root.width/2
                                 requestedHeight: root.height - PanelState.panelHeight
                             }
@@ -426,9 +416,6 @@ AbstractStage {
                                 target: appDelegate;
                                 x: root.width/2;
                                 y: PanelState.panelHeight
-                            }
-                            PropertyChanges {
-                                target: decoratedWindow
                                 requestedWidth: root.width/2;
                                 requestedHeight: root.height - PanelState.panelHeight
                             }
@@ -472,10 +459,7 @@ AbstractStage {
                             enabled: appDelegate.animationsEnabled
                             PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                             SequentialAnimation {
-                                ParallelAnimation {
-                                    UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale" }
-                                    UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight" }
-                                }
+                                UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale,requestedWidth,requestedHeight" }
                                 PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                                 ScriptAction {
                                     script: {
@@ -490,7 +474,7 @@ AbstractStage {
                             to: "closing"
                             SequentialAnimation {
                                 PropertyAction { target: appDelegate; properties: "x,y" }
-                                PropertyAction { target: decoratedWindow; properties: "requestedWidth,requestedHeight" }
+                                PropertyAction { target: appDelegate; properties: "requestedWidth,requestedHeight" }
                                 ParallelAnimation {
                                     UbuntuNumberAnimation {
                                         target: appDelegate
@@ -523,10 +507,7 @@ AbstractStage {
                             enabled: appDelegate.animationsEnabled
                             PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                             SequentialAnimation {
-                                ParallelAnimation {
-                                    UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale" }
-                                    UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight" }
-                                }
+                                UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale,requestedWidth,requestedHeight" }
                                 PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                             }
                         }
