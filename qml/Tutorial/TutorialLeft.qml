@@ -47,11 +47,12 @@ TutorialPage {
     SequentialAnimation {
         id: teaseAnimation
         objectName: "teaseAnimation"
-        paused: running && root.paused
-        running: !slider.active && root.launcher.visibleWidth === 0 && root.shown
+        running: !slider.active && root.launcher.visibleWidth === 0 && root.shown && !root.paused
         loops: Animation.Infinite
         property real bounce: 0
         readonly property real maxBounce: units.gu(2)
+
+        onRunningChanged: bounce = 0
 
         UbuntuNumberAnimation {
             target: teaseAnimation

@@ -405,7 +405,7 @@ Item {
             hides: [launcher, panel.indicators]
             tabletMode: shell.usageScenario != "phone"
             launcherOffset: launcher.progress
-            forcedUnlock: tutorial.running
+            forcedUnlock: wizard.active
             background: wallpaperResolver.background
 
             // avoid overlapping with Launcher's edge drag area
@@ -462,7 +462,7 @@ Item {
 
         onStatusChanged: {
             if (Powerd.status === Powerd.Off && reason !== Powerd.Proximity &&
-                    !callManager.hasCalls && !tutorial.running) {
+                    !callManager.hasCalls && !wizard.active) {
                 // We don't want to simply call greeter.showNow() here, because
                 // that will take too long.  Qt will delay button event
                 // handling until the greeter is done loading and may think the
