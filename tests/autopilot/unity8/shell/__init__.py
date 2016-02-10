@@ -128,8 +128,6 @@ def _order_by_key(object_list, sort_key, include_off_screen):
 
     objects = []
     for obj in object_list:
-        import pdb
-        pdb.set_trace()
         try:
             # If obj is no longer valid, this can cause an exception
             point = obj.globalRect.x, obj.globalRect.y
@@ -139,7 +137,8 @@ def _order_by_key(object_list, sort_key, include_off_screen):
                 objects.append(obj)
         except StateNotFoundError:
             pass
-        return sorted(objects, key=sort_key)
+
+    return sorted(objects, key=sort_key)
 
 class ShellView(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
     """An helper class that makes it easy to interact with the shell"""
