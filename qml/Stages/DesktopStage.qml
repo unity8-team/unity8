@@ -391,11 +391,6 @@ AbstractStage {
                                 visuallyMinimized: false;
                                 visuallyMaximized: false
                             }
-                            PropertyChanges {
-                                target: decoratedWindow
-                                requestedWidth: resizeArea.defaultWidth
-                                requestedHeight: resizeArea.defaultHeight
-                            }
                         },
                         State {
                             name: "maximized"; when: appDelegate.maximized && !appDelegate.minimized
@@ -455,9 +450,8 @@ AbstractStage {
                             from: ",minimized"
                             to: "normal"
                             enabled: appDelegate.animationsEnabled
-                            PropertyAction { target: decoratedWindow; properties: "visuallyMinimized,visuallyMaximized,requestedWidth,requestedHeight" }
+                            PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
                             UbuntuNumberAnimation { target: appDelegate; properties: "x,y" }
-                            UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight" }
                             UbuntuNumberAnimation {
                                 target: appDelegate
                                 property: 'scale'
