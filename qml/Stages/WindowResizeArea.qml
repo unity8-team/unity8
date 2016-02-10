@@ -75,8 +75,9 @@ MouseArea {
         target.requestedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth); });
         target.requestedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight),
                                                                          root.screenHeight - PanelState.panelHeight); });
-        target.x = Math.max(Math.min(windowGeometry.x, root.screenWidth - target.requestedWidth), 0)
-        target.y = Math.max(Math.min(windowGeometry.y, root.screenHeight - target.requestedHeight), PanelState.panelHeight)
+        target.x = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - target.requestedWidth), 0); });
+        target.y = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - target.requestedHeight),
+                                                           PanelState.panelHeight); });
 
         var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal)
         if (windowState === WindowStateStorage.WindowStateMaximized) {
