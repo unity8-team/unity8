@@ -504,8 +504,6 @@ Item {
         }
 
         function test_dropShadow() {
-            killAllRunningApps();
-
             // verify the drop shadow is not visible initially
             verify(PanelState.dropShadow == false);
 
@@ -532,7 +530,6 @@ Item {
         }
 
         function test_switchKeymap() {
-            killAllRunningApps();
             AccountsService.keymaps = ["cz+qwerty", "fr", "us"] // "configure" the keymaps for user
 
             var facebookApp = startApplication("facebook-webapp");
