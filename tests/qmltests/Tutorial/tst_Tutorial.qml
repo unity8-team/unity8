@@ -47,8 +47,8 @@ Item {
 
     Component.onCompleted: {
         // must set the mock mode before loading the Shell
-        LightDM.Greeter.mockMode = "single-pin";
-        LightDM.Users.mockMode = "single-pin";
+        LightDM.Greeter.mockMode = "single";
+        LightDM.Users.mockMode = "single";
         shellLoader.active = true;
     }
 
@@ -331,24 +331,28 @@ Item {
 
             // Wait for launcher to be really out there
             tryCompareFunction(function() {return launcher.x > teaseAnimation.maxBounce/2}, true);
+            verify(!teaseAnimation.paused);
             verify(teaseAnimation.running);
 
             // Start a drag, make sure animation stops
             touchFlick(shell, 0, halfHeight, units.gu(4), halfHeight, true, false);
-            verify(!teaseAnimation.running);
+            verify(teaseAnimation.paused);
+            verify(teaseAnimation.running);
             verify(launcher.visibleWidth > 0);
             verify(launcher.x > 0);
             compare(launcher.x, teaseAnimation.bounce);
 
             // Continue drag, make sure we don't create a gap on the left hand side
             touchFlick(shell, units.gu(4), halfHeight, shell.width, halfHeight, false, false);
-            verify(!teaseAnimation.running);
+            verify(teaseAnimation.paused);
+            verify(teaseAnimation.running);
             compare(launcher.visibleWidth, launcher.panelWidth);
             compare(launcher.x, 0);
 
             // Finish and make sure we continue animation
             touchFlick(shell, shell.width, halfHeight, shell.width, halfHeight, false, true);
-            tryCompare(teaseAnimation, "running", true);
+            tryCompare(teaseAnimation, "paused", false);
+            verify(teaseAnimation.running);
         }
 
         function test_spread() {

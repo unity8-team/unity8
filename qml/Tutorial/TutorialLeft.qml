@@ -47,7 +47,8 @@ TutorialPage {
     SequentialAnimation {
         id: teaseAnimation
         objectName: "teaseAnimation"
-        running: !slider.active && root.launcher.visibleWidth === 0 && root.shown && !root.paused
+        paused: running && (slider.active || root.launcher.visibleWidth > 0)
+        running: !root.paused && root.shown
         loops: Animation.Infinite
         property real bounce: 0
         readonly property real maxBounce: units.gu(2)
