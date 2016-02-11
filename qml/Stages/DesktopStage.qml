@@ -72,7 +72,7 @@ AbstractStage {
     GlobalShortcut {
         id: closeWindowShortcut
         shortcut: Qt.AltModifier|Qt.Key_F4
-        onTriggered: priv.closeApplication(priv.focusedAppDelegate)
+        onTriggered: priv.focusedAppDelegate.close()
         active: priv.focusedAppId !== ""
     }
 
@@ -179,16 +179,14 @@ AbstractStage {
             var appIndex = indexOf(appId);
             return appRepeater.itemAt(appIndex);
         }
-
-        function closeApplication(delegate) {
-            delegate.state = "closing";
-        }
     }
 
     Connections {
         target: PanelState
         onClose: {
-            priv.closeApplication(priv.focusedAppDelegate)
+            if (priv.focusedAppDelegate) {
+                priv.focusedAppDelegate.close()
+            }
         }
         onMinimize: priv.focusedAppDelegate && priv.focusedAppDelegate.minimize();
         onMaximize: priv.focusedAppDelegate // don't restore minimized apps when double clicking the panel
@@ -359,6 +357,9 @@ AbstractStage {
                         else if (maximizedRight)
                             maximizeRight();
                         ApplicationManager.focusApplication(appId);
+                    }
+                    function close() {
+                        state = "closing";
                     }
 
                     states: [
@@ -532,7 +533,7 @@ AbstractStage {
                         active: ApplicationManager.focusedApplicationId === model.appId
                         focus: true
 
-                        onClose: priv.closeApplication(appDelegate)
+                        onClose: appDelegate.close()
                         onMaximize: appDelegate.maximized || appDelegate.maximizedLeft || appDelegate.maximizedRight
                                     ? appDelegate.restoreFromMaximized() : appDelegate.maximize()
                         onMinimize: appDelegate.minimize()
