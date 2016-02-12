@@ -330,7 +330,7 @@ Item {
             greeter.forcedUnlock = true;
             compare(greeter.required, false);
             greeter.forcedUnlock = false;
- 
+
             // Now recover from tearing down the view above
             LightDM.Greeter.showGreeter();
             tryCompare(greeter, "required", true);
