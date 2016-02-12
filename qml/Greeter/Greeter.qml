@@ -160,6 +160,14 @@ Showable {
                 return false;
             }
         }
+
+        function checkForcedUnlock() {
+            if (forcedUnlock && shown && loader.item) {
+                // pretend we were just authenticated
+                loader.item.notifyAuthenticationSucceeded();
+                loader.item.hide();
+            }
+        }
     }
 
     onLauncherOffsetChanged: {
@@ -168,18 +176,17 @@ Showable {
         }
     }
 
-    onForcedUnlockChanged: {
-        if (forcedUnlock && shown) {
-            // pretend we were just authenticated
-            loader.item.notifyAuthenticationSucceeded();
-        }
-    }
-
     onRequiredChanged: {
         if (required) {
             d.waiting = true;
             lockedApp = "";
         }
+    }
+
+    onForcedUnlockChanged: d.checkForcedUnlock()
+
+    Component.onCompleted: {
+        d.checkForcedUnlock();
     }
 
     GSettings {

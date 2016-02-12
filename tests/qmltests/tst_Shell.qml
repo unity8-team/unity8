@@ -554,9 +554,8 @@ Rectangle {
 
         function test_tabletLeftEdgeDrag_data() {
             return [
-                {tag: "without password", user: "no-password", loggedIn: true, demo: false},
-                {tag: "with password", user: "has-password", loggedIn: false, demo: false},
-                {tag: "with demo", user: "has-password", loggedIn: true, demo: true},
+                {tag: "without password", user: "no-password", loggedIn: true},
+                {tag: "with password", user: "has-password", loggedIn: false},
             ]
         }
 
@@ -565,10 +564,6 @@ Rectangle {
             loadShell("tablet");
 
             selectUser(data.user)
-
-            AccountsService.demoEdges = data.demo
-            var tutorial = findChild(shell, "tutorial");
-            tryCompare(tutorial, "running", data.demo);
 
             swipeFromLeftEdge(shell.width * 0.75)
             wait(500) // to give time to handle dash() signal from Launcher
@@ -1157,6 +1152,24 @@ Rectangle {
 
             var tutorialLeft = findChild(tutorial, "tutorialLeft");
             compare(tutorialLeft, null); // should be destroyed with tutorial
+        }
+
+        function test_wizardHidesGreeter() {
+            setLightDMMockMode("single-pin");
+            loadShell("phone");
+
+            var wizard = findChild(shell, "wizard");
+            var greeter = findChild(shell, "greeter");
+
+            Wizard.System.wizardEnabled = true;
+            verify(wizard.active);
+            tryCompare(greeter, "shown", false);
+
+            Wizard.System.wizardEnabled = false;
+            verify(!wizard.active);
+            verify(!greeter.shown); // stays hidden
+
+            compare(sessionSpy.count, 1);
         }
 
         function test_tutorialPausedDuringGreeter() {
