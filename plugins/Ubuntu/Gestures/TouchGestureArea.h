@@ -84,6 +84,14 @@ private:
     bool m_dragging;
 };
 
+/*
+ An area that detects multi-finger gestures.
+
+ We can use this to detect gestures contstrained by a minimim and/or maximum number of touch points.
+ This components uses the touch registry to apply for ownership of touch points.
+ This way we can use the component in conjuntion with the directional drag area to compete for ownwership
+ or gestures; unline the MultiPointTouchArea.
+ */
 class TouchGestureArea : public QQuickItem
 {
     Q_OBJECT
@@ -93,14 +101,14 @@ class TouchGestureArea : public QQuickItem
     Q_PROPERTY(bool dragging READ dragging NOTIFY draggingChanged)
     Q_PROPERTY(QQmlListProperty<GestureTouchPoint> touchPoints READ touchPoints NOTIFY touchPointsUpdated)
 
-    Q_PROPERTY(int minimumTouchPoints READ minimumTouchPoints WRITE setMinimumTouchPoints NOTIFY minimumTouchPointsChanged)
-    Q_PROPERTY(int maximumTouchPoints READ maximumTouchPoints WRITE setMaximumTouchPoints NOTIFY maximumTouchPointsChanged)
+    Q_PROPERTY(int minimumTouchPoints MEMBER m_minimumTouchPoints NOTIFY minimumTouchPointsChanged)
+    Q_PROPERTY(int maximumTouchPoints MEMBER m_maximumTouchPoints NOTIFY maximumTouchPointsChanged)
 
     Q_PROPERTY(int recognitionPeriod READ recognitionPeriod WRITE setRecognitionPeriod NOTIFY recognitionPeriodChanged)
     Q_PROPERTY(int releaseRejectPeriod READ releaseRejectPeriod WRITE setReleaseRejectPeriod NOTIFY releaseRejectPeriodChanged)
 
 public:
-    // Describes the state of the directional drag gesture.
+    // Describes the state of the touch gesture area.
     enum Status {
         WaitingForTouch,
         Undecided,
@@ -117,12 +125,6 @@ public:
     int status() const;
     bool dragging() const;
     QQmlListProperty<GestureTouchPoint> touchPoints();
-
-    int minimumTouchPoints() const;
-    void setMinimumTouchPoints(int value);
-
-    int maximumTouchPoints() const;
-    void setMaximumTouchPoints(int value);
 
     int recognitionPeriod() const;
     void setRecognitionPeriod(int value);
@@ -151,13 +153,13 @@ private Q_SLOTS:
 private:
     void touchEvent(QTouchEvent *event) override;
     void touchEvent_waitingForTouch(QTouchEvent *event);
-    void touchEvent_undecided(QTouchEvent *event);
+    void touchEvent_waitingForMoreTouches(QTouchEvent *event);
     void touchEvent_waitingForOwnership(QTouchEvent *event);
     void touchEvent_recognized(QTouchEvent *event);
     void touchEvent_rejected(QTouchEvent *event);
 
     void unownedTouchEvent(QTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_undecided(QTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_waitingForMoreTouches(QTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_waitingForOwnership(QTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_recognised(QTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_rejected(QTouchEvent *unownedTouchEvent);
