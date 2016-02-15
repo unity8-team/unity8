@@ -66,8 +66,9 @@ Item {
         property bool itemDestroyed: false
         sourceComponent: Component {
             DesktopStage {
-                color: "darkblue"
+                color: "white"
                 anchors.fill: parent
+                background: "../../../qml/graphics/tablet_background.jpg"
 
                 Component.onCompleted: {
                     edgeBarrierControls.target = testCase.findChild(this, "edgeBarrierController");
@@ -90,36 +91,42 @@ Item {
             right: parent.right
         }
 
-        Column {
-            anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
-            spacing: units.gu(1)
+        Flickable {
+            anchors.fill: parent
+            contentHeight: controlsColumn.height
+            Column {
+                id: controlsColumn
+                spacing: units.gu(1)
 
-            Button {
-                color: "white"
-                text: "Make surface slow to resize"
-                activeFocusOnPress: false
-                onClicked: {
-                    if (ApplicationManager.focusedApplicationId) {
-                        var surface = ApplicationManager.findApplication(ApplicationManager.focusedApplicationId).session.lastSurface;
-                        surface.slowToResize = true;
+                Button {
+                    color: "white"
+                    text: "Make surface slow to resize"
+                    activeFocusOnPress: false
+                    onClicked: {
+                        if (ApplicationManager.focusedApplicationId) {
+                            var surface = ApplicationManager.findApplication(ApplicationManager.focusedApplicationId).session.lastSurface;
+                            surface.slowToResize = true;
+                        }
                     }
                 }
-            }
 
-            EdgeBarrierControls {
-                id: edgeBarrierControls
-                text: "Drag here to pull out spread"
-                backgroundColor: "blue"
-                onDragged: { desktopStageLoader.item.pushRightEdge(amount); }
-            }
-
-            Divider {}
-
-            Repeater {
-                model: ApplicationManager.availableApplications
-                ApplicationCheckBox {
-                    appId: modelData
+                EdgeBarrierControls {
+                    id: edgeBarrierControls
+                    text: "Drag here to pull out spread"
+                    backgroundColor: "blue"
+                    onDragged: { desktopStageLoader.item.pushRightEdge(amount); }
                 }
+
+                Divider {}
+
+                Repeater {
+                    model: ApplicationManager.availableApplications
+                    ApplicationCheckBox {
+                        appId: modelData
+                    }
+                }
+
+                SurfaceManagerControls { textColor: "white" }
             }
         }
     }
