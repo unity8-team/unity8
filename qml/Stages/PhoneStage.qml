@@ -94,10 +94,6 @@ AbstractStage {
         }
     }
 
-    supportedOrientations: mainApp ? mainApp.supportedOrientations
-                                   : (Qt.PortraitOrientation | Qt.LandscapeOrientation
-                                      | Qt.InvertedPortraitOrientation | Qt.InvertedLandscapeOrientation)
-
     // How far left the stage has been dragged
     readonly property real dragProgress: spreadRepeater.count > 0 ? -spreadRepeater.itemAt(0).xTranslate : 0
 
