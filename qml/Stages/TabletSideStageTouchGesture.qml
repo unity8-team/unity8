@@ -19,7 +19,7 @@ import Ubuntu.Gestures 0.1
 
 TouchGestureArea {
     id: root
-    minimumTouchPoints: 1
+    minimumTouchPoints: 3
     maximumTouchPoints: 3
 
     property bool enableDrag: true

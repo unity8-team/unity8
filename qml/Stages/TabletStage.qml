@@ -633,7 +633,8 @@ AbstractStage {
                         if (application) {
                             var orientations = application.supportedOrientations;
                             if (stage == ApplicationInfoInterface.MainStage) {
-                                // All mainstage apps support landscape orientations so that we can load into sidestage.
+                                // When an app is in the mainstage, it always supports Landscape|InvertedLandscape
+                                // so that we can drag it from the main stage to the side stage
                                 orientations |= Qt.LandscapeOrientation | Qt.InvertedLandscapeOrientation;
                             }
                             return orientations;
