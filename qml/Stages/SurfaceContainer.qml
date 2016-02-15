@@ -48,32 +48,13 @@ FocusScope {
         }
     }
 
-    function nextKeymap() {
-        var currentIndex = keymaps.indexOf(currentKeymap);
-        var nextIndex = 0;
-
-        if (currentIndex !== -1 && currentIndex < keymaps.length - 1) {
-            nextIndex = currentIndex + 1;
-        }
-
-        currentKeymap = keymaps[nextIndex];
+    function switchToKeymap(index) {
+        currentKeymap = keymaps[index];
         var keymap = currentKeymap.split("+");
 
-        surface.setKeymap(keymap[0], keymap[1] || "");
-    }
-
-    function previousKeymap() {
-        var currentIndex = keymaps.indexOf(currentKeymap);
-        var prevIndex = keymaps.length - 1;
-
-        if (currentIndex > 0) {
-            prevIndex = currentIndex - 1;
+        if (surface) {
+            surface.setKeymap(keymap[0], keymap[1] || "");
         }
-
-        currentKeymap = keymaps[prevIndex];
-        var keymap = currentKeymap.split("+");
-
-        surface.setKeymap(keymap[0], keymap[1] || "");
     }
 
     InputWatcher {
