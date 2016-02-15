@@ -219,6 +219,7 @@ void TouchGestureArea::touchEvent_waitingForTouch(QTouchEvent *event)
         Q_FOREACH(int candidateTouchId, tmpCandidates) {
             TouchRegistry::instance()->requestTouchOwnership(candidateTouchId, this);
         }
+        // We accept the gesture; so don't pass to lower items
         event->accept();
     } else if (m_candidateTouches.count() > 0) {
         setInternalStatus(InternalStatus::WaitingForMoreTouches);
@@ -249,6 +250,7 @@ void TouchGestureArea::touchEvent_waitingForMoreTouches(QTouchEvent *event)
         Q_FOREACH(int candidateTouchId, tmpCandidates) {
             TouchRegistry::instance()->requestTouchOwnership(candidateTouchId, this);
         }
+        // We accept the gesture; so don't pass to lower items
         event->accept();
     }
 }
@@ -619,6 +621,32 @@ QQmlListProperty<GestureTouchPoint> TouchGestureArea::touchPoints()
                                                0);
 }
 
+int TouchGestureArea::minimumTouchPoints() const
+{
+    return m_minimumTouchPoints;
+}
+
+void TouchGestureArea::setMinimumTouchPoints(int value)
+{
+    if (m_minimumTouchPoints != value) {
+        m_minimumTouchPoints = value;
+        Q_EMIT minimumTouchPointsChanged(value);
+    }
+}
+
+int TouchGestureArea::maximumTouchPoints() const
+{
+    return m_maximumTouchPoints;
+}
+
+void TouchGestureArea::setMaximumTouchPoints(int value)
+{
+    if (m_maximumTouchPoints != value) {
+        m_maximumTouchPoints = value;
+        Q_EMIT maximumTouchPointsChanged(value);
+    }
+}
+
 int TouchGestureArea::recognitionPeriod() const
 {
     return m_recognitionPeriod;
@@ -748,6 +776,15 @@ GestureTouchPoint* TouchGestureArea::addTouchPoint(QTouchEvent::TouchPoint const
     updateTouchPoint(gtp, tp);
     m_liveTouchPoints.insert(tp->id(), gtp);
     return gtp;
+}
+
+void TouchGestureArea::itemChange(ItemChange change, const ItemChangeData &value)
+{
+    if (change == QQuickItem::ItemSceneChange) {
+        if (value.window != nullptr) {
+            value.window->installEventFilter(TouchRegistry::instance());
+        }
+    }
 }
 
 void TouchGestureArea::updateTouchPoint(GestureTouchPoint* gtp, QTouchEvent::TouchPoint const* tp)

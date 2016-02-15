@@ -1,6 +1,8 @@
 #ifndef TOUCHGESTUREAREA_H
 #define TOUCHGESTUREAREA_H
 
+#include "UbuntuGesturesQmlGlobal.h"
+
 #include <QQuickItem>
 
 // lib UbuntuGestures
@@ -92,7 +94,7 @@ private:
  This way we can use the component in conjuntion with the directional drag area to compete for ownwership
  or gestures; unline the MultiPointTouchArea.
  */
-class TouchGestureArea : public QQuickItem
+class UBUNTUGESTURESQML_EXPORT TouchGestureArea : public QQuickItem
 {
     Q_OBJECT
     Q_ENUMS(Status)
@@ -101,10 +103,13 @@ class TouchGestureArea : public QQuickItem
     Q_PROPERTY(bool dragging READ dragging NOTIFY draggingChanged)
     Q_PROPERTY(QQmlListProperty<GestureTouchPoint> touchPoints READ touchPoints NOTIFY touchPointsUpdated)
 
-    Q_PROPERTY(int minimumTouchPoints MEMBER m_minimumTouchPoints NOTIFY minimumTouchPointsChanged)
-    Q_PROPERTY(int maximumTouchPoints MEMBER m_maximumTouchPoints NOTIFY maximumTouchPointsChanged)
+    Q_PROPERTY(int minimumTouchPoints READ minimumTouchPoints WRITE setMinimumTouchPoints NOTIFY minimumTouchPointsChanged)
+    Q_PROPERTY(int maximumTouchPoints READ maximumTouchPoints WRITE setMaximumTouchPoints NOTIFY maximumTouchPointsChanged)
 
+    // Time(ms) the component will wait for after receiving an initial touch to recoginise a gesutre before rejecting it.
     Q_PROPERTY(int recognitionPeriod READ recognitionPeriod WRITE setRecognitionPeriod NOTIFY recognitionPeriodChanged)
+    // Time(ms) the component will allow a recognised gesture to intermitently release a touch point before rejecting the gesture.
+    // This is so we will not immediately reject a gesture if there are fleeting touch point releases while dragging.
     Q_PROPERTY(int releaseRejectPeriod READ releaseRejectPeriod WRITE setReleaseRejectPeriod NOTIFY releaseRejectPeriodChanged)
 
 public:
@@ -126,6 +131,12 @@ public:
     bool dragging() const;
     QQmlListProperty<GestureTouchPoint> touchPoints();
 
+    int minimumTouchPoints() const;
+    void setMinimumTouchPoints(int value);
+
+    int maximumTouchPoints() const;
+    void setMaximumTouchPoints(int value);
+
     int recognitionPeriod() const;
     void setRecognitionPeriod(int value);
 
@@ -146,6 +157,9 @@ Q_SIGNALS:
     void released(const QList<QObject*>& points);
     void updated(const QList<QObject*>& points);
     void clicked();
+
+protected:
+    void itemChange(ItemChange change, const ItemChangeData &value);
 
 private Q_SLOTS:
     void rejectGesture();
