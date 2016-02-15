@@ -909,7 +909,7 @@ AbstractStage {
             }
         }
 
-        onDrag: {
+        onDragStarted: {
             // If we're dragging to the sidestage.
             if (!sideStage.shown) {
                 sideStage.show();
