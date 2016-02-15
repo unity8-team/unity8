@@ -43,8 +43,8 @@ private Q_SLOTS:
     void minimumAndMaximumTouchPoints();
     void rejectGestureAfterRecognitionPeriod();
     void releaseAndPressRecognisedGestureDoesNotRejectForPeriod();
-    void topAreaRecevesOwnershipFirstWithEqualPoints();
-    void topAreaRecevesOwnershipFirstWithMorePoints();
+    void topAreaReicevesOwnershipFirstWithEqualPoints();
+    void topAreaReicevesOwnershipFirstWithMorePoints();
 
 private:
     void initGestureComponent(TouchGestureArea *area);
@@ -202,7 +202,7 @@ void tst_TouchGestureArea::releaseAndPressRecognisedGestureDoesNotRejectForPerio
     QCOMPARE((int)m_gestureBottom->status(), (int)TouchGestureArea::Rejected);
 }
 
-void tst_TouchGestureArea::topAreaRecevesOwnershipFirstWithEqualPoints()
+void tst_TouchGestureArea::topAreaReicevesOwnershipFirstWithEqualPoints()
 {
     m_gestureBottom->setEnabled(true);
     m_gestureMiddle->setEnabled(true);
@@ -222,7 +222,7 @@ void tst_TouchGestureArea::topAreaRecevesOwnershipFirstWithEqualPoints()
     QCOMPARE((int)m_gestureBottom->status(), (int)TouchGestureArea::WaitingForTouch);
 }
 
-void tst_TouchGestureArea::topAreaRecevesOwnershipFirstWithMorePoints()
+void tst_TouchGestureArea::topAreaReicevesOwnershipFirstWithMorePoints()
 {
     m_gestureBottom->setEnabled(true);
     m_gestureMiddle->setEnabled(true);
