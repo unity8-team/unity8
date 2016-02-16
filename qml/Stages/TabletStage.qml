@@ -568,7 +568,15 @@ AbstractStage {
                 opacity: priv.sideStageEnabled && spreadView.phase <= 0 ? 1 : 0
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
-                onShownChanged: priv.updateStageApps()
+                onShownChanged: {
+                    if (!shown && ApplicationManager.focusedApplicationId == priv.sideStageAppId) {
+                        ApplicationManager.requestFocusApplication(priv.mainStageAppId);
+                    }
+                    priv.updateStageApps();
+                    if (shown && priv.sideStageAppId) {
+                        ApplicationManager.requestFocusApplication(priv.sideStageAppId);
+                    }
+                }
 
                 DropArea {
                     id: sideStageDropArea
@@ -586,7 +594,7 @@ AbstractStage {
                     onDropped: {
                         if (drop.keys == "MainStage") {
                             priv.setAppStage(drop.source.appId, ApplicationInfoInterface.SideStage, true);
-                            ApplicationManager.focusApplication(drop.source.appId);
+                            ApplicationManager.requestFocusApplication(drop.source.appId);
                         }
                     }
                     drag {
@@ -818,7 +826,7 @@ AbstractStage {
                                         if (priv.sideStageAppId === spreadTile.appId &&
                                                 mainApp && (mainApp.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) == 0) {
                                             // The mainstage app did not natively support portrait orientation, so focus the sidestage.
-                                            ApplicationManager.focusApplication(spreadTile.appId);
+                                            ApplicationManager.requestFocusApplication(spreadTile.appId);
                                         }
                                     }
                                 }
