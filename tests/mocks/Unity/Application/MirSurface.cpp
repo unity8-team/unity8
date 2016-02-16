@@ -129,7 +129,21 @@ void MirSurface::setOrientationAngle(Mir::OrientationAngle angle)
     Q_EMIT orientationAngleChanged(angle);
 }
 
+QString MirSurface::keymapLayout() const
+{
+    return m_keyMap.first;
+}
 
+QString MirSurface::keymapVariant() const
+{
+    return m_keyMap.second;
+}
+
+void MirSurface::setKeymap(const QString &layout, const QString &variant)
+{
+    m_keyMap = qMakePair(layout, variant);
+    Q_EMIT keymapChanged(layout, variant);
+}
 
 void MirSurface::registerView(qintptr viewId)
 {
@@ -264,5 +278,53 @@ void MirSurface::setSlowToResize(bool value)
             m_delayedResizeTimer.stop();
             applyDelayedResize();
         }
+    }
+}
+
+void MirSurface::setMinimumWidth(int value)
+{
+    if (value != m_minimumWidth) {
+        m_minimumWidth = value;
+        Q_EMIT minimumWidthChanged(m_minimumWidth);
+    }
+}
+
+void MirSurface::setMaximumWidth(int value)
+{
+    if (value != m_maximumWidth) {
+        m_maximumWidth = value;
+        Q_EMIT maximumWidthChanged(m_maximumWidth);
+    }
+}
+
+void MirSurface::setMinimumHeight(int value)
+{
+    if (value != m_minimumHeight) {
+        m_minimumHeight = value;
+        Q_EMIT minimumHeightChanged(m_minimumHeight);
+    }
+}
+
+void MirSurface::setMaximumHeight(int value)
+{
+    if (value != m_maximumHeight) {
+        m_maximumHeight = value;
+        Q_EMIT maximumHeightChanged(m_maximumHeight);
+    }
+}
+
+void MirSurface::setWidthIncrement(int value)
+{
+    if (value != m_widthIncrement) {
+        m_widthIncrement = value;
+        Q_EMIT widthIncrementChanged(m_widthIncrement);
+    }
+}
+
+void MirSurface::setHeightIncrement(int value)
+{
+    if (value != m_heightIncrement) {
+        m_heightIncrement = value;
+        Q_EMIT heightIncrementChanged(m_heightIncrement);
     }
 }

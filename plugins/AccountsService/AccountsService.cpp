@@ -37,12 +37,17 @@
 #define PROP_ENABLE_INDICATORS_WHILE_LOCKED    QStringLiteral("EnableIndicatorsWhileLocked")
 #define PROP_ENABLE_LAUNCHER_WHILE_LOCKED      QStringLiteral("EnableLauncherWhileLocked")
 #define PROP_FAILED_LOGINS                     QStringLiteral("FailedLogins")
+#define PROP_INPUT_SOURCES                     QStringLiteral("InputSources")
 #define PROP_LICENSE_ACCEPTED                  QStringLiteral("LicenseAccepted")
 #define PROP_LICENSE_BASE_PATH                 QStringLiteral("LicenseBasePath")
 #define PROP_MOUSE_CURSOR_SPEED                QStringLiteral("MouseCursorSpeed")
 #define PROP_PASSWORD_DISPLAY_HINT             QStringLiteral("PasswordDisplayHint")
 #define PROP_STATS_WELCOME_SCREEN              QStringLiteral("StatsWelcomeScreen")
 #define PROP_TOUCHPAD_CURSOR_SPEED             QStringLiteral("TouchpadCursorSpeed")
+
+using StringMap = QMap<QString,QString>;
+using StringMapList = QList<StringMap>;
+Q_DECLARE_METATYPE(StringMapList)
 
 AccountsService::AccountsService(QObject* parent, const QString &user)
     : QObject(parent)
@@ -57,6 +62,7 @@ AccountsService::AccountsService(QObject* parent, const QString &user)
     connect(m_service, &AccountsServiceDBusAdaptor::maybeChanged, this, &AccountsService::onMaybeChanged);
 
     registerProperty(IFACE_ACCOUNTS_USER, PROP_BACKGROUND_FILE, QStringLiteral("backgroundFileChanged"));
+    registerProperty(IFACE_ACCOUNTS_USER, PROP_INPUT_SOURCES, QStringLiteral("keymapsChanged"));
     registerProperty(IFACE_LOCATION_HERE, PROP_LICENSE_ACCEPTED, QStringLiteral("hereEnabledChanged"));
     registerProperty(IFACE_LOCATION_HERE, PROP_LICENSE_BASE_PATH, QStringLiteral("hereLicensePathChanged"));
     registerProperty(IFACE_UBUNTU_SECURITY, PROP_ENABLE_LAUNCHER_WHILE_LOCKED, QStringLiteral("enableLauncherWhileLockedChanged"));
@@ -159,6 +165,26 @@ bool AccountsService::hereLicensePathValid() const
 {
     auto value = getProperty(IFACE_LOCATION_HERE, PROP_LICENSE_BASE_PATH);
     return !value.toString().isNull();
+}
+
+QStringList AccountsService::keymaps() const
+{
+    auto value = getProperty(IFACE_ACCOUNTS_USER, PROP_INPUT_SOURCES);
+    QDBusArgument arg = value.value<QDBusArgument>();
+    StringMapList maps = qdbus_cast<StringMapList>(arg);
+    QStringList simplifiedMaps;
+
+    Q_FOREACH(const StringMap &map, maps) {
+        Q_FOREACH(const QString &entry, map) {
+            simplifiedMaps.append(entry);
+        }
+    }
+
+    if (!simplifiedMaps.isEmpty()) {
+        return simplifiedMaps;
+    }
+
+    return {QStringLiteral("us")};
 }
 
 uint AccountsService::failedLogins() const

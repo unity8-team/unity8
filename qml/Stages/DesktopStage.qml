@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import "../Components"
 import Utils 0.1
 import Ubuntu.Gestures 0.1
 import GlobalShortcut 1.0
+import AccountsService 0.1
 
 AbstractStage {
     id: root
@@ -39,6 +40,11 @@ AbstractStage {
     mainApp: ApplicationManager.focusedApplicationId
             ? ApplicationManager.findApplication(ApplicationManager.focusedApplicationId)
             : null
+
+    // application windows never rotate independently
+    mainAppWindowOrientationAngle: shellOrientationAngle
+
+    orientationChangesEnabled: true
 
     Connections {
         target: ApplicationManager
@@ -110,6 +116,18 @@ AbstractStage {
         shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Down
         onTriggered: priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight
                      ? priv.focusedAppDelegate.restoreFromMaximized() : priv.focusedAppDelegate.minimize()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        shortcut: Qt.MetaModifier|Qt.Key_Space
+        onTriggered: priv.focusedAppDelegate.nextKeymap()
+        active: priv.focusedAppDelegate !== null
+    }
+
+    GlobalShortcut {
+        shortcut: Qt.MetaModifier|Qt.ShiftModifier|Qt.Key_Space
+        onTriggered: priv.focusedAppDelegate.previousKeymap()
         active: priv.focusedAppDelegate !== null
     }
 
@@ -251,6 +269,12 @@ AbstractStage {
                 height: decoratedWindow.height
                 property alias requestedWidth: decoratedWindow.requestedWidth
                 property alias requestedHeight: decoratedWindow.requestedHeight
+                property alias minimumWidth: decoratedWindow.minimumWidth
+                property alias minimumHeight: decoratedWindow.minimumHeight
+                property alias maximumWidth: decoratedWindow.maximumWidth
+                property alias maximumHeight: decoratedWindow.maximumHeight
+                property alias widthIncrement: decoratedWindow.widthIncrement
+                property alias heightIncrement: decoratedWindow.heightIncrement
 
                 QtObject {
                     id: appDelegatePrivate
@@ -335,6 +359,27 @@ AbstractStage {
                     else if (maximizedRight)
                         maximizeRight();
                     ApplicationManager.focusApplication(appId);
+                }
+
+                function nextKeymap() {
+                    decoratedWindow.nextKeymap();
+                }
+
+                function previousKeymap() {
+                    decoratedWindow.previousKeymap();
+                }
+
+                function playFocusAnimation() {
+                    focusAnimation.start()
+                }
+
+                UbuntuNumberAnimation {
+                    id: focusAnimation
+                    target: appDelegate
+                    property: "scale"
+                    from: 0.98
+                    to: 1
+                    duration: UbuntuAnimation.SnapDuration
                 }
 
                 states: [
@@ -427,7 +472,7 @@ AbstractStage {
                     target: appDelegate
                     property: "z"
                     value: ApplicationManager.count + 1
-                    when: index == spread.highlightedIndex && blurLayer.ready
+                    when: index == spread.highlightedIndex && spread.ready
                 }
 
                 WindowResizeArea {
@@ -462,27 +507,6 @@ AbstractStage {
         }
     }
 
-    BlurLayer {
-        id: blurLayer
-        anchors.fill: parent
-        source: appContainer
-        visible: false
-    }
-
-    Rectangle {
-        id: spreadBackground
-        anchors.fill: parent
-        color: "#55000000"
-        visible: false
-    }
-
-    MouseArea {
-        id: eventEater
-        anchors.fill: parent
-        visible: spreadBackground.visible
-        enabled: visible
-    }
-
     EdgeBarrier {
         id: edgeBarrier
 
@@ -498,7 +522,7 @@ AbstractStage {
                     rotation: 90
                     anchors.centerIn: parent
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(0.16,0.16,0.16,0.7)}
+                        GradientStop { position: 0.0; color: Qt.rgba(0.16,0.16,0.16,0.5)}
                         GradientStop { position: 1.0; color: Qt.rgba(0.16,0.16,0.16,0)}
                     }
                 }
@@ -520,5 +544,9 @@ AbstractStage {
         workspace: appContainer
         focus: state == "altTab"
         altTabPressed: root.altTabPressed
+
+        onPlayFocusAnimation: {
+            appRepeater.itemAt(index).playFocusAnimation();
+        }
     }
 }
