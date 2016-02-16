@@ -25,7 +25,7 @@
 // local
 #include "activefocuslogger.h"
 #include "easingcurve.h"
-#include "HomeKeyWatcher.h"
+#include "WindowInputMonitor.h"
 #include "inputwatcher.h"
 #include "qlimitproxymodelqml.h"
 #include "unitysortfilterproxymodelqml.h"
@@ -36,6 +36,8 @@
 #include "constants.h"
 #include "timezoneFormatter.h"
 #include "applicationsfiltermodel.h"
+#include "inputeventgenerator.h"
+#include "deviceconfigparser.h"
 #include "globalfunctions.h"
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -52,7 +54,7 @@ static QObject *createConstants(QQmlEngine *engine, QJSEngine *scriptEngine)
     return new Constants();
 }
 
-static QObject *createGlobal(QQmlEngine *engine, QJSEngine *scriptEngine)
+static QObject *createGlobalFunctions(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
@@ -62,7 +64,7 @@ static QObject *createGlobal(QQmlEngine *engine, QJSEngine *scriptEngine)
 void UtilsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("Utils"));
-    qmlRegisterType<HomeKeyWatcher>(uri, 0, 1, "HomeKeyWatcher");
+    qmlRegisterType<WindowInputMonitor>(uri, 0, 1, "WindowInputMonitor");
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<QLimitProxyModelQML>(uri, 0, 1, "LimitProxyModel");
     qmlRegisterType<UnitySortFilterProxyModelQML>(uri, 0, 1, "UnitySortFilterProxyModel");
@@ -76,7 +78,9 @@ void UtilsPlugin::registerTypes(const char *uri)
                                                 [](QQmlEngine*, QJSEngine*) -> QObject* { return new TimezoneFormatter; });
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
-    qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobal);
+    qmlRegisterType<InputEventGenerator>(uri, 0, 1, "InputEventGenerator");
+    qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
+    qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
 }
 
 void UtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

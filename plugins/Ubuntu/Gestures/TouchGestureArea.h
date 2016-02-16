@@ -1,6 +1,8 @@
 #ifndef TOUCHGESTUREAREA_H
 #define TOUCHGESTUREAREA_H
 
+#include "UbuntuGesturesQmlGlobal.h"
+
 #include <QQuickItem>
 
 // lib UbuntuGestures
@@ -84,7 +86,15 @@ private:
     bool m_dragging;
 };
 
-class TouchGestureArea : public QQuickItem
+/*
+ An area that detects multi-finger gestures.
+
+ We can use this to detect gestures contstrained by a minimim and/or maximum number of touch points.
+ This components uses the touch registry to apply for ownership of touch points.
+ This way we can use the component in conjuntion with the directional drag area to compete for ownwership
+ or gestures; unline the MultiPointTouchArea.
+ */
+class UBUNTUGESTURESQML_EXPORT TouchGestureArea : public QQuickItem
 {
     Q_OBJECT
     Q_ENUMS(Status)
@@ -96,10 +106,14 @@ class TouchGestureArea : public QQuickItem
     Q_PROPERTY(int minimumTouchPoints READ minimumTouchPoints WRITE setMinimumTouchPoints NOTIFY minimumTouchPointsChanged)
     Q_PROPERTY(int maximumTouchPoints READ maximumTouchPoints WRITE setMaximumTouchPoints NOTIFY maximumTouchPointsChanged)
 
+    // Time(ms) the component will wait for after receiving an initial touch to recoginise a gesutre before rejecting it.
     Q_PROPERTY(int recognitionPeriod READ recognitionPeriod WRITE setRecognitionPeriod NOTIFY recognitionPeriodChanged)
+    // Time(ms) the component will allow a recognised gesture to intermitently release a touch point before rejecting the gesture.
+    // This is so we will not immediately reject a gesture if there are fleeting touch point releases while dragging.
+    Q_PROPERTY(int releaseRejectPeriod READ releaseRejectPeriod WRITE setReleaseRejectPeriod NOTIFY releaseRejectPeriodChanged)
 
 public:
-    // Describes the state of the directional drag gesture.
+    // Describes the state of the touch gesture area.
     enum Status {
         WaitingForTouch,
         Undecided,
@@ -126,6 +140,9 @@ public:
     int recognitionPeriod() const;
     void setRecognitionPeriod(int value);
 
+    int releaseRejectPeriod() const;
+    void setReleaseRejectPeriod(int value);
+
 Q_SIGNALS:
     void statusChanged(int status);
 
@@ -134,11 +151,15 @@ Q_SIGNALS:
     void minimumTouchPointsChanged(bool value);
     void maximumTouchPointsChanged(bool value);
     void recognitionPeriodChanged(bool value);
+    void releaseRejectPeriodChanged(bool value);
 
     void pressed(const QList<QObject*>& points);
     void released(const QList<QObject*>& points);
     void updated(const QList<QObject*>& points);
     void clicked();
+
+protected:
+    void itemChange(ItemChange change, const ItemChangeData &value);
 
 private Q_SLOTS:
     void rejectGesture();
@@ -146,13 +167,13 @@ private Q_SLOTS:
 private:
     void touchEvent(QTouchEvent *event) override;
     void touchEvent_waitingForTouch(QTouchEvent *event);
-    void touchEvent_undecided(QTouchEvent *event);
+    void touchEvent_waitingForMoreTouches(QTouchEvent *event);
     void touchEvent_waitingForOwnership(QTouchEvent *event);
     void touchEvent_recognized(QTouchEvent *event);
     void touchEvent_rejected(QTouchEvent *event);
 
     void unownedTouchEvent(QTouchEvent *unownedTouchEvent);
-    void unownedTouchEvent_undecided(QTouchEvent *unownedTouchEvent);
+    void unownedTouchEvent_waitingForMoreTouches(QTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_waitingForOwnership(QTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_recognised(QTouchEvent *unownedTouchEvent);
     void unownedTouchEvent_rejected(QTouchEvent *unownedTouchEvent);
@@ -184,6 +205,7 @@ private:
     int m_minimumTouchPoints;
     int m_maximumTouchPoints;
     int m_recognitionPeriod;
+    int m_releaseRejectPeriod;
 };
 
 QML_DECLARE_TYPE(GestureTouchPoint)

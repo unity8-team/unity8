@@ -606,6 +606,9 @@ void DirectionalDragAreaPrivate::setStatus(Status newStatus)
             Q_EMIT q->pressedChanged(true);
             break;
         case Recognized:
+            if (oldStatus == WaitingForTouch) { // for immediate recognition
+                Q_EMIT q->pressedChanged(true);
+            }
             Q_EMIT q->draggingChanged(true);
             break;
         default:
@@ -715,8 +718,14 @@ void DirectionalDragArea::itemChange(ItemChange change, const ItemChangeData &va
             value.window->installEventFilter(TouchRegistry::instance());
 
             // TODO: Handle window->screen() changes (ie window changing screens)
-            qreal pixelsPerMm = value.window->screen()->physicalDotsPerInch() / 25.4;
-            d->setPixelsPerMm(pixelsPerMm);
+
+            qreal pixelsPerInch = value.window->screen()->physicalDotsPerInch();
+            if (pixelsPerInch < 0) {
+                // It can return garbage when run in a XVFB server (Virtual Framebuffer 'fake' X server)
+                pixelsPerInch = 72;
+            }
+
+            d->setPixelsPerMm(pixelsPerInch / 25.4);
         }
     }
 }

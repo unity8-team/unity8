@@ -237,13 +237,13 @@ TutorialPage {
             }
         }
 
-        onDrop: {
+        onDropped: {
             // still in the gesture state after dropping?
             if (!overlayFinish.shown) {
                 root.showError();
             }
         }
-        onCancel: {
+        onCancelled: {
             root.showError();
         }
     }

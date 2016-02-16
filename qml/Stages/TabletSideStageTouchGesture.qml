@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,30 +19,29 @@ import Ubuntu.Gestures 0.1
 
 TouchGestureArea {
     id: root
-    minimumTouchPoints: 3
+    minimumTouchPoints: 1
     maximumTouchPoints: 3
 
+    property bool enableDrag: true
     property Component dragComponent
     property var dragComponentProperties: undefined
 
-    property bool wasRecognisedPress: false
-    property bool wasRecognisedDrag: false
     readonly property bool recognisedPress: status == TouchGestureArea.Recognized &&
                                             touchPoints.length >= minimumTouchPoints &&
                                             touchPoints.length <= maximumTouchPoints
-    readonly property bool recognisedDrag: wasRecognisedPress && dragging
+    readonly property bool recognisedDrag: priv.wasRecognisedPress && dragging
 
     signal pressed(int x, int y)
     signal clicked
-    signal drag
-    signal drop
-    signal cancel
+    signal dragStarted
+    signal dropped
+    signal cancelled
 
     onEnabledChanged: {
         if (!enabled) {
-            if (priv.dragObject) root.cancel();
-            wasRecognisedDrag = false;
-            wasRecognisedPress = false;
+            if (priv.dragObject) root.cancelled();
+            priv.wasRecognisedDrag = false;
+            priv.wasRecognisedPress = false;
         }
     }
 
@@ -59,41 +58,44 @@ TouchGestureArea {
             centerY = centerY/touchPoints.length;
 
             pressed(centerX, centerY);
-            wasRecognisedPress = true;
+            priv.wasRecognisedPress = true;
         }
     }
 
     onStatusChanged: {
         if (status != TouchGestureArea.Recognized) {
             if (status == TouchGestureArea.Rejected) {
-                root.cancel();
+                root.cancelled();
             } else if (status == TouchGestureArea.WaitingForTouch) {
-                if (wasRecognisedPress) {
-                    if (!wasRecognisedDrag) {
+                if (priv.wasRecognisedPress) {
+                    if (!priv.wasRecognisedDrag) {
                         root.clicked();
                     } else {
-                        root.drop();
+                        root.dropped();
                     }
                 }
             }
-            wasRecognisedDrag = false;
-            wasRecognisedPress = false;
+            priv.wasRecognisedDrag = false;
+            priv.wasRecognisedPress = false;
         }
     }
 
     onRecognisedDragChanged: {
-        if (recognisedDrag) {
-            wasRecognisedDrag = true;
-            root.drag()
+        if (enableDrag && recognisedDrag) {
+            priv.wasRecognisedDrag = true;
+            root.dragStarted()
         }
     }
 
     QtObject {
         id: priv
         property var dragObject: null
+
+        property bool wasRecognisedPress: false
+        property bool wasRecognisedDrag: false
     }
 
-    onCancel: {
+    onCancelled: {
         if (priv.dragObject) {
             var obj = priv.dragObject;
             priv.dragObject = null;
@@ -103,7 +105,7 @@ TouchGestureArea {
         }
     }
 
-    onDrag: {
+    onDragStarted: {
         if (!dragComponent) return;
 
         if (dragComponentProperties) {
@@ -114,7 +116,7 @@ TouchGestureArea {
         priv.dragObject.Drag.start();
     }
 
-    onDrop: {
+    onDropped: {
         if (priv.dragObject) {
             var obj = priv.dragObject;
             priv.dragObject = null;
@@ -126,7 +128,7 @@ TouchGestureArea {
 
     Binding {
         target: priv.dragObject
-        when: priv.dragObject && root.wasRecognisedDrag
+        when: priv.dragObject && priv.wasRecognisedDrag
         property: "x"
         value: {
             if (!priv.dragObject) return 0;
@@ -140,7 +142,7 @@ TouchGestureArea {
 
     Binding {
         target: priv.dragObject
-        when: priv.dragObject && root.wasRecognisedDrag
+        when: priv.dragObject && priv.wasRecognisedDrag
         property: "y"
         value: {
             if (!priv.dragObject) return 0;

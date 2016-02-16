@@ -1,5 +1,3 @@
-pkg_search_module(GIO REQUIRED gio-2.0)
-
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -7,7 +5,6 @@ include_directories(
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
     ${GIO_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/plugins/Utils
-    ${CMAKE_SOURCE_DIR}/libs/UbuntuGestures
 )
 
 set(QMLPLUGIN_SRC
@@ -20,6 +17,8 @@ set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/easingcurve.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/inputwatcher.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/applicationsfiltermodel.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/inputeventgenerator.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/deviceconfigparser.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/globalfunctions.cpp
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
     constants.cpp
@@ -32,10 +31,7 @@ add_library(FakeUtils-qml SHARED
     ${QMLPLUGIN_SRC}
     )
 
-target_link_libraries(FakeUtils-qml
-    ${GIO_LDFLAGS}
-    UbuntuGestures
-)
+target_link_libraries(FakeUtils-qml ${GIO_LDFLAGS})
 
 # Because this is an internal support library, we want
 # to expose all symbols in it. Consider changing this

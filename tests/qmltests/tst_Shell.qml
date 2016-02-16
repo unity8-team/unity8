@@ -49,6 +49,11 @@ Rectangle {
         shellLoader.active = true;
     }
 
+    MouseArea {
+        id: clickThroughCatcher
+        anchors.fill: shellContainer
+    }
+
     Item {
         id: shellContainer
         anchors.left: root.left
@@ -305,9 +310,29 @@ Rectangle {
         signalName: "applicationRemoved"
     }
 
+    SignalSpy {
+        id: clickThroughSpy
+        target: clickThroughCatcher
+        signalName: "clicked"
+    }
+
     Telephony.CallEntry {
         id: phoneCall
         phoneNumber: "+447812221111"
+    }
+
+    Item {
+        id: fakeDismissTimer
+        property bool running: false
+        signal triggered
+
+        function stop() {
+            running = false;
+        }
+
+        function restart() {
+            running = true;
+        }
     }
 
     UnityTestCase {
@@ -346,6 +371,11 @@ Rectangle {
 
             var launcher = findChild(shell, "launcher");
             launcherShowDashHomeSpy.target = launcher;
+
+            var panel = findChild(launcher, "launcherPanel");
+            verify(!!panel);
+
+            panel.dismissTimer = fakeDismissTimer;
 
             waitForGreeterToStabilize();
         }
@@ -645,7 +675,6 @@ Rectangle {
             // again before interacting with it otherwise any
             // DirectionalDragAreas in there won't be easily fooled by
             // fake swipes.
-            removeTimeConstraintsFromDirectionalDragAreas(greeter);
             swipeAwayGreeter();
 
             compare(mainApp.requestedState, ApplicationInfoInterface.RequestedRunning);
@@ -655,6 +684,7 @@ Rectangle {
         function swipeAwayGreeter() {
             var greeter = findChild(shell, "greeter");
             tryCompare(greeter, "fullyShown", true);
+            removeTimeConstraintsFromDirectionalDragAreas(greeter);
 
             var touchX = shell.width - (shell.edgeSize / 2);
             var touchY = shell.height / 2;
@@ -1254,10 +1284,6 @@ Rectangle {
 
             var launcher = findChild(shell, "launcher");
 
-            // ensure the launcher dimissal timer never gets triggered during the test run
-            var dismissTimer = findInvisibleChild(launcher, "dismissTimer");
-            dismissTimer.interval = 60 * 60 * 1000;
-
             dragLauncherIntoView();
 
             // Emulate a tap with a finger, where the touch position drifts during the tap.
@@ -1745,6 +1771,7 @@ Rectangle {
 
             revealLauncherByEdgePushWithMouse();
             tryCompare(launcher, "x", 0);
+            mouseMove(bfb, bfb.width / 2, bfb.height / 2)
             waitForRendering(shell)
 
             mouseClick(bfb, bfb.width / 2, bfb.height / 2)
@@ -1974,6 +2001,48 @@ Rectangle {
                 // Libreoffice must be gone now
                 compare(ApplicationManager.findApplication("libreoffice") === null, true);
             }
+        }
+
+        function test_inputEventsOnEdgesEndUpInAppSurface_data() {
+            return [
+                { tag: "phone", repeaterName: "spreadRepeater" },
+                { tag: "tablet", repeaterName: "spreadRepeater" },
+                { tag: "desktop", repeaterName: "appRepeater" },
+            ]
+        }
+
+        function test_inputEventsOnEdgesEndUpInAppSurface(data) {
+            loadShell(data.tag);
+            shell.usageScenario = data.tag;
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            // Let's open a fullscreen app
+            var app = ApplicationManager.startApplication("camera-app");
+            waitUntilAppWindowIsFullyLoaded(app);
+
+            var appRepeater = findChild(shell, data.repeaterName);
+            var topmostAppDelegate = appRepeater.itemAt(0);
+            verify(topmostAppDelegate);
+
+            var topmostSurfaceItem = findChild(topmostAppDelegate, "surfaceItem");
+            verify(topmostSurfaceItem);
+
+            mouseClick(shell, 1, shell.height / 2);
+            compare(topmostSurfaceItem.mousePressCount, 1);
+            compare(topmostSurfaceItem.mouseReleaseCount, 1);
+
+            mouseClick(shell, shell.width - 1, shell.height / 2);
+            compare(topmostSurfaceItem.mousePressCount, 2);
+            compare(topmostSurfaceItem.mouseReleaseCount, 2);
+
+            tap(shell, 1, shell.height / 2);
+            compare(topmostSurfaceItem.touchPressCount, 1);
+            compare(topmostSurfaceItem.touchReleaseCount, 1);
+
+            tap(shell, shell.width - 1, shell.height / 2);
+            compare(topmostSurfaceItem.touchPressCount, 2);
+            compare(topmostSurfaceItem.touchReleaseCount, 2);
         }
     }
 }
