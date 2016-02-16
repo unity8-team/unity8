@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 Canonical Ltd.
+ * Copyright 2014-2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,9 @@ FocusScope {
     readonly property string title: sessionContainer.surface && sessionContainer.surface.name !== "" ?
                                         sessionContainer.surface.name : d.name
 
+    // overridable from outside
+    property bool fullscreen: application ? application.fullscreen : false
+
     // to be set from outside
     property QtObject application
     property int surfaceOrientationAngle
@@ -36,8 +39,12 @@ FocusScope {
     property int requestedWidth: -1
     property int requestedHeight: -1
 
-    // overridable from outside
-    property bool fullscreen: application ? application.fullscreen : false
+    readonly property int minimumWidth: sessionContainer.surface ? sessionContainer.surface.minimumWidth : 0
+    readonly property int minimumHeight: sessionContainer.surface ? sessionContainer.surface.minimumHeight : 0
+    readonly property int maximumWidth: sessionContainer.surface ? sessionContainer.surface.maximumWidth : 0
+    readonly property int maximumHeight: sessionContainer.surface ? sessionContainer.surface.maximumHeight : 0
+    readonly property int widthIncrement: sessionContainer.surface ? sessionContainer.surface.widthIncrement : 0
+    readonly property int heightIncrement: sessionContainer.surface ? sessionContainer.surface.heightIncrement : 0
 
     QtObject {
         id: d
@@ -82,6 +89,12 @@ FocusScope {
                  || (application.supportedOrientations & Qt.InvertedLandscapeOrientation))
 
         property bool surfaceOldEnoughToBeResized: false
+    }
+
+    Binding {
+        target: root.application
+        property: "initialSurfaceSize"
+        value: Qt.size(root.requestedWidth, root.requestedHeight)
     }
 
     Timer {

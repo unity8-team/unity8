@@ -37,6 +37,7 @@
 #include <easingcurve.h>
 #include <applicationsfiltermodel.h>
 #include <inputeventgenerator.h>
+#include <deviceconfigparser.h>
 #include <globalfunctions.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -53,7 +54,7 @@ static QObject *createConstants(QQmlEngine *engine, QJSEngine *scriptEngine)
     return new Constants();
 }
 
-static QObject *createGlobal(QQmlEngine *engine, QJSEngine *scriptEngine)
+static QObject *createGlobalFunctions(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
@@ -75,7 +76,8 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<ActiveFocusLogger>(uri, 0, 1, "ActiveFocusLogger");
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
     qmlRegisterType<InputEventGenerator>(uri, 0, 1, "InputEventGenerator");
-    qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobal);
+    qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
+    qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
 }
 
 void FakeUtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
