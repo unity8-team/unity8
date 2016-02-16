@@ -91,6 +91,7 @@ Showable {
         height: root.height
         stretch: true
 
+        immediateRecognition: true
         maxTotalDragDistance: panelWidth
         autoCompleteDragThreshold: panelWidth / 2
     }
