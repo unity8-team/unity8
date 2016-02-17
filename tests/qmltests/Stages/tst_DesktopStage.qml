@@ -21,6 +21,7 @@ import Ubuntu.Components.ListItems 1.3
 import Unity.Application 0.1
 import Unity.Test 0.1
 import Utils 0.1
+import AccountsService 0.1
 
 import ".." // For EdgeBarrierControls
 import "../../../qml/Stages"
@@ -65,8 +66,9 @@ Item {
         property bool itemDestroyed: false
         sourceComponent: Component {
             DesktopStage {
-                color: "darkblue"
+                color: "white"
                 anchors.fill: parent
+                background: "../../../qml/graphics/tablet_background.jpg"
 
                 Component.onCompleted: {
                     edgeBarrierControls.target = testCase.findChild(this, "edgeBarrierController");
@@ -509,8 +511,6 @@ Item {
         }
 
         function test_dropShadow() {
-            killAllRunningApps();
-
             // verify the drop shadow is not visible initially
             verify(PanelState.dropShadow == false);
 
@@ -534,6 +534,32 @@ Item {
 
             // verify the drop shadow is gone
             verify(PanelState.dropShadow == false);
+        }
+
+        function test_switchKeymap() {
+            AccountsService.keymaps = ["cz+qwerty", "fr", "us"] // "configure" the keymaps for user
+
+            var facebookApp = startApplication("facebook-webapp");
+            var appSurface = facebookApp.session.lastSurface;
+            verify(appSurface);
+
+            // verify the initial keymap is the first one from the list
+            tryCompare(appSurface, "keymapLayout", AccountsService.keymaps[0].split("+")[0]); // cz
+            tryCompare(appSurface, "keymapVariant", AccountsService.keymaps[0].split("+")[1]); // qwerty
+
+            // switch to next keymap
+            keyClick(Qt.Key_Space, Qt.MetaModifier);
+            // the keymap should now be "fr"
+            var frKeymap = AccountsService.keymaps[1].split("+");
+            tryCompare(appSurface, "keymapLayout", frKeymap[0]); // fr
+            tryCompare(appSurface, "keymapVariant", "");
+
+            // switch twice backwards, should be "us" keyboard now, the switching wraps around
+            keyClick(Qt.Key_Space, Qt.MetaModifier|Qt.ShiftModifier);
+            keyClick(Qt.Key_Space, Qt.MetaModifier|Qt.ShiftModifier);
+            var usKeymap = AccountsService.keymaps[2].split("+");
+            tryCompare(appSurface, "keymapLayout", usKeymap[0]); // us
+            tryCompare(appSurface, "keymapVariant", "");
         }
     }
 }
