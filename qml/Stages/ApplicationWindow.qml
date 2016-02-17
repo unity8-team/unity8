@@ -29,6 +29,7 @@ FocusScope {
     property bool orientationChangesEnabled: d.supportsSurfaceResize ? d.surfaceOldEnoughToBeResized : true
     readonly property string title: sessionContainer.surface && sessionContainer.surface.name !== "" ?
                                         sessionContainer.surface.name : d.name
+    readonly property string currentKeymap: sessionContainer.surfaceContainer ? sessionContainer.surfaceContainer.currentKeymap : "us"
 
     // to be set from outside
     property QtObject application
@@ -37,20 +38,16 @@ FocusScope {
     property int requestedWidth: -1
     property int requestedHeight: -1
 
+    function switchToKeymap(index) {
+        sessionContainer.surfaceContainer.switchToKeymap(index);
+    }
+
     readonly property int minimumWidth: sessionContainer.surface ? sessionContainer.surface.minimumWidth : 0
     readonly property int minimumHeight: sessionContainer.surface ? sessionContainer.surface.minimumHeight : 0
     readonly property int maximumWidth: sessionContainer.surface ? sessionContainer.surface.maximumWidth : 0
     readonly property int maximumHeight: sessionContainer.surface ? sessionContainer.surface.maximumHeight : 0
     readonly property int widthIncrement: sessionContainer.surface ? sessionContainer.surface.widthIncrement : 0
     readonly property int heightIncrement: sessionContainer.surface ? sessionContainer.surface.heightIncrement : 0
-
-    function nextKeymap() {
-        sessionContainer.surfaceContainer.nextKeymap();
-    }
-
-    function previousKeymap() {
-        sessionContainer.surfaceContainer.previousKeymap();
-    }
 
     QtObject {
         id: d
