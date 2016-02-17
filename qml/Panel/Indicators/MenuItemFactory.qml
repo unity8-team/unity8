@@ -300,6 +300,49 @@ Item {
     }
 
     Component {
+        id: keymapMenu;
+
+        Menus.CheckableMenu {
+            id: keymapItem
+            objectName: "keymapMenu"
+            property QtObject menuData: null
+            property int menuIndex: -1
+            property bool serverChecked: menuData && menuData.isToggled || false
+
+            text: menuData && menuData.label || ""
+            enabled: menuData && menuData.sensitive && !serverChecked || false
+            checked: serverChecked
+            highlightWhenPressed: false
+
+            ServerPropertySynchroniser {
+                objectName: "sync"
+                syncTimeout: Utils.Constants.indicatorValueTimeout
+
+                serverTarget: keymapItem
+                serverProperty: "serverChecked"
+                userTarget: keymapItem
+                userProperty: "checked"
+
+                onSyncTriggered: {
+                    var keymapIndex = keymapItem.menuIndex;
+                    keymapActionGroup.currentAction.updateState(keymapIndex);
+                }
+            }
+
+            QDBusActionGroup {
+                id: keymapActionGroup
+                busType: DBus.SessionBus
+                busName: "com.canonical.indicator.keyboard"
+                objectPath: "/com/canonical/indicator/keyboard"
+
+                property variant currentAction: action("current")
+
+                Component.onCompleted: keymapActionGroup.start()
+            }
+        }
+    }
+
+    Component {
         id: checkableMenu;
 
         Menus.CheckableMenu {
@@ -994,6 +1037,9 @@ Item {
             console.debug("Don't know how to make " + modelData.type + " for " + context);
         }
         if (modelData.isCheck || modelData.isRadio) {
+            if (context === "indicator-keyboard" ) {
+                return keymapMenu;
+            }
             return checkableMenu;
         }
         if (modelData.isSeparator) {
