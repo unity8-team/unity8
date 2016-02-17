@@ -50,6 +50,11 @@ Rectangle {
         shellLoader.active = true;
     }
 
+    MouseArea {
+        id: clickThroughCatcher
+        anchors.fill: shellContainer
+    }
+
     Item {
         id: shellContainer
         anchors.left: root.left
@@ -311,6 +316,12 @@ Rectangle {
         id: appRemovedSpy
         target: ApplicationManager
         signalName: "applicationRemoved"
+    }
+
+    SignalSpy {
+        id: clickThroughSpy
+        target: clickThroughCatcher
+        signalName: "clicked"
     }
 
     Telephony.CallEntry {
@@ -2035,7 +2046,6 @@ Rectangle {
             compare(launcherPanel.highlightIndex, -2);
             compare(ApplicationManager.focusedApplicationId, "unity8-dash");
 
-            wait(2000)
             // Use Super + Tab Tab to cycle to the first entry in the launcher
             keyPress(Qt.Key_Super_L, Qt.MetaModifier);
             keyClick(Qt.Key_Tab);
@@ -2103,7 +2113,7 @@ Rectangle {
             tryCompare(launcher, "focus", true)
         }
 
-        function test_lockedOutLauncherShrinksStage() {
+        function test_lockedOutLauncherAddsMarginsToMaximized() {
             loadShell("desktop");
             shell.usageScenario = "desktop";
             waitForRendering(shell);
@@ -2111,13 +2121,20 @@ Rectangle {
             var appContainer = findChild(shell, "appContainer");
             var launcher = findChild(shell, "launcher");
 
+            var app = ApplicationManager.startApplication("music-app");
+            waitUntilAppWindowIsFullyLoaded(app);
+            var appDelegate = findChild(appContainer, "appDelegate_music-app");
+            appDelegate.maximize();
+            tryCompare(appDelegate, "visuallyMaximized", true);
+            waitForRendering(shell);
+
             GSettingsController.setAutohideLauncher(true);
             waitForRendering(shell)
-            var hiddenSize = appContainer.width;
+            var hiddenSize = appDelegate.width;
 
             GSettingsController.setAutohideLauncher(false);
             waitForRendering(shell)
-            var shownSize = appContainer.width;
+            var shownSize = appDelegate.width;
 
             compare(shownSize + launcher.panelWidth, hiddenSize);
         }
@@ -2125,21 +2142,61 @@ Rectangle {
         function test_fullscreenAppHidesLockedOutLauncher() {
             loadShell("desktop");
             shell.usageScenario = "desktop";
-            waitForRendering(shell);
 
-            var appContainer = findChild(shell, "appContainer");
             var launcher = findChild(shell, "launcher");
             var launcherPanel = findChild(launcher, "launcherPanel");
 
             GSettingsController.setAutohideLauncher(false);
             waitForRendering(shell)
 
-            tryCompare(appContainer, "width", shell.width - launcherPanel.width);
+            tryCompare(launcher, "lockedVisible", true);
 
             var cameraApp = ApplicationManager.startApplication("camera-app");
             waitUntilAppWindowIsFullyLoaded(cameraApp);
 
-            tryCompare(appContainer, "width", shell.width);
+            tryCompare(launcher, "lockedVisible", false);
+        }
+
+        function test_inputEventsOnEdgesEndUpInAppSurface_data() {
+            return [
+                { tag: "phone", repeaterName: "spreadRepeater" },
+                { tag: "tablet", repeaterName: "spreadRepeater" },
+                { tag: "desktop", repeaterName: "appRepeater" },
+            ]
+        }
+
+        function test_inputEventsOnEdgesEndUpInAppSurface(data) {
+            loadShell(data.tag);
+            shell.usageScenario = data.tag;
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            // Let's open a fullscreen app
+            var app = ApplicationManager.startApplication("camera-app");
+            waitUntilAppWindowIsFullyLoaded(app);
+
+            var appRepeater = findChild(shell, data.repeaterName);
+            var topmostAppDelegate = appRepeater.itemAt(0);
+            verify(topmostAppDelegate);
+
+            var topmostSurfaceItem = findChild(topmostAppDelegate, "surfaceItem");
+            verify(topmostSurfaceItem);
+
+            mouseClick(shell, 1, shell.height / 2);
+            compare(topmostSurfaceItem.mousePressCount, 1);
+            compare(topmostSurfaceItem.mouseReleaseCount, 1);
+
+            mouseClick(shell, shell.width - 1, shell.height / 2);
+            compare(topmostSurfaceItem.mousePressCount, 2);
+            compare(topmostSurfaceItem.mouseReleaseCount, 2);
+
+            tap(shell, 1, shell.height / 2);
+            compare(topmostSurfaceItem.touchPressCount, 1);
+            compare(topmostSurfaceItem.touchReleaseCount, 1);
+
+            tap(shell, shell.width - 1, shell.height / 2);
+            compare(topmostSurfaceItem.touchPressCount, 2);
+            compare(topmostSurfaceItem.touchReleaseCount, 2);
         }
     }
 }

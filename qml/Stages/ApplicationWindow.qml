@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 Canonical Ltd.
+ * Copyright 2014-2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -44,6 +44,14 @@ FocusScope {
     readonly property int widthIncrement: sessionContainer.surface ? sessionContainer.surface.widthIncrement : 0
     readonly property int heightIncrement: sessionContainer.surface ? sessionContainer.surface.heightIncrement : 0
 
+    function nextKeymap() {
+        sessionContainer.surfaceContainer.nextKeymap();
+    }
+
+    function previousKeymap() {
+        sessionContainer.surfaceContainer.previousKeymap();
+    }
+
     QtObject {
         id: d
 
@@ -87,6 +95,12 @@ FocusScope {
                  || (application.supportedOrientations & Qt.InvertedLandscapeOrientation))
 
         property bool surfaceOldEnoughToBeResized: false
+    }
+
+    Binding {
+        target: root.application
+        property: "initialSurfaceSize"
+        value: Qt.size(root.requestedWidth, root.requestedHeight)
     }
 
     Timer {

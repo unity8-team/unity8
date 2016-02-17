@@ -24,6 +24,10 @@
 #include <QStringList>
 #include <QDebug>
 
+using StringMap = QMap<QString,QString>;
+using StringMapList = QList<StringMap>;
+Q_DECLARE_METATYPE(StringMapList)
+
 AccountsService::AccountsService(QObject* parent, const QString &user)
     : QObject(parent),
     m_service(new AccountsServiceDBusAdaptor(this)),
@@ -71,6 +75,7 @@ void AccountsService::setUser(const QString &user)
     updateFailedLogins(false);
     updateHereEnabled(false);
     updateHereLicensePath(false);
+    updateKeymaps(false);
 }
 
 bool AccountsService::demoEdges() const
@@ -136,6 +141,15 @@ QString AccountsService::hereLicensePath() const
 bool AccountsService::hereLicensePathValid() const
 {
     return !m_hereLicensePath.isNull();
+}
+
+QStringList AccountsService::keymaps() const
+{
+    if (!m_kbdMap.isEmpty()) {
+        return m_kbdMap;
+    }
+
+    return {QStringLiteral("us")};
 }
 
 void AccountsService::updateDemoEdges(bool async)
@@ -448,6 +462,45 @@ void AccountsService::updateHereLicensePath(bool async)
     }
 }
 
+void AccountsService::updateKeymaps(bool async)
+{
+    QDBusPendingCall pendingReply = m_service->getUserPropertyAsync(m_user,
+                                                                    QStringLiteral("org.freedesktop.Accounts.User"),
+                                                                    QStringLiteral("InputSources"));
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingReply, this);
+
+    connect(watcher, &QDBusPendingCallWatcher::finished,
+            this, [this](QDBusPendingCallWatcher* watcher) {
+
+        QDBusPendingReply<QDBusVariant> reply = *watcher;
+        watcher->deleteLater();
+        if (reply.isError()) {
+            qWarning() << "Failed to get 'InputSources' property - " << reply.error().message();
+            return;
+        }
+
+        const QStringList previousKeymaps = keymaps();
+        m_kbdMap.clear();
+        StringMapList maps;
+        QDBusArgument arg = reply.value().variant().value<QDBusArgument>();
+        maps = qdbus_cast<StringMapList>(arg);
+
+        Q_FOREACH(const StringMap & map, maps) {
+            Q_FOREACH(const QString &entry, map) {
+                m_kbdMap.append(entry);
+            }
+        }
+
+        if (previousKeymaps != m_kbdMap) {
+            Q_EMIT keymapsChanged();
+        }
+    });
+    if (!async) {
+        watcher->waitForFinished();
+        delete watcher;
+    }
+}
+
 uint AccountsService::failedLogins() const
 {
     return m_failedLogins;
@@ -516,4 +569,5 @@ void AccountsService::onMaybeChanged(const QString &user)
 
     // Standard properties might have changed
     updateBackgroundFile();
+    updateKeymaps();
 }

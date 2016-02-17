@@ -19,6 +19,7 @@ import Ubuntu.Components 1.3
 import Ubuntu.Gestures 0.1 // For TouchGate
 import Utils 0.1 // for InputWatcher
 import Unity.Application 0.1 // for MirSurfaceItem
+import AccountsService 0.1
 
 FocusScope {
     id: root
@@ -34,11 +35,45 @@ FocusScope {
     property int requestedWidth: -1
     property int requestedHeight: -1
 
+    readonly property var keymaps: AccountsService.keymaps
+    property string currentKeymap: AccountsService.keymaps[0]
+
     onSurfaceChanged: {
         if (surface) {
             surfaceItem.surface = surface;
             root.hadSurface = false;
+
+            var keymap = currentKeymap.split("+")
+            surface.setKeymap(keymap[0], keymap[1] || "")
         }
+    }
+
+    function nextKeymap() {
+        var currentIndex = keymaps.indexOf(currentKeymap);
+        var nextIndex = 0;
+
+        if (currentIndex !== -1 && currentIndex < keymaps.length - 1) {
+            nextIndex = currentIndex + 1;
+        }
+
+        currentKeymap = keymaps[nextIndex];
+        var keymap = currentKeymap.split("+");
+
+        surface.setKeymap(keymap[0], keymap[1] || "");
+    }
+
+    function previousKeymap() {
+        var currentIndex = keymaps.indexOf(currentKeymap);
+        var prevIndex = keymaps.length - 1;
+
+        if (currentIndex > 0) {
+            prevIndex = currentIndex - 1;
+        }
+
+        currentKeymap = keymaps[prevIndex];
+        var keymap = currentKeymap.split("+");
+
+        surface.setKeymap(keymap[0], keymap[1] || "");
     }
 
     InputWatcher {
