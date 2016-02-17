@@ -218,28 +218,28 @@ AbstractStage {
                 }
             }
         }
+    }
 
-        QMenuModel.QDBusActionGroup {
-            id: keymapActionGroup
-            busType: QMenuModel.DBus.SessionBus
-            busName: "com.canonical.indicator.keyboard"
-            objectPath: "/com/canonical/indicator/keyboard"
+    QMenuModel.QDBusActionGroup {
+        id: keymapActionGroup
+        busType: QMenuModel.DBus.SessionBus
+        busName: "com.canonical.indicator.keyboard"
+        objectPath: "/com/canonical/indicator/keyboard"
 
-            property variant activeAction: action("active")
-            property variant nextAction: action("scroll")
+        property variant activeAction: action("active")
+        property variant nextAction: action("scroll")
 
-            readonly property int currentLayoutIndex: action("current") ? action("current").state : 0
-            onCurrentLayoutIndexChanged: {
-                if (priv.globalKeymapSwitching) {
-                    priv.switchKeymaps(currentLayoutIndex);
-                } else if (priv.focusedAppDelegate) {
-                    priv.focusedAppDelegate.switchToKeymap(currentLayoutIndex);
-                }
+        readonly property int currentLayoutIndex: action("current") ? action("current").state : 0
+        onCurrentLayoutIndexChanged: {
+            if (priv.globalKeymapSwitching) {
+                priv.switchKeymaps(currentLayoutIndex);
+            } else if (priv.focusedAppDelegate) {
+                priv.focusedAppDelegate.switchToKeymap(currentLayoutIndex);
             }
+        }
 
-            Component.onCompleted: {
-                keymapActionGroup.start();
-            }
+        Component.onCompleted: {
+            keymapActionGroup.start();
         }
     }
 
