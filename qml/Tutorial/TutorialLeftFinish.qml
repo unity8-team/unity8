@@ -21,9 +21,14 @@ import "." as LocalComponents
 TutorialPage {
     id: root
 
+    property var launcher
+
     title: i18n.tr("These are the shortcuts to favorite apps")
     text: i18n.tr("Tap here to continue.")
     fullTextWidth: true
+
+    // Make sure launcher is shown, even after screen is locked/unlocked
+    onPausedChanged: if (!paused) launcher.switchToNextState("visible")
 
     foreground {
         children: [

@@ -29,7 +29,7 @@ TutorialPage {
     textXOffset: root.launcher.x + root.launcher.visibleWidth
 
     Connections {
-        target: root.launcher
+        target: root.shown ? root.launcher : null
 
         onStateChanged: {
             if (root.launcher.state === "visible") {

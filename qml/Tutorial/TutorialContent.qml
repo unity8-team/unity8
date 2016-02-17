@@ -76,6 +76,7 @@ Item {
         objectName: "tutorialLeftFinish"
         anchors.fill: parent
         textXOffset: root.launcher.panelWidth
+        launcher: root.launcher
         paused: !shown || root.paused
         text: i18n.tr("Tap here to continue.")
 
