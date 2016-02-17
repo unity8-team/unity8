@@ -31,6 +31,7 @@ FocusScope {
     property alias active: decoration.active
     property alias title: decoration.title
     property alias fullscreen: applicationWindow.fullscreen
+    readonly property alias currentKeymap: applicationWindow.currentKeymap
 
     readonly property bool decorationShown: !fullscreen
     property bool highlightShown: false
@@ -51,12 +52,8 @@ FocusScope {
     signal minimize()
     signal decorationPressed()
 
-    function nextKeymap() {
-        applicationWindow.nextKeymap();
-    }
-
-    function previousKeymap() {
-        applicationWindow.previousKeymap();
+    function switchToKeymap(index) {
+        applicationWindow.switchToKeymap(index);
     }
 
     Rectangle {
