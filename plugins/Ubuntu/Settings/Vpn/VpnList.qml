@@ -65,7 +65,6 @@ ListView {
        }
     }
 
-    // FIXME: Load this async
     Component {
         id: vpnPreviewDialog
         VpnPreviewDialog {
@@ -76,7 +75,6 @@ ListView {
         }
     }
 
-    // FIXME: Load this async
     Component {
         id: vpnEditorDialog
         VpnEditorDialog {}

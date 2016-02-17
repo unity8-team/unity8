@@ -15,12 +15,13 @@
  */
 
 import QtQuick 2.4
+import QtQuick.Layouts 1.2
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 import Ubuntu.Components.Popups 1.3
 
-
 Dialog {
+    id: editor
     title: i18n.tr("Set up VPN")
 
     property var connection
@@ -31,18 +32,27 @@ Dialog {
         var props = {"connection": connection}
         switch (connection.type) {
         case 0:
-            basicPropertiesLoader.setSource("Openvpn/BasicProperties.qml", props)
+            editorLoader.setSource("Openvpn/Editor.qml", props)
             break
         }
     }
 
-    Row {
+
+    RowLayout {
+
         Label {
             id: serverLabel
             text: i18n.tr("Server:")
             font.bold: true
             color: Theme.palette.selected.backgroundText
             elide: Text.ElideRight
+            Layout.fillWidth: true
+        }
+
+        // Corresponds to the ":" element in the row of server:port textfields.
+        Item {
+            Layout.preferredWidth: units.gu(1)
+            height: units.gu(1) // Value set for the sake of it being drawn.
         }
 
         Label {
@@ -51,15 +61,31 @@ Dialog {
             font.bold: true
             color: Theme.palette.selected.backgroundText
             elide: Text.ElideRight
+
+            Layout.preferredWidth: units.gu(10)
         }
     }
 
-    Row {
+    RowLayout {
+
         TextField {
             id: serverField
             objectName: "serverField"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            Layout.fillWidth: true
+            text: connection.remote
+            onTextChanged: {
+                connection.remote = text;
+                connection.id = text;
+            }
             Component.onCompleted: forceActiveFocus()
+        }
+
+        Label {
+            text: ":"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            Layout.preferredWidth: units.gu(1)
         }
 
         TextField {
@@ -68,21 +94,18 @@ Dialog {
             maximumLength: 5
             validator: portValidator
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            Component.onCompleted: forceActiveFocus()
+            text: connection.port
+            onTextChanged: connection.port = parseInt(text, 10) || 0
+
+            // The UI does not offer control over whether or not a custom port
+            // is to be used, so we implicitly set this.
+            onActiveFocusChanged: connection.portSet = true
+
+            Layout.preferredWidth: units.gu(10)
         }
     }
 
-    ListItems.ItemSelector {
-        text: i18n.tr("Use this VPN for:")
-        id: usageScopeField
-        objectName: "usageScopeField"
-        model: [i18n.tr("All network connections"),
-                i18n.tr("Its own network"),
-                i18n.tr("Specific routes")]
-
-    }
-
-    Row {
+    RowLayout {
         id: typeRow
 
         Label {
@@ -91,6 +114,8 @@ Dialog {
             font.bold: true
             color: Theme.palette.selected.backgroundText
             elide: Text.ElideRight
+            horizontalAlignment: Text.AlignHCenter
+            Layout.fillWidth: true
         }
 
         ListItems.ItemSelector {
@@ -100,13 +125,14 @@ Dialog {
             model: [
                 i18n.tr("OpenVPN")
             ]
-            width: units.gu(10)
+            Layout.preferredWidth: units.gu(20)
         }
     }
 
     Loader {
-        anchors { left: parent.left; right: parent.right }
-        id: basicPropertiesLoader
+        id: editorLoader
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     RegExpValidator {

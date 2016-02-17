@@ -28,12 +28,11 @@ Dialog {
     signal changeClicked(var connection)
 
     // TRANSLATORS: %1 is the hostname of a VPN connection
-    title: i18n.tr("VPN “%1”").arg(connection.remote)
+    title: connection.remote ? i18n.tr("VPN “%1”").arg(connection.remote) : i18n.tr("VPN")
 
     Component.onCompleted: {
 
         var l = contentLoader;
-        var invalidCertDetail;
 
         switch (connection.type) {
 
@@ -47,7 +46,6 @@ Dialog {
 
                 var err = UbuntuSettingsVpn.isCertificateValid(connection.ca);
                 switch (err) {
-                // No error.
                 case UbuntuSettingsVpn.CERT_NOT_FOUND:
                 case UbuntuSettingsVpn.CERT_EMPTY:
                 case UbuntuSettingsVpn.CERT_SELFSIGNED:
@@ -124,7 +122,10 @@ Dialog {
             width: (parent.width / 2) - (parent.spacing / 2)
             text: i18n.tr("Remove")
             color: UbuntuColors.red
-            onClicked: connection.remove()
+            onClicked: {
+                connection.remove();
+                PopupUtils.close(preview);
+            }
         }
 
         Button {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical Ltd.
+ * Copyright (C) 2016 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version 3,
@@ -19,35 +19,46 @@ import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 import Ubuntu.Components.Popups 1.3
+import Ubuntu.Content 1.1
+
 
 ListItems.ItemSelector {
+    id: root
+
     property string path
 
-    property var __dialog
+    property var activeTransfer: null
 
-    function createDialog() {
-        __dialog = PopupUtils.open(fileDialogComponent)
-        __dialog.accept.connect(pathAccepted)
-        __dialog.reject.connect(pathRejected)
+    ContentPeer {
+        id: certSource
+        contentType: ContentType.Documents
+        handler: ContentHandler.Source
+        selectionType: ContentTransfer.Single
     }
 
-    function destroyDialog() {
-        __dialog.accept.disconnect(pathAccepted)
-        __dialog.reject.disconnect(pathRejected)
-        PopupUtils.close(__dialog)
+    ContentTransferHint {
+        id: importHint
+        anchors.fill: parent
+        activeTransfer: root.activeTransfer
     }
 
-    function pathAccepted(newPath) {
-        path = newPath
-        destroyDialog()
+    Connections {
+        target: root.activeTransfer
+        onStateChanged: {
+            if (root.activeTransfer.state === ContentTransfer.Charged)
+                console.warn(root.activeTransfer.items, root.activeTransfer.items[0].url);
+                path = root.activeTransfer.items[0].url;
+        }
     }
 
-    function pathRejected() {
-        destroyDialog()
-    }
     model: [
         path ? path.split("/")[path.split("/").length - 1] : i18n.tr("None"),
         i18n.tr("Choose…")
     ]
 
+    onDelegateClicked: {
+        if (index === 1) {
+            activeTransfer = certSource.request();
+        }
+    }
 }
