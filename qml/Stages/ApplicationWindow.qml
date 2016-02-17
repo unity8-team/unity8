@@ -44,6 +44,14 @@ FocusScope {
     readonly property int widthIncrement: sessionContainer.surface ? sessionContainer.surface.widthIncrement : 0
     readonly property int heightIncrement: sessionContainer.surface ? sessionContainer.surface.heightIncrement : 0
 
+    function nextKeymap() {
+        sessionContainer.surfaceContainer.nextKeymap();
+    }
+
+    function previousKeymap() {
+        sessionContainer.surfaceContainer.previousKeymap();
+    }
+
     QtObject {
         id: d
 

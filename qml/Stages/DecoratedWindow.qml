@@ -51,6 +51,14 @@ FocusScope {
     signal minimize()
     signal decorationPressed()
 
+    function nextKeymap() {
+        applicationWindow.nextKeymap();
+    }
+
+    function previousKeymap() {
+        applicationWindow.previousKeymap();
+    }
+
     Rectangle {
         id: selectionHighlight
         anchors.fill: parent
