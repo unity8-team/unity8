@@ -45,6 +45,18 @@ Rectangle {
         }
     }
 
+
+    Item {
+        Repeater {
+            id: repeater
+            model: mockResultsModel
+            Item {
+                property var previewModel: mockScope.preview(model.result, model.categoryId);
+            }
+        }
+    }
+
+
     UT.UnityTestCase {
         id: testCase
         name: "PreviewView"
@@ -59,15 +71,13 @@ Rectangle {
         }
 
         function init() {
-            view.model = mockResultsModel;
-            view.currentIndex = 1;
             view.open = true;
+            view.previewModel = repeater.itemAt(0).previewModel
             verify(testCase.mouseArea, "Can't find the processingMouseArea object.");
         }
 
         function cleanup() {
             view.open = false;
-            view.model = null;
             clickedSpy.clear();
         }
 
