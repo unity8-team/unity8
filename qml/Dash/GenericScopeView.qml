@@ -785,7 +785,6 @@ FocusScope {
 
         readonly property bool processing: item && item.processing || false
         readonly property int count: item && item.count || 0
-        readonly property int currentIndex: item && item.currentIndex || 0
         readonly property var currentItem: item && item.currentItem || null
 
         property string subPage: ""
@@ -800,7 +799,7 @@ FocusScope {
         }
 
         source: switch(subPage) {
-            case "preview": return "PreviewListView.qml";
+            case "preview": return "PreviewView.qml";
             case "settings": return "ScopeSettingsPage.qml";
             default: return "";
         }

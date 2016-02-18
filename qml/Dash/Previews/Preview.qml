@@ -34,9 +34,6 @@ Item {
      */
     property var previewModel
 
-    //! \brief Should be set to true if this preview is currently displayed.
-    property bool isCurrent: false
-
     //! \brief The ScopeStyle component.
     property var scopeStyle: null
 
@@ -68,8 +65,8 @@ Item {
                 id: column
                 objectName: "previewListRow" + index
                 anchors {
-                    top: parent.top
-                    bottom: parent.bottom
+                    top: parent ? parent.top : undefined
+                    bottom: parent ? parent.bottom : undefined
                 }
                 width: row.columnWidth
                 spacing: row.spacing
@@ -88,7 +85,6 @@ Item {
                     widgetId: model.widgetId
                     widgetType: model.type
                     widgetData: model.properties
-                    isCurrentPreview: root.isCurrent
                     scopeStyle: root.scopeStyle
                     parentFlickable: column
 

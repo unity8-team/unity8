@@ -36,8 +36,8 @@ Rectangle {
         id: mockResultsModel
     }
 
-    PreviewListView {
-        id: listView
+    PreviewView {
+        id: view
         anchors.fill: parent
         scope: mockScope
         scopeStyle: ScopeStyle {
@@ -47,10 +47,10 @@ Rectangle {
 
     UT.UnityTestCase {
         id: testCase
-        name: "PreviewListView"
+        name: "PreviewView"
         when: windowShown
 
-        property MouseArea mouseArea: findChild(listView, "processingMouseArea")
+        property MouseArea mouseArea: findChild(view, "processingMouseArea")
 
         SignalSpy {
             id: clickedSpy
@@ -59,43 +59,43 @@ Rectangle {
         }
 
         function init() {
-            listView.model = mockResultsModel;
-            listView.currentIndex = 1;
-            listView.open = true;
+            view.model = mockResultsModel;
+            view.currentIndex = 1;
+            view.open = true;
             verify(testCase.mouseArea, "Can't find the processingMouseArea object.");
         }
 
         function cleanup() {
-            listView.open = false;
-            listView.model = null;
+            view.open = false;
+            view.model = null;
             clickedSpy.clear();
         }
 
         function test_notProcessing() {
             expectFail("", "processingMouseArea should not receive the click.");
-            mouseClick(listView);
+            mouseClick(view);
             clickedSpy.wait();
         }
 
         function test_processing() {
-            verify(listView.currentItem, "currentItem is not ready yet");
-            listView.currentItem.previewModel.setLoaded(false);
+            verify(view.currentItem, "currentItem is not ready yet");
+            view.currentItem.previewModel.setLoaded(false);
 
-            tryCompare(listView, "processing", true);
+            tryCompare(view, "processing", true);
 
-            mouseClick(listView);
+            mouseClick(view);
             clickedSpy.wait();
         }
 
         function test_title() {
-            var header = findChild(listView, "innerPageHeader");
+            var header = findChild(view, "innerPageHeader");
             verify(header, "Could not find the preview header");
 
             compare(header.config.title, "Mock Scope");
         }
 
         function test_header_style() {
-            var header = findChild(listView, "pageHeader");
+            var header = findChild(view, "pageHeader");
             verify(header, "Could not find the header");
 
             var innerHeader = findChild(header, "innerPageHeader");
