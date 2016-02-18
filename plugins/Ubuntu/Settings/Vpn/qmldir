@@ -1,7 +1,10 @@
 module Ubuntu.Settings.Vpn
 plugin UbuntuSettingsVpn
 
+singleton DialogFileProperties 0.1 DialogFileProperties.qml
+
 internal VpnPreviewDialog PreviewDialog/VpnPreviewDialog.qml
+internal DialogFile DialogFile.qml
 
 VpnList 0.1 VpnList.qml
 VpnEditorDialog 0.1 VpnEditorDialog.qml

@@ -15,7 +15,7 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Layouts 1.2
+import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 import Ubuntu.Components.Popups 1.3
@@ -119,18 +119,27 @@ Column {
         text: i18n.tr("TLS key:")
     }
 
+    RowLayout {
+        CheckBox {
+            id: taSetToggle
+            checked: connection.taSet
+            onTriggered: connection.taSet = checked
+            activeFocusOnPress: false
+        }
+
+        Label {
+            id: taSetLabel
+            text: i18n.tr("Use additional TLS authentication:")
+            Layout.fillWidth: true
+        }
+    }
+
     FileSelector {
         id: taField
         anchors { left: parent.left; right: parent.right; }
         path: connection.ta
-        onPathChanged: {
-            var taSet = !!path;
-            if (taSet !== connection.taSet) {
-                connection.taSetChanged.connect(function () { connection.path = path });
-            } else {
-                connection.ta = path;
-            }
-        }
+        onPathChanged: connection.ta = path
+        enabled: taSetToggle.checked
     }
 
     Label {
