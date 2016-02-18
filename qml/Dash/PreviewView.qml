@@ -24,18 +24,13 @@ Item {
     id: root
 
     property bool open: false
-    property int initialIndex: -1
-    property var initialIndexPreviewStack: null
     property var scope: null
     property var scopeStyle: null
-    property string categoryId
-    property bool usedInitialIndex: false
 
     property alias showSignatureLine: header.showSignatureLine
 
-    property var model
-    property alias currentIndex: previewLoader.index
     property alias currentItem: previewLoader.item
+    property var previewModel
 
     readonly property bool processing: currentItem && (!currentItem.previewModel.loaded
                                                        || currentItem.previewModel.processingAction)
@@ -61,40 +56,6 @@ Item {
                 currentItem.previewData.cancelAction();
             }
             root.scope.cancelActivation();
-            model = undefined;
-        }
-    }
-
-    onModelChanged: {
-        if (previewLoader.active && initialIndex >= 0 && !usedInitialIndex) {
-            usedInitialIndex = true;
-        }
-    }
-
-    Item {
-        Repeater {
-            id: repeater
-            model: root.model
-            Item {
-                readonly property var previewStack: {
-                    if (root.open) {
-                        if (index === root.initialIndex) {
-                            return root.initialIndexPreviewStack;
-                        } else {
-                            return root.scope.preview(model.result, root.categoryId);
-                        }
-                    } else {
-                        return null;
-                    }
-                }
-                property var previewModel: {
-                    if (previewStack) {
-                        return previewStack.getPreviewModel(0);
-                    } else {
-                        return null;
-                    }
-                }
-            }
         }
     }
 
@@ -107,29 +68,17 @@ Item {
             left: parent.left
             right: parent.right
         }
-        active: count > 0
-
-        property int index: initialIndex
-        onIndexChanged: console.log(index, "index changed")
-        readonly property int count: root.model && root.model.count || 0
 
         sourceComponent: Previews.Preview {
             id: preview
-            objectName: "preview" + index
+            objectName: "preview"
             height: previewLoader.height
             width: previewLoader.width
-
-            property var result
-            property int index: 0
         }
 
-        property var previewModel: repeater.itemAt(index).previewModel;
-        onPreviewModelChanged: console.log(previewModel)
-
         onLoaded: {
-            item.index = Qt.binding(function() { return index; });
             item.scopeStyle = Qt.binding(function() { return root.scopeStyle; });
-            item.previewModel = Qt.binding(function() { return previewLoader.previewModel });
+            item.previewModel = Qt.binding(function() { return root.previewModel; });
         }
     }
 
