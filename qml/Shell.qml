@@ -41,6 +41,7 @@ import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
 import Unity.Indicators 0.1 as Indicators
 import Cursor 1.0
+import Aethercast 0.1
 
 
 Item {
@@ -186,6 +187,20 @@ Item {
             cursor.y = mappedCoords.y;
         }
     }
+
+    CursorImageHelper {
+        id: cursorImageHelper
+    }
+
+    Binding { target: AethercastManager; property: "x"; value: cursor.x }
+    Binding { target: AethercastManager; property: "cursorImage"; value: cursorImageHelper.cursorImage(cursor.themeName + "/" + cursor.cursorName) }
+
+//    AethercastManager {
+//        id: aethercast
+//        cursorX: cursor.x
+//        cursorY: cursor.y
+//        cursor: mousePointer.themeName + "/" + mousePointer.cursorName
+//    }
 
     Item {
         id: stages

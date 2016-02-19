@@ -1,0 +1,52 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+    <interface name="org.aethercast.Manager">
+        <method name="RegisterMediaManager">
+            <arg name="path" type="o" direction="in"/>
+        </method>
+        <method name="UnregisterMediaManager">
+            <arg name="path" type="o" direction="in"/>
+        </method>
+        <method name="Scan"/>
+        <method name="RegisterInputProvider">
+            <arg name="path" type="o" direction="in"/>
+            <arg name="options" type="a{sv}" direction="in"/>
+            <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QVariantMap"/>
+        </method>
+        <method name="UnregisterInputProvider">
+            <arg name="path" type="o" direction="in"/>
+        </method>
+        <property name="State" type="s" access="read"/>
+        <property name="Capabilities" type="as" access="read"/>
+        <property name="Scanning" type="b" access="read"/>
+    </interface>
+    <interface name="org.aethercast.InputProvider">
+        <method name="NewConnection">
+            <arg name="fd" type="h" direction="in"/>
+            <arg name="options" type="a{sv}" direction="in"/>
+            <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QVariantMap"/>
+        </method>
+        <method name="RequestDisconnection"/>
+        <property name="cursor" type="s" access="read"/>
+    </interface>
+    <interface name="org.aethercast.Device">
+        <method name="Connect">
+            <arg name="role" type="s" direction="in"/>
+        </method>
+        <method name="Disconnect"/>
+        <property name="State" type="s" access="read"/>
+        <property name="Address" type="s" access="read"/>
+        <property name="Name" type="s" access="read"/>
+        <property name="Capabilities" type="as" access="read"/>
+    </interface>
+    <interface name="org.aethercast.MediaManager">
+        <method name="Configure">
+            <arg name="address" type="s"/>
+            <arg name="port" type="i"/>
+        </method>
+        <method name="Play"/>
+        <method name="Pause"/>
+        <method name="Teardown"/>
+    </interface>
+</node>
