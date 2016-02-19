@@ -34,8 +34,8 @@ SequentialAnimation {
         windowScreenshot.visible = true;
         shell.orientationAngle = root.toAngle;
         shell.x = 0;
-        shell.width = flipShellDimensions ? orientedShell.height : orientedShell.width;
-        shell.height = flipShellDimensions ? orientedShell.width : orientedShell.height;
+        shell.width = Qt.binding( function() { return flipShellDimensions ? orientedShell.height : orientedShell.width; } );
+        shell.height = Qt.binding( function() { return flipShellDimensions ? orientedShell.width : orientedShell.height; } );
         shell.transformOriginX = orientedShell.width / 2;
         shell.transformOriginY = orientedShell.width / 2;
         shell.updateFocusedAppOrientation();
