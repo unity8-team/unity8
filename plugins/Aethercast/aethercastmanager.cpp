@@ -74,3 +74,8 @@ void AethercastManager::setCursor(const QString &cursor)
 {
     m_inputProvider->setCursorSource(cursor);
 }
+
+void AethercastManager::disconnectAll()
+{
+    m_manager->DisconnectAll();
+}

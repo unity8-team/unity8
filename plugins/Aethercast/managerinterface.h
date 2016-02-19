@@ -48,6 +48,12 @@ public:
     { return qvariant_cast< QString >(property("State")); }
 
 public Q_SLOTS: // METHODS
+    inline QDBusPendingReply<> DisconnectAll()
+    {
+        QList<QVariant> argumentList;
+        return asyncCallWithArgumentList(QStringLiteral("DisconnectAll"), argumentList);
+    }
+
     inline QDBusPendingReply<> RegisterInputProvider(const QDBusObjectPath &path, const QVariantMap &options)
     {
         QList<QVariant> argumentList;

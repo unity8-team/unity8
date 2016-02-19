@@ -24,6 +24,12 @@ Item {
     width: units.gu(40)
     height: units.gu(70)
 
+    Binding {
+        target: MouseTouchAdaptor
+        property: "enabled"
+        value: true
+    }
+
     DisabledScreenNotice {
         id: touchScreenPad
         anchors.fill: parent

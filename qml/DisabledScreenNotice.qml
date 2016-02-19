@@ -17,8 +17,10 @@
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
+import Ubuntu.Gestures 0.1
 import QtQuick.Window 2.2
 import "Components"
+import Aethercast 0.1
 
 Item {
     id: root
@@ -97,6 +99,77 @@ Item {
             id: inputMethod
             objectName: "inputMethod"
             anchors.fill: parent
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        visible: topPanel.y > -topPanel.height
+        onClicked: {
+            topPanel.collapse()
+        }
+    }
+
+    Rectangle {
+        id: topPanel
+        anchors { left: parent.left; right: parent.right }
+        height: units.gu(10)
+        color: "#292929"
+        y: -height
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: units.gu(2)
+
+            Label {
+                text: "External display"
+                Layout.fillWidth: true
+                color: "white"
+            }
+            Button {
+                text: "Disconnect"
+                color: UbuntuColors.green
+                onClicked: {
+                    AethercastManager.disconnectAll()
+                    topPanel.collapse();
+                }
+            }
+        }
+
+        function collapse() {
+            snapAnimation.targetY = -topPanel.height;
+            snapAnimation.start();
+        }
+
+        function expand() {
+            snapAnimation.targetY = 0
+            snapAnimation.start();
+        }
+
+        UbuntuNumberAnimation {
+            id: snapAnimation
+            property int targetY
+            target: topPanel
+            property: "y"
+            to: targetY
+        }
+    }
+
+    DirectionalDragArea {
+        id: topDragArea
+        direction: Direction.Downwards
+        width: parent.width
+        height: units.gu(1)
+        onDistanceChanged: topPanel.y = Math.min(-topPanel.height + distance, 0)
+        onDraggingChanged: {
+            print("dragging changed")
+            if (!dragging) {
+                if (topPanel.y > -topPanel.height / 2) {
+                    topPanel.expand()
+                } else {
+                    topPanel.collapse()
+                }
+            }
         }
     }
 }
