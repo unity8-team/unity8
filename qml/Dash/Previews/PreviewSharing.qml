@@ -77,11 +77,9 @@ Item {
                 var transfer = peer.request();
                 if (transfer.state === ContentTransfer.InProgress) {
                     var items = new Array();
-                    for (var i = 0; i < url.length; i++) {
-                        var exportItem = exportItemComponent.createObject();
-                        exportItem.url = url[i];
-                        items.push(exportItem);
-                    }
+                    var exportItem = exportItemComponent.createObject();
+                    exportItem.url = url;
+                    items.push(exportItem);
                     transfer.items = items;
                     transfer.state = ContentTransfer.Charged;
                 }
