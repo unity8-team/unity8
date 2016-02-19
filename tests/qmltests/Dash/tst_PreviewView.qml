@@ -45,7 +45,6 @@ Rectangle {
         }
     }
 
-
     Item {
         Repeater {
             id: repeater

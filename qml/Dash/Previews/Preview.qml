@@ -65,8 +65,8 @@ Item {
                 id: column
                 objectName: "previewListRow" + index
                 anchors {
-                    top: parent ? parent.top : undefined
-                    bottom: parent ? parent.bottom : undefined
+                    top: parent.top
+                    bottom: parent.bottom
                 }
                 width: row.columnWidth
                 spacing: row.spacing
