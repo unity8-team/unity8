@@ -29,7 +29,7 @@ FocusScope {
     property bool orientationChangesEnabled: d.supportsSurfaceResize ? d.surfaceOldEnoughToBeResized : true
     readonly property string title: sessionContainer.surface && sessionContainer.surface.name !== "" ?
                                         sessionContainer.surface.name : d.name
-    readonly property string currentKeymap: sessionContainer.surfaceContainer ? sessionContainer.surfaceContainer.currentKeymap : "us"
+    readonly property string activeKeymap: sessionContainer.surfaceContainer ? sessionContainer.surfaceContainer.activeKeymap : "us"
 
     // to be set from outside
     property QtObject application

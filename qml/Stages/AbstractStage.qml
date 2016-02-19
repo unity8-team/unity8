@@ -17,6 +17,9 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import GSettings 1.0
+import GlobalShortcut 1.0
+import QMenuModel 0.1 as QMenuModel
+import AccountsService 0.1
 
 Rectangle {
     id: root
@@ -44,6 +47,7 @@ Rectangle {
 
     // To be read from outside
     property var mainApp: null
+    property var mainAppWindow: null
     property int mainAppWindowOrientationAngle
     property bool orientationChangesEnabled
     property int supportedOrientations: Qt.PortraitOrientation
@@ -66,4 +70,63 @@ Rectangle {
         }
         return false;
     }
+
+    // keymap switching, shared between stages
+    // TODO Work around http://pad.lv/1293478 until qmenumodel knows to cast
+    readonly property int stepUp: -1
+    readonly property int stepDown: 1
+
+    GlobalShortcut {
+        shortcut: Qt.MetaModifier|Qt.Key_Space
+        onTriggered: keymapActionGroup.nextAction.activate(stepUp);
+    }
+
+    GlobalShortcut {
+        shortcut: Qt.MetaModifier|Qt.ShiftModifier|Qt.Key_Space
+        onTriggered: keymapActionGroup.nextAction.activate(stepDown);
+    }
+
+    QMenuModel.QDBusActionGroup {
+        id: keymapActionGroup
+        busType: QMenuModel.DBus.SessionBus
+        busName: "com.canonical.indicator.keyboard"
+        objectPath: "/com/canonical/indicator/keyboard"
+
+        property variant activeAction: action("active")
+        property variant currentAction: action("current")
+        property variant nextAction: action("scroll")
+
+        Component.onCompleted: {
+            keymapActionGroup.start();
+            currentAction.updateState(0); // start with first keymap
+        }
+    }
+
+    // switching
+    property int currentKeymapIndex: 0
+    readonly property int currentIndicatorIndex: keymapActionGroup.currentAction ? keymapActionGroup.currentAction.state : 0
+    onCurrentIndicatorIndexChanged: { // switch the keymap
+        if (mainAppWindow) {
+            currentKeymapIndex = currentIndicatorIndex;
+            mainAppWindow.switchToKeymap(currentIndicatorIndex);
+        }
+    }
+
+    onMainAppWindowChanged: {
+        if (mainAppWindow) {
+            mainAppWindow.switchToKeymap(currentKeymapIndex);
+        }
+    }
+
+    // reading the active keymap
+    function updateActiveKeymap() {
+        var activeIndex = AccountsService.keymaps.indexOf(activeKeymap);
+        if (activeIndex !== -1) {
+            // tell the keyboard indicator about the active keymap
+            keymapActionGroup.activeAction.updateState(activeIndex);
+        }
+    }
+
+    readonly property string activeKeymap: mainAppWindow ? mainAppWindow.activeKeymap : "us"
+    onActiveKeymapChanged: updateActiveKeymap()
 }
