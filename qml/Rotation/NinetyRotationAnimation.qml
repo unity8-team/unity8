@@ -30,8 +30,8 @@ SequentialAnimation {
 
     ScriptAction { script: {
         info.transitioning = true;
-        windowScreenshot.take();
-        windowScreenshot.visible = true;
+//        windowScreenshot.take(); // Disabled as broken on silo10
+//        windowScreenshot.visible = true;
         shell.orientationAngle = root.toAngle;
         shell.x = 0;
         shell.width = flipShellDimensions ? orientedShell.height : orientedShell.width;
