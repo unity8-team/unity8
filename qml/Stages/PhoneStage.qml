@@ -124,7 +124,6 @@ AbstractStage {
             beingResizedTimer.start();
         }
     }
-
     Timer {
         id: beingResizedTimer
         interval: 100

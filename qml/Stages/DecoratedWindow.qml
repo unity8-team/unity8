@@ -51,10 +51,6 @@ FocusScope {
     signal minimize()
     signal decorationPressed()
 
-    function switchToKeymap(index) {
-        applicationWindow.switchToKeymap(index);
-    }
-
     Rectangle {
         id: selectionHighlight
         anchors.fill: parent

@@ -352,10 +352,6 @@ AbstractStage {
                     ApplicationManager.focusApplication(appId);
                 }
 
-                function switchToKeymap(index) {
-                    decoratedWindow.switchToKeymap(index);
-                }
-
                 function playFocusAnimation() {
                     focusAnimation.start()
                 }
