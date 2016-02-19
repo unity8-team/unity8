@@ -313,6 +313,7 @@ Module {
         Property { name: "description"; type: "string"; isReadonly: true }
         Property { name: "searchHint"; type: "string"; isReadonly: true }
         Property { name: "searchInProgress"; type: "bool"; isReadonly: true }
+        Property { name: "activationInProgress"; type: "bool"; isReadonly: true }
         Property { name: "favorite"; type: "bool" }
         Property { name: "shortcut"; type: "string"; isReadonly: true }
         Property {
