@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ static QObject *manager_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
     return new AethercastManager();
 }
 
-void LightsPlugin::registerTypes(const char *uri)
+void AethercastPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("Aethercast"));
     qmlRegisterSingletonType<AethercastManager>(uri, 0, 1, "AethercastManager", manager_provider);
