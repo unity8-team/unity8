@@ -190,8 +190,7 @@ Item {
     Item {
         id: stages
         objectName: "stages"
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
 
         Connections {
             target: ApplicationManager
