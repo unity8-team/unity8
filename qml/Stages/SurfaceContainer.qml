@@ -36,21 +36,21 @@ FocusScope {
     property int requestedHeight: -1
 
     readonly property var keymaps: AccountsService.keymaps
-    property string currentKeymap: AccountsService.keymaps[0]
+    property string activeKeymap: AccountsService.keymaps[0]
 
     onSurfaceChanged: {
         if (surface) {
             surfaceItem.surface = surface;
             root.hadSurface = false;
 
-            var keymap = currentKeymap.split("+")
+            var keymap = activeKeymap.split("+")
             surface.setKeymap(keymap[0], keymap[1] || "")
         }
     }
 
     function switchToKeymap(index) {
-        currentKeymap = keymaps[index];
-        var keymap = currentKeymap.split("+");
+        activeKeymap = keymaps[index];
+        var keymap = activeKeymap.split("+");
 
         if (surface) {
             surface.setKeymap(keymap[0], keymap[1] || "");

@@ -22,8 +22,6 @@ import "../Components"
 import Utils 0.1
 import Ubuntu.Gestures 0.1
 import GlobalShortcut 1.0
-import QMenuModel 0.1 as QMenuModel
-import AccountsService 0.1
 
 AbstractStage {
     id: root
@@ -41,6 +39,8 @@ AbstractStage {
     mainApp: ApplicationManager.focusedApplicationId
             ? ApplicationManager.findApplication(ApplicationManager.focusedApplicationId)
             : null
+
+    mainAppWindow: priv.focusedAppDelegate ? priv.focusedAppDelegate.appWindow : null
 
     // application windows never rotate independently
     mainAppWindowOrientationAngle: shellOrientationAngle
@@ -120,16 +120,6 @@ AbstractStage {
         active: priv.focusedAppDelegate !== null
     }
 
-    GlobalShortcut {
-        shortcut: Qt.MetaModifier|Qt.Key_Space
-        onTriggered: priv.nextKeymap()
-    }
-
-    GlobalShortcut {
-        shortcut: Qt.MetaModifier|Qt.ShiftModifier|Qt.Key_Space
-        onTriggered: priv.previousKeymap()
-    }
-
     QtObject {
         id: priv
 
@@ -186,60 +176,6 @@ AbstractStage {
                     return;
                 }
             }
-        }
-
-        // keymap
-        readonly property bool globalKeymapSwitching: true // TODO make this configurable in the future
-        readonly property string activeKeymap: priv.focusedAppDelegate ? priv.focusedAppDelegate.currentKeymap : "us"
-        onActiveKeymapChanged: {
-            var activeIndex = AccountsService.keymaps.indexOf(activeKeymap);
-            if (activeIndex !== -1) {
-                keymapActionGroup.activeAction.updateState(activeIndex); // tell the keyboard indicator about the active keymap
-            }
-        }
-
-        // TODO Work around http://pad.lv/1293478 until qmenumodel knows to cast
-        readonly property int stepUp: -1
-        readonly property int stepDown: 1
-
-        function nextKeymap() {
-            keymapActionGroup.nextAction.activate(stepUp);
-        }
-
-        function previousKeymap() {
-            keymapActionGroup.nextAction.activate(stepDown);
-        }
-
-        function switchKeymaps(index) { // switch all surfaces to keymap with index
-            for (var i = 0; i < appRepeater.count; i++) {
-                var appDelegate = appRepeater.itemAt(i);
-                if (appDelegate) {
-                    appDelegate.switchToKeymap(index);
-                }
-            }
-        }
-    }
-
-    QMenuModel.QDBusActionGroup {
-        id: keymapActionGroup
-        busType: QMenuModel.DBus.SessionBus
-        busName: "com.canonical.indicator.keyboard"
-        objectPath: "/com/canonical/indicator/keyboard"
-
-        property variant activeAction: action("active")
-        property variant nextAction: action("scroll")
-
-        readonly property int currentLayoutIndex: action("current") ? action("current").state : 0
-        onCurrentLayoutIndexChanged: {
-            if (priv.globalKeymapSwitching) {
-                priv.switchKeymaps(currentLayoutIndex);
-            } else if (priv.focusedAppDelegate) {
-                priv.focusedAppDelegate.switchToKeymap(currentLayoutIndex);
-            }
-        }
-
-        Component.onCompleted: {
-            keymapActionGroup.start();
         }
     }
 
@@ -347,7 +283,8 @@ AbstractStage {
                 readonly property string appName: model.name
                 property bool visuallyMaximized: false
                 property bool visuallyMinimized: false
-                readonly property alias currentKeymap: decoratedWindow.currentKeymap
+
+                readonly property alias appWindow: decoratedWindow.window
 
                 onFocusChanged: {
                     if (focus && ApplicationManager.focusedApplicationId !== appId) {
@@ -413,10 +350,6 @@ AbstractStage {
                     else if (maximizedRight)
                         maximizeRight();
                     ApplicationManager.focusApplication(appId);
-                }
-
-                function switchToKeymap(index) {
-                    decoratedWindow.switchToKeymap(index);
                 }
 
                 function playFocusAnimation() {
