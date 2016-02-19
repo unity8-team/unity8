@@ -23,4 +23,3 @@ ManagerInterface::ManagerInterface(const QString &service, const QString &path, 
 ManagerInterface::~ManagerInterface()
 {
 }
-
