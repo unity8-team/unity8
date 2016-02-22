@@ -16,20 +16,30 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
+import Ubuntu.Settings.Vpn 0.1
 
 Column {
-    spacing: units.gu(2)
+    property var connection
+    property bool installed
 
-    Label {
-        wrapMode: Text.WordWrap
-        anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("This VPN is not safe to use.")
+    Component.onCompleted: {
+        var defaultSource;
+
+        if (installed) {
+            // The API does not support routes yet (lp:1546573), so we treat
+            // any active VPN as if it is routing all traffic.
+             defaultSource = connection.active ?
+                             "../PreviewDialog/AllTrafficWithoutDns.qml"
+                             : "../PreviewDialog/SetUpUnused.qml";
+        } else {
+             defaultSource = "../PreviewDialog/NotInstalledWithoutRoutes.qml";
+        }
+
+        contentLoader.setSource(defaultSource);
     }
 
-    Label {
-        wrapMode: Text.WordWrap
+    Loader {
+        id: contentLoader
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("It does not provide a certificate. The VPN provider could be impersonated.")
     }
-
 }

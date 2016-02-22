@@ -15,21 +15,34 @@
  */
 
 import QtQuick 2.4
+import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItems
 
 Column {
-    spacing: units.gu(2)
+    spacing: units.gu(1)
+
+    property var connection
 
     Label {
-        wrapMode: Text.WordWrap
-        anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("This VPN is not safe to use.")
+        id: serverLabel
+        text: i18n.tr("Server:")
+        font.bold: true
+        color: Theme.palette.selected.backgroundText
+        elide: Text.ElideRight
+        Layout.fillWidth: true
     }
 
-    Label {
-        wrapMode: Text.WordWrap
-        anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("It does not provide a certificate. The VPN provider could be impersonated.")
+    TextField {
+        id: serverField
+        objectName: "serverField"
+        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+        Layout.fillWidth: true
+        text: connection.gateway
+        onTextChanged: {
+            connection.gateway = text;
+            connection.id = text;
+        }
+        Component.onCompleted: forceActiveFocus()
     }
-
 }

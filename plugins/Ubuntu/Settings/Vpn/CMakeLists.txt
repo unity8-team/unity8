@@ -1,6 +1,7 @@
 project(UbuntuSettingsVpn)
 
 add_subdirectory(Openvpn)
+add_subdirectory(Pptp)
 add_subdirectory(PreviewDialog)
 
 find_package(Qt5Core REQUIRED)

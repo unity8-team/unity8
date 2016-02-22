@@ -18,8 +18,13 @@ import QtQuick 2.4
 import Ubuntu.Components 1.3
 
 Column {
-
     spacing: units.gu(2)
+
+    Label {
+        wrapMode: Text.WordWrap
+        anchors { left: parent.left; right: parent.right; }
+        text: i18n.tr("You’re using this VPN for all Internet traffic.")
+    }
 
     Label {
         wrapMode: Text.WordWrap

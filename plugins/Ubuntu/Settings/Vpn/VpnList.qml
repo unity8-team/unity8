@@ -24,13 +24,16 @@ ListView {
 
     property var diag
 
-    function openConnection(connection) {
-        diag = PopupUtils.open(vpnEditorDialog, list, {"connection": connection});
-    }
+    signal requestOpenConnection(var connection)
+    signal requestPreviewConnection(var connection)
 
-    function previewConnection(connection) {
-        diag = PopupUtils.open(vpnPreviewDialog, list, {"connection": connection});
-    }
+    // function openConnection(connection) {
+    //     diag = PopupUtils.open(vpnEditorDialog, list, {"connection": connection});
+    // }
+
+    // function previewConnection(connection) {
+    //     diag = PopupUtils.open(vpnPreviewDialog, list, {"connection": connection});
+    // }
 
     anchors {
         left: parent.left
@@ -65,18 +68,18 @@ ListView {
        }
     }
 
-    Component {
-        id: vpnPreviewDialog
-        VpnPreviewDialog {
-            onChangeClicked: {
-                PopupUtils.close(diag);
-                openConnection(connection);
-            }
-        }
-    }
+    // Component {
+    //     id: vpnPreviewDialog
+    //     VpnPreviewDialog {
+    //         onChangeClicked: {
+    //             PopupUtils.close(diag);
+    //             openConnection(connection);
+    //         }
+    //     }
+    // }
 
-    Component {
-        id: vpnEditorDialog
-        VpnEditorDialog {}
-    }
+    // Component {
+    //     id: vpnEditorDialog
+    //     VpnEditorDialog {}
+    // }
 }

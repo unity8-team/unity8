@@ -26,13 +26,20 @@ Dialog {
 
     property var connection
 
+    signal typeChanged(var connection, int type)
+
     Component.onCompleted: {
         connection.updateSecrets()
 
         var props = {"connection": connection}
         switch (connection.type) {
-        case 0:
+        case 0: // Openvpn
+            basicPropertiesLoader.setSource("Openvpn/BasicProperties.qml", props)
             editorLoader.setSource("Openvpn/Editor.qml", props)
+            break
+        case 1: // Pptp
+            basicPropertiesLoader.setSource("Pptp/BasicProperties.qml", props)
+            editorLoader.setSource("Pptp/Editor.qml", props)
             break
         }
     }
@@ -44,71 +51,10 @@ Dialog {
         }
     }
 
-    RowLayout {
-
-        Label {
-            id: serverLabel
-            text: i18n.tr("Server:")
-            font.bold: true
-            color: Theme.palette.selected.backgroundText
-            elide: Text.ElideRight
-            Layout.fillWidth: true
-        }
-
-        // Corresponds to the ":" element in the row of server:port textfields.
-        Item {
-            Layout.preferredWidth: units.gu(1)
-            height: units.gu(1) // Value set for the sake of it being drawn.
-        }
-
-        Label {
-            id: portLabel
-            text: i18n.tr("Port:")
-            font.bold: true
-            color: Theme.palette.selected.backgroundText
-            elide: Text.ElideRight
-
-            Layout.preferredWidth: units.gu(10)
-        }
-    }
-
-    RowLayout {
-
-        TextField {
-            id: serverField
-            objectName: "serverField"
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            Layout.fillWidth: true
-            text: connection.remote
-            onTextChanged: {
-                connection.remote = text;
-                connection.id = text;
-            }
-            Component.onCompleted: forceActiveFocus()
-        }
-
-        Label {
-            text: ":"
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            Layout.preferredWidth: units.gu(1)
-        }
-
-        TextField {
-            id: portField
-            objectName: "portField"
-            maximumLength: 5
-            validator: portValidator
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            text: connection.port
-            onTextChanged: connection.port = parseInt(text, 10) || 0
-
-            // The UI does not offer control over whether or not a custom port
-            // is to be used, so we implicitly set this.
-            onActiveFocusChanged: connection.portSet = true
-
-            Layout.preferredWidth: units.gu(10)
-        }
+   Loader {
+        id: basicPropertiesLoader
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     RowLayout {
@@ -127,11 +73,15 @@ Dialog {
         ListItems.ItemSelector {
             id: typeField
             objectName: "typeField"
-            enabled: false
             model: [
-                i18n.tr("OpenVPN")
+                i18n.tr("OpenVPN"),
+                i18n.tr("Pptp")
             ]
+            expanded: true
+            Component.onCompleted: selectedIndex = connection.type
+            onDelegateClicked: typeChanged(connection, index)
             Layout.preferredWidth: units.gu(20)
+            Layout.minimumHeight: currentlyExpanded ? itemHeight * model.length : itemHeight
         }
     }
 
@@ -139,10 +89,5 @@ Dialog {
         id: editorLoader
         anchors.left: parent.left
         anchors.right: parent.right
-    }
-
-    RegExpValidator {
-        id: portValidator
-        regExp: /([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])/
     }
 }

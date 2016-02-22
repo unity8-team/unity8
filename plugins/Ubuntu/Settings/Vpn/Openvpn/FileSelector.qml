@@ -46,7 +46,6 @@ ListItems.ItemSelector {
         destroyDialog()
     }
 
-
     model: [
         path ? path.split("/")[path.split("/").length - 1] : i18n.tr("None"),
         i18n.tr("Choose…")

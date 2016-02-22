@@ -19,8 +19,7 @@ import Ubuntu.Components 1.3
 import Ubuntu.Settings.Vpn 0.1
 
 Column {
-
-    property var error;
+    property var error
 
     spacing: units.gu(2)
 
