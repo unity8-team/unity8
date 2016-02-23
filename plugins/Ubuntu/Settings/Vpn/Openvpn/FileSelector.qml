@@ -25,6 +25,17 @@ ListItems.ItemSelector {
 
     property var __dialog
 
+    // FIXME: workaround for lp:1498683. Resetting the model is the only
+    // thing that will make selectedIndex = 0 work.
+    function resetModel () {
+        var m = [];
+        model = m;
+        m.push(path ? path.split("/")[path.split("/").length - 1] : i18n.tr("None"))
+        m.push(i18n.tr("Choose…"));
+        model = m;
+        currentlyExpanded = false;
+    }
+
     function createDialog() {
         __dialog = PopupUtils.open(fileDialogComponent)
         __dialog.accept.connect(pathAccepted)
@@ -39,17 +50,16 @@ ListItems.ItemSelector {
 
     function pathAccepted(newPath) {
         path = newPath
-        destroyDialog()
+        destroyDialog();
+        resetModel();
     }
 
     function pathRejected() {
-        destroyDialog()
+        destroyDialog();
+        resetModel();
     }
 
-    model: [
-        path ? path.split("/")[path.split("/").length - 1] : i18n.tr("None"),
-        i18n.tr("Choose…")
-    ]
+    Component.onCompleted: resetModel()
 
     onDelegateClicked: {
         if (index === 1) {

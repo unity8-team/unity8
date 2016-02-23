@@ -28,7 +28,7 @@ Dialog {
 
     signal typeChanged(var connection, int type)
 
-    Component.onCompleted: {
+     Component.onCompleted: {
         connection.updateSecrets()
 
         var props = {"connection": connection}
@@ -77,11 +77,14 @@ Dialog {
                 i18n.tr("OpenVPN"),
                 i18n.tr("Pptp")
             ]
-            expanded: true
+            expanded: false
             Component.onCompleted: selectedIndex = connection.type
             onDelegateClicked: typeChanged(connection, index)
             Layout.preferredWidth: units.gu(20)
             Layout.minimumHeight: currentlyExpanded ? itemHeight * model.length : itemHeight
+
+            // Currently disabled due to lp:1523946, i.e. we only support OpenVPN
+            enabled: false
         }
     }
 

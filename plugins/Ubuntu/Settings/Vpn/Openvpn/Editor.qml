@@ -27,10 +27,7 @@ Column {
     property var connection
 
     RowLayout {
-        id: protocolRow
-
         Label {
-            id: protocolLabel
             text: i18n.tr("Protocol:")
             font.bold: true
             color: Theme.palette.selected.backgroundText
@@ -43,7 +40,6 @@ Column {
         }
 
         CheckBox {
-            id: tcpSwitch
             checked: connection.protoTcp
             onTriggered: {
                 connection.protoTcp = checked;
@@ -54,12 +50,10 @@ Column {
         }
 
         Label {
-            id: udpLabel
             text: i18n.tr("UDP")
         }
 
         CheckBox {
-            id: udpSwitch
             checked: !connection.protoTcp
             onTriggered: {
                 connection.protoTcp = !checked;
@@ -78,7 +72,6 @@ Column {
     }
 
     FileSelector {
-        id: certField
         anchors { left: parent.left; right: parent.right; }
         path: connection.cert
         onPathChanged: connection.cert = path
@@ -92,7 +85,6 @@ Column {
     }
 
     FileSelector {
-        id: caField
         anchors { left: parent.left; right: parent.right; }
         path: connection.ca
         onPathChanged: connection.ca = path
@@ -106,10 +98,22 @@ Column {
     }
 
     FileSelector {
-        id: keyField
         anchors { left: parent.left; right: parent.right; }
         path: connection.key
         onPathChanged: connection.key = path
+    }
+
+    Label {
+        font.bold: true
+        color: Theme.palette.selected.backgroundText
+        elide: Text.ElideRight
+        text: i18n.tr("Key password:")
+    }
+
+    TextField {
+        anchors { left: parent.left; right: parent.right; }
+        text: connection.certPass
+        onTextChanged: connection.certPass = text
     }
 
     Label {
@@ -121,43 +125,72 @@ Column {
 
     RowLayout {
         CheckBox {
-            id: taSetToggle
             checked: connection.taSet
             onTriggered: connection.taSet = checked
             activeFocusOnPress: false
         }
 
         Label {
-            id: taSetLabel
             text: i18n.tr("Use additional TLS authentication:")
             Layout.fillWidth: true
         }
     }
 
     FileSelector {
-        id: taField
         anchors { left: parent.left; right: parent.right; }
         path: connection.ta
         onPathChanged: connection.ta = path
-        enabled: taSetToggle.checked
+        visible: connection.taSet
+    }
+
+    Label {
+        text: i18n.tr("Key direction:")
+        font.bold: true
+        color: Theme.palette.selected.backgroundText
+        elide: Text.ElideRight
+        visible: connection.taSet
+    }
+
+    ListItems.ItemSelector {
+        model: [
+            i18n.tr("None"),
+            i18n.tr("0"),
+            i18n.tr("1"),
+        ]
+        selectedIndex: connection.taDir
+        onSelectedIndexChanged: connection.taDir = selectedIndex
+        visible: connection.taSet
+    }
+
+    RowLayout {
+        CheckBox {
+            checked: connection.remoteCertTlsSet
+            onCheckedChanged: connection.remoteCertTlsSet = checked
+            activeFocusOnPress: false
+        }
+
+        Label {
+            text: i18n.tr("Verify peer certificate:")
+            Layout.fillWidth: true
+        }
     }
 
     Label {
         font.bold: true
         color: Theme.palette.selected.backgroundText
         elide: Text.ElideRight
-        text: i18n.tr("Key password:")
-        // Hidden due to lp:1546560.
-        visible: false
+        text: i18n.tr("Peer certificate TLS type:")
+        visible: connection.remoteCertTlsSet
     }
 
-    TextField {
-        id: certpassField
-        anchors { left: parent.left; right: parent.right; }
-        text: connection.certPass
-        onTextChanged: connection.certPass = text
-        // Hidden due to lp:1546560.
-        visible: false
+    ListItems.ItemSelector {
+        model: [
+            i18n.tr("Server"),
+            i18n.tr("Client"),
+        ]
+        selectedIndex: connection.remoteCertTls
+        onSelectedIndexChanged: connection.remoteCertTls = selectedIndex
+        visible: connection.remoteCertTlsSet
     }
 
     Label {
@@ -168,7 +201,6 @@ Column {
     }
 
     ListItems.ItemSelector {
-        id: cipherField
         model: [
             i18n.tr("Default"),
             i18n.tr("DES-CBC"),
@@ -189,19 +221,17 @@ Column {
             i18n.tr("AES-256-CBC-HMAC-SHA1"),
         ]
         selectedIndex: connection.cipher
-        onDelegateClicked: connection.cipher = selectedIndex
+        onDelegateClicked: connection.cipher = index
     }
 
     RowLayout {
         CheckBox {
-            id: compressionToggle
             checked: connection.compLzo
             onTriggered: connection.compLzo = checked
             activeFocusOnPress: false
         }
 
         Label {
-            id: compressionLabel
             text: i18n.tr("Compress data")
             Layout.fillWidth: true
         }

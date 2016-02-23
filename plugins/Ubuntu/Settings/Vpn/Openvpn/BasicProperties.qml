@@ -29,7 +29,6 @@ Column {
         anchors { left: parent.left; right: parent.right }
 
         Label {
-            id: serverLabel
             text: i18n.tr("Server:")
             font.bold: true
             color: Theme.palette.selected.backgroundText
@@ -44,12 +43,10 @@ Column {
         }
 
         Label {
-            id: portLabel
             text: i18n.tr("Port:")
             font.bold: true
             color: Theme.palette.selected.backgroundText
             elide: Text.ElideRight
-
             Layout.preferredWidth: units.gu(10)
         }
     }
@@ -58,7 +55,6 @@ Column {
         anchors { left: parent.left; right: parent.right }
 
         TextField {
-            id: serverField
             objectName: "serverField"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             Layout.fillWidth: true
@@ -78,19 +74,26 @@ Column {
         }
 
         TextField {
-            id: portField
             objectName: "portField"
             maximumLength: 5
             validator: portValidator
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            text: connection.port
-            onTextChanged: connection.port = parseInt(text, 10) || 0
-
-            // The UI does not offer control over whether or not a custom port
-            // is to be used, so we implicitly set this.
-            onActiveFocusChanged: connection.portSet = true
-
+            text: connection.portSet ? connection.port : ""
+            onTextChanged: connection.port = parseInt(text) || 0
             Layout.preferredWidth: units.gu(10)
+            enabled: connection.portSet
+        }
+    }
+
+    RowLayout {
+        CheckBox {
+            checked: connection.portSet
+            onTriggered: connection.portSet = checked
+        }
+
+        Label {
+            text: i18n.tr("Use custom gateway port:")
+            Layout.fillWidth: true
         }
     }
 
