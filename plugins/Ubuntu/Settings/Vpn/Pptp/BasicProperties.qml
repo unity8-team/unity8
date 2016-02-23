@@ -25,19 +25,15 @@ Column {
     property var connection
 
     Label {
-        id: serverLabel
         text: i18n.tr("Server:")
         font.bold: true
         color: Theme.palette.selected.backgroundText
         elide: Text.ElideRight
-        Layout.fillWidth: true
     }
 
     TextField {
-        id: serverField
         objectName: "serverField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-        Layout.fillWidth: true
         text: connection.gateway
         onTextChanged: {
             connection.gateway = text;

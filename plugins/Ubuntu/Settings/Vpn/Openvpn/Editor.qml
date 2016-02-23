@@ -72,7 +72,7 @@ Column {
     }
 
     FileSelector {
-        anchors { left: parent.left; right: parent.right; }
+        anchors { left: parent.left; right: parent.right }
         path: connection.cert
         onPathChanged: connection.cert = path
     }
@@ -85,7 +85,7 @@ Column {
     }
 
     FileSelector {
-        anchors { left: parent.left; right: parent.right; }
+        anchors { left: parent.left; right: parent.right }
         path: connection.ca
         onPathChanged: connection.ca = path
     }
@@ -98,7 +98,7 @@ Column {
     }
 
     FileSelector {
-        anchors { left: parent.left; right: parent.right; }
+        anchors { left: parent.left; right: parent.right }
         path: connection.key
         onPathChanged: connection.key = path
     }
@@ -111,16 +111,10 @@ Column {
     }
 
     TextField {
-        anchors { left: parent.left; right: parent.right; }
+        anchors { left: parent.left; right: parent.right }
+        echoMode: TextInput.Password
         text: connection.certPass
         onTextChanged: connection.certPass = text
-    }
-
-    Label {
-        font.bold: true
-        color: Theme.palette.selected.backgroundText
-        elide: Text.ElideRight
-        text: i18n.tr("TLS key:")
     }
 
     RowLayout {
@@ -136,8 +130,16 @@ Column {
         }
     }
 
+    Label {
+        font.bold: true
+        color: Theme.palette.selected.backgroundText
+        elide: Text.ElideRight
+        text: i18n.tr("TLS key:")
+        visible: connection.taSet
+    }
+
     FileSelector {
-        anchors { left: parent.left; right: parent.right; }
+        anchors { left: parent.left; right: parent.right }
         path: connection.ta
         onPathChanged: connection.ta = path
         visible: connection.taSet

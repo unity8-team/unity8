@@ -35,10 +35,9 @@ Column {
     }
 
     TextField {
-        id: userFIeld
+        anchors { left: parent.left; right: parent.right }
         objectName: "userField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-        Layout.fillWidth: true
         text: connection.user
         onTextChanged: connection.user = text
     }
@@ -51,8 +50,8 @@ Column {
     }
 
     TextField {
-        id: passField
-        anchors { left: parent.left; right: parent.right; }
+        anchors { left: parent.left; right: parent.right }
+        echoMode: TextInput.Password
         text: connection.password
         onTextChanged: connection.password = text
     }
@@ -65,24 +64,21 @@ Column {
     }
 
     TextField {
-        id: domainField
+        anchors { left: parent.left; right: parent.right }
         objectName: "domainField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-        Layout.fillWidth: true
         text: connection.domain
         onTextChanged: connection.domain = text
     }
 
     RowLayout {
         CheckBox {
-            id: bsdCompressionToggle
             checked: connection.bsdCompression
             onTriggered: connection.bsdCompression = checked
             activeFocusOnPress: false
         }
 
         Label {
-            id: compressionLabel
             text: i18n.tr("Allow BSD data compression")
             Layout.fillWidth: true
         }
@@ -90,7 +86,6 @@ Column {
 
     RowLayout {
         CheckBox {
-            id: deflateCompressionToggle
             checked: connection.deflateCompression
             onTriggered: connection.deflateCompression = checked
             activeFocusOnPress: false
@@ -104,7 +99,6 @@ Column {
 
     RowLayout {
         CheckBox {
-            id: tcpCompressionToggle
             checked: connection.tcpHeaderCompression
             onTriggered: connection.tcpHeaderCompression = checked
             activeFocusOnPress: false
