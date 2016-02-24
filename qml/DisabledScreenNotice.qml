@@ -84,7 +84,7 @@ Item {
                 id: text
                 anchors.centerIn: parent
                 width: parent.width - units.gu(8)
-                text: i18n.tr("Your device is now connected to an external display. Use this screen as a touch pad to interact with the mouse.")
+                text: i18n.tr("Your device is now connected to an external display. Use this screen as a touch pad to interact with the cursor.")
                 color: "white"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
