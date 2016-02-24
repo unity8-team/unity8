@@ -22,13 +22,14 @@ import Ubuntu.Components.Popups 1.3
 
 Dialog {
     id: editor
+    objectName: "vpnEditor"
     title: i18n.tr("Set up VPN")
 
     property var connection
 
     signal typeChanged(var connection, int type)
 
-     Component.onCompleted: {
+    Component.onCompleted: {
         connection.updateSecrets()
 
         var props = {"connection": connection}
@@ -36,10 +37,12 @@ Dialog {
         case 0: // Openvpn
             basicPropertiesLoader.setSource("Openvpn/BasicProperties.qml", props)
             editorLoader.setSource("Openvpn/Editor.qml", props)
+            objectName = "vpnOpenvpnEditor"
             break
         case 1: // Pptp
             basicPropertiesLoader.setSource("Pptp/BasicProperties.qml", props)
             editorLoader.setSource("Pptp/Editor.qml", props)
+            objectName = "vpnPptpEditor"
             break
         }
     }

@@ -27,14 +27,6 @@ ListView {
     signal requestOpenConnection(var connection)
     signal requestPreviewConnection(var connection)
 
-    // function openConnection(connection) {
-    //     diag = PopupUtils.open(vpnEditorDialog, list, {"connection": connection});
-    // }
-
-    // function previewConnection(connection) {
-    //     diag = PopupUtils.open(vpnPreviewDialog, list, {"connection": connection});
-    // }
-
     anchors {
         left: parent.left
         right: parent.right
@@ -43,6 +35,7 @@ ListView {
     height: contentItem.height
 
     delegate: ListItem {
+        objectName: "vpnListConnection" + index
         height: layout.height + divider.height
         onClicked: previewConnection(connection)
 

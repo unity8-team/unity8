@@ -21,7 +21,6 @@ import Ubuntu.Components.ListItems 1.3 as ListItems
 import Ubuntu.Components.Popups 1.3
 
 Column {
-    id: openvpnEditor
     spacing: units.gu(1)
 
     property var connection
@@ -40,6 +39,7 @@ Column {
         }
 
         CheckBox {
+            objectName: "vpnOpenvpnTcpToggle"
             checked: connection.protoTcp
             onTriggered: {
                 connection.protoTcp = checked;
@@ -54,6 +54,7 @@ Column {
         }
 
         CheckBox {
+            objectName: "vpnOpenvpnUdpToggle"
             checked: !connection.protoTcp
             onTriggered: {
                 connection.protoTcp = !checked;
@@ -85,6 +86,7 @@ Column {
     }
 
     FileSelector {
+        objectName: "vpnOpenvpnCaField"
         anchors { left: parent.left; right: parent.right }
         path: connection.ca
         onPathChanged: connection.ca = path
@@ -240,6 +242,7 @@ Column {
     }
 
     Button {
+        objectName: "vpnOpenvpnOkButton"
         width: parent.width
         text: i18n.tr("OK")
         onClicked:  PopupUtils.close(editor)

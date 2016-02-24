@@ -55,7 +55,7 @@ Column {
         anchors { left: parent.left; right: parent.right }
 
         TextField {
-            objectName: "serverField"
+            objectName: "vpnOpenvpnServerField"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             Layout.fillWidth: true
             text: connection.remote
@@ -74,7 +74,7 @@ Column {
         }
 
         TextField {
-            objectName: "portField"
+            objectName: "vpnOpenvpnPortField"
             maximumLength: 5
             validator: portValidator
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
@@ -87,6 +87,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnOpenvpnCustomPortToggle"
             checked: connection.portSet
             onTriggered: connection.portSet = checked
         }

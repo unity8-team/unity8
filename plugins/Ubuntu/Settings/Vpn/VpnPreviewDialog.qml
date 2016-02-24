@@ -20,6 +20,7 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.Popups 1.3
 
 Dialog {
+    objectName: "vpnPreviewDialog"
     id: preview
 
     // A connection we assume to be installed.
@@ -77,6 +78,7 @@ Dialog {
         spacing: units.gu(2)
 
         Button {
+            objectName: "vpnPreviewRemoveButton"
             Layout.fillWidth: true
             visible: !!connection
             text: i18n.tr("Remove")
@@ -88,6 +90,7 @@ Dialog {
         }
 
         Button {
+            objectName: "vpnPreviewChangeButton"
             Layout.fillWidth: true
             visible: !!connection
             text: i18n.tr("Change")
@@ -95,6 +98,7 @@ Dialog {
         }
 
         Button {
+            objectName: "vpnPreviewCancelButton"
             Layout.fillWidth: true
             visible: !!configuration
             text: i18n.tr("Cancel")
@@ -102,6 +106,7 @@ Dialog {
         }
 
         Button {
+            objectName: "vpnPreviewInstallButton"
             Layout.fillWidth: true
             visible: !!configuration
             text: i18n.tr("Install")
