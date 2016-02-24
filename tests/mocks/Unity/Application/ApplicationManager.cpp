@@ -224,6 +224,12 @@ ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
     return application;
 }
 
+bool ApplicationManager::requestStopApplication(const QString &appId)
+{
+    QMetaObject::invokeMethod(this, "stopRequested", Qt::QueuedConnection, Q_ARG(QString, appId));
+    return true;
+}
+
 ApplicationInfo* ApplicationManager::add(QString appId)
 {
     ApplicationInfo *application = 0;

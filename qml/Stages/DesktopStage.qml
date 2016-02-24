@@ -69,6 +69,13 @@ AbstractStage {
                 spread.cancel();
             }
         }
+
+        onStopRequested: {
+            var delegate = priv.appDelegate(appId);
+            if (delegate) {
+                delegate.close();
+            }
+        }
     }
 
     GlobalShortcut {

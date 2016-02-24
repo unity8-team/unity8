@@ -66,6 +66,7 @@ class ApplicationManager : public ApplicationManagerInterface {
     Q_INVOKABLE void unfocusCurrentApplication() override;
     Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, const QStringList &arguments = QStringList()) override;
     Q_INVOKABLE ApplicationInfo *startApplication(const QString &appId, ExecFlags flags, const QStringList &arguments = QStringList());
+    Q_INVOKABLE bool requestStopApplication(const QString &appId) override;
     Q_INVOKABLE bool stopApplication(const QString &appId) override;
 
     QString focusedApplicationId() const override;
@@ -79,7 +80,6 @@ class ApplicationManager : public ApplicationManagerInterface {
     bool isEmpty() const;
 
  Q_SIGNALS:
-    void focusRequested(const QString &appId);
     void emptyChanged(bool empty);
     void availableApplicationsChanged(QStringList list);
 

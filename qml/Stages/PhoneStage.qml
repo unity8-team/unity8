@@ -161,6 +161,10 @@ AbstractStage {
             }
         }
 
+        onStopRequested: {
+            applicationManager.stopApplication(appId);
+        }
+
         function focusTopMostApp() {
             if (applicationManager.count > 0) {
                 var topmostApp = applicationManager.get(0);

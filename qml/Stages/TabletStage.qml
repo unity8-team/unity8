@@ -228,6 +228,10 @@ AbstractStage {
                 ApplicationManager.focusApplication(ApplicationManager.get(0).appId);
             }
         }
+
+        onStopRequested: {
+            ApplicationManager.stopApplication(appId);
+        }
     }
 
     Flickable {
