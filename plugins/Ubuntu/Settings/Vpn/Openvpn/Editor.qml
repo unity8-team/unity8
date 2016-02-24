@@ -74,6 +74,7 @@ Column {
 
     FileSelector {
         anchors { left: parent.left; right: parent.right }
+        objectName: "vpnOpenvpnCertField"
         path: connection.cert
         onPathChanged: connection.cert = path
     }
@@ -101,6 +102,7 @@ Column {
 
     FileSelector {
         anchors { left: parent.left; right: parent.right }
+        objectName: "vpnOpenvpnKeyField"
         path: connection.key
         onPathChanged: connection.key = path
     }
@@ -114,6 +116,7 @@ Column {
 
     TextField {
         anchors { left: parent.left; right: parent.right }
+        objectName: "vpnOpenvpnCertPassField"
         echoMode: TextInput.Password
         text: connection.certPass
         onTextChanged: connection.certPass = text
@@ -121,6 +124,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnOpenvpnTaSetToggle"
             checked: connection.taSet
             onTriggered: connection.taSet = checked
             activeFocusOnPress: false
@@ -142,6 +146,7 @@ Column {
 
     FileSelector {
         anchors { left: parent.left; right: parent.right }
+        objectName: "vpnOpenvpnTaField"
         path: connection.ta
         onPathChanged: connection.ta = path
         visible: connection.taSet
@@ -156,6 +161,7 @@ Column {
     }
 
     ListItems.ItemSelector {
+        objectName: "vpnOpenvpnTaDirSelector"
         model: [
             i18n.tr("None"),
             i18n.tr("0"),
@@ -168,6 +174,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnOpenvpnRemoteCertSetToggle"
             checked: connection.remoteCertTlsSet
             onCheckedChanged: connection.remoteCertTlsSet = checked
             activeFocusOnPress: false
@@ -188,6 +195,7 @@ Column {
     }
 
     ListItems.ItemSelector {
+        objectName: "vpnOpenvpnRemoteCertTlsSelector"
         model: [
             i18n.tr("Server"),
             i18n.tr("Client"),
@@ -205,6 +213,7 @@ Column {
     }
 
     ListItems.ItemSelector {
+        objectName: "vpnOpenvpnCipherSelector"
         model: [
             i18n.tr("Default"),
             i18n.tr("DES-CBC"),
@@ -230,6 +239,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnOpenvpnCompressionToggle"
             checked: connection.compLzo
             onTriggered: connection.compLzo = checked
             activeFocusOnPress: false
@@ -242,7 +252,7 @@ Column {
     }
 
     Button {
-        objectName: "vpnOpenvpnOkButton"
+        objectName: "vpnOpenvpnOkayButton"
         width: parent.width
         text: i18n.tr("OK")
         onClicked:  PopupUtils.close(editor)

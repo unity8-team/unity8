@@ -32,7 +32,7 @@ Column {
     }
 
     TextField {
-        objectName: "serverField"
+        objectName: "vpnPptpGatewayField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         text: connection.gateway
         onTextChanged: {

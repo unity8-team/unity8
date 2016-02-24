@@ -22,7 +22,7 @@ import Ubuntu.Components.Popups 1.3
 
 Dialog {
     id: editor
-    objectName: "vpnEditor"
+    objectName: "vpnEditorDialog"
     title: i18n.tr("Set up VPN")
 
     property var connection
@@ -37,12 +37,10 @@ Dialog {
         case 0: // Openvpn
             basicPropertiesLoader.setSource("Openvpn/BasicProperties.qml", props)
             editorLoader.setSource("Openvpn/Editor.qml", props)
-            objectName = "vpnOpenvpnEditor"
             break
         case 1: // Pptp
             basicPropertiesLoader.setSource("Pptp/BasicProperties.qml", props)
             editorLoader.setSource("Pptp/Editor.qml", props)
-            objectName = "vpnPptpEditor"
             break
         }
     }
@@ -61,10 +59,7 @@ Dialog {
     }
 
     RowLayout {
-        id: typeRow
-
         Label {
-            id: typeLabel
             text: i18n.tr("Type:")
             font.bold: true
             color: Theme.palette.selected.backgroundText
@@ -74,8 +69,7 @@ Dialog {
         }
 
         ListItems.ItemSelector {
-            id: typeField
-            objectName: "typeField"
+            objectName: "vpnTypeField"
             model: [
                 i18n.tr("OpenVPN"),
                 i18n.tr("Pptp")

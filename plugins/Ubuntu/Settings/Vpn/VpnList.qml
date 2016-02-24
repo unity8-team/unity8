@@ -20,7 +20,7 @@ import Ubuntu.Components.Popups 1.3
 import Ubuntu.Settings.Vpn 0.1
 
 ListView {
-    id: list
+    objectName: "vpnList"
 
     property var diag
 
@@ -60,19 +60,4 @@ ListView {
            ]
        }
     }
-
-    // Component {
-    //     id: vpnPreviewDialog
-    //     VpnPreviewDialog {
-    //         onChangeClicked: {
-    //             PopupUtils.close(diag);
-    //             openConnection(connection);
-    //         }
-    //     }
-    // }
-
-    // Component {
-    //     id: vpnEditorDialog
-    //     VpnEditorDialog {}
-    // }
 }

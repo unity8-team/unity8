@@ -23,6 +23,7 @@ import Ubuntu.Settings.Vpn 0.1
 import Qt.labs.folderlistmodel 2.1
 
 Dialog {
+    objectName: "vpnDialogFile"
     id: dialog
 
     property string currentFilePath: ""

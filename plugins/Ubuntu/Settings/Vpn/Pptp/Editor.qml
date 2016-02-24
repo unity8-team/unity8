@@ -36,7 +36,7 @@ Column {
 
     TextField {
         anchors { left: parent.left; right: parent.right }
-        objectName: "userField"
+        objectName: "vpnPptpUserField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         text: connection.user
         onTextChanged: connection.user = text
@@ -51,6 +51,7 @@ Column {
 
     TextField {
         anchors { left: parent.left; right: parent.right }
+        objectName: "vpnPptpPasswordField"
         echoMode: TextInput.Password
         text: connection.password
         onTextChanged: connection.password = text
@@ -65,7 +66,7 @@ Column {
 
     TextField {
         anchors { left: parent.left; right: parent.right }
-        objectName: "domainField"
+        objectName: "vpnPptpDomainField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         text: connection.domain
         onTextChanged: connection.domain = text
@@ -73,6 +74,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnPptpBsdCompressionToggle"
             checked: connection.bsdCompression
             onTriggered: connection.bsdCompression = checked
             activeFocusOnPress: false
@@ -86,6 +88,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnPptpDeflateCompressionToggle"
             checked: connection.deflateCompression
             onTriggered: connection.deflateCompression = checked
             activeFocusOnPress: false
@@ -99,6 +102,7 @@ Column {
 
     RowLayout {
         CheckBox {
+            objectName: "vpnPptpHeaderCompressionToggle"
             checked: connection.tcpHeaderCompression
             onTriggered: connection.tcpHeaderCompression = checked
             activeFocusOnPress: false
@@ -111,6 +115,7 @@ Column {
     }
 
     Button {
+        objectName: "vpnPptpOkayButton"
         width: parent.width
         text: i18n.tr("OK")
         onClicked:  PopupUtils.close(editor)
