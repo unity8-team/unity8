@@ -16,7 +16,7 @@
 
 import QtQuick 2.4
 import QtQuick.Window 2.2
-import Unity.InputInfo 0.1
+import QtSystemInfo 5.5
 import Unity.Session 0.1
 import Unity.Screens 0.1
 import GSettings 1.0
@@ -64,24 +64,19 @@ Rectangle {
     property bool orientationLocked: OrientationLock.enabled
     property var orientationLock: OrientationLock
 
-    InputDeviceModel {
+    InputDeviceManager {
         id: miceModel
-        deviceFilter: InputInfo.Mouse
+        filter: InputInfo.Mouse | InputInfo.TouchPad
     }
 
-    InputDeviceModel {
-        id: touchPadModel
-        deviceFilter: InputInfo.TouchPad
-    }
-
-    InputDeviceModel {
+    InputDeviceManager {
         id: keyboardsModel
-        deviceFilter: InputInfo.Keyboard
+        filter: InputInfo.Keyboard
     }
 
-    InputDeviceModel {
+    InputDeviceManager {
         id: touchScreensModel
-        deviceFilter: InputInfo.TouchScreen
+        filter: InputInfo.TouchScreen
     }
 
     Screens {
@@ -190,7 +185,7 @@ Rectangle {
         nativeWidth: root.width
         nativeHeight: root.height
         mode: applicationArguments.mode
-        hasMouse: miceModel.count + touchPadModel.count > 0
+        hasMouse: miceModel.count > 0
         // TODO: Factor in if the current screen is a touch screen and if the user wants to
         //       have multiple keyboards around. For now we only enable one keyboard at a time
         //       thus hiding it here if there is a physical one around or if we have a second
@@ -211,11 +206,11 @@ Rectangle {
             } else { // automatic
                 var longEdgeWidth = Math.max(root.width, root.height)
                 if (longEdgeWidth > units.gu(120)) {
-                    if (keyboardsModel.count + miceModel.count + touchPadModel.count > 0) {
+                    if (keyboardsModel.count + miceModel.count > 0) {
                         return "desktop";
                     }
                 } else if (longEdgeWidth > units.gu(90)){
-                    if (miceModel.count + touchPadModel.count > 0) {
+                    if (miceModel.count > 0) {
                         return "desktop";
                     }
                 }
