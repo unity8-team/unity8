@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical Ltd.
+ * Copyright (C) 2016 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version 3,
@@ -22,6 +22,7 @@ import Ubuntu.Components.ListItems 1.3 as ListItems
 
 ListItems.ItemSelector {
     property string path
+    property string chooseLabel: i18n.tr("Choose…")
 
     property var __dialog
 
@@ -30,10 +31,19 @@ ListItems.ItemSelector {
     function resetModel () {
         var m = [];
         model = m;
-        m.push(path ? path.split("/")[path.split("/").length - 1] : i18n.tr("None"))
-        m.push(i18n.tr("Choose…"));
+        m.push(i18n.tr("None"));
+
+        if (path) {
+            m.push(path.split("/")[path.split("/").length - 1]);
+        }
+
+        m.push(chooseLabel);
         model = m;
+
         currentlyExpanded = false;
+        if (path) {
+            selectedIndex = 1;
+        }
     }
 
     function createDialog() {
@@ -66,8 +76,12 @@ ListItems.ItemSelector {
     }
 
     onDelegateClicked: {
-        if (index === 1) {
+        if (index === 0) {
+            path = "";
+        } else if (index === model.length - 1) {
            createDialog();
+        } else {
+            path = model[index];
         }
     }
 }

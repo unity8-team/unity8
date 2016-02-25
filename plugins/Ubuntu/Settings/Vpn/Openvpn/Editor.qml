@@ -19,11 +19,218 @@ import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 import Ubuntu.Components.Popups 1.3
+import ".."
 
 Column {
+    id: openVpnEditor
     spacing: units.gu(1)
 
+    states: [
+        State {
+            name: "committing"
+            PropertyChanges {
+                target: okButtonIndicator
+                running: true
+            }
+            PropertyChanges {
+                target: secretUpdaterLoop
+                running: true
+            }
+            PropertyChanges { target: serverField; enabled: false }
+            PropertyChanges { target: customPortToggle; enabled: false }
+            PropertyChanges { target: portField; enabled: false }
+            PropertyChanges { target: tcpToggle; enabled: false }
+            PropertyChanges { target: certField; enabled: false }
+            PropertyChanges { target: caField; enabled: false }
+            PropertyChanges { target: keyField; enabled: false }
+            PropertyChanges { target: certPassField; enabled: false }
+            PropertyChanges { target: taField; enabled: false }
+            PropertyChanges { target: taSetToggle; enabled: false }
+            PropertyChanges { target: taDirSelector; enabled: false }
+            PropertyChanges { target: remoteCertSetToggle; enabled: false }
+            PropertyChanges { target: remoteCertTlsSelector; enabled: false }
+            PropertyChanges { target: cipherSelector; enabled: false }
+            PropertyChanges { target: compressionToggle; enabled: false }
+
+        },
+        State {
+            name: "succeeded"
+            PropertyChanges {
+                target: successIndicator
+                running: true
+            }
+            PropertyChanges { target: serverField; enabled: false }
+            PropertyChanges { target: customPortToggle; enabled: false }
+            PropertyChanges { target: portField; enabled: false }
+            PropertyChanges { target: tcpToggle; enabled: false }
+            PropertyChanges { target: certField; enabled: false }
+            PropertyChanges { target: caField; enabled: false }
+            PropertyChanges { target: keyField; enabled: false }
+            PropertyChanges { target: certPassField; enabled: false }
+            PropertyChanges { target: taField; enabled: false }
+            PropertyChanges { target: taSetToggle; enabled: false }
+            PropertyChanges { target: taDirSelector; enabled: false }
+            PropertyChanges { target: remoteCertSetToggle; enabled: false }
+            PropertyChanges { target: remoteCertTlsSelector; enabled: false }
+            PropertyChanges { target: cipherSelector; enabled: false }
+            PropertyChanges { target: compressionToggle; enabled: false }
+        }
+    ]
+
+    // Return a list of pairs, first the server property name, then
+    // the field value.
+    function getChanges () {
+        var fields = [
+            ["remote",           serverField.text],
+            ["portSet",          customPortToggle.checked],
+            ["port",             parseInt(portField.text, 10) || 0],
+            ["protoTcp",         tcpToggle.checked],
+            ["cert",             certField.path],
+            ["ca",               caField.path],
+            ["key",              keyField.path],
+            ["certPass",         certPassField.text],
+            ["ta",               taField.path],
+            ["taSet",            taSetToggle.checked],
+            ["taDir",            parseInt(taDirSelector.selectedIndex, 10) || 0],
+            ["remoteCertTlsSet", remoteCertSetToggle.checked],
+            ["remoteCertTls",    parseInt(remoteCertTlsSelector.selectedIndex, 10) || 0],
+            ["cipher",           parseInt(cipherSelector.selectedIndex, 10) || 0],
+            ["compLzo",          compressionToggle.checked]
+        ]
+        var changedFields = [];
+
+        // Push all fields that differs from the server to chanagedFields.
+        for (var i = 0; i < fields.length; i++) {
+            if (connection[fields[i][0]] !== fields[i][1]) {
+                changedFields.push(fields[i]);
+            }
+        }
+
+        return changedFields;
+    }
+
+
+    // XXX: Most of this commit function deals with bug lp:1546559.
+    // Each remote variable is changed in a chain of events where
+    // one Change event triggers the next change, ad finem.
+    function commit () {
+        openVpnEditor.state = 'committing';
+        var changes = getChanges();
+        var steps = [];
+
+        for (var i = 0; i < changes.length; i++) {
+            var srvName = changes[i][0];
+            var eName = srvName + "Changed";
+            var localProperty = changes[i][1];
+
+            // Subscribe to the *Changed event for this change,
+            // and in the handler perform the next change.
+            if (changes[i+1]) {
+                connection[eName].connect(function (key, value) {
+                    this[key] = value;
+                }.bind(connection, changes[i+1][0], changes[i+1][1]))
+            }
+
+            // If this is the last change, subscribe to its Change event
+            // a handler that changes the UI's state to a done state.
+            // Also, set the id to whatever the remote is, if any.
+            if (i == changes.length - 1) {
+                connection[eName].connect(function (connection) {
+                    this.state = 'succeeded';
+                    if (connection.remote) connection.id = connection.remote;
+                }.bind(openVpnEditor, connection));
+            }
+        }
+
+        // Start event chain.
+        connection[changes[0][0]] = changes[0][1];
+    }
+
     property var connection
+    property bool changed: getChanges().length > 0
+
+    RowLayout {
+
+        anchors { left: parent.left; right: parent.right }
+
+        Label {
+            text: i18n.tr("Server:")
+            font.bold: true
+            color: Theme.palette.selected.backgroundText
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+        }
+
+        // Corresponds to the ":" element in the row of server:port textfields.
+        Item {
+            Layout.preferredWidth: units.gu(1)
+            height: units.gu(1) // Value set for the sake of it being drawn.
+        }
+
+        Label {
+            text: i18n.tr("Port:")
+            font.bold: true
+            color: Theme.palette.selected.backgroundText
+            elide: Text.ElideRight
+            Layout.preferredWidth: units.gu(10)
+        }
+    }
+
+    RowLayout {
+        anchors { left: parent.left; right: parent.right }
+
+        TextField {
+            id: serverField
+            objectName: "vpnOpenvpnServerField"
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            Layout.fillWidth: true
+            text: connection.remote
+            Component.onCompleted: forceActiveFocus()
+        }
+
+        Label {
+            text: ":"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            Layout.preferredWidth: units.gu(1)
+        }
+
+        TextField {
+            id: portField
+            objectName: "vpnOpenvpnPortField"
+            maximumLength: 5
+            validator: portValidator
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            text: connection.port
+            Layout.preferredWidth: units.gu(10)
+            enabled: customPortToggle.checked
+        }
+    }
+
+    RowLayout {
+        CheckBox {
+            id: customPortToggle
+            objectName: "vpnOpenvpnCustomPortToggle"
+            checked: connection.portSet
+        }
+
+        Label {
+            text: i18n.tr("Use custom gateway port:")
+            Layout.fillWidth: true
+        }
+    }
+
+    RegExpValidator {
+        id: portValidator
+        regExp: /([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])/
+    }
+
+    VpnTypeField {
+        onTypeRequested: {
+            typeChanged(connection, index);
+        }
+        Component.onCompleted: type = connection.type
+    }
 
     RowLayout {
         Label {
@@ -39,14 +246,9 @@ Column {
         }
 
         CheckBox {
+            id: tcpToggle
             objectName: "vpnOpenvpnTcpToggle"
             checked: connection.protoTcp
-            onTriggered: {
-                connection.protoTcp = checked;
-                checked = Qt.binding(function () {
-                    return connection.protoTcp
-                });
-            }
         }
 
         Label {
@@ -54,12 +256,13 @@ Column {
         }
 
         CheckBox {
+            id: udpToggle
             objectName: "vpnOpenvpnUdpToggle"
-            checked: !connection.protoTcp
+            checked: !tcpToggle.checked
             onTriggered: {
-                connection.protoTcp = !checked;
+                tcpToggle.checked = !checked
                 checked = Qt.binding(function () {
-                    return !connection.protoTcp
+                    return !tcpToggle.checked
                 });
             }
         }
@@ -74,9 +277,10 @@ Column {
 
     FileSelector {
         anchors { left: parent.left; right: parent.right }
+        id: certField
         objectName: "vpnOpenvpnCertField"
         path: connection.cert
-        onPathChanged: connection.cert = path
+        chooseLabel: i18n.tr("Choose Certificate…")
     }
 
     Label {
@@ -87,10 +291,11 @@ Column {
     }
 
     FileSelector {
+        id: caField
         objectName: "vpnOpenvpnCaField"
         anchors { left: parent.left; right: parent.right }
         path: connection.ca
-        onPathChanged: connection.ca = path
+        chooseLabel: i18n.tr("Choose Certificate…")
     }
 
     Label {
@@ -102,9 +307,10 @@ Column {
 
     FileSelector {
         anchors { left: parent.left; right: parent.right }
+        id: keyField
         objectName: "vpnOpenvpnKeyField"
         path: connection.key
-        onPathChanged: connection.key = path
+        chooseLabel: i18n.tr("Choose Key…")
     }
 
     Label {
@@ -116,14 +322,15 @@ Column {
 
     TextField {
         anchors { left: parent.left; right: parent.right }
+        id: certPassField
         objectName: "vpnOpenvpnCertPassField"
         echoMode: TextInput.Password
         text: connection.certPass
-        onTextChanged: connection.certPass = text
     }
 
     RowLayout {
         CheckBox {
+            id: taSetToggle
             objectName: "vpnOpenvpnTaSetToggle"
             checked: connection.taSet
             onTriggered: connection.taSet = checked
@@ -141,15 +348,16 @@ Column {
         color: Theme.palette.selected.backgroundText
         elide: Text.ElideRight
         text: i18n.tr("TLS key:")
-        visible: connection.taSet
+        visible: taSetToggle.checked
     }
 
     FileSelector {
         anchors { left: parent.left; right: parent.right }
+        id: taField
         objectName: "vpnOpenvpnTaField"
         path: connection.ta
-        onPathChanged: connection.ta = path
-        visible: connection.taSet
+        chooseLabel: i18n.tr("Choose Key…")
+        visible: taSetToggle.checked
     }
 
     Label {
@@ -157,10 +365,11 @@ Column {
         font.bold: true
         color: Theme.palette.selected.backgroundText
         elide: Text.ElideRight
-        visible: connection.taSet
+        visible: taSetToggle.checked
     }
 
     ListItems.ItemSelector {
+        id: taDirSelector
         objectName: "vpnOpenvpnTaDirSelector"
         model: [
             i18n.tr("None"),
@@ -168,15 +377,14 @@ Column {
             i18n.tr("1"),
         ]
         selectedIndex: connection.taDir
-        onSelectedIndexChanged: connection.taDir = selectedIndex
-        visible: connection.taSet
+        visible: taSetToggle.checked
     }
 
     RowLayout {
         CheckBox {
+            id: remoteCertSetToggle
             objectName: "vpnOpenvpnRemoteCertSetToggle"
             checked: connection.remoteCertTlsSet
-            onCheckedChanged: connection.remoteCertTlsSet = checked
             activeFocusOnPress: false
         }
 
@@ -191,18 +399,18 @@ Column {
         color: Theme.palette.selected.backgroundText
         elide: Text.ElideRight
         text: i18n.tr("Peer certificate TLS type:")
-        visible: connection.remoteCertTlsSet
+        visible: remoteCertSetToggle.checked
     }
 
     ListItems.ItemSelector {
+        id: remoteCertTlsSelector
         objectName: "vpnOpenvpnRemoteCertTlsSelector"
         model: [
             i18n.tr("Server"),
             i18n.tr("Client"),
         ]
         selectedIndex: connection.remoteCertTls
-        onSelectedIndexChanged: connection.remoteCertTls = selectedIndex
-        visible: connection.remoteCertTlsSet
+        visible: remoteCertSetToggle.checked
     }
 
     Label {
@@ -213,6 +421,7 @@ Column {
     }
 
     ListItems.ItemSelector {
+        id: cipherSelector
         objectName: "vpnOpenvpnCipherSelector"
         model: [
             i18n.tr("Default"),
@@ -234,14 +443,13 @@ Column {
             i18n.tr("AES-256-CBC-HMAC-SHA1"),
         ]
         selectedIndex: connection.cipher
-        onDelegateClicked: connection.cipher = index
     }
 
     RowLayout {
         CheckBox {
+            id: compressionToggle
             objectName: "vpnOpenvpnCompressionToggle"
             checked: connection.compLzo
-            onTriggered: connection.compLzo = checked
             activeFocusOnPress: false
         }
 
@@ -251,10 +459,70 @@ Column {
         }
     }
 
-    Button {
-        objectName: "vpnOpenvpnOkayButton"
-        width: parent.width
-        text: i18n.tr("OK")
-        onClicked:  PopupUtils.close(editor)
+    RowLayout {
+        anchors { left: parent.left; right: parent.right }
+
+        Button {
+            objectName: "vpnOpenCancelButton"
+            text: i18n.tr("Cancel")
+            onClicked: {
+                if (editor.isNew) {
+                    connection.remove();
+                }
+                PopupUtils.close(editor)
+            }
+            Layout.fillWidth: true
+        }
+
+        Button {
+            objectName: "vpnOpenvpnOkayButton"
+            text: i18n.tr("OK")
+            onClicked: openVpnEditor.commit()
+            Layout.fillWidth: true
+            enabled: openVpnEditor.changed
+
+            Icon {
+                height: parent.height - units.gu(1.5)
+                width: parent.height - units.gu(1.5)
+                anchors {
+                    centerIn: parent
+                }
+                name: "tick"
+                color: "green"
+                visible: successIndicator.running
+            }
+
+            ActivityIndicator {
+                id: okButtonIndicator
+                running: false
+                visible: running
+                height: parent.height - units.gu(1.5)
+                anchors {
+                    centerIn: parent
+                }
+            }
+        }
+    }
+
+    // Timer that shows a tick in the connect button once we have
+    // successfully connected.
+    Timer {
+        id: successIndicator
+        interval: 2000
+        running: false
+        repeat: false
+        onTriggered: PopupUtils.close(editor)
+    }
+
+    // XXX: Workaround for lp:1546559.
+    // Timer that makes sure our secrets are up to date. If this timer
+    // does not run while we're committing changes, changes to fields
+    // like “certPass” will never notify, and our loop will get stuck.
+    Timer {
+        id: secretUpdaterLoop
+        interval: 500
+        running: false
+        repeat: true
+        onTriggered: connection.updateSecrets()
     }
 }
