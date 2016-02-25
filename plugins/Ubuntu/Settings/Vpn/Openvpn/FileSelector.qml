@@ -61,6 +61,10 @@ ListItems.ItemSelector {
 
     Component.onCompleted: resetModel()
 
+    delegate: OptionSelectorDelegate {
+        objectName: "vpnFileSelectorItem" + index
+    }
+
     onDelegateClicked: {
         if (index === 1) {
            createDialog();

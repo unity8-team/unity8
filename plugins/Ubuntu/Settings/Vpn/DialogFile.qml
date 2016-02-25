@@ -97,6 +97,7 @@ Dialog {
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Label {
+                        objectName: "vpnFilePathItem_" + model.modelData["name"]
                         text: model.modelData["name"]
                         font.weight: (isCurrent ? Font.Bold : Font.Normal)
                         font.underline: hoverDetector.containsMouse
@@ -125,12 +126,14 @@ Dialog {
             }
 
             ListView {
+                objectName: "vpnFileList"
                 anchors.fill: parent
                 anchors.margins: 1
                 clip: true
                 model: modelFs
 
                 delegate: ListItems.Standard {
+                    objectName: "vpnFileItem_" + model.fileName
                     text: model.fileName
                     iconFrame: false
                     iconName: model.fileIsDir ? "folder" : "empty"
@@ -153,6 +156,7 @@ Dialog {
             Layout.fillWidth: true
 
             Button {
+                objectName: "vpnFileCancel"
                 Layout.fillWidth: true
                 text: i18n.tr("Cancel")
                 onClicked: rejectFunc()
@@ -160,6 +164,7 @@ Dialog {
             }
 
             Button {
+                objectName: "vpnFileAccept"
                 Layout.fillWidth: true
                 enabled: currentFilePath !== ""
                 text: i18n.tr("Accept")
