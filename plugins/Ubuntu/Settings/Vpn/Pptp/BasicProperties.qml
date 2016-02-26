@@ -24,21 +24,5 @@ Column {
 
     property var connection
 
-    Label {
-        text: i18n.tr("Server:")
-        font.bold: true
-        color: Theme.palette.selected.backgroundText
-        elide: Text.ElideRight
-    }
 
-    TextField {
-        objectName: "vpnPptpGatewayField"
-        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-        text: connection.gateway
-        onTextChanged: {
-            connection.gateway = text;
-            connection.id = text;
-        }
-        Component.onCompleted: forceActiveFocus()
-    }
 }

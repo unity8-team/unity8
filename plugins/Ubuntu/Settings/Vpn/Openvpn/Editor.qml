@@ -23,7 +23,11 @@ import ".."
 
 Column {
     id: openVpnEditor
+
     spacing: units.gu(1)
+
+    property var connection
+    property bool changed: getChanges().length > 0
 
     states: [
         State {
@@ -108,46 +112,6 @@ Column {
 
         return changedFields;
     }
-
-
-    // XXX: Most of this commit function deals with bug lp:1546559.
-    // Each remote variable is changed in a chain of events where
-    // one Change event triggers the next change, ad finem.
-    function commit () {
-        openVpnEditor.state = 'committing';
-        var changes = getChanges();
-        var steps = [];
-
-        for (var i = 0; i < changes.length; i++) {
-            var srvName = changes[i][0];
-            var eName = srvName + "Changed";
-            var localProperty = changes[i][1];
-
-            // Subscribe to the *Changed event for this change,
-            // and in the handler perform the next change.
-            if (changes[i+1]) {
-                connection[eName].connect(function (key, value) {
-                    this[key] = value;
-                }.bind(connection, changes[i+1][0], changes[i+1][1]))
-            }
-
-            // If this is the last change, subscribe to its Change event
-            // a handler that changes the UI's state to a done state.
-            // Also, set the id to whatever the remote is, if any.
-            if (i == changes.length - 1) {
-                connection[eName].connect(function (connection) {
-                    this.state = 'succeeded';
-                    if (connection.remote) connection.id = connection.remote;
-                }.bind(openVpnEditor, connection));
-            }
-        }
-
-        // Start event chain.
-        connection[changes[0][0]] = changes[0][1];
-    }
-
-    property var connection
-    property bool changed: getChanges().length > 0
 
     RowLayout {
 
@@ -457,72 +421,5 @@ Column {
             text: i18n.tr("Compress data")
             Layout.fillWidth: true
         }
-    }
-
-    RowLayout {
-        anchors { left: parent.left; right: parent.right }
-
-        Button {
-            objectName: "vpnOpenCancelButton"
-            text: i18n.tr("Cancel")
-            onClicked: {
-                if (editor.isNew) {
-                    connection.remove();
-                }
-                PopupUtils.close(editor)
-            }
-            Layout.fillWidth: true
-        }
-
-        Button {
-            objectName: "vpnOpenvpnOkayButton"
-            text: i18n.tr("OK")
-            onClicked: openVpnEditor.commit()
-            Layout.fillWidth: true
-            enabled: openVpnEditor.changed
-
-            Icon {
-                height: parent.height - units.gu(1.5)
-                width: parent.height - units.gu(1.5)
-                anchors {
-                    centerIn: parent
-                }
-                name: "tick"
-                color: "green"
-                visible: successIndicator.running
-            }
-
-            ActivityIndicator {
-                id: okButtonIndicator
-                running: false
-                visible: running
-                height: parent.height - units.gu(1.5)
-                anchors {
-                    centerIn: parent
-                }
-            }
-        }
-    }
-
-    // Timer that shows a tick in the connect button once we have
-    // successfully connected.
-    Timer {
-        id: successIndicator
-        interval: 2000
-        running: false
-        repeat: false
-        onTriggered: PopupUtils.close(editor)
-    }
-
-    // XXX: Workaround for lp:1546559.
-    // Timer that makes sure our secrets are up to date. If this timer
-    // does not run while we're committing changes, changes to fields
-    // like “certPass” will never notify, and our loop will get stuck.
-    Timer {
-        id: secretUpdaterLoop
-        interval: 500
-        running: false
-        repeat: true
-        onTriggered: connection.updateSecrets()
     }
 }

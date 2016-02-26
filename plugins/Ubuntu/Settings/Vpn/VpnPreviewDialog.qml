@@ -27,8 +27,8 @@ Dialog {
     property var connection
 
     // A configuration we assume is not installed.
-    // A configuration is expected to behave the same way
-    // as a connection.
+    // A configuration is expected to have a set of
+    // properties, just like a connection.
     property var configuration
 
     function getConnection () {
@@ -92,9 +92,18 @@ Dialog {
         Button {
             objectName: "vpnPreviewChangeButton"
             Layout.fillWidth: true
-            visible: !!connection
+            // XXX: we can't change running connections, see lp:1550283
+            visible: !!connection && !connection.active
             text: i18n.tr("Change")
             onClicked: changeClicked(connection)
+        }
+
+        Button {
+            objectName: "vpnPreviewDismissButton"
+            Layout.fillWidth: true
+            visible: !!connection && connection.active
+            text: i18n.tr("OK")
+            onClicked: PopupUtils.close(preview)
         }
 
         Button {

@@ -32,6 +32,53 @@ Dialog {
 
     signal typeChanged(var connection, int type)
 
+    // XXX: Most of this commit function deals with bug lp:1546559.
+    // Each remote variable is changed in a chain of events where
+    // one Change event triggers the next change, ad finem. We infer
+    // that if we're reconnecting the connection, and activatable goes
+    // from false to true, that the connection attempt failed. The
+    // indicator will notify the user as to why, and we will not do
+    // that here.
+    function commit () {
+        editorLoader.item.state = 'committing';
+        var changes = editorLoader.item.getChanges();
+
+        for (var i = 0; i < changes.length; i++) {
+            var srvName = changes[i][0];
+            var eName = srvName + "Changed";
+            console.warn("subscribing", eName, changes[i][0]);
+            // Subscribe to the *Changed event for this change,
+            // and in the handler perform the next change.
+            if (changes[i+1]) {
+                var handler = function (key, value, e, h) {
+                    console.warn('Changing key', key, 'to', value, 'on the', e, 'event.');
+                    this[key] = value;
+                    this[e].disconnect(h);
+                }
+                handler = handler.bind(
+                    connection, changes[i+1][0], changes[i+1][1], eName, handler
+                );
+                connection[eName].connect(handler)
+            }
+
+            // If this is the last change, subscribe to its Change event
+            // a handler that changes the UI's state to a done state.
+            // Also, set the id to whatever the remote/gateway is, if any.
+            if (i == changes.length - 1) {
+                connection[eName].connect(function (editorItem, k, v) {
+                    if (this[k] === v) {
+                        editorItem.state = 'succeeded';
+                        if (connection.remote) connection.id = connection.remote;
+                        if (connection.gateway) connection.id = connection.gateway;
+                    }
+                }.bind(connection, editorLoader.item, srvName, changes[i][1]));
+            }
+        }
+
+        // Start event chain.
+        connection[changes[0][0]] = changes[0][1];
+    }
+
     Component.onCompleted: {
         connection.updateSecrets()
 
@@ -57,5 +104,72 @@ Dialog {
         id: editorLoader
         anchors.left: parent.left
         anchors.right: parent.right
+    }
+
+    RowLayout {
+        anchors { left: parent.left; right: parent.right }
+
+        Button {
+            objectName: "vpnEditorCancelButton"
+            text: i18n.tr("Cancel")
+            onClicked: {
+                if (editor.isNew) {
+                    connection.remove();
+                }
+                PopupUtils.close(editor)
+            }
+            Layout.fillWidth: true
+        }
+
+        Button {
+            objectName: "vpnEditorOkayButton"
+            text: i18n.tr("OK")
+            onClicked: editor.commit()
+            Layout.fillWidth: true
+            enabled: editorLoader.item.changed
+
+            Icon {
+                height: parent.height - units.gu(1.5)
+                width: parent.height - units.gu(1.5)
+                anchors {
+                    centerIn: parent
+                }
+                name: "tick"
+                color: "green"
+                visible: successIndicator.running
+            }
+
+            ActivityIndicator {
+                id: okButtonIndicator
+                running: false
+                visible: running
+                height: parent.height - units.gu(1.5)
+                anchors {
+                    centerIn: parent
+                }
+            }
+        }
+    }
+
+    // Timer that shows a tick in the connect button once we have
+    // successfully connected.
+    Timer {
+        id: successIndicator
+        interval: 2000
+        running: false
+        repeat: false
+        onTriggered: PopupUtils.close(editor)
+    }
+
+    // XXX: Workaround for lp:1546559.
+    // Timer that makes sure our secrets are up to date. If this timer
+    // does not run while we're committing changes, changes to fields
+    // like “certPass” will never notify, and our loop will get stuck.
+    Timer {
+        id: secretUpdaterLoop
+        interval: 500
+        running: false
+        repeat: true
+        onTriggered: connection.updateSecrets()
     }
 }
