@@ -34,11 +34,7 @@ Dialog {
 
     // XXX: Most of this commit function deals with bug lp:1546559.
     // Each remote variable is changed in a chain of events where
-    // one Change event triggers the next change, ad finem. We infer
-    // that if we're reconnecting the connection, and activatable goes
-    // from false to true, that the connection attempt failed. The
-    // indicator will notify the user as to why, and we will not do
-    // that here.
+    // one Change event triggers the next change, ad finem.
     function commit () {
         editorLoader.item.state = 'committing';
         var changes = editorLoader.item.getChanges();
@@ -46,17 +42,19 @@ Dialog {
         for (var i = 0; i < changes.length; i++) {
             var srvName = changes[i][0];
             var eName = srvName + "Changed";
+            var nextChange = changes[i+1];
             console.warn("subscribing", eName, changes[i][0]);
+
             // Subscribe to the *Changed event for this change,
             // and in the handler perform the next change.
-            if (changes[i+1]) {
+            if (nextChange) {
                 var handler = function (key, value, e, h) {
                     console.warn('Changing key', key, 'to', value, 'on the', e, 'event.');
                     this[key] = value;
                     this[e].disconnect(h);
                 }
                 handler = handler.bind(
-                    connection, changes[i+1][0], changes[i+1][1], eName, handler
+                    connection, nextChange[0], nextChange[1], eName, handler
                 );
                 connection[eName].connect(handler)
             }
