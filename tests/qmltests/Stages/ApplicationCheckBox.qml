@@ -33,7 +33,7 @@ RowLayout {
         if (checked) {
             ApplicationManager.startApplication(root.appId);
         } else {
-            ApplicationManager.stopApplication(root.appId);
+            ApplicationManager.requestStopApplication(root.appId);
         }
         d.bindGuard = false;
     }
@@ -67,7 +67,7 @@ RowLayout {
             if (checked) {
                 ApplicationManager.startApplication(root.appId);
             } else {
-                ApplicationManager.stopApplication(root.appId);
+                ApplicationManager.requestStopApplication(root.appId);
             }
             d.bindGuard = false;
         }
