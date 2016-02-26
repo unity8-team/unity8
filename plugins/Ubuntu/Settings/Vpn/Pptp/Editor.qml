@@ -47,6 +47,7 @@ Column {
             PropertyChanges { target: bsdCompressionToggle; enabled: false }
             PropertyChanges { target: deflateCompressionToggle; enabled: false }
             PropertyChanges { target: tcpHeaderCompressionToggle; enabled: false }
+            PropertyChanges { target: vpnEditorOkayButton; enabled: false }
         },
         State {
             name: "succeeded"
@@ -61,7 +62,6 @@ Column {
             PropertyChanges { target: bsdCompressionToggle; enabled: false }
             PropertyChanges { target: deflateCompressionToggle; enabled: false }
             PropertyChanges { target: tcpHeaderCompressionToggle; enabled: false }
-
         }
     ]
 

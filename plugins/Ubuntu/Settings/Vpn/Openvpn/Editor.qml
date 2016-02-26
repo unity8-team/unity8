@@ -55,7 +55,7 @@ Column {
             PropertyChanges { target: remoteCertTlsSelector; enabled: false }
             PropertyChanges { target: cipherSelector; enabled: false }
             PropertyChanges { target: compressionToggle; enabled: false }
-
+            PropertyChanges { target: vpnEditorOkayButton; enabled: false }
         },
         State {
             name: "succeeded"

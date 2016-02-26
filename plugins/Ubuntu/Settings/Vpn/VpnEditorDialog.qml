@@ -120,6 +120,7 @@ Dialog {
         }
 
         Button {
+            id: vpnEditorOkayButton
             objectName: "vpnEditorOkayButton"
             text: i18n.tr("OK")
             onClicked: editor.commit()
