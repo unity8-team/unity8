@@ -63,7 +63,11 @@ AbstractStage {
 
         onFocusRequested: {
             var delegate = priv.appDelegate(appId);
-            delegate.restore();
+            if (delegate) {
+                delegate.restore();
+            } else { // app died, start it
+                ApplicationManager.startApplication(appId);
+            }
 
             if (spread.state == "altTab") {
                 spread.cancel();
