@@ -517,6 +517,15 @@ AbstractStage {
                         }
                     },
                     Transition {
+                        from: "minimized"
+                        to: "closing"
+                        ScriptAction {
+                            script: {
+                                ApplicationManager.stopApplication(appId);
+                            }
+                        }
+                    },
+                    Transition {
                         to: "*" //maximized and fullscreen
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; property: "visuallyMinimized" }
