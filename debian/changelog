@@ -1,3 +1,19 @@
+unity8 (8.11+16.04.20160229-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk.
+  * Update translation template
+
+  [ Michał Sawicz ]
+  * Add autopilot as DEP-8 tests added: debian/tests/autopilot.sh
+
+  [ Pawel Stolowski ]
+  * Added apparmor profile for unity8-dash. removed: data/unity8-
+    dash.png added: data/unity8-dash.png data/unity8-dash.png.moved
+    debian/usr.bin.unity8-dash
+
+ -- Pawel Stolowski <ci-train-bot@canonical.com>  Mon, 29 Feb 2016 14:48:42 +0000
+
 unity8 (8.11+16.04.20160216.1-0ubuntu1) xenial; urgency=medium
 
   [ Albert Astals Cid ]
