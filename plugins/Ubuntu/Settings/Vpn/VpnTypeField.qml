@@ -20,7 +20,6 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 
 RowLayout {
-
     property alias type: vpnTypeSelector.selectedIndex
 
     signal typeRequested(int index)
@@ -45,8 +44,5 @@ RowLayout {
         onDelegateClicked: typeRequested(index)
         Layout.preferredWidth: units.gu(20)
         Layout.minimumHeight: currentlyExpanded ? itemHeight * model.length : itemHeight
-
-        // Currently disabled due to lp:1523946, i.e. we only support OpenVPN
-        enabled: false
     }
 }

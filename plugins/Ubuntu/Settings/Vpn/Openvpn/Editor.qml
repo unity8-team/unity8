@@ -59,25 +59,19 @@ Column {
         },
         State {
             name: "succeeded"
+            extend: "committing"
             PropertyChanges {
                 target: successIndicator
                 running: true
             }
-            PropertyChanges { target: serverField; enabled: false }
-            PropertyChanges { target: customPortToggle; enabled: false }
-            PropertyChanges { target: portField; enabled: false }
-            PropertyChanges { target: tcpToggle; enabled: false }
-            PropertyChanges { target: certField; enabled: false }
-            PropertyChanges { target: caField; enabled: false }
-            PropertyChanges { target: keyField; enabled: false }
-            PropertyChanges { target: certPassField; enabled: false }
-            PropertyChanges { target: taField; enabled: false }
-            PropertyChanges { target: taSetToggle; enabled: false }
-            PropertyChanges { target: taDirSelector; enabled: false }
-            PropertyChanges { target: remoteCertSetToggle; enabled: false }
-            PropertyChanges { target: remoteCertTlsSelector; enabled: false }
-            PropertyChanges { target: cipherSelector; enabled: false }
-            PropertyChanges { target: compressionToggle; enabled: false }
+            PropertyChanges {
+                target: okButtonIndicator
+                running: false
+            }
+            PropertyChanges {
+                target: secretUpdaterLoop
+                running: false
+            }
         }
     ]
 
@@ -191,7 +185,8 @@ Column {
 
     VpnTypeField {
         onTypeRequested: {
-            typeChanged(connection, index);
+            console.warn('onTypeRequested')
+            editor.typeChanged(connection, index);
         }
         Component.onCompleted: type = connection.type
     }
