@@ -7,5 +7,4 @@ add_dependencies(qmluitests UbuntuTest)
 add_custom_target(qmltests)
 add_dependencies(qmltests qmluitests)
 
-add_subdirectory(imports)
 add_subdirectory(qmltests)
