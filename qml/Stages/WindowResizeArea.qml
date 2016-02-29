@@ -73,10 +73,11 @@ MouseArea {
         var windowGeometry = windowStateStorage.getGeometry(root.windowId,
                                                             Qt.rect(target.x, target.y, defaultWidth, defaultHeight));
 
-        target.requestedWidth = Qt.binding(function() { return MathUtils.clamp(windowGeometry.width, d.minimumWidth, screenWidth - root.leftMargin); });
-        target.requestedHeight = Qt.binding(function() { return MathUtils.clamp(windowGeometry.height, d.minimumWidth, root.screenHeight - PanelState.panelHeight); });
-        target.x = Qt.binding(function() { return MathUtils.clamp(windowGeometry.x, (target.fullscreen ? 0 : root.leftMargin), root.screenWidth); });
-        target.y = Qt.binding(function() { return MathUtils.clamp(windowGeometry.y, PanelState.panelHeight, root.screenHeight - target.requestedHeight); });
+        target.requestedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin); });
+        target.requestedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight), root.screenHeight - PanelState.panelHeight); });
+        target.x = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - target.requestedWidth),
+                                                           (target.fullscreen ? 0 : root.leftMargin)); });
+        target.y = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - target.requestedHeight), PanelState.panelHeight); });
 
         var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal)
         if (windowState === WindowStateStorage.WindowStateMaximized) {
