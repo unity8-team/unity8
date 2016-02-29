@@ -28,6 +28,7 @@ Column {
 
     property var connection
     property bool changed: getChanges().length > 0
+    property bool valid: isValid()
 
     states: [
         State {
@@ -75,6 +76,12 @@ Column {
             }
         }
     ]
+
+    function isValid () {
+        // XXX: Workaround for lp:1551258 where the backend refuses
+        // blank passwords.
+        return passwordField.text.length > 0;
+    }
 
     // Return a list of pairs, first the server property name, then
     // the field value.
@@ -282,7 +289,7 @@ Column {
     ListItems.ItemSelector {
         id: mppeTypeSelector
         model: [
-            i18n.tr("All Availale (Default)"),
+            i18n.tr("All Available (Default)"),
             i18n.tr("128-bit (most secure)"),
             i18n.tr("40-bit (less secure)")
         ]
@@ -296,6 +303,7 @@ Column {
             objectName: "vpnPptpRequireMppeToggle"
             checked: connection.mppeStateful
             activeFocusOnPress: false
+            enabled: requireMppeToggle.checked
         }
 
         Label {

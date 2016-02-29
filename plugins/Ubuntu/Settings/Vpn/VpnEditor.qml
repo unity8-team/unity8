@@ -43,13 +43,11 @@ Dialog {
             var srvName = changes[i][0];
             var eName = srvName + "Changed";
             var nextChange = changes[i+1];
-            console.warn("subscribing", eName, changes[i][0]);
 
             // Subscribe to the *Changed event for this change,
             // and in the handler perform the next change.
             if (nextChange) {
                 var handler = function (key, value, e, h) {
-                    console.warn('Changing key', key, 'to', value, 'on the', e, 'event.');
                     this[key] = value;
                     this[e].disconnect(h);
                 }
@@ -125,7 +123,7 @@ Dialog {
             text: i18n.tr("OK")
             onClicked: editor.commit()
             Layout.fillWidth: true
-            enabled: editorLoader.item.changed
+            enabled: editorLoader.item.changed && editorLoader.item.valid
 
             Icon {
                 height: parent.height - units.gu(1.5)

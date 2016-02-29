@@ -28,6 +28,7 @@ Column {
 
     property var connection
     property bool changed: getChanges().length > 0
+    property bool valid: true
 
     states: [
         State {
