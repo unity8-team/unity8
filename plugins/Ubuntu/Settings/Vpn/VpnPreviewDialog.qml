@@ -66,7 +66,7 @@ Dialog {
             connection: getConnection(),
             installed: isInstalled()
         });
-        title = i18n.tr("VPN");
+        if (!title) title = i18n.tr("VPN");
     }
 
     Loader {

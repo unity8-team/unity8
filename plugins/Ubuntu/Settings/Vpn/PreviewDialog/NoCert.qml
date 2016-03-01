@@ -31,5 +31,4 @@ Column {
         anchors { left: parent.left; right: parent.right; }
         text: i18n.tr("It does not provide a certificate. The VPN provider could be impersonated.")
     }
-
 }

@@ -109,7 +109,6 @@ Column {
     }
 
     RowLayout {
-
         anchors { left: parent.left; right: parent.right }
 
         Label {
@@ -186,7 +185,6 @@ Column {
 
     VpnTypeField {
         onTypeRequested: {
-            console.warn('onTypeRequested')
             editor.typeChanged(connection, index);
         }
         Component.onCompleted: type = connection.type
