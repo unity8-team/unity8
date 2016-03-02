@@ -1,9 +1,12 @@
-ubuntu-settings-components (0.7-0ubuntu1) UNRELEASED; urgency=medium
+ubuntu-settings-components (0.7+16.04.20160302-0ubuntu1) xenial; urgency=medium
 
   [ Nick Dedekind ]
   * Moved ModemItem class here from unity8
 
- -- Nick Dedekind <nick.dedekind@canonical.com>  Mon, 29 Feb 2016 14:28:21 +0000
+  [ Albert Astals Cid ]
+  * Standarize QtQuick and Ubuntu.Components.Listitems imports
+
+ -- Zoltan Balogh <zoltan.balogh@canonical.com>  Wed, 02 Mar 2016 21:39:36 +0000
 
 ubuntu-settings-components (0.6+16.04.20151102-0ubuntu1) xenial; urgency=medium
 
