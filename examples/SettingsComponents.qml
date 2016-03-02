@@ -30,7 +30,7 @@ MainView {
     height: units.gu(75)
 
     Component.onCompleted: {
-        theme.name = "Ubuntu.Components.Themes.SuruGradient"
+        theme.name = "Ubuntu.Components.Themes.SuruDark"
     }
 
     ListModel {

@@ -133,7 +133,7 @@ ListItem.Empty {
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: theme.palette.selected.backgroundText
+                color: theme.palette.normal.backgroundText
 
                 MouseArea {
                     anchors.fill: parent
@@ -189,7 +189,7 @@ ListItem.Empty {
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: theme.palette.selected.backgroundText
+                color: theme.palette.normal.backgroundText
 
                 MouseArea {
                     anchors.fill: parent

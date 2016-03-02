@@ -164,6 +164,28 @@ Item {
                 onTriggered: active = !active
             }
 
+            AccessPointMenu {
+                active: false
+                secure: true
+                adHoc: true
+                signalStrength: 50
+                text: "Access Point"
+
+                onTriggered: active = !active
+            }
+
+            AccessPointMenu {
+                text: "Access Point"
+                onTriggered: active = !active
+            }
+
+            ModemInfoItem {
+                statusText: "EE 4G"
+                statusIcon: "gsm-3g-full"
+                roaming: true
+                locked: false
+            }
+
             GroupedMessageMenu {
                 text: "Group Message"
                 count: "4100"

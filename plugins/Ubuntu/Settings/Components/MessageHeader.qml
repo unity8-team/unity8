@@ -59,7 +59,7 @@ Item {
 
                 color: {
                     if (String(source).match(/^image:\/\/theme/)) {
-                        return theme.palette.selected.backgroundText;
+                        return theme.palette.normal.backgroundText;
                     }
                     return Qt.rgba(0.0, 0.0, 0.0, 0.0);
                 }
@@ -116,7 +116,7 @@ Item {
             Layout.preferredHeight: units.gu(3)
             Layout.preferredWidth: units.gu(3)
             Layout.alignment: Qt.AlignRight
-            color: theme.palette.selected.backgroundText
+            color: theme.palette.normal.backgroundText
 
             MouseArea {
                 anchors.fill: parent

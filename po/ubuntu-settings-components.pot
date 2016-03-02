@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Canonical Ltd.
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the ubuntu-settings-components package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-02 16:26+0200\n"
+"POT-Creation-Date: 2016-02-11 11:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,20 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Menus/CalendarMenu.qml:57
+#, qt-format
+msgctxt "%1=month name, %2=4-digit year"
+msgid "%1 %2"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:100
+msgid "Roaming"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:122
+msgid "Unlock SIM"
 msgstr ""
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:30

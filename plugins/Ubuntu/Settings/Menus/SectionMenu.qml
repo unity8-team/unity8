@@ -24,6 +24,7 @@ import Ubuntu.Components.ListItems 1.3 as ListItem
 ListItem.Header {
     id: menuItem
     property alias busy: indicator.running
+    __foregroundColor: theme.palette.normal.backgroundText
 
     ActivityIndicator {
         id: indicator

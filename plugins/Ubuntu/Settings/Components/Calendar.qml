@@ -149,7 +149,7 @@ ListView {
     height: priv.squareUnit * (collapsed ? 1 : 6) + priv.verticalMargin * 2
     interactive: !collapsed
     clip: true
-    cacheBuffer: width + 1
+    cacheBuffer: Math.max(width + 1, 0)
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
@@ -203,8 +203,8 @@ ListView {
                     property var dayStart: gridStart.addDays(index)
 
                     // Styling properties
-                    property color color: theme.palette.selected.backgroundText
-                    property color todayColor: theme.palette.selected.foreground
+                    property color color: theme.palette.normal.backgroundText
+                    property color todayColor: theme.palette.normal.positive
                     property string fontSize: "large"
                     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
                     property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
