@@ -24,7 +24,7 @@ import ".."
 Column {
     id: pptpEditor
 
-    spacing: units.gu(1)
+    spacing: units.gu(2)
 
     property var connection
     property bool changed: getChanges().length > 0
@@ -42,6 +42,7 @@ Column {
                 running: true
             }
             PropertyChanges { target: gatewayField; enabled: false }
+            PropertyChanges { target: routesField; enabled: false }
             PropertyChanges { target: userField; enabled: false }
             PropertyChanges { target: passwordField; enabled: false }
             PropertyChanges { target: domainField; enabled: false }
@@ -88,6 +89,7 @@ Column {
     function getChanges () {
         var fields = [
             ["gateway",              gatewayField.text],
+            ["neverDefault",         routesField.neverDefault],
             ["user",                 userField.text],
             ["password",             passwordField.text],
             ["domain",               domainField.text],
@@ -124,6 +126,7 @@ Column {
     }
 
     TextField {
+        anchors { left: parent.left; right: parent.right }
         id: gatewayField
         objectName: "vpnPptpGatewayField"
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
@@ -131,7 +134,14 @@ Column {
         Component.onCompleted: forceActiveFocus()
     }
 
+    VpnRoutesField {
+        anchors { left: parent.left; right: parent.right }
+        id: routesField
+        neverDefault: connection.neverDefault
+    }
+
     VpnTypeField {
+        anchors { left: parent.left; right: parent.right }
         onTypeRequested: {
             editor.typeChanged(connection, index);
         }
@@ -191,6 +201,9 @@ Column {
     }
 
     Column {
+        anchors { left: parent.left; right: parent.right }
+        spacing: units.gu(1)
+
         ListItems.ThinDivider {}
 
         RowLayout {

@@ -20,8 +20,9 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 
 RowLayout {
-    property alias type: vpnTypeSelector.selectedIndex
+    spacing: units.gu(1)
 
+    property alias type: vpnTypeSelector.selectedIndex
     signal typeRequested(int index)
 
     Label {
@@ -29,7 +30,7 @@ RowLayout {
         font.bold: true
         color: Theme.palette.selected.backgroundText
         elide: Text.ElideRight
-        horizontalAlignment: Text.AlignHCenter
+        horizontalAlignment: Text.AlignRight
         Layout.fillWidth: true
     }
 
@@ -42,7 +43,7 @@ RowLayout {
         ]
         expanded: false
         onDelegateClicked: typeRequested(index)
-        Layout.preferredWidth: units.gu(20)
+        Layout.preferredWidth: units.gu(35)
         Layout.minimumHeight: currentlyExpanded ? itemHeight * model.length : itemHeight
     }
 }

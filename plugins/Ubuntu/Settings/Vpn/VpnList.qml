@@ -24,8 +24,7 @@ ListView {
 
     property var diag
 
-    signal requestOpenConnection(var connection)
-    signal requestPreviewConnection(var connection)
+    signal clickedConnection(var connection)
 
     anchors {
         left: parent.left
@@ -37,14 +36,19 @@ ListView {
     delegate: ListItem {
         objectName: "vpnListConnection" + index
         height: layout.height + divider.height
-        onClicked: previewConnection(connection)
+        onClicked: clickedConnection(connection)
 
         ListItemLayout {
             id: layout
             title.text: id
-            Label {
+
+            Switch {
                 SlotsLayout.position: SlotsLayout.Trailing;
-                text: active ? i18n.tr("On") : i18n.tr("Off")
+                id: hotspotSwitch
+                objectName: "hotspotSwitch"
+                enabled: activatable
+                checked: active
+                onTriggered: active = checked
             }
         }
 

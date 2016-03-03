@@ -24,7 +24,7 @@ import ".."
 Column {
     id: openVpnEditor
 
-    spacing: units.gu(1)
+    spacing: units.gu(2)
 
     property var connection
     property bool changed: getChanges().length > 0
@@ -44,7 +44,9 @@ Column {
             PropertyChanges { target: serverField; enabled: false }
             PropertyChanges { target: customPortToggle; enabled: false }
             PropertyChanges { target: portField; enabled: false }
+            PropertyChanges { target: routesField; enabled: false }
             PropertyChanges { target: tcpToggle; enabled: false }
+            PropertyChanges { target: udpToggle; enabled: false }
             PropertyChanges { target: certField; enabled: false }
             PropertyChanges { target: caField; enabled: false }
             PropertyChanges { target: keyField; enabled: false }
@@ -83,6 +85,7 @@ Column {
             ["remote",           serverField.text],
             ["portSet",          customPortToggle.checked],
             ["port",             parseInt(portField.text, 10) || 0],
+            ["neverDefault",     routesField.neverDefault],
             ["protoTcp",         tcpToggle.checked],
             ["cert",             certField.path],
             ["ca",               caField.path],
@@ -166,6 +169,7 @@ Column {
     }
 
     RowLayout {
+        anchors { left: parent.left; right: parent.right }
         CheckBox {
             id: customPortToggle
             objectName: "vpnOpenvpnCustomPortToggle"
@@ -173,9 +177,15 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Use custom gateway port:")
+            text: i18n.tr("Use custom gateway port")
             Layout.fillWidth: true
         }
+    }
+
+    VpnRoutesField {
+        anchors { left: parent.left; right: parent.right }
+        id: routesField
+        neverDefault: connection.neverDefault
     }
 
     RegExpValidator {
@@ -184,10 +194,12 @@ Column {
     }
 
     VpnTypeField {
+        anchors { left: parent.left; right: parent.right }
+        // type does not notify, so we avoid binding to suppress warnings
+        Component.onCompleted: type = connection.type
         onTypeRequested: {
             editor.typeChanged(connection, index);
         }
-        Component.onCompleted: type = connection.type
     }
 
     RowLayout {
@@ -218,7 +230,7 @@ Column {
             objectName: "vpnOpenvpnUdpToggle"
             checked: !tcpToggle.checked
             onTriggered: {
-                tcpToggle.checked = !checked
+                tcpToggle.checked = !checked;
                 checked = Qt.binding(function () {
                     return !tcpToggle.checked
                 });

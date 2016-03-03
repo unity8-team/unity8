@@ -18,9 +18,8 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
-import Ubuntu.Components.Popups 1.3
 
-Dialog {
+Page {
     id: editor
     objectName: "vpnEditorDialog"
     title: i18n.tr("Set up VPN")
@@ -36,43 +35,33 @@ Dialog {
     // Each remote variable is changed in a chain of events where
     // one Change event triggers the next change, ad finem.
     function commit () {
+        console.warn('commit');
         editorLoader.item.state = 'committing';
         var changes = editorLoader.item.getChanges();
+        var currentChange = changes.shift();
+        var c = connection;
 
-        for (var i = 0; i < changes.length; i++) {
-            var srvName = changes[i][0];
-            var eName = srvName + "Changed";
-            var nextChange = changes[i+1];
-
-            // Subscribe to the *Changed event for this change,
-            // and in the handler perform the next change.
-            if (nextChange) {
-                var handler = function (key, value, e, h) {
-                    this[key] = value;
-                    this[e].disconnect(h);
-                }
-                handler = handler.bind(
-                    connection, nextChange[0], nextChange[1], eName, handler
-                );
-                connection[eName].connect(handler)
-            }
-
-            // If this is the last change, subscribe to its Change event
-            // a handler that changes the UI's state to a done state.
-            // Also, set the id to whatever the remote/gateway is, if any.
-            if (i == changes.length - 1) {
-                connection[eName].connect(function (editorItem, k, v) {
-                    if (this[k] === v) {
-                        editorItem.state = 'succeeded';
-                        if (connection.remote) connection.id = connection.remote;
-                        if (connection.gateway) connection.id = connection.gateway;
-                    }
-                }.bind(connection, editorLoader.item, srvName, changes[i][1]));
-            }
+        function cb () {
+            console.warn(currentChange[0], 'changed');
+            var change;
+            c[currentChange[0] + "Changed"].disconnect(cb);
+            if (changes.length === 0) {
+                console.warn('cb: no more, succeeded');
+                editorLoader.item.state = 'succeeded';
+                if (c.gateway) c.id = c.gateway;
+                if (c.remote) c.id = c.remote;
+             } else {
+                change = changes.shift();
+                console.warn('cb: saw new', change[0], 'subscribing to', change[0] + "Changed", 'will set to', change[1]);
+                c[change[0] + "Changed"].connect(cb);
+                c[change[0]] = change[1];
+                currentChange = change;
+             }
         }
 
-        // Start event chain.
-        connection[changes[0][0]] = changes[0][1];
+        c[currentChange[0] + "Changed"].connect(cb);
+        c[currentChange[0]] = currentChange[1];
+        console.warn('started with', currentChange[0] + "Changed", currentChange[0], currentChange[1]);
     }
 
     Component.onCompleted: {
@@ -89,6 +78,10 @@ Dialog {
         }
     }
 
+    head {
+        backAction: Action { visible: false }
+    }
+
     Component {
         id: fileDialogComponent
         DialogFile {
@@ -96,53 +89,68 @@ Dialog {
         }
     }
 
-    Loader {
-        id: editorLoader
-        anchors.left: parent.left
-        anchors.right: parent.right
-    }
-
-    RowLayout {
-        anchors { left: parent.left; right: parent.right }
-
-        Button {
-            objectName: "vpnEditorCancelButton"
-            text: i18n.tr("Cancel")
-            onClicked: {
-                if (editor.isNew) {
-                    connection.remove();
-                }
-                PopupUtils.close(editor)
-            }
-            Layout.fillWidth: true
+    Flickable {
+        id: scrollWidget
+        anchors {
+            fill: parent
+            margins: units.gu(2)
         }
+        contentHeight: contentItem.childrenRect.height
+        boundsBehavior: (contentHeight > editor.height) ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
 
-        Button {
-            id: vpnEditorOkayButton
-            objectName: "vpnEditorOkayButton"
-            text: i18n.tr("OK")
-            onClicked: editor.commit()
-            Layout.fillWidth: true
-            enabled: editorLoader.item.changed && editorLoader.item.valid
+        Column {
+            anchors { left: parent.left; right: parent.right }
+            spacing: units.gu(2)
 
-            Icon {
-                height: parent.height - units.gu(1.5)
-                width: parent.height - units.gu(1.5)
-                anchors {
-                    centerIn: parent
-                }
-                name: "tick"
-                color: "green"
-                visible: successIndicator.running
+            Loader {
+                id: editorLoader
+                anchors.left: parent.left
+                anchors.right: parent.right
             }
 
-            ActivityIndicator {
-                id: okButtonIndicator
-                running: false
-                visible: running
-                height: parent.height - units.gu(1.5)
-                anchors {
-                    centerIn: parent
+            RowLayout {
+                anchors { left: parent.left; right: parent.right }
+
+                Button {
+                    objectName: "vpnEditorCancelButton"
+                    text: i18n.tr("Cancel")
+                    onClicked: {
+                        if (editor.isNew) {
+                            connection.remove();
+                        }
+                        pageStack.pop();
+                    }
+                    Layout.fillWidth: true
+                }
+
+                Button {
+                    id: vpnEditorOkayButton
+                    objectName: "vpnEditorOkayButton"
+                    text: i18n.tr("OK")
+                    onClicked: editor.commit()
+                    Layout.fillWidth: true
+                    enabled: editorLoader.item.changed && editorLoader.item.valid
+
+                    Icon {
+                        height: parent.height - units.gu(1.5)
+                        width: parent.height - units.gu(1.5)
+                        anchors {
+                            centerIn: parent
+                        }
+                        name: "tick"
+                        color: "green"
+                        visible: successIndicator.running
+                    }
+
+                    ActivityIndicator {
+                        id: okButtonIndicator
+                        running: false
+                        visible: running
+                        height: parent.height - units.gu(1.5)
+                        anchors {
+                            centerIn: parent
+                        }
+                    }
                 }
             }
         }
@@ -155,7 +163,7 @@ Dialog {
         interval: 2000
         running: false
         repeat: false
-        onTriggered: PopupUtils.close(editor)
+        onTriggered: pageStack.pop()
     }
 
     // XXX: Workaround for lp:1546559.
