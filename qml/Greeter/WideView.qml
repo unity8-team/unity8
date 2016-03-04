@@ -73,6 +73,7 @@ FocusScope {
     readonly property var showPrompt: ifLoginlistShownThen(doShowPrompt);
     function doShowPrompt(text, isSecret, isDefaultPrompt) {
         loginAreaLoader.item.showPrompt(text, isSecret, isDefaultPrompt);
+        loginAreaLoader.item.passwordInput.forceActiveFocus();
     }
 
     readonly property var tryToUnlock: ifLoginlistShownThen(doTryToUnlock);
