@@ -43,7 +43,7 @@ RowLayout {
         ]
         expanded: false
         onDelegateClicked: typeRequested(index)
-        Layout.preferredWidth: units.gu(35)
+        Layout.preferredWidth: units.gu(30)
         Layout.minimumHeight: currentlyExpanded ? itemHeight * model.length : itemHeight
     }
 }
