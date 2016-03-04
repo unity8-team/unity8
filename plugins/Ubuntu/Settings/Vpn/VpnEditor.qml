@@ -31,37 +31,17 @@ Page {
 
     signal typeChanged(var connection, int type)
 
-    // XXX: Most of this commit function deals with bug lp:1546559.
-    // Each remote variable is changed in a chain of events where
-    // one Change event triggers the next change, ad finem.
     function commit () {
-        console.warn('commit');
         editorLoader.item.state = 'committing';
         var changes = editorLoader.item.getChanges();
-        var currentChange = changes.shift();
-        var c = connection;
 
-        function cb () {
-            console.warn(currentChange[0], 'changed');
-            var change;
-            c[currentChange[0] + "Changed"].disconnect(cb);
-            if (changes.length === 0) {
-                console.warn('cb: no more, succeeded');
-                editorLoader.item.state = 'succeeded';
-                if (c.gateway) c.id = c.gateway;
-                if (c.remote) c.id = c.remote;
-             } else {
-                change = changes.shift();
-                console.warn('cb: saw new', change[0], 'subscribing to', change[0] + "Changed", 'will set to', change[1]);
-                c[change[0] + "Changed"].connect(cb);
-                c[change[0]] = change[1];
-                currentChange = change;
-             }
+        for (var i = 0; i < changes.length; i++) {
+            var key = changes[i][0];
+            var value = changes[i][1];
+            connection[key] = value;
+            if (key == "gateway" || key == "remote") connection.id = value;
         }
-
-        c[currentChange[0] + "Changed"].connect(cb);
-        c[currentChange[0]] = currentChange[1];
-        console.warn('started with', currentChange[0] + "Changed", currentChange[0], currentChange[1]);
+        editorLoader.item.state = 'succeeded';
     }
 
     Component.onCompleted: {
@@ -164,17 +144,5 @@ Page {
         running: false
         repeat: false
         onTriggered: pageStack.pop()
-    }
-
-    // XXX: Workaround for lp:1546559.
-    // Timer that makes sure our secrets are up to date. If this timer
-    // does not run while we're committing changes, changes to fields
-    // like “certPass” will never notify, and our loop will get stuck.
-    Timer {
-        id: secretUpdaterLoop
-        interval: 500
-        running: false
-        repeat: true
-        onTriggered: connection.updateSecrets()
     }
 }

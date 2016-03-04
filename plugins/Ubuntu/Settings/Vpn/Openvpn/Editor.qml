@@ -37,10 +37,6 @@ Column {
                 target: okButtonIndicator
                 running: true
             }
-            PropertyChanges {
-                target: secretUpdaterLoop
-                running: true
-            }
             PropertyChanges { target: serverField; enabled: false }
             PropertyChanges { target: customPortToggle; enabled: false }
             PropertyChanges { target: portField; enabled: false }
@@ -69,10 +65,6 @@ Column {
             }
             PropertyChanges {
                 target: okButtonIndicator
-                running: false
-            }
-            PropertyChanges {
-                target: secretUpdaterLoop
                 running: false
             }
         }
@@ -143,7 +135,9 @@ Column {
         TextField {
             id: serverField
             objectName: "vpnOpenvpnServerField"
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            inputMethodHints: Qt.ImhNoAutoUppercase
+                              | Qt.ImhNoPredictiveText
+                              | Qt.ImhUrlCharactersOnly
             Layout.fillWidth: true
             text: connection.remote
             Component.onCompleted: forceActiveFocus()

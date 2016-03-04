@@ -35,18 +35,21 @@ Column {
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
+        // TRANSLATORS: This describes the effect, should you enable the VPN.
         text: i18n.tr("Your Wi-Fi/mobile provider can see when and how much you use the Internet, but not what for.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
+        // TRANSLATORS: This describes the effect, should you enable the VPN.
         text: i18n.tr("The VPN provider can see or modify your Internet traffic.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
+        // TRANSLATORS: This describes the effect, should you enable the VPN.
         text: i18n.tr("Web sites and other service providers can still monitor your use.")
     }
 }

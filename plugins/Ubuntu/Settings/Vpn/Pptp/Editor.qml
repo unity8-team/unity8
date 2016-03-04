@@ -37,10 +37,6 @@ Column {
                 target: okButtonIndicator
                 running: true
             }
-            PropertyChanges {
-                target: secretUpdaterLoop
-                running: true
-            }
             PropertyChanges { target: gatewayField; enabled: false }
             PropertyChanges { target: routesField; enabled: false }
             PropertyChanges { target: userField; enabled: false }
@@ -70,10 +66,6 @@ Column {
             PropertyChanges {
                 target: successIndicator
                 running: true
-            }
-            PropertyChanges {
-                target: secretUpdaterLoop
-                running: false
             }
         }
     ]
@@ -129,7 +121,9 @@ Column {
         anchors { left: parent.left; right: parent.right }
         id: gatewayField
         objectName: "vpnPptpGatewayField"
-        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+        inputMethodHints: Qt.ImhNoAutoUppercase
+                          | Qt.ImhNoPredictiveText
+                          | Qt.ImhUrlCharactersOnly
         text: connection.gateway
         Component.onCompleted: forceActiveFocus()
     }

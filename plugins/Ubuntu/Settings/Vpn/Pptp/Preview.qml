@@ -22,21 +22,37 @@ Column {
     property var connection
     property bool installed
 
-    Component.onCompleted: {
-        var defaultSource;
+    // The order of which source to load is determined by the order in which
+    // they appear in the spec (starting with “This VPN is not safe to use.”)
+    // and ending with “You’re using this VPN for specific services.”.
+    // We do not currently deal with non-installed VPN connections, so we
+    // assume the connection to be installed.
+    function showPreview () {
+        var c = connection;
 
-        if (installed) {
-            // The API does not support routes yet (lp:1546573), so we treat
-            // any active VPN as if it is routing all traffic.
-             defaultSource = connection.active ?
-                             "../PreviewDialog/AllTrafficWithoutDns.qml"
-                             : "../PreviewDialog/SetUpUnused.qml";
-        } else {
-             defaultSource = "../PreviewDialog/NotInstalledWithoutRoutes.qml";
+        // “You’re using this VPN for all Internet traffic.”
+        if (c.active && !c.neverDefault) {
+            return contentLoader.setSource(
+                "../PreviewDialog/AllTrafficWithoutDns.qml"
+            );
         }
 
-        contentLoader.setSource(defaultSource);
+        // “This VPN is set up, but not in use now.”
+        if (!c.active) {
+            return contentLoader.setSource(
+                "../PreviewDialog/SetUpUnused.qml"
+            );
+        }
+
+        // “You’re using this VPN for specific services.”
+        if (c.active && c.neverDefault) {
+            return contentLoader.setSource(
+                "../PreviewDialog/SomeTraffic.qml"
+            );
+        }
     }
+
+    Component.onCompleted: showPreview()
 
     Loader {
         id: contentLoader
