@@ -2117,7 +2117,6 @@ Rectangle {
             loadShell("desktop");
             shell.usageScenario = "desktop";
             waitForRendering(shell);
-
             var appContainer = findChild(shell, "appContainer");
             var launcher = findChild(shell, "launcher");
 
