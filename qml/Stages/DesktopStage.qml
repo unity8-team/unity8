@@ -284,11 +284,15 @@ AbstractStage {
                     property bool maximized: false
                     property bool maximizedLeft: false
                     property bool maximizedRight: false
+                    property bool maximizedHorizontally: false
+                    property bool maximizedVertically: false
                     property bool minimized: false
                 }
                 readonly property alias maximized: appDelegatePrivate.maximized
                 readonly property alias maximizedLeft: appDelegatePrivate.maximizedLeft
                 readonly property alias maximizedRight: appDelegatePrivate.maximizedRight
+                readonly property alias maximizedHorizontally: appDelegatePrivate.maximizedHorizontally
+                readonly property alias maximizedVertically: appDelegatePrivate.maximizedVertically
                 readonly property alias minimized: appDelegatePrivate.minimized
                 readonly property alias fullscreen: decoratedWindow.fullscreen
 
@@ -332,18 +336,40 @@ AbstractStage {
                     appDelegatePrivate.maximized = true;
                     appDelegatePrivate.maximizedLeft = false;
                     appDelegatePrivate.maximizedRight = false;
+                    appDelegatePrivate.maximizedHorizontally = false;
+                    appDelegatePrivate.maximizedVertically = false;
                 }
                 function maximizeLeft() {
                     appDelegatePrivate.minimized = false;
                     appDelegatePrivate.maximized = false;
                     appDelegatePrivate.maximizedLeft = true;
                     appDelegatePrivate.maximizedRight = false;
+                    appDelegatePrivate.maximizedHorizontally = false;
+                    appDelegatePrivate.maximizedVertically = false;
                 }
                 function maximizeRight() {
                     appDelegatePrivate.minimized = false;
                     appDelegatePrivate.maximized = false;
                     appDelegatePrivate.maximizedLeft = false;
                     appDelegatePrivate.maximizedRight = true;
+                    appDelegatePrivate.maximizedHorizontally = false;
+                    appDelegatePrivate.maximizedVertically = false;
+                }
+                function maximizeHorizontally() {
+                    appDelegatePrivate.minimized = false;
+                    appDelegatePrivate.maximized = false;
+                    appDelegatePrivate.maximizedLeft = false;
+                    appDelegatePrivate.maximizedRight = false;
+                    appDelegatePrivate.maximizedHorizontally = true;
+                    appDelegatePrivate.maximizedVertically = false;
+                }
+                function maximizeVertically() {
+                    appDelegatePrivate.minimized = false;
+                    appDelegatePrivate.maximized = false;
+                    appDelegatePrivate.maximizedLeft = false;
+                    appDelegatePrivate.maximizedRight = false;
+                    appDelegatePrivate.maximizedHorizontally = false;
+                    appDelegatePrivate.maximizedVertically = true;
                 }
                 function minimize(animated) {
                     animationsEnabled = (animated === undefined) || animated;
@@ -355,6 +381,8 @@ AbstractStage {
                     appDelegatePrivate.maximized = false;
                     appDelegatePrivate.maximizedLeft = false;
                     appDelegatePrivate.maximizedRight = false;
+                    appDelegatePrivate.maximizedHorizontally = false;
+                    appDelegatePrivate.maximizedVertically = false;
                 }
                 function restore(animated) {
                     animationsEnabled = (animated === undefined) || animated;
@@ -365,6 +393,10 @@ AbstractStage {
                         maximizeLeft();
                     else if (maximizedRight)
                         maximizeRight();
+                    else if (maximizedHorizontally)
+                        maximizeHorizontally();
+                    else if (maximizedVertically)
+                        maximizeVertically();
                     ApplicationManager.focusApplication(appId);
                 }
 
@@ -406,6 +438,7 @@ AbstractStage {
                         name: "normal";
                         when: !appDelegate.maximized && !appDelegate.minimized
                               && !appDelegate.maximizedLeft && !appDelegate.maximizedRight
+                              && !appDelegate.maximizedHorizontally && !appDelegate.maximizedVertically
                         PropertyChanges {
                             target: appDelegate;
                             visuallyMinimized: false;
@@ -435,12 +468,20 @@ AbstractStage {
                             requestedWidth: (appContainer.width - root.leftMargin)/2; requestedHeight: appContainer.height - PanelState.panelHeight }
                     },
                     State {
+                        name: "maximizedHorizontally"; when: appDelegate.maximizedHorizontally && !appDelegate.minimized
+                        PropertyChanges { target: appDelegate; x: root.leftMargin; requestedWidth: appContainer.width - root.leftMargin }
+                    },
+                    State {
+                        name: "maximizedVertically"; when: appDelegate.maximizedVertically && !appDelegate.minimized
+                        PropertyChanges { target: appDelegate; y: PanelState.panelHeight; requestedHeight: appContainer.height - PanelState.panelHeight }
+                    },
+                    State {
                         name: "minimized"; when: appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
                             x: -appDelegate.width / 2;
                             scale: units.gu(5) / appDelegate.width;
-                            opacity: 0
+                            opacity: 0;
                             visuallyMinimized: true;
                             visuallyMaximized: false
                         }
@@ -568,7 +609,10 @@ AbstractStage {
 
                     onClose: appDelegate.close()
                     onMaximize: appDelegate.maximized || appDelegate.maximizedLeft || appDelegate.maximizedRight
+                                || appDelegate.maximizedHorizontally || appDelegate.maximizedVertically
                                 ? appDelegate.restoreFromMaximized() : appDelegate.maximize()
+                    onMaximizeHorizontally: appDelegate.maximizedHorizontally ? appDelegate.restoreFromMaximized() : appDelegate.maximizeHorizontally()
+                    onMaximizeVertically: appDelegate.maximizedVertically ? appDelegate.restoreFromMaximized() : appDelegate.maximizeVertically()
                     onMinimize: appDelegate.minimize()
                     onDecorationPressed: { ApplicationManager.focusApplication(model.appId) }
                 }
