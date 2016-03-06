@@ -2156,6 +2156,7 @@ Rectangle {
             tryCompare(launcher, "lockedVisible", false);
         }
 
+
         function test_inputEventsOnEdgesEndUpInAppSurface_data() {
             return [
                 { tag: "phone", repeaterName: "spreadRepeater" },

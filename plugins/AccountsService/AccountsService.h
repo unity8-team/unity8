@@ -21,7 +21,6 @@
 
 #include <QObject>
 #include <QString>
-#include <QStringList>
 
 class AccountsServiceDBusAdaptor;
 class QDBusInterface;
@@ -67,9 +66,6 @@ class AccountsService: public QObject
     Q_PROPERTY(bool hereLicensePathValid // qml sees a null string as "", so we use proxy setting for that
                READ hereLicensePathValid
                NOTIFY hereLicensePathChanged)
-    Q_PROPERTY(QStringList keymaps
-               READ keymaps
-               NOTIFY keymapsChanged)
 
 public:
     enum PasswordDisplayHint {
@@ -95,7 +91,6 @@ public:
     void setHereEnabled(bool enabled);
     QString hereLicensePath() const;
     bool hereLicensePathValid() const;
-    QStringList keymaps() const;
 
 Q_SIGNALS:
     void userChanged();
@@ -108,7 +103,6 @@ Q_SIGNALS:
     void failedLoginsChanged();
     void hereEnabledChanged();
     void hereLicensePathChanged();
-    void keymapsChanged();
 
 private Q_SLOTS:
     void onPropertiesChanged(const QString &user, const QString &interface, const QStringList &changed);
@@ -126,7 +120,6 @@ private:
     void updateFailedLogins(bool async = true);
     void updateHereEnabled(bool async = true);
     void updateHereLicensePath(bool async = true);
-    void updateKeymaps(bool async = true);
 
     AccountsServiceDBusAdaptor *m_service;
     QDBusInterface *m_unityInput;
@@ -140,7 +133,6 @@ private:
     uint m_failedLogins;
     bool m_hereEnabled;
     QString m_hereLicensePath;
-    QStringList m_kbdMap;
 };
 
 #endif

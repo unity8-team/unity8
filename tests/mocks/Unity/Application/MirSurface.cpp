@@ -129,21 +129,7 @@ void MirSurface::setOrientationAngle(Mir::OrientationAngle angle)
     Q_EMIT orientationAngleChanged(angle);
 }
 
-QString MirSurface::keymapLayout() const
-{
-    return m_keyMap.first;
-}
 
-QString MirSurface::keymapVariant() const
-{
-    return m_keyMap.second;
-}
-
-void MirSurface::setKeymap(const QString &layout, const QString &variant)
-{
-    m_keyMap = qMakePair(layout, variant);
-    Q_EMIT keymapChanged(layout, variant);
-}
 
 void MirSurface::registerView(qintptr viewId)
 {
