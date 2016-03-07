@@ -214,7 +214,7 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
             QDesktopServices::openUrl(getUrlForAppId(appId));
         } else if (actionId == QLatin1String("stop_item")) { // Quit
             if (m_appManager) {
-                m_appManager->stopApplication(appId);
+                m_appManager->requestStopApplication(appId);
             }
         // Nope, we don't know this action, let the backend forward it to the application
         } else {
