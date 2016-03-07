@@ -1,3 +1,10 @@
+unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Elide the window title not to let it overflow into the indicators
+    area
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Mon, 07 Mar 2016 22:44:31 +0000
+
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
   [ Albert Astals Cid ]
