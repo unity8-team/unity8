@@ -123,7 +123,8 @@ AbstractStage {
     GlobalShortcut {
         id: minimizeRestoreShortcut
         shortcut: Qt.MetaModifier|Qt.ControlModifier|Qt.Key_Down
-        onTriggered: priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight
+        onTriggered: priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight ||
+                     priv.focusedAppDelegate.maximizedHorizontally || priv.focusedAppDelegate.maximizedVertically
                      ? priv.focusedAppDelegate.restoreFromMaximized() : priv.focusedAppDelegate.minimize()
         active: priv.focusedAppDelegate !== null
     }
@@ -279,22 +280,15 @@ AbstractStage {
                 property alias widthIncrement: decoratedWindow.widthIncrement
                 property alias heightIncrement: decoratedWindow.heightIncrement
 
-                QtObject {
-                    id: appDelegatePrivate
-                    property bool maximized: false
-                    property bool maximizedLeft: false
-                    property bool maximizedRight: false
-                    property bool maximizedHorizontally: false
-                    property bool maximizedVertically: false
-                    property bool minimized: false
-                }
-                readonly property alias maximized: appDelegatePrivate.maximized
-                readonly property alias maximizedLeft: appDelegatePrivate.maximizedLeft
-                readonly property alias maximizedRight: appDelegatePrivate.maximizedRight
-                readonly property alias maximizedHorizontally: appDelegatePrivate.maximizedHorizontally
-                readonly property alias maximizedVertically: appDelegatePrivate.maximizedVertically
-                readonly property alias minimized: appDelegatePrivate.minimized
+                readonly property bool maximized: windowState & WindowStateStorage.WindowStateMaximized
+                readonly property bool maximizedLeft: windowState & WindowStateStorage.WindowStateMaximizedLeft
+                readonly property bool maximizedRight: windowState & WindowStateStorage.WindowStateMaximizedRight
+                readonly property bool maximizedHorizontally: windowState & WindowStateStorage.WindowStateMaximizedHorizontally
+                readonly property bool maximizedVertically: windowState & WindowStateStorage.WindowStateMaximizedVertically
+                readonly property bool minimized: windowState & WindowStateStorage.WindowStateMinimized
                 readonly property alias fullscreen: decoratedWindow.fullscreen
+
+                property int windowState: WindowStateStorage.WindowStateNormal
 
                 readonly property string appId: model.appId
                 property bool animationsEnabled: true
@@ -332,61 +326,31 @@ AbstractStage {
 
                 function maximize(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    appDelegatePrivate.minimized = false;
-                    appDelegatePrivate.maximized = true;
-                    appDelegatePrivate.maximizedLeft = false;
-                    appDelegatePrivate.maximizedRight = false;
-                    appDelegatePrivate.maximizedHorizontally = false;
-                    appDelegatePrivate.maximizedVertically = false;
+                    windowState = WindowStateStorage.WindowStateMaximized;
                 }
                 function maximizeLeft() {
-                    appDelegatePrivate.minimized = false;
-                    appDelegatePrivate.maximized = false;
-                    appDelegatePrivate.maximizedLeft = true;
-                    appDelegatePrivate.maximizedRight = false;
-                    appDelegatePrivate.maximizedHorizontally = false;
-                    appDelegatePrivate.maximizedVertically = false;
+                    windowState = WindowStateStorage.WindowStateMaximizedLeft;
                 }
                 function maximizeRight() {
-                    appDelegatePrivate.minimized = false;
-                    appDelegatePrivate.maximized = false;
-                    appDelegatePrivate.maximizedLeft = false;
-                    appDelegatePrivate.maximizedRight = true;
-                    appDelegatePrivate.maximizedHorizontally = false;
-                    appDelegatePrivate.maximizedVertically = false;
+                    windowState = WindowStateStorage.WindowStateMaximizedRight;
                 }
                 function maximizeHorizontally() {
-                    appDelegatePrivate.minimized = false;
-                    appDelegatePrivate.maximized = false;
-                    appDelegatePrivate.maximizedLeft = false;
-                    appDelegatePrivate.maximizedRight = false;
-                    appDelegatePrivate.maximizedHorizontally = true;
-                    appDelegatePrivate.maximizedVertically = false;
+                    windowState = WindowStateStorage.WindowStateMaximizedHorizontally;
                 }
                 function maximizeVertically() {
-                    appDelegatePrivate.minimized = false;
-                    appDelegatePrivate.maximized = false;
-                    appDelegatePrivate.maximizedLeft = false;
-                    appDelegatePrivate.maximizedRight = false;
-                    appDelegatePrivate.maximizedHorizontally = false;
-                    appDelegatePrivate.maximizedVertically = true;
+                    windowState = WindowStateStorage.WindowStateMaximizedVertically;
                 }
                 function minimize(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    appDelegatePrivate.minimized = true;
+                    windowState |= WindowStateStorage.WindowStateMinimized; // add the minimized bit
                 }
                 function restoreFromMaximized(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    appDelegatePrivate.minimized = false;
-                    appDelegatePrivate.maximized = false;
-                    appDelegatePrivate.maximizedLeft = false;
-                    appDelegatePrivate.maximizedRight = false;
-                    appDelegatePrivate.maximizedHorizontally = false;
-                    appDelegatePrivate.maximizedVertically = false;
+                    windowState = WindowStateStorage.WindowStateNormal;
                 }
                 function restore(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    appDelegatePrivate.minimized = false;
+                    windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
                     if (maximized)
                         maximize();
                     else if (maximizedLeft)
@@ -436,9 +400,7 @@ AbstractStage {
                     },
                     State {
                         name: "normal";
-                        when: !appDelegate.maximized && !appDelegate.minimized
-                              && !appDelegate.maximizedLeft && !appDelegate.maximizedRight
-                              && !appDelegate.maximizedHorizontally && !appDelegate.maximizedVertically
+                        when: appDelegate.windowState == WindowStateStorage.WindowStateNormal
                         PropertyChanges {
                             target: appDelegate;
                             visuallyMinimized: false;

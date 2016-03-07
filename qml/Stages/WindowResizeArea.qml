@@ -83,13 +83,22 @@ MouseArea {
         var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal)
         if (windowState === WindowStateStorage.WindowStateMaximized) {
             target.maximize(false)
+        } else if (windowState === WindowStateStorage.WindowStateMaximizedLeft) {
+            target.maximizeLeft();
+        } else if (windowState === WindowStateStorage.WindowStateMaximizedRight) {
+            target.maximizeRight();
+        } else if (windowState === WindowStateStorage.WindowStateMaximizedHorizontally) {
+            target.maximizeHorizontally();
+        } else if (windowState === WindowStateStorage.WindowStateMaximizedVertically) {
+            target.maximizeVertically();
         }
+
         priv.updateNormalGeometry();
     }
 
     Component.onDestruction: {
-        windowStateStorage.saveState(root.windowId, target.maximized ? WindowStateStorage.WindowStateMaximized : WindowStateStorage.WindowStateNormal)
-        windowStateStorage.saveGeometry(root.windowId, Qt.rect(priv.normalX, priv.normalY, priv.normalWidth, priv.normalHeight))
+        windowStateStorage.saveState(root.windowId, target.windowState & ~WindowStateStorage.WindowStateMinimized); // clear the minimized bit when saving
+        windowStateStorage.saveGeometry(root.windowId, Qt.rect(priv.normalX, priv.normalY, priv.normalWidth, priv.normalHeight));
     }
 
     QtObject {
