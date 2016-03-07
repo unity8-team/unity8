@@ -7,7 +7,10 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Albert Astals Cid ]
   * Fix resizing the dash bringing temp scopes size out of sync
 
- -- Albert Astals Cid <albert.astals@canonical.com>  Mon, 07 Mar 2016 22:44:40 +0000
+  [ Michael Zanetti ]
+  * Some visual updates and rotation lock for the virtual touchpad
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Mon, 07 Mar 2016 22:44:47 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
