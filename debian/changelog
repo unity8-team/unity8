@@ -9,11 +9,12 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
 
   [ Michael Zanetti ]
   * Some visual updates and rotation lock for the virtual touchpad
+  * Implement Launcher's keyboard navigation and updated pip design
 
   [ Andrea Cimitan ]
   * Use Text.Wrap for body notification text
 
- -- Andrea Cimitan <andrea.cimitan@gmail.com>  Mon, 07 Mar 2016 22:44:55 +0000
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Mon, 07 Mar 2016 22:45:07 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
