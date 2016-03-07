@@ -27,7 +27,11 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Michał Sawicz ]
   * Proxy more mouse and touchpad properties to USC (LP: #1540398)
 
- -- Michał Sawicz <michal.sawicz@canonical.com>  Mon, 07 Mar 2016 22:46:20 +0000
+  [ Daniel d'Andrada ]
+  * Ensure the QML engine doesn't delete our mock MirSurfaces on its
+    own.
+
+ -- Daniel d'Andrada <daniel.dandrada@canonical.com>  Mon, 07 Mar 2016 22:46:31 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
