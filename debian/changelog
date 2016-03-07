@@ -24,7 +24,10 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Michael Terry ]
   * Refactor the AccountsService plugin and make it slightly faster.
 
- -- Michael Terry <michael.terry@canonical.com>  Mon, 07 Mar 2016 22:46:04 +0000
+  [ Michał Sawicz ]
+  * Proxy more mouse and touchpad properties to USC (LP: #1540398)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Mon, 07 Mar 2016 22:46:20 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
