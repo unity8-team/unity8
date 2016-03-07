@@ -14,6 +14,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Implement Launcher's keyboard navigation and updated pip design
   * Make launcher scalable, allow it locking
   * Visual updates for the windowed spread
+  * Read inputMethod surface from the new property int QtMir
 
   [ Andrea Cimitan ]
   * Use Text.Wrap for body notification text
@@ -31,7 +32,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Ensure the QML engine doesn't delete our mock MirSurfaces on its
     own.
 
- -- Daniel d'Andrada <daniel.dandrada@canonical.com>  Mon, 07 Mar 2016 22:46:31 +0000
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Mon, 07 Mar 2016 22:46:41 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
