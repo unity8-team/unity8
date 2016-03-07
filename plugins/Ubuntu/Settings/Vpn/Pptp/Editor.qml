@@ -113,7 +113,7 @@ Column {
     Label {
         text: i18n.tr("Server:")
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
     }
 
@@ -144,7 +144,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("User:")
     }
@@ -159,7 +159,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("Password:")
     }
@@ -174,7 +174,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("NT Domain:")
     }
@@ -190,7 +190,7 @@ Column {
     Label {
         text: i18n.tr("Authentication methods:")
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
     }
 

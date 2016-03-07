@@ -28,7 +28,7 @@ RowLayout {
     Label {
         text: i18n.tr("Type:")
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignRight
         Layout.fillWidth: true

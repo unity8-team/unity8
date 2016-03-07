@@ -109,7 +109,7 @@ Column {
         Label {
             text: i18n.tr("Server:")
             font.bold: true
-            color: Theme.palette.selected.backgroundText
+            color: Theme.palette.normal.baseText
             elide: Text.ElideRight
             Layout.fillWidth: true
         }
@@ -123,7 +123,7 @@ Column {
         Label {
             text: i18n.tr("Port:")
             font.bold: true
-            color: Theme.palette.selected.backgroundText
+            color: Theme.palette.normal.baseText
             elide: Text.ElideRight
             Layout.preferredWidth: units.gu(10)
         }
@@ -200,7 +200,7 @@ Column {
         Label {
             text: i18n.tr("Protocol:")
             font.bold: true
-            color: Theme.palette.selected.backgroundText
+            color: Theme.palette.normal.baseText
             elide: Text.ElideRight
         }
 
@@ -234,7 +234,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("Client certificate:")
     }
@@ -249,7 +249,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("CA certificate:")
     }
@@ -264,7 +264,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("Private key:")
     }
@@ -279,7 +279,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("Key password:")
     }
@@ -309,7 +309,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("TLS key:")
         visible: taSetToggle.checked
@@ -327,7 +327,7 @@ Column {
     Label {
         text: i18n.tr("Key direction:")
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         visible: taSetToggle.checked
     }
@@ -360,7 +360,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("Peer certificate TLS type:")
         visible: remoteCertSetToggle.checked
@@ -379,7 +379,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.tr("Cipher:")
     }

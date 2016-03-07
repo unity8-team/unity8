@@ -29,7 +29,7 @@ Column {
     Label {
         text: i18n.tr("Use this VPN for:")
         font.bold: true
-        color: Theme.palette.selected.backgroundText
+        color: Theme.palette.normal.baseText
         elide: Text.ElideRight
     }
 
@@ -81,13 +81,3 @@ Column {
         ListItems.ThinDivider {}
     }
 }
-
-
-            // ListItems.Standard {
-            //     control: CheckBox {
-            //         id: neverDefaultCheckbox
-            //         Binding {target: neverDefaultCheckbox; property: "checked"; value: connection.neverDefault}
-            //         onCheckedChanged: connection.neverDefault = checked
-            //     }
-            //     text: i18n.tr("Only use connection for VPN resources")
-            // }
