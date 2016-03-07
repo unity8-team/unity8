@@ -10,6 +10,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Resolve title alignment on card creator time instead of on runtime
   * click scope: Add the else branch so we reset the card size in all
     situations
+  * Add emblem to the preview header widget
 
   [ Michael Zanetti ]
   * Some visual updates and rotation lock for the virtual touchpad
@@ -34,7 +35,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Ensure the QML engine doesn't delete our mock MirSurfaces on its
     own.
 
- -- Albert Astals Cid <albert.astals@canonical.com>  Mon, 07 Mar 2016 22:46:49 +0000
+ -- Albert Astals Cid <albert.astals@canonical.com>  Mon, 07 Mar 2016 22:46:58 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
