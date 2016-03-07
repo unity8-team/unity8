@@ -16,7 +16,10 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Andrea Cimitan ]
   * Use Text.Wrap for body notification text
 
- -- Michael Zanetti <michael.zanetti@canonical.com>  Mon, 07 Mar 2016 22:45:30 +0000
+  [ Lukáš Tinkl, Michał Sawicz ]
+  * Fix tiny windows when switching stages
+
+ -- Lukáš Tinkl, Michał Sawicz <michal.sawicz@canonical.com>  Mon, 07 Mar 2016 22:45:38 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
