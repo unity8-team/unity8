@@ -39,7 +39,10 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
     own.
   * tst_Shell: Remove unused qml items
 
- -- Michael Terry <michael.terry@canonical.com>  Mon, 07 Mar 2016 22:47:29 +0000
+  [ Vesa Rautiainen ]
+  * Fixing the vertical position of desktop spread item icon.
+
+ -- Vesa Rautiainen <vesa.rautiainen@canonical.com>  Mon, 07 Mar 2016 22:47:39 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
