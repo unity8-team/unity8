@@ -1,4 +1,4 @@
-unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
+unity8 (8.11+16.04.20160307.1-0ubuntu1) xenial; urgency=medium
 
   [ Lukáš Tinkl ]
   * Elide the window title not to let it overflow into the indicators
@@ -42,7 +42,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Vesa Rautiainen ]
   * Fixing the vertical position of desktop spread item icon.
 
- -- Vesa Rautiainen <vesa.rautiainen@canonical.com>  Mon, 07 Mar 2016 22:47:39 +0000
+ -- Robert Bruce Park <robert.park@canonical.com>  Mon, 07 Mar 2016 22:47:41 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
