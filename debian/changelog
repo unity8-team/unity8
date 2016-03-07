@@ -8,6 +8,8 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Fix resizing the dash bringing temp scopes size out of sync
   * Do not create fallback code for the card tool fake card
   * Resolve title alignment on card creator time instead of on runtime
+  * click scope: Add the else branch so we reset the card size in all
+    situations
 
   [ Michael Zanetti ]
   * Some visual updates and rotation lock for the virtual touchpad
@@ -32,7 +34,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Ensure the QML engine doesn't delete our mock MirSurfaces on its
     own.
 
- -- Michael Zanetti <michael.zanetti@canonical.com>  Mon, 07 Mar 2016 22:46:41 +0000
+ -- Albert Astals Cid <albert.astals@canonical.com>  Mon, 07 Mar 2016 22:46:49 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
