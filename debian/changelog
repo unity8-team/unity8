@@ -18,6 +18,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   * Make launcher scalable, allow it locking
   * Visual updates for the windowed spread
   * Read inputMethod surface from the new property int QtMir
+  * stabilize swipeAwayGreeter()
 
   [ Andrea Cimitan ]
   * Use Text.Wrap for body notification text
@@ -36,7 +37,7 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
     own.
   * tst_Shell: Remove unused qml items
 
- -- Daniel d'Andrada <daniel.dandrada@canonical.com>  Mon, 07 Mar 2016 22:47:10 +0000
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Mon, 07 Mar 2016 22:47:19 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
