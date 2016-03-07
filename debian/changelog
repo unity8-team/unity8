@@ -21,7 +21,10 @@ unity8 (8.11+16.04.20160307.1-0ubuntu1) UNRELEASED; urgency=medium
   [ Lukáš Tinkl, Michał Sawicz ]
   * Fix tiny windows when switching stages
 
- -- Albert Astals Cid <albert.astals@canonical.com>  Mon, 07 Mar 2016 22:45:54 +0000
+  [ Michael Terry ]
+  * Refactor the AccountsService plugin and make it slightly faster.
+
+ -- Michael Terry <michael.terry@canonical.com>  Mon, 07 Mar 2016 22:46:04 +0000
 
 unity8 (8.11+16.04.20160301-0ubuntu1) xenial; urgency=medium
 
