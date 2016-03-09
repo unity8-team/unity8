@@ -37,7 +37,6 @@ MainView {
         Page {
             id: root
             title: i18n.tr("VPN")
-            objectName: "vpnPage"
             flickable: scrollWidget
             visible: false
 
@@ -87,7 +86,6 @@ MainView {
 
                     ListItem.SingleControl {
                         control: Button {
-                            objectName: "addVpnButton"
                             text : i18n.tr("Add Manual Configuration…")
                             onClicked: Connectivity.vpnConnections.add(VpnConnection.OPENVPN)
                         }
