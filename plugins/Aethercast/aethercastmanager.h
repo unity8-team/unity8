@@ -43,6 +43,9 @@ public:
     QString cursor() const;
     void setCursor(const QString &cursor);
 
+public Q_SLOTS:
+    void disconnectAll();
+
 //public Q_SLOTS:
 //    void sendMousePosition(int x, int y);
 

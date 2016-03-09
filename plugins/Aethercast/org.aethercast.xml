@@ -9,6 +9,7 @@
             <arg name="path" type="o" direction="in"/>
         </method>
         <method name="Scan"/>
+        <method name="DisconnectAll"/>
         <method name="RegisterInputProvider">
             <arg name="path" type="o" direction="in"/>
             <arg name="options" type="a{sv}" direction="in"/>

@@ -28,7 +28,8 @@ AethercastManager::AethercastManager(QObject *parent):
     m_manager(new ManagerInterface(QStringLiteral("org.aethercast"), QStringLiteral("/org/aethercast"), QDBusConnection::systemBus(), this)),
     m_inputProvider(new InputProvider(this))
 {
-    QDBusConnection::systemBus().registerObject(MANAGER_PATH, QStringLiteral("org.aethercast.InputProvider"), m_inputProvider);
+//    QDBusConnection::systemBus().registerObject(MANAGER_PATH, QStringLiteral("org.aethercast.InputProvider"), m_inputProvider);
+    QDBusConnection::systemBus().registerObject(MANAGER_PATH, m_inputProvider);
     m_manager->RegisterInputProvider(QDBusObjectPath(MANAGER_PATH), QVariantMap());
 
     connect(m_inputProvider, &InputProvider::cursorChanged, this, &AethercastManager::cursorChanged);
@@ -73,4 +74,9 @@ QString AethercastManager::cursor() const
 void AethercastManager::setCursor(const QString &cursor)
 {
     m_inputProvider->setCursorSource(cursor);
+}
+
+void AethercastManager::disconnectAll()
+{
+    m_manager->DisconnectAll();
 }
