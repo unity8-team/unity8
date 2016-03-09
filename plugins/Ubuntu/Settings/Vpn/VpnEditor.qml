@@ -30,6 +30,7 @@ Page {
     property var isNew
 
     signal typeChanged(var connection, int type)
+    signal reconnectionPrompt()
 
     function commit () {
         editorLoader.item.state = 'committing';
@@ -150,6 +151,9 @@ Page {
         interval: 2000
         running: false
         repeat: false
-        onTriggered: pageStack.pop()
+        onTriggered: {
+            editor.reconnectionPrompt()
+            pageStack.pop();
+        }
     }
 }

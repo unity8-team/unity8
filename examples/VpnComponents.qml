@@ -101,6 +101,7 @@ MainView {
                         pageStack.pop();
                         Connectivity.vpnConnections.add(type);
                     }
+                    onReconnectionPrompt: PopupUtils.open(reconnPrompt)
                 }
             }
 
@@ -110,6 +111,23 @@ MainView {
                     onChangeClicked: {
                         PopupUtils.close(root.diag);
                         root.openConnection(connection);
+                    }
+                }
+            }
+
+            Component {
+                id: reconnPrompt
+                Dialog {
+                    id: reconnPromptDiag
+                    title: i18n.tr("VPN reconnection required.")
+                    text: i18n.tr("You need to reconnect for changes to have an effect.")
+
+                    ListItem.SingleControl {
+                        control: Button {
+                            width: parent.width
+                            text : i18n.tr("OK")
+                            onClicked: PopupUtils.close(reconnPromptDiag);
+                        }
                     }
                 }
             }

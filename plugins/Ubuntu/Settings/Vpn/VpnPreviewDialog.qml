@@ -24,12 +24,12 @@ Dialog {
     id: preview
 
     // A connection we assume to be installed.
-    property var connection
+    property var connection: null
 
     // A configuration we assume is not installed.
     // A configuration is expected to have a set of
     // properties, just like a connection.
-    property var configuration
+    property var configuration: null
 
     function getConnection () {
         return connection ? connection : configuration;
@@ -80,7 +80,7 @@ Dialog {
         Button {
             objectName: "vpnPreviewRemoveButton"
             Layout.fillWidth: true
-            visible: !!connection
+            visible: connection !== null
             text: i18n.tr("Remove")
             color: UbuntuColors.red
             onClicked: {
@@ -92,24 +92,15 @@ Dialog {
         Button {
             objectName: "vpnPreviewChangeButton"
             Layout.fillWidth: true
-            // XXX: we can't change running connections, see lp:1550283
-            visible: !!connection && !connection.active
+            visible: connection !== null
             text: i18n.tr("Change")
             onClicked: changeClicked(connection)
         }
 
         Button {
-            objectName: "vpnPreviewDismissButton"
-            Layout.fillWidth: true
-            visible: !!connection && connection.active
-            text: i18n.tr("OK")
-            onClicked: PopupUtils.close(preview)
-        }
-
-        Button {
             objectName: "vpnPreviewCancelButton"
             Layout.fillWidth: true
-            visible: !!configuration
+            visible: configuration !== null
             text: i18n.tr("Cancel")
             onClicked: PopupUtils.close(preview)
         }
@@ -117,7 +108,7 @@ Dialog {
         Button {
             objectName: "vpnPreviewInstallButton"
             Layout.fillWidth: true
-            visible: !!configuration
+            visible: configuration !== null
             text: i18n.tr("Install")
             onClicked: installClicked(configuration)
         }
