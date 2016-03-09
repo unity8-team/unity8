@@ -1,3 +1,25 @@
+unity8 (8.11+16.04.20160309-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Update translation template
+
+  [ Michael Zanetti ]
+  * Add support for cursor streaming over aethercast added:
+    plugins/Aethercast/ plugins/Aethercast/CMakeLists.txt
+    plugins/Aethercast/aethercastmanager.cpp
+    plugins/Aethercast/aethercastmanager.h
+    plugins/Aethercast/inputprovider.cpp
+    plugins/Aethercast/inputprovider.h
+    plugins/Aethercast/inputprovideradaptor.cpp
+    plugins/Aethercast/inputprovideradaptor.h
+    plugins/Aethercast/managerinterface.cpp
+    plugins/Aethercast/managerinterface.h
+    plugins/Aethercast/org.aethercast.xml plugins/Aethercast/plugin.cpp
+    plugins/Aethercast/plugin.h plugins/Aethercast/qmldir
+  * add a disconnect all button to the virtual touchpad
+
+ -- Simon Fels <simon.busch@canonical.com>  Wed, 09 Mar 2016 09:17:17 +0000
+
 unity8 (8.11+16.04.20160307-0ubuntu1) xenial; urgency=medium
 
   [ CI Train Bot ]
