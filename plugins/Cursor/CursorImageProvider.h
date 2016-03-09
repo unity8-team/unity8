@@ -63,8 +63,12 @@ public:
     CursorImageProvider();
     virtual ~CursorImageProvider();
 
-    static CursorImageProvider *instance() { return m_instance; }
-
+    static CursorImageProvider *instance() {
+        if (m_instance == nullptr) {
+            new CursorImageProvider();
+        }
+        return m_instance;
+    }
 
     QImage requestImage(const QString &cursorName, QSize *size, const QSize &requestedSize) override;
 
@@ -87,6 +91,17 @@ private:
     QMap<QString, QStringList> m_fallbackNames;
 
     static CursorImageProvider *m_instance;
+};
+
+class CursorImageHelper: public QObject
+{
+    Q_OBJECT
+public:
+    CursorImageHelper(QObject *parent = 0): QObject(parent) {}
+    Q_INVOKABLE QImage cursorImage(const QString &cursorName) {
+        QSize s;
+        return CursorImageProvider::instance()->requestImage(cursorName, &s, QSize());
+    }
 };
 
 #endif // CURSORIMAGEPROVIDER_H

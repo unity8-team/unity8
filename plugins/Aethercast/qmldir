@@ -1,0 +1,3 @@
+module Aethercast
+plugin Aethercast-qml
+typeinfo Lights.qmltypes

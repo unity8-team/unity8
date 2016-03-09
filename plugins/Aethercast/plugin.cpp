@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Qt
-#include <QtQml/qqml.h>
-#include <QQmlContext>
-
-// self
 #include "plugin.h"
+#include "aethercastmanager.h"
 
-// local
-#include "CursorImageProvider.h"
-#include "MousePointer.h"
+#include <QtQml/qqml.h>
+#include <QDebug>
 
-void CursorPlugin::registerTypes(const char *uri)
+static QObject *manager_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
-    Q_ASSERT(uri == QLatin1String("Cursor"));
-    qmlRegisterType<MousePointer>(uri, 1, 0, "MousePointer");
-    qmlRegisterType<CursorImageHelper>(uri, 1, 0, "CursorImageHelper");
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    qDebug() << "imageprovider is" << engine->imageProvider("cursor");
+    return new AethercastManager();
 }
 
-void CursorPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
+void AethercastPlugin::registerTypes(const char *uri)
 {
-    QQmlExtensionPlugin::initializeEngine(engine, uri);
-
-    engine->addImageProvider(QStringLiteral("cursor"), CursorImageProvider::instance());
+    Q_ASSERT(uri == QLatin1String("Aethercast"));
+    qmlRegisterSingletonType<AethercastManager>(uri, 0, 1, "AethercastManager", manager_provider);
 }
