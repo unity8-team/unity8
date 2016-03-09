@@ -39,13 +39,14 @@ ListView {
         onClicked: clickedConnection(connection)
 
         ListItemLayout {
+            objectName: "vpnLayout"
             id: layout
             title.text: id
 
             Switch {
                 SlotsLayout.position: SlotsLayout.Trailing;
-                id: hotspotSwitch
-                objectName: "hotspotSwitch"
+                id: vpnSwitch
+                objectName: "vpnSwitch"
                 enabled: activatable
                 checked: active
                 onTriggered: active = checked

@@ -22,6 +22,7 @@ Column {
     property var error
 
     spacing: units.gu(2)
+    objectName: "vpnPreviewInvalidCert"
 
     Label {
         wrapMode: Text.WordWrap
@@ -36,6 +37,7 @@ Column {
     }
 
     Label {
+        objectName: "vpnPreviewInvalidCertErrorMsg"
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
         visible: error

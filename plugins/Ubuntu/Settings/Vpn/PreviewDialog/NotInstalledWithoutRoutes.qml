@@ -19,6 +19,7 @@ import Ubuntu.Components 1.3
 
 Column {
     spacing: units.gu(2)
+    objectName: "vpnPreviewNotInstalledWithoutRoutes"
 
     Label {
         wrapMode: Text.WordWrap

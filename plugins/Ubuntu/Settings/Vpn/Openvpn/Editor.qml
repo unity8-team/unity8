@@ -177,6 +177,7 @@ Column {
     }
 
     VpnRoutesField {
+        objectName: "vpnOpenvpnRoutesField"
         anchors { left: parent.left; right: parent.right }
         id: routesField
         neverDefault: connection.neverDefault

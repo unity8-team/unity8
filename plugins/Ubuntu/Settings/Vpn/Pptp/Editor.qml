@@ -129,6 +129,7 @@ Column {
     }
 
     VpnRoutesField {
+        objectName: "vpnPptpRoutesField"
         anchors { left: parent.left; right: parent.right }
         id: routesField
         neverDefault: connection.neverDefault
@@ -294,6 +295,7 @@ Column {
     }
 
     ListItems.ItemSelector {
+        objectName: "vpnPptpMppeTypeSelector"
         id: mppeTypeSelector
         model: [
             i18n.tr("All Available (Default)"),
@@ -307,7 +309,7 @@ Column {
     RowLayout {
         CheckBox {
             id: mppeStatefulToggle
-            objectName: "vpnPptpRequireMppeToggle"
+            objectName: "vpnPptpMppeStatefulToggle"
             checked: connection.mppeStateful
             activeFocusOnPress: false
             enabled: requireMppeToggle.checked
@@ -364,7 +366,7 @@ Column {
     RowLayout {
         CheckBox {
             id: sendPppEchoPacketsToggle
-            objectName: "vpnPptpHeaderCompressionToggle"
+            objectName: "vpnPptpPppEchoPacketsToggle"
             checked: connection.sendPppEchoPackets
             activeFocusOnPress: false
         }

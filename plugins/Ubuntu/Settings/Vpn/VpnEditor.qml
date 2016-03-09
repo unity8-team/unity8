@@ -21,7 +21,7 @@ import Ubuntu.Components.ListItems 1.3 as ListItems
 
 Page {
     id: editor
-    objectName: "vpnEditorDialog"
+    objectName: "vpnEditor"
     title: i18n.tr("Set up VPN")
 
     property var connection
@@ -44,7 +44,7 @@ Page {
         editorLoader.item.state = 'succeeded';
     }
 
-    Component.onCompleted: {
+    function render () {
         connection.updateSecrets()
 
         var props = {"connection": connection}
@@ -58,8 +58,12 @@ Page {
         }
     }
 
-    head {
-        backAction: Action { visible: false }
+    Component.onCompleted: render()
+
+    header: PageHeader {
+        title: editor.title
+        flickable: scrollWidget
+        leadingActionBar.actions: []
     }
 
     Component {
@@ -84,6 +88,7 @@ Page {
 
             Loader {
                 id: editorLoader
+                objectName: "editorLoader"
                 anchors.left: parent.left
                 anchors.right: parent.right
             }
@@ -124,6 +129,7 @@ Page {
 
                     ActivityIndicator {
                         id: okButtonIndicator
+                        objectName: "okButtonIndicator"
                         running: false
                         visible: running
                         height: parent.height - units.gu(1.5)
@@ -140,6 +146,7 @@ Page {
     // successfully connected.
     Timer {
         id: successIndicator
+        objectName: "successIndicator"
         interval: 2000
         running: false
         repeat: false

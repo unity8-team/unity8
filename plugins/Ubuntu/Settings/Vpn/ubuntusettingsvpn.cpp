@@ -17,8 +17,8 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QProcessEnvironment>
 #include <QSslCertificate>
-
 
 UbuntuSettingsVpn::UbuntuSettingsVpn(QObject* parent)
     : QObject(parent)
@@ -27,6 +27,12 @@ UbuntuSettingsVpn::UbuntuSettingsVpn(QObject* parent)
 
 UbuntuSettingsVpn::CertificateError UbuntuSettingsVpn::isCertificateValid(const QString &path)
 {
+    // Allow certificate checks to be turned off.
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    if (env.value("NO_SSL_CERTIFICATE_CHECK", "0") == "1") {
+        return UbuntuSettingsVpn::CertificateError::CERT_VALID;
+    }
+
     QList<QSslCertificate> certs = QSslCertificate::fromPath(path);
 
     if (certs.size() == 0 || certs.size() > 1) {
