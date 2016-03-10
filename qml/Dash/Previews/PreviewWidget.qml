@@ -37,6 +37,9 @@ Item {
     /// The parent (vertical) flickable this widget is in (if any)
     property var parentFlickable: null
 
+    /// The index of this widget
+    property int widgetIndex
+
     /*! \brief This signal should be emitted when a preview action was triggered.
      *
      *  \param widgetId, actionId Respective identifiers from widgetData.

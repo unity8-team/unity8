@@ -31,6 +31,9 @@ Loader {
     //! Widget data, forwarded to the widget as is.
     property var widgetData: null
 
+    //! Index of the widget.
+    property int widgetIndex: -1
+
     //! The ScopeStyle component.
     property var scopeStyle: null
 
@@ -82,6 +85,7 @@ Loader {
         item.expanded = Qt.binding(function() { return root.expanded } )
         item.scopeStyle = Qt.binding(function() { return root.scopeStyle } )
         item.parentFlickable = Qt.binding(function() { return root.parentFlickable } )
+        item.widgetIndex = Qt.binding(function() { return root.widgetIndex } )
     }
 
     Connections {

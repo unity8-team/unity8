@@ -93,6 +93,7 @@ PreviewWidget {
             }
             size: 5
             onValueChanged: {
+                parentFlickable.positionViewAtIndex(widgetIndex, ListView.Contain);
                 if (widgetData["visible"] === "rating") root.submit();
             }
 
