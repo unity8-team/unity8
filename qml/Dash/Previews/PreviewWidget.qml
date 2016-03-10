@@ -38,7 +38,7 @@ Item {
     property var parentFlickable: null
 
     /// The index of this widget
-    property int widgetIndex
+    property int widgetIndex: -1
 
     /*! \brief This signal should be emitted when a preview action was triggered.
      *
