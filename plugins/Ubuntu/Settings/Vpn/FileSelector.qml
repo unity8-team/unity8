@@ -34,7 +34,7 @@ ListItems.ItemSelector {
         m.push(i18n.tr("None"));
 
         if (path) {
-            m.push(path.split("/")[path.split("/").length - 1]);
+            m.push(path);
         }
 
         m.push(chooseLabel);
@@ -73,6 +73,13 @@ ListItems.ItemSelector {
 
     delegate: OptionSelectorDelegate {
         objectName: "vpnFileSelectorItem" + index
+        text: {
+            if (modelData[0] == "/") {
+                return path.split("/")[path.split("/").length - 1];
+            } else {
+                return modelData;
+            }
+        }
     }
 
     onDelegateClicked: {

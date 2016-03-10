@@ -152,7 +152,9 @@ Page {
         running: false
         repeat: false
         onTriggered: {
-            editor.reconnectionPrompt()
+            if (connection.active) {
+                editor.reconnectionPrompt();
+            }
             pageStack.pop();
         }
     }
