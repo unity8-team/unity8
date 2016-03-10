@@ -191,7 +191,7 @@ Rectangle {
                 CheckBox {
                     activeFocusOnPress: false
                     onCheckedChanged: {
-                        var surface = SurfaceManager.inputMethodSurface();
+                        var surface = SurfaceManager.inputMethodSurface;
                         if (checked) {
                             surface.setState(Mir.RestoredState);
                         } else {
@@ -256,7 +256,6 @@ Rectangle {
             if (app) {
                 app.setStage(ApplicationInfoInterface.SideStage);
             }
-            SurfaceManager.inputMethodSurface().destroy(); // so that InputMethod will notice new one
             // kill all (fake) running apps
             killApps();
 
@@ -274,6 +273,9 @@ Rectangle {
             AccountsService.demoEdges = false;
             AccountsService.demoEdgesCompleted = [];
             AccountsService.demoEdges = true;
+
+            var surface = SurfaceManager.inputMethodSurface;
+            surface.setState(Mir.MinimizedState);
 
             LightDM.Greeter.hideGreeter();
         }
@@ -413,7 +415,7 @@ Rectangle {
             touchFlick(shell, 0, halfHeight, shell.width, halfHeight);
 
             tryCompare(tutorialLeft, "shown", false);
-            tryCompare(AccountsService, "demoEdgesCompleted", ["left"]);
+            tryCompare(AccountsService, "demoEdgesCompleted", ["left", "left-long"]);
         }
 
         function test_tutorialLeftAutoSkipped() {
@@ -742,7 +744,7 @@ Rectangle {
             var tutorialLeft = findChild(shell, "tutorialLeft");
             verify(tutorialLeft.shown);
 
-            var surface = SurfaceManager.inputMethodSurface();
+            var surface = SurfaceManager.inputMethodSurface;
             surface.setState(Mir.RestoredState);
 
             var inputMethod = findInvisibleChild(shell, "inputMethod");
@@ -752,7 +754,7 @@ Rectangle {
         }
 
         function test_oskPreventsTutorial() {
-            var surface = SurfaceManager.inputMethodSurface();
+            var surface = SurfaceManager.inputMethodSurface;
             var inputMethod = findInvisibleChild(shell, "inputMethod");
 
             AccountsService.demoEdges = false;
