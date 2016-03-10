@@ -23,10 +23,14 @@ RowLayout {
     spacing: units.gu(1)
 
     property alias type: vpnTypeSelector.selectedIndex
+
+    // XXX: disabled due to lp:1551823 (pptp connections fails on arm)
+    property bool enabled: false
     signal typeRequested(int index)
 
     Label {
         text: i18n.tr("Type:")
+        enabled: parent.enabled
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
@@ -37,6 +41,7 @@ RowLayout {
     ListItems.ItemSelector {
         id: vpnTypeSelector
         objectName: "vpnTypeField"
+        enabled: parent.enabled
         model: [
             i18n.tr("OpenVPN"),
             i18n.tr("Pptp")
