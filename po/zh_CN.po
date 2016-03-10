@@ -7,18 +7,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-08-02 16:26+0200\n"
+"POT-Creation-Date: 2016-02-11 11:25+0000\n"
 "PO-Revision-Date: 2016-03-08 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-03-09 05:50+0000\n"
+"X-Launchpad-Export-Date: 2016-03-10 05:57+0000\n"
 "X-Generator: Launchpad (build 17936)\n"
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Menus/CalendarMenu.qml:57
+#, qt-format
+msgctxt "%1=month name, %2=4-digit year"
+msgid "%1 %2"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:100
+msgid "Roaming"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:122
+msgid "Unlock SIM"
 msgstr ""
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:30
