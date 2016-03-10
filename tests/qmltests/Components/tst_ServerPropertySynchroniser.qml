@@ -325,7 +325,7 @@ Item {
         }
 
         function test_frontend_change() {
-            switchControl.clicked();
+            switchControl.trigger();
             tryCompare(switchBackend, "checked", true);
         }
 
@@ -382,7 +382,7 @@ Item {
 
         function test_client_revert() {
             switchBackend.timer.interval = 500;
-            switchControl.clicked();
+            switchControl.trigger();
             compare(switchControl.checked, true);
             tryCompare(switchControl, "checked", false);
         }
