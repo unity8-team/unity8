@@ -22,6 +22,7 @@ Item {
 
     property Item launcher
     property Item panel
+    property string usageScenario
 
     readonly property bool launcherEnabled: !running ||
                                             (!paused && tutorialLeft.shown)
@@ -61,7 +62,7 @@ Item {
         }
     }
 
-    TutorialLeft {
+    LeftEdgeTutorialPage {
         id: tutorialLeft
         objectName: "tutorialLeft"
         anchors.fill: parent
@@ -71,7 +72,7 @@ Item {
         onFinished: tutorialLeftFinish.show()
     }
 
-    TutorialLeftFinish {
+    LeftEdgeFinishTutorialPage {
         id: tutorialLeftFinish
         objectName: "tutorialLeftFinish"
         anchors.fill: parent
@@ -85,7 +86,7 @@ Item {
         }
     }
 
-    TutorialRight {
+    RightEdgeTutorialPage {
         id: tutorialRight
         objectName: "tutorialRight"
         anchors.fill: parent
@@ -96,7 +97,7 @@ Item {
         onFinished: tutorialBottom.show()
     }
 
-    TutorialBottom {
+    BottomEdgeTutorialPage {
         id: tutorialBottom
         objectName: "tutorialBottom"
         anchors.fill: parent
@@ -106,11 +107,11 @@ Item {
         onFinished: tutorialBottomFinish.show()
     }
 
-    TutorialBottomFinish {
+    BottomEdgeFinishTutorialPage {
         id: tutorialBottomFinish
         objectName: "tutorialBottomFinish"
         anchors.fill: parent
-        backgroundFadesOut: true
+        backgroundFadesOut: usageScenario !== "tablet"
         paused: !shown || root.paused
 
         onFinished: root.finish()

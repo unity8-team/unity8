@@ -21,6 +21,7 @@ import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
 import Utils 0.1
+import AccountsService 0.1
 
 import ".."
 import "../../../qml/Stages"
@@ -34,6 +35,11 @@ Rectangle {
 
     property var greeter: { fullyShown: true }
 
+    Component.onCompleted: {
+        theme.name = "Ubuntu.Components.Themes.SuruGradient"
+        tabletStageLoader.active = true;
+    }
+
     Loader {
         id: tabletStageLoader
 
@@ -43,6 +49,7 @@ Rectangle {
         height: units.gu(100*0.7)
 
         focus: true
+        active: false
 
         property bool itemDestroyed: false
         sourceComponent: Component {
@@ -88,6 +95,11 @@ Rectangle {
                 Component.onCompleted: {
                     edgeBarrierControls.target = testCase.findChild(tabletStageLoader, "edgeBarrierController");
                 }
+            }
+
+            Button {
+                text: "Show Tutorial"
+                onClicked: AccountsService.demoEdges = true
             }
 
             Button {

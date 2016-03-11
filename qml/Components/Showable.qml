@@ -39,8 +39,8 @@ Item {
 
     // automatically set the target on showAnimation and hideAnimation to be the
     // showable itself
-    onShowAnimationChanged: if (showAnimation) showAnimation["target"] = showable
-    onHideAnimationChanged: if (hideAnimation) hideAnimation["target"] = showable
+    onShowAnimationChanged: if (showAnimation && showAnimation.hasOwnProperty("target")) showAnimation["target"] = showable
+    onHideAnimationChanged: if (hideAnimation && hideAnimation.hasOwnProperty("target")) hideAnimation["target"] = showable
 
     Component.onCompleted: required = shown;
 

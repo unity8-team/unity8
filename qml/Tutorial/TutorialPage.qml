@@ -45,6 +45,9 @@ Showable {
     // The text label bottom, so you can position elements relative to it
     readonly property real textBottom: Math.max(textLabel.y + textLabel.height, errorTextLabel.y + errorTextLabel.height)
 
+    // The text label bottom, so you can position elements relative to it
+    readonly property real textLeft: Math.max(textLabel.x, errorTextLabel.x)
+
     // The MouseArea that eats events (so you can adjust size as you will)
     property alias mouseArea: mouseArea
 
@@ -61,12 +64,16 @@ Showable {
         errorTimer.start();
     }
 
+    function hideError() {
+        errorTimer.stop();
+    }
+
     ////
 
     visible: false
     shown: false
 
-    property real _foregroundHideOpacity
+    property real _foregroundHideOpacity: 1.0
 
     showAnimation: StandardAnimation {
         property: root.backgroundFadesIn ? "opacity" : "_foregroundHideOpacity"

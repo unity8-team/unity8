@@ -19,31 +19,18 @@ import QtTest 1.0
 import AccountsService 0.1
 import IntegratedLightDM 0.1 as LightDM
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1 as UT
 
 import "../../../qml"
+import "../../../qml/Components"
 
-Item {
+Rectangle {
     id: root
-    width: shellLoader.width + buttons.width
-    height: shellLoader.height
-
-    QtObject {
-        id: applicationArguments
-
-        function hasGeometry() {
-            return false;
-        }
-
-        function width() {
-            return 0;
-        }
-
-        function height() {
-            return 0;
-        }
-    }
+    color: "grey"
+    width: units.gu(100) + controlRect.width
+    height: units.gu(71)
 
     Component.onCompleted: {
         // must set the mock mode before loading the Shell
@@ -52,38 +39,86 @@ Item {
         shellLoader.active = true;
     }
 
-    Row {
-        spacing: 0
-        anchors.fill: parent
-
+    Item {
+        id: shellContainer
+        anchors.left: root.left
+        anchors.right: controlRect.left
+        anchors.top: root.top
+        anchors.bottom: root.bottom
         Loader {
             id: shellLoader
+            focus: true
+
+            anchors.centerIn: parent
+
+            property int shellOrientation: Qt.PortraitOrientation
+            property int nativeOrientation: Qt.PortraitOrientation
+            property int primaryOrientation: Qt.PortraitOrientation
+
+            state: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
+            states: [
+                State {
+                    name: "phone"
+                    PropertyChanges {
+                        target: shellLoader
+                        width: units.gu(40)
+                        height: units.gu(71)
+                    }
+                },
+                State {
+                    name: "tablet"
+                    PropertyChanges {
+                        target: shellLoader
+                        width: units.gu(100)
+                        height: units.gu(71)
+                        shellOrientation: Qt.LandscapeOrientation
+                        nativeOrientation: Qt.LandscapeOrientation
+                        primaryOrientation: Qt.LandscapeOrientation
+                    }
+                }
+            ]
 
             active: false
-            width: units.gu(40)
-            height: units.gu(71)
-
             property bool itemDestroyed: false
             sourceComponent: Component {
                 Shell {
+                    id: __shell
                     property string indicatorProfile: "phone"
 
+                    usageScenario: shellLoader.state
+                    nativeWidth: width
+                    nativeHeight: height
                     Component.onDestruction: {
                         shellLoader.itemDestroyed = true;
+                    }
+                    orientation: shellLoader.shellOrientation
+                    orientations: Orientations {
+                        native_: shellLoader.nativeOrientation
+                        primary: shellLoader.primaryOrientation
                     }
                 }
             }
         }
+    }
 
-        Rectangle {
-            id: buttons
-            color: "white"
-            width: units.gu(30)
-            height: shellLoader.height
+    Rectangle {
+        id: controlRect
+        anchors.top: root.top
+        anchors.bottom: root.bottom
+        anchors.right: root.right
+        width: units.gu(30)
+        color: "darkgrey"
+
+        Flickable {
+            id: controls
+            contentHeight: controlCol.height
+            anchors.fill: parent
 
             Column {
+                id: controlCol
                 anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
                 spacing: units.gu(1)
+
                 Row {
                     anchors { left: parent.left; right: parent.right }
                     Button {
@@ -96,6 +131,13 @@ Item {
                             AccountsService.demoEdges = true;
                         }
                     }
+                }
+                ListItem.ItemSelector {
+                    id: usageScenarioSelector
+                    anchors { left: parent.left; right: parent.right }
+                    activeFocusOnPress: false
+                    text: "Usage scenario"
+                    model: ["phone", "tablet"]
                 }
             }
         }

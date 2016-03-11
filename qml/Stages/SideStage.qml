@@ -26,6 +26,7 @@ Showable {
     property int panelWidth: units.gu(40)
     readonly property alias dragging: hideSideStageDragArea.dragging
     readonly property real progress: width / panelWidth
+    property bool enableDrag: true
 
     width: 0
     shown: false
@@ -100,7 +101,7 @@ Showable {
 
         direction: Direction.Leftwards
         rotation: 180
-        enabled: root.shown
+        enabled: root.shown && enableDrag
         anchors.right: root.left
         width: sideStageDragHandle.width
         height: root.height

@@ -18,9 +18,11 @@ import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Ubuntu.Gestures 0.1
 import Unity.Application 0.1
+import AccountsService 0.1
 import Utils 0.1
 import Powerd 0.1
 import "../Components"
+import "../Tutorial"
 
 AbstractStage {
     id: root
@@ -603,6 +605,7 @@ AbstractStage {
                 objectName: "sideStage"
                 height: priv.landscapeHeight
                 x: spreadView.width - width
+                showHint: !priv.sideStageAppId
                 z: {
                     if (!priv.mainStageAppId) return 0;
 
@@ -1098,6 +1101,28 @@ AbstractStage {
                         GradientStop { position: 1.0; color: Qt.rgba(0.16,0.16,0.16,0)}
                     }
                 }
+            }
+        }
+    }
+
+    Loader {
+        id: sideStageTutorialLoader
+        anchors.fill: parent
+
+        property bool doSideStageDemo: false
+        Component.onCompleted: doSideStageDemo = AccountsService.demoEdges
+        Connections {
+            target: AccountsService
+            onDemoEdgesChanged: {
+                if (AccountsService.demoEdges) sideStageTutorialLoader.doSideStageDemo = true;
+            }
+        }
+        active: doSideStageDemo && mainApp && (mainApp.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation))
+
+        sourceComponent: SideStageTutorial {
+            Component.onCompleted: sideStage.hide();
+            onFinished: {
+                sideStageTutorialLoader.doSideStageDemo = false;
             }
         }
     }

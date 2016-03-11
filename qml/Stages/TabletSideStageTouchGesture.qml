@@ -106,6 +106,8 @@ TouchGestureArea {
     }
 
     onDragStarted: {
+        if (!dragComponent) return;
+
         if (dragComponentProperties) {
             priv.dragObject = dragComponent.createObject(root, dragComponentProperties);
         } else {
