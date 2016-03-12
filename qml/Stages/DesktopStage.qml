@@ -287,7 +287,6 @@ AbstractStage {
                 readonly property bool maximizedVertically: windowState & WindowStateStorage.WindowStateMaximizedVertically
                 readonly property bool minimized: windowState & WindowStateStorage.WindowStateMinimized
                 readonly property alias fullscreen: decoratedWindow.fullscreen
-
                 property int windowState: WindowStateStorage.WindowStateNormal
 
                 readonly property string appId: model.appId
@@ -580,27 +579,6 @@ AbstractStage {
                 }
             }
         }
-    }
-
-    BlurLayer {
-        id: blurLayer
-        anchors.fill: appContainer
-        source: appContainer
-        visible: false
-    }
-
-    Rectangle {
-        id: spreadBackground
-        anchors.fill: parent
-        color: "#55000000"
-        visible: false
-    }
-
-    MouseArea {
-        id: eventEater
-        anchors.fill: parent
-        visible: spreadBackground.visible
-        enabled: visible
     }
 
     EdgeBarrier {
