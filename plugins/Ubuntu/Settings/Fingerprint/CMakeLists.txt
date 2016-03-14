@@ -1,4 +1,4 @@
-project(UbuntuSettingsFingerprintQml)
+project(UbuntuSettingsFingerprint)
 
 find_package(Qt5Core REQUIRED)
 
@@ -9,10 +9,10 @@ include_directories(
 
 add_definitions(-DUBUNTUSETTINGSFINGERPRINT_LIBRARY)
 
-add_library(UbuntuSettingsFingerprintQml MODULE
+add_library(UbuntuSettingsFingerprint MODULE
     plugin.cpp
 )
 
-qt5_use_modules(UbuntuSettingsFingerprintQml Core Qml Quick)
+qt5_use_modules(UbuntuSettingsFingerprint Core Qml Quick)
 
-add_usc_plugin(Ubuntu.Settings.Fingerprint 0.1 Ubuntu/Settings/Fingerprint TARGETS UbuntuSettingsFingerprintQml)
+add_usc_plugin(Ubuntu.Settings.Fingerprint 0.1 Ubuntu/Settings/Fingerprint TARGETS UbuntuSettingsFingerprint)

@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// local
-#include "plugin.h"
-#include "ubuntusettingsfingerprint.h"
+#ifndef UBUNTUSETTINGSFINGERPRINT_H
+#define UBUNTUSETTINGSFINGERPRINT_H
 
-// Qt
-#include <QtQml/qqml.h>
+#include <QObject>
 
-void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
+class UbuntuSettingsFingerprint : public QObject
 {
-    qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
-}
+public:
+    UbuntuSettingsFingerprint(QObject* parent = nullptr);
+};
+
+#endif // UBUNTUSETTINGSFINGERPRINT_H

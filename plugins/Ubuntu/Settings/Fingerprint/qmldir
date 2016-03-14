@@ -5,6 +5,6 @@ plugin UbuntuSettingsFingerprint
 
 # internal DialogFile DialogFile.qml
 
-# VpnList 0.1 VpnList.qml
+Fingerprint 0.1 Fingerprint.qml
 # VpnEditor 0.1 VpnEditor.qml
 # VpnPreviewDialog 0.1 VpnPreviewDialog.qml

@@ -14,14 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// local
-#include "plugin.h"
 #include "ubuntusettingsfingerprint.h"
 
-// Qt
-#include <QtQml/qqml.h>
+UbuntuSettingsFingerprint::UbuntuSettingsFingerprint(QObject* parent) {
 
-void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
-{
-    qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
 }

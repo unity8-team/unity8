@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright 2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// local
-#include "plugin.h"
-#include "ubuntusettingsfingerprint.h"
+import QtQuick 2.4
+import Ubuntu.Components 1.2
 
-// Qt
-#include <QtQml/qqml.h>
-
-void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
-{
-    qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
+Page {
+    id: page
+    title: i18n.tr("")
+    Flickable {
+        id: content
+        anchors.fill: parent
+        contentHeight: units.gu(70)
+        Label {
+            text: "hello"
+            anchors.centerIn: parent
+        }
+    }
 }
