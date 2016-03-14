@@ -1,16 +1,13 @@
 AbstractButton { 
                 id: root; 
-                property var components; 
                 property var cardData; 
                 property string artShapeStyle: "inset"; 
                 property string backgroundShapeStyle: "inset"; 
                 property real fontScale: 1.0; 
                 property var scopeStyle: null; 
-                property int titleAlignment: Text.AlignLeft; 
                 property int fixedHeaderHeight: -1; 
                 property size fixedArtShapeSize: Qt.size(-1, -1); 
                 readonly property string title: cardData && cardData["title"] || ""; 
-                property bool asynchronous: true; 
                 property bool showHeader: true; 
                 implicitWidth: childrenRect.width; 
                 enabled: true;
@@ -24,13 +21,13 @@ Item  {
                             Loader { 
                                 id: artShapeLoader; 
                                 objectName: "artShapeLoader"; 
-                                active: cardData && cardData["art"] || false; 
-                                asynchronous: root.asynchronous; 
+                                readonly property string cardArt: cardData && cardData["art"] || decodeURI("IHAVE%5C%22ESCAPED%5C%22QUOTES%5C%22");
+                                active: cardArt != "";
+                                asynchronous: true;
                                 visible: status == Loader.Ready;
                                 sourceComponent: Item {
                                     id: artShape;
                                     objectName: "artShape";
-                                    readonly property bool doShapeItem: components["art"]["conciergeMode"] !== true;
                                     visible: image.status == Image.Ready;
                                     readonly property alias image: artImage;
                                     ShaderEffectSource {
@@ -39,11 +36,11 @@ Item  {
                                         anchors.centerIn: parent;
                                         width: 1;
                                         height: 1;
-                                        hideSource: doShapeItem;
+                                        hideSource: true;
                                     }
                                     Loader {
                                         anchors.fill: parent;
-                                        visible: artShape.doShapeItem;
+                                        visible: true;
                                         sourceComponent: root.artShapeStyle === "icon" ? artShapeIconComponent : artShapeShapeComponent;
                                         Component {
                                             id: artShapeShapeComponent;
@@ -67,7 +64,7 @@ Item  {
                                         }
                                     }
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1;
-                                    readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : components !== undefined ? components["art"]["aspect-ratio"] : 1;
+                                    readonly property real aspect: fixedArtShapeSizeAspect > 0 ? fixedArtShapeSizeAspect : 0.75;
                                     Component.onCompleted: { updateWidthHeightBindings(); }
                                     Connections { target: root; onFixedArtShapeSizeChanged: updateWidthHeightBindings(); }
                                     function updateWidthHeightBindings() {
@@ -82,10 +79,11 @@ Item  {
                                     CroppedImageMinimumSourceSize {
                                         id: artImage;
                                         objectName: "artImage";
-                                        source: cardData && cardData["art"] || "";
-                                        asynchronous: root.asynchronous;
+                                        source: artShapeLoader.cardArt;
+                                        asynchronous: true;
                                         width: root.width;
                                         height: width / artShape.aspect;
+                                        onStatusChanged: if (status === Image.Error) source = decodeURI("IHAVE%5C%22ESCAPED%5C%22QUOTES%5C%22");
                                     }
                                 } 
                             } 
@@ -109,7 +107,7 @@ Label {
                         width: undefined;
                         text: root.title; 
                         font.weight: cardData && cardData["subtitle"] ? Font.DemiBold : Font.Normal; 
-                        horizontalAlignment: root.titleAlignment; 
+                        horizontalAlignment: Text.AlignLeft;
                     }
 Label { 
                             id: subtitleLabel; 

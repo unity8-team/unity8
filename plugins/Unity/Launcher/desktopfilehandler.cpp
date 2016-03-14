@@ -197,9 +197,9 @@ QString DesktopFileHandler::icon() const
     const QString iconString = readString(G_KEY_FILE_DESKTOP_KEY_ICON);
     const QString pathString = readString(G_KEY_FILE_DESKTOP_KEY_PATH);
 
-    if (QFileInfo(iconString).exists()) {
+    if (QFileInfo::exists(iconString)) {
         return QFileInfo(iconString).absoluteFilePath();
-    } else if (QFileInfo(pathString + '/' + iconString).exists()) {
+    } else if (QFileInfo::exists(pathString + '/' + iconString)) {
         return pathString + '/' + iconString;
     }
     return "image://theme/" + iconString;

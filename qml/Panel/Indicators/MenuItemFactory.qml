@@ -125,10 +125,12 @@ Item {
                 menuModel.loadExtendedAttributes(menuIndex, {'min-value': 'double',
                                                              'max-value': 'double',
                                                              'min-icon': 'icon',
-                                                             'max-icon': 'icon'});
+                                                             'max-icon': 'icon',
+                                                             'x-canonical-sync-action': 'string'});
             }
 
             ServerPropertySynchroniser {
+                id: sliderPropertySync
                 objectName: "sync"
                 syncTimeout: Utils.Constants.indicatorValueTimeout
                 bufferedSyncTimeout: true
@@ -140,6 +142,16 @@ Item {
                 userProperty: "value"
 
                 onSyncTriggered: menuModel.changeState(menuIndex, value)
+            }
+
+            UnityMenuAction {
+                model: menuModel
+                index: menuIndex
+                name: getExtendedProperty(extendedData, "xCanonicalSyncAction", "")
+                onStateChanged: {
+                    sliderPropertySync.reset();
+                    sliderPropertySync.updateUserValue();
+                }
             }
         }
     }
@@ -216,7 +228,6 @@ Item {
             text: menuData && menuData.label || ""
             iconSource: menuData && menuData.icon || ""
             value : menuData && menuData.actionState || 0.0
-            enabled: menuData && menuData.sensitive || false
             highlightWhenPressed: false
         }
     }
@@ -249,7 +260,7 @@ Item {
                     name: "settings"
                     height: units.gu(3)
                     width: height
-                    color: theme.palette.selected.backgroundText
+                    color: theme.palette.normal.backgroundText
                 }
             }
         }
@@ -281,7 +292,7 @@ Item {
                     source: menuData.icon
                     height: units.gu(3)
                     width: height
-                    color: theme.palette.selected.backgroundText
+                    color: theme.palette.normal.backgroundText
                 }
             }
         }
@@ -564,7 +575,17 @@ Item {
             active: serverChecked
             secure: getExtendedProperty(extendedData, "xCanonicalWifiApIsSecure", false)
             adHoc: getExtendedProperty(extendedData, "xCanonicalWifiApIsAdhoc", false)
-            signalStrength: strengthAction.valid ? strengthAction.state : 0
+            signalStrength: {
+                if (strengthAction.valid) {
+                    var state = strengthAction.state; // handle both int and uchar
+                    // FIXME remove the special casing when we switch to indicator-network completely
+                    if (typeof state == "string") {
+                        return state.charCodeAt();
+                    }
+                    return state;
+                }
+                return 0;
+            }
             highlightWhenPressed: false
 
             onMenuModelChanged: {
@@ -598,7 +619,7 @@ Item {
 
     Component {
         id: modeminfoitem;
-        ModemInfoItem {
+        Menus.ModemInfoItem {
             objectName: "modemInfoItem"
             property QtObject menuData: null
             property var menuModel: menuFactory.menuModel

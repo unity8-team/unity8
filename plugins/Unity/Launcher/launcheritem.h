@@ -34,7 +34,7 @@ class LauncherItem: public LauncherItemInterface
 public:
     LauncherItem(const QString &appId, const QString &name, const QString &icon,
                  const QList<QuickListEntry> &actions = QList<QuickListEntry>(),
-                 QObject *parent = 0);
+                 QObject *parent);
 
     QString appId() const override;
     QString name() const override;

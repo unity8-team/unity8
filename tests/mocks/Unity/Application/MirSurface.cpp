@@ -17,13 +17,15 @@
 #include "MirSurface.h"
 
 #include <QDebug>
+#include <QQmlEngine>
 
 MirSurface::MirSurface(const QString& name,
         Mir::Type type,
         Mir::State state,
         const QUrl& screenshot,
-        const QUrl &qmlFilePath)
-    : unity::shell::application::MirSurfaceInterface(nullptr)
+        const QUrl &qmlFilePath,
+        QObject *parent)
+    : unity::shell::application::MirSurfaceInterface(parent)
     , m_name(name)
     , m_type(type)
     , m_state(state)
@@ -38,6 +40,8 @@ MirSurface::MirSurface(const QString& name,
     , m_slowToResize(false)
 {
 //    qDebug() << "MirSurface::MirSurface() " << name;
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+
     m_delayedResizeTimer.setInterval(600);
     m_delayedResizeTimer.setSingleShot(true);
     connect(&m_delayedResizeTimer, &QTimer::timeout, this, &MirSurface::applyDelayedResize);
@@ -264,5 +268,53 @@ void MirSurface::setSlowToResize(bool value)
             m_delayedResizeTimer.stop();
             applyDelayedResize();
         }
+    }
+}
+
+void MirSurface::setMinimumWidth(int value)
+{
+    if (value != m_minimumWidth) {
+        m_minimumWidth = value;
+        Q_EMIT minimumWidthChanged(m_minimumWidth);
+    }
+}
+
+void MirSurface::setMaximumWidth(int value)
+{
+    if (value != m_maximumWidth) {
+        m_maximumWidth = value;
+        Q_EMIT maximumWidthChanged(m_maximumWidth);
+    }
+}
+
+void MirSurface::setMinimumHeight(int value)
+{
+    if (value != m_minimumHeight) {
+        m_minimumHeight = value;
+        Q_EMIT minimumHeightChanged(m_minimumHeight);
+    }
+}
+
+void MirSurface::setMaximumHeight(int value)
+{
+    if (value != m_maximumHeight) {
+        m_maximumHeight = value;
+        Q_EMIT maximumHeightChanged(m_maximumHeight);
+    }
+}
+
+void MirSurface::setWidthIncrement(int value)
+{
+    if (value != m_widthIncrement) {
+        m_widthIncrement = value;
+        Q_EMIT widthIncrementChanged(m_widthIncrement);
+    }
+}
+
+void MirSurface::setHeightIncrement(int value)
+{
+    if (value != m_heightIncrement) {
+        m_heightIncrement = value;
+        Q_EMIT heightIncrementChanged(m_heightIncrement);
     }
 }

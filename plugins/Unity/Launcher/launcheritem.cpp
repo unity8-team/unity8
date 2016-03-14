@@ -36,10 +36,10 @@ LauncherItem::LauncherItem(const QString &appId, const QString &name, const QStr
     m_alerting(false),
     m_quickList(new QuickListModel(this))
 {
+    Q_ASSERT(parent != nullptr)
     Q_FOREACH(const QuickListEntry &action, actions) {
         m_quickList->appendAction(action);
     }
-
     QuickListEntry nameAction;
     nameAction.setActionId(QStringLiteral("launch_item"));
     nameAction.setText(m_name);

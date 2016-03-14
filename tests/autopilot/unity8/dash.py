@@ -158,7 +158,7 @@ class Dash(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
     def enter_search_query(self, query, keyboard):
         current_header = self._get_current_page_header()
         search_button = \
-            current_header.select_single(objectName="search_action_button")
+            current_header.select_single(objectName="search_button")
         self.pointing_device.move(
             search_button.globalRect.x + search_button.width / 2,
             search_button.globalRect.y + search_button.height / 2)
@@ -211,8 +211,7 @@ class GenericScopeView(ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase):
         self.get_root_instance().select_single(
             objectName='processingIndicator').visible.wait_for(False)
         return preview_list.select_single(
-            Preview, objectName='preview{}'.format(
-                preview_list.initialIndex))
+            Preview, objectName='preview')
 
     @autopilot_logging.log_action(logger.debug)
     def click_scope_item(self, category, title, press_duration=0.10):

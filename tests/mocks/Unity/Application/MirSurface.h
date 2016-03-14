@@ -41,7 +41,8 @@ public:
             Mir::Type type,
             Mir::State state,
             const QUrl& screenshot,
-            const QUrl &qmlFilePath = QUrl());
+            const QUrl &qmlFilePath = QUrl(),
+            QObject *parent = nullptr);
     virtual ~MirSurface();
 
     ////
@@ -66,6 +67,13 @@ public:
     Mir::OrientationAngle orientationAngle() const override;
     void setOrientationAngle(Mir::OrientationAngle) override;
 
+    int minimumWidth() const override { return m_minimumWidth; }
+    int minimumHeight() const override { return m_minimumHeight; }
+    int maximumWidth() const override { return m_maximumWidth; }
+    int maximumHeight() const override { return m_maximumHeight; }
+    int widthIncrement() const override { return m_widthIncrement; }
+    int heightIncrement() const override { return m_heightIncrement; }
+
     ////
     // API for tests
 
@@ -81,6 +89,13 @@ public:
 
     bool isSlowToResize() const;
     void setSlowToResize(bool value);
+
+    Q_INVOKABLE void setMinimumWidth(int);
+    Q_INVOKABLE void setMaximumWidth(int);
+    Q_INVOKABLE void setMinimumHeight(int);
+    Q_INVOKABLE void setMaximumHeight(int);
+    Q_INVOKABLE void setWidthIncrement(int);
+    Q_INVOKABLE void setHeightIncrement(int);
 
     /////
     // internal mock stuff
@@ -124,6 +139,13 @@ private:
     bool m_activeFocus;
     int m_width;
     int m_height;
+
+    int m_minimumWidth{0};
+    int m_minimumHeight{0};
+    int m_maximumWidth{0};
+    int m_maximumHeight{0};
+    int m_widthIncrement{0};
+    int m_heightIncrement{0};
 
     bool m_slowToResize;
     QTimer m_delayedResizeTimer;

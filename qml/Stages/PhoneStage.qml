@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,33 @@ AbstractStage {
         }
     }
 
+    onAltTabPressedChanged: {
+        if (!spreadEnabled || !altTabEnabled) {
+            return;
+        }
+        if (altTabPressed) {
+            spreadView.snapToSpread();
+            priv.highlightIndex = Math.min(spreadRepeater.count - 1, 1);
+        } else {
+            spreadView.snapTo(priv.highlightIndex)
+        }
+    }
+
+    FocusScope {
+        focus: root.altTabPressed
+
+        Keys.onPressed: {
+            switch (event.key) {
+            case Qt.Key_Tab:
+                priv.highlightIndex = (priv.highlightIndex + 1) % spreadRepeater.count
+                break;
+            case Qt.Key_Backtab:
+                priv.highlightIndex = (priv.highlightIndex + spreadRepeater.count - 1) % spreadRepeater.count
+                break;
+            }
+        }
+    }
+
     // Functions to be called from outside
     function updateFocusedAppOrientation() {
         if (spreadRepeater.count > 0) {
@@ -74,6 +101,12 @@ AbstractStage {
         }
     }
 
+    function pushRightEdge(amount) {
+        if (spreadView.contentX == -spreadView.shift) {
+            edgeBarrier.push(amount);
+        }
+    }
+
     mainApp: applicationManager.focusedApplicationId
             ? applicationManager.findApplication(applicationManager.focusedApplicationId)
             : null
@@ -82,6 +115,10 @@ AbstractStage {
                                && !priv.focusedAppDelegateIsDislocated
                                && !(priv.focusedAppDelegate && priv.focusedAppDelegate.xBehavior.running)
                                && spreadView.phase === 0
+
+    supportedOrientations: mainApp ? mainApp.supportedOrientations
+                                   : (Qt.PortraitOrientation | Qt.LandscapeOrientation
+                                      | Qt.InvertedPortraitOrientation | Qt.InvertedLandscapeOrientation)
 
     // How far left the stage has been dragged
     readonly property real dragProgress: spreadRepeater.count > 0 ? -spreadRepeater.itemAt(0).xTranslate : 0
@@ -176,6 +213,7 @@ AbstractStage {
 
         property real oldInverseProgress: 0
         property bool animateX: false
+        property int highlightIndex: 0
 
         onFocusedAppDelegateChanged: {
             if (focusedAppDelegate) {
@@ -209,6 +247,10 @@ AbstractStage {
             spreadView.selectedIndex = -1;
             spreadView.phase = 0;
             spreadView.contentX = -spreadView.shift;
+        }
+
+        onHighlightIndexChanged: {
+            spreadView.contentX = highlightIndex * spreadView.contentWidth / (spreadRepeater.count + 2)
         }
     }
     Timer {
@@ -277,6 +319,11 @@ AbstractStage {
             }
         }
 
+        Behavior on contentX {
+            enabled: root.altTabPressed
+            UbuntuNumberAnimation {}
+        }
+
         onShiftedContentXChanged: {
             if (root.beingResized) {
                 // Flickabe.contentX wiggles during resizes. Don't react to it.
@@ -315,12 +362,17 @@ AbstractStage {
             } else if (shiftedContentX < positionMarker3 * width) {
                 snapTo(1);
             } else if (phase < 2){
-                // Add 1 pixel to make sure we definitely hit positionMarker4 even with rounding errors of the animation.
-                snapAnimation.targetContentX = width * positionMarker4 + 1 - shift;
-                snapAnimation.start();
+                snapToSpread();
                 root.opened();
             }
         }
+
+        function snapToSpread() {
+            // Add 1 pixel to make sure we definitely hit positionMarker4 even with rounding errors of the animation.
+            snapAnimation.targetContentX = (root.width * spreadView.positionMarker4) + 1 - spreadView.shift;
+            snapAnimation.start();
+        }
+
         function snapTo(index) {
             if (!root.altTabEnabled) {
                 // Reset to start instead
@@ -423,6 +475,7 @@ AbstractStage {
                     maximizedAppTopMargin: root.maximizedAppTopMargin
                     dropShadow: spreadView.active || priv.focusedAppDelegateIsDislocated
                     focusFirstApp: root.focusFirstApp
+                    highlightShown: root.altTabPressed && index === priv.highlightIndex
 
                     readonly property bool isDash: model.appId == "unity8-dash"
 
@@ -643,6 +696,31 @@ AbstractStage {
                     // otherwise snap to the closest snap position we can find
                     // (might be back to start, to app 1 or to spread)
                     spreadView.snap();
+                }
+            }
+        }
+    }
+
+    EdgeBarrier {
+        id: edgeBarrier
+
+        // NB: it does its own positioning according to the specified edge
+        edge: Qt.RightEdge
+
+        onPassed: {
+            spreadView.snapToSpread();
+        }
+        material: Component {
+            Item {
+                Rectangle {
+                    width: parent.height
+                    height: parent.width
+                    rotation: 90
+                    anchors.centerIn: parent
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Qt.rgba(0.16,0.16,0.16,0.7)}
+                        GradientStop { position: 1.0; color: Qt.rgba(0.16,0.16,0.16,0)}
+                    }
                 }
             }
         }

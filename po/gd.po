@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-12-08 15:42+0000\n"
+"POT-Creation-Date: 2016-03-10 22:48+0000\n"
 "PO-Revision-Date: 2015-07-16 10:56+0000\n"
 "Last-Translator: GunChleoc <Unknown>\n"
 "Language-Team: Fòram na Gàidhlig\n"
@@ -16,24 +16,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
 "(n > 2 && n < 20) ? 2 : 3;\n"
-"X-Launchpad-Export-Date: 2015-12-12 05:44+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2016-03-13 05:50+0000\n"
+"X-Generator: Launchpad (build 17939)\n"
 "Language: gd\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
 msgstr "Facal-faire: "
 
-#: plugins/Unity/Launcher/launcheritem.cpp:47
-#: plugins/Unity/Launcher/launcheritem.cpp:106
+#: plugins/Unity/Launcher/launcheritem.cpp:48
+#: plugins/Unity/Launcher/launcheritem.cpp:107
 msgid "Pin shortcut"
 msgstr "Prìnich ath-ghoirid"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:52
+#: plugins/Unity/Launcher/launcheritem.cpp:53
 msgid "Quit"
 msgstr "Fàg an-seo"
 
-#: plugins/Unity/Launcher/launcheritem.cpp:106
+#: plugins/Unity/Launcher/launcheritem.cpp:107
 msgid "Unpin shortcut"
 msgstr "Neo-phrìnich an ath-ghoirid"
 
@@ -145,74 +145,76 @@ msgctxt "Button: Restart the system"
 msgid "Restart"
 msgstr "Ath-thòisich"
 
-#: qml/Components/Lockscreen.qml:245
+#: qml/Components/Lockscreen.qml:231
 msgid "Return to Call"
 msgstr "Till dhan ghairm"
 
-#: qml/Components/Lockscreen.qml:245
+#: qml/Components/Lockscreen.qml:231
 msgid "Emergency Call"
 msgstr "Gairm èiginn"
 
-#: qml/Components/Lockscreen.qml:277
+#: qml/Components/Lockscreen.qml:263
 msgid "OK"
 msgstr "Ceart ma-thà"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:32
 msgid "Apps may have unsaved data:"
-msgstr ""
+msgstr "Aplacaidean aig a bheil dàta gun sàbhaladh ma dh'fhaoidte:"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:57
+msgctxt ""
+"Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
 msgstr ""
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
-msgstr ""
+msgstr "No sparr fàgail air an-dràsta (thèid dàta gun sàbhaladh air chall)."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:75
 msgid "OK, I will reconnect"
-msgstr ""
+msgstr "Ceart ma-thà, ceanglaidh mi a-rithist"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:76
 msgid "Reconnect now!"
-msgstr ""
+msgstr "Ath-cheangail an-dràsta!"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:88
 msgid "Close all"
-msgstr ""
+msgstr "Dùin na h-uile"
 
-#: qml/Dash/DashPageHeader.qml:265
+#: qml/Dash/DashPageHeader.qml:270
 msgctxt "Button: Open the Ubuntu Store"
 msgid "Store"
 msgstr "Am bùth"
 
-#: qml/Dash/DashPageHeader.qml:272
+#: qml/Dash/DashPageHeader.qml:277
 msgctxt "Button: Start a search in the current dash scope"
 msgid "Search"
 msgstr "Lorg"
 
-#: qml/Dash/DashPageHeader.qml:282
+#: qml/Dash/DashPageHeader.qml:287
 msgctxt "Button: Show the current dash scope settings"
 msgid "Settings"
 msgstr "Roghainnean"
 
-#: qml/Dash/DashPageHeader.qml:289
+#: qml/Dash/DashPageHeader.qml:294
 msgid "Remove from Favorites"
 msgstr "Thoir air falbh o na h-annsachdan"
 
-#: qml/Dash/DashPageHeader.qml:289
+#: qml/Dash/DashPageHeader.qml:294
 msgid "Add to Favorites"
 msgstr "Cuir ris na h-annsachdan"
 
-#: qml/Dash/GenericScopeView.qml:576 qml/Dash/GenericScopeView.qml:734
+#: qml/Dash/GenericScopeView.qml:567 qml/Dash/GenericScopeView.qml:725
 msgid "See less"
 msgstr "Seall nas lugha"
 
-#: qml/Dash/GenericScopeView.qml:576
+#: qml/Dash/GenericScopeView.qml:567
 msgid "See all"
 msgstr "Seall na h-uile"
 
-#: qml/Dash/GenericScopeView.qml:638
+#: qml/Dash/GenericScopeView.qml:629
 msgctxt "Label: Hint for dash search line edit"
 msgid "Search"
 msgstr "Lorg"
@@ -238,7 +240,7 @@ msgstr "Rangaich seo"
 msgid "Add a review"
 msgstr "Cuir lèirmheas ris"
 
-#: qml/Dash/Previews/PreviewSharing.qml:51
+#: qml/Dash/Previews/PreviewSharing.qml:66
 msgid "Preview Share Item"
 msgstr "Ro-sheall an nì co-roinnidh"
 
@@ -266,19 +268,21 @@ msgstr "Dhachaigh"
 msgid "Also installed"
 msgstr "Air a stàladh cuideachd"
 
-#: qml/DisabledScreenNotice.qml:42
-msgid "Your device is now connected to an external display."
+#: qml/DisabledScreenNotice.qml:104
+msgid ""
+"Your device is now connected to an external display. Use this screen as a "
+"touch pad to interact with the pointer."
 msgstr ""
 
-#: qml/Greeter/CoverPage.qml:107
+#: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
 msgstr "Thoir a' ghlas dheth"
 
-#: qml/Greeter/LoginList.qml:236
+#: qml/Greeter/LoginList.qml:239
 msgid "Retry"
 msgstr "Feuch ris a-rithist"
 
-#: qml/Greeter/LoginList.qml:237
+#: qml/Greeter/LoginList.qml:240
 msgid "Tap to unlock"
 msgstr "Gnog gus a' ghlas a thoirt fo bharr"
 
@@ -355,11 +359,11 @@ msgstr "Gnog gus tilleadh dhan ghairm..."
 msgid "Conference"
 msgstr "Gairm co-labhairt"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:731
+#: qml/Panel/Indicators/MenuItemFactory.qml:752
 msgid "Nothing is playing"
 msgstr "Chan eil dad 'ga chluich"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:860
+#: qml/Panel/Indicators/MenuItemFactory.qml:881
 #, qt-format
 msgid "%1 hour"
 msgid_plural "%1 hours"
@@ -368,7 +372,7 @@ msgstr[1] "%1 uair a thìde"
 msgstr[2] "%1 uairean a thìde"
 msgstr[3] "%1 uair a thìde"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:864
+#: qml/Panel/Indicators/MenuItemFactory.qml:885
 #, qt-format
 msgid "%1 minute"
 msgid_plural "%1 minutes"
@@ -377,7 +381,7 @@ msgstr[1] "%1 mhionaid"
 msgstr[2] "%1 mionaidean"
 msgstr[3] "%1 mionaid"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:869
+#: qml/Panel/Indicators/MenuItemFactory.qml:890
 #, qt-format
 msgid "%1 second"
 msgid_plural "%1 seconds"
@@ -386,37 +390,37 @@ msgstr[1] "%1 dhiog"
 msgstr[2] "%1 diogan"
 msgstr[3] "%1 diog"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:872
+#: qml/Panel/Indicators/MenuItemFactory.qml:893
 msgid "0 seconds"
 msgstr "0 diog"
 
 #. Translators: String like "1 hour, 2 minutes, 3 seconds remaining"
-#: qml/Panel/Indicators/MenuItemFactory.qml:874
+#: qml/Panel/Indicators/MenuItemFactory.qml:895
 #, qt-format
 msgid "%1 remaining"
 msgstr "%1 air fhàgail"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:880
+#: qml/Panel/Indicators/MenuItemFactory.qml:901
 msgid "In queue…"
 msgstr "Air a' chiudha…"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:884
+#: qml/Panel/Indicators/MenuItemFactory.qml:905
 msgid "Downloading"
 msgstr "'Ga luchdadh a-nuas"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:886
+#: qml/Panel/Indicators/MenuItemFactory.qml:907
 msgid "Paused, tap to resume"
 msgstr "'Na stad, thoir gnogag gus leantainn air"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:888
+#: qml/Panel/Indicators/MenuItemFactory.qml:909
 msgid "Canceled"
 msgstr "Air a sgur dheth"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:890
+#: qml/Panel/Indicators/MenuItemFactory.qml:911
 msgid "Finished"
 msgstr "Coileanta"
 
-#: qml/Panel/Indicators/MenuItemFactory.qml:892
+#: qml/Panel/Indicators/MenuItemFactory.qml:913
 msgid "Failed, tap to retry"
 msgstr "Dh'fhàillig leis, thoir gnogag gus feuchainn a-rithist"
 
@@ -424,7 +428,7 @@ msgstr "Dh'fhàillig leis, thoir gnogag gus feuchainn a-rithist"
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:214
 msgctxt "Button: Send a reply message"
 msgid "Send"
-msgstr ""
+msgstr "Cuir"
 
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:156
 msgctxt "Label: Hint in message indicator line edit"
@@ -434,15 +438,7 @@ msgstr "Freagairt"
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:213
 msgctxt "Button: Call back on phone"
 msgid "Call back"
-msgstr ""
-
-#: qml/Panel/Indicators/ModemInfoItem.qml:105
-msgid "Unlock SIM"
-msgstr "Thoir a' ghlas far an SIM"
-
-#: qml/Panel/Indicators/RoamingIndication.qml:27
-msgid "Roaming"
-msgstr "Air fàrsan"
+msgstr "Fònaig air ais"
 
 #: qml/Tutorial/TutorialBottom.qml:28
 msgid "Open special menus"
@@ -507,14 +503,14 @@ msgid "Hi!"
 msgstr "Shin thu!"
 
 #: qml/Wizard/Pages/10-welcome.qml:44
-msgid "Welcome to your Ubuntu phone."
-msgstr "Fàilte dhan fhòn Ubuntu agad."
+msgid "Welcome to your Ubuntu device."
+msgstr "Fàilte dhan uidheam Ubuntu agad."
 
 #: qml/Wizard/Pages/10-welcome.qml:52
 msgid "Let’s get started."
 msgstr "Tòisicheamaid."
 
-#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:128
+#: qml/Wizard/Pages/10-welcome.qml:88 qml/Wizard/Pages/30-passwd-type.qml:133
 #: qml/Wizard/Pages/40-wifi.qml:215 qml/Wizard/Pages/50-location.qml:131
 #: qml/Wizard/Pages/60-reporting.qml:60 qml/Wizard/Pages/passwd-confirm.qml:82
 #: qml/Wizard/Pages/passwd-set.qml:90
@@ -537,36 +533,37 @@ msgstr "Leum thairis air"
 msgid "Lock security"
 msgstr "Glas tèarainteachd"
 
-#: qml/Wizard/Pages/30-passwd-type.qml:74
-msgid "Please select how you’d like to unlock your phone."
-msgstr "Tagh an dòigh sa tha thu airson a' ghlas a thoirt far an fhòn agad."
+#: qml/Wizard/Pages/30-passwd-type.qml:79
+msgid "Please select how you’d like to unlock your device."
+msgstr ""
+"Tagh an dòigh sa tha thu airson a' ghlas a thoirt far an uidheam agad."
 
-#: qml/Wizard/Pages/30-passwd-type.qml:97
+#: qml/Wizard/Pages/30-passwd-type.qml:102
 msgctxt "Label: Type of security method"
 msgid "Swipe"
 msgstr "Grad-shlaighd"
 
-#: qml/Wizard/Pages/30-passwd-type.qml:98
+#: qml/Wizard/Pages/30-passwd-type.qml:103
 msgctxt "Label: Description of security method"
 msgid "No security"
 msgstr "Gun tèarainteachd"
 
-#: qml/Wizard/Pages/30-passwd-type.qml:100
+#: qml/Wizard/Pages/30-passwd-type.qml:105
 msgctxt "Label: Type of security method"
 msgid "Passcode"
 msgstr "Còd-faire"
 
-#: qml/Wizard/Pages/30-passwd-type.qml:101
+#: qml/Wizard/Pages/30-passwd-type.qml:106
 msgctxt "Label: Description of security method"
 msgid "4 digits only"
 msgstr "4 àireamhan a-mhàin"
 
-#: qml/Wizard/Pages/30-passwd-type.qml:103
+#: qml/Wizard/Pages/30-passwd-type.qml:108
 msgctxt "Label: Type of security method"
 msgid "Passphrase"
 msgstr "Abairt-fhaire"
 
-#: qml/Wizard/Pages/30-passwd-type.qml:104
+#: qml/Wizard/Pages/30-passwd-type.qml:109
 msgctxt "Label: Description of security method"
 msgid "Numbers and letters"
 msgstr "Àireamhan 's litrichean"
@@ -650,8 +647,8 @@ msgid "Nice work!"
 msgstr "Shin thu!"
 
 #: qml/Wizard/Pages/80-finished.qml:46
-msgid "Your phone is now ready to use."
-msgstr "Gabhaidh am fòn agad cleachdadh a-nis."
+msgid "Your device is now ready to use."
+msgstr "Tha an t-uidheam agad ullamh a-nis."
 
 #: qml/Wizard/Pages/80-finished.qml:53
 msgid "Finish"
@@ -758,6 +755,9 @@ msgstr "%1  〉"
 #~ msgid "All"
 #~ msgstr "Na h-uile"
 
+#~ msgid "Unlock SIM"
+#~ msgstr "Thoir a' ghlas far an SIM"
+
 #~ msgid "Favorites"
 #~ msgstr "Annsachdan"
 
@@ -769,6 +769,9 @@ msgstr "%1  〉"
 
 #~ msgid "Done"
 #~ msgstr "Deiseil"
+
+#~ msgid "Roaming"
+#~ msgstr "Air fàrsan"
 
 #~ msgid "Log out"
 #~ msgstr "Clàraich a-mach"
@@ -790,6 +793,15 @@ msgstr "%1  〉"
 
 #~ msgid "Manage Scopes"
 #~ msgstr "Stiùirich na sgòpaichean"
+
+#~ msgid "Welcome to your Ubuntu phone."
+#~ msgstr "Fàilte dhan fhòn Ubuntu agad."
+
+#~ msgid "Please select how you’d like to unlock your phone."
+#~ msgstr "Tagh an dòigh sa tha thu airson a' ghlas a thoirt far an fhòn agad."
+
+#~ msgid "Your phone is now ready to use."
+#~ msgstr "Gabhaidh am fòn agad cleachdadh a-nis."
 
 #~ msgid "%a %H:%M"
 #~ msgstr "%a %H:%M"
@@ -826,3 +838,16 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "Fònaig air ais"
+
+#~ msgid "Re-dock, save your work and close these apps to continue."
+#~ msgstr ""
+#~ "Ath-dhocaich, sàbhail d' obair is dùin na h-aplacaidean sin gus leantainn "
+#~ "air adhart."
+
+#~ msgid ""
+#~ "Your device is now connected to an external display. Use this screen as a "
+#~ "touch pad to interact with the mouse."
+#~ msgstr ""
+#~ "Tha an t-uidheam agad air a cheangal ri uidheam-taisbeanaidh air an taobh a-"
+#~ "muigh a-nis. Cleachd an sgrìn seo 'na phada-suathaidh gus gnìomh luchaige a "
+#~ "dhèanamh."
