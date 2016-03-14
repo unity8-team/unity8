@@ -97,7 +97,7 @@ ListItem.Empty {
                         id: labelRoaming
                         elide: Text.ElideRight
                         fontSize: "x-small"
-                        text: i18n.tr("Roaming")
+                        text: i18n.dtr("ubuntu-settings-components", "Roaming")
                         opacity: 0.6
                     }
 
@@ -119,7 +119,7 @@ ListItem.Empty {
             objectName: "buttonUnlockSim"
             visible: menu.locked
 
-            text: i18n.tr("Unlock SIM")
+            text: i18n.dtr("ubuntu-settings-components", "Unlock SIM")
             Layout.preferredWidth: implicitWidth + units.gu(5)
 
             onTriggered: menu.unlock()
