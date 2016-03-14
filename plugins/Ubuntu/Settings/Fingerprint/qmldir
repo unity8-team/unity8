@@ -3,7 +3,7 @@ plugin UbuntuSettingsFingerprint
 
 # singleton DialogFileProperties 0.1 DialogFileProperties.qml
 
-# internal DialogFile DialogFile.qml
+internal AddFingerprint AddFingerprint.qml
 
 Fingerprint 0.1 Fingerprint.qml
 # VpnEditor 0.1 VpnEditor.qml
