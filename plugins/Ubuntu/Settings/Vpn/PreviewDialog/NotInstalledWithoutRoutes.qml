@@ -24,36 +24,36 @@ Column {
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("This VPN configuration is not installed.")
+        text: i18n.dtr("ubuntu-settings-components", "This VPN configuration is not installed.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("If you install it:")
+        text: i18n.dtr("ubuntu-settings-components", "If you install it:")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("Your Wi-Fi/mobile provider can see when and how much you use the Internet, but not what for.")
+        text: i18n.dtr("ubuntu-settings-components", "Your Wi-Fi/mobile provider can see when and how much you use the Internet, but not what for.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("The DNS provider can see which Web sites and other services you use. ")
+        text: i18n.dtr("ubuntu-settings-components", "The DNS provider can see which Web sites and other services you use. ")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("The VPN provider can see or modify your Internet traffic.")
+        text: i18n.dtr("ubuntu-settings-components", "The VPN provider can see or modify your Internet traffic.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("Web sites and other service providers can still monitor your use.")
+        text: i18n.dtr("ubuntu-settings-components", "Web sites and other service providers can still monitor your use.")
     }
 }

@@ -107,7 +107,7 @@ Column {
         anchors { left: parent.left; right: parent.right }
 
         Label {
-            text: i18n.tr("Server:")
+            text: i18n.dtr("ubuntu-settings-components", "Server:")
             font.bold: true
             color: Theme.palette.normal.baseText
             elide: Text.ElideRight
@@ -121,7 +121,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Port:")
+            text: i18n.dtr("ubuntu-settings-components", "Port:")
             font.bold: true
             color: Theme.palette.normal.baseText
             elide: Text.ElideRight
@@ -171,7 +171,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Use custom gateway port")
+            text: i18n.dtr("ubuntu-settings-components", "Use custom gateway port")
             Layout.fillWidth: true
         }
     }
@@ -199,7 +199,7 @@ Column {
 
     RowLayout {
         Label {
-            text: i18n.tr("Protocol:")
+            text: i18n.dtr("ubuntu-settings-components", "Protocol:")
             font.bold: true
             color: Theme.palette.normal.baseText
             elide: Text.ElideRight
@@ -207,7 +207,7 @@ Column {
 
         Label {
             id: tcpLabel
-            text: i18n.tr("TCP")
+            text: i18n.dtr("ubuntu-settings-components", "TCP")
         }
 
         CheckBox {
@@ -217,7 +217,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("UDP")
+            text: i18n.dtr("ubuntu-settings-components", "UDP")
         }
 
         CheckBox {
@@ -237,7 +237,7 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("Client certificate:")
+        text: i18n.dtr("ubuntu-settings-components", "Client certificate:")
     }
 
     FileSelector {
@@ -245,14 +245,14 @@ Column {
         id: certField
         objectName: "vpnOpenvpnCertField"
         path: connection.cert
-        chooseLabel: i18n.tr("Choose Certificate…")
+        chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Certificate…")
     }
 
     Label {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("CA certificate:")
+        text: i18n.dtr("ubuntu-settings-components", "CA certificate:")
     }
 
     FileSelector {
@@ -260,14 +260,14 @@ Column {
         objectName: "vpnOpenvpnCaField"
         anchors { left: parent.left; right: parent.right }
         path: connection.ca
-        chooseLabel: i18n.tr("Choose Certificate…")
+        chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Certificate…")
     }
 
     Label {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("Private key:")
+        text: i18n.dtr("ubuntu-settings-components", "Private key:")
     }
 
     FileSelector {
@@ -275,14 +275,14 @@ Column {
         id: keyField
         objectName: "vpnOpenvpnKeyField"
         path: connection.key
-        chooseLabel: i18n.tr("Choose Key…")
+        chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Key…")
     }
 
     Label {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("Key password:")
+        text: i18n.dtr("ubuntu-settings-components", "Key password:")
     }
 
     TextField {
@@ -303,7 +303,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Use additional TLS authentication:")
+            text: i18n.dtr("ubuntu-settings-components", "Use additional TLS authentication:")
             Layout.fillWidth: true
         }
     }
@@ -312,7 +312,7 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("TLS key:")
+        text: i18n.dtr("ubuntu-settings-components", "TLS key:")
         visible: taSetToggle.checked
     }
 
@@ -321,12 +321,12 @@ Column {
         id: taField
         objectName: "vpnOpenvpnTaField"
         path: connection.ta
-        chooseLabel: i18n.tr("Choose Key…")
+        chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Key…")
         visible: taSetToggle.checked
     }
 
     Label {
-        text: i18n.tr("Key direction:")
+        text: i18n.dtr("ubuntu-settings-components", "Key direction:")
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
@@ -337,9 +337,9 @@ Column {
         id: taDirSelector
         objectName: "vpnOpenvpnTaDirSelector"
         model: [
-            i18n.tr("None"),
-            i18n.tr("0"),
-            i18n.tr("1"),
+            i18n.dtr("ubuntu-settings-components", "None"),
+            i18n.dtr("ubuntu-settings-components", "0"),
+            i18n.dtr("ubuntu-settings-components", "1"),
         ]
         selectedIndex: connection.taDir
         visible: taSetToggle.checked
@@ -354,7 +354,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Verify peer certificate:")
+            text: i18n.dtr("ubuntu-settings-components", "Verify peer certificate:")
             Layout.fillWidth: true
         }
     }
@@ -363,7 +363,7 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("Peer certificate TLS type:")
+        text: i18n.dtr("ubuntu-settings-components", "Peer certificate TLS type:")
         visible: remoteCertSetToggle.checked
     }
 
@@ -371,8 +371,8 @@ Column {
         id: remoteCertTlsSelector
         objectName: "vpnOpenvpnRemoteCertTlsSelector"
         model: [
-            i18n.tr("Server"),
-            i18n.tr("Client"),
+            i18n.dtr("ubuntu-settings-components", "Server"),
+            i18n.dtr("ubuntu-settings-components", "Client"),
         ]
         selectedIndex: connection.remoteCertTls
         visible: remoteCertSetToggle.checked
@@ -382,30 +382,30 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("Cipher:")
+        text: i18n.dtr("ubuntu-settings-components", "Cipher:")
     }
 
     ListItems.ItemSelector {
         id: cipherSelector
         objectName: "vpnOpenvpnCipherSelector"
         model: [
-            i18n.tr("Default"),
-            i18n.tr("DES-CBC"),
-            i18n.tr("RC2-CBC"),
-            i18n.tr("DES-EDE-CBC"),
-            i18n.tr("DES-EDE3-CBC"),
-            i18n.tr("DESX-CBC"),
-            i18n.tr("RC2-40-CBC"),
-            i18n.tr("CAST5-CBC"),
-            i18n.tr("AES-128-CBC"),
-            i18n.tr("AES-192-CBC"),
-            i18n.tr("AES-256-CBC"),
-            i18n.tr("CAMELLIA-128-CBC"),
-            i18n.tr("CAMELLIA-192-CBC"),
-            i18n.tr("CAMELLIA-256-CBC"),
-            i18n.tr("SEED-CBC"),
-            i18n.tr("AES-128-CBC-HMAC-SHA1"),
-            i18n.tr("AES-256-CBC-HMAC-SHA1"),
+            i18n.dtr("ubuntu-settings-components", "Default"),
+            i18n.dtr("ubuntu-settings-components", "DES-CBC"),
+            i18n.dtr("ubuntu-settings-components", "RC2-CBC"),
+            i18n.dtr("ubuntu-settings-components", "DES-EDE-CBC"),
+            i18n.dtr("ubuntu-settings-components", "DES-EDE3-CBC"),
+            i18n.dtr("ubuntu-settings-components", "DESX-CBC"),
+            i18n.dtr("ubuntu-settings-components", "RC2-40-CBC"),
+            i18n.dtr("ubuntu-settings-components", "CAST5-CBC"),
+            i18n.dtr("ubuntu-settings-components", "AES-128-CBC"),
+            i18n.dtr("ubuntu-settings-components", "AES-192-CBC"),
+            i18n.dtr("ubuntu-settings-components", "AES-256-CBC"),
+            i18n.dtr("ubuntu-settings-components", "CAMELLIA-128-CBC"),
+            i18n.dtr("ubuntu-settings-components", "CAMELLIA-192-CBC"),
+            i18n.dtr("ubuntu-settings-components", "CAMELLIA-256-CBC"),
+            i18n.dtr("ubuntu-settings-components", "SEED-CBC"),
+            i18n.dtr("ubuntu-settings-components", "AES-128-CBC-HMAC-SHA1"),
+            i18n.dtr("ubuntu-settings-components", "AES-256-CBC-HMAC-SHA1"),
         ]
         selectedIndex: connection.cipher
     }
@@ -419,7 +419,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Compress data")
+            text: i18n.dtr("ubuntu-settings-components", "Compress data")
             Layout.fillWidth: true
         }
     }

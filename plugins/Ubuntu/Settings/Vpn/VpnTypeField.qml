@@ -29,7 +29,7 @@ RowLayout {
     signal typeRequested(int index)
 
     Label {
-        text: i18n.tr("Type:")
+        text: i18n.dtr("ubuntu-settings-components", "Type:")
         enabled: parent.enabled
         font.bold: true
         color: Theme.palette.normal.baseText
@@ -43,8 +43,8 @@ RowLayout {
         objectName: "vpnTypeField"
         enabled: parent.enabled
         model: [
-            i18n.tr("OpenVPN"),
-            i18n.tr("Pptp")
+            i18n.dtr("ubuntu-settings-components", "OpenVPN"),
+            i18n.dtr("ubuntu-settings-components", "Pptp")
         ]
         expanded: false
         onDelegateClicked: typeRequested(index)

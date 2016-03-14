@@ -24,18 +24,18 @@ Column {
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("You’re using this VPN for specific services.")
+        text: i18n.dtr("ubuntu-settings-components", "You’re using this VPN for specific services.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("Your traffic to these services is private to them and the VPN provider.")
+        text: i18n.dtr("ubuntu-settings-components", "Your traffic to these services is private to them and the VPN provider.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("Your Wi-Fi/mobile provider can track your use of any other services. ")
+        text: i18n.dtr("ubuntu-settings-components", "Your Wi-Fi/mobile provider can track your use of any other services. ")
     }
 }

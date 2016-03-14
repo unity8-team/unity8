@@ -59,7 +59,7 @@ ListView {
            actions: [
                Action {
                    iconName: "delete"
-                   text: i18n.tr("Delete configuration")
+                   text: i18n.dtr("ubuntu-settings-components", "Delete configuration")
                    onTriggered: connection.remove()
                }
            ]

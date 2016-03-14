@@ -111,7 +111,7 @@ Column {
     }
 
     Label {
-        text: i18n.tr("Server:")
+        text: i18n.dtr("ubuntu-settings-components", "Server:")
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
@@ -147,7 +147,7 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("User:")
+        text: i18n.dtr("ubuntu-settings-components", "User:")
     }
 
     TextField {
@@ -162,7 +162,7 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("Password:")
+        text: i18n.dtr("ubuntu-settings-components", "Password:")
     }
 
     TextField {
@@ -177,7 +177,7 @@ Column {
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
-        text: i18n.tr("NT Domain:")
+        text: i18n.dtr("ubuntu-settings-components", "NT Domain:")
     }
 
     TextField {
@@ -189,7 +189,7 @@ Column {
     }
 
     Label {
-        text: i18n.tr("Authentication methods:")
+        text: i18n.dtr("ubuntu-settings-components", "Authentication methods:")
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
@@ -289,7 +289,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Use Point-to-Point encryption")
+            text: i18n.dtr("ubuntu-settings-components", "Use Point-to-Point encryption")
             Layout.fillWidth: true
         }
     }
@@ -298,9 +298,9 @@ Column {
         objectName: "vpnPptpMppeTypeSelector"
         id: mppeTypeSelector
         model: [
-            i18n.tr("All Available (Default)"),
-            i18n.tr("128-bit (most secure)"),
-            i18n.tr("40-bit (less secure)")
+            i18n.dtr("ubuntu-settings-components", "All Available (Default)"),
+            i18n.dtr("ubuntu-settings-components", "128-bit (most secure)"),
+            i18n.dtr("ubuntu-settings-components", "40-bit (less secure)")
         ]
         selectedIndex: connection.mppeType
         enabled: requireMppeToggle.checked
@@ -316,7 +316,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Allow stateful encryption")
+            text: i18n.dtr("ubuntu-settings-components", "Allow stateful encryption")
             Layout.fillWidth: true
         }
     }
@@ -330,7 +330,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Allow BSD data compression")
+            text: i18n.dtr("ubuntu-settings-components", "Allow BSD data compression")
             Layout.fillWidth: true
         }
     }
@@ -344,7 +344,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Allow Deflate data compression")
+            text: i18n.dtr("ubuntu-settings-components", "Allow Deflate data compression")
             Layout.fillWidth: true
         }
     }
@@ -358,7 +358,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Use TCP Header compression")
+            text: i18n.dtr("ubuntu-settings-components", "Use TCP Header compression")
             Layout.fillWidth: true
         }
     }
@@ -372,7 +372,7 @@ Column {
         }
 
         Label {
-            text: i18n.tr("Send PPP echo packets")
+            text: i18n.dtr("ubuntu-settings-components", "Send PPP echo packets")
             Layout.fillWidth: true
         }
     }

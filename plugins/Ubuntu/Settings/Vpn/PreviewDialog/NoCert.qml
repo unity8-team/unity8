@@ -24,12 +24,12 @@ Column {
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("This VPN is not safe to use.")
+        text: i18n.dtr("ubuntu-settings-components", "This VPN is not safe to use.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("It does not provide a certificate. The VPN provider could be impersonated.")
+        text: i18n.dtr("ubuntu-settings-components", "It does not provide a certificate. The VPN provider could be impersonated.")
     }
 }

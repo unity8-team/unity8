@@ -27,7 +27,7 @@ Column {
     property bool enabled: true
 
     Label {
-        text: i18n.tr("Use this VPN for:")
+        text: i18n.dtr("ubuntu-settings-components", "Use this VPN for:")
         font.bold: true
         color: Theme.palette.normal.baseText
         elide: Text.ElideRight
@@ -57,7 +57,7 @@ Column {
             }
 
             Label {
-                text: i18n.tr("All network connections")
+                text: i18n.dtr("ubuntu-settings-components", "All network connections")
                 Layout.fillWidth: true
             }
         }
@@ -73,7 +73,7 @@ Column {
             }
 
             Label {
-                text: i18n.tr("Its own network")
+                text: i18n.dtr("ubuntu-settings-components", "Its own network")
                 Layout.fillWidth: true
             }
         }

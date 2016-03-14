@@ -22,7 +22,7 @@ import Ubuntu.Components.ListItems 1.3 as ListItems
 
 ListItems.ItemSelector {
     property string path
-    property string chooseLabel: i18n.tr("Choose…")
+    property string chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose…")
 
     property var __dialog
 
@@ -31,7 +31,7 @@ ListItems.ItemSelector {
     function resetModel () {
         var m = [];
         model = m;
-        m.push(i18n.tr("None"));
+        m.push(i18n.dtr("ubuntu-settings-components", "None"));
 
         if (path) {
             m.push(path);

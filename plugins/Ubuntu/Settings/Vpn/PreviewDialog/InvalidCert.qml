@@ -27,13 +27,13 @@ Column {
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("This VPN is not safe to use.")
+        text: i18n.dtr("ubuntu-settings-components", "This VPN is not safe to use.")
     }
 
     Label {
         wrapMode: Text.WordWrap
         anchors { left: parent.left; right: parent.right; }
-        text: i18n.tr("The server certificate is not valid. The VPN provider may be being impersonated.")
+        text: i18n.dtr("ubuntu-settings-components", "The server certificate is not valid. The VPN provider may be being impersonated.")
     }
 
     Label {
@@ -43,24 +43,24 @@ Column {
         visible: error
         text: {
             // TRANSLATORS: %1 is a reason for why a VPN certificate was invalid.
-            var detailsLabel = i18n.tr("Details: %1");
+            var detailsLabel = i18n.dtr("ubuntu-settings-components", "Details: %1");
             var errorMsg;
 
             switch(error) {
             case UbuntuSettingsVpn.CERT_NOT_FOUND:
-                errorMsg = i18n.tr("The certificate was not found.");
+                errorMsg = i18n.dtr("ubuntu-settings-components", "The certificate was not found.");
                 break;
             case UbuntuSettingsVpn.CERT_EMPTY:
-                errorMsg = i18n.tr("The certificate is empty.");
+                errorMsg = i18n.dtr("ubuntu-settings-components", "The certificate is empty.");
                 break;
             case UbuntuSettingsVpn.CERT_SELFSIGNED:
-                errorMsg = i18n.tr("The certificate is self signed.");
+                errorMsg = i18n.dtr("ubuntu-settings-components", "The certificate is self signed.");
                 break;
             case UbuntuSettingsVpn.CERT_EXPIRED:
-                errorMsg = i18n.tr("The certificate has expired.");
+                errorMsg = i18n.dtr("ubuntu-settings-components", "The certificate has expired.");
                 break;
             case UbuntuSettingsVpn.CERT_BLACKLISTED:
-                errorMsg = i18n.tr("The certificate is blacklisted.");
+                errorMsg = i18n.dtr("ubuntu-settings-components", "The certificate is blacklisted.");
                 break;
             }
             return errorMsg ? detailsLabel.arg(errorMsg) : "";

@@ -158,7 +158,7 @@ Dialog {
             Button {
                 objectName: "vpnFileCancel"
                 Layout.fillWidth: true
-                text: i18n.tr("Cancel")
+                text: i18n.dtr("ubuntu-settings-components", "Cancel")
                 onClicked: rejectFunc()
                 color: UbuntuColors.red
             }
@@ -167,7 +167,7 @@ Dialog {
                 objectName: "vpnFileAccept"
                 Layout.fillWidth: true
                 enabled: currentFilePath !== ""
-                text: i18n.tr("Accept")
+                text: i18n.dtr("ubuntu-settings-components", "Accept")
                 onClicked: acceptFunc()
                 color: UbuntuColors.green
             }
