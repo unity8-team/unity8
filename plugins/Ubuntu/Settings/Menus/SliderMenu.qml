@@ -16,9 +16,9 @@
  * Authored by Andrea Cimitan <andrea.cimitan@canonical.com>
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import Ubuntu.Components 1.3
-import Ubuntu.Components.ListItems 1.0 as ListItem
+import Ubuntu.Components.ListItems 1.3 as ListItem
 
 ListItem.Empty {
     id: menu
@@ -133,7 +133,7 @@ ListItem.Empty {
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: theme.palette.selected.backgroundText
+                color: theme.palette.normal.backgroundText
 
                 MouseArea {
                     anchors.fill: parent
@@ -189,7 +189,7 @@ ListItem.Empty {
                 anchors.verticalCenter: row.verticalCenter
                 height: slider.height - units.gu(2)
                 width: height
-                color: theme.palette.selected.backgroundText
+                color: theme.palette.normal.backgroundText
 
                 MouseArea {
                     anchors.fill: parent
