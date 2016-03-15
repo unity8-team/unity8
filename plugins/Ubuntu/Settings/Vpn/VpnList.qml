@@ -48,8 +48,8 @@ ListView {
                 id: vpnSwitch
                 objectName: "vpnSwitch"
                 enabled: activatable
-                checked: active
-                onTriggered: active = checked
+                Binding {target: vpnSwitch; property: "checked"; value: active}
+                onTriggered: active = !active
             }
         }
 
