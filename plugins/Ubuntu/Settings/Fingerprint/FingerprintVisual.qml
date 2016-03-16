@@ -12,24 +12,14 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Authored by Jonas G. Drange <jonas.drange@canonical.com>
  */
 
 import QtQuick 2.4
-import Ubuntu.Components 1.3
-import Ubuntu.Settings.Components 0.1
-import Ubuntu.Settings.Fingerprint 0.1
 
-MainView {
-    width: units.gu(50)
-    height: units.gu(90)
-    PageStack {
-        id: pageStack
-        Component.onCompleted: push(fingerprint)
-
-        Fingerprint {
-            id: fingerprint
-        }
-    }
+Image {
+    anchors.fill: parent
+    asynchronous: true
+    fillMode: Image.Pad
+    sourceSize.width: parent.width
+    sourceSize.height: parent.height
 }

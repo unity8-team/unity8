@@ -147,7 +147,7 @@ Page {
 
                 Button {
                     text: i18n.dtr("ubuntu-settings-components", "Add Fingerprint…")
-                    onClicked: pageStack.push(addFingerprint)
+                    onClicked: pageStack.push(setup)
                 }
 
                 Button {
@@ -182,7 +182,7 @@ Page {
     }
 
 
-    AddFingerprint {
-        id: addFingerprint
+    Setup {
+        id: setup
     }
 }
