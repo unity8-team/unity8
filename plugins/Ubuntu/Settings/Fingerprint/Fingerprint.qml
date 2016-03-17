@@ -28,7 +28,10 @@ Page {
     signal requestPasscode()
 
     property bool passcodeSet: false
-    property int fingerprintCount: 0
+
+    // Will be replaced by the plugin proper
+    property var plugin
+
 
     states: [
         State {
@@ -57,7 +60,7 @@ Page {
                             Flickable.StopAtBounds
 
         Column {
-            spacing: units.gu(1)
+            spacing: units.gu(3)
             anchors {
                 left: parent.left
                 right: parent.right
@@ -84,9 +87,13 @@ Page {
             Column {
                 id: setupFingerprint
                 anchors { left: parent.left; right: parent.right }
+                spacing: units.gu(1)
                 property bool enabled: true
+                property int count: plugin.fingerprintCount
 
                 Label {
+                    enabled: parent.enabled
+
                     // TRANSLATORS: As in "One fingerprint registered"
                     property string one: i18n.dtr("ubuntu-settings-components", "One")
                     // TRANSLATORS: As in "Two fingerprints registered"
@@ -132,27 +139,28 @@ Page {
                     }
 
                     text: {
-                        var fpc = fingerprintCount;
-
-                        if (fpc == 0) {
+                        var count = parent.count;
+                        if (count == 0) {
                             return i18n.dtr("ubuntu-settings-components", "No fingerprints registered.");
                         } else {
                             // TRANSLATORS: %1 is the number of fingerprints registered.
                             return i18n.dtr("ubuntu-settings-components", "%1 fingerprint registered.",
                                            "%1 fingerprints registered.",
-                                           fpc).arg(getNaturalNumber(fpc));
+                                           count).arg(getNaturalNumber(count));
                         }
                     }
                 }
 
                 Button {
                     text: i18n.dtr("ubuntu-settings-components", "Add Fingerprint…")
-                    onClicked: pageStack.push(setup)
+                    onClicked: pageStack.push(Qt.resolvedUrl("Setup.qml"), {plugin: plugin})
+                    enabled: parent.enabled
                 }
 
                 Button {
                     text: i18n.dtr("ubuntu-settings-components", "Remove All…")
                     onClicked: PopupUtils.open(removeAllAlert)
+                    enabled: parent.enabled && plugin.fingerprintCount
                 }
             }
         }
@@ -162,6 +170,7 @@ Page {
         id: removeAllAlert
 
         Dialog {
+            id: removeAllAlertDialog
             text: i18n.dtr("ubuntu-settings-components", "Are you sure you want to forget all stored fingerprints?")
 
             RowLayout {
@@ -171,18 +180,18 @@ Page {
                 Button {
                     text: i18n.dtr("ubuntu-settings-components", "Cancel")
                     Layout.fillWidth: true
+                    onClicked: PopupUtils.close(removeAllAlertDialog)
                 }
 
                 Button {
                     text: i18n.dtr("ubuntu-settings-components", "Remove")
                     Layout.fillWidth: true
+                    onClicked: {
+                        plugin.fingerprintCount = 0;
+                        PopupUtils.close(removeAllAlertDialog);
+                    }
                 }
             }
         }
-    }
-
-
-    Setup {
-        id: setup
     }
 }

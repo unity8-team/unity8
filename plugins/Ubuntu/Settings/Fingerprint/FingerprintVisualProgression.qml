@@ -25,15 +25,12 @@ Item {
 
     anchors.fill: parent
 
-    Image {
+    FingerprintVisual {
+        anchors.fill: undefined
         anchors.top: parent.top
         clip: true
         height: parent.height - (parent.height * enrollmentProgress)
-        fillMode: Image.Pad
         verticalAlignment: Image.AlignTop
-
-        sourceSize.width: parent.width
-        sourceSize.height: parent.height
         source: root.source
 
         Behavior on height {
@@ -41,15 +38,13 @@ Item {
         }
     }
 
-    Image {
+    FingerprintVisual {
+        anchors.fill: undefined
         anchors.bottom: parent.bottom
         clip: true
         height: parent.height * enrollmentProgress
-        fillMode: Image.Pad
         verticalAlignment: Image.AlignBottom
 
-        sourceSize.width: parent.width
-        sourceSize.height: parent.height
         source: root.source
 
         ColorOverlay {

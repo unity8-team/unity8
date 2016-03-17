@@ -22,28 +22,40 @@ import Ubuntu.Components 1.3
 Page {
     id: root
 
+    property var plugin
+
+    Connections {
+        target: plugin
+
+        onEnrollmentStopped: root.state = ""
+        onEnrollmentStarted: root.state = "reading"
+        onEnrollmentInterrupted: root.state = "longer"
+        onEnrollmentCompleted: root.state = "done"
+        onEnrollmentFailed: root.state = "failed"
+    }
+
     states: [
         State {
-            name: "reading"
-            PropertyChanges {
-                target: imageDefault
-                opacity: 1
+            name: ""
+            StateChangeScript {
+                script: statusLabel.setText(statusLabel.initialText)
             }
+        },
+        State {
+            name: "reading"
+            StateChangeScript {
+                script: statusLabel.setText(
+                    i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.")
+                )
+            }
+
         },
         State {
             name: "longer"
-            extend: "reading"
-            PropertyChanges {
-                target: statusLabel
-                text: i18n.dtr("ubuntu-settings-components", "Keep your finger on the button for longer.")
-            }
-        },
-        State {
-            name: "again"
-            extend: "reading"
-            PropertyChanges {
-                target: statusLabel
-                text: i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.")
+            StateChangeScript {
+                script: statusLabel.setText(
+                    i18n.dtr("ubuntu-settings-components", "Keep your finger on the button for longer.")
+                )
             }
         },
         State {
@@ -56,13 +68,14 @@ Page {
                 target: imageFailed
                 visible: true
             }
-            PropertyChanges {
-                target: statusLabel
-                text: i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.")
+            StateChangeScript {
+                script: statusLabel.setText(
+                    i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.")
+                )
             }
         },
         State {
-            name: "ok"
+            name: "done"
             PropertyChanges {
                 target: imageDefault
                 visible: false
@@ -71,9 +84,10 @@ Page {
                 target: imageDone
                 visible: true
             }
-            PropertyChanges {
-                target: statusLabel
-                text: i18n.dtr("ubuntu-settings-components", "All done!")
+            StateChangeScript {
+                script: statusLabel.setText(
+                    i18n.dtr("ubuntu-settings-components", "All done!")
+                )
             }
             PropertyChanges {
                 target: doneButton
@@ -82,7 +96,6 @@ Page {
         }
     ]
 
-    // state: "ok"
     header: PageHeader {
         leadingActionBar.actions: []
         visible: false
@@ -129,12 +142,14 @@ Page {
                     id: imageContainer
                     anchors.centerIn: parent
                     width: units.gu(16)
+
+                    // 1.227 preserves the aspect ratio of the svg file
                     height: width * 1.227
 
                     // Default image.
                     FingerprintVisualProgression {
                         id: imageDefault
-                        enrollmentProgress: 0
+                        enrollmentProgress: plugin.enrollmentProgress
                         opacity: 1
                         source: "fingerprint_nomask.svg"
                     }
@@ -156,39 +171,9 @@ Page {
             }
         }
 
-        // Column {
-        //     Button {
-        //         text: "READY"
-        //         onClicked: root.state = ""
-        //     }
-        //     Button {
-        //         text: "0%"
-        //         onClicked: imageDefault.enrollmentProgress = 0
-        //     }
-        //     Button {
-        //         text: "25%"
-        //         onClicked: imageDefault.enrollmentProgress = 0.25
-        //     }
-        //     Button {
-        //         text: "50%"
-        //         onClicked: imageDefault.enrollmentProgress = 0.5
-        //     }
-        //     Button {
-        //         text: "75%"
-        //         onClicked: imageDefault.enrollmentProgress = 0.75
-        //     }
-        //     Button {
-        //         text: "100%"
-        //         onClicked: imageDefault.enrollmentProgress = 1
-        //     }
-        //     Button {
-        //         text: "DONE"
-        //         onClicked: root.state = "ok"
-        //     }
-        // }
-
-        Label {
+        StatusLabel {
             id: statusLabel
+
             anchors {
                 left: parent.left
                 leftMargin: units.gu(2.9)
@@ -197,11 +182,8 @@ Page {
                 top: parent.top
                 topMargin: units.gu(4.9)
             }
-            horizontalAlignment: Text.AlignHCenter
-            height: units.gu(4)
-            wrapMode: Text.WordWrap
-            font.pixelSize: units.gu(3.3)
-            text: i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.")
+
+            initialText: i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.")
         }
 
         Rectangle {
@@ -247,6 +229,7 @@ Page {
                         verticalCenter: parent.verticalCenter
                         right: parent.right
                     }
+                    font.bold: parent.enabled
                     text: i18n.dtr("ubuntu-settings-components", "Done")
                 }
             }

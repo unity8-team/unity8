@@ -1,12 +1,8 @@
 module Ubuntu.Settings.Fingerprint
 plugin UbuntuSettingsFingerprint
 
-# singleton DialogFileProperties 0.1 DialogFileProperties.qml
-
-internal Setup Setup.qml
 internal FingerprintVisual FingerprintVisual.qml
 internal FingerprintVisualProgression FingerprintVisualProgression.qml
+internal StatusLabel StatusLabel.qml
 
 Fingerprint 0.1 Fingerprint.qml
-# VpnEditor 0.1 VpnEditor.qml
-# VpnPreviewDialog 0.1 VpnPreviewDialog.qml
