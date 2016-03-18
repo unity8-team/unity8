@@ -32,6 +32,7 @@ StandardMenu {
 
             text: menuItem.value + " %"
             fontSize: "medium"
+            color: menuItem.foregroundColor
         }
     }
 }
