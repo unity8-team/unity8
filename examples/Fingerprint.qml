@@ -50,13 +50,16 @@ MainView {
     PageStack {
         id: pageStack
 
-        Component.onCompleted: push(fingerprint)
+        Component.onCompleted: push(fingerprintPage, {
+            plugin: p
+        })
 
         // Example plugin
         QtObject {
             id: p
             property var enrollmentProgress
             property int fingerprintCount: 0
+            property bool passcodeSet: false
 
             signal enrollmentStopped()
             signal enrollmentStarted()
@@ -65,10 +68,9 @@ MainView {
             signal enrollmentFailed()
         }
 
-        Fingerprint {
-            id: fingerprint
-            plugin: p
-            passcodeSet: false
+        Component {
+            id: fingerprintPage
+            Fingerprint {}
         }
     }
 
@@ -158,7 +160,7 @@ MainView {
                 ListItems.Standard {
                     text: "Toggle passcode"
                     onClicked: {
-                        fingerprint.passcodeSet = !fingerprint.passcodeSet;
+                        p.passcodeSet = !p.passcodeSet;
                         PopupUtils.close(toolsDiag);
                     }
                 }

@@ -27,7 +27,7 @@ Page {
     // passcode.
     signal requestPasscode()
 
-    property bool passcodeSet: false
+    property bool passSet: false
 
     // Will be replaced by the plugin proper
     property var plugin
@@ -44,7 +44,7 @@ Page {
                 target: setupFingerprint
                 enabled: false
             }
-            when: !root.passcodeSet
+            when: !root.passSet
         }
     ]
 
