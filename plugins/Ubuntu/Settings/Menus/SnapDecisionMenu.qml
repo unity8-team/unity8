@@ -18,7 +18,7 @@
  *      Olivier Tilloy <olivier.tilloy@canonical.com>
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Ubuntu.Settings.Components 0.1 as USC
 import QtQuick.Layouts 1.1
@@ -68,7 +68,7 @@ SimpleMessageMenu {
                     objectName: "actionButton"
                     enabled: menu.actionEnabled
                     text: actionButtonText
-                    color: UbuntuColors.green
+                    color: enabled ? theme.palette.normal.positive : theme.palette.disabled.positive
                     Layout.fillWidth: true
 
                     onClicked: {

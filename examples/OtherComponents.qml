@@ -16,7 +16,7 @@
  * Authored by Andrea Cimitan <andrea.cimitan@canonical.com>
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Ubuntu.Settings.Components 0.1
 import Ubuntu.Settings.Menus 0.1
@@ -162,6 +162,28 @@ Item {
                 text: "Access Point"
 
                 onTriggered: active = !active
+            }
+
+            AccessPointMenu {
+                active: false
+                secure: true
+                adHoc: true
+                signalStrength: 50
+                text: "Access Point"
+
+                onTriggered: active = !active
+            }
+
+            AccessPointMenu {
+                text: "Access Point"
+                onTriggered: active = !active
+            }
+
+            ModemInfoItem {
+                statusText: "EE 4G"
+                statusIcon: "gsm-3g-full"
+                roaming: true
+                locked: false
             }
 
             GroupedMessageMenu {

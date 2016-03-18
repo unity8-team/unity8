@@ -16,7 +16,7 @@
  * Authored by Andrea Cimitan <andrea.cimitan@canonical.com>
  */
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1

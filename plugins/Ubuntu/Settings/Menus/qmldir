@@ -9,6 +9,7 @@ CheckableMenu 0.1 CheckableMenu.qml
 EventMenu 0.1 EventMenu.qml
 GroupedMessageMenu 0.1 GroupedMessageMenu.qml
 MediaPlayerMenu 0.1 MediaPlayerMenu.qml
+ModemInfoItem 0.1 ModemInfoItem.qml
 PlaybackItemMenu 0.1 PlaybackItemMenu.qml
 ProgressBarMenu 0.1 ProgressBarMenu.qml
 ProgressValueMenu 0.1 ProgressValueMenu.qml
