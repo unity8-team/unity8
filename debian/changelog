@@ -1,3 +1,14 @@
+ubuntu-settings-components (0.7+16.04.20160318-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk. added: po/id.po
+
+  [ Michael Zanetti ]
+  * Align the progress label color to the main entry label color (LP:
+    #1554616)
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Fri, 18 Mar 2016 12:25:35 +0000
+
 ubuntu-settings-components (0.7+16.04.20160315-0ubuntu1) xenial; urgency=medium
 
   [ jonas-drange ]
