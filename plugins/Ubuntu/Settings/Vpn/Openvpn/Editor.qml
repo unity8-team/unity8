@@ -338,8 +338,8 @@ Column {
         objectName: "vpnOpenvpnTaDirSelector"
         model: [
             i18n.dtr("ubuntu-settings-components", "None"),
-            i18n.dtr("ubuntu-settings-components", "0"),
-            i18n.dtr("ubuntu-settings-components", "1"),
+            0,
+            1,
         ]
         selectedIndex: connection.taDir
         visible: taSetToggle.checked
@@ -390,22 +390,22 @@ Column {
         objectName: "vpnOpenvpnCipherSelector"
         model: [
             i18n.dtr("ubuntu-settings-components", "Default"),
-            i18n.dtr("ubuntu-settings-components", "DES-CBC"),
-            i18n.dtr("ubuntu-settings-components", "RC2-CBC"),
-            i18n.dtr("ubuntu-settings-components", "DES-EDE-CBC"),
-            i18n.dtr("ubuntu-settings-components", "DES-EDE3-CBC"),
-            i18n.dtr("ubuntu-settings-components", "DESX-CBC"),
-            i18n.dtr("ubuntu-settings-components", "RC2-40-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAST5-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-128-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-192-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-256-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAMELLIA-128-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAMELLIA-192-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAMELLIA-256-CBC"),
-            i18n.dtr("ubuntu-settings-components", "SEED-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-128-CBC-HMAC-SHA1"),
-            i18n.dtr("ubuntu-settings-components", "AES-256-CBC-HMAC-SHA1"),
+            "DES-CBC",
+            "RC2-CBC",
+            "DES-EDE-CBC",
+            "DES-EDE3-CBC",
+            "DESX-CBC",
+            "RC2-40-CBC",
+            "CAST5-CBC",
+            "AES-128-CBC",
+            "AES-192-CBC",
+            "AES-256-CBC",
+            "CAMELLIA-128-CBC",
+            "CAMELLIA-192-CBC",
+            "CAMELLIA-256-CBC",
+            "SEED-CBC",
+            "AES-128-CBC-HMAC-SHA1",
+            "AES-256-CBC-HMAC-SHA1",
         ]
         selectedIndex: connection.cipher
     }
