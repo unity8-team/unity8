@@ -1,4 +1,4 @@
-# Polish translation for ubuntu-settings-components
+# Interlingua translation for ubuntu-settings-components
 # Copyright (c) 2016 Rosetta Contributors and Canonical Ltd 2016
 # This file is distributed under the same license as the ubuntu-settings-components package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-02-11 11:25+0000\n"
-"PO-Revision-Date: 2016-03-18 07:49+0000\n"
-"Last-Translator: Michał Sawicz <michal.sawicz@canonical.com>\n"
-"Language-Team: Polish <pl@li.org>\n"
+"PO-Revision-Date: 2016-03-19 23:42+0000\n"
+"Last-Translator: karm <melo@carmu.com>\n"
+"Language-Team: Interlingua <ia@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-03-19 05:56+0000\n"
+"X-Launchpad-Export-Date: 2016-03-21 06:03+0000\n"
 "X-Generator: Launchpad (build 17947)\n"
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
-msgstr "Szybka odpowiedź przez:"
+msgstr "Responsa rapide con:"
 
 #: plugins/Ubuntu/Settings/Menus/CalendarMenu.qml:57
 #, qt-format
@@ -33,17 +33,17 @@ msgstr "Roaming"
 
 #: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:122
 msgid "Unlock SIM"
-msgstr "Odblokuj kartę SIM"
+msgstr "Disblocar le SIM"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:30
 msgid "Call back"
-msgstr "Oddzwoń"
+msgstr "Appellar retro"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:33
 #: plugins/Ubuntu/Settings/Menus/TextMessageMenu.qml:29
 msgid "Send"
-msgstr "Wyślij"
+msgstr "Mandar"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:58
 msgid "Message"
-msgstr "Wiadomość"
+msgstr "Message"
