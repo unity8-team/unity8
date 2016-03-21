@@ -207,7 +207,7 @@ Column {
 
         Label {
             id: tcpLabel
-            text: i18n.dtr("ubuntu-settings-components", "TCP")
+            text: "TCP"
         }
 
         CheckBox {
@@ -217,7 +217,7 @@ Column {
         }
 
         Label {
-            text: i18n.dtr("ubuntu-settings-components", "UDP")
+            text: "UDP"
         }
 
         CheckBox {

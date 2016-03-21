@@ -43,8 +43,8 @@ RowLayout {
         objectName: "vpnTypeField"
         enabled: parent.enabled
         model: [
-            i18n.dtr("ubuntu-settings-components", "OpenVPN"),
-            i18n.dtr("ubuntu-settings-components", "Pptp")
+            "OpenVPN",
+            "Pptp"
         ]
         expanded: false
         onDelegateClicked: typeRequested(index)
