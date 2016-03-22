@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Canonical, Ltd.
+ * Copyright (C) 2013-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,8 @@
 #include "plugin.h"
 #include "ApplicationInfo.h"
 #include "ApplicationManager.h"
-#include "ApplicationScreenshotProvider.h"
-#include "Session.h"
 #include "MirSurfaceItem.h"
 #include "SurfaceManager.h"
-#include "SessionManager.h"
-#include "ApplicationTestInterface.h"
 #include "UbuntuKeyboardInfo.h"
 
 // unity-api
@@ -43,50 +39,34 @@ static QObject* surfaceManagerSingleton(QQmlEngine* engine, QJSEngine* scriptEng
     return SurfaceManager::singleton();
 }
 
-static QObject* sessionManagerSingleton(QQmlEngine* engine, QJSEngine* scriptEngine) {
-    Q_UNUSED(engine);
-    Q_UNUSED(scriptEngine);
-    return SessionManager::singleton();
-}
-
 static QObject* ubuntuKeyboardInfoSingleton(QQmlEngine*, QJSEngine*) {
     return UbuntuKeyboardInfo::singleton();
 }
 
-
-ApplicationTestInterface* s_appTestInterface = nullptr;
-
-static QObject* applicationTestInterface(QQmlEngine* engine, QJSEngine* scriptEngine) {
-    Q_UNUSED(engine);
-    Q_UNUSED(scriptEngine);
-    if (!s_appTestInterface) {
-        s_appTestInterface = new ApplicationTestInterface(engine);
-    }
-    return s_appTestInterface;
+static QObject* mirFocusControllerSingleton(QQmlEngine*, QJSEngine*)
+{
+    return MirFocusController::instance();
 }
 
 void FakeUnityApplicationQmlPlugin::registerTypes(const char *uri)
 {
-    qRegisterMetaType<Session*>("Session*");
     qRegisterMetaType<ApplicationInfo*>("ApplicationInfo*");
-    qRegisterMetaType<SessionModel*>("SessionModel*");
     qRegisterMetaType<unity::shell::application::MirSurfaceInterface*>("unity::shell::application::MirSurfaceInterface*");
+    qRegisterMetaType<unity::shell::application::MirSurfaceListInterface*>("unity::shell::application::MirSurfaceListInterface*");
     qRegisterMetaType<Mir::Type>("Mir::Type");
     qRegisterMetaType<Mir::State>("Mir::State");
 
     qmlRegisterUncreatableType<unity::shell::application::ApplicationManagerInterface>(uri, 0, 1, "ApplicationManagerInterface", "Abstract interface. Cannot be created in QML");
     qmlRegisterUncreatableType<unity::shell::application::ApplicationInfoInterface>(uri, 0, 1, "ApplicationInfoInterface", "Abstract interface. Cannot be created in QML");
-    qmlRegisterUncreatableType<Session>(uri, 0, 1, "Session", "Session can't be instantiated from QML");
     qmlRegisterUncreatableType<MirSurface>(uri, 0, 1, "MirSurface", "MirSurface can't be instantiated from QML");
     qmlRegisterUncreatableType<unity::shell::application::MirSurfaceInterface>(
                     uri, 0, 1, "MirSurface", "MirSurface can't be instantiated from QML");
+    qmlRegisterSingletonType<MirFocusController>(uri, 0, 1, "MirFocusController", mirFocusControllerSingleton);
     qmlRegisterType<MirSurfaceItem>(uri, 0, 1, "MirSurfaceItem");
     qmlRegisterType<ApplicationInfo>(uri, 0, 1, "ApplicationInfo");
 
     qmlRegisterSingletonType<ApplicationManager>(uri, 0, 1, "ApplicationManager", applicationManagerSingleton);
     qmlRegisterSingletonType<SurfaceManager>(uri, 0, 1, "SurfaceManager", surfaceManagerSingleton);
-    qmlRegisterSingletonType<SessionManager>(uri, 0, 1, "SessionManager", sessionManagerSingleton);
-    qmlRegisterSingletonType<ApplicationTestInterface>(uri, 0, 1, "ApplicationTest", applicationTestInterface);
     qmlRegisterSingletonType<UbuntuKeyboardInfo>(uri, 0, 1, "UbuntuKeyboardInfo", ubuntuKeyboardInfoSingleton);
 
     qmlRegisterUncreatableType<Mir>(uri, 0, 1, "Mir", "Mir provides enum values, it can't be instantiated");
@@ -95,8 +75,4 @@ void FakeUnityApplicationQmlPlugin::registerTypes(const char *uri)
 void FakeUnityApplicationQmlPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
-
-    engine->addImageProvider(QLatin1String("application"), new ApplicationScreenshotProvider(ApplicationManager::singleton()));
-    // make sure we initialise our test interface.
-    applicationTestInterface(engine, nullptr);
 }

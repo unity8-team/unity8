@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Canonical, Ltd.
+ * Copyright (C) 2013-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,7 @@
 
 #include "ApplicationManager.h"
 #include "ApplicationInfo.h"
-#include "Session.h"
-#include "ApplicationTestInterface.h"
+#include "MirSurface.h"
 
 #include <paths.h>
 #include <csignal>
@@ -30,6 +29,16 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QtDBus/QtDBus>
+
+#define APPLICATIONMANAGER_DEBUG 0
+
+#if APPLICATIONMANAGER_DEBUG
+#define DEBUG_MSG(params) qDebug().nospace() << "ApplicationManager::" << __func__  << " " << params
+#else
+#define DEBUG_MSG(params) ((void)0)
+#endif
+
+namespace unityapi = unity::shell::application;
 
 ApplicationManager *ApplicationManager::the_application_manager = nullptr;
 
@@ -50,9 +59,6 @@ ApplicationManager *ApplicationManager::singleton()
 ApplicationManager::ApplicationManager(QObject *parent)
     : ApplicationManagerInterface(parent)
 {
-    m_roleNames.insert(RoleSession, "session");
-    m_roleNames.insert(RoleFullscreen, "fullscreen");
-
     buildListOfAvailableApplications();
 
     // polling to find out when the toplevel window has been created as there's
@@ -61,6 +67,9 @@ ApplicationManager::ApplicationManager(QObject *parent)
             this, &ApplicationManager::onWindowCreatedTimerTimeout);
     m_windowCreatedTimer.setSingleShot(false);
     m_windowCreatedTimer.start(200);
+
+    connect(MirFocusController::instance(), &MirFocusController::focusedSurfaceChanged,
+        this, &ApplicationManager::updateFocusedApplication, Qt::QueuedConnection);
 }
 
 ApplicationManager::~ApplicationManager()
@@ -109,10 +118,8 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
         return app->isTouchApp();
     case RoleExemptFromLifecycle:
         return app->exemptFromLifecycle();
-    case RoleSession:
-        return QVariant::fromValue(app->session());
-    case RoleFullscreen:
-        return app->fullscreen();
+    case RoleApplication:
+        return QVariant::fromValue(static_cast<unityapi::ApplicationInfoInterface*>(app));
     default:
         return QVariant();
     }
@@ -144,23 +151,17 @@ QModelIndex ApplicationManager::findIndex(ApplicationInfo* application)
     return QModelIndex();
 }
 
-void ApplicationManager::add(ApplicationInfo *application) {
+bool ApplicationManager::add(ApplicationInfo *application) {
     if (!application || m_runningApplications.contains(application)) {
-        return;
+        return false;
     }
+    DEBUG_MSG(application->appId());
+
+    application->setState(ApplicationInfo::Starting);
 
     beginInsertRows(QModelIndex(), m_runningApplications.size(), m_runningApplications.size());
     m_runningApplications.append(application);
-    endInsertRows();
-    Q_EMIT applicationAdded(application->appId());
-    Q_EMIT countChanged();
-    if (count() == 1) Q_EMIT emptyChanged(isEmpty()); // was empty but not anymore
 
-    connect(application, &ApplicationInfo::sessionChanged, this, [application, this]() {
-        QModelIndex appIndex = findIndex(application);
-        if (!appIndex.isValid()) return;
-        Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleSession);
-    });
     connect(application, &ApplicationInfo::focusedChanged, this, [application, this]() {
         QModelIndex appIndex = findIndex(application);
         if (!appIndex.isValid()) return;
@@ -171,15 +172,33 @@ void ApplicationManager::add(ApplicationInfo *application) {
         if (!appIndex.isValid()) return;
         Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleState);
     });
+    connect(application, &ApplicationInfo::stageChanged, this, [application, this]() {
+        QModelIndex appIndex = findIndex(application);
+        if (!appIndex.isValid()) return;
+        Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleStage);
+    });
+
+    connect(application, &ApplicationInfo::closed, this, [application, this]() {
+        this->remove(application);
+    });
+    connect(application, &ApplicationInfo::focusRequested, this, [application, this]() {
+        Q_EMIT this->focusRequested(application->appId());
+    });
+
+    endInsertRows();
+    Q_EMIT countChanged();
+    if (count() == 1) Q_EMIT emptyChanged(isEmpty()); // was empty but not anymore
+
+    return true;
 }
 
 void ApplicationManager::remove(ApplicationInfo *application) {
     int i = m_runningApplications.indexOf(application);
     if (i != -1) {
+        DEBUG_MSG(application->appId());
         beginRemoveRows(QModelIndex(), i, i);
         m_runningApplications.removeAt(i);
         endRemoveRows();
-        Q_EMIT applicationRemoved(application->appId());
         Q_EMIT countChanged();
         if (isEmpty()) Q_EMIT emptyChanged(isEmpty());
     }
@@ -203,30 +222,29 @@ void ApplicationManager::move(int from, int to) {
 ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
                                               const QStringList &arguments)
 {
-    return startApplication(appId, NoFlag, arguments);
-}
-
-ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
-                                              ExecFlags flags,
-                                              const QStringList &arguments)
-{
+    DEBUG_MSG(appId);
     Q_UNUSED(arguments)
-    ApplicationInfo *application = add(appId);
-    if (!application)
-        return 0;
 
-    if (flags.testFlag(ApplicationManager::ForceMainStage)
-            && application->stage() == ApplicationInfo::SideStage) {
-        application->setStage(ApplicationInfo::MainStage);
+    ApplicationInfo *application = findApplication(appId);
+    if (application) {
+        // the requested app is already running
+        return application;
+    } else {
+        application = add(appId);
     }
-    application->setState(ApplicationInfo::Starting);
+
+    // most likely not among the available ones
+    if (!application)
+        return nullptr;
+
+    Q_EMIT application->focusRequested(); // we assume that an application that's starting up wants focus
 
     return application;
 }
 
 ApplicationInfo* ApplicationManager::add(QString appId)
 {
-    ApplicationInfo *application = 0;
+    ApplicationInfo *application = nullptr;
 
     for (ApplicationInfo *availableApp : m_availableApplications) {
         if (availableApp->appId() == appId) {
@@ -235,14 +253,18 @@ ApplicationInfo* ApplicationManager::add(QString appId)
         }
     }
 
-    if (application)
-        add(application);
+    if (application) {
+        if (!add(application)) {
+            application = nullptr;
+        }
+    }
 
     return application;
 }
 
 bool ApplicationManager::stopApplication(const QString &appId)
 {
+    DEBUG_MSG(appId);
     ApplicationInfo *application = findApplication(appId);
     if (application == nullptr)
         return false;
@@ -250,8 +272,7 @@ bool ApplicationManager::stopApplication(const QString &appId)
     if (application->appId() == focusedApplicationId()) {
         unfocusCurrentApplication();
     }
-    application->setState(ApplicationInfo::Stopped);
-    remove(application);
+    application->close();
     return true;
 }
 
@@ -270,25 +291,23 @@ bool ApplicationManager::focusApplication(const QString &appId)
     if (application == nullptr)
         return false;
 
-    // unfocus currently focused app
-    for (ApplicationInfo *app : m_runningApplications) {
-        if (app->focused()) {
-            app->setFocused(false);
-        }
-    }
-
-    // focus this app
     application->setFocused(true);
 
-    // move app to top of stack
-    move(m_runningApplications.indexOf(application), 0);
-    Q_EMIT focusedApplicationIdChanged();
     return true;
 }
 
 bool ApplicationManager::requestFocusApplication(const QString &appId)
 {
-    QMetaObject::invokeMethod(this, "focusRequested", Qt::QueuedConnection, Q_ARG(QString, appId));
+    ApplicationInfo *application = findApplication(appId);
+    if (application == nullptr)
+        return false;
+
+    auto surfaceList = static_cast<MirSurfaceListModel*>(application->surfaceList());
+    if (surfaceList->count() == 0)
+        return false;
+
+    surfaceList->get(0)->requestFocus();
+
     return true;
 }
 
@@ -299,7 +318,6 @@ void ApplicationManager::unfocusCurrentApplication()
             app->setFocused(false);
         }
     }
-    Q_EMIT focusedApplicationIdChanged();
 }
 
 void ApplicationManager::buildListOfAvailableApplications()
@@ -317,7 +335,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setAppId("unity8-dash");
     application->setName("Unity 8 Mock Dash");
     application->setScreenshotId("unity8-dash");
-    application->setStage(ApplicationInfo::MainStage);
     application->setSupportedOrientations(Qt::PrimaryOrientation);
     m_availableApplications.append(application);
 
@@ -326,7 +343,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Dialer");
     application->setScreenshotId("dialer");
     application->setIconId("dialer-app");
-    application->setStage(ApplicationInfo::SideStage);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::InvertedPortraitOrientation);
     m_availableApplications.append(application);
@@ -336,6 +352,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Camera");
     application->setScreenshotId("camera");
     application->setIconId("camera");
+    application->setShellChrome(Mir::LowChrome);
     application->setFullscreen(true);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::LandscapeOrientation
@@ -349,7 +366,7 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Gallery");
     application->setScreenshotId("gallery");
     application->setIconId("gallery");
-    application->setFullscreen(true);
+    application->setShellChrome(Mir::LowChrome);
     application->setStage(ApplicationInfo::MainStage);
     m_availableApplications.append(application);
 
@@ -358,12 +375,11 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Facebook");
     application->setScreenshotId("facebook");
     application->setIconId("facebook");
-    application->setStage(ApplicationInfo::SideStage);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("webbrowser-app");
-    application->setFullscreen(true);
+    application->setShellChrome(Mir::LowChrome);
     application->setName("Browser");
     application->setScreenshotId("browser");
     application->setIconId("browser");
@@ -374,7 +390,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Twitter");
     application->setScreenshotId("twitter");
     application->setIconId("twitter");
-    application->setStage(ApplicationInfo::SideStage);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
@@ -389,7 +404,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("GMail");
     application->setIconId("gmail");
     application->setScreenshotId("gmail-webapp.svg");
-    application->setFullscreen(false);
     application->setStage(ApplicationInfo::MainStage);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::LandscapeOrientation
@@ -402,7 +416,6 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setName("Music");
     application->setIconId("soundcloud");
     application->setScreenshotId("music");
-    application->setFullscreen(false);
     application->setStage(ApplicationInfo::MainStage);
     application->setSupportedOrientations(Qt::PortraitOrientation
                                         | Qt::LandscapeOrientation
@@ -423,14 +436,12 @@ void ApplicationManager::buildListOfAvailableApplications()
     application->setAppId("notes-app");
     application->setName("Notepad");
     application->setIconId("notepad");
-    application->setStage(ApplicationInfo::SideStage);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
     application->setAppId("calendar-app");
     application->setName("Calendar");
     application->setIconId("calendar");
-    application->setStage(ApplicationInfo::SideStage);
     m_availableApplications.append(application);
 
     application = new ApplicationInfo(this);
@@ -485,4 +496,44 @@ QStringList ApplicationManager::availableApplications()
 bool ApplicationManager::isEmpty() const
 {
     return m_runningApplications.isEmpty();
+}
+
+void ApplicationManager::updateFocusedApplication()
+{
+    ApplicationInfo *focusedApplication = nullptr;
+    ApplicationInfo *previouslyFocusedApplication = nullptr;
+
+    MirSurface *surface = static_cast<MirSurface*>(MirFocusController::instance()->focusedSurface());
+    if (surface) {
+        focusedApplication = findApplication(surface);
+    }
+
+    surface = static_cast<MirSurface*>(MirFocusController::instance()->previouslyFocusedSurface());
+    if (surface) {
+        previouslyFocusedApplication = findApplication(surface);
+    }
+
+    if (focusedApplication != previouslyFocusedApplication) {
+        if (focusedApplication) {
+            DEBUG_MSG("focused " << focusedApplication->appId());
+            Q_EMIT focusedApplication->focusedChanged(true);
+            this->move(this->m_runningApplications.indexOf(focusedApplication), 0);
+        }
+        if (previouslyFocusedApplication) {
+            DEBUG_MSG("unfocused " << previouslyFocusedApplication->appId());
+            Q_EMIT previouslyFocusedApplication->focusedChanged(false);
+        }
+        Q_EMIT focusedApplicationIdChanged();
+    }
+}
+
+ApplicationInfo *ApplicationManager::findApplication(MirSurface* surface)
+{
+    for (ApplicationInfo *app : m_runningApplications) {
+        auto surfaceList = static_cast<MirSurfaceListModel*>(app->surfaceList());
+        if (surfaceList->contains(surface)) {
+            return app;
+        }
+    }
+    return nullptr;
 }
