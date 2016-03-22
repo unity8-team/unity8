@@ -87,6 +87,8 @@ LocalComponents.Page {
             }
 
             resetViews();
+            tzFilterModel.filter = Qt.binding(function() { return searchField.text; });
+            tzFilterModel.invalidate();
             searchField.forceActiveFocus();
         }
     }
@@ -188,20 +190,8 @@ LocalComponents.Page {
             anchors.left: parent.left
             anchors.right: parent.right
             currentIndex: -1
-            model: TimeZoneModel {
-                id: timeZoneModel
-                filter: searchField.text
-                country: i18n.language.split('_')[1].split('.')[0]
-            }
+            model: tzFilterModel
             delegate: tzComponent
-        }
-
-        ActivityIndicator {
-            anchors.centerIn: tzList
-            running: tzList.count == 0 &&
-                     searchField.length > 0 &&
-                     timeZoneModel.listUpdating
-            visible: running
         }
     }
 

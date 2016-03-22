@@ -18,15 +18,17 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <timezonemap/tz.h>
 
 #include "LocalePlugin.h"
 #include "timezonemodel.h"
 
 TimeZoneLocationModel::TimeZoneLocationModel(QObject *parent):
     QAbstractListModel(parent),
-    m_listUpdating(false),
-    m_cancellable(nullptr)
+    m_workerThread(new TimeZonePopulateWorker())
 {
+    qRegisterMetaType<TzLocationWizard>();
+
     m_roleNames[Qt::DisplayRole] = "displayName";
     m_roleNames[TimeZoneRole] = "timeZone";
     m_roleNames[CityRole] = "city";
@@ -34,52 +36,78 @@ TimeZoneLocationModel::TimeZoneLocationModel(QObject *parent):
     m_roleNames[OffsetRole] = "offset";
     m_roleNames[LatitudeRole] = "latitude";
     m_roleNames[LongitudeRole] = "longitude";
+
+    QObject::connect(m_workerThread,
+                     &TimeZonePopulateWorker::resultReady,
+                     this,
+                     &TimeZoneLocationModel::processModelResult);
+    QObject::connect(m_workerThread,
+                     &TimeZonePopulateWorker::finished,
+                     this,
+                     &TimeZoneLocationModel::store);
+    QObject::connect(m_workerThread,
+                     &TimeZonePopulateWorker::finished,
+                     m_workerThread,
+                     &QObject::deleteLater);
+
+    init();
+}
+
+void TimeZoneLocationModel::init()
+{
+    beginResetModel();
+    m_workerThread->start();
+}
+
+void TimeZoneLocationModel::store()
+{
+    m_workerThread = nullptr;
+    endResetModel();
+}
+
+void TimeZoneLocationModel::processModelResult(const TzLocationWizard &location)
+{
+    m_locations.append(location);
 }
 
 int TimeZoneLocationModel::rowCount(const QModelIndex &parent) const
 {
-    if (parent.isValid()) {
+    if (parent.isValid())
         return 0;
-    } else if (m_filter.isEmpty()) {
-        return m_countryLocations.count();
-    } else {
-        return m_locations.count();
-    }
+    return m_locations.count();
 }
 
 QVariant TimeZoneLocationModel::data(const QModelIndex &index, int role) const
 {
-    GeonamesCity *city;
-    if (m_filter.isEmpty()) {
-        city = m_countryLocations.value(index.row());
-    } else {
-        city = m_locations.value(index.row());
-    }
-    if (!city)
+    if (index.row() >= m_locations.count() || index.row() < 0)
         return QVariant();
+
+    const TzLocationWizard tz = m_locations.at(index.row());
+
+    const QString country(tz.full_country.isEmpty() ? tz.country : tz.full_country);
 
     switch (role) {
     case Qt::DisplayRole:
-        return QStringLiteral("%1, %2, %3").arg(geonames_city_get_name(city))
-                                           .arg(geonames_city_get_state(city))
-                                           .arg(geonames_city_get_country(city));
+        if (!tz.state.isEmpty())
+            return QStringLiteral("%1, %2, %3").arg(tz.city).arg(tz.state).arg(country);
+        else
+            return QStringLiteral("%1, %2").arg(tz.city).arg(country);
     case SimpleRole:
-        return QStringLiteral("%1, %2").arg(geonames_city_get_name(city))
-                                       .arg(geonames_city_get_country(city));
+        return QStringLiteral("%1, %2").arg(tz.city).arg(country);
     case TimeZoneRole:
-        return geonames_city_get_timezone(city);
+        return tz.timezone;
     case CountryRole:
-        return geonames_city_get_country(city);
+        return tz.country;
     case CityRole:
-        return geonames_city_get_name(city);
+        return tz.city;
     case OffsetRole: {
-        QTimeZone tmp(geonames_city_get_timezone(city));
+        QTimeZone tmp(tz.timezone.toLatin1());
         return static_cast<double>(tmp.standardTimeOffset(QDateTime::currentDateTime())) / 3600;
     }
     case LatitudeRole:
-        return geonames_city_get_latitude(city);
+        return tz.latitude;
     case LongitudeRole:
-        return geonames_city_get_longitude(city);
+        return tz.longitude;
     default:
         qWarning() << Q_FUNC_INFO << "Unknown role";
         return QVariant();
@@ -91,154 +119,110 @@ QHash<int, QByteArray> TimeZoneLocationModel::roleNames() const
     return m_roleNames;
 }
 
-void TimeZoneLocationModel::setModel(const QList<GeonamesCity *> &locations)
+void TimeZonePopulateWorker::run()
 {
-    beginResetModel();
-
-    Q_FOREACH(GeonamesCity *city, m_locations) {
-        geonames_city_free(city);
-    }
-
-    m_locations = locations;
-    endResetModel();
+    buildCityMap();
 }
 
-void TimeZoneLocationModel::filterFinished(GObject      *source_object,
-                                           GAsyncResult *res,
-                                           gpointer      user_data)
+void TimeZonePopulateWorker::buildCityMap()
 {
-    Q_UNUSED(source_object);
+    TzDB *tzdb = tz_load_db();
+    GPtrArray *tz_locations = tz_get_locations(tzdb);
 
-    g_autofree gint *cities = nullptr;
-    guint cities_len = 0;
-    g_autoptr(GError) error = nullptr;
+    TimeZoneLocationModel::TzLocationWizard tmpTz;
 
-    cities = geonames_query_cities_finish(res, &cities_len, &error);
-    if (error) {
-        if (!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-            TimeZoneLocationModel *model = static_cast<TimeZoneLocationModel *>(user_data);
-            g_clear_object(&model->m_cancellable);
-            model->setListUpdating(false);
-            qWarning() << "Could not filter timezones:" << error->message;
+    for (guint i = 0; i < tz_locations->len; ++i) {
+        auto tmp = static_cast<CcTimezoneLocation *>(g_ptr_array_index(tz_locations, i));
+        gchar *en_name, *country, *zone, *state, *full_country;
+        gdouble latitude;
+        gdouble longitude;
+        g_object_get (tmp, "en_name", &en_name,
+                      "country", &country,
+                      "zone", &zone,
+                      "state", &state,
+                      "full_country", &full_country,
+                      "latitude", &latitude,
+                      "longitude", &longitude,
+                      nullptr);
+        // There are empty entries in the DB
+        if (g_strcmp0(en_name, "") != 0) {
+            tmpTz.city = en_name;
+            tmpTz.country = country;
+            tmpTz.timezone = zone;
+            tmpTz.state = state;
+            tmpTz.full_country = full_country;
+            tmpTz.latitude = latitude;
+            tmpTz.longitude = longitude;
+
+            Q_EMIT (resultReady(tmpTz));
         }
-        return;
+        g_free (en_name);
+        g_free (country);
+        g_free (zone);
+        g_free (state);
+        g_free (full_country);
     }
 
-    QList<GeonamesCity *> locations;
+    g_ptr_array_free (tz_locations, TRUE);
+    tz_db_free(tzdb);
+}
 
-    for (guint i = 0; i < cities_len; ++i) {
-        GeonamesCity *city = geonames_get_city(cities[i]);
-        if (city) {
-            locations.append(city);
+
+TimeZoneFilterModel::TimeZoneFilterModel(QObject *parent)
+    : QSortFilterProxyModel(parent)
+{
+    setDynamicSortFilter(false);
+    setSortLocaleAware(true);
+    setSortRole(TimeZoneLocationModel::CityRole);
+    m_stringMatcher.setCaseSensitivity(Qt::CaseInsensitive);
+    sort(0);
+}
+
+bool TimeZoneFilterModel::filterAcceptsRow(int row, const QModelIndex &parentIndex) const
+{
+    if (!sourceModel()) {
+        return true;
+    }
+
+    if (!m_filter.isEmpty()) { // filtering by freeform text input, cf setFilter(QString)
+        const QString city = sourceModel()->index(row, 0, parentIndex).data(TimeZoneLocationModel::CityRole).toString();
+
+        if (m_stringMatcher.indexIn(city) == 0) { // match at the beginning of the city name
+            return true;
         }
+    } else if (!m_country.isEmpty()) { // filter by country code
+        const QString countryCode = sourceModel()->index(row, 0, parentIndex).data(TimeZoneLocationModel::CountryRole).toString();
+        return m_country.compare(countryCode, Qt::CaseInsensitive) == 0;
     }
 
-    TimeZoneLocationModel *model = static_cast<TimeZoneLocationModel *>(user_data);
-
-    g_clear_object(&model->m_cancellable);
-
-    model->setModel(locations);
-    model->setListUpdating(false);
+    return false;
 }
 
-bool TimeZoneLocationModel::listUpdating() const
-{
-    return m_listUpdating;
-}
-
-void TimeZoneLocationModel::setListUpdating(bool listUpdating)
-{
-    if (m_listUpdating != listUpdating) {
-        m_listUpdating = listUpdating;
-        Q_EMIT listUpdatingChanged();
-    }
-}
-
-QString TimeZoneLocationModel::filter() const
+QString TimeZoneFilterModel::filter() const
 {
     return m_filter;
 }
 
-void TimeZoneLocationModel::setFilter(const QString &filter)
+void TimeZoneFilterModel::setFilter(const QString &filter)
 {
     if (filter != m_filter) {
         m_filter = filter;
+        m_stringMatcher.setPattern(m_filter);
         Q_EMIT filterChanged();
+        invalidate();
     }
-
-    setListUpdating(true);
-
-    if (m_cancellable) {
-        g_cancellable_cancel(m_cancellable);
-        g_clear_object(&m_cancellable);
-    }
-
-    setModel(QList<GeonamesCity *>());
-
-    if (filter.isEmpty()) {
-        setListUpdating(false);
-        return;
-    }
-
-    m_cancellable = g_cancellable_new();
-    geonames_query_cities(filter.toUtf8().data(),
-                          GEONAMES_QUERY_DEFAULT,
-                          m_cancellable,
-                          filterFinished,
-                          this);
 }
 
-QString TimeZoneLocationModel::country() const
+QString TimeZoneFilterModel::country() const
 {
     return m_country;
 }
 
-static bool citycmp(GeonamesCity *a, GeonamesCity *b)
-{
-    return geonames_city_get_population(b) < geonames_city_get_population(a);
-}
-
-void TimeZoneLocationModel::setCountry(const QString &country)
+void TimeZoneFilterModel::setCountry(const QString &country)
 {
     if (m_country == country)
         return;
 
-    beginResetModel();
-
     m_country = country;
-
-    Q_FOREACH(GeonamesCity *city, m_countryLocations) {
-        geonames_city_free(city);
-    }
-    m_countryLocations.clear();
-
-    gint num_cities = geonames_get_n_cities();
-    for (gint i = 0; i < num_cities; i++) {
-        GeonamesCity *city = geonames_get_city(i);
-        if (city && m_country == geonames_city_get_country_code(city)) {
-            m_countryLocations.append(city);
-        }
-    }
-
-    std::sort(m_countryLocations.begin(), m_countryLocations.end(), citycmp);
-
-    endResetModel();
-
     Q_EMIT countryChanged(country);
-}
-
-TimeZoneLocationModel::~TimeZoneLocationModel()
-{
-    if (m_cancellable) {
-        g_cancellable_cancel(m_cancellable);
-        g_clear_object(&m_cancellable);
-    }
-
-    Q_FOREACH(GeonamesCity *city, m_countryLocations) {
-        geonames_city_free(city);
-    }
-
-    Q_FOREACH(GeonamesCity *city, m_locations) {
-        geonames_city_free(city);
-    }
 }
