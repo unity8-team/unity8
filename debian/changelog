@@ -1,3 +1,11 @@
+unity8 (8.12+16.04.20160322.3-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk.
+  * Update translation template
+
+ -- Gerry Boland <ci-train-bot@canonical.com>  Tue, 22 Mar 2016 22:35:28 +0000
+
 unity8 (8.12+16.04.20160322.2-0ubuntu1) xenial; urgency=medium
 
   [ Michael Terry ]
