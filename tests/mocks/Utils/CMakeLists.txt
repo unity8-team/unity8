@@ -21,7 +21,13 @@ set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/inputeventgenerator.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/deviceconfigparser.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/globalfunctions.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/TopLevelSurfaceList.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/MirSurfaceListModel.cpp
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceListInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/Mir.h
     constants.cpp
     plugin.cpp
     windowstatestorage.cpp

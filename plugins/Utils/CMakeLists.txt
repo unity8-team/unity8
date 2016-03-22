@@ -9,6 +9,10 @@ include_directories(
 set(QMLPLUGIN_SRC
     activefocuslogger.cpp
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceListInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/Mir.h
     applicationsfiltermodel.cpp
     constants.cpp
     WindowInputMonitor.cpp
@@ -26,6 +30,8 @@ set(QMLPLUGIN_SRC
     deviceconfigparser.cpp
     globalfunctions.cpp
     plugin.cpp
+    TopLevelSurfaceList.cpp
+    MirSurfaceListModel.cpp
     )
 
 add_library(Utils-qml SHARED

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2015-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include <inputeventgenerator.h>
 #include <deviceconfigparser.h>
 #include <globalfunctions.h>
+#include <TopLevelSurfaceList.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -81,6 +82,9 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<InputEventGenerator>(uri, 0, 1, "InputEventGenerator");
     qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
     qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
+    qmlRegisterType<TopLevelSurfaceList>(uri, 0, 1, "TopLevelSurfaceList");
+
+    qRegisterMetaType<QAbstractListModel*>("QAbstractListModel*");
 }
 
 void FakeUtilsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
