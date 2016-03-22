@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:50+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 05:59+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -158,7 +158,7 @@ msgstr "መተግበሪያው ያልተቀመጠ ዳታ ይዟል:"
 msgctxt ""
 "Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
-msgstr ""
+msgstr "እንደገና-ማሳረፊያ: ስራዎትን ያስቀምጡ እና ይዝጉ መተግበሪያው እንዲቀጥል"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
@@ -265,7 +265,7 @@ msgstr "እንዲሁም የተገጠሙ"
 msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
-msgstr ""
+msgstr "የ እርስዎ አካል አሁን ከ ውጪ ማሳያ ጋር ተገናኝቷል: ይህን መመልከቻ እንደ ተችፓድ መጠቀሚያ"
 
 #: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
@@ -808,12 +808,3 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "መልሶ መደወያ"
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr "እንደገና-ማሳረፊያ: ስራዎትን ያስቀምጡ እና ይዝጉ መተግበሪያው እንዲቀጥል"
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "የ እርስዎ አካል አሁን ከ ውጪ ማሳያ ጋር ተገናኝቷል: ይህን መመልከቻ እንደ ተችፓድ ከ አይጥ ጋር ተባብሮ ይሰራል"

@@ -17,8 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:51+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 06:00+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -826,8 +826,3 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "Позвонить"
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr ""
-#~ "Переподключение, сохраните вашу работу и закройте эти приложения для "
-#~ "продолжения."

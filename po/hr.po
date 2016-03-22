@@ -17,8 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:51+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 06:00+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -161,6 +161,8 @@ msgctxt ""
 "Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
 msgstr ""
+"Ponovno spojite uređaj, spremite svoj rad i zatvorite ove aplikacije za "
+"nastavak."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
@@ -268,6 +270,8 @@ msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
+"Vaš uređaj je sada povezan s vanjskim uređajem. Koristite ovaj zaslon kao "
+"dodirnik za interakciju s pokazivačem."
 
 #: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
@@ -741,14 +745,3 @@ msgstr "%1  〉"
 
 #~ msgid "Your phone is now ready to use."
 #~ msgstr "Vaš telefon je sada spreman za korištenje."
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "Vaš uređaj je sada povezan s vanjskim zaslonom. Koristite ovaj uređaj kao "
-#~ "touchpad za interakciju s mišem."
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr ""
-#~ "Za nastavak ponovno povežite, spremite svoj rad i zatvorite te aplikacije."

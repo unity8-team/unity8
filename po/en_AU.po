@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:51+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 06:00+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -808,13 +808,3 @@ msgstr "%1  〉"
 
 #~ msgid "%a %d %b %l:%M %p"
 #~ msgstr "%a %b %d %l:%M %p"
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr "Re-dock, save your work and close these apps to continue."

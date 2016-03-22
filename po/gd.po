@@ -17,8 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
 "(n > 2 && n < 20) ? 2 : 3;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:50+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 05:59+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -166,6 +166,8 @@ msgctxt ""
 "Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
 msgstr ""
+"Ath-dhocaich, sàbhail d' obair is dùin na h-aplacaidean sin gus leantainn "
+"air adhart."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
@@ -273,6 +275,9 @@ msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
+"Tha an t-uidheam agad air a cheangal ri uidheam-taisbeanaidh air an taobh a-"
+"muigh a-nis. Cleachd an sgrìn seo 'na phada-suathaidh gus gnìomh tomhaire a "
+"dhèanamh."
 
 #: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
@@ -838,16 +843,3 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "Fònaig air ais"
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr ""
-#~ "Ath-dhocaich, sàbhail d' obair is dùin na h-aplacaidean sin gus leantainn "
-#~ "air adhart."
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "Tha an t-uidheam agad air a cheangal ri uidheam-taisbeanaidh air an taobh "
-#~ "a-muigh a-nis. Cleachd an sgrìn seo 'na phada-suathaidh gus gnìomh "
-#~ "luchaige a dhèanamh."

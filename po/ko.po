@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:51+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 06:00+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -155,7 +155,7 @@ msgstr "프로그램에 저장하지 않은 데이터가 있을 때:"
 msgctxt ""
 "Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
-msgstr ""
+msgstr "다시 연결합니다. 계속 진행하려면 작업을 저장한 후 앱을 닫아주십시오."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
@@ -263,6 +263,8 @@ msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
+"장치를 외부 디스플레이에 연결했습니다. 포인터를 사용하려면 화면을 터치 패드"
+"로 사용해주십시오."
 
 #: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
@@ -804,13 +806,3 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "부재중 번호로 전화"
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "장치를 외부 디스플레이와 연결햇습니다. 이 화면을 마우스와 상호작용 하는 터"
-#~ "치 패드로 사용합니다."
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr "다시 도킹해 작업을 저장하고 프로그램을 닫은 후 계속합니다."

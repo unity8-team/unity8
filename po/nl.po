@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:50+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 05:59+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -156,29 +156,32 @@ msgstr "Ok"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:32
 msgid "Apps may have unsaved data:"
-msgstr ""
+msgstr "Er zouden toepassingen kunnen zijn met niet-opgeslagen gegevens:"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:57
 msgctxt ""
 "Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
 msgstr ""
+"Zet uw apparaat weer in het dok, sla uw werk op en sluit deze toepassingen "
+"alvorens door te gaan."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
 msgstr ""
+"Of sluit nu geforceerd af (niet-opgeslagen gegevens zullen verloren gaan)."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:75
 msgid "OK, I will reconnect"
-msgstr ""
+msgstr "OK, ik zal opnieuw verbinden"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:76
 msgid "Reconnect now!"
-msgstr ""
+msgstr "Verbind nu opnieuw!"
 
 #: qml/Components/ModeSwitchWarningDialog.qml:88
 msgid "Close all"
-msgstr ""
+msgstr "Alles sluiten"
 
 #: qml/Dash/DashPageHeader.qml:270
 msgctxt "Button: Open the Ubuntu Store"
@@ -270,6 +273,8 @@ msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
+"Uw apparaat is nu verbonden met een extern beeldscherm. Gebruik dit scherm "
+"als een touchpad om de aanwijzer te bedienen."
 
 #: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
@@ -417,7 +422,7 @@ msgstr "Mislukt, tik om het opnieuw te proberen"
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:214
 msgctxt "Button: Send a reply message"
 msgid "Send"
-msgstr ""
+msgstr "Versturen"
 
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:156
 msgctxt "Label: Hint in message indicator line edit"
@@ -427,7 +432,7 @@ msgstr "Beantwoorden"
 #: qml/Panel/Indicators/MessageMenuItemFactory.qml:213
 msgctxt "Button: Call back on phone"
 msgid "Call back"
-msgstr ""
+msgstr "Terugbellen"
 
 #: qml/Tutorial/TutorialBottom.qml:28
 msgid "Open special menus"
@@ -495,7 +500,7 @@ msgstr "Hallo!"
 
 #: qml/Wizard/Pages/10-welcome.qml:44
 msgid "Welcome to your Ubuntu device."
-msgstr ""
+msgstr "Welkom bij uw Ubuntu-apparaat."
 
 #: qml/Wizard/Pages/10-welcome.qml:52
 msgid "Let’s get started."
@@ -526,7 +531,7 @@ msgstr "Vergrendelbeveiliging"
 
 #: qml/Wizard/Pages/30-passwd-type.qml:79
 msgid "Please select how you’d like to unlock your device."
-msgstr ""
+msgstr "Kies a.u.b. hoe u graag uw apparaat zou willen ontgrendelen."
 
 #: qml/Wizard/Pages/30-passwd-type.qml:102
 msgctxt "Label: Type of security method"
@@ -634,7 +639,7 @@ msgstr "Mooi werk!"
 
 #: qml/Wizard/Pages/80-finished.qml:46
 msgid "Your device is now ready to use."
-msgstr ""
+msgstr "Uw apparaat is nu klaar voor gebruik."
 
 #: qml/Wizard/Pages/80-finished.qml:53
 msgid "Finish"

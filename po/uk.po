@@ -17,8 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:51+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 06:00+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -165,6 +165,8 @@ msgctxt ""
 "Re-dock means connect the device again to an external screen/mouse/keyboard"
 msgid "Re-dock, save your work and close these apps to continue."
 msgstr ""
+"Виконайте повторне з’єднання, збережіть результати роботи і закрийте вікна "
+"цих програм, щоб продовжити."
 
 #: qml/Components/ModeSwitchWarningDialog.qml:63
 msgid "Or force close now (unsaved data will be lost)."
@@ -272,6 +274,8 @@ msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
+"Ваш пристрій під’єднаний до зовнішнього дисплея. Використовуйте цей екран як "
+"сенсорну панель для керування вказівником."
 
 #: qml/Greeter/CoverPage.qml:118
 msgid "Unlock"
@@ -827,15 +831,3 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "Зворотний виклик"
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr ""
-#~ "Перепідключення, збережіть Вашу роботу й закрийте ці додатки для "
-#~ "продовження."
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "Ваш пристрій з’єднано із зовнішнім дисплеєм. Скористайтеся його екраном "
-#~ "як сенсорною панеллю для імітації роботи із мишею."

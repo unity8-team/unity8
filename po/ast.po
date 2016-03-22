@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-03-13 05:50+0000\n"
-"X-Generator: Launchpad (build 17939)\n"
+"X-Launchpad-Export-Date: 2016-03-22 05:59+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/IntegratedLightDM/Greeter.cpp:112
 msgid "Password: "
@@ -813,15 +813,3 @@ msgstr "%1  〉"
 
 #~ msgid "Call back"
 #~ msgstr "Devolver llamada"
-
-#~ msgid "Re-dock, save your work and close these apps to continue."
-#~ msgstr ""
-#~ "Pa siguir coneuta nuevamente'l preséu, guarda'l trabayu y zarra estes "
-#~ "aplicaciones."
-
-#~ msgid ""
-#~ "Your device is now connected to an external display. Use this screen as a "
-#~ "touch pad to interact with the mouse."
-#~ msgstr ""
-#~ "Agora'l to preséu ta coneutáu a una pantalla esterna. Usa esta pantalla "
-#~ "como panel táutil pa interactuar col mur."
