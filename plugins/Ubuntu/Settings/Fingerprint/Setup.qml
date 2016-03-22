@@ -21,6 +21,7 @@ import Ubuntu.Components 1.3
 
 Page {
     id: root
+    objectName: "fingerprintSetupPage"
 
     property var plugin
 
@@ -148,6 +149,7 @@ Page {
 
                     // Default image.
                     FingerprintVisualProgression {
+                        objectName: "fingerprintDefaultVisual"
                         id: imageDefault
                         enrollmentProgress: plugin.enrollmentProgress
                         opacity: 1
@@ -156,6 +158,7 @@ Page {
 
                     // Failed image.
                     FingerprintVisual {
+                        objectName: "fingerprintFailedVisual"
                         id: imageFailed
                         visible: false
                         source: "fingerprint_failed.svg"
@@ -163,6 +166,7 @@ Page {
 
                     // Done image.
                     FingerprintVisual {
+                        objectName: "fingerprintDoneVisual"
                         id: imageDone
                         visible: false
                         source: "fingerprint_done.svg"
@@ -172,6 +176,7 @@ Page {
         }
 
         StatusLabel {
+            objectName: "fingerprintStatusLabel"
             id: statusLabel
 
             anchors {
@@ -198,6 +203,7 @@ Page {
 
             AbstractButton {
                 id: cancelButton
+                objectName: "fingerprintSetupCancelButton"
                 anchors {
                     left: parent.left
                     leftMargin: units.gu(3)
@@ -215,6 +221,7 @@ Page {
 
             AbstractButton {
                 id: doneButton
+                objectName: "fingerprintSetupDoneButton"
                 anchors {
                     right: parent.right
                     rightMargin: units.gu(3)

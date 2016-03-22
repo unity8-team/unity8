@@ -21,13 +21,14 @@ import Ubuntu.Components.Popups 1.3
 
 Page {
     id: root
+    objectName: "fingerprintPage"
     title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
 
     // This signal indicates that the user has requested that she to set a
     // passcode.
     signal requestPasscode()
 
-    property bool passSet: false
+    property bool passSet: plugin.passcodeSet
 
     // Will be replaced by the plugin proper
     property var plugin
@@ -79,6 +80,7 @@ Page {
                 }
 
                 Button {
+                    objectName: "fingerprintSetPasscodeButton"
                     text: i18n.dtr("ubuntu-settings-components", "Set Passcode…")
                     onClicked: root.requestPasscode()
                 }
@@ -86,32 +88,34 @@ Page {
 
             Column {
                 id: setupFingerprint
+                objectName: "fingerprintSetupEntry"
                 anchors { left: parent.left; right: parent.right }
                 spacing: units.gu(1)
                 property bool enabled: true
                 property int count: plugin.fingerprintCount
 
                 Label {
+                    objectName: "fingerprintFingerprintCount"
                     enabled: parent.enabled
 
                     // TRANSLATORS: As in "One fingerprint registered"
-                    property string one: i18n.dtr("ubuntu-settings-components", "One")
+                    readonly property string one: i18n.dtr("ubuntu-settings-components", "One")
                     // TRANSLATORS: As in "Two fingerprints registered"
-                    property string two: i18n.dtr("ubuntu-settings-components", "Two")
+                    readonly property string two: i18n.dtr("ubuntu-settings-components", "Two")
                     // TRANSLATORS: As in "Three fingerprints registered"
-                    property string three: i18n.dtr("ubuntu-settings-components", "Three")
+                    readonly property string three: i18n.dtr("ubuntu-settings-components", "Three")
                     // TRANSLATORS: As in "Four fingerprints registered"
-                    property string four: i18n.dtr("ubuntu-settings-components", "Four")
+                    readonly property string four: i18n.dtr("ubuntu-settings-components", "Four")
                     // TRANSLATORS: As in "Five fingerprints registered"
-                    property string five: i18n.dtr("ubuntu-settings-components", "Five")
+                    readonly property string five: i18n.dtr("ubuntu-settings-components", "Five")
                     // TRANSLATORS: As in "Six fingerprints registered"
-                    property string six: i18n.dtr("ubuntu-settings-components", "Six")
+                    readonly property string six: i18n.dtr("ubuntu-settings-components", "Six")
                     // TRANSLATORS: As in "Seven fingerprints registered"
-                    property string seven: i18n.dtr("ubuntu-settings-components", "Seven")
+                    readonly property string seven: i18n.dtr("ubuntu-settings-components", "Seven")
                     // TRANSLATORS: As in "Eight fingerprints registered"
-                    property string eight: i18n.dtr("ubuntu-settings-components", "Eight")
+                    readonly property string eight: i18n.dtr("ubuntu-settings-components", "Eight")
                     // TRANSLATORS: As in "Nine fingerprints registered"
-                    property string nine: i18n.dtr("ubuntu-settings-components", "Nine")
+                    readonly property string nine: i18n.dtr("ubuntu-settings-components", "Nine")
 
                     function getNaturalNumber(fpc) {
                         switch (fpc) {
@@ -134,7 +138,7 @@ Page {
                         case 9:
                             return nine;
                         default:
-                            return fpc;
+                            return fpc.toString();
                         }
                     }
 
@@ -152,12 +156,14 @@ Page {
                 }
 
                 Button {
+                    objectName: "fingerprintAddFingerprintButton"
                     text: i18n.dtr("ubuntu-settings-components", "Add Fingerprint…")
                     onClicked: pageStack.push(Qt.resolvedUrl("Setup.qml"), {plugin: plugin})
                     enabled: parent.enabled
                 }
 
                 Button {
+                    objectName: "fingerprintRemoveAllButton"
                     text: i18n.dtr("ubuntu-settings-components", "Remove All…")
                     onClicked: PopupUtils.open(removeAllAlert)
                     enabled: parent.enabled && plugin.fingerprintCount
@@ -171,6 +177,7 @@ Page {
 
         Dialog {
             id: removeAllAlertDialog
+            objectName: "fingerprintRemoveAllDialog"
             text: i18n.dtr("ubuntu-settings-components", "Are you sure you want to forget all stored fingerprints?")
 
             RowLayout {
@@ -184,6 +191,7 @@ Page {
                 }
 
                 Button {
+                    objectName: "fingerprintRemoveAllConfirmationButton"
                     text: i18n.dtr("ubuntu-settings-components", "Remove")
                     Layout.fillWidth: true
                     onClicked: {
