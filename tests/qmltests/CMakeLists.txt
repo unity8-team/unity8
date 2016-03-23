@@ -42,3 +42,4 @@ add_qml_test(Vpn VpnPreviewDialogCertificateChecks)
 add_qml_test(Vpn VpnPreviewDialog ENVIRONMENT NO_SSL_CERTIFICATE_CHECK=1)
 
 add_qml_test(Fingerprint Fingerprint)
+add_qml_test(Fingerprint FingerprintSetup)

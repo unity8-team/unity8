@@ -22,7 +22,11 @@ import Ubuntu.Components.Popups 1.3
 Page {
     id: root
     objectName: "fingerprintPage"
-    title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
+
+    header: PageHeader {
+        title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
+        flickable: content
+    }
 
     // This signal indicates that the user has requested that she to set a
     // passcode.
@@ -32,7 +36,6 @@ Page {
 
     // Will be replaced by the plugin proper
     property var plugin
-
 
     states: [
         State {

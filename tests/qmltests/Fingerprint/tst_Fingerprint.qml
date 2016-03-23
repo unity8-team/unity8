@@ -46,7 +46,6 @@ Item {
         anchors.fill: parent
     }
 
-
     SignalSpy {
         id: setPasscodeSpy
         target: fingerprintPage
@@ -58,7 +57,6 @@ Item {
         when: windowShown
 
         function init() {
-            p.enrollmentProgress = null;
             p.fingerprintCount = 0;
             p.passcodeSet = false;
 
@@ -123,7 +121,7 @@ Item {
             }
         }
 
-        function test_setup_buttons_no_passcode() {
+        function test_setup_no_passcode() {
             p.passcodeSet = false;
             var add = findChild(fingerprintPage, "fingerprintAddFingerprintButton");
             var remove = findChild(fingerprintPage, "fingerprintRemoveAllButton");
@@ -131,14 +129,14 @@ Item {
             compare(remove.enabled, false, "remove button enabled even though no passcode set");
         }
 
-        function test_remove_button_no_fingerprints() {
+        function test_remove_when_no_fingerprints() {
             p.passcodeSet = true;
             p.fingerprintCount = 0;
             var remove = findChild(fingerprintPage, "fingerprintRemoveAllButton");
             compare(remove.enabled, false, "remove button enabled even though no fingerprints");
         }
 
-        function test_remove_button_some_fingerprints() {
+        function test_remove_fingerprints() {
             p.passcodeSet = true;
             p.fingerprintCount = 1;
             var remove = findChild(fingerprintPage, "fingerprintRemoveAllButton");
@@ -151,7 +149,10 @@ Item {
             mouseClick(confirm, confirm.width / 2, confirm.height / 2);
 
             compare(p.fingerprintCount, 0, "the fingerprint counter was not reset");
-            wait(100); // wait for diag to properly close
+
+            tryCompareFunction(function () {
+                    return findChild(testRoot, "fingerprintRemoveAllDialog");
+            }, undefined, "the dialog was not destroyed");
         }
     }
 }

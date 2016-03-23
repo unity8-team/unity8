@@ -20,8 +20,13 @@ import Ubuntu.Components 1.3
 Item {
     id: root
     property string initialText
-
     property int origX: 0
+
+    // This is readonly. Use setText to update the text of this component.
+    readonly property alias text: label.text
+
+    signal slideStarted()
+    signal slideCompleted()
 
     Component.onCompleted: origX = label.x
 
@@ -50,25 +55,23 @@ Item {
         text: initialText
     }
 
-    SequentialAnimation {
+    NumberAnimation {
         id: outAnim
         alwaysRunToEnd: true
-        NumberAnimation {
-            target: label
-            property: "x"
-            to: -units.gu(50)
-            duration: UbuntuAnimation.SlowDuration
-        }
+        target: label
+        property: "x"
+        to: -units.gu(50)
+        duration: UbuntuAnimation.SlowDuration
+        onStarted: root.slideStarted()
     }
 
-    SequentialAnimation {
+    NumberAnimation {
         id: inAnim
         alwaysRunToEnd: true
-        NumberAnimation {
-            target: label
-            property: "x"
-            to: root.origX
-            duration: UbuntuAnimation.SlowDuration
-        }
+        target: label
+        property: "x"
+        to: root.origX
+        duration: UbuntuAnimation.SlowDuration
+        onStopped: root.slideCompleted()
     }
 }
