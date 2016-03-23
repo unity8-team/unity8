@@ -72,6 +72,12 @@ Date.prototype.monthStart = function() {
     return date;
 }
 
+Date.prototype.midMonth = function() {
+    var date = new Date(this).midnight();
+    date.setDate(15);
+    return date;
+}
+
 Date.prototype.weekNumber = function() {
     var date = this.weekStart(1).addDays(3) // Thursday midnight
     var newYear = new Date(date.getFullYear(), 0 /*Jan*/, 1 /*the 1st*/)

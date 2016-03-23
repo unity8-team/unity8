@@ -22,7 +22,7 @@ ListView {
     id: monthView
 
     property bool collapsed: false
-    property var currentDate: selectedDate.monthStart().addDays(15)
+    property var currentDate: selectedDate.midMonth()
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var maximumDate
     property var minimumDate
@@ -36,7 +36,8 @@ ListView {
     onCurrentIndexChanged: {
         if (!priv.ready) return
 
-        currentDate = currentItem.monthStart
+        console.log("INDEX CHANGE", currentIndex)
+        currentDate = currentItem.midMonth.midMonth()
     }
 
     onCurrentDateChanged: {
@@ -70,11 +71,11 @@ ListView {
         property var today: (new Date()).midnight()
 
         function __withinLowerMonthBound(date) {
-            return minimumDate == undefined || date.monthStart() >= minimumDate.monthStart()
+            return minimumDate == undefined || date.midMonth() >= minimumDate.midMonth()
         }
 
         function __withinUpperMonthBound(date) {
-            return maximumDate == undefined || date.monthStart() <= maximumDate.monthStart()
+            return maximumDate == undefined || date.midMonth() <= maximumDate.midMonth()
         }
 
         function __getRealMinimumDate(date) {
@@ -95,43 +96,47 @@ ListView {
             //  disable the onCurrentIndexChanged logic
             priv.ready = false
 
-            var minimumAddedDate = priv.__getRealMinimumDate(currentDate.addMonths(-2)).monthStart();
-            var maximumAddedDate = priv.__getRealMaximumDate(currentDate.addMonths(2)).monthStart();
+            console.log("REPOPULATE MODEL")
+
+            var minimumAddedDate = priv.__getRealMinimumDate(currentDate.addMonths(-2)).midMonth();
+            var maximumAddedDate = priv.__getRealMaximumDate(currentDate.addMonths(2)).midMonth();
 
             // Remove old minimum months
-            while (calendarModel.count > 0 && calendarModel.get(0).monthStart < minimumAddedDate) {
+            while (calendarModel.count > 0 && calendarModel.get(0).midMonth.midMonth() < minimumAddedDate) {
                 calendarModel.remove(0);
             }
             // Remove old maximum months
-            while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).monthStart > maximumAddedDate) {
+            while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).midMonth.midMonth() > maximumAddedDate) {
                 calendarModel.remove(calendarModel.count - 1);
             }
 
             // Add new months
             var i = 0;
-            while (calendarModel.count > 0 && calendarModel.get(0).monthStart > minimumAddedDate) {
-                calendarModel.insert(0, { "monthStart": calendarModel.get(0).monthStart.addMonths(-1) });
+            while (calendarModel.count > 0 && calendarModel.get(0).midMonth.midMonth() > minimumAddedDate) {
+                calendarModel.insert(0, { "midMonth": calendarModel.get(0).midMonth.midMonth().addMonths(-1) });
                 ++i;
             }
 
             if (calendarModel.count > 0) {
                 i = 0;
-                while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).monthStart < maximumAddedDate) {
-                    calendarModel.append({ "monthStart": calendarModel.get(calendarModel.count - 1).monthStart.addMonths(1) });
+                while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).midMonth.midMonth() < maximumAddedDate) {
+                    calendarModel.append({ "midMonth": calendarModel.get(calendarModel.count - 1).midMonth.midMonth().addMonths(1) });
                     ++i;
                 }
             } else {
                 i = 0;
                 do {
-                    calendarModel.append({ "monthStart": minimumAddedDate.addMonths(i) });
+                    calendarModel.append({ "midMonth": minimumAddedDate.addMonths(i) });
                     ++i;
-                } while (calendarModel.get(i-1).monthStart < maximumAddedDate)
+                } while (calendarModel.get(i-1).midMonth.midMonth() < maximumAddedDate)
             }
 
             currentIndex = DateExt.diffMonths(minimumAddedDate, currentDate);
 
             // Ok, we're all set up. enable the onCurrentIndexChanged logic
             priv.ready = true
+
+            console.log("REPOPED")
         }
     }
 
@@ -149,7 +154,7 @@ ListView {
     height: priv.squareUnit * (collapsed ? 1 : 6) + priv.verticalMargin * 2
     interactive: !collapsed
     clip: true
-    cacheBuffer: Math.max(width + 1, 0)
+    cacheBuffer: 2000000000//Math.max((width+1) * 2, 0)
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
@@ -164,10 +169,14 @@ ListView {
     delegate: Item {
         id: monthItem
 
+        ListView.onAdd: console.log("ITEM ADDED!", monthStart.getMonth())
+        ListView.onRemove: console.log("ITEM REMOVE!", monthStart.getMonth())
+
         property int currentWeekRow: Math.floor((selectedDate.getTime() - gridStart.getTime()) / Date.msPerWeek)
         property var gridStart: monthStart.weekStart(firstDayOfWeek)
         property var monthEnd: monthStart.addMonths(1)
-        property var monthStart: model.monthStart
+        property var monthStart: model.midMonth.monthStart()
+        property var midMonth: model.midMonth
 
         width: monthView.width
         height: monthView.height
@@ -205,7 +214,6 @@ ListView {
                     // Styling properties
                     property color color: theme.palette.normal.backgroundText
                     property color todayColor: theme.palette.normal.positive
-                    property string fontSize: "large"
                     property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
                     property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
 
@@ -230,12 +238,11 @@ ListView {
                         Label {
                             anchors.centerIn: parent
                             text: dayStart.getDate()
-                            fontSize: dayItem.fontSize
+                            font.pixelSize: units.dp(isCurrent ? 36 : 20)
                             color: isToday ? dayItem.todayColor : dayItem.color
-                            scale: isCurrent ? 1.8 : 1.
                             opacity: isWithinBounds ? isCurrentMonth ? 1. : 0.3 : 0.1
 
-                            Behavior on scale {
+                            Behavior on font.pixelSize {
                                 NumberAnimation { duration: 50 }
                             }
                         }
@@ -248,7 +255,9 @@ ListView {
                             bottomMargin: dayItem.bottomMargin
                         }
 
-                        onReleased: if (isWithinBounds) monthView.selectedDate = dayStart
+                        onReleased: {
+                            if (isWithinBounds) monthView.selectedDate = dayStart
+                        }
                     }
                 }
             }
