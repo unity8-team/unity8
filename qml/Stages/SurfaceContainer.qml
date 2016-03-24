@@ -99,6 +99,50 @@ FocusScope {
         focus: true
         antialiasing: !root.interactive
         orientationAngle: root.surfaceOrientationAngle
+        visible: false
+    }
+
+    ShaderEffect {
+        anchors.fill: surfaceItem
+        blending: false
+        // TODO need to make this only for non maximized desktop stage windows
+        enabled: true
+
+        property variant surfaceItem: surfaceItem
+
+        fragmentShader: "
+        uniform sampler2D surfaceItem;
+        uniform highp float width;
+        uniform highp float height;
+        varying highp vec2 qt_TexCoord0;
+
+        void main()
+        {
+            highp vec4 c = texture2D(surfaceItem, qt_TexCoord0);
+
+            // TODO this probably needs to be gu dependant
+            float radius = 5.;
+            vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
+
+            vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
+            if ((point.x < bottomLeftCircleCenter.x) && (point.y > bottomLeftCircleCenter.y)) {
+                float dist = distance(point, bottomLeftCircleCenter);
+                if (dist > radius) {
+                    discard;
+                }
+            } else {
+                vec2 bottomRightCircleCenter = vec2(width - radius, height - radius);
+                float dist = distance(point, bottomRightCircleCenter);
+                if ((point.x > bottomRightCircleCenter.x) && (point.y > bottomRightCircleCenter.y)) {
+                    if (dist > radius) {
+                        discard;
+                    }
+                }
+            }
+
+            gl_FragColor = c;
+        }
+        "
     }
 
     // MirSurface size drives SurfaceContainer size

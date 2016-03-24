@@ -49,6 +49,11 @@ MirSurfaceItem::MirSurfaceItem(QQuickItem *parent)
         Qt::ExtraButton12 | Qt::ExtraButton13);
 
     connect(this, &QQuickItem::visibleChanged, this, &MirSurfaceItem::updateMirSurfaceVisibility);
+
+    // This is a trick to make the fake MirSurfaceItem be
+    // a texture provider, the real qtmir one is without the need for layering
+    QObject *layer = property("layer").value<QObject*>();
+    layer->setProperty("enabled", true);
 }
 
 MirSurfaceItem::~MirSurfaceItem()
