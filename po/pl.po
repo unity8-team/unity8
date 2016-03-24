@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-03-21 13:10+0100\n"
-"PO-Revision-Date: 2016-03-18 07:49+0000\n"
-"Last-Translator: Michał Sawicz <michal.sawicz@canonical.com>\n"
+"PO-Revision-Date: 2016-03-23 10:29+0000\n"
+"Last-Translator: Krzysztof Tataradziński <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-03-23 06:05+0000\n"
+"X-Launchpad-Export-Date: 2016-03-24 06:07+0000\n"
 "X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
@@ -52,15 +52,15 @@ msgstr "Wiadomość"
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:102
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:104
 msgid "Cancel"
-msgstr ""
+msgstr "Anuluj"
 
 #: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:170
 msgid "Accept"
-msgstr ""
+msgstr "Akceptuj"
 
 #: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:25
 msgid "Choose…"
-msgstr ""
+msgstr "Wybierz..."
 
 #: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:34
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:340
@@ -70,11 +70,11 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:110
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:114
 msgid "Server:"
-msgstr ""
+msgstr "Serwer:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:124
 msgid "Port:"
-msgstr ""
+msgstr "Port:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:174
 msgid "Use custom gateway port"
@@ -82,33 +82,33 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:202
 msgid "Protocol:"
-msgstr ""
+msgstr "Protokół:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:240
 msgid "Client certificate:"
-msgstr ""
+msgstr "Certyfikat klienta:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:248
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:263
 msgid "Choose Certificate…"
-msgstr ""
+msgstr "Wybierz certyfikat..."
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:255
 msgid "CA certificate:"
-msgstr ""
+msgstr "Certyfikat CA:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:270
 msgid "Private key:"
-msgstr ""
+msgstr "Klucz prywatny:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:278
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:324
 msgid "Choose Key…"
-msgstr ""
+msgstr "Wybierz klucz..."
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:285
 msgid "Key password:"
-msgstr ""
+msgstr "Hasło klucza:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:306
 msgid "Use additional TLS authentication:"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:315
 msgid "TLS key:"
-msgstr ""
+msgstr "Klucz TLS:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:329
 msgid "Key direction:"
@@ -132,11 +132,11 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:374
 msgid "Server"
-msgstr ""
+msgstr "Serwer"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:375
 msgid "Client"
-msgstr ""
+msgstr "Klient"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:385
 msgid "Cipher:"
@@ -152,19 +152,19 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:150
 msgid "User:"
-msgstr ""
+msgstr "Użytkownik:"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:165
 msgid "Password:"
-msgstr ""
+msgstr "Hasło:"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:180
 msgid "NT Domain:"
-msgstr ""
+msgstr "Domena NT:"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:192
 msgid "Authentication methods:"
-msgstr ""
+msgstr "Metody uwierzytelniania:"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:292
 msgid "Use Point-to-Point encryption"
@@ -172,15 +172,15 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:301
 msgid "All Available (Default)"
-msgstr ""
+msgstr "Wszystkie dostępne (domyślnie)"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:302
 msgid "128-bit (most secure)"
-msgstr ""
+msgstr "128-bitowe (najbardziej bezpieczne)"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:303
 msgid "40-bit (less secure)"
-msgstr ""
+msgstr "40-bitowe (mniej bezpieczne)"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:319
 msgid "Allow stateful encryption"
@@ -257,7 +257,7 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:46
 #, qt-format
 msgid "Details: %1"
-msgstr ""
+msgstr "Szczegóły: %1"
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:51
 msgid "The certificate was not found."
@@ -273,7 +273,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:60
 msgid "The certificate has expired."
-msgstr ""
+msgstr "Certyfikat wygasł."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:63
 msgid "The certificate is blacklisted."
@@ -325,7 +325,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:115
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnList.qml:62
 msgid "Delete configuration"
@@ -335,23 +335,23 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:58
 #, qt-format
 msgid "VPN “%1”"
-msgstr ""
+msgstr "VPN “%1”"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:69
 msgid "VPN"
-msgstr ""
+msgstr "VPN"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:84
 msgid "Remove"
-msgstr ""
+msgstr "Usuń"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:96
 msgid "Change"
-msgstr ""
+msgstr "Zmień"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:112
 msgid "Install"
-msgstr ""
+msgstr "Instaluj"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnRoutesField.qml:30
 msgid "Use this VPN for:"
@@ -367,4 +367,4 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/VpnTypeField.qml:32
 msgid "Type:"
-msgstr ""
+msgstr "Typ:"
