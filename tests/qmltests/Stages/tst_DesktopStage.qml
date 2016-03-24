@@ -40,7 +40,10 @@ Item {
         value: false
     }
 
-    Component.onCompleted: resetGeometry()
+    Component.onCompleted: {
+        theme.name = "Ubuntu.Components.Themes.SuruDark";
+        resetGeometry();
+    }
 
     function resetGeometry() {
         // ensures apps which are tested decorations are in view.

@@ -47,6 +47,9 @@ public:
     Q_INVOKABLE void saveGeometry(const QString &windowId, const QRect &rect);
     Q_INVOKABLE QRect getGeometry(const QString &windowId, const QRect &defaultValue);
 
+    Q_INVOKABLE void saveStage(const QString &appId, int stage);
+    Q_INVOKABLE int getStage(const QString &appId) const;
+
     // Only in the mock, to easily restore a fresh state
     Q_INVOKABLE void clear();
 
@@ -58,5 +61,6 @@ private:
     QVariantMap geometry() const;
 
     QHash<QString, WindowState> m_state;
+    QHash<QString, int> m_stage;
     QVariantMap m_geometry;
 };
