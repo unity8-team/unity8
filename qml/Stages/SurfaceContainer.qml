@@ -132,8 +132,8 @@ FocusScope {
                 }
             } else {
                 vec2 bottomRightCircleCenter = vec2(width - radius, height - radius);
-                float dist = distance(point, bottomRightCircleCenter);
                 if ((point.x > bottomRightCircleCenter.x) && (point.y > bottomRightCircleCenter.y)) {
+                    float dist = distance(point, bottomRightCircleCenter);
                     if (dist > radius) {
                         discard;
                     }
