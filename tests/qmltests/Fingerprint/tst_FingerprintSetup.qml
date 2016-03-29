@@ -30,15 +30,14 @@ Item {
     // Example plugin
     QtObject {
         id: p
-        property var enrollmentProgress
         property int fingerprintCount: 0
         property bool passcodeSet: false
 
-        signal enrollmentStopped()
-        signal enrollmentStarted()
-        signal enrollmentInterrupted()
+        function
+
+        signal enrollmentProgressed(double progress)
         signal enrollmentCompleted()
-        signal enrollmentFailed()
+        signal enrollmentFailed(int error)
     }
 
     Component {
@@ -64,7 +63,6 @@ Item {
                 plugin: p
             });
 
-            p.enrollmentProgress = 0.0;
             p.fingerprintCount = 0;
             p.passcodeSet = true;
 
@@ -81,18 +79,18 @@ Item {
         function test_states_data() {
             return [
                 { tag: "init", signal: null, state: "" },
-                { tag: "started", signal: p.enrollmentStarted, state: "reading" },
-                { tag: "stopped", signal: p.enrollmentStopped, state: "" },
-                { tag: "interrupted", signal: p.enrollmentInterrupted, state: "longer" },
-                { tag: "completed", signal: p.enrollmentCompleted, state: "done" },
-                { tag: "failed", signal: p.enrollmentFailed, state: "failed" },
+                { tag: "started", signal: p.enrollmentProgressed, signalArgs: [0], state: "reading" },
+                // { tag: "stopped", signal: p.enrollmentFailed, signalArgs: [0], state: "" },
+                { tag: "interrupted", signal: p.enrollmentFailed, signalArgs: [0], state: "longer" },
+                { tag: "completed", signal: p.enrollmentCompleted, signalArgs: [], state: "done" },
+                { tag: "failed", signal: p.enrollmentFailed, signalArgs: [1], state: "failed" },
             ];
         }
 
         function test_states(data) {
             var page = findChild(pageStack, "fingerprintSetupPage");
             if (data.signal) {
-                data.signal();
+                data.signal.apply(data, data.signalArgs);
             }
             compare(page.state, data.state, "unexpected state");
         }

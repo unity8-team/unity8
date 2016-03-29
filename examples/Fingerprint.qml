@@ -57,20 +57,22 @@ MainView {
         // Example plugin
         QtObject {
             id: p
-            property var enrollmentProgress
             property int fingerprintCount: 0
             property bool passcodeSet: false
 
-            signal enrollmentStopped()
-            signal enrollmentStarted()
-            signal enrollmentInterrupted()
+            signal enrollmentProgressed(double progress)
             signal enrollmentCompleted()
-            signal enrollmentFailed()
+
+            // 0: finger left thing before it was finished
+            // 1: some unrecoverable error
+            signal enrollmentFailed(int error)
         }
 
         Component {
             id: fingerprintPage
-            Fingerprint {}
+            Fingerprint {
+                onRequestPasscode: p.passcodeSet = !p.passcodeSet
+            }
         }
     }
 
@@ -85,61 +87,56 @@ MainView {
                 ListItems.Standard {
                     text: "Enrollment stopped"
                     onClicked: {
-                        p.enrollmentStopped();
+                        p.enrollmentFailed(0);
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrollment started"
                     onClicked: {
-                        p.enrollmentStarted();
+                        p.enrollmentProgressed(0.1);
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrollment interrupted"
                     onClicked: {
-                        p.enrollmentInterrupted();
+                        p.enrollmentFailed(0);;
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrolled 0%"
                     onClicked: {
-                        p.enrollmentStarted();
-                        p.enrollmentProgress = 0;
+                        p.enrollmentProgressed(0.0);
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrolled 25%"
                     onClicked: {
-                        p.enrollmentStarted();
-                        p.enrollmentProgress = 0.25;
+                        p.enrollmentProgressed(0.25);
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrolled 50%"
                     onClicked: {
-                        p.enrollmentStarted();
-                        p.enrollmentProgress = 0.5;
+                        p.enrollmentProgressed(0.5);
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrolled 75%"
                     onClicked: {
-                        p.enrollmentStarted();
-                        p.enrollmentProgress = 0.75;
+                        p.enrollmentProgressed(0.75);
                         PopupUtils.close(toolsDiag);
                     }
                 }
                 ListItems.Standard {
                     text: "Enrolled 100%"
                     onClicked: {
-                        p.enrollmentStarted();
-                        p.enrollmentProgress = 1;
+                        p.enrollmentProgressed(1);
                         PopupUtils.close(toolsDiag);
                     }
                 }
@@ -153,7 +150,7 @@ MainView {
                 ListItems.Standard {
                     text: "Enrollment failed"
                     onClicked: {
-                        p.enrollmentFailed();
+                        p.enrollmentFailed(1);
                         PopupUtils.close(toolsDiag);
                     }
                 }

@@ -28,12 +28,24 @@ Page {
     Connections {
         target: plugin
 
-        onEnrollmentStopped: root.state = ""
-        onEnrollmentStarted: root.state = "reading"
-        onEnrollmentInterrupted: root.state = "longer"
+        onEnrollmentFailed: {
+            switch (error) {
+                case 0:
+                    root.state = "longer";
+                    break;
+                case 1:
+                    root.state = "failed";
+                    break;
+            }
+        }
         onEnrollmentCompleted: root.state = "done"
-        onEnrollmentFailed: root.state = "failed"
+        onEnrollmentProgressed: {
+            root.state = "reading";
+            imageDefault.enrollmentProgress = progress;
+        }
     }
+
+    Component.onCompleted: plugin.enroll()
 
     states: [
         State {
@@ -151,7 +163,6 @@ Page {
                     FingerprintVisualProgression {
                         objectName: "fingerprintDefaultVisual"
                         id: imageDefault
-                        enrollmentProgress: plugin.enrollmentProgress
                         opacity: 1
                         source: "fingerprint_nomask.svg"
                     }
