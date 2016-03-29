@@ -109,20 +109,20 @@ FocusScope {
         blending: false
         enabled: false
 
-        property variant surfaceItem: surfaceItem
+        readonly property variant surfaceItem: surfaceItem
+        readonly property variant radius: units.gu(0.5)
 
         fragmentShader: "
         uniform sampler2D surfaceItem;
         uniform highp float width;
         uniform highp float height;
+        uniform highp float radius;
         varying highp vec2 qt_TexCoord0;
 
         void main()
         {
             highp vec4 c = texture2D(surfaceItem, qt_TexCoord0);
 
-            // TODO this probably needs to be gu dependant
-            float radius = 5.;
             vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
 
             vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
