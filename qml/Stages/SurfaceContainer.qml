@@ -103,46 +103,10 @@ FocusScope {
         visible: !root.roundedBottomCorners
     }
 
-    ShaderEffect {
+    BottomCornerRounder {
         id: roundedBottomCornersShader
-        anchors.fill: surfaceItem
-        blending: false
+        textureItem: surfaceItem
         enabled: false
-
-        readonly property variant surfaceItem: surfaceItem
-        readonly property variant radius: units.gu(0.5)
-
-        fragmentShader: "
-        uniform sampler2D surfaceItem;
-        uniform highp float width;
-        uniform highp float height;
-        uniform highp float radius;
-        varying highp vec2 qt_TexCoord0;
-
-        void main()
-        {
-            highp vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
-
-            highp vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
-            if ((point.x < bottomLeftCircleCenter.x) && (point.y > bottomLeftCircleCenter.y)) {
-                highp float dist = distance(point, bottomLeftCircleCenter);
-                if (dist > radius) {
-                    discard;
-                }
-            } else {
-                highp vec2 bottomRightCircleCenter = vec2(width - radius, height - radius);
-                if ((point.x > bottomRightCircleCenter.x) && (point.y > bottomRightCircleCenter.y)) {
-                    highp float dist = distance(point, bottomRightCircleCenter);
-                    if (dist > radius) {
-                        discard;
-                    }
-                }
-            }
-
-            highp vec4 c = texture2D(surfaceItem, qt_TexCoord0);
-            gl_FragColor = c;
-        }
-        "
     }
 
     // MirSurface size drives SurfaceContainer size
