@@ -121,8 +121,6 @@ FocusScope {
 
         void main()
         {
-            highp vec4 c = texture2D(surfaceItem, qt_TexCoord0);
-
             vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
 
             vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
@@ -141,6 +139,7 @@ FocusScope {
                 }
             }
 
+            highp vec4 c = texture2D(surfaceItem, qt_TexCoord0);
             gl_FragColor = c;
         }
         "
