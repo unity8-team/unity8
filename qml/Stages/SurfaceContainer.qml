@@ -121,18 +121,18 @@ FocusScope {
 
         void main()
         {
-            vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
+            highp vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
 
-            vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
+            highp vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
             if ((point.x < bottomLeftCircleCenter.x) && (point.y > bottomLeftCircleCenter.y)) {
-                float dist = distance(point, bottomLeftCircleCenter);
+                highp float dist = distance(point, bottomLeftCircleCenter);
                 if (dist > radius) {
                     discard;
                 }
             } else {
-                vec2 bottomRightCircleCenter = vec2(width - radius, height - radius);
+                highp vec2 bottomRightCircleCenter = vec2(width - radius, height - radius);
                 if ((point.x > bottomRightCircleCenter.x) && (point.y > bottomRightCircleCenter.y)) {
-                    float dist = distance(point, bottomRightCircleCenter);
+                    highp float dist = distance(point, bottomRightCircleCenter);
                     if (dist > radius) {
                         discard;
                     }
