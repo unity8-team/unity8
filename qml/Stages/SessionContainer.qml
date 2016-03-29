@@ -28,6 +28,7 @@ FocusScope {
     property alias interactive: _surfaceContainer.interactive
     property alias surfaceOrientationAngle: _surfaceContainer.surfaceOrientationAngle
     property alias resizeSurface: _surfaceContainer.resizeSurface
+    property alias roundedBottomCorners: _surfaceContainer.roundedBottomCorners
 
     property int requestedWidth: -1
     property int requestedHeight: -1
@@ -97,6 +98,11 @@ FocusScope {
             Binding {
                 target: item; when: item
                 property: "height"; value: root.height
+            }
+
+            Binding {
+                target: item; when: item
+                property: "roundedBottomCorners"; value: root.roundedBottomCorners
             }
         }
     }

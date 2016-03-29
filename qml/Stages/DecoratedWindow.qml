@@ -45,6 +45,7 @@ FocusScope {
     readonly property int maximumHeight: (root.decorationShown ? decoration.height : 0) + applicationWindow.maximumHeight
     property alias widthIncrement: applicationWindow.widthIncrement
     property alias heightIncrement: applicationWindow.heightIncrement
+    property alias roundedBottomCorners: applicationWindow.roundedBottomCorners
 
     signal close()
     signal maximize()

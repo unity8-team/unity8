@@ -38,6 +38,7 @@ FocusScope {
     property alias resizeSurface: sessionContainer.resizeSurface
     property int requestedWidth: -1
     property int requestedHeight: -1
+    property alias roundedBottomCorners: sessionContainer.roundedBottomCorners
 
     function switchToKeymap(keymap) {
         sessionContainer.surfaceContainer.switchToKeymap(keymap);

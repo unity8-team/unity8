@@ -31,6 +31,7 @@ FocusScope {
     property int surfaceOrientationAngle: 0
     property string name: surface ? surface.name : ""
     property bool resizeSurface: true
+    property alias roundedBottomCorners: roundedBottomCornersShader.enabled
 
     property int requestedWidth: -1
     property int requestedHeight: -1
@@ -99,14 +100,14 @@ FocusScope {
         focus: true
         antialiasing: !root.interactive
         orientationAngle: root.surfaceOrientationAngle
-        visible: false
+        visible: !root.roundedBottomCorners
     }
 
     ShaderEffect {
+        id: roundedBottomCornersShader
         anchors.fill: surfaceItem
         blending: false
-        // TODO need to make this only for non maximized desktop stage windows
-        enabled: true
+        enabled: false
 
         property variant surfaceItem: surfaceItem
 

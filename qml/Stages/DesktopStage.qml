@@ -533,6 +533,7 @@ AbstractStage {
                     application: ApplicationManager.get(index)
                     active: ApplicationManager.focusedApplicationId === model.appId
                     focus: true
+                    roundedBottomCorners: !appDelegate.maximized
 
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
