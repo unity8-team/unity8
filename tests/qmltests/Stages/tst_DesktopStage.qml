@@ -446,7 +446,6 @@ Item {
 
             ApplicationManager.stopApplication("gmail-webapp");
 
-            console.log("MOO", mapApp, mapApp.session, mapApp.session.lastSurface);
             compare(mapApp.session.lastSurface.visible, true);
             tryCompare(dialerApp.session.lastSurface, "visible", true);
             tryCompare(dashApp.session.lastSurface, "visible", false); // still occluded by maximised dialer
