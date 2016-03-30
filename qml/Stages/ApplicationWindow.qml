@@ -138,11 +138,6 @@ FocusScope {
         active: false
         anchors.fill: parent
         sourceComponent: Item {
-            BottomCornerRounder {
-                id: roundedBottomCornersShader
-                textureItem: splash
-                enabled: root.roundedBottomCorners
-            }
             Splash {
                 id: splash
                 anchors.fill: parent
@@ -154,7 +149,10 @@ FocusScope {
                 headerColor: d.splashColorHeader
                 footerColor: d.splashColorFooter
                 layer.enabled: root.roundedBottomCorners
-                visible: !root.roundedBottomCorners
+                layer.effect: BottomCornerRounder {
+                    textureItem: splash
+                    enabled: root.roundedBottomCorners
+                }
             }
         }
     }

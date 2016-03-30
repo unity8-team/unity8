@@ -16,9 +16,9 @@
  */
 
 import QtQuick 2.4
+import Utils 0.1
 
 ShaderEffect {
-    anchors.fill: textureItem
     blending: false
 
     property variant textureItem: undefined

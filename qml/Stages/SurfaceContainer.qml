@@ -31,7 +31,7 @@ FocusScope {
     property int surfaceOrientationAngle: 0
     property string name: surface ? surface.name : ""
     property bool resizeSurface: true
-    property alias roundedBottomCorners: roundedBottomCornersShader.enabled
+    property bool roundedBottomCorners: false
 
     property int requestedWidth: -1
     property int requestedHeight: -1
@@ -100,13 +100,19 @@ FocusScope {
         focus: true
         antialiasing: !root.interactive
         orientationAngle: root.surfaceOrientationAngle
-        visible: !root.roundedBottomCorners
     }
 
-    BottomCornerRounder {
-        id: roundedBottomCornersShader
-        textureItem: surfaceItem
-        enabled: false
+    Loader {
+        anchors.fill: surfaceItem
+        active: root.roundedBottomCorners && surfaceItem.visible
+
+        sourceComponent: BottomCornerRounder {
+            textureItem: surfaceItem
+
+            ItemCuller {
+                target: surfaceItem
+            }
+        }
     }
 
     // MirSurface size drives SurfaceContainer size

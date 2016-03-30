@@ -39,6 +39,7 @@
 #include <applicationsfiltermodel.h>
 #include <inputeventgenerator.h>
 #include <deviceconfigparser.h>
+#include <itemculler.h>
 #include <globalfunctions.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -80,6 +81,7 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<ApplicationsFilterModel>(uri, 0, 1, "ApplicationsFilterModel");
     qmlRegisterType<InputEventGenerator>(uri, 0, 1, "InputEventGenerator");
     qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
+    qmlRegisterType<ItemCuller>(uri, 0, 1, "ItemCuller");
     qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
 }
 
