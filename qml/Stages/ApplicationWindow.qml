@@ -147,11 +147,7 @@ FocusScope {
                 backgroundColor: d.splashColor
                 headerColor: d.splashColorHeader
                 footerColor: d.splashColorFooter
-                layer.enabled: root.roundedBottomCorners
-                layer.effect: BottomCornerRounder {
-                    textureItem: splash
-                    enabled: root.roundedBottomCorners
-                }
+                roundedBottomCorners: root.roundedBottomCorners
             }
         }
     }

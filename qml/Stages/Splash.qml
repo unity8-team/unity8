@@ -31,6 +31,7 @@ Item {
     property url icon
     property alias title: headerConfig.title
     property alias showHeader: header.visible
+    property bool roundedBottomCorners: false
 
     Ambiance.Palette {
         id: ambiancePalette
@@ -49,95 +50,105 @@ Item {
         readonly property bool showIcon: overlaidImage.status == Image.Null && !root.showHeader
     }
 
-    StyledItem {
-        id: styledItem
+    Item {
+        id: staticContentItem
         anchors.fill: parent
 
-        // mimic API of toolkit's MainView component required by MainViewStyle
-        property color backgroundColor: Qt.colorEqual(root.backgroundColor, d.undefinedColor) ? d.defaultBackgroundColor
-                                                                                              : root.backgroundColor
-        property color headerColor: Qt.colorEqual(root.headerColor, d.undefinedColor) ? styledItem.backgroundColor
-                                                                                      : root.headerColor
-        property color footerColor: Qt.colorEqual(root.footerColor, d.undefinedColor) ? styledItem.backgroundColor
-                                                                                      : root.footerColor
+        StyledItem {
+            id: styledItem
+            anchors.fill: parent
 
-        // FIXME: fake a Theme object as to expose the Palette corresponding to the backgroundColor (see MainViewStyle.qml)
-        readonly property var fakeTheme: QtObject {
-            property string name
-            property Palette palette: Qt.createQmlObject("import QtQuick 2.4;\
-                                                          import Ubuntu.Components.Themes.%1 1.3;\
-                                                          Palette {}".arg(styledItem.fakeTheme.name),
-                                                         styledItem, "dynamicPalette");
+            // mimic API of toolkit's MainView component required by MainViewStyle
+            property color backgroundColor: Qt.colorEqual(root.backgroundColor, d.undefinedColor) ? d.defaultBackgroundColor
+                                                                                                : root.backgroundColor
+            property color headerColor: Qt.colorEqual(root.headerColor, d.undefinedColor) ? styledItem.backgroundColor
+                                                                                        : root.headerColor
+            property color footerColor: Qt.colorEqual(root.footerColor, d.undefinedColor) ? styledItem.backgroundColor
+                                                                                        : root.footerColor
+
+            // FIXME: fake a Theme object as to expose the Palette corresponding to the backgroundColor (see MainViewStyle.qml)
+            readonly property var fakeTheme: QtObject {
+                property string name
+                property Palette palette: Qt.createQmlObject("import QtQuick 2.4;\
+                                                            import Ubuntu.Components.Themes.%1 1.3;\
+                                                            Palette {}".arg(styledItem.fakeTheme.name),
+                                                            styledItem, "dynamicPalette");
+            }
+
+            // FIXME: should instead use future toolkit API:
+            // style: theme.createStyleComponent("MainViewStyle.qml", styledItem)
+            style: Component { MainViewStyle {theme: styledItem.fakeTheme} }
         }
 
-        // FIXME: should instead use future toolkit API:
-        // style: theme.createStyleComponent("MainViewStyle.qml", styledItem)
-        style: Component { MainViewStyle {theme: styledItem.fakeTheme} }
-    }
+        Ambiance.PageHeadStyle {
+            // FIXME: Replace PageHeadStyle by PageHeader from Ubuntu.Components 1.3.
+            id: header
+            anchors {
+                left: parent.left;
+                right: parent.right
+            }
+            property var styledItem: header
+            // FIXME Keep in sync with SDK's MainView.qml values of these two colors
+            property color dividerColor: Qt.darker(styledItem.backgroundColor, 1.1)
+            property color panelColor: Qt.lighter(styledItem.backgroundColor, 1.1)
+            panelForegroundColor: config.foregroundColor
+            backgroundColor: "transparent"
+            config: PageHeadConfiguration {
+                id: headerConfig
+                foregroundColor: styledItem.fakeTheme.palette.normal.backgroundText
+            }
 
-    Ambiance.PageHeadStyle {
-        // FIXME: Replace PageHeadStyle by PageHeader from Ubuntu.Components 1.3.
-        id: header
-        anchors {
-            left: parent.left;
-            right: parent.right
-        }
-        property var styledItem: header
-        // FIXME Keep in sync with SDK's MainView.qml values of these two colors
-        property color dividerColor: Qt.darker(styledItem.backgroundColor, 1.1)
-        property color panelColor: Qt.lighter(styledItem.backgroundColor, 1.1)
-        panelForegroundColor: config.foregroundColor
-        backgroundColor: "transparent"
-        config: PageHeadConfiguration {
-            id: headerConfig
-            foregroundColor: styledItem.fakeTheme.palette.normal.backgroundText
+            property var contents: null
         }
 
-        property var contents: null
-    }
-
-    Image {
-        id: overlaidImage
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: header.visible ? header.height / 2 : 0
-        sourceSize {
-            width: root.width
-            height: root.height
+        Image {
+            id: overlaidImage
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: header.visible ? header.height / 2 : 0
+            sourceSize {
+                width: root.width
+                height: root.height
+            }
+            asynchronous: true
+            cache: false
         }
-        asynchronous: true
-        cache: false
-    }
 
-    UbuntuShape {
-        id: iconShape
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -units.gu(4)
-        width: units.gu(8)
-        height: units.gu(7.5)
+        UbuntuShape {
+            id: iconShape
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -units.gu(4)
+            width: units.gu(8)
+            height: units.gu(7.5)
 
-        visible: d.showIcon
+            visible: d.showIcon
 
-        radius: "medium"
-        aspect: UbuntuShape.Flat
-        sourceFillMode: Image.PreserveAspectCrop
-        source: Image {
-            id: iconImage
-            sourceSize.width: iconShape.width
-            sourceSize.height: iconShape.height
-            source: d.showIcon ? root.icon : ""
+            radius: "medium"
+            aspect: UbuntuShape.Flat
+            sourceFillMode: Image.PreserveAspectCrop
+            source: Image {
+                id: iconImage
+                sourceSize.width: iconShape.width
+                sourceSize.height: iconShape.height
+                source: d.showIcon ? root.icon : ""
+            }
         }
-    }
 
-    Label {
-        text: root.title
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: iconShape.bottom
-        anchors.topMargin: units.gu(2)
-        fontSize: "large"
+        Label {
+            text: root.title
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: iconShape.bottom
+            anchors.topMargin: units.gu(2)
+            fontSize: "large"
 
-        color: styledItem.fakeTheme.palette.normal.backgroundText
-        visible: d.showIcon
+            color: styledItem.fakeTheme.palette.normal.backgroundText
+            visible: d.showIcon
+        }
+
+        layer.enabled: root.roundedBottomCorners
+        layer.effect: BottomCornerRounder {
+            textureItem: staticContentItem
+        }
     }
 
     Timer {
