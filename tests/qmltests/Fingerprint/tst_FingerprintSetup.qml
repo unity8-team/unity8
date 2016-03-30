@@ -33,8 +33,6 @@ Item {
         property int fingerprintCount: 0
         property bool passcodeSet: false
 
-        function
-
         signal enrollmentProgressed(double progress)
         signal enrollmentCompleted()
         signal enrollmentFailed(int error)
