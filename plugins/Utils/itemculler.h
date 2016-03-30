@@ -23,7 +23,7 @@
 class QQuickItem;
 
 // Culls an item, i.e. excludes it from the rendering process
-// whithout changing the the visible property
+// without changing the visible property
 class ItemCuller : public QObject
 {
     Q_OBJECT
