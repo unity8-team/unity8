@@ -110,7 +110,6 @@ Page {
     ]
 
     header: PageHeader {
-        leadingActionBar.actions: []
         visible: false
     }
 

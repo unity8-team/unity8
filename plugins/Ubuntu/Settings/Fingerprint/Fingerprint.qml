@@ -23,10 +23,7 @@ Page {
     id: root
     objectName: "fingerprintPage"
 
-    header: PageHeader {
-        title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
-        flickable: content
-    }
+    title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
 
     // This signal indicates that the user has requested that she to set a
     // passcode.
