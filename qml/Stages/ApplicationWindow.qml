@@ -137,10 +137,9 @@ FocusScope {
         visible: active
         active: false
         anchors.fill: parent
-        sourceComponent: Item {
+        sourceComponent: Component {
             Splash {
                 id: splash
-                anchors.fill: parent
                 title: d.splashTitle ? d.splashTitle : d.name
                 imageSource: d.splashImage
                 icon: d.icon
