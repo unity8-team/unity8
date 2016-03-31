@@ -20,18 +20,29 @@ import Ubuntu.Components 1.3
 
 Item {
     id: root
-    property double enrollmentProgress
-    property string source
 
     anchors.fill: parent
+    /*!
+        \qmlproperty double enrollmentProgress
+
+        Used to visually present progress of the enrollment.
+    */
+    property double enrollmentProgress
+
+    /*!
+        \qmlproperty string source
+
+        The source of the visual's image component.
+    */
+    property string source
 
     FingerprintVisual {
         anchors.fill: undefined
         anchors.top: parent.top
         clip: true
         height: parent.height - (parent.height * enrollmentProgress)
-        verticalAlignment: Image.AlignTop
         source: root.source
+        verticalAlignment: Image.AlignTop
 
         Behavior on height {
             NumberAnimation { duration: UbuntuAnimation.BriskDuration }
@@ -43,15 +54,14 @@ Item {
         anchors.bottom: parent.bottom
         clip: true
         height: parent.height * enrollmentProgress
+        source: root.source
         verticalAlignment: Image.AlignBottom
 
-        source: root.source
-
         ColorOverlay {
-            width: parent.width
+            color: "#FF00B4EF"
             height: parent.height
             source: parent
-            color: "#FF00B4EF"
+            width: parent.width
         }
 
         Behavior on height {

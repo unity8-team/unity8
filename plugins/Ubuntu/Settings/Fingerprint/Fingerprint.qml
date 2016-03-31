@@ -25,13 +25,37 @@ Page {
 
     title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
 
-    // This signal indicates that the user has requested that she to set a
-    // passcode.
+    /*!
+        \qmlsignal requestPasscode
+
+        This signal is emitted when the user has requested that a passcode
+        be set. A passcode is a prerequisite for the enrollment process, so
+        some UI will not be enabled without one.
+    */
     signal requestPasscode()
 
+    /*!
+        \qmlsignal fingerprintEnrolled
+
+        This signal is emitted when a fingerprint was successfully enrolled.
+    */
+    signal fingerprintEnrolled()
+
+    /*!
+        \qmlsignal fingerprintRemoved
+
+        This signal is emitted when all fingerprints were removed.
+    */
+    signal fingerprintRemoved()
+
+    /*!
+       Whether or not the user has a passcode set, which is a prerequisite for
+       fingerprint enrollment.
+       \qmlproperty bool passSet
+    */
     property bool passSet: plugin.passcodeSet
 
-    // Will be replaced by the plugin proper
+    // To be replaced by some proper plugin.
     property var plugin
 
     states: [
@@ -51,28 +75,30 @@ Page {
 
     Flickable {
         id: content
+
         anchors {
             fill: parent
             topMargin: units.gu(2)
         }
-        contentHeight: contentItem.childrenRect.height
         boundsBehavior: (contentHeight > root.height) ?
                             Flickable.DragAndOvershootBounds :
                             Flickable.StopAtBounds
+        contentHeight: contentItem.childrenRect.height
 
         Column {
-            spacing: units.gu(3)
             anchors {
                 left: parent.left
                 right: parent.right
                 margins: units.gu(2)
             }
+            spacing: units.gu(3)
 
             Column {
                 id: setupPasscode
+
                 anchors { left: parent.left; right: parent.right }
-                visible: false
                 spacing: units.gu(1)
+                visible: false
 
                 Label {
                     anchors { left: parent.left; right: parent.right }
@@ -81,22 +107,23 @@ Page {
 
                 Button {
                     objectName: "fingerprintSetPasscodeButton"
-                    text: i18n.dtr("ubuntu-settings-components", "Set Passcode…")
                     onClicked: root.requestPasscode()
+                    text: i18n.dtr("ubuntu-settings-components", "Set Passcode…")
                 }
             }
 
             Column {
                 id: setupFingerprint
-                objectName: "fingerprintSetupEntry"
+
                 anchors { left: parent.left; right: parent.right }
-                spacing: units.gu(1)
+                objectName: "fingerprintSetupEntry"
                 property bool enabled: true
                 property int count: plugin.fingerprintCount
+                spacing: units.gu(1)
 
                 Label {
-                    objectName: "fingerprintFingerprintCount"
                     enabled: parent.enabled
+                    objectName: "fingerprintFingerprintCount"
 
                     // TRANSLATORS: As in "One fingerprint registered"
                     readonly property string one: i18n.dtr("ubuntu-settings-components", "One")
@@ -156,17 +183,17 @@ Page {
                 }
 
                 Button {
-                    objectName: "fingerprintAddFingerprintButton"
-                    text: i18n.dtr("ubuntu-settings-components", "Add Fingerprint…")
-                    onClicked: pageStack.push(Qt.resolvedUrl("Setup.qml"), {plugin: plugin})
                     enabled: parent.enabled
+                    objectName: "fingerprintAddFingerprintButton"
+                    onClicked: pageStack.push(Qt.resolvedUrl("Setup.qml"), {plugin: plugin})
+                    text: i18n.dtr("ubuntu-settings-components", "Add Fingerprint…")
                 }
 
                 Button {
-                    objectName: "fingerprintRemoveAllButton"
-                    text: i18n.dtr("ubuntu-settings-components", "Remove All…")
-                    onClicked: PopupUtils.open(removeAllAlert)
                     enabled: parent.enabled && plugin.fingerprintCount
+                    objectName: "fingerprintRemoveAllButton"
+                    onClicked: PopupUtils.open(removeAllAlert)
+                    text: i18n.dtr("ubuntu-settings-components", "Remove All…")
                 }
             }
         }
@@ -177,6 +204,7 @@ Page {
 
         Dialog {
             id: removeAllAlertDialog
+
             objectName: "fingerprintRemoveAllDialog"
             text: i18n.dtr("ubuntu-settings-components", "Are you sure you want to forget all stored fingerprints?")
 
@@ -185,19 +213,19 @@ Page {
                 spacing: units.gu(2)
 
                 Button {
+                    onClicked: PopupUtils.close(removeAllAlertDialog)
                     text: i18n.dtr("ubuntu-settings-components", "Cancel")
                     Layout.fillWidth: true
-                    onClicked: PopupUtils.close(removeAllAlertDialog)
                 }
 
                 Button {
                     objectName: "fingerprintRemoveAllConfirmationButton"
-                    text: i18n.dtr("ubuntu-settings-components", "Remove")
-                    Layout.fillWidth: true
                     onClicked: {
                         plugin.fingerprintCount = 0;
                         PopupUtils.close(removeAllAlertDialog);
                     }
+                    text: i18n.dtr("ubuntu-settings-components", "Remove")
+                    Layout.fillWidth: true
                 }
             }
         }

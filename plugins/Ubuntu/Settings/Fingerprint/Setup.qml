@@ -21,8 +21,8 @@ import Ubuntu.Components 1.3
 
 Page {
     id: root
-    objectName: "fingerprintSetupPage"
 
+    objectName: "fingerprintSetupPage"
     property var plugin
 
     Connections {
@@ -103,8 +103,8 @@ Page {
                 )
             }
             PropertyChanges {
-                target: doneButton
                 enabled: true
+                target: doneButton
             }
         }
     ]
@@ -120,73 +120,74 @@ Page {
             id: readerPositioner
 
             anchors {
-                top: parent.top
-                topMargin: units.gu(28.5)
                 bottom: actions.top
                 bottomMargin: units.gu(26.5)
                 left: parent.left
                 leftMargin: units.gu(13)
                 right: parent.right
                 rightMargin: units.gu(13)
+                top: parent.top
+                topMargin: units.gu(28.5)
             }
 
             DropShadow {
                 anchors.fill: readerVisual
+                color: "#33000000"
                 horizontalOffset: 0
-                verticalOffset: 0
-                transparentBorder: true
                 radius: 9.0
                 samples: 9
-                color: "#33000000"
                 source: readerVisual
+                transparentBorder: true
+                verticalOffset: 0
             }
 
             UbuntuShape {
                 id: readerVisual
-                radius: "medium"
+
                 backgroundColor: "white"
                 borderSource: ""
-
-                width: units.gu(24)
                 height: units.gu(26)
+                radius: "medium"
+                width: units.gu(24)
 
                 Item {
                     id: imageContainer
-                    anchors.centerIn: parent
-                    width: units.gu(16)
 
-                    // 1.227 preserves the aspect ratio of the svg file
-                    height: width * 1.227
+                    anchors.centerIn: parent
+                    height: width * 1.227 // preserves aspect ratio
+                    width: units.gu(16)
 
                     // Default image.
                     FingerprintVisualProgression {
-                        objectName: "fingerprintDefaultVisual"
                         id: imageDefault
+
+                        objectName: "fingerprintDefaultVisual"
                         opacity: 1
                         source: "fingerprint_nomask.svg"
                     }
 
                     // Failed image.
                     FingerprintVisual {
-                        objectName: "fingerprintFailedVisual"
                         id: imageFailed
-                        visible: false
+
+                        objectName: "fingerprintFailedVisual"
                         source: "fingerprint_failed.svg"
+                        visible: false
                     }
 
                     // Done image.
                     FingerprintVisual {
-                        objectName: "fingerprintDoneVisual"
                         id: imageDone
-                        visible: false
+
+                        objectName: "fingerprintDoneVisual"
                         source: "fingerprint_done.svg"
+                        visible: false
                     }
                 }
             }
         }
 
         StatusLabel {
-            objectName: "fingerprintStatusLabel"
             id: statusLabel
 
             anchors {
@@ -197,31 +198,33 @@ Page {
                 top: parent.top
                 topMargin: units.gu(4.9)
             }
-
             initialText: i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.")
+            objectName: "fingerprintStatusLabel"
         }
 
         Rectangle {
-            color: "#FFF7F7F7"
             id: actions
+
             anchors {
                 left: parent.left
                 right: parent.right
                 bottom: parent.bottom
             }
+            color: "#FFF7F7F7"
             height: units.gu(4.9)
 
             AbstractButton {
                 id: cancelButton
-                objectName: "fingerprintSetupCancelButton"
+
                 anchors {
                     left: parent.left
                     leftMargin: units.gu(3)
                     verticalCenter: parent.verticalCenter
                 }
-                width: units.gu(10)
                 height: parent.height
+                objectName: "fingerprintSetupCancelButton"
                 onClicked: pageStack.pop()
+                width: units.gu(10)
 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
@@ -231,15 +234,16 @@ Page {
 
             AbstractButton {
                 id: doneButton
-                objectName: "fingerprintSetupDoneButton"
+
                 anchors {
                     right: parent.right
                     rightMargin: units.gu(3)
                     verticalCenter: parent.verticalCenter
                 }
-                width: units.gu(10)
-                height: parent.height
                 enabled: false
+                height: parent.height
+                objectName: "fingerprintSetupDoneButton"
+                width: units.gu(10)
 
                 Label {
                     anchors {
