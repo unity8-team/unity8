@@ -19,6 +19,7 @@ import QtQuick.Window 2.2
 import Unity.InputInfo 0.1
 import Unity.Session 0.1
 import Unity.Screens 0.1
+import Utils 0.1
 import GSettings 1.0
 import "Components"
 import "Rotation"
@@ -57,7 +58,7 @@ Rectangle {
         }
     }
         // to be overwritten by tests
-    property var unity8Settings: Unity8Settings {}
+    property var unity8Settings: GSettings { schema.id: "com.canonical.Unity8" }
     property var oskSettings: GSettings { schema.id: "com.canonical.keyboard.maliit" }
 
     property int physicalOrientation: Screen.orientation
@@ -67,21 +68,69 @@ Rectangle {
     InputDeviceModel {
         id: miceModel
         deviceFilter: InputInfo.Mouse
+        property int oldCount: 0
     }
 
     InputDeviceModel {
         id: touchPadModel
         deviceFilter: InputInfo.TouchPad
+        property int oldCount: 0
     }
 
     InputDeviceModel {
         id: keyboardsModel
         deviceFilter: InputInfo.Keyboard
+        onDeviceAdded: forceOSKEnabled = autopilotDevicePresent();
+        onDeviceRemoved: forceOSKEnabled = autopilotDevicePresent();
     }
 
     InputDeviceModel {
         id: touchScreensModel
         deviceFilter: InputInfo.TouchScreen
+    }
+
+    readonly property int pointerInputDevices: miceModel.count + touchPadModel.count
+    onPointerInputDevicesChanged: {
+        console.log("Pointer input devices changed:", pointerInputDevices, "current mode:", root.unity8Settings.usageMode, "old device count", miceModel.oldCount + touchPadModel.oldCount)
+        if (root.unity8Settings.usageMode === "Windowed") {
+            if (pointerInputDevices === 0) {
+                // All pointer devices have been unplugged. Move to staged.
+                root.unity8Settings.usageMode = "Staged";
+            }
+        } else {
+            var longEdgeWidth = Math.max(root.width, root.height)
+            if (longEdgeWidth > units.gu(90)){
+                if (pointerInputDevices > 0 && pointerInputDevices > miceModel.oldCount + touchPadModel.oldCount) {
+                    root.unity8Settings.usageMode = "Windowed";
+                }
+            } else {
+                // Make sure we initialize to something sane
+                root.unity8Settings.usageMode = "Staged";
+            }
+        }
+        miceModel.oldCount = miceModel.count;
+        touchPadModel.oldCount = touchPadModel.count;
+    }
+
+    /* FIXME: This exposes the NameRole as a work arround for lp:1542224.
+     * When QInputInfo exposes NameRole to QML, this should be removed.
+     */
+    property bool forceOSKEnabled: false
+    property var autopilotEmulatedDeviceNames: ["py-evdev-uinput"]
+    UnitySortFilterProxyModel {
+        id: autopilotDevices
+        model: keyboardsModel
+    }
+
+    function autopilotDevicePresent() {
+        for(var i = 0; i < autopilotDevices.count; i++) {
+            var device = autopilotDevices.get(i);
+            if (autopilotEmulatedDeviceNames.indexOf(device.name) != -1) {
+                console.warn("Forcing the OSK to be enabled as there is an autopilot eumlated device present.")
+                return true;
+            }
+        }
+        return false;
     }
 
     Screens {
@@ -195,32 +244,18 @@ Rectangle {
         //       have multiple keyboards around. For now we only enable one keyboard at a time
         //       thus hiding it here if there is a physical one around or if we have a second
         //       screen (the virtual touchpad & osk on the phone) attached.
-        oskEnabled: keyboardsModel.count === 0 && screens.count === 1
+        oskEnabled: (keyboardsModel.count === 0 && screens.count === 1) ||
+                    forceOSKEnabled
 
-        // TODO: Factor in the connected input devices (eg: physical keyboard, mouse, touchscreen),
-        //       what's the output device (eg: big TV, desktop monitor, phone display), etc.
         usageScenario: {
             if (root.unity8Settings.usageMode === "Windowed") {
                 return "desktop";
-            } else if (root.unity8Settings.usageMode === "Staged") {
+            } else {
                 if (deviceConfiguration.category === "phone") {
                     return "phone";
                 } else {
                     return "tablet";
                 }
-            } else { // automatic
-                var longEdgeWidth = Math.max(root.width, root.height)
-                if (longEdgeWidth > units.gu(120)) {
-                    if (keyboardsModel.count + miceModel.count + touchPadModel.count > 0) {
-                        return "desktop";
-                    }
-                } else if (longEdgeWidth > units.gu(90)){
-                    if (miceModel.count + touchPadModel.count > 0) {
-                        return "desktop";
-                    }
-                }
-
-                return deviceConfiguration.category;
             }
         }
 
