@@ -76,7 +76,7 @@ Page {
 
                 Label {
                     anchors { left: parent.left; right: parent.right }
-                    text: i18n.dtr("ubuntu-settings-components", "You must set a passcode before using fingerprint ID")
+                    text: i18n.dtr("ubuntu-settings-components", "You must set a passcode to use fingerprint ID")
                 }
 
                 Button {
