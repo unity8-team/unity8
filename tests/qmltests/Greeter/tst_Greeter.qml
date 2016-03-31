@@ -28,7 +28,7 @@ Item {
     width: units.gu(120)
     height: units.gu(80)
 
-    property url defaultBackground: Qt.resolvedUrl("../../../qml/graphics/tablet_background.jpg")
+    property url defaultBackground: Qt.resolvedUrl("../../../qml/graphics/tablet_background.png")
 
     Component.onCompleted: {
         // set the mock mode before loading

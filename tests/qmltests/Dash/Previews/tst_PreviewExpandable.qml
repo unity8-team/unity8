@@ -54,8 +54,8 @@ Rectangle {
 
     property var galleryData: {
         "sources": [
-                    "../../graphics/phone_background.jpg",
-                    "../../graphics/tablet_background.jpg",
+                    "../../graphics/phone_background.png",
+                    "../../graphics/tablet_background.png",
                     "../../../tests/graphics/clock@18.png",
                     "../../graphics/borked"
                    ]
@@ -71,7 +71,7 @@ Rectangle {
     }
 
     property var imageData: {
-        "source": "../../graphics/phone_background.jpg",
+        "source": "../../graphics/phone_background.png",
         "zoomable": false
     }
 

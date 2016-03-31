@@ -26,7 +26,7 @@ Rectangle {
     color: "lightgrey"
 
     property var widgetData0: {
-        "source": "../../graphics/phone_background.jpg",
+        "source": "../../graphics/phone_background.png",
         "zoomable": false
     }
 
@@ -36,12 +36,12 @@ Rectangle {
 
     property var widgetData2: {
         "source": "fadsasf",
-        "fallback": "../../graphics/phone_background.jpg"
+        "fallback": "../../graphics/phone_background.png"
     }
 
     property var widgetData3: {
         "source": "",
-        "fallback": "../../graphics/phone_background.jpg"
+        "fallback": "../../graphics/phone_background.png"
     }
 
     Loader {

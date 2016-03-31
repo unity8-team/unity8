@@ -45,7 +45,7 @@ Item {
                 WideView {
                     id: view
 
-                    background: Qt.resolvedUrl("../../../qml/graphics/tablet_background.jpg")
+                    background: Qt.resolvedUrl("../../../qml/graphics/tablet_background.png")
                     userModel: LightDM.Users
                     infographicModel: LightDM.Infographic
 

@@ -39,7 +39,7 @@ Item {
             property bool itemDestroyed: false
             sourceComponent: Component {
                 NarrowView {
-                    background: Qt.resolvedUrl("../../../qml/graphics/phone_background.jpg")
+                    background: Qt.resolvedUrl("../../../qml/graphics/phone_background.png")
                     userModel: LightDM.Users
                     infographicModel: LightDM.Infographic
 

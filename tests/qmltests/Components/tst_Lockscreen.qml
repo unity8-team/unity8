@@ -38,7 +38,7 @@ Rectangle {
         minPinLength: minPinLengthTextField.text
         maxPinLength: maxPinLengthTextField.text
         delayMinutes: delayMinutesTextField.text
-        background: "../../../qml/graphics/phone_background.jpg"
+        background: "../../../qml/graphics/phone_background.png"
     }
 
     Connections {

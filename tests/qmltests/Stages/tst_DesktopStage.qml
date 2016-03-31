@@ -67,7 +67,7 @@ Item {
             DesktopStage {
                 color: "white"
                 anchors.fill: parent
-                background: "../../../qml/graphics/tablet_background.jpg"
+                background: "../../../qml/graphics/tablet_background.png"
 
                 Component.onCompleted: {
                     edgeBarrierControls.target = testCase.findChild(this, "edgeBarrierController");

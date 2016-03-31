@@ -31,7 +31,7 @@ Rectangle {
     }
 
     property var widgetData1: {
-        "source": "../../../qml/graphics/phone_background.jpg",
+        "source": "../../../qml/graphics/phone_background.png",
         "zoomable": false
     }
 
