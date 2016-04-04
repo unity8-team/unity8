@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-03-21 13:10+0100\n"
-"PO-Revision-Date: 2016-03-26 21:36+0000\n"
-"Last-Translator: Tobias Bannert <Unknown>\n"
+"PO-Revision-Date: 2016-04-03 13:43+0000\n"
+"Last-Translator: Stephan Lanfermann <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-03-27 05:47+0000\n"
-"X-Generator: Launchpad (build 17967)\n"
+"X-Launchpad-Export-Date: 2016-04-04 05:38+0000\n"
+"X-Generator: Launchpad (build 17972)\n"
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
@@ -56,7 +56,7 @@ msgstr "Abbrechen"
 
 #: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:170
 msgid "Accept"
-msgstr ""
+msgstr "Annehmen"
 
 #: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:25
 msgid "Choose…"
@@ -112,7 +112,7 @@ msgstr "Schlüsselpasswort:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:306
 msgid "Use additional TLS authentication:"
-msgstr ""
+msgstr "Zusätzliche TLS-Legitimierung verwenden:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:315
 msgid "TLS key:"
@@ -120,7 +120,7 @@ msgstr "TLS-Schlüssel:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:329
 msgid "Key direction:"
-msgstr ""
+msgstr "Schlüsselrichtung:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:357
 msgid "Verify peer certificate:"
@@ -148,7 +148,7 @@ msgstr "Vorgabe"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:422
 msgid "Compress data"
-msgstr ""
+msgstr "Daten komprimieren"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:150
 msgid "User:"
@@ -188,7 +188,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:333
 msgid "Allow BSD data compression"
-msgstr ""
+msgstr "BSD-Datenkomprimierung erlauben"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:347
 msgid "Allow Deflate data compression"
@@ -196,7 +196,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:361
 msgid "Use TCP Header compression"
-msgstr ""
+msgstr "TCP-Kopfzeilenkomprimierung verwenden"
 
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:375
 msgid "Send PPP echo packets"
@@ -222,7 +222,7 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:51
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:47
 msgid "The VPN provider can see or modify your Internet traffic."
-msgstr ""
+msgstr "Der VPN-Anbieter kann Ihren Internetverkehr sehen und verändern."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithDns.qml:45
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:51
@@ -231,6 +231,8 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:54
 msgid "Web sites and other service providers can still monitor your use."
 msgstr ""
+"Internetseitenbetreiber und andere Diensteanbieter können weiterhin Ihre "
+"Nutzung überwachen."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:33
 msgid ""
@@ -261,15 +263,15 @@ msgstr "Details: %1"
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:51
 msgid "The certificate was not found."
-msgstr ""
+msgstr "Das Zertifikat wurde nicht gefunden."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:54
 msgid "The certificate is empty."
-msgstr ""
+msgstr "Das Zertifikat ist leer."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:57
 msgid "The certificate is self signed."
-msgstr ""
+msgstr "Das Zertifikat ist selbstsigniert."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:60
 msgid "The certificate has expired."
@@ -287,12 +289,12 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:27
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:27
 msgid "This VPN configuration is not installed."
-msgstr ""
+msgstr "Die VPN-Konfiguration ist nicht installiert."
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:33
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:33
 msgid "If you install it:"
-msgstr ""
+msgstr "Falls Sie es installieren:"
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:45
 msgid "The DNS provider can see which Web sites and other services you use. "
@@ -304,7 +306,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:33
 msgid "When you use it:"
-msgstr ""
+msgstr "Wenn Sie es verwenden:"
 
 #: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SomeTraffic.qml:27
 msgid "You’re using this VPN for specific services."
@@ -321,7 +323,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:25
 msgid "Set up VPN"
-msgstr ""
+msgstr "VPN einrichten"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:115
 msgid "OK"
@@ -329,7 +331,7 @@ msgstr "OK"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnList.qml:62
 msgid "Delete configuration"
-msgstr ""
+msgstr "Konfiguration löschen"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:53
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:58
@@ -359,7 +361,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/VpnRoutesField.qml:60
 msgid "All network connections"
-msgstr ""
+msgstr "Alle Netzwerkverbindungen"
 
 #: plugins/Ubuntu/Settings/Vpn/VpnRoutesField.qml:76
 msgid "Its own network"
