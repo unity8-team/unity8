@@ -1,3 +1,8 @@
 #!/bin/sh
 
+if [ -z $DBUS_SESSION_BUS_ADDRESS ] ; then
+	UID=`id -u`
+	export `cat /run/user/${UID}/dbus-session`
+fi
+
 exec dbus-send --type=method_call --dest=com.canonical.Unity.Launcher /com/canonical/Unity/Launcher com.canonical.Unity.Launcher.Refresh
