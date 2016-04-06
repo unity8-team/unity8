@@ -4,6 +4,7 @@ data/unity8-filewatcher.conf usr/share/upstart/sessions/
 data/unity8.conf usr/share/upstart/sessions/
 usr/bin/unity8
 usr/bin/unity8-dash
+usr/bin/unity8-launcher-refresh
 usr/share/applications/unity8-dash.desktop
 usr/share/applications/unity8.desktop
 usr/share/unity8/Greeter

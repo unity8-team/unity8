@@ -1,0 +1,4 @@
+Pattern: ${home}/.cache/unity8/click-desktops/${short-id}.desktop
+Exec: unity8-launcher-refresh
+User-Level: yes
+Hook-Name: desktop

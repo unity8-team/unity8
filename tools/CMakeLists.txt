@@ -12,3 +12,5 @@ install(TARGETS ${SCOPE_TOOL}
     )
 
 install(FILES unlock-device DESTINATION ${SHELL_APP_DIR})
+
+install(PROGRAMS unity8-launcher-refresh DESTINATION ${CMAKE_INSTALL_BINDIR})
