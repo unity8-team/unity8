@@ -27,6 +27,7 @@ FocusScope {
     property alias delayMinutes: lockscreen.delayMinutes
     property alias backgroundTopMargin: coverPage.backgroundTopMargin
     property url background
+    property bool hasMouse
     property bool locked
     property bool alphanumeric
     property var userModel // unused
@@ -157,7 +158,7 @@ FocusScope {
         width: parent.width
         background: root.background
         onTease: root.tease()
-        onClicked: hide()
+        swipeHint.visible: !loginButton.visible
 
         onShowProgressChanged: {
             if (showProgress === 1) {
@@ -179,6 +180,15 @@ FocusScope {
                 topMargin: units.gu(2)
                 horizontalCenter: parent.horizontalCenter
             }
+        }
+
+        Button {
+            id: loginButton
+            visible: !root.locked && root.hasMouse
+            anchors.bottom: coverPage.swipeHint.bottom
+            anchors.horizontalCenter: coverPage.swipeHint.horizontalCenter
+            text: i18n.tr("Login")
+            onClicked: root.responded("")
         }
     }
 }

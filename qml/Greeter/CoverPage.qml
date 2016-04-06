@@ -30,11 +30,11 @@ Showable {
     property bool draggable: true
 
     property alias infographics: infographics
+    property alias swipeHint: swipeHint
 
     readonly property real showProgress: MathUtils.clamp((width - Math.abs(x)) / width, 0, 1)
 
     signal tease()
-    signal clicked()
 
     function hideRight() {
         d.forceRightOnNextHideAnimation = true;
@@ -56,16 +56,9 @@ Showable {
     // instead, we can get a little extra horizontal push by using transforms.
     transform: Translate { id: translation; x: root.draggable ? launcherOffset : 0 }
 
-    // Eat events elsewhere on the coverpage, except mouse clicks which we pass
-    // up (they are used in the NarrowView to hide the cover page)
+    // Eat events elsewhere on the coverpage
     MouseArea {
         anchors.fill: parent
-        onClicked: root.clicked()
-
-        MultiPointTouchArea {
-            anchors.fill: parent
-            mouseEnabled: false
-        }
     }
 
     Rectangle {

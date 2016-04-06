@@ -26,6 +26,7 @@ FocusScope {
     property int delayMinutes // TODO
     property alias backgroundTopMargin: coverPage.backgroundTopMargin
     property alias background: coverPage.background
+    property bool hasMouse
     property bool locked
     property alias alphanumeric: loginList.alphanumeric
     property alias userModel: loginList.model

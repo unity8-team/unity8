@@ -28,8 +28,8 @@ Showable {
     created: loader.status == Loader.Ready
 
     property real dragHandleLeftMargin: 0
-
     property url background
+    property bool hasMouse
 
     // How far to offset the top greeter layer during a launcher left-drag
     property real launcherOffset
@@ -330,6 +330,12 @@ Showable {
             target: loader.item
             property: "background"
             value: root.background
+        }
+
+        Binding {
+            target: loader.item
+            property: "hasMouse"
+            value: root.hasMouse
         }
 
         Binding {
