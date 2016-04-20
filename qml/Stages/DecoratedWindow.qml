@@ -49,7 +49,7 @@ FocusScope {
     signal close()
     signal maximize()
     signal minimize()
-    signal decorationPressed()
+    signal decorationPressed(var button)
 
     Rectangle {
         id: selectionHighlight
@@ -87,9 +87,9 @@ FocusScope {
         visible: root.decorationShown
 
         onClose: root.close();
-        onMaximize: { root.decorationPressed(); root.maximize(); }
+        onMaximize: { root.decorationPressed(Qt.LeftButton); root.maximize(); }
         onMinimize: root.minimize();
-        onPressed: root.decorationPressed();
+        onPressed: root.decorationPressed(mouse.button)
     }
 
     ApplicationWindow {

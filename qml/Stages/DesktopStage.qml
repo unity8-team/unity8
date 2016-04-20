@@ -139,10 +139,11 @@ AbstractStage {
             }
         }
 
-        function focusNext() {
+        function focusNext(index) {
+            // focus some other window
             for (var i = 0; i < appRepeater.count; i++) {
                 var appDelegate = appRepeater.itemAt(i);
-                if (appDelegate && !appDelegate.minimized) {
+                if (appDelegate && !appDelegate.minimized && i !== index) {
                     appDelegate.focus = true;
                     return;
                 }
@@ -345,14 +346,7 @@ AbstractStage {
                     }
 
                     if (focus) {
-                        // focus some other window
-                        for (var i = 0; i < appRepeater.count; i++) {
-                            var appDelegate = appRepeater.itemAt(i);
-                            if (appDelegate && !appDelegate.minimized && i != index) {
-                                appDelegate.focus = true;
-                                return;
-                            }
-                        }
+                       priv.focusNext(index);
                     }
                 }
 
@@ -522,7 +516,7 @@ AbstractStage {
                                 script: {
                                     if (appDelegate.minimized) {
                                         appDelegate.focus = false;
-                                        priv.focusNext();
+                                        priv.focusNext(index);
                                     }
                                 }
                             }
@@ -601,7 +595,14 @@ AbstractStage {
                     onMaximize: appDelegate.maximized || appDelegate.maximizedLeft || appDelegate.maximizedRight
                                 ? appDelegate.restoreFromMaximized() : appDelegate.maximize()
                     onMinimize: appDelegate.minimize()
-                    onDecorationPressed: { appDelegate.focus = true; }
+                    onDecorationPressed: {
+                        print("Decoration pressed, button:", button)
+                        if (button === Qt.MiddleButton) {
+                            priv.focusNext(index);
+                        } else if (button === Qt.LeftButton) {
+                            appDelegate.focus = true;
+                        }
+                    }
                 }
 
                 WindowedFullscreenPolicy {

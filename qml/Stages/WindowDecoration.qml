@@ -28,12 +28,17 @@ MouseArea {
     property alias title: titleLabel.text
     property bool active: false
     hoverEnabled: true
+    acceptedButtons: Qt.LeftButton | Qt.MiddleButton
 
     signal close()
     signal minimize()
     signal maximize()
 
-    onDoubleClicked: root.maximize()
+    onDoubleClicked: {
+        if (mouse.button == Qt.LeftButton) {
+            root.maximize();
+        }
+    }
 
     QtObject {
         id: priv
@@ -43,7 +48,7 @@ MouseArea {
     }
 
     onPressedChanged: {
-        if (pressed) {
+        if (pressed && pressedButtons === Qt.LeftButton) {
             var pos = mapToItem(root.target, mouseX, mouseY);
             priv.distanceX = pos.x;
             priv.distanceY = pos.y;
