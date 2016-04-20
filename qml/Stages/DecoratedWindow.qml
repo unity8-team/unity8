@@ -46,9 +46,11 @@ FocusScope {
     property alias widthIncrement: applicationWindow.widthIncrement
     property alias heightIncrement: applicationWindow.heightIncrement
 
-    signal close()
-    signal maximize()
-    signal minimize()
+    signal closeClicked()
+    signal maximizeClicked()
+    signal maximizeHorizontallyClicked()
+    signal maximizeVerticallyClicked()
+    signal minimizeClicked()
     signal decorationPressed(var button)
 
     Rectangle {
@@ -86,9 +88,11 @@ FocusScope {
         title: applicationWindow.title
         visible: root.decorationShown
 
-        onClose: root.close();
-        onMaximize: { root.decorationPressed(Qt.LeftButton); root.maximize(); }
-        onMinimize: root.minimize();
+        onCloseClicked: root.closeClicked();
+        onMaximizeClicked: { root.decorationPressed(Qt.LeftButton); root.maximizeClicked(); }
+        onMaximizeHorizontallyClicked: { root.decorationPressed(Qt.LeftButton); root.maximizeHorizontallyClicked(); }
+        onMaximizeVerticallyClicked: { root.decorationPressed(Qt.LeftButton); root.maximizeVerticallyClicked(); }
+        onMinimizeClicked: root.minimizeClicked();
         onPressed: root.decorationPressed(mouse.button)
     }
 

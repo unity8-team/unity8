@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,15 @@ MouseArea {
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.MiddleButton
 
-    signal close()
-    signal minimize()
-    signal maximize()
+    signal closeClicked()
+    signal minimizeClicked()
+    signal maximizeClicked()
+    signal maximizeHorizontallyClicked()
+    signal maximizeVerticallyClicked()
 
     onDoubleClicked: {
         if (mouse.button == Qt.LeftButton) {
-            root.maximize();
+            root.maximizeClicked();
         }
     }
 
@@ -89,9 +91,11 @@ MouseArea {
             id: buttons
             height: parent.height
             active: root.active
-            onClose: root.close();
-            onMinimize: root.minimize();
-            onMaximize: root.maximize();
+            onCloseClicked: root.closeClicked();
+            onMinimizeClicked: root.minimizeClicked();
+            onMaximizeClicked: root.maximizeClicked();
+            onMaximizeHorizontallyClicked: root.maximizeHorizontallyClicked();
+            onMaximizeVerticallyClicked: root.maximizeVerticallyClicked();
         }
 
         Label {
