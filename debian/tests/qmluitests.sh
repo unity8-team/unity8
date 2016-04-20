@@ -12,12 +12,12 @@ dh_auto_configure -- -DCMAKE_INSTALL_LOCALSTATEDIR="/var" \
                      -DUNITY_MOCKPATH=${SHELL_QML_PATH}/mocks
 dh_auto_build --parallel -- -C tests/mocks
 dh_auto_build --parallel -- -C tests/plugins
-# FIXME: Re-enable parallel qmltests. Temporarily disabled because of freezes in testShell on Britney.
-#dh_auto_build --parallel -- -C tests/qmltests
-dh_auto_build -- -C tests/qmltests
+dh_auto_build --parallel -- -C tests/qmltests
 dh_auto_build --parallel -- -C tests/uqmlscene
 dh_auto_build --parallel -- -C tests/utils
 
 export UNITY_SOURCE_DIR
 
-dh_auto_build --parallel -- -k xvfballtests
+# FIXME: Re-enable parallel qmltests. Temporarily disabled because of freezes in testShell on CI.
+#dh_auto_build --parallel -- -k xvfballtests
+dh_auto_build -- -k xvfballtests
