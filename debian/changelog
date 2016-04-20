@@ -1,3 +1,10 @@
+unity8 (8.12+16.04.20160420-0ubuntu1) xenial; urgency=medium
+
+  * Use new setTimeZone method to set user-friendly timezone name in the
+    wizard. (LP: #1566295)
+
+ -- Michael Terry <michael.terry@canonical.com>  Wed, 20 Apr 2016 15:56:30 +0000
+
 unity8 (8.12+16.04.20160414.1-0ubuntu1) xenial; urgency=medium
 
   [ Michael Terry ]
