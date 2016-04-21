@@ -92,7 +92,7 @@ FocusScope {
         onMaximizeClicked: { root.decorationPressed(Qt.LeftButton); root.maximizeClicked(); }
         onMaximizeHorizontallyClicked: { root.decorationPressed(Qt.LeftButton); root.maximizeHorizontallyClicked(); }
         onMaximizeVerticallyClicked: { root.decorationPressed(Qt.LeftButton); root.maximizeVerticallyClicked(); }
-        onMinimizeClicked: root.minimizeClicked();
+        onMinimizeClicked: root.minimizeClicked()
         onPressed: root.decorationPressed(mouse.button)
     }
 

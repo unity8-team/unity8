@@ -608,7 +608,6 @@ AbstractStage {
                     onMaximizeVerticallyClicked: appDelegate.maximizedVertically ? appDelegate.restoreFromMaximized() : appDelegate.maximizeVertically()
                     onMinimizeClicked: appDelegate.minimize()
                     onDecorationPressed: {
-                        print("Decoration pressed, button:", button)
                         if (button === Qt.MiddleButton) {
                             priv.focusNext(index);
                         } else if (button === Qt.LeftButton) {
