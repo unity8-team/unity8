@@ -18,6 +18,7 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
+import Ubuntu.Components.Themes 1.3
 
 Page {
     id: editor
@@ -77,7 +78,10 @@ Page {
     Flickable {
         id: scrollWidget
         anchors {
-            fill: parent
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            bottom: actionButtons.top
             margins: units.gu(2)
         }
         contentHeight: contentItem.childrenRect.height
@@ -93,50 +97,77 @@ Page {
                 anchors.left: parent.left
                 anchors.right: parent.right
             }
+        }
+    }
 
-            RowLayout {
-                anchors { left: parent.left; right: parent.right }
+    Rectangle {
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: actionButtons.top
+        }
+        height: units.gu(0.1)
+        color: Qt.rgba(0,0,0,0.2)
+    }
 
-                Button {
-                    objectName: "vpnEditorCancelButton"
-                    text: i18n.dtr("ubuntu-settings-components", "Cancel")
-                    onClicked: {
-                        if (editor.isNew) {
-                            connection.remove();
-                        }
-                        pageStack.pop();
+    Rectangle {
+        color: theme.palette.normal.background
+        id: actionButtons
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        height: units.gu(6)
+
+        RowLayout {
+            anchors {
+                left: parent.left
+                right: parent.right
+                verticalCenter: parent.verticalCenter
+                margins: units.gu(2)
+            }
+            spacing: units.gu(2)
+
+            Button {
+                objectName: "vpnEditorCancelButton"
+                text: i18n.dtr("ubuntu-settings-components", "Cancel")
+                onClicked: {
+                    if (editor.isNew) {
+                        connection.remove();
                     }
-                    Layout.fillWidth: true
+                    pageStack.pop();
+                }
+                Layout.fillWidth: true
+            }
+
+            Button {
+                id: vpnEditorOkayButton
+                objectName: "vpnEditorOkayButton"
+                text: i18n.dtr("ubuntu-settings-components", "OK")
+                onClicked: editor.commit()
+                Layout.fillWidth: true
+                enabled: editorLoader.item.changed && editorLoader.item.valid
+
+                Icon {
+                    height: parent.height - units.gu(1.5)
+                    width: parent.height - units.gu(1.5)
+                    anchors {
+                        centerIn: parent
+                    }
+                    name: "tick"
+                    color: "green"
+                    visible: successIndicator.running
                 }
 
-                Button {
-                    id: vpnEditorOkayButton
-                    objectName: "vpnEditorOkayButton"
-                    text: i18n.dtr("ubuntu-settings-components", "OK")
-                    onClicked: editor.commit()
-                    Layout.fillWidth: true
-                    enabled: editorLoader.item.changed && editorLoader.item.valid
-
-                    Icon {
-                        height: parent.height - units.gu(1.5)
-                        width: parent.height - units.gu(1.5)
-                        anchors {
-                            centerIn: parent
-                        }
-                        name: "tick"
-                        color: "green"
-                        visible: successIndicator.running
-                    }
-
-                    ActivityIndicator {
-                        id: okButtonIndicator
-                        objectName: "okButtonIndicator"
-                        running: false
-                        visible: running
-                        height: parent.height - units.gu(1.5)
-                        anchors {
-                            centerIn: parent
-                        }
+                ActivityIndicator {
+                    id: okButtonIndicator
+                    objectName: "okButtonIndicator"
+                    running: false
+                    visible: running
+                    height: parent.height - units.gu(1.5)
+                    anchors {
+                        centerIn: parent
                     }
                 }
             }
