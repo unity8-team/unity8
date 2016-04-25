@@ -39,10 +39,10 @@ Column {
         objectName: "vpnTypeField"
         enabled: parent.enabled
         model: [
-            i18n.tr("Certificates (TLS)"),
-            i18n.tr("Password"),
-            i18n.tr("Password with certificates (TLS)"),
-            i18n.tr("Static key")
+            i18n.dtr("Certificates (TLS)"),
+            i18n.dtr("Password"),
+            i18n.dtr("Password with certificates (TLS)"),
+            i18n.dtr("Static key")
         ]
         expanded: false
         onDelegateClicked: authTypeRequested(index)
