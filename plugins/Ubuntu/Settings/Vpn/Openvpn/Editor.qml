@@ -291,7 +291,6 @@ Column {
         Component.onCompleted: authTypeRequested(connection.connectionType)
     }
 
-
     Column {
         id: authPassword
         anchors { left: parent.left; right: parent.right }
