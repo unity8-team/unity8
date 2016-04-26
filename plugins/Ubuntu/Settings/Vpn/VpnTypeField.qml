@@ -32,7 +32,7 @@ RowLayout {
         text: i18n.dtr("ubuntu-settings-components", "Type:")
         enabled: parent.enabled
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignRight
         Layout.fillWidth: true

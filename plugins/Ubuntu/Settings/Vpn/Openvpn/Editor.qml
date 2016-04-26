@@ -122,7 +122,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Server:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             Layout.fillWidth: true
         }
@@ -136,7 +136,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Port:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             Layout.preferredWidth: units.gu(10)
         }
@@ -214,7 +214,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Protocol:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
         }
 
@@ -299,7 +299,7 @@ Column {
 
         Label {
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             text: i18n.dtr("ubuntu-settings-components", "Username:")
         }
@@ -314,7 +314,7 @@ Column {
 
         Label {
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             text: i18n.dtr("ubuntu-settings-components", "Password:")
         }
@@ -336,7 +336,7 @@ Column {
 
         Label {
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             text: i18n.dtr("ubuntu-settings-components", "Client certificate:")
         }
@@ -351,7 +351,7 @@ Column {
 
         Label {
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             text: i18n.dtr("ubuntu-settings-components", "Private key:")
         }
@@ -366,7 +366,7 @@ Column {
 
         Label {
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             text: i18n.dtr("ubuntu-settings-components", "Key password:")
         }
@@ -383,7 +383,7 @@ Column {
     Label {
         id: caLabel
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "CA certificate:")
     }
@@ -404,7 +404,7 @@ Column {
 
         Label {
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             text: i18n.dtr("ubuntu-settings-components", "Static key:")
         }
@@ -420,7 +420,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Key direction:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
         }
 
@@ -438,7 +438,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Remote IP:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
         }
 
@@ -453,7 +453,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Local IP:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
         }
 
@@ -483,7 +483,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "TLS key:")
         visible: taSetToggle.checked
@@ -501,7 +501,7 @@ Column {
     Label {
         text: i18n.dtr("ubuntu-settings-components", "Key direction:")
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         visible: taSetToggle.checked
     }
@@ -534,7 +534,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "Peer certificate TLS type:")
         visible: remoteCertSetToggle.checked
@@ -553,7 +553,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "Cipher:")
     }

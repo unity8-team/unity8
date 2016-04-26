@@ -113,7 +113,7 @@ Column {
     Label {
         text: i18n.dtr("ubuntu-settings-components", "Server:")
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
     }
 
@@ -145,7 +145,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "User:")
     }
@@ -160,7 +160,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "Password:")
     }
@@ -175,7 +175,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "NT Domain:")
     }
@@ -191,7 +191,7 @@ Column {
     Label {
         text: i18n.dtr("ubuntu-settings-components", "Authentication methods:")
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
     }
 

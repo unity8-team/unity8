@@ -29,7 +29,7 @@ Column {
         text: i18n.dtr("ubuntu-settings-components", "Authentication type:")
         enabled: parent.enabled
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignRight
     }
@@ -39,10 +39,10 @@ Column {
         objectName: "vpnTypeField"
         enabled: parent.enabled
         model: [
-            i18n.dtr("Certificates (TLS)"),
-            i18n.dtr("Password"),
-            i18n.dtr("Password with certificates (TLS)"),
-            i18n.dtr("Static key")
+            i18n.dtr("ubuntu-settings-components", "Certificates (TLS)"),
+            i18n.dtr("ubuntu-settings-components", "Password"),
+            i18n.dtr("ubuntu-settings-components", "Password with certificates (TLS)"),
+            i18n.dtr("ubuntu-settings-components", "Static key")
         ]
         expanded: false
         onDelegateClicked: authTypeRequested(index)
