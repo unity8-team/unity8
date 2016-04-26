@@ -101,6 +101,7 @@ protected:
     void mouseMoveEvent(QMouseEvent * event) override;
     void mouseReleaseEvent(QMouseEvent * event) override;
     void itemChange(ItemChange change, const ItemChangeData & value) override;
+    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
 
 private Q_SLOTS:
     void onComponentStatusChanged(QQmlComponent::Status status);

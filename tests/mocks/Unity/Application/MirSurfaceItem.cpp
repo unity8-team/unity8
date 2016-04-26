@@ -171,9 +171,6 @@ void MirSurfaceItem::createQmlContentItem()
     setImplicitWidth(m_qmlItem->implicitWidth());
     setImplicitHeight(m_qmlItem->implicitHeight());
 
-    m_shaderEffectSource.setImplicitWidth(m_qmlItem->implicitWidth());
-    m_shaderEffectSource.setImplicitHeight(m_qmlItem->implicitHeight());
-
     {
         QQmlProperty screenshotSource(m_qmlItem, "screenshotSource");
         screenshotSource.write(QVariant::fromValue(m_qmlSurface->screenshotUrl()));
@@ -298,6 +295,15 @@ void MirSurfaceItem::itemChange(ItemChange change, const ItemChangeData & value)
         if (m_qmlSurface) {
             m_qmlSurface->setActiveFocus(value.boolValue);
         }
+    }
+}
+
+void MirSurfaceItem::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+{
+    unity::shell::application::MirSurfaceItemInterface::geometryChanged(newGeometry, oldGeometry);
+    if (newGeometry != oldGeometry) {
+        m_shaderEffectSource.setWidth(newGeometry.width());
+        m_shaderEffectSource.setHeight(newGeometry.height());
     }
 }
 
