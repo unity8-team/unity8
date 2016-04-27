@@ -18,7 +18,6 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
-import Ubuntu.Components.Themes 1.3
 
 Page {
     id: editor
@@ -106,8 +105,10 @@ Page {
             right: parent.right
             bottom: actionButtons.top
         }
-        height: units.gu(0.1)
-        color: Qt.rgba(0,0,0,0.2)
+        // This rectangle acts as a horizontal border on top of the action
+        // buttons. I.e. height is the width of the border.
+        height: units.dp(2)
+        color: theme.palette.normal.foreground
     }
 
     Rectangle {
