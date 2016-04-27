@@ -15,40 +15,36 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 
-RowLayout {
+Column {
     spacing: units.gu(1)
 
-    property alias type: vpnTypeSelector.selectedIndex
-
-    // XXX: disabled due to lp:1551823 (pptp connections fails on arm)
-    property bool enabled: false
-    signal typeRequested(int index)
+    property alias type: authTypeSelector.selectedIndex
+    property bool enabled: true
+    signal authTypeRequested(int index)
 
     Label {
-        text: i18n.dtr("ubuntu-settings-components", "Type:")
+        text: i18n.dtr("ubuntu-settings-components", "Authentication type:")
         enabled: parent.enabled
         font.bold: true
         color: theme.palette.normal.baseText
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignRight
-        Layout.fillWidth: true
     }
 
     ListItems.ItemSelector {
-        id: vpnTypeSelector
+        id: authTypeSelector
         objectName: "vpnTypeField"
         enabled: parent.enabled
         model: [
-            "OpenVPN",
-            "Pptp"
+            i18n.dtr("ubuntu-settings-components", "Certificates (TLS)"),
+            i18n.dtr("ubuntu-settings-components", "Password"),
+            i18n.dtr("ubuntu-settings-components", "Password with certificates (TLS)"),
+            i18n.dtr("ubuntu-settings-components", "Static key")
         ]
         expanded: false
-        onDelegateClicked: typeRequested(index)
-        Layout.preferredWidth: units.gu(30)
-        Layout.minimumHeight: currentlyExpanded ? itemHeight * model.length : itemHeight
+        onDelegateClicked: authTypeRequested(index)
     }
 }

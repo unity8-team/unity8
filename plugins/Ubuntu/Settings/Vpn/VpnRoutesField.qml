@@ -29,7 +29,7 @@ Column {
     Label {
         text: i18n.dtr("ubuntu-settings-components", "Use this VPN for:")
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
     }
 
