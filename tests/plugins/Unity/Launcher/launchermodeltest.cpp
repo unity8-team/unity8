@@ -48,6 +48,7 @@ public:
     QString comment() const override { return "this is a mock"; }
     QUrl icon() const override { return QUrl(); }
     ApplicationInfoInterface::Stage stage() const override { return ApplicationInfoInterface::MainStage; }
+    void setStage(ApplicationInfoInterface::Stage) override {}
     ApplicationInfoInterface::State state() const override { return ApplicationInfoInterface::Running; }
     bool focused() const override { return m_focused; }
     QString splashTitle() const override { return QString(); }
@@ -63,6 +64,7 @@ public:
     void setExemptFromLifecycle(bool) override {}
     QSize initialSurfaceSize() const override { return QSize(); }
     void setInitialSurfaceSize(const QSize &) override {}
+    MirSurfaceListInterface* surfaceList() override { return nullptr; }
 
     // Methods used for mocking (not in the interface)
     void setFocused(bool focused) { m_focused = focused; Q_EMIT focusedChanged(focused); }
@@ -105,15 +107,13 @@ public:
         }
         return false;
     }
-    bool focusApplication(const QString &appId) override {
+    bool focusApplication(const QString &appId) {
         Q_FOREACH(MockApp* app, m_list) {
             app->setFocused(app->appId() == appId);
         }
         Q_EMIT focusedApplicationIdChanged();
         return true;
     }
-
-    void unfocusCurrentApplication() override { }
 
     void addApplication(MockApp *app) {
         beginInsertRows(QModelIndex(), count(), count());

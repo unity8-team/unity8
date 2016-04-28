@@ -124,7 +124,7 @@ Item {
         anchors.topMargin: units.gu(2)
         fontSize: "large"
 
-        color: styledItem.fakeTheme.palette.selected.backgroundText
+        color: styledItem.fakeTheme.palette.normal.backgroundText
         visible: d.showIcon
     }
 
