@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-03-21 13:10+0100\n"
-"PO-Revision-Date: 2016-04-07 20:52+0000\n"
+"PO-Revision-Date: 2016-04-27 17:46+0000\n"
 "Last-Translator: Marcos Lans <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-04-08 05:44+0000\n"
-"X-Generator: Launchpad (build 17990)\n"
+"X-Launchpad-Export-Date: 2016-04-28 05:58+0000\n"
+"X-Generator: Launchpad (build 17995)\n"
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
@@ -95,7 +95,7 @@ msgstr "Seleccionar certificado..."
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:255
 msgid "CA certificate:"
-msgstr "Certificado AC:"
+msgstr "Certificado da AC:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:270
 msgid "Private key:"
@@ -124,11 +124,11 @@ msgstr "Enderezo da chave:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:357
 msgid "Verify peer certificate:"
-msgstr "Comprobar certificado do par:"
+msgstr "Comprobar certificado dos pares:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:366
 msgid "Peer certificate TLS type:"
-msgstr "Tipo TLS do certificado do par:"
+msgstr "Tipo de certificado TLS do par:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:374
 msgid "Server"
