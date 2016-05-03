@@ -674,6 +674,7 @@ FocusScope {
             onHistoryItemClicked: {
                 SearchHistoryModel.addQuery(text);
                 categoryView.pageHeader.searchQuery = text;
+                categoryView.pageHeader.unfocus();
             }
 
             onDashNavigationLeafClicked: {

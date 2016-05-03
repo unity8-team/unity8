@@ -215,7 +215,7 @@ Item {
             verify(pageHeader, "Could not find the scope page header.");
             var innerHeader = findChild(pageHeader, "innerPageHeader");
             verify(innerHeader, "Could not find the scope page header.");
-            compare(innerHeader.config.title, scopesModel.getScope(data.index).name);
+            compare(innerHeader.title, scopesModel.getScope(data.index).name);
         }
 
         function test_is_active_data() {
@@ -624,6 +624,32 @@ Item {
             mouseClick(favoriteAction);
             tryCompareFunction(function() { return dashContentList.currentItem.item.scope.id == nextScopeId; }, true);
             compare(dashContentList.currentIndex, 0);
+        }
+
+        function test_extraPanel() {
+            var dashContentList = findChild(dashContent, "dashContentList");
+            var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
+            pageHeader.searchEntryEnabled = true;
+            pageHeader.searchHistory.clear();
+
+            pageHeader.searchHistory.addQuery("Search1");
+            pageHeader.searchHistory.addQuery("Search2");
+
+            pageHeader.triggerSearch();
+            tryCompare(pageHeader.extraPanel, "visible", true);
+
+            var searchTextField = findChild(pageHeader, "searchTextField");
+            compare(searchTextField.focus, true);
+
+            var recentSearches = findChild(pageHeader.extraPanel, "recentSearchesRepeater");
+            verify(recentSearches, "Could not find recent searches");
+
+            waitForRendering(recentSearches);
+
+            mouseClick(recentSearches.itemAt(0));
+            compare(pageHeader.searchQuery, "Search2");
+            tryCompare(pageHeader.extraPanel, "visible", false);
+            compare(searchTextField.focus, false);
         }
     }
 }
