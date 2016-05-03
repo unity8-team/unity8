@@ -125,7 +125,7 @@ Item {
             // Go back
             var scopesList = findChild(dash, "scopesList");
             var scopesListPageHeader = findChild(scopesList, "pageHeader");
-            var backButton = findChild(findChild(scopesListPageHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(scopesListPageHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
             tryCompare(bottomEdgeController, "progress", 0);
         }
@@ -200,7 +200,7 @@ Item {
 
             // Go back
             var dashTempScopeItemHeader = findChild(dashTempScopeItem, "scopePageHeader");
-            var backButton = findChild(findChild(dashTempScopeItemHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(dashTempScopeItemHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
 
             // Check temp scope is gone
@@ -253,7 +253,7 @@ Item {
 
             // Go back
             var dashTempScopeItemHeader = findChild(dashTempScopeItem, "scopePageHeader");
-            var backButton = findChild(findChild(dashTempScopeItemHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(dashTempScopeItemHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
 
             // Check temp scope is gone
@@ -279,7 +279,7 @@ Item {
             // Go back
             var scopesList = findChild(dash, "scopesList");
             var scopesListPageHeader = findChild(scopesList, "pageHeader");
-            var backButton = findChild(findChild(scopesListPageHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(scopesListPageHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
             tryCompare(bottomEdgeController, "progress", 0);
         }
@@ -391,7 +391,7 @@ Item {
             // Exit edit mode and go back
             var scopesList = findChild(dash, "scopesList");
             var scopesListPageHeader = findChild(scopesList, "pageHeader");
-            var backButton = findChild(findChild(scopesListPageHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(scopesListPageHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
             mouseClick(backButton);
             tryCompare(bottomEdgeController, "progress", 0);
@@ -436,7 +436,7 @@ Item {
             // Exit edit mode
             var scopesList = findChild(dash, "scopesList");
             var scopesListPageHeader = findChild(scopesList, "pageHeader");
-            var backButton = findChild(findChild(scopesListPageHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(scopesListPageHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
 
             // Click on third scope
@@ -546,7 +546,7 @@ Item {
 
             // Go back
             var dashTempScopeItemHeader = findChild(dashTempScopeItem, "scopePageHeader");
-            var backButton = findChild(findChild(dashTempScopeItemHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(dashTempScopeItemHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
 
             // Check temp scope is gone
@@ -614,7 +614,7 @@ Item {
 
             // Go back
             var dashTempScopeItemHeader = findChild(dashTempScopeItem, "scopePageHeader");
-            var backButton = findChild(findChild(dashTempScopeItemHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(dashTempScopeItemHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
 
             // Check temp scope is gone
@@ -646,7 +646,7 @@ Item {
 
             // Go back
             var dashTempScopeItemHeader = findChild(dashTempScopeItem, "scopePageHeader");
-            var backButton = findChild(findChild(dashTempScopeItemHeader, "innerPageHeader"), "customBackButton");
+            var backButton = findChild(dashTempScopeItemHeader, "innerPageHeader").leadingActionBar;
             mouseClick(backButton);
 
             // Check temp scope is gone
