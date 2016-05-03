@@ -142,7 +142,7 @@ Item {
         objectName: "headerContainer"
         clip: contentY < height
         anchors { left: parent.left; top: parent.top; right: parent.right }
-        height: header.implicitHeight
+        height: header.implicitHeight - units.dp(1)
         contentHeight: headersColumn.height
         interactive: false
         contentY: showSearch ? 0 : height
@@ -292,7 +292,7 @@ Item {
                         Label {
                             id: cancelLabel
                             text: i18n.tr("Cancel")
-                            color: headerStyleHints.foregroundColor
+                            color: header.__styleInstance.foregroundColor
                             verticalAlignment: Text.AlignVCenter
                             anchors {
                                 verticalCenter: parent.verticalCenter
@@ -314,7 +314,6 @@ Item {
                 title: root.title
 
                 StyleHints {
-                    id: headerStyleHints
                     foregroundColor: root.scopeStyle ? root.scopeStyle.headerForeground : theme.palette.normal.baseText
                     backgroundColor: "transparent"
                     dividerColor: "transparent"
