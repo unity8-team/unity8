@@ -1,5 +1,5 @@
 module Ubuntu.Settings.Fingerprint
-plugin UbuntuSettingsFingerprint
+plugin UbuntuSettingsFingerprintQml
 
 internal FingerprintVisual FingerprintVisual.qml
 internal FingerprintVisualProgression FingerprintVisualProgression.qml

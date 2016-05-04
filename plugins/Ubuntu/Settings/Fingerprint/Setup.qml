@@ -18,6 +18,7 @@ import QtGraphicalEffects 1.0
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
+import Biometryd 0.0
 
 Page {
     id: root
@@ -42,10 +43,12 @@ Page {
         onEnrollmentProgressed: {
             root.state = "reading";
             imageDefault.enrollmentProgress = progress;
+            imageDefault.masks = hints[FingerprintReader.masks];
         }
     }
 
     Component.onCompleted: plugin.enroll()
+    Component.onDestruction: plugin.cancel()
 
     states: [
         State {

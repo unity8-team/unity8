@@ -42,11 +42,11 @@ Page {
     signal fingerprintEnrolled()
 
     /*!
-        \qmlsignal fingerprintRemoved
+        \qmlsignal requestFingerprintsRemoval
 
-        This signal is emitted when all fingerprints were removed.
+        This signal is emitted when user requests that fingerprint be removed.
     */
-    signal fingerprintRemoved()
+    signal requestFingerprintsRemoval()
 
     /*!
        Whether or not the user has a passcode set, which is a prerequisite for
@@ -221,7 +221,7 @@ Page {
                 Button {
                     objectName: "fingerprintRemoveAllConfirmationButton"
                     onClicked: {
-                        plugin.fingerprintCount = 0;
+                        root.requestFingerprintsRemoval();
                         PopupUtils.close(removeAllAlertDialog);
                     }
                     text: i18n.dtr("ubuntu-settings-components", "Remove")

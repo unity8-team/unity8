@@ -30,6 +30,13 @@ Item {
     property double enrollmentProgress
 
     /*!
+        \qmlproperty var masks
+
+        Used to guide enrollment. Should be a list of QRects.
+    */
+    property var masks: []
+
+    /*!
         \qmlproperty string source
 
         The source of the visual's image component.
@@ -66,6 +73,21 @@ Item {
 
         Behavior on height {
             NumberAnimation { duration: UbuntuAnimation.BriskDuration }
+        }
+    }
+
+    Repeater {
+        model: root.masks
+        anchors.fill: parent
+
+        Rectangle {
+            color: "#FF00B4EF"
+            opacity: 0.3
+            width: modelData.height
+            height: modelData.width
+            x: modelData.x
+            y: modelData.y
+            Component.onCompleted: console.warn(modelData)
         }
     }
 }

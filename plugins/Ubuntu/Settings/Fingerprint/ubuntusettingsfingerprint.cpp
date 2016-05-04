@@ -13,9 +13,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <unistd.h>
+#include <sys/types.h>
 
 #include "ubuntusettingsfingerprint.h"
 
-UbuntuSettingsFingerprint::UbuntuSettingsFingerprint(QObject* parent) {
+UbuntuSettingsFingerprint::UbuntuSettingsFingerprint(QObject* parent)
+    : QObject(parent)
+{
+}
 
+qlonglong UbuntuSettingsFingerprint::uid() const
+{
+    return qlonglong(getuid());
 }

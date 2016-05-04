@@ -1,6 +1,5 @@
 project(UbuntuSettingsFingerprintQml)
 
-
 find_package(Qt5Core REQUIRED)
 
 include_directories(
