@@ -184,7 +184,7 @@ Item {
                     dividerColor: "transparent"
                 }
 
-                contents:Item {
+                contents: Item {
                     anchors.fill: parent
 
                     TextField {
