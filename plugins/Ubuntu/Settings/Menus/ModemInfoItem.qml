@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2015 Canonical Ltd.
+ * Copyright 2014-2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -61,14 +61,14 @@ ListItem.Empty {
             }
 
             RowLayout {
-                spacing: 0.5
+                spacing: units.gu(0.5)
                 height: parent.height
                 Icon {
                     id: statusIcon
                     color: theme.palette.normal.backgroundText
 
-                    Layout.preferredHeight: parent.height
-                    Layout.preferredWidth: Layout.preferredHeight
+                    height: labelStatus.height
+                    width: height
 
                     visible: name !== ""
                 }
@@ -77,8 +77,8 @@ ListItem.Empty {
                     id: iconConnectivity
                     color: theme.palette.normal.backgroundText
 
-                    Layout.preferredHeight: parent.height
-                    Layout.preferredWidth: Layout.preferredHeight
+                    height: labelStatus.height
+                    width: height
 
                     visible: name !== ""
                 }
@@ -105,8 +105,8 @@ ListItem.Empty {
                         id: iconRoaming
                         color: theme.palette.normal.backgroundText
 
-                        Layout.preferredHeight: parent.height
-                        Layout.preferredWidth: Layout.preferredHeight
+                        height: labelStatus.height
+                        width: height
 
                         name: "network-cellular-roaming"
                     }
