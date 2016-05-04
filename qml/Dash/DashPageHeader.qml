@@ -142,7 +142,7 @@ Item {
         objectName: "headerContainer"
         clip: contentY < height
         anchors { left: parent.left; top: parent.top; right: parent.right }
-        height: header.implicitHeight - units.dp(1)
+        height: header.__styleInstance.contentHeight
         contentHeight: headersColumn.height
         interactive: false
         contentY: showSearch ? 0 : height
