@@ -14,28 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Lightweight wrapper that allows for loading integrated/real LightDM
- * plugin
- */
-
 import QtQuick 2.4
+import LightDM.FullLightDM 0.1 as LightDM
 
-Loader {
-    id: loader
+Item{
+    id: implementation
 
-    property var greeter: d.valid ? loader.item.greeter : null
-    property var infographic: d.valid ? loader.item.infographic : null
-    property var users: d.valid ? loader.item.users : null
-    property var userRoles: d.valid ? loader.item.userRoles : null
-
-    // TODO: Conditionally load RealLightDMImpl if shellMode dictates it
-    source: "./IntegratedLightDMImpl.qml"
-
-    QtObject {
-        id: d
-
-        property bool valid: loader.item !== null
-    }
+    property var greeter: LightDM.Greeter
+    property var infographic: LightDM.Infographic
+    property var users: LightDM.Users
+    property var userRoles: LightDM.UserRoles
 
 }

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Unity 8 Greeter
+Comment=The converged Unity shell's Greeter
+Exec=/usr/bin/unity8-greeter-wrapper /usr/bin/unity8 --mode=greeter
+X-LightDM-Session-Type=mir
+X-Ubuntu-Touch=true

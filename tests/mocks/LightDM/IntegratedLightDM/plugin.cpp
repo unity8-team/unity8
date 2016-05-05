@@ -19,8 +19,8 @@
 #include <DBusGreeterList.h>
 #include "MockGreeter.h"
 #include "MockUsersModel.h"
-#include <libusermetricsoutput/ColorTheme.h>
-#include <libusermetricsoutput/UserMetrics.h>
+#include "ColorTheme.h"
+#include "UserMetrics.h"
 #include <QLightDM/UsersModel>
 
 #include <QAbstractItemModel>
@@ -53,12 +53,12 @@ static QObject *infographic_provider(QQmlEngine *engine, QJSEngine *scriptEngine
     return UserMetricsOutput::UserMetrics::getInstance();
 }
 
-void IntegratedLightDMPlugin::registerTypes(const char *uri)
+void LightDMPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<UserMetricsOutput::ColorTheme>();
 
-    Q_ASSERT(uri == QLatin1String("IntegratedLightDM"));
+    Q_ASSERT(uri == QLatin1String("LightDM.IntegratedLightDM"));
     qRegisterMetaType<QLightDM::Greeter::MessageType>("QLightDM::Greeter::MessageType");
     qRegisterMetaType<QLightDM::Greeter::PromptType>("QLightDM::Greeter::PromptType");
     qmlRegisterSingletonType<MockGreeter>(uri, 0, 1, "Greeter", greeter_provider);

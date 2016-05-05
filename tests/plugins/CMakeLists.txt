@@ -1,7 +1,7 @@
 add_subdirectory(AccountsService)
 add_subdirectory(GlobalShortcut)
 add_subdirectory(Greeter)
-add_subdirectory(IntegratedLightDM)
+add_subdirectory(LightDM)
 add_subdirectory(Dash)
 add_subdirectory(Ubuntu)
 add_subdirectory(Unity)

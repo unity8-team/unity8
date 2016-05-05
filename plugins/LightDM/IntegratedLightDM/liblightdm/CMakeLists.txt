@@ -46,8 +46,8 @@ set_target_properties(integratedLightDMSession PROPERTIES
                       COMPILE_FLAGS "-DSM_BUSNAME=sessionBus -fPIC")
 set_target_properties(MockLightDM-demo-shared PROPERTIES
                       COMPILE_FLAGS "-DSM_BUSNAME=systemBus"
-                      OUTPUT_NAME lightdm-qt5-2)
+                      OUTPUT_NAME lightdm-qt5-3)
 
 install(TARGETS MockLightDM-demo-shared
-    DESTINATION ${SHELL_INSTALL_QML}/mocks/IntegratedLightDM/demo
+    DESTINATION ${SHELL_INSTALL_QML}/mocks/LightDM/IntegratedLightDM/demo
     )

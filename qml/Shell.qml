@@ -175,7 +175,6 @@ Item {
         finishStartUpTimer.start();
     }
 
-    LightDM{id: lightDM} // Provide backend access
     VolumeControl {
         id: volumeControl
         indicators: panel.indicators
@@ -493,7 +492,7 @@ Item {
     function showHome() {
         greeter.notifyUserRequestedApp("unity8-dash");
 
-        var animate = !lightDM.greeter.active && !stages.shown
+        var animate = !LightDMService.greeter.active && !stages.shown
         dash.setCurrentScope(0, animate, false)
         ApplicationManager.requestFocusApplication("unity8-dash")
     }
@@ -543,7 +542,7 @@ Item {
             readonly property bool focusedSurfaceIsFullscreen: MirFocusController.focusedSurface
                 ? MirFocusController.focusedSurface.state === Mir.FullscreenState
                 : false
-            fullscreenMode: (focusedSurfaceIsFullscreen && !lightDM.greeter.active && launcher.progress == 0)
+            fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0)
                             || greeter.hasLockedApp
             locked: greeter && greeter.active
         }
@@ -635,6 +634,7 @@ Item {
             id: wizard
             objectName: "wizard"
             anchors.fill: parent
+            deferred: shell.mode === "greeter"
 
             function unlockWhenDoneWithWizard() {
                 if (!active) {
