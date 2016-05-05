@@ -1,3 +1,25 @@
+ubuntu-settings-components (0.7+16.04.20160321.1-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk. added: po/ia.po po/sl.po
+
+  [ jonas-drange ]
+  * prune vpn's translated strings like cipher options, "0" and "1", and
+    update the .pot file
+
+ -- Jonas G. Drange <ci-train-bot@canonical.com>  Mon, 21 Mar 2016 16:54:08 +0000
+
+ubuntu-settings-components (0.7+16.04.20160318-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk. added: po/id.po
+
+  [ Michael Zanetti ]
+  * Align the progress label color to the main entry label color (LP:
+    #1554616)
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Fri, 18 Mar 2016 12:25:35 +0000
+
 ubuntu-settings-components (0.7+16.04.20160315-0ubuntu1) xenial; urgency=medium
 
   [ jonas-drange ]

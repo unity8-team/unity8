@@ -7,43 +7,385 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-02-11 11:25+0000\n"
-"PO-Revision-Date: 2016-03-08 17:40+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2016-03-21 13:10+0100\n"
+"PO-Revision-Date: 2016-03-23 08:00+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-03-10 05:57+0000\n"
-"X-Generator: Launchpad (build 17936)\n"
+"X-Launchpad-Export-Date: 2016-03-24 06:07+0000\n"
+"X-Generator: Launchpad (build 17958)\n"
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
-msgstr ""
+msgstr "Швидка відповідь:"
 
 #: plugins/Ubuntu/Settings/Menus/CalendarMenu.qml:57
 #, qt-format
 msgctxt "%1=month name, %2=4-digit year"
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:100
 msgid "Roaming"
-msgstr ""
+msgstr "Роумінг"
 
 #: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:122
 msgid "Unlock SIM"
-msgstr ""
+msgstr "Розблокувати SIM"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:30
 msgid "Call back"
-msgstr ""
+msgstr "Зворотний виклик"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:33
 #: plugins/Ubuntu/Settings/Menus/TextMessageMenu.qml:29
 msgid "Send"
-msgstr ""
+msgstr "Надіслати"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:58
 msgid "Message"
+msgstr "Повідомлення"
+
+#: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:161
+#: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:102
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:104
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:170
+msgid "Accept"
+msgstr "Прийняти"
+
+#: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:25
+msgid "Choose…"
+msgstr "Вибрати…"
+
+#: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:34
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:340
+msgid "None"
+msgstr "Немає"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:110
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:114
+msgid "Server:"
+msgstr "Сервер:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:124
+msgid "Port:"
+msgstr "Порт:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:174
+msgid "Use custom gateway port"
+msgstr "Використовувати нетиповий порт шлюзу"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:202
+msgid "Protocol:"
+msgstr "Протокол:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:240
+msgid "Client certificate:"
+msgstr "Клієнтський сертифікат:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:248
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:263
+msgid "Choose Certificate…"
+msgstr "Вибрати сертифікат…"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:255
+msgid "CA certificate:"
+msgstr "Сертифікат CA:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:270
+msgid "Private key:"
+msgstr "Закритий ключ:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:278
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:324
+msgid "Choose Key…"
+msgstr "Вибрати ключ…"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:285
+msgid "Key password:"
+msgstr "Пароль ключа:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:306
+msgid "Use additional TLS authentication:"
+msgstr "Використовувати додаткове розпізнавання за TLS:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:315
+msgid "TLS key:"
+msgstr "Ключ TLS:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:329
+msgid "Key direction:"
+msgstr "Напрямок ключа:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:357
+msgid "Verify peer certificate:"
+msgstr "Перевірка сертифіката вузла:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:366
+msgid "Peer certificate TLS type:"
+msgstr "Тип TLS сертифіката вузла:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:374
+msgid "Server"
+msgstr "Сервер"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:375
+msgid "Client"
+msgstr "Клієнт"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:385
+msgid "Cipher:"
+msgstr "Шифр:"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:392
+msgid "Default"
+msgstr "Типовий"
+
+#: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:422
+msgid "Compress data"
+msgstr "Стискати дані"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:150
+msgid "User:"
+msgstr "Користувач:"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:165
+msgid "Password:"
+msgstr "Пароль:"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:180
+msgid "NT Domain:"
+msgstr "NT-домен:"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:192
+msgid "Authentication methods:"
+msgstr "Способи розпізнавання:"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:292
+msgid "Use Point-to-Point encryption"
+msgstr "Використовувати шифрування точка-точка"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:301
+msgid "All Available (Default)"
+msgstr "Усі доступні (типово)"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:302
+msgid "128-bit (most secure)"
+msgstr "128-бітове (найбільш захищене)"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:303
+msgid "40-bit (less secure)"
+msgstr "40-бітове (менш захищене)"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:319
+msgid "Allow stateful encryption"
+msgstr "Дозволити шифрування за станом"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:333
+msgid "Allow BSD data compression"
+msgstr "Дозволити стискання даних BSD"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:347
+msgid "Allow Deflate data compression"
+msgstr "Дозволити стискання даних DEFLATE"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:361
+msgid "Use TCP Header compression"
+msgstr "Використовувати стискання заголовка TCP"
+
+#: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:375
+msgid "Send PPP echo packets"
+msgstr "Надсилати PPP-луна пакети"
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithDns.qml:27
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:27
+msgid "You’re using this VPN for all Internet traffic."
+msgstr "Ви використовуєте цю VPN для усього обміну даними з інтернетом."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithDns.qml:33
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:39
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:39
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:40
+msgid ""
+"Your Wi-Fi/mobile provider can see when and how much you use the Internet, "
+"but not what for."
 msgstr ""
+"Ваш надавач послуг Wi-Fi/мобільного зв’язку зможе стежити за тим, коли ви "
+"користуєтеся інтернетом і об’ємом обміну даними, але не зможе стежити за "
+"тим, чим і як ви користуєтеся."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithDns.qml:39
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:45
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:51
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:51
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:47
+msgid "The VPN provider can see or modify your Internet traffic."
+msgstr ""
+"Надавач послуг VPN зможе стежити за обміном даними з інтернетом і втручатися "
+"у нього."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithDns.qml:45
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:51
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:57
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:57
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:54
+msgid "Web sites and other service providers can still monitor your use."
+msgstr ""
+"Сайти та інші надавачі послуг матимуть змогу спостерігати за тим, чим ви "
+"користуєтеся."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:33
+msgid ""
+"Your Wi-Fi/mobile provider can still see when and how much you use the "
+"Internet."
+msgstr ""
+"Ваш надавач послуг Wi-Fi/мобільного зв’язку зможе стежити за тим, коли ви "
+"користуєтеся інтернетом і за об’ємом обміну даними."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/AllTrafficWithoutDns.qml:39
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:45
+msgid "The DNS provider can see which Web sites and other services you use."
+msgstr ""
+"Надавач послуг DNS зможе стежити за тим, які сайти ви відвідуєте і чим "
+"користуєтеся."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:30
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NoCert.qml:27
+msgid "This VPN is not safe to use."
+msgstr "Користування цією VPN не є безпечним."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:36
+msgid ""
+"The server certificate is not valid. The VPN provider may be being "
+"impersonated."
+msgstr ""
+"Сертифікат сервера не є чинним. Можливо, надавач послуг VPN не є тим, за "
+"кого себе видає."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:46
+#, qt-format
+msgid "Details: %1"
+msgstr "Подробиці: %1"
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:51
+msgid "The certificate was not found."
+msgstr "Сертифікат не знайдено."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:54
+msgid "The certificate is empty."
+msgstr "Сертифікат є порожнім"
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:57
+msgid "The certificate is self signed."
+msgstr "Сертифікат є самопідписаним."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:60
+msgid "The certificate has expired."
+msgstr "Строк дії сертифіката вичерпано."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/InvalidCert.qml:63
+msgid "The certificate is blacklisted."
+msgstr "Сертифікат потрапив до «чорного» списку."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NoCert.qml:33
+msgid ""
+"It does not provide a certificate. The VPN provider could be impersonated."
+msgstr ""
+"Не надано сертифіката. Можливо, надавач послуг VPN не є тим, за кого себе "
+"видає."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:27
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:27
+msgid "This VPN configuration is not installed."
+msgstr "Ці налаштування VPN не встановлено."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:33
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithRoutes.qml:33
+msgid "If you install it:"
+msgstr "Якщо ви встановите їх:"
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/NotInstalledWithoutRoutes.qml:45
+msgid "The DNS provider can see which Web sites and other services you use. "
+msgstr ""
+"Надавач послуг DNS зможе стежити за тим, які сайти ви відвідуєте і чим "
+"користуєтеся. "
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:27
+msgid "This VPN is set up, but not in use now."
+msgstr "Цю VPN налаштовано, але зараз вона не використовується."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SetUpUnused.qml:33
+msgid "When you use it:"
+msgstr "Якщо ви скористаєтеся нею:"
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SomeTraffic.qml:27
+msgid "You’re using this VPN for specific services."
+msgstr "Ви використовуєте цю VPN для певних служб."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SomeTraffic.qml:33
+msgid ""
+"Your traffic to these services is private to them and the VPN provider."
+msgstr ""
+"Обмін даними з цими службами є конфіденційним, дані буде надано лише службам "
+"і надавачу послуг VPN."
+
+#: plugins/Ubuntu/Settings/Vpn/PreviewDialog/SomeTraffic.qml:39
+msgid "Your Wi-Fi/mobile provider can track your use of any other services. "
+msgstr ""
+"Ваш надавач послуг Wi-Fi/мобільного зв’язку зможе стежити за вашим "
+"використанням будь-яких інших служб. "
+
+#: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:25
+msgid "Set up VPN"
+msgstr "Налаштувати VPN"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:115
+msgid "OK"
+msgstr "Гаразд"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnList.qml:62
+msgid "Delete configuration"
+msgstr "Вилучити налаштування"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:53
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:58
+#, qt-format
+msgid "VPN “%1”"
+msgstr "VPN «%1»"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:69
+msgid "VPN"
+msgstr "VPN"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:84
+msgid "Remove"
+msgstr "Вилучити"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:96
+msgid "Change"
+msgstr "Змінити"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:112
+msgid "Install"
+msgstr "Встановити"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnRoutesField.qml:30
+msgid "Use this VPN for:"
+msgstr "Використовувати цю VPN для:"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnRoutesField.qml:60
+msgid "All network connections"
+msgstr "усіх з’єднань із мережею"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnRoutesField.qml:76
+msgid "Its own network"
+msgstr "її власної мережі"
+
+#: plugins/Ubuntu/Settings/Vpn/VpnTypeField.qml:32
+msgid "Type:"
+msgstr "Тип:"
