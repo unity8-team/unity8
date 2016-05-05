@@ -57,6 +57,16 @@ Showable {
 
     readonly property bool animating: loader.item ? loader.item.animating : false
 
+    property string sessionToStart: {
+        if (loader.active && loader.item.sessionToStart !== undefined) {
+            return loader.item.sessionToStart
+        } else if (LightDMService.greeter.defaultSession) {
+            return LightDMService.greeter.defaultSession
+        } else {
+            return "ubuntu"
+        }
+    }
+
     signal tease()
     signal sessionStarted()
     signal emergencyCall()
@@ -145,7 +155,7 @@ Showable {
 
         function login() {
             enabled = false;
-            if (LightDMService.greeter.startSessionSync()) {
+            if (LightDMService.greeter.startSessionSync(root.sessionToStart.toLowerCase())) {
                 sessionStarted();
                 if (loader.item) {
                     loader.item.notifyAuthenticationSucceeded();
