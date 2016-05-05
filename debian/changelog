@@ -1,3 +1,35 @@
+unity8 (8.12+16.04.20160505.1-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk.
+
+  [ Josh Arenson ]
+  * Add a SessionsModel to lightdm to support the greeter's session
+    chooser added:
+    plugins/LightDM/IntegratedLightDM/liblightdm/SessionsModel.cpp
+    plugins/LightDM/IntegratedLightDM/liblightdm/SessionsModel.h
+    plugins/LightDM/IntegratedLightDM/liblightdm/SessionsModelPrivate.cp
+    p
+    plugins/LightDM/IntegratedLightDM/liblightdm/SessionsModelPrivate.h
+    plugins/LightDM/SessionsModel.cpp plugins/LightDM/SessionsModel.h
+    tests/mocks/LightDM/IntegratedLightDM/MockSessionsModel.cpp
+    tests/mocks/LightDM/IntegratedLightDM/MockSessionsModel.h
+    tests/mocks/LightDM/IntegratedLightDM/QLightDM/SessionsModel
+    tests/mocks/LightDM/IntegratedLightDM/liblightdm/SessionsModel.cpp
+    tests/mocks/LightDM/IntegratedLightDM/liblightdm/SessionsModel.h
+    tests/mocks/LightDM/IntegratedLightDM/liblightdm/SessionsModelPrivat
+    e.cpp
+    tests/mocks/LightDM/IntegratedLightDM/liblightdm/SessionsModelPrivat
+    e.h tests/plugins/LightDM/IntegratedLightDM/sessionsmodel.cpp
+  * Add a frontend to the sessions model and enable a session chooser in
+    the greeter. (LP: #1512470)
+  * Enable unity8 greeter mode to use real liblightdm and act as a basic
+    desktop greeter (LP: #1324602)
+  * Focus the greeter's password field when a prompt from PAM is
+    received. (LP: #1435923)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Thu, 05 May 2016 17:37:23 +0000
+
 unity8 (8.12+16.04.20160504.2-0ubuntu1) xenial; urgency=medium
 
   [ Albert Astals Cid ]
