@@ -24,6 +24,7 @@ Item {
 
     property alias model: userList.model
     property bool alphanumeric: true
+    property alias passwordInput: passwordInput
     property int currentIndex
     property bool locked
 
