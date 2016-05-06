@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
+               libbiometryd0 | libbiometryd1,
                pkg-config,
                qml-module-qtquick-layouts,
                qt5-default,

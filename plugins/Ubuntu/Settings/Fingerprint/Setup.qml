@@ -24,31 +24,33 @@ Page {
     id: root
 
     objectName: "fingerprintSetupPage"
-    property var plugin
 
-    Connections {
-        target: plugin
+    signal enroll()
+    signal cancel()
 
-        onEnrollmentFailed: {
-            switch (error) {
-                case 0:
-                    root.state = "longer";
-                    break;
-                case 1:
-                    root.state = "failed";
-                    break;
-            }
-        }
-        onEnrollmentCompleted: root.state = "done"
-        onEnrollmentProgressed: {
-            root.state = "reading";
-            imageDefault.enrollmentProgress = progress;
-            imageDefault.masks = hints[FingerprintReader.masks];
+    function enrollmentFailed(error) {
+        switch (error) {
+            case 0:
+                root.state = "longer";
+                break;
+            case 1:
+                root.state = "failed";
+                break;
         }
     }
 
-    Component.onCompleted: plugin.enroll()
-    Component.onDestruction: plugin.cancel()
+    function enrollmentCompleted() {
+        root.state = "done";
+    }
+
+    function enrollmentProgressed(progress, hints) {
+        root.state = "reading";
+        imageDefault.enrollmentProgress = progress;
+        imageDefault.masks = hints[FingerprintReader.masks];
+    }
+
+    Component.onCompleted: enroll()
+    Component.onDestruction: cancel();
 
     states: [
         State {
@@ -61,7 +63,8 @@ Page {
             name: "reading"
             StateChangeScript {
                 script: statusLabel.setText(
-                    i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.")
+                    i18n.dtr("ubuntu-settings-components",
+                             "Lift and press your finger again.")
                 )
             }
 
@@ -70,7 +73,8 @@ Page {
             name: "longer"
             StateChangeScript {
                 script: statusLabel.setText(
-                    i18n.dtr("ubuntu-settings-components", "Keep your finger on the button for longer.")
+                    i18n.dtr("ubuntu-settings-components",
+                             "Keep your finger on the button for longer.")
                 )
             }
         },
@@ -86,7 +90,8 @@ Page {
             }
             StateChangeScript {
                 script: statusLabel.setText(
-                    i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.")
+                    i18n.dtr("ubuntu-settings-components",
+                             "Sorry, the reader doesn’t seem to be working.")
                 )
             }
         },
@@ -192,7 +197,6 @@ Page {
 
         StatusLabel {
             id: statusLabel
-
             anchors {
                 left: parent.left
                 leftMargin: units.gu(2.9)
@@ -201,7 +205,8 @@ Page {
                 top: parent.top
                 topMargin: units.gu(4.9)
             }
-            initialText: i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.")
+            initialText: i18n.dtr("ubuntu-settings-components",
+                                  "Place your finger on the home button.")
             objectName: "fingerprintStatusLabel"
         }
 
@@ -218,16 +223,15 @@ Page {
 
             AbstractButton {
                 id: cancelButton
-
+                objectName: "fingerprintSetupCancelButton"
                 anchors {
                     left: parent.left
                     leftMargin: units.gu(3)
                     verticalCenter: parent.verticalCenter
                 }
                 height: parent.height
-                objectName: "fingerprintSetupCancelButton"
-                onClicked: pageStack.pop()
                 width: units.gu(10)
+                onClicked: pageStack.pop()
 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
@@ -237,7 +241,7 @@ Page {
 
             AbstractButton {
                 id: doneButton
-
+                objectName: "fingerprintSetupDoneButton"
                 anchors {
                     right: parent.right
                     rightMargin: units.gu(3)
@@ -245,8 +249,8 @@ Page {
                 }
                 enabled: false
                 height: parent.height
-                objectName: "fingerprintSetupDoneButton"
                 width: units.gu(10)
+                onClicked: pageStack.pop()
 
                 Label {
                     anchors {
