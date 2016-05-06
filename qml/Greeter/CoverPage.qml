@@ -28,7 +28,7 @@ Showable {
     property real backgroundTopMargin
     property var infographicModel
     property bool draggable: true
-    property bool blur
+    property bool customBackground
 
     property alias infographics: infographics
 
@@ -109,6 +109,7 @@ Showable {
         height: parent.height
         model: root.infographicModel
         clip: true // clip large data bubbles
+        fullColor: !root.customBackground
 
         anchors {
             verticalCenter: parent.verticalCenter

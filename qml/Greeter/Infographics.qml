@@ -25,6 +25,7 @@ Item {
     property var model
 
     property int animDuration: 10
+    property bool fullColor: true
 
     QtObject {
         id: d
@@ -34,6 +35,14 @@ Item {
         property bool animating: dotHideAnimTimer.running
                               || dotShowAnimTimer.running
                               || circleChangeAnimTimer.running
+    }
+
+    // Define a replacement white-based color theme when fullColor is false
+    QtObject {
+        id: whiteTheme
+        property color main: "#ffffff"
+        property color start: "#ffffff"
+        property color end: "#ffffff"
     }
 
     Connections {
@@ -168,7 +177,7 @@ Item {
                             ColorAnimation {
                                 target: pastCircle
                                 property: "color"
-                                to: Gradient.threeColorByIndex(index, count, infographic.model.secondColor)
+                                to: Gradient.threeColorByIndex(index, count, fullColor ? infographic.model.secondColor : whiteTheme)
                                 easing.type: Easing.OutCurve
                                 duration: circleChangeAnimTimer.interval * d.circleModifier
                             }
@@ -229,7 +238,7 @@ Item {
                             ColorAnimation {
                                 target: presentCircle
                                 property: "color"
-                                to: Gradient.threeColorByIndex(index, infographic.model.currentDay, infographic.model.firstColor)
+                                to: Gradient.threeColorByIndex(index, infographic.model.currentDay, fullColor ? infographic.model.firstColor : whiteTheme)
                                 easing.type: Easing.OutCurve
                                 duration: circleChangeAnimTimer.interval * d.circleModifier
                             }
