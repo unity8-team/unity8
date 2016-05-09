@@ -46,7 +46,7 @@ Showable {
     onOpacityOverrideChanged: {
         if (opacityOverride <= 0) {
             d.showOnUnpause = false;
-            hide();
+            hideNow();
         }
     }
     property real _showOpacity: 0

@@ -319,7 +319,7 @@ Item {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "inverseProgress"
-                value: greeter && greeter.locked ? 0 : launcher.progress
+                value: !greeter || greeter.locked || !tutorial.launcherLongSwipeEnabled ? 0 : launcher.progress
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -503,7 +503,8 @@ Item {
             launcher.fadeOut();
         }
 
-        if (!greeter.locked && ApplicationManager.focusedApplicationId != "unity8-dash") {
+        if (!greeter.locked && tutorial.launcherLongSwipeEnabled
+            && ApplicationManager.focusedApplicationId != "unity8-dash") {
             ApplicationManager.requestFocusApplication("unity8-dash")
             launcher.fadeOut();
         }
@@ -622,8 +623,10 @@ Item {
             objectName: "tutorial"
             anchors.fill: parent
 
-            paused: callManager.hasCalls || greeter.shown
-            keyboardVisible: inputMethod.state === "shown"
+            paused: callManager.hasCalls || !greeter || greeter.shown
+            delayed: dialogs.hasActiveDialog || notifications.hasNotification ||
+                     inputMethod.state === "shown" || launcher.shown ||
+                     panel.indicators.shown || stage.dragProgress > 0
             usageScenario: shell.usageScenario
             lastInputTimestamp: inputFilter.lastInputTimestamp
             launcher: launcher
