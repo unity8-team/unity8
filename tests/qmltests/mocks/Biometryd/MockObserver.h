@@ -34,9 +34,11 @@ public:
     Q_INVOKABLE void mockClearance(const QString &error); // only in mock
 
 Q_SIGNALS:
-    void succeeded();
+    void progressed(double percent, const QVariantMap& details);
     void succeeded(const QVariant &result);
     void failed(const QString &reason);
+    void canceled(const QString& reason);
+    void started();
 };
 
 #endif // MOCK_OBSERVER_H

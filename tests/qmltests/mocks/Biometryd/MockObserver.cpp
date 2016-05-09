@@ -48,7 +48,7 @@ void MockObserver::mockSize(int size, const QString &error)
 void MockObserver::mockEnroll(const QString &error)
 {
     if (error.isEmpty())
-        Q_EMIT succeeded();
+        Q_EMIT succeeded(QVariant());
     else
         Q_EMIT failed(error);
 }
@@ -56,7 +56,7 @@ void MockObserver::mockEnroll(const QString &error)
 void MockObserver::mockClearance(const QString &error)
 {
     if (error.isEmpty())
-        Q_EMIT succeeded();
+        Q_EMIT succeeded(QVariant());
     else
         Q_EMIT failed(error);
 }

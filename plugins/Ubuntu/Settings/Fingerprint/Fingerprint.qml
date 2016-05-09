@@ -18,6 +18,7 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.Popups 1.3
+import Ubuntu.Settings.Fingerprint 0.1
 import Biometryd 0.0
 
 Page {
@@ -40,6 +41,8 @@ Page {
     property var sizeOperation: null
     property var enrollmentOperation: null
     property var clearanceOperation: null
+
+    property Dialog diag: null
 
     /*!
        Whether or not the user has a passcode set, which is a prerequisite for
@@ -235,9 +238,9 @@ Page {
                         } else if (count > 0 && count < 10) {
                             return getNaturalNumber(count);
                         } else {
-                            // TRANSLATORS: %1 is the number of stored fingerprints > 9
+                            // TRANSLATORS: %1 is the number of stored fingerprints > 9 (i.e. always plural)
                             return i18n.dtr("ubuntu-settings-components",
-                                            "%1 fingerprint registered.")
+                                            "%1 fingerprints registered.")
                                             .arg(count);
                         }
                     }
@@ -254,7 +257,7 @@ Page {
                 Button {
                     enabled: parent.enabled && root.storedFingerprints
                     objectName: "fingerprintRemoveAllButton"
-                    onClicked: PopupUtils.open(removeAllAlert)
+                    onClicked: diag = PopupUtils.open(removeAllAlert)
                     text: i18n.dtr("ubuntu-settings-components",
                                    "Remove All…")
                 }
@@ -286,10 +289,7 @@ Page {
 
                 Button {
                     objectName: "fingerprintRemoveAllConfirmationButton"
-                    onClicked: {
-                        root.requestFingerprintsRemoval();
-                        PopupUtils.close(removeAllAlertDialog);
-                    }
+                    onClicked: root.remove()
                     text: i18n.dtr("ubuntu-settings-components", "Remove")
                     Layout.fillWidth: true
                 }
@@ -305,6 +305,7 @@ Page {
 
     Observer {
         id: enrollmentObserver
+        objectName: "enrollmentObserver"
         onStarted: {
             console.log("enrollmentObserver: started")
         }
@@ -342,6 +343,7 @@ Page {
 
     Observer {
         id: sizeObserver
+        objectName: "sizeObserver"
         onStarted: {
             console.log("sizeObserver: started")
         }
@@ -359,6 +361,7 @@ Page {
 
     Observer {
         id: clearanceObserver
+        objectName: "clearanceObserver"
         onStarted: {
             console.log("clearanceObserver: started")
         }
@@ -371,6 +374,7 @@ Page {
         onSucceeded: {
             console.log("clearanceObserver: succeeded")
             root.storedFingerprints = 0;
+            PopupUtils.close(diag);
         }
     }
 
