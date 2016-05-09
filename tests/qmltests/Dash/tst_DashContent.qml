@@ -524,6 +524,7 @@ Item {
             var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
             var headerContainer = findChild(pageHeader, "headerContainer");
 
+            // test that closing the filters popover without a search unfocuses and removes the navigation
             mouseClick(searchButton);
             tryCompare(peExtraPanel, "visible", true);
 
@@ -545,6 +546,7 @@ Item {
             tryCompare(headerContainer, "showSearch", false);
             tryCompare(headerContainer, "contentY", headerContainer.height);
 
+            // test within a navigation
             goToSecondLevel();
 
             filtersPopover = findChild(shell, "filtersPopover")
