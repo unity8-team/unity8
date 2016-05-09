@@ -17,8 +17,10 @@
 #ifndef MOCK_FINGERPRINTREADER_H
 #define MOCK_FINGERPRINTREADER_H
 
-#include <QList>
 #include <QObject>
+#include <QString>
+#include <QVariant>
+#include <QList>
 #include <QRect>
 
 class MockFingerprintReader : public QObject
@@ -32,7 +34,7 @@ class MockFingerprintReader : public QObject
     Q_PROPERTY(QString masks READ masks)
 
 public:
-    explicit FingerprintReader(QObject *parent = 0);
+    explicit MockFingerprintReader(QObject *parent = 0);
 
     Q_INVOKABLE QString isFingerPresent() const;
     Q_INVOKABLE QString hasMainClusterIdentified() const;

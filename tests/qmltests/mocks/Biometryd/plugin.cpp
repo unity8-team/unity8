@@ -15,9 +15,14 @@
  */
 
 #include "plugin.h"
-#include "MockObserver.h"
+
+#include "MockDevice.h"
 #include "MockFingerprintReader.h"
+#include "MockObserver.h"
+#include "MockOperation.h"
 #include "MockService.h"
+#include "MockTemplateStore.h"
+#include "MockUser.h"
 
 #include <QtQml>
 
@@ -26,6 +31,16 @@ void BackendPlugin::registerTypes(const char *uri)
     Q_ASSERT(uri == QLatin1String("Biometryd"));
 
     qmlRegisterType<MockObserver>(uri, 0, 0, "Observer");
+    qmlRegisterType<MockUser>(uri, 0, 0, "User");
+
+    qmlRegisterUncreatableType<MockDevice>(uri, 0, 0, "Device", "Rely on Biometryd.instance");
+
+    qmlRegisterUncreatableType<MockOperation>(uri, 0, 0, "Operation", "Rely on Biometryd.instance");
+    qmlRegisterUncreatableType<MockSizeQuery>(uri, 0, 0, "SizeQuery", "Rely on Biometryd.instance");
+    qmlRegisterUncreatableType<MockEnrollment>(uri, 0, 0, "Enrollment", "Rely on Biometryd.instance");
+    qmlRegisterUncreatableType<MockClearance>(uri, 0, 0, "Clearance", "Rely on Biometryd.instance");
+    qmlRegisterUncreatableType<MockTemplateStore>(uri, 0, 0, "TemplateStore", "Rely on Biometryd.instance");
+
     qmlRegisterSingletonType<MockService>(
         uri, 0, 0, "Biometryd",
         [](QQmlEngine*, QJSEngine*) -> QObject*

@@ -14,26 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MOCK_SERVICE_H
-#define MOCK_SERVICE_H
+#ifndef MOCK_OPERATION
+#define MOCK_OPERATION
 
 #include <QObject>
 
-#include "MockDevice.h"
+class MockObserver;
 
-class MockService : public QObject
+class MockOperation : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(MockService)
+    Q_DISABLE_COPY(MockOperation)
 
 public:
-    explicit MockService(QObject *parent = 0);
-    Q_PROPERTY(MockDevice* defaultDevice READ defaultDevice)
-
-    MockDevice* defaultDevice();
-
-private:
-    MockDevice* m_device;
+    explicit MockOperation(QObject *parent = 0);
+    Q_INVOKABLE void start(MockObserver* observer);
+    Q_INVOKABLE void cancel();
 };
 
-#endif // MOCK_SERVICE_H
+#endif // MOCK_OPERATION

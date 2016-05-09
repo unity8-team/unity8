@@ -37,10 +37,26 @@ MockObserver::MockObserver(QObject *parent)
 {
 }
 
-void MockObserver::mockIdentification(int uid, const QString &error)
+void MockObserver::mockSize(int size, const QString &error)
 {
     if (error.isEmpty())
-        Q_EMIT succeeded(QVariant::fromValue(new Result(uid, this)));
+        Q_EMIT succeeded(QVariant::fromValue(size));
+    else
+        Q_EMIT failed(error);
+}
+
+void MockObserver::mockEnroll(const QString &error)
+{
+    if (error.isEmpty())
+        Q_EMIT succeeded();
+    else
+        Q_EMIT failed(error);
+}
+
+void MockObserver::mockClearance(const QString &error)
+{
+    if (error.isEmpty())
+        Q_EMIT succeeded();
     else
         Q_EMIT failed(error);
 }

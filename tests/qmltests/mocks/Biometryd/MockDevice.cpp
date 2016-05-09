@@ -14,26 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MOCK_SERVICE_H
-#define MOCK_SERVICE_H
-
-#include <QObject>
-
 #include "MockDevice.h"
 
-class MockService : public QObject
+MockDevice::MockDevice(QObject *parent)
+    : QObject(parent)
+    , m_ts(new MockTemplateStore(this))
 {
-    Q_OBJECT
-    Q_DISABLE_COPY(MockService)
+}
 
-public:
-    explicit MockService(QObject *parent = 0);
-    Q_PROPERTY(MockDevice* defaultDevice READ defaultDevice)
+MockTemplateStore* MockDevice::templateStore()
+{
+    return m_ts;
+}
 
-    MockDevice* defaultDevice();
-
-private:
-    MockDevice* m_device;
-};
-
-#endif // MOCK_SERVICE_H
+#include "MockDevice.moc"
