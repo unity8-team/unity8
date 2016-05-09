@@ -1,3 +1,14 @@
+unity8 (8.12+16.04.20160509-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk.
+
+  [ Michael Terry ]
+  * Drop bottom edge tutorials completely and small fixes for other
+    edges. (LP: #1565103)
+
+ -- Michael Terry <michael.terry@canonical.com>  Mon, 09 May 2016 12:58:31 +0000
+
 unity8 (8.12+16.04.20160504.2-0ubuntu1) xenial; urgency=medium
 
   [ Albert Astals Cid ]
