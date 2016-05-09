@@ -515,10 +515,17 @@ Item {
         }
 
         function test_navigationShowFilterPopup() {
-            goToSecondLevel();
-
             var dashContentList = findChild(dashContent, "dashContentList");
+            var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
             var settingsButton = findChild(dashContentList.currentItem, "settingsButton");
+            var searchButton = findChild(dashContentList.currentItem, "search_button");
+            var cancelButton = findChild(dashContentList.currentItem, "cancelButton");
+            var searchTextField = findChild(pageHeader, "searchTextField");
+            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
+            var headerContainer = findChild(pageHeader, "headerContainer");
+
+            mouseClick(searchButton);
+            tryCompare(peExtraPanel, "visible", true);
 
             var filtersPopover = findChild(shell, "filtersPopover")
             verify(!filtersPopover);
@@ -526,8 +533,32 @@ Item {
             mouseClick(settingsButton);
 
             filtersPopover = findChild(shell, "filtersPopover")
-
             verify(filtersPopover);
+
+            mouseClick(shell, shell.width - 1, shell.height - 1);
+
+            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(headerContainer, "showSearch", true);
+            tryCompare(searchTextField, "focus", false);
+
+            mouseClick(cancelButton);
+            tryCompare(headerContainer, "showSearch", false);
+            tryCompare(headerContainer, "contentY", headerContainer.height);
+
+            goToSecondLevel();
+
+            filtersPopover = findChild(shell, "filtersPopover")
+            verify(!filtersPopover);
+
+            mouseClick(settingsButton);
+
+            filtersPopover = findChild(shell, "filtersPopover")
+            verify(filtersPopover);
+
+            mouseClick(shell, shell.width - 1, shell.height - 1);
+
+            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(headerContainer, "showSearch", true);
         }
 
         function test_primaryFilter() {

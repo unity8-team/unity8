@@ -78,13 +78,13 @@ Item {
         }
     }
 
-    function closePopup(keepFocus) {
+    function closePopup(keepFocus, keepSearch) {
         if (extraPanel.visible) {
             extraPanel.visible = false;
         } else if (!keepFocus) {
-            unfocus();
+            unfocus(keepSearch);
         }
-        if (!searchTextField.text && !root.navigationTag && searchHistory.count == 0) {
+        if (!keepSearch && !searchTextField.text && !root.navigationTag && searchHistory.count == 0) {
             headerContainer.showSearch = false;
         }
     }
@@ -97,9 +97,9 @@ Item {
         closePopup(keepFocus);
     }
 
-    function unfocus() {
+    function unfocus(keepSearch) {
         searchTextField.focus = false;
-        if (!searchTextField.text && !root.navigationTag) {
+        if (!keepSearch && !searchTextField.text && !root.navigationTag) {
             headerContainer.showSearch = false;
         }
     }
@@ -279,6 +279,7 @@ Item {
 
                     AbstractButton {
                         id: cancelButton
+                        objectName: "cancelButton"
                         width: cancelLabel.width + cancelLabel.anchors.rightMargin + cancelLabel.anchors.leftMargin
                         anchors {
                             top: parent.top
