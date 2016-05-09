@@ -44,7 +44,6 @@ Item {
 
     signal _showMessageCalled(string html)
     signal _showPromptCalled(string text, bool isSecret, bool isDefaultPrompt)
-    signal _showLastChanceCalled()
     signal _hideCalled()
     signal _notifyAuthenticationSucceededCalled()
     signal _notifyAuthenticationFailedCalled()
@@ -57,10 +56,6 @@ Item {
 
     function showPrompt(text, isSecret, isDefaultPrompt) {
         _showPromptCalled(text, isSecret, isDefaultPrompt);
-    }
-
-    function showLastChance() {
-        _showLastChanceCalled();
     }
 
     function hide() {

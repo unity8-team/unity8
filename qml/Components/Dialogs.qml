@@ -46,6 +46,10 @@ Item {
         d.showPowerDialog();
     }
 
+    function showInfoPopup(title, text) {
+        d.showInfoPopup(title, text);
+    }
+
     onUsageScenarioChanged: {
         if (usageScenario != "desktop" && legacyAppsModel.count > 0 && !d.modeSwitchWarningPopup) {
             var comp = Qt.createComponent(Qt.resolvedUrl("ModeSwitchWarningDialog.qml"))
@@ -122,6 +126,14 @@ Item {
         function showPowerDialog() {
             if (!dialogLoader.active) {
                 dialogLoader.sourceComponent = powerDialogComponent;
+                dialogLoader.focus = true;
+                dialogLoader.active = true;
+            }
+        }
+
+        function showInfoPopup(title, text) {
+            if (!dialogLoader.active) {
+                dialogLoader.setSource(Qt.resolvedUrl("InfoPopup.qml"), {title: title, text: text});
                 dialogLoader.focus = true;
                 dialogLoader.active = true;
             }

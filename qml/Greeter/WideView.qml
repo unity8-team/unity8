@@ -51,10 +51,6 @@ FocusScope {
         loginList.showPrompt(text, isSecret, isDefaultPrompt);
     }
 
-    function showLastChance() {
-        // TODO
-    }
-
     function hide() {
         coverPage.hide();
     }

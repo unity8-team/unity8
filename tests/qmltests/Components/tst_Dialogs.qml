@@ -104,10 +104,23 @@ Rectangle {
         when: windowShown
 
         function test_showPowerDialog() {
-            var dialogsPrivate = findInvisibleChild(dialogs, "dialogsPrivate");
-            dialogsPrivate.showPowerDialog();
+            dialogs.showPowerDialog();
             var dialogLoader = findInvisibleChild(dialogs, "dialogLoader");
             tryCompare(dialogLoader.item.__foreground, "focus", true);
+        }
+
+        function test_showInfoPopup() {
+            dialogs.showInfoPopup("foo", "bar");
+            tryCompareFunction(function() { return findChild(dialogs, "infoPopup") !== null}, true);
+
+            var infoPopup = findChild(root, "infoPopup");
+            compare(infoPopup.title, "foo");
+            compare(infoPopup.text, "bar");
+
+            var okButton = findChild(root, "infoPopupOkButton");
+            mouseClick(okButton);
+
+            tryCompareFunction(function() { return findChild(dialogs, "infoPopup") === null}, true);
         }
     }
 }

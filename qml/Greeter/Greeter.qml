@@ -59,6 +59,7 @@ Showable {
     signal tease()
     signal sessionStarted()
     signal emergencyCall()
+    signal showInfoPopup(string title, string text)
 
     function forceShow() {
         showNow();
@@ -113,6 +114,7 @@ Showable {
     QtObject {
         id: d
 
+        readonly property bool alphanumeric: AccountsService.passwordDisplayHint === AccountsService.Keyboard
         readonly property bool multiUser: lightDM.users.count > 1
         property int currentIndex
         property bool waiting
@@ -170,6 +172,17 @@ Showable {
                 loader.item.notifyAuthenticationSucceeded();
                 loader.item.hide();
             }
+        }
+
+        function showLastChance() {
+            var title = d.alphaNumeric ?
+                        i18n.tr("Sorry, incorrect passphrase.") :
+                        i18n.tr("Sorry, incorrect passcode.");
+            var text = i18n.tr("This will be your last attempt.") + " " +
+                       (d.alphaNumeric ?
+                        i18n.tr("If passphrase is entered incorrectly, your phone will conduct a factory reset and all personal data will be deleted.") :
+                        i18n.tr("If passcode is entered incorrectly, your phone will conduct a factory reset and all personal data will be deleted."));
+            root.showInfoPopup(title, text);
         }
     }
 
@@ -349,7 +362,7 @@ Showable {
         Binding {
             target: loader.item
             property: "alphanumeric"
-            value: AccountsService.passwordDisplayHint === AccountsService.Keyboard
+            value: d.alphanumeric
         }
 
         Binding {
@@ -425,7 +438,7 @@ Showable {
                 // Check if we should initiate a factory reset
                 if (maxFailedLogins >= 2) { // require at least a warning
                     if (AccountsService.failedLogins === maxFailedLogins - 1) {
-                        loader.item.showLastChance();
+                        d.showLastChance();
                     } else if (AccountsService.failedLogins >= maxFailedLogins) {
                         SystemImage.factoryReset(); // Ouch!
                     }

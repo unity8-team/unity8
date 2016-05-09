@@ -451,6 +451,7 @@ Rectangle {
             panel.dismissTimer = fakeDismissTimer;
 
             waitForGreeterToStabilize();
+            waitForRendering(shell);
 
             topLevelSurfaceList = findInvisibleChild(shell, "topLevelSurfaceList");
             verify(topLevelSurfaceList);

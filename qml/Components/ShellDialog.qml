@@ -37,17 +37,7 @@ Dialog {
     Keys.onEscapePressed: hide()
 
     focus: true
+    theme.name: "Ubuntu.Components.Themes.Ambiance"
 
-    // FIXME: this is a hack because Dialog subtheming seems broken atm
-    // https://bugs.launchpad.net/ubuntu/+source/ubuntu-ui-toolkit/+bug/1555548
-    ThemeSettings {
-        id: themeHack
-    }
-
-    Component.onCompleted: {
-        themeHack.palette.normal.overlay = "white";
-        themeHack.palette.normal.overlayText = UbuntuColors.slate;
-        __foreground.theme = themeHack
-        show();
-    }
+    Component.onCompleted: show()
 }

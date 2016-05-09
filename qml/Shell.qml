@@ -75,7 +75,7 @@ Item {
             && (applicationsDisplayLoader.item && applicationsDisplayLoader.item.orientationChangesEnabled)
             && (!greeter || !greeter.animating)
 
-    readonly property bool showingGreeter: greeter && greeter.shown
+    readonly property bool showingGreeter: greeter && greeter.active
 
     property bool startingUp: true
     Timer { id: finishStartUpTimer; interval: 500; onTriggered: startingUp = false }
@@ -84,9 +84,9 @@ Item {
         if (startingUp) {
             // Ensure we don't rotate during start up
             return Qt.PrimaryOrientation;
-        } else if (greeter && greeter.shown) {
+        } else if (showingGreeter && shell.usageScenario === "phone") {
             return Qt.PrimaryOrientation;
-        } else if (applicationsDisplayLoader.item) {
+        } else if (!showingGreeter && applicationsDisplayLoader.item) {
             return shell.orientations.map(applicationsDisplayLoader.item.supportedOrientations);
         } else {
             // we just don't care
@@ -439,6 +439,8 @@ Item {
             }
 
             onEmergencyCall: startLockedApp("dialer-app")
+
+            onShowInfoPopup: dialogs.showInfoPopup(title, text)
         }
     }
 

@@ -22,6 +22,7 @@ import Ubuntu.Components 1.3
 import AccountsService 0.1
 import GSettings 1.0
 import IntegratedLightDM 0.1 as LightDM
+import Ubuntu.SystemImage 0.1
 import Unity.Test 0.1 as UT
 
 Item {
@@ -76,6 +77,18 @@ Item {
         signalName: "activeChanged"
     }
 
+    SignalSpy {
+        id: showInfoPopupSpy
+        target: loader.item
+        signalName: "showInfoPopup"
+    }
+
+    SignalSpy {
+        id: factoryResetSpy
+        target: SystemImage
+        signalName: "resettingDevice"
+    }
+
     GSettings {
         id: greeterSettings
         schema.id: "com.canonical.Unity8.Greeter"
@@ -99,12 +112,6 @@ Item {
             id: viewShowPromptSpy
             target: testCase.view
             signalName: "_showPromptCalled"
-        }
-
-        SignalSpy {
-            id: viewShowLastChanceSpy
-            target: testCase.view
-            signalName: "_showLastChanceCalled"
         }
 
         SignalSpy {
@@ -143,9 +150,10 @@ Item {
             teaseSpy.clear();
             sessionStartedSpy.clear();
             activeChangedSpy.clear();
+            showInfoPopupSpy.clear();
+            factoryResetSpy.clear();
             viewShowMessageSpy.clear();
             viewShowPromptSpy.clear();
-            viewShowLastChanceSpy.clear();
             viewHideSpy.clear();
             viewAuthenticationSucceededSpy.clear();
             viewAuthenticationFailedSpy.clear();
@@ -511,6 +519,22 @@ Item {
 
             // Active state should never have changed
             compare(activeChangedSpy.count, 0);
+        }
+
+        function test_maxFailedLogins() {
+            greeter.maxFailedLogins = 2;
+            selectUser("has-password");
+            tryCompare(viewShowPromptSpy, "count", 1);
+
+            compare(showInfoPopupSpy.count, 0);
+            view.responded("wr0ng p4ssw0rd");
+            tryCompare(showInfoPopupSpy, "count", 1);
+
+            tryCompare(viewShowPromptSpy, "count", 2);
+
+            compare(factoryResetSpy.count, 0);
+            view.responded("wr0ng p4ssw0rd");
+            tryCompare(factoryResetSpy, "count", 1);
         }
 
         function test_dbusRequestAuthenticationUser() {
