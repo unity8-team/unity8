@@ -31,6 +31,8 @@ public:
 
     Q_INVOKABLE void mockSize(int size, const QString &error); // only in mock
     Q_INVOKABLE void mockEnroll(const QString &error); // only in mock
+    Q_INVOKABLE void mockEnrollProgress(double percent,
+                                        const QVariantMap& details); // only in mock
     Q_INVOKABLE void mockClearance(const QString &error); // only in mock
 
 Q_SIGNALS:

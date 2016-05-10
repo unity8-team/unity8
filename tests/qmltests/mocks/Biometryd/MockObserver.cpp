@@ -53,6 +53,13 @@ void MockObserver::mockEnroll(const QString &error)
         Q_EMIT failed(error);
 }
 
+void MockObserver::mockEnrollProgress(double percent,
+                                      const QVariantMap& details)
+{
+    Q_EMIT progressed(percent, details);
+}
+
+
 void MockObserver::mockClearance(const QString &error)
 {
     if (error.isEmpty())

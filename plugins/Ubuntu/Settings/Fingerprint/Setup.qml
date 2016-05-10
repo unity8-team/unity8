@@ -168,7 +168,6 @@ Page {
                     // Default image.
                     FingerprintVisualProgression {
                         id: imageDefault
-
                         objectName: "fingerprintDefaultVisual"
                         opacity: 1
                         source: "fingerprint_nomask.svg"

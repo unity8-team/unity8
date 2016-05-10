@@ -249,7 +249,7 @@ Page {
                 Button {
                     enabled: parent.enabled
                     objectName: "fingerprintAddFingerprintButton"
-                    onClicked: pageStack.push(Qt.resolvedUrl("Setup.qml"))
+                    onClicked: setupPage = pageStack.push(Qt.resolvedUrl("Setup.qml"))
                     text: i18n.dtr("ubuntu-settings-components",
                                    "Add Fingerprint…")
                 }
@@ -297,10 +297,27 @@ Page {
         }
     }
 
+    Component {
+        id: fingerprintReaderBroken
+
+        Dialog {
+            id: fingerprintReaderBrokenDialog
+            objectName: "fingerprintReaderBrokenDialog"
+            text: i18n.dtr("ubuntu-settings-components",
+                           "Sorry, the reader doesn’t seem to be working.")
+
+            Button {
+                objectName: "fingerprintReaderBrokenDialogOK"
+                onClicked: PopupUtils.close(fingerprintReaderBrokenDialog)
+                text: i18n.dtr("ubuntu-settings-components", "OK")
+            }
+        }
+    }
+
     Connections {
         target: setupPage
         onEnroll: enroll()
-        onCancel: cancel();
+        onCancel: cancel()
     }
 
     Observer {
@@ -352,6 +369,9 @@ Page {
         }
         onFailed: {
             console.log("sizeObserver: failed")
+            if (diag) PopupUtils.close(diag);
+            diag = PopupUtils.open(fingerprintReaderBroken);
+            console.error("Biometry size operation failed:", reason);
         }
         onSucceeded: {
             console.log("sizeObserver: succeeded", result)
@@ -370,11 +390,14 @@ Page {
         }
         onFailed: {
             console.log("clearanceObserver: failed")
+            if (diag) PopupUtils.close(diag);
+            diag = PopupUtils.open(fingerprintReaderBroken);
+            console.error("Biometry clearance failed:", reason);
         }
         onSucceeded: {
             console.log("clearanceObserver: succeeded")
             root.storedFingerprints = 0;
-            PopupUtils.close(diag);
+            if (diag) PopupUtils.close(diag);
         }
     }
 

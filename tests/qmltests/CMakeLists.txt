@@ -44,4 +44,4 @@ add_qml_test(Vpn VpnPreviewDialogCertificateChecks)
 add_qml_test(Vpn VpnPreviewDialog ENVIRONMENT NO_SSL_CERTIFICATE_CHECK=1)
 
 add_qml_test(Fingerprint Fingerprint IMPORT_PATHS ${CMAKE_CURRENT_BINARY_DIR}/mocks)
-add_qml_test(Fingerprint FingerprintSetup)
+add_qml_test(Fingerprint FingerprintSetup IMPORT_PATHS ${CMAKE_CURRENT_BINARY_DIR}/mocks)

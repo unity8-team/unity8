@@ -27,20 +27,13 @@ Item {
     width: units.gu(50)
     height: units.gu(90)
 
-    // Example plugin
-    QtObject {
-        id: p
-        property int fingerprintCount: 0
-        property bool passcodeSet: false
-
-        signal enrollmentProgressed(double progress)
-        signal enrollmentCompleted()
-        signal enrollmentFailed(int error)
-    }
-
     Component {
         id: fingerprintPage
-        Fingerprint {}
+        Fingerprint {
+            objectName: "fingerprintPage"
+            anchors.fill: parent
+            passcodeSet: true
+        }
     }
 
     PageStack {
@@ -52,17 +45,18 @@ Item {
         signalName: "slideCompleted"
     }
 
+    SignalSpy {
+        id: enrollmentObserverProgressedSpy
+        target: null
+        signalName: "progressed"
+    }
+
     UbuntuTestCase {
-        name: "FingerprintPanel"
+        name: "SetupUI"
         when: windowShown
 
-        function init() {
-            pageStack.push(fingerprintPage, {
-                plugin: p
-            });
-
-            p.fingerprintCount = 0;
-            p.passcodeSet = true;
+        function init () {
+            pageStack.push(fingerprintPage);
 
             statusLabelSpy.clear();
 
@@ -70,49 +64,91 @@ Item {
             mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
         }
 
-        function cleanup() {
+        function cleanup () {
             pageStack.pop();
         }
 
-        function test_states_data() {
+        function getDefaultVisual () {
+            var setup = findChild(testRoot, "fingerprintSetupPage");
+            return findChild(setup, "fingerprintDefaultVisual");
+        }
+
+        function createTestMasks () {
             return [
-                { tag: "init", signal: null, state: "" },
-                { tag: "started", signal: p.enrollmentProgressed, signalArgs: [0], state: "reading" },
-                // { tag: "stopped", signal: p.enrollmentFailed, signalArgs: [0], state: "" },
-                { tag: "interrupted", signal: p.enrollmentFailed, signalArgs: [0], state: "longer" },
-                { tag: "completed", signal: p.enrollmentCompleted, signalArgs: [], state: "done" },
-                { tag: "failed", signal: p.enrollmentFailed, signalArgs: [1], state: "failed" },
-            ];
+                {x: 0, y: 0, height: 10, width: 10},
+                {x: 20, y: 20, height: 10, width: 10},
+            ]
         }
 
-        function test_states(data) {
-            var page = findChild(pageStack, "fingerprintSetupPage");
-            if (data.signal) {
-                data.signal.apply(data, data.signalArgs);
-            }
-            compare(page.state, data.state, "unexpected state");
-        }
+        function test_enrollmentHalfway () {
+            var fpPage = findChild(testRoot, "fingerprintPage");
 
-        function test_not_done() {
-            var button = findChild(pageStack, "fingerprintSetupDoneButton");
-            compare(button.enabled, false, "button was enabled initially");
-        }
+            var enrollmentObserver = findInvisibleChild(fpPage, "enrollmentObserver");
+            enrollmentObserverProgressedSpy.target = enrollmentObserver;
+            enrollmentObserver.mockEnrollProgress(0.5, {masks: createTestMasks()});
+            enrollmentObserverProgressedSpy.wait();
 
-        function test_done() {
-            var button = findChild(pageStack, "fingerprintSetupDoneButton");
-            p.enrollmentCompleted();
-            compare(button.enabled, true, "button was disabled when done");
-        }
-
-        function test_status_label() {
-            var page = findChild(pageStack, "fingerprintSetupPage");
-            var statusLabel = findChild(page, "fingerprintStatusLabel");
-
-            statusLabelSpy.target = statusLabel;
-
-            statusLabel.setText("foo");
-            statusLabelSpy.wait();
-            compare(statusLabel.text, "foo");
+            var visual = getDefaultVisual();
+            compare(visual.enrollmentProgress, 0.5);
+            compare(visual.masks, createTestMasks());
         }
     }
+    // UbuntuTestCase {
+    //     name: "SetupUI"
+    //     when: windowShown
+
+    //     function init() {
+    //         pageStack.push(fingerprintPage);
+
+    //         statusLabelSpy.clear();
+
+    //         var setupButton = findChild(pageStack, "fingerprintAddFingerprintButton");
+    //         mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
+    //     }
+
+    //     function cleanup() {
+    //         pageStack.pop();
+    //     }
+
+    //     function test_states_data() {
+    //         return [
+    //             { tag: "init", signal: null, state: "" },
+    //             { tag: "started", signal: p.enrollmentProgressed, signalArgs: [0], state: "reading" },
+    //             // { tag: "stopped", signal: p.enrollmentFailed, signalArgs: [0], state: "" },
+    //             { tag: "interrupted", signal: p.enrollmentFailed, signalArgs: [0], state: "longer" },
+    //             { tag: "completed", signal: p.enrollmentCompleted, signalArgs: [], state: "done" },
+    //             { tag: "failed", signal: p.enrollmentFailed, signalArgs: [1], state: "failed" },
+    //         ];
+    //     }
+
+    //     function test_states(data) {
+    //         var page = findChild(pageStack, "fingerprintSetupPage");
+    //         if (data.signal) {
+    //             data.signal.apply(data, data.signalArgs);
+    //         }
+    //         compare(page.state, data.state, "unexpected state");
+    //     }
+
+    //     function test_notDone() {
+    //         var button = findChild(pageStack, "fingerprintSetupDoneButton");
+    //         compare(button.enabled, false, "button was enabled initially");
+    //     }
+
+    //     function test_done() {
+    //         var button = findChild(pageStack, "fingerprintSetupDoneButton");
+    //         p.enrollmentCompleted();
+    //         compare(button.enabled, true, "button was disabled when done");
+    //     }
+
+    //     function test_statusLabel() {
+    //         var page = findChild(pageStack, "fingerprintSetupPage");
+    //         var statusLabel = findChild(page, "fingerprintStatusLabel");
+
+    //         statusLabelSpy.target = statusLabel;
+
+    //         statusLabel.setText("foo");
+    //         statusLabelSpy.wait();
+    //         compare(statusLabel.text, "foo");
+    //     }
+    // }
 }
