@@ -38,6 +38,7 @@ target_link_libraries(launchermodeltestExec
     unity8-private
     ${GLIB_LDFLAGS}
     ${GSETTINGS_QT_LDFLAGS}
+    ${GLIB_LIBRARIES}
     )
 add_dependencies(launchermodeltestExec mock-server)
 qt5_use_modules(launchermodeltestExec Test Core DBus Xml Gui)

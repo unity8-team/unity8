@@ -37,6 +37,7 @@ target_link_libraries(UnityLauncher-qml
     unity8-private
     ${GLIB_LDFLAGS}
     ${GSETTINGS_QT_LDFLAGS}
+    ${GLIB_LIBRARIES}
     )
 
 qt5_use_modules(UnityLauncher-qml DBus Qml Gui)
