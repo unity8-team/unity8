@@ -75,8 +75,8 @@ Item {
 
         function createTestMasks () {
             return [
-                {x: 0, y: 0, height: 10, width: 10},
-                {x: 20, y: 20, height: 10, width: 10},
+                {x: 0, y: 0, height: 50, width: 60},
+                {x: 75, y: 75, height: 100, width: 100},
             ]
         }
 
@@ -85,12 +85,15 @@ Item {
 
             var enrollmentObserver = findInvisibleChild(fpPage, "enrollmentObserver");
             enrollmentObserverProgressedSpy.target = enrollmentObserver;
+            wait(1000)
             enrollmentObserver.mockEnrollProgress(0.5, {masks: createTestMasks()});
+            wait(1000)
             enrollmentObserverProgressedSpy.wait();
 
             var visual = getDefaultVisual();
             compare(visual.enrollmentProgress, 0.5);
             compare(visual.masks, createTestMasks());
+
         }
     }
     // UbuntuTestCase {

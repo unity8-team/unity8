@@ -31,14 +31,12 @@ MainView {
     PageStack {
         id: pageStack
 
-        property bool passcodeSet: false
-
         Component.onCompleted: push(fingerprintPage)
 
         Component {
             id: fingerprintPage
             Fingerprint {
-                onRequestPasscode: pageStack.passcodeSet = !pageStack.passcodeSet
+                onRequestPasscode: passcodeSet = !passcodeSet
             }
         }
     }

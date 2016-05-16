@@ -76,18 +76,18 @@ Item {
         }
     }
 
-    Repeater {
-        model: root.masks
-        anchors.fill: parent
+    // Repeater {
+    //     model: root.masks
+    //     anchors.fill: parent
 
-        Rectangle {
-            color: "#FF00B4EF"
-            opacity: 0.3
-            width: modelData.height
-            height: modelData.width
-            x: modelData.x
-            y: modelData.y
-            Component.onCompleted: console.warn(modelData)
-        }
-    }
+    //     Rectangle {
+    //         color: "red"
+    //         opacity: 0.3
+    //         width: modelData.height
+    //         height: modelData.width
+    //         x: modelData.x
+    //         y: modelData.y
+    //         Component.onCompleted: console.warn(modelData)
+    //     }
+    // }
 }

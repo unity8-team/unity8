@@ -49,7 +49,10 @@ Page {
         imageDefault.masks = hints[FingerprintReader.masks];
     }
 
-    Component.onCompleted: enroll()
+    // Component.onCompleted: {
+    //     console.warn('enroll()');
+    //                  root.enroll();
+    // }
     Component.onDestruction: cancel();
 
     states: [
@@ -173,7 +176,7 @@ Page {
                         source: "fingerprint_nomask.svg"
                     }
 
-                    // Failed image.
+                    // // Failed image.
                     FingerprintVisual {
                         id: imageFailed
 
@@ -182,7 +185,7 @@ Page {
                         visible: false
                     }
 
-                    // Done image.
+                    // // Done image.
                     FingerprintVisual {
                         id: imageDone
 

@@ -17,6 +17,7 @@
 // local
 #include "plugin.h"
 #include "ubuntusettingsfingerprint.h"
+// #include "fingerprintvisual.h"
 
 // Qt
 #include <QtQml/qqml.h>
@@ -24,4 +25,5 @@
 void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
+    // qmlRegisterType<FingerprintVisual>(uri, 0, 1, "FingerprintVisual");
 }

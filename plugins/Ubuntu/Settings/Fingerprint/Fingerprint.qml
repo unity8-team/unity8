@@ -249,7 +249,10 @@ Page {
                 Button {
                     enabled: parent.enabled
                     objectName: "fingerprintAddFingerprintButton"
-                    onClicked: setupPage = pageStack.push(Qt.resolvedUrl("Setup.qml"))
+                    onClicked: {
+                        setupPage = pageStack.push(Qt.resolvedUrl("Setup.qml"));
+                        root.enroll();
+                    }
                     text: i18n.dtr("ubuntu-settings-components",
                                    "Add Fingerprint…")
                 }
@@ -399,6 +402,12 @@ Page {
             root.storedFingerprints = 0;
             if (diag) PopupUtils.close(diag);
         }
+    }
+
+    Connections {
+        target: setupPage
+        onEnroll: root.enroll()
+        onCancel: root.cancel()
     }
 
     UbuntuSettingsFingerprint {
