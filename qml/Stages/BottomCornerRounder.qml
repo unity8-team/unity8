@@ -36,16 +36,16 @@ ShaderEffect {
         highp vec2 point = vec2(qt_TexCoord0.x * width, qt_TexCoord0.y * height);
 
         highp vec2 bottomLeftCircleCenter = vec2(radius, height - radius);
-        if ((point.x < bottomLeftCircleCenter.x) && (point.y > bottomLeftCircleCenter.y)) {
+        if ((point.x < bottomLeftCircleCenter.x) && (point.y >= bottomLeftCircleCenter.y)) {
             highp float dist = distance(point, bottomLeftCircleCenter);
-            if (dist > radius) {
+            if (dist >= radius - 1.0) {
                 discard;
             }
         } else {
             highp vec2 bottomRightCircleCenter = vec2(width - radius, height - radius);
-            if ((point.x > bottomRightCircleCenter.x) && (point.y > bottomRightCircleCenter.y)) {
+            if ((point.x > bottomRightCircleCenter.x) && (point.y >= bottomRightCircleCenter.y)) {
                 highp float dist = distance(point, bottomRightCircleCenter);
-                if (dist > radius) {
+                if (dist >= radius - 1.0) {
                     discard;
                 }
             }
