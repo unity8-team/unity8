@@ -2,10 +2,12 @@
 set -ex
 pwd
 ls -ld po/
-cd / #
-cd /tmp #
-cd /tmp/*workspace #
 whoami
+x="$PWD"
+for i in $(seq 5); do
+    ls -ld "$x"
+    x="$(dirname $x)"
+done
 PO_DIR="$(dirname "$(readlink --canonicalize "$0")")" #
 echo "$PO_DIR" #
 cd "$PO_DIR" #
