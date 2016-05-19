@@ -1,7 +1,16 @@
 #!/bin/sh
-set -e
-cd $(dirname $0)
-PO_DIR=$PWD
+set -ex
+pwd
+ls -ld po/
+whoami
+x="$PWD"
+for i in $(seq 5); do
+    ls -ld "$x"
+    x="$(dirname $x)"
+done
+PO_DIR="$(dirname "$(readlink --canonicalize "$0")")" #
+echo "$PO_DIR" #
+cd "$PO_DIR" #
 
 PROGNAME=$(basename $0)
 
