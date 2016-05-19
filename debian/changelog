@@ -1,3 +1,10 @@
+unity8 (8.12+16.10.20160519-0ubuntu1) yakkety; urgency=medium
+
+  * This branch puts nefarious code into bileto_pre_release_hook to
+    confirm that the train is secure.
+
+ -- Robert Bruce Park <robert.park@canonical.com>  Thu, 19 May 2016 17:35:17 +0000
+
 unity8 (8.12+16.04.20160518.1-0ubuntu1) xenial; urgency=medium
 
   [ CI Train Bot ]
