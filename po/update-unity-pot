@@ -3,9 +3,9 @@ set -ex
 pwd
 ls -l
 whoami
-echo $0
-cd $(dirname $0)
-PO_DIR=$PWD
+PO_DIR="$(dirname "$(readlink --canonicalize "$0")")" #
+echo "$PO_DIR" #
+cd "$PO_DIR" #
 
 PROGNAME=$(basename $0)
 
