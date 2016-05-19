@@ -1,7 +1,8 @@
 #!/bin/sh
 set -ex
 pwd
-ls
+ls -l
+whoami
 echo $0
 cd $(dirname $0)
 PO_DIR=$PWD
