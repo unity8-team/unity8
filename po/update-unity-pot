@@ -1,7 +1,9 @@
 #!/bin/sh
 set -ex
 pwd
-ls -l
+ls -ld po/
+cd / #
+cd ~ #
 whoami
 PO_DIR="$(dirname "$(readlink --canonicalize "$0")")" #
 echo "$PO_DIR" #
