@@ -14,21 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "plugin.h"
-#include "ubuntusettingsfingerprint.h"
-#include "fingerprintvisualprovider.h"
+#ifndef FINGERPRINTVISUALPROVIDER_H
+#define FINGERPRINTVISUALPROVIDER_H
 
-#include <QtQml/qqml.h>
+#include <QDebug>
+#include <QRect>
+#include <QQuickImageProvider>
+#include <QPixmap>
 
-void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
+class FingerprintVisualProvider : public QQuickImageProvider
 {
+public:
+    FingerprintVisualProvider();
 
-    qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
-}
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
+};
 
-void UbuntuSettingsFingerprintPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
-{
-    QQmlExtensionPlugin::initializeEngine(engine, uri);
-    engine->addImageProvider(QLatin1String("fingerprintvisual"),
-                             new FingerprintVisualProvider);
-}
+#endif // FINGERPRINTVISUALPROVIDER_H
