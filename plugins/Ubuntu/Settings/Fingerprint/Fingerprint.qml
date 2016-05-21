@@ -326,21 +326,12 @@ Page {
     Observer {
         id: enrollmentObserver
         objectName: "enrollmentObserver"
-        onStarted: {
-            console.log("enrollmentObserver: started")
-        }
-        onCanceled: {
-            console.log("enrollmentObserver: canceled")
-        }
-        onFailed: {
-            console.log("enrollmentObserver: failed")
-            setupPage.enrollmentFailed();
-        }
+        onFailed: setupPage.enrollmentFailed()
         onProgressed: {
             // biometryd API users can use details to receive
             // device/operation-specific information about the
             // operation. We illustrate the case of a FingerprintReader here.
-            console.log("enrollmentObserver: progressed: ", percent);
+            // console.log("enrollmentObserver: progressed: ", percent);
 
             var isFingerPresent             = details[FingerprintReader.isFingerPresent]
             var hasMainClusterIdentified    = details[FingerprintReader.hasMainClusterIdentified]
@@ -355,50 +346,29 @@ Page {
                         "masks:",                      masks,
                         "estimatedFingerSize",         estimatedFingerSize);
         }
-        onSucceeded: {
-            console.log("enrollmentObserver: succeeded")
-            setupPage.enrollmentCompleted();
-        }
+        onSucceeded: setupPage.enrollmentCompleted()
     }
 
     Observer {
         id: sizeObserver
         objectName: "sizeObserver"
-        onStarted: {
-            console.log("sizeObserver: started")
-        }
-        onCanceled: {
-            console.log("sizeObserver: canceled")
-        }
         onFailed: {
-            console.log("sizeObserver: failed")
             if (diag) PopupUtils.close(diag);
             diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometry size operation failed:", reason);
         }
-        onSucceeded: {
-            console.log("sizeObserver: succeeded", result)
-            root.storedFingerprints = result;
-        }
+        onSucceeded: root.storedFingerprints = result
     }
 
     Observer {
         id: clearanceObserver
         objectName: "clearanceObserver"
-        onStarted: {
-            console.log("clearanceObserver: started")
-        }
-        onCanceled: {
-            console.log("clearanceObserver: canceled")
-        }
         onFailed: {
-            console.log("clearanceObserver: failed")
             if (diag) PopupUtils.close(diag);
             diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometry clearance failed:", reason);
         }
         onSucceeded: {
-            console.log("clearanceObserver: succeeded")
             root.storedFingerprints = 0;
             if (diag) PopupUtils.close(diag);
         }
