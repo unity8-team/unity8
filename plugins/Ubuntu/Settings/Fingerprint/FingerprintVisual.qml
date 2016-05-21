@@ -19,9 +19,36 @@
 import QtQuick 2.4
 
 Image {
-    anchors.fill: parent
-    asynchronous: true
-    fillMode: Image.Pad
-    sourceSize.width: parent.width
-    sourceSize.height: parent.height
+    property var masks
+
+    source: "image://fingerprintvisual/"
+    onMasksChanged: {
+        var s = "image://fingerprintvisual/";
+
+        if (masks && masks.length) {
+            masks.forEach(function (mask, i) {
+                // Format is "<source>/[x1,y1,w1,h1],…,[xn,yn,wn,hn]"
+                s += "[" + mask.x + "," + mask.y + ","
+                     + mask.width + "," + mask.height + "]";
+
+                // Add comma if not last mask.
+                if (i !== (masks.length - 1))
+                    s += ",";
+            });
+        }
+        source = s;
+    }
+
+    Repeater {
+        model: parent.masks
+
+        // For testing.
+        Rectangle {
+            color: "#20000000"
+            x: modelData.x
+            y: modelData.y
+            width: modelData.width
+            height: modelData.height
+        }
+    }
 }

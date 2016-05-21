@@ -171,40 +171,12 @@ Page {
                     width: units.gu(16)
 
                     // Default image.
-                    Image {
+                    FingerprintVisual {
                         id: imageDefault
                         anchors.fill: parent
-                        source: "image://fingerprintvisual/"
                         sourceSize.width: parent.width
                         sourceSize.height: parent.height
                         objectName: "fingerprintDefaultVisual"
-                        property var masks
-                        onMasksChanged: {
-                            var s = "image://fingerprintvisual/";
-                            masks.forEach(function (mask, i) {
-                                // Format is "<source>/[x1,y1,w1,h1],…,[xn,yn,wn,hn]"
-                                s += "[" + mask.x + "," + mask.y + ","
-                                     + mask.width + "," + mask.height + "]";
-
-                                // Add comma if not last mask.
-                                if (i !== (masks.length - 1))
-                                    s += ",";
-                            });
-                            source = s;
-                        }
-
-                        Repeater {
-                            model: imageDefault.masks
-
-                            // For testing.
-                            Rectangle {
-                                color: "#20000000"
-                                x: modelData.x
-                                y: modelData.y
-                                width: modelData.width
-                                height: modelData.height
-                            }
-                        }
                     }
 
                     // // Failed image.
