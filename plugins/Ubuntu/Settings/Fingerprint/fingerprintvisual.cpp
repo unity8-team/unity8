@@ -34,6 +34,8 @@ FingerprintVisual::FingerprintVisual(const QList<QRectF> &masks, const QSize &si
     ).mapRect(m_unenrolled_paths.boundsOnElement(SVG_ROOT_LAYER));
 
     // We will preserve aspect ratio, so we only consider the requested width.
+    // Scale is the scale at which we need to scale up/down the default SVG
+    // size in order to meet the requested size.
     if (m_size.width() > 0) {
         m_scale = m_size.width() / bb.width();
     }
@@ -64,6 +66,8 @@ void FingerprintVisual::render()
         return;
     }
 
+    // For all paths, check if a mask intersects with it, in which case we
+    // render that path as enrolled.
     for (int i = 0; i < m_paths.size(); i++) {
         QString path = m_paths.at(i);
         QMatrix mat = m_enrolled_paths.matrixForElement(path);
@@ -87,6 +91,7 @@ void FingerprintVisual::renderPath(const QString &id)
     if (!m_enrolled_paths.elementExists(id) || !m_unenrolled_paths.elementExists(id))
         throw std::invalid_argument("Received non-existing id.");
 
+    // We translate and scale each path according to a matrix.
     QMatrix mat = m_enrolled_paths.matrixForElement(id);
     QRectF bb = mat.mapRect(m_enrolled_paths.boundsOnElement(id));
     bb.moveLeft(bb.x() * m_scale);

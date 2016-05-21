@@ -26,8 +26,10 @@ FingerprintVisualProvider::FingerprintVisualProvider()
 QPixmap FingerprintVisualProvider::requestPixmap(
     const QString &id, QSize *size, const QSize &requestedSize)
 {
+    Q_UNUSED(size);
     QList<QRectF> masks = QList<QRectF>();
 
+    // Read, from the id, what masks should be rendered.
     QList<QString> split = id.split("[", QString::SkipEmptyParts);
     for (int i = 0; i < split.size(); i++) {
         QString srectf = split.at(i);
@@ -63,9 +65,6 @@ QPixmap FingerprintVisualProvider::requestPixmap(
         }
         masks.append(QRectF(x,y,w,h));
     }
-
-    qDebug() << "Masks for id" << id << masks;
-
     FingerprintVisual fv(masks, requestedSize);
     try
     {
