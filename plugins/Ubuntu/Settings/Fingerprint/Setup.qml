@@ -41,7 +41,7 @@ Page {
     }
 
     function enrollmentCompleted() {
-//        root.state = "done";
+        root.state = "done";
     }
 
     function enrollmentProgressed(progress, hints) {
@@ -194,8 +194,9 @@ Page {
                         Repeater {
                             model: imageDefault.masks
 
+                            // For testing.
                             Rectangle {
-                                color: "#80FF0000"
+                                color: "#20000000"
                                 x: modelData.x
                                 y: modelData.y
                                 width: modelData.width
