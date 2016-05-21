@@ -23,7 +23,6 @@
 #include <QRect>
 #include <QPixmap>
 
-
 #define SVG_ROOT_LAYER QLatin1String("layer1")
 
 class FingerprintVisual
@@ -46,11 +45,12 @@ private:
     // TODO(jgdx): parse the svg.
     QList<QString> m_paths = QList<QString>({ "path4261", "path4439", "path4441", "path4443", "path4445", "path4447", "path4449", "path4451", "path4453", "path4455", "path4457", "path4459", "path4461", "path4463", "path4465", "path4467", "path4469", "path4471", "path4473", "path4475", "path4477", "path4479", "path4481", "path4483", "path4300", "path5080", "path5078", "path5076", "path5074", "path5072", "path5070", "path5068", "path5066", "path5064", "path5062", "path5060", "path5058", "path5056", "path5054", "path5052", "path5050", "path5048", "path5046", "path5044", "path5042", "path5040", "path5038", "path5036", "path5034", "path5032", "path5030", "path5028", "path5026", "path5024", "path5022", "path5020", "path4297" });
 
-    // These two renderers represents the gray and blue fingerprint paths.
+    // These two renderers represents the gray (unenrolled) and blue (enrolled)
+    // fingerprint paths.
     // It is expected they share the same base layer, and that an ID from
-    // one renderer is identical in the other.
-    QSvgRenderer m_inactive;
-    QSvgRenderer m_active;
+    // one renderer is identical to one in the other.
+    QSvgRenderer m_unenrolled_paths;
+    QSvgRenderer m_enrolled_paths;
 };
 
 #endif // FINGERPRINTVISUAL_H

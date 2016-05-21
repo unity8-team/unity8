@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Biometryd 0.0
 import QtGraphicalEffects 1.0
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
-import Biometryd 0.0
+import Ubuntu.Settings.Fingerprint 0.1
 
 Page {
     id: root
@@ -40,12 +41,11 @@ Page {
     }
 
     function enrollmentCompleted() {
-        root.state = "done";
+//        root.state = "done";
     }
 
     function enrollmentProgressed(progress, hints) {
         root.state = "reading";
-        imageDefault.enrollmentProgress = progress;
         imageDefault.masks = hints[FingerprintReader.masks];
     }
 
@@ -169,11 +169,39 @@ Page {
                     width: units.gu(16)
 
                     // Default image.
-                    FingerprintVisualProgression {
+                    Image {
                         id: imageDefault
+                        anchors.fill: parent
+                        source: "image://fingerprintvisual/"
+                        sourceSize.width: parent.width
+                        sourceSize.height: parent.height
                         objectName: "fingerprintDefaultVisual"
-                        opacity: 1
-                        source: "fingerprint_nomask.svg"
+                        property var masks
+                        onMasksChanged: {
+                            var s = "image://fingerprintvisual/";
+                            masks.forEach(function (mask, i) {
+                                // Format is "<source>/[x1,y1,w1,h1],…,[xn,yn,wn,hn]"
+                                s += "[" + mask.x + "," + mask.y + ","
+                                     + mask.width + "," + mask.height + "]";
+
+                                // Add comma if not last mask.
+                                if (i !== (masks.length - 1))
+                                    s += ",";
+                            });
+                            source = s;
+                        }
+
+                        Repeater {
+                            model: imageDefault.masks
+
+                            Rectangle {
+                                color: "#80FF0000"
+                                x: modelData.x
+                                y: modelData.y
+                                width: modelData.width
+                                height: modelData.height
+                            }
+                        }
                     }
 
                     // // Failed image.

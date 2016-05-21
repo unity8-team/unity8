@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>paths/enrolled.svg</file>
+    <file>paths/unenrolled.svg</file>
+</qresource>
+</RCC>

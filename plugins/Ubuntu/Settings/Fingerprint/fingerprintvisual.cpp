@@ -17,21 +17,21 @@
 #include <QDebug>
 #include "fingerprintvisual.h"
 
-FingerprintVisual::FingerprintVisual(QObject* parent)
-    : QSvgRenderer(parent)
-    , m_source("")
-{
-}
 FingerprintVisual::FingerprintVisual(const QList<QRectF> &masks, const QSize &size) :
     m_masks(masks)
     , m_size(size)
     , m_scale(4)
-    , m_inactive(QLatin1String("../fingerprint_paths_gray.svg"))
-    , m_active(QLatin1String("../fingerprint_paths_blue.svg"))
+    , m_unenrolled_paths(QLatin1String(":paths/unenrolled.svg"))
+    , m_enrolled_paths(QLatin1String(":paths/enrolled.svg"))
 {
-    QRectF bb = m_inactive.matrixForElement(
+    if (!m_unenrolled_paths.isValid())
+        qCritical() << "failed to open inactive paths";
+    if (!m_enrolled_paths.isValid())
+        qCritical() << "failed to open active paths";
+
+    QRectF bb = m_unenrolled_paths.matrixForElement(
         SVG_ROOT_LAYER
-    ).mapRect(m_inactive.boundsOnElement(SVG_ROOT_LAYER));
+    ).mapRect(m_unenrolled_paths.boundsOnElement(SVG_ROOT_LAYER));
 
     // We will preserve aspect ratio, so we only consider the requested width.
     if (m_size.width() > 0) {
@@ -49,7 +49,7 @@ FingerprintVisual::FingerprintVisual(const QList<QRectF> &masks, const QSize &si
                        bb.height() + (bb.y() * 2));
     m_pixmap.fill(Qt::white); // for testing
     m_painter = new QPainter(&m_pixmap);
-    m_inactive.render(m_painter, SVG_ROOT_LAYER, bb);
+    m_unenrolled_paths.render(m_painter, SVG_ROOT_LAYER, bb);
 }
 
 FingerprintVisual::~FingerprintVisual()
@@ -59,21 +59,22 @@ FingerprintVisual::~FingerprintVisual()
 
 void FingerprintVisual::render()
 {
-    // No masks means we draw all active paths.
+    // No masks means we draw no active paths.
     if (m_masks.size() == 0) {
-        m_active.render(m_painter);
         return;
     }
 
-    foreach(const QString path, m_paths) {
-        QMatrix mat = m_active.matrixForElement(path);
-        QRectF bb = mat.mapRect(m_active.boundsOnElement(path));
+    for (int i = 0; i < m_paths.size(); i++) {
+        QString path = m_paths.at(i);
+        QMatrix mat = m_enrolled_paths.matrixForElement(path);
+        QRectF bb = mat.mapRect(m_enrolled_paths.boundsOnElement(path));
         bb.moveLeft(bb.x() * m_scale);
         bb.moveTop(bb.y() * m_scale);
         bb.setWidth(bb.width() * m_scale);
         bb.setHeight(bb.height() * m_scale);
 
-        foreach (const QRectF mask, m_masks) {
+        for (int j = 0; j < m_masks.size(); j++) {
+            QRectF mask = m_masks.at(j);
             if (mask.intersects(bb)) {
                 renderPath(path);
             }
@@ -83,16 +84,16 @@ void FingerprintVisual::render()
 
 void FingerprintVisual::renderPath(const QString &id)
 {
-    if (!m_active.elementExists(id) || !m_inactive.elementExists(id))
+    if (!m_enrolled_paths.elementExists(id) || !m_unenrolled_paths.elementExists(id))
         throw std::invalid_argument("Received non-existing id.");
 
-    QMatrix mat = m_active.matrixForElement(id);
-    QRectF bb = mat.mapRect(m_active.boundsOnElement(id));
+    QMatrix mat = m_enrolled_paths.matrixForElement(id);
+    QRectF bb = mat.mapRect(m_enrolled_paths.boundsOnElement(id));
     bb.moveLeft(bb.x() * m_scale);
     bb.moveTop(bb.y() * m_scale);
     bb.setWidth(bb.width() * m_scale);
     bb.setHeight(bb.height() * m_scale);
-    m_active.render(m_painter, id, bb);
+    m_enrolled_paths.render(m_painter, id, bb);
 }
 
 QPixmap FingerprintVisual::pixmap()

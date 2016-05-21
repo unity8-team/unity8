@@ -14,16 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "fingerprintvisual.h"
+#include "fingerprintvisualprovider.h"
+
 FingerprintVisualProvider::FingerprintVisualProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
+    Q_INIT_RESOURCE(paths);
 }
 
 QPixmap FingerprintVisualProvider::requestPixmap(
     const QString &id, QSize *size, const QSize &requestedSize)
 {
     QList<QRectF> masks = QList<QRectF>();
-    foreach(const QString srectf, id.split("[", QString::SkipEmptyParts)) {
+
+    QList<QString> split = id.split("[", QString::SkipEmptyParts);
+    for (int i = 0; i < split.size(); i++) {
+        QString srectf = split.at(i);
 
         // Regexp for both int and qreal.
         QRegExp rx("(\\d+(?:\\.\\d+)?),(\\d+(?:\\.\\d+)?),(\\d+(?:\\.\\d+)?),(\\d+(?:\\.\\d+)?)");
@@ -60,7 +67,14 @@ QPixmap FingerprintVisualProvider::requestPixmap(
     qDebug() << "Masks for id" << id << masks;
 
     FingerprintVisual fv(masks, requestedSize);
-    fv.render();
-
+    try
+    {
+        fv.render();
+    }
+    catch (std::invalid_argument e)
+    {
+        qCritical() << "Failed to render fingerprint visual."
+                    << "Path file(s) not loaded. Was (" << e.what() << ")";
+    }
     return fv.pixmap();
 }
