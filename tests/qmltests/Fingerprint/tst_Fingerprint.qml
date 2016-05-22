@@ -61,14 +61,21 @@ Item {
         signalName: "failed"
     }
 
+    SignalSpy {
+        id: enrollmentSucceededSpy
+        target: null
+        signalName: "succeeded"
+    }
+
     UbuntuTestCase {
         name: "FingerprintPanel"
         when: windowShown
 
-        function init() {
+        function cleanup() {
             setPasscodeSpy.clear();
             sizeSuccessSpy.clear();
             clearanceSuccessSpy.clear();
+            fingerprintPage.storedFingerprints = 0;
         }
 
         function test_sizeOperation() {
@@ -86,6 +93,8 @@ Item {
             var errorDiag = findChild(testRoot, "fingerprintReaderBrokenDialog");
             var ok = findChild(errorDiag, "fingerprintReaderBrokenDialogOK");
             mouseClick(ok, ok.width / 2, ok.height / 2);
+
+            // Halt testing until dialog has been destroyed.
             tryCompareFunction(function () {
                 return findChild(fingerprintPage, "fingerprintReaderBrokenDialog");
             }, null);
@@ -185,9 +194,24 @@ Item {
             var errorDiag = findChild(testRoot, "fingerprintReaderBrokenDialog");
             var ok = findChild(errorDiag, "fingerprintReaderBrokenDialogOK");
             mouseClick(ok, ok.width / 2, ok.height / 2);
+
+            // Wait for dialog destruction (which is required for other tests)
+            // to function.
             tryCompareFunction(function () {
                 return findChild(fingerprintPage, "fingerprintReaderBrokenDialog");
             }, null);
+        }
+
+        function test_enrollmentSucceeded() {
+            var enrollmentObserver = findInvisibleChild(fingerprintPage, "enrollmentObserver");
+            compare(fingerprintPage.storedFingerprints, 0);
+            enrollmentSucceededSpy.target = enrollmentObserver;
+            enrollmentObserver.mockEnroll("");
+            enrollmentSucceededSpy.wait();
+
+            tryCompareFunction(function () {
+                return fingerprintPage.storedFingerprints
+            }, 1);
         }
     }
 }

@@ -59,7 +59,6 @@ void MockObserver::mockEnrollProgress(double percent,
     Q_EMIT progressed(percent, details);
 }
 
-
 void MockObserver::mockClearance(const QString &error)
 {
     if (error.isEmpty())

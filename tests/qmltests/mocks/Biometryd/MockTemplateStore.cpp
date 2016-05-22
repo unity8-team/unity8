@@ -18,20 +18,24 @@
 
 MockTemplateStore::MockTemplateStore(QObject *parent)
 {
+    Q_UNUSED(parent);
 }
 
 MockSizeQuery* MockTemplateStore::size(MockUser* user)
 {
+    Q_UNUSED(user);
     return new MockSizeQuery(this);
 }
 
 MockEnrollment* MockTemplateStore::enroll(MockUser* user)
 {
+    Q_UNUSED(user);
     return new MockEnrollment(this);
 }
 
 MockClearance* MockTemplateStore::clear(MockUser* user)
 {
+    Q_UNUSED(user);
     return new MockClearance(this);
 }
 

@@ -51,6 +51,18 @@ Item {
         signalName: "progressed"
     }
 
+    SignalSpy {
+        id: enrollmentObserverSucceededSpy
+        target: null
+        signalName: "succeeded"
+    }
+
+    SignalSpy {
+        id: enrollmentObserverFailedSpy
+        target: null
+        signalName: "failed"
+    }
+
     UbuntuTestCase {
         name: "SetupUI"
         when: windowShown
@@ -58,100 +70,104 @@ Item {
         function init () {
             pageStack.push(fingerprintPage);
 
-            statusLabelSpy.clear();
-
             var setupButton = findChild(pageStack, "fingerprintAddFingerprintButton");
             mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
+
+            statusLabelSpy.target = getStatusLabel();
         }
 
         function cleanup () {
+            // Pop fingerprint and setup pages.
             pageStack.pop();
+            pageStack.pop();
+            statusLabelSpy.clear();
+        }
+
+        function getStatusLabel () {
+            return findChild(getSetupPage(), "fingerprintStatusLabel");
+        }
+
+        function getSetupPage () {
+            return findChild(pageStack, "fingerprintSetupPage");
+        }
+
+        function getFingerprintPage () {
+            return findChild(testRoot, "fingerprintPage");
+        }
+
+        function getEnrollmentObserver () {
+            return findInvisibleChild(getFingerprintPage(), "enrollmentObserver");
+        }
+
+        function getFailedVisual () {
+            return findChild(getSetupPage(), "fingerprintFailedVisual");
         }
 
         function getDefaultVisual () {
-            var setup = findChild(testRoot, "fingerprintSetupPage");
-            return findChild(setup, "fingerprintDefaultVisual");
+            return findChild(getSetupPage(), "fingerprintDefaultVisual");
         }
 
-        function createTestMasks () {
-            return [
-                {x: 0, y: 0, height: 50, width: 60},
-                {x: 75, y: 75, height: 100, width: 100},
-            ]
+        function getDoneVisual () {
+            return findChild(getSetupPage(), "fingerprintDoneVisual");
         }
 
-        function test_enrollmentHalfway () {
-            var fpPage = findChild(testRoot, "fingerprintPage");
+        function test_initialState () {
+            var targetText = i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.");
+            compare(getStatusLabel().text, targetText);
 
-            var enrollmentObserver = findInvisibleChild(fpPage, "enrollmentObserver");
-            enrollmentObserverProgressedSpy.target = enrollmentObserver;
-            wait(1000)
-            enrollmentObserver.mockEnrollProgress(0.5, {masks: createTestMasks()});
-            wait(1000)
-            enrollmentObserverProgressedSpy.wait();
+            verify(getDefaultVisual().visible);
+            verify(!getFailedVisual().visible);
+            verify(!getDoneVisual().visible);
+        }
 
-            var visual = getDefaultVisual();
-            compare(visual.enrollmentProgress, 0.5);
-            compare(visual.masks, createTestMasks());
+        function test_startedState () {
+            var targetText = i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.");
+            getEnrollmentObserver().mockEnrollProgress(0.5, {});
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, targetText);
 
+            verify(getDefaultVisual().visible);
+            verify(!getFailedVisual().visible);
+            verify(!getDoneVisual().visible);
+        }
+
+        function test_failedStatus () {
+            var targetText = i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.");
+            getEnrollmentObserver().mockEnroll("test failure");
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, targetText);
+
+            verify(!getDefaultVisual().visible);
+            verify(getFailedVisual().visible);
+            verify(!getDoneVisual().visible);
+        }
+
+        function test_successfulState () {
+            var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
+            getEnrollmentObserver().mockEnroll("");
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, targetText);
+
+            verify(!getDefaultVisual().visible);
+            verify(!getFailedVisual().visible);
+            verify(getDoneVisual().visible);
+        }
+
+        function test_notDone() {
+            var button = findChild(pageStack, "fingerprintSetupDoneButton");
+            compare(button.enabled, false, "button was enabled initially");
+        }
+
+        function test_done() {
+            var button = findChild(pageStack, "fingerprintSetupDoneButton");
+            getEnrollmentObserver().mockEnroll("");
+            compare(button.enabled, true, "button was disabled when done");
+        }
+
+        function test_statusLabel() {
+            getStatusLabel().setText("foo");
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, "foo");
         }
     }
-    // UbuntuTestCase {
-    //     name: "SetupUI"
-    //     when: windowShown
-
-    //     function init() {
-    //         pageStack.push(fingerprintPage);
-
-    //         statusLabelSpy.clear();
-
-    //         var setupButton = findChild(pageStack, "fingerprintAddFingerprintButton");
-    //         mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
-    //     }
-
-    //     function cleanup() {
-    //         pageStack.pop();
-    //     }
-
-    //     function test_states_data() {
-    //         return [
-    //             { tag: "init", signal: null, state: "" },
-    //             { tag: "started", signal: p.enrollmentProgressed, signalArgs: [0], state: "reading" },
-    //             // { tag: "stopped", signal: p.enrollmentFailed, signalArgs: [0], state: "" },
-    //             { tag: "interrupted", signal: p.enrollmentFailed, signalArgs: [0], state: "longer" },
-    //             { tag: "completed", signal: p.enrollmentCompleted, signalArgs: [], state: "done" },
-    //             { tag: "failed", signal: p.enrollmentFailed, signalArgs: [1], state: "failed" },
-    //         ];
-    //     }
-
-    //     function test_states(data) {
-    //         var page = findChild(pageStack, "fingerprintSetupPage");
-    //         if (data.signal) {
-    //             data.signal.apply(data, data.signalArgs);
-    //         }
-    //         compare(page.state, data.state, "unexpected state");
-    //     }
-
-    //     function test_notDone() {
-    //         var button = findChild(pageStack, "fingerprintSetupDoneButton");
-    //         compare(button.enabled, false, "button was enabled initially");
-    //     }
-
-    //     function test_done() {
-    //         var button = findChild(pageStack, "fingerprintSetupDoneButton");
-    //         p.enrollmentCompleted();
-    //         compare(button.enabled, true, "button was disabled when done");
-    //     }
-
-    //     function test_statusLabel() {
-    //         var page = findChild(pageStack, "fingerprintSetupPage");
-    //         var statusLabel = findChild(page, "fingerprintStatusLabel");
-
-    //         statusLabelSpy.target = statusLabel;
-
-    //         statusLabel.setText("foo");
-    //         statusLabelSpy.wait();
-    //         compare(statusLabel.text, "foo");
-    //     }
-    // }
 }

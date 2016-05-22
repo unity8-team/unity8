@@ -38,7 +38,6 @@ QPixmap FingerprintVisualProvider::requestPixmap(
 
         // Regexp for both int and qreal.
         QRegExp rx("(\\d+(?:\\.\\d+)?),(\\d+(?:\\.\\d+)?),(\\d+(?:\\.\\d+)?),(\\d+(?:\\.\\d+)?)");
-
         rx.indexIn(srectf);
         QStringList captured = rx.capturedTexts();
         if (captured.length() != 5)

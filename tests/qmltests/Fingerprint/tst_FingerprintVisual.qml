@@ -38,7 +38,6 @@ Item {
         height: width * 1.227
         sourceSize.width: width
         sourceSize.height: height
-
     }
 
     UbuntuTestCase {
@@ -47,9 +46,6 @@ Item {
 
         function init () {
             vis.masks = null;
-        }
-
-        function cleanup () {
         }
 
         function test_masks_data() {
@@ -83,6 +79,14 @@ Item {
                 {
                     masks: [{x: 0, y: 0, width: vis.width, height: vis.height }],
                     targetSource: src + "[0,0,"+vis.width+"," + vis.height + "]"
+                },
+                {
+                    masks: [
+                        {x: null, y: "-a", width: "0x1", height: true },
+                        {},
+                    ],
+                    targetSource: src + "[null,-a,0x1,true],[undefined,undefined,undefined,undefined]",
+                    tag: "bad values"
                 }
             ]
         }

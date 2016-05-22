@@ -29,40 +29,14 @@ Page {
 
     title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
 
-    /*!
-        \qmlsignal requestPasscode
-
-        This signal is emitted when the user has requested that a passcode
-        be set. A passcode is a prerequisite for the enrollment process, so
-        some UI will not be enabled without one.
-    */
-    signal requestPasscode()
 
     property var ts: Biometryd.defaultDevice.templateStore
-
     property var sizeOperation: null
     property var enrollmentOperation: null
     property var clearanceOperation: null
-
     property Dialog diag: null
-
-    /*!
-       Whether or not the user has a passcode set, which is a prerequisite for
-       fingerprint enrollment.
-       \qmlproperty bool passcodeSet
-    */
     property bool passcodeSet: false
-
-    /*!
-       Amount of fingerprints stored.
-       \qmlproperty int storedFingerprints
-    */
     property int storedFingerprints: 0
-
-    /*!
-       The setup page. We connect signals to it.
-       \qmlproperty var setupPage
-    */
     property var setupPage: null
 
     function enroll () {
@@ -80,11 +54,10 @@ Page {
         clearanceOperation.start(clearanceObserver);
     }
 
-    // signal enrollmentProgressed(double progress, var hints)
-    // signal enrollmentCompleted()
-    // signal enrollmentFailed(int error)
+    signal requestPasscode()
 
     Component.onCompleted: {
+        // Start a size operation immediately.
         sizeOperation = ts.size(user);
         sizeOperation.start(sizeObserver);
     }
@@ -322,13 +295,16 @@ Page {
     Connections {
         target: setupPage
         onEnroll: enroll()
-        onCancel: cancel()
+        onCanceled: cancel()
     }
 
     Observer {
         id: enrollmentObserver
         objectName: "enrollmentObserver"
-        onFailed: setupPage.enrollmentFailed()
+        onFailed: {
+            setupPage.enrollmentFailed(reason);
+            enrollmentOperation = null;
+        }
         onProgressed: {
             // biometryd API users can use details to receive
             // device/operation-specific information about the
@@ -348,32 +324,45 @@ Page {
                         "masks:",                      masks,
                         "estimatedFingerSize",         estimatedFingerSize);
         }
-        onSucceeded: setupPage.enrollmentCompleted()
+        onSucceeded: {
+            root.storedFingerprints = root.storedFingerprints + 1;
+            setupPage.enrollmentCompleted();
+            enrollmentOperation = null;
+        }
+        onCanceled: enrollmentOperation = null
     }
 
     Observer {
         id: sizeObserver
         objectName: "sizeObserver"
         onFailed: {
+            sizeOperation = null;
             if (diag) PopupUtils.close(diag);
             diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometry size operation failed:", reason);
         }
-        onSucceeded: root.storedFingerprints = result
+        onSucceeded: {
+            root.storedFingerprints = result;
+            sizeOperation = null;
+        }
+        onCanceled: sizeOperation = null
     }
 
     Observer {
         id: clearanceObserver
         objectName: "clearanceObserver"
         onFailed: {
+            clearanceOperation = null;
             if (diag) PopupUtils.close(diag);
             diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometry clearance failed:", reason);
         }
         onSucceeded: {
+            clearanceOperation = null;
             root.storedFingerprints = 0;
             if (diag) PopupUtils.close(diag);
         }
+        onCanceled: clearanceOperation = null
     }
 
     Connections {

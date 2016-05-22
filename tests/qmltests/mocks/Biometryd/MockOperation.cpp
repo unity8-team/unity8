@@ -22,6 +22,7 @@ MockOperation::MockOperation(QObject *parent) : QObject(parent)
 
 bool MockOperation::start(MockObserver *observer)
 {
+    Q_UNUSED(observer);
     return true;
 }
 

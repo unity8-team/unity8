@@ -32,14 +32,7 @@ Page {
     signal cancel()
 
     function enrollmentFailed(error) {
-        switch (error) {
-            case 0:
-                root.state = "longer";
-                break;
-            case 1:
-                root.state = "failed";
-                break;
-        }
+        root.state = "failed";
     }
 
     function enrollmentCompleted() {
@@ -51,10 +44,6 @@ Page {
         imageDefault.masks = hints[FingerprintReader.masks];
     }
 
-    // Component.onCompleted: {
-    //     console.warn('enroll()');
-    //                  root.enroll();
-    // }
     Component.onDestruction: cancel();
 
     states: [
@@ -173,34 +162,34 @@ Page {
                     // Default image.
                     FingerprintVisual {
                         id: imageDefault
+                        objectName: "fingerprintDefaultVisual"
                         anchors.fill: parent
                         sourceSize.width: parent.width
                         sourceSize.height: parent.height
-                        objectName: "fingerprintDefaultVisual"
                     }
 
-                    // // Failed image.
+                    // Failed image.
                     Image {
                         id: imageFailed
+                        objectName: "fingerprintFailedVisual"
                         anchors.fill: parent
                         asynchronous: true
                         fillMode: Image.Pad
                         sourceSize.width: parent.width
                         sourceSize.height: parent.height
-                        objectName: "fingerprintFailedVisual"
                         source: "fingerprint_failed.svg"
                         visible: false
                     }
 
-                    // // Done image.
+                    // Done image.
                     Image {
                         id: imageDone
+                        objectName: "fingerprintDoneVisual"
                         anchors.fill: parent
                         asynchronous: true
                         fillMode: Image.Pad
                         sourceSize.width: parent.width
                         sourceSize.height: parent.height
-                        objectName: "fingerprintDoneVisual"
                         source: "fingerprint_done.svg"
                         visible: false
                     }

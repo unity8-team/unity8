@@ -28,6 +28,8 @@ Image {
         if (masks && masks.length) {
             masks.forEach(function (mask, i) {
                 // Format is "<source>/[x1,y1,w1,h1],…,[xn,yn,wn,hn]"
+                // These values are passed as JavaScript sees them, without
+                // any validation.
                 s += "[" + mask.x + "," + mask.y + ","
                      + mask.width + "," + mask.height + "]";
 
