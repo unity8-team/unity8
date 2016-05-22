@@ -14,6 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authored by Jonas G. Drange <jonas.drange@canonical.com>
+ *
+ * Given a list of rectangles, this image provider will draw a fingerprint
+ * visual where ridges, that intersects with some mask, will be drawn
+ * differently than ridges not intersecting some mask.
  */
 
 #ifndef FINGERPRINTVISUALPROVIDER_H
@@ -29,6 +33,8 @@ class FingerprintVisualProvider : public QQuickImageProvider
 public:
     FingerprintVisualProvider();
 
+    // id is a comma separated list of rects in this format:
+    //     [x1,y1,width1,heigh1],…,[xN,yN,widthN,heightN]
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
 };
 

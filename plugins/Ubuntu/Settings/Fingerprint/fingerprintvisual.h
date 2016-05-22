@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authored by Jonas G. Drange <jonas.drange@canonical.com>
+ *
+ * A class that draws fingerprint visuals.
  */
 
 #ifndef FINGERPRINTVISUAL_H
@@ -33,6 +35,9 @@ public:
     // Masks are QRect that represent a successfully enrolled area.
     explicit FingerprintVisual(const QList<QRectF> &masks, const QSize &size);
     ~FingerprintVisual();
+
+    // Will draw a set of “inactive” ridges, then iterate over masks to draw
+    // “active” ridges (ridges intersecting with a mask).
     void render();
     QPixmap pixmap();
 
