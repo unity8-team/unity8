@@ -76,6 +76,7 @@ Item {
                                             id: artShapeShapeComponent; 
                                             UbuntuShape { 
                                                 source: artImage;
+                                                backgroundColor: "transparent";
                                                 sourceFillMode: UbuntuShape.PreserveAspectCrop; 
                                                 radius: "medium"; 
                                                 aspect: { 
@@ -90,7 +91,7 @@ Item {
                                         } 
                                         Component { 
                                             id: artShapeIconComponent; 
-                                            ProportionalShape { source: artImage; aspect: UbuntuShape.DropShadow; }
+                                            ProportionalShape { source: artImage; aspect: UbuntuShape.DropShadow; backgroundColor: "transparent"; }
                                         } 
                                     } 
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; 

@@ -65,9 +65,9 @@ var kBackgroundLoaderCode = 'Loader {\n\
 // %4 is whether the image or the Loader with the UbuntuShape/ProportionalShape should be visible
 // %5 is used as aspect ratio fallback
 // %6 is whether the loader should be asynchronous or not
-// %7 is injected as code to artImage
-// %8 is used as image fallback
-// %9 is used as the background color for the art's UbuntuShape
+// %7 is used as the background color for the art's UbuntuShape
+// %8 is injected as code to artImage
+// %9 is used as image fallback
 var kArtShapeHolderCode = 'Item { \n\
                             id: artShapeHolder; \n\
                             height: root.fixedArtShapeSize.height > 0 ? root.fixedArtShapeSize.height : artShapeLoader.height; \n\
@@ -76,7 +76,7 @@ var kArtShapeHolderCode = 'Item { \n\
                             Loader { \n\
                                 id: artShapeLoader; \n\
                                 objectName: "artShapeLoader"; \n\
-                                readonly property string cardArt: cardData && cardData["art"] || %8; \n\
+                                readonly property string cardArt: cardData && cardData["art"] || %9; \n\
                                 active: cardArt != ""; \n\
                                 asynchronous: %6; \n\
                                 visible: status == Loader.Ready; \n\
@@ -93,7 +93,7 @@ var kArtShapeHolderCode = 'Item { \n\
                                             id: artShapeShapeComponent; \n\
                                             UbuntuShape { \n\
                                                 source: artImage; \n\
-                                                backgroundColor: %9; \n\
+                                                backgroundColor: %7; \n\
                                                 sourceFillMode: UbuntuShape.PreserveAspectCrop; \n\
                                                 radius: "medium"; \n\
                                                 aspect: { \n\
@@ -108,7 +108,7 @@ var kArtShapeHolderCode = 'Item { \n\
                                         } \n\
                                         Component { \n\
                                             id: artShapeIconComponent; \n\
-                                            ProportionalShape { source: artImage; aspect: UbuntuShape.DropShadow; backgroundColor: %9; } \n\
+                                            ProportionalShape { source: artImage; aspect: UbuntuShape.DropShadow; backgroundColor: %7; } \n\
                                         } \n\
                                     } \n\
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; \n\
@@ -132,7 +132,7 @@ var kArtShapeHolderCode = 'Item { \n\
                                         visible: !%4; \n\
                                         width: %2; \n\
                                         height: %3; \n\
-                                        %7 \n\
+                                        %8 \n\
                                     } \n\
                                 } \n\
                             } \n\
@@ -521,9 +521,9 @@ function cardString(template, components, isCardTool) {
         var fallbackStatusCode = "";
         var fallbackURICode = '""';
         if (fallback !== "") {
-            // fallbackStatusCode has %6 in it because we want to substitute it for fallbackURICode
-            // which in kArtShapeHolderCode is %8
-            fallbackStatusCode += 'onStatusChanged: if (status === Image.Error) source = %8;';
+            // fallbackStatusCode has %9 in it because we want to substitute it for fallbackURICode
+            // which in kArtShapeHolderCode is %9
+            fallbackStatusCode += 'onStatusChanged: if (status === Image.Error) source = %9;';
             fallbackURICode = 'decodeURI("%1")'.arg(fallback);
         }
         code += kArtShapeHolderCode.arg(artAnchors)
@@ -532,9 +532,9 @@ function cardString(template, components, isCardTool) {
                                    .arg(isConciergeMode ? "false" : "true")
                                    .arg(aspectRatio)
                                    .arg(asynchronous)
+                                   .arg(hasBackground ? '"transparent"' : 'UbuntuColors.porcelain')
                                    .arg(fallbackStatusCode)
-                                   .arg(fallbackURICode)
-                                   .arg(hasBackground ? '"transparent"' : 'UbuntuColors.porcelain');
+                                   .arg(fallbackURICode); // must be last, it might contain %N strings
     } else {
         code += 'readonly property size artShapeSize: Qt.size(-1, -1);\n'
     }
