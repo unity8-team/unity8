@@ -1,3 +1,16 @@
+unity8 (8.12+16.04.20160523-0ubuntu1) xenial; urgency=medium
+
+  [ Michael Terry ]
+  * WIP added: tests/mocks/Biometryd/
+    tests/mocks/Biometryd/Biometryd.qmltypes
+    tests/mocks/Biometryd/CMakeLists.txt
+    tests/mocks/Biometryd/MockObserver.cpp
+    tests/mocks/Biometryd/MockObserver.h
+    tests/mocks/Biometryd/plugin.cpp tests/mocks/Biometryd/plugin.h
+    tests/mocks/Biometryd/qmldir
+
+ -- Jonas G. Drange <ci-train-bot@canonical.com>  Mon, 23 May 2016 14:25:44 +0000
+
 unity8 (8.12+16.04.20160518.1-0ubuntu1) xenial; urgency=medium
 
   [ CI Train Bot ]
