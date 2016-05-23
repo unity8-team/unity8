@@ -82,7 +82,15 @@ void FingerprintVisual::render()
         for (int j = 0; j < m_masks.size(); j++) {
             QRectF mask = m_masks.at(j);
             if (mask.intersects(bb)) {
-                renderPath(path);
+
+                // A substantive part should intersect.
+                const QRectF sum = mask.intersected(bb);
+                qreal wPct = (100 / bb.width()) * sum.width();
+                qreal hPct = (100 / bb.height()) * sum.height();
+
+                if (wPct > 25 && hPct > 25) {
+                    renderPath(path);
+                }
             }
         }
     }

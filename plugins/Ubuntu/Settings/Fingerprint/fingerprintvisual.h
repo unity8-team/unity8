@@ -50,7 +50,7 @@ private:
     QPainter *m_painter;
 
     // This should most likely be populated using an XML parser.
-    QList<QString> m_paths = QList<QString>({ "path4261", "path4439", "path4441", "path4443", "path4445", "path4447", "path4449", "path4451", "path4453", "path4455", "path4457", "path4459", "path4461", "path4463", "path4465", "path4467", "path4469", "path4471", "path4473", "path4475", "path4477", "path4479", "path4481", "path4483", "path4300", "path5080", "path5078", "path5076", "path5074", "path5072", "path5070", "path5068", "path5066", "path5064", "path5062", "path5060", "path5058", "path5056", "path5054", "path5052", "path5050", "path5048", "path5046", "path5044", "path5042", "path5040", "path5038", "path5036", "path5034", "path5032", "path5030", "path5028", "path5026", "path5024", "path5022", "path5020", "path4297" });
+    QList<QString> m_paths = QList<QString>({ "path4261", "path4256", "path4254", "path4252", "path4250", "path4248", "path4246", "path4244", "path4242", "path4240", "path4238", "path4236", "path4234", "path4232", "path4230", "path4228", "path4226", "path4224", "path4222", "path4220", "path4218", "path4216", "path4214", "path4212", "path4210", "path4208", "path4206", "path4204", "path4202", "path4200", "path4198", "path4196", "path4194", "path4192", "path4190", "path4188", "path4186", "path4184", "path4182", "path4180", "path4178", "path4176", "path4174", "path4172", "path4170", "path4168", "path4166", "path4164", "path4162", "path4160", "path4158", "path4297" });
 
     // These two renderers represents the unenrolled and enrolled
     // fingerprint paths.

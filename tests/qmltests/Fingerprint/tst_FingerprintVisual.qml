@@ -50,6 +50,7 @@ Item {
 
         function test_masks_data() {
             var src = "image://fingerprintvisual/";
+            var visHeight = vis.sourceSize.height;
             return [
                 { masks: null, targetSource: src },
                 { masks: [], targetSource: src },
@@ -87,13 +88,57 @@ Item {
                     ],
                     targetSource: src + "[null,-a,0x1,true],[undefined,undefined,undefined,undefined]",
                     tag: "bad values"
+                },
+
+                // Masks that can be used for manual, visual checks.
+                {
+                    masks: [
+                        {x: 0, y: 0, width: 200, height: (visHeight / 2) },
+                    ],
+                    visualCheck: true,
+                    tag: "top left corner"
+                },
+                {
+                    masks: [
+                        {x: 200, y: 0, width: 200, height: (visHeight / 2) },
+                    ],
+                    visualCheck: true,
+                    tag: "top right corner"
+                },
+                {
+                    masks: [
+                        {x: 0, y: (visHeight / 2), width: 200, height: (visHeight / 2) },
+                    ],
+                    visualCheck: true,
+                    tag: "bottom left corner"
+                },
+                {
+                    masks: [
+                        {x: 200, y: (visHeight / 2), width: 200, height: (visHeight / 2) },
+                    ],
+                    visualCheck: true,
+                    tag: "bottom right corner"
+                },
+                {
+                    masks: [
+                        {x: 0, y: 0, width: 200, height: (visHeight / 2) },
+                        {x: 200, y: 0, width: 200, height: (visHeight / 2) },
+                        {x: 0, y: (visHeight / 2), width: 200, height: (visHeight / 2) },
+                        {x: 200, y: (visHeight / 2), width: 200, height: (visHeight / 2) }
+                    ],
+                    visualCheck: true,
+                    tag: "all corners"
                 }
             ]
         }
 
         function test_masks (data) {
             vis.masks = data.masks;
-            compare(vis.source, data.targetSource);
+            if (data.visualCheck) {
+                wait(1000);
+            } else {
+                compare(vis.source, data.targetSource);
+            }
         }
     }
 }
