@@ -126,6 +126,12 @@ Item {
         }
 
         SignalSpy {
+            id: viewShowErrorMessageSpy
+            target: testCase.view
+            signalName: "_showErrorMessageCalled"
+        }
+
+        SignalSpy {
             id: viewResetSpy
             target: testCase.view
             signalName: "_resetCalled"
@@ -149,6 +155,7 @@ Item {
             viewHideSpy.clear();
             viewAuthenticationSucceededSpy.clear();
             viewAuthenticationFailedSpy.clear();
+            viewShowErrorMessageSpy.clear();
             viewResetSpy.clear();
             viewTryToUnlockSpy.clear();
             tryCompare(greeter, "waiting", false);
@@ -552,6 +559,52 @@ Item {
             LightDM.Greeter.showGreeter();
             compare(viewResetSpy.count, 1);
             tryCompare(viewShowPromptSpy, "count", 1);
+        }
+
+        function test_fingerprintSuccess() {
+            var biometryd = findInvisibleChild(greeter, "biometryd");
+            selectUser("has-password");
+            biometryd.mockIdentification(0, "");
+            verify(greeter.forcedUnlock);
+        }
+
+        function test_fingerprintFailureMessage() {
+            var biometryd = findInvisibleChild(greeter, "biometryd");
+            selectUser("has-password");
+            biometryd.mockIdentification(0, "error");
+            compare(viewShowErrorMessageSpy.count, 1);
+            compare(viewShowErrorMessageSpy.signalArguments[0][0], i18n.tr("Try again"));
+        }
+
+        function test_fingerprintTooManyFailures() {
+            var biometryd = findInvisibleChild(greeter, "biometryd");
+            selectUser("has-password");
+            biometryd.mockIdentification(0, "error");
+            biometryd.mockIdentification(0, "error");
+            compare(viewTryToUnlockSpy.count, 0);
+
+            biometryd.mockIdentification(0, "error");
+            compare(viewTryToUnlockSpy.count, 1);
+
+            compare(viewShowErrorMessageSpy.count, 3);
+        }
+
+        function test_fingerprintFailureCountReset() {
+            var biometryd = findInvisibleChild(greeter, "biometryd");
+            selectUser("has-password");
+            biometryd.mockIdentification(0, "error");
+            biometryd.mockIdentification(0, "error");
+            compare(viewTryToUnlockSpy.count, 0);
+
+            greeter.forceShow();
+            biometryd.mockIdentification(0, "error");
+            biometryd.mockIdentification(0, "error");
+            compare(viewTryToUnlockSpy.count, 0);
+
+            biometryd.mockIdentification(0, "error");
+            compare(viewTryToUnlockSpy.count, 1);
+
+            compare(viewShowErrorMessageSpy.count, 5);
         }
     }
 }

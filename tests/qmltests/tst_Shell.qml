@@ -332,6 +332,26 @@ Rectangle {
                     }
                 }
 
+                Label {
+                    text: "Fingerprint"
+                }
+                Row {
+                    Button {
+                        text: "Success"
+                        onClicked: {
+                            var biometryd = testCase.findInvisibleChild(shellContainer, "biometryd");
+                            biometryd.mockIdentification(0, "");
+                        }
+                    }
+
+                    Button {
+                        text: "Failure"
+                        onClicked: {
+                            var biometryd = testCase.findInvisibleChild(shellContainer, "biometryd");
+                            biometryd.mockIdentification(0, "error");
+                        }
+                    }
+                }
             }
         }
     }
