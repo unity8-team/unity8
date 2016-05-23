@@ -16,6 +16,7 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
+import "../Components"
 
 Item {
     id: root
@@ -139,18 +140,13 @@ Item {
             visible: root.highlighted
         }
 
-        ProportionalShape {
+        ExternalIcon {
             id: iconShape
             anchors.centerIn: parent
             width: root.itemWidth
             aspect: UbuntuShape.DropShadow
-            source: Image {
-                id: iconImage
-                sourceSize.width: iconShape.width
-                sourceSize.height: iconShape.height
-                source: root.iconName
-                cache: false // see lpbug#1543290 why no cache
-            }
+            icon: root.iconName
+            cache: false // see lpbug#1543290 why no cache
         }
 
         UbuntuShape {

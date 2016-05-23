@@ -108,25 +108,17 @@ Item {
         cache: false
     }
 
-    UbuntuShape {
+    ExternalIcon {
         id: iconShape
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -units.gu(4)
         width: units.gu(8)
-        height: units.gu(7.5)
 
         visible: d.showIcon
 
-        radius: "medium"
         aspect: UbuntuShape.Flat
-        sourceFillMode: Image.PreserveAspectCrop
-        source: Image {
-            id: iconImage
-            sourceSize.width: iconShape.width
-            sourceSize.height: iconShape.height
-            source: d.showIcon ? root.icon : ""
-        }
+        icon: d.showIcon ? root.icon : ""
     }
 
     Label {

@@ -67,6 +67,7 @@ var kBackgroundLoaderCode = 'Loader {\n\
 // %6 is whether the loader should be asynchronous or not
 // %7 is injected as code to artImage
 // %8 is used as image fallback
+// %9 is used as the background color for the art's UbuntuShape
 var kArtShapeHolderCode = 'Item { \n\
                             id: artShapeHolder; \n\
                             height: root.fixedArtShapeSize.height > 0 ? root.fixedArtShapeSize.height : artShapeLoader.height; \n\
@@ -92,6 +93,7 @@ var kArtShapeHolderCode = 'Item { \n\
                                             id: artShapeShapeComponent; \n\
                                             UbuntuShape { \n\
                                                 source: artImage; \n\
+                                                backgroundColor: %9; \n\
                                                 sourceFillMode: UbuntuShape.PreserveAspectCrop; \n\
                                                 radius: "medium"; \n\
                                                 aspect: { \n\
@@ -106,7 +108,7 @@ var kArtShapeHolderCode = 'Item { \n\
                                         } \n\
                                         Component { \n\
                                             id: artShapeIconComponent; \n\
-                                            ProportionalShape { source: artImage; aspect: UbuntuShape.DropShadow; } \n\
+                                            ProportionalShape { source: artImage; aspect: UbuntuShape.DropShadow; backgroundColor: %9; } \n\
                                         } \n\
                                     } \n\
                                     readonly property real fixedArtShapeSizeAspect: (root.fixedArtShapeSize.height > 0 && root.fixedArtShapeSize.width > 0) ? root.fixedArtShapeSize.width / root.fixedArtShapeSize.height : -1; \n\
@@ -531,7 +533,8 @@ function cardString(template, components, isCardTool) {
                                    .arg(aspectRatio)
                                    .arg(asynchronous)
                                    .arg(fallbackStatusCode)
-                                   .arg(fallbackURICode);
+                                   .arg(fallbackURICode)
+                                   .arg(hasBackground ? '"transparent"' : 'UbuntuColors.porcelain');
     } else {
         code += 'readonly property size artShapeSize: Qt.size(-1, -1);\n'
     }

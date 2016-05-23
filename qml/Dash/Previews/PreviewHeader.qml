@@ -18,6 +18,7 @@ import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Dash 0.1
 import "../"
+import "../../Components"
 
 /*! This preview widget shows a header
  *  The title comes in widgetData["title"]
@@ -71,26 +72,17 @@ PreviewWidget {
                 visible: active
 
                 anchors.verticalCenter: parent.verticalCenter
-                // TODO karni: Icon aspect-ratio is 8:7.5. Revisit these values to avoid fraction of pixels.
-                width: units.gu(6)
-                height: units.gu(5.625)
-                readonly property int maxSize: Math.max(width, height) * 4
                 asynchronous: true
 
-                sourceComponent: UbuntuShape {
+                sourceComponent: ExternalIcon {
                     objectName: "mascotShape"
-                    visible: source.status === Image.Ready
-                    sourceFillMode: UbuntuShape.PreserveAspectCrop
-                    sourceHorizontalAlignment: UbuntuShape.AlignHCenter
-                    sourceVerticalAlignment: UbuntuShape.AlignVCenter
-                    source: Image {
-                        source: headerRoot.mascot
-                        width: source ? mascotShapeLoader.width : 0
-                        height: mascotShapeLoader.height
+                    visible: status === Image.Ready
 
-                        sourceSize { width: mascotShapeLoader.maxSize; height: mascotShapeLoader.maxSize }
-                        onStatusChanged: if (status === Image.Error) source = headerRoot.fallback;
-                    }
+                    // TODO karni: Icon aspect-ratio is 8:7.5. Revisit these values to avoid fraction of pixels.
+                    width: source ? units.gu(6) : 0
+
+                    icon: headerRoot.mascot
+                    onStatusChanged: if (status === Image.Error) icon = headerRoot.fallback;
                 }
             }
 
