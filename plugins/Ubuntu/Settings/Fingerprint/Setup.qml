@@ -88,6 +88,14 @@ Page {
                 target: imageFailed
                 visible: true
             }
+            PropertyChanges {
+                target: cancelButton
+                text: i18n.dtr("ubuntu-settings-components", "Back");
+            }
+            PropertyChanges {
+                target: doneButton
+                visible: false
+            }
             StateChangeScript {
                 script: statusLabel.setText(
                     i18n.dtr("ubuntu-settings-components",
@@ -115,8 +123,9 @@ Page {
                 )
             }
             PropertyChanges {
-                enabled: true
                 target: doneButton
+                enabled: true
+                text: i18n.dtr("ubuntu-settings-components", "OK")
             }
         }
     ]
@@ -237,6 +246,7 @@ Page {
 
             AbstractButton {
                 id: cancelButton
+                property alias text: cancelButtonText.text
                 objectName: "fingerprintSetupCancelButton"
                 anchors {
                     left: parent.left
@@ -248,6 +258,7 @@ Page {
                 onClicked: pageStack.pop()
 
                 Label {
+                    id: cancelButtonText
                     anchors.verticalCenter: parent.verticalCenter
                     text: i18n.dtr("ubuntu-settings-components", "Cancel")
                 }
@@ -255,6 +266,7 @@ Page {
 
             AbstractButton {
                 id: doneButton
+                property alias text: doneButtonText.text
                 objectName: "fingerprintSetupDoneButton"
                 anchors {
                     right: parent.right
@@ -267,12 +279,13 @@ Page {
                 onClicked: pageStack.pop()
 
                 Label {
+                    id: doneButtonText
                     anchors {
                         verticalCenter: parent.verticalCenter
                         right: parent.right
                     }
                     font.bold: parent.enabled
-                    text: i18n.dtr("ubuntu-settings-components", "Done")
+                    text: i18n.dtr("ubuntu-settings-components", "Next")
                 }
             }
         }
