@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>assets/enrolled.svg</file>
+    <file>assets/unenrolled.svg</file>
+    <file>assets/fingerprint_done.svg</file>
+    <file>assets/fingerprint_failed.svg</file>
+    <file>assets/shape-up.png</file>
+    <file>assets/shape-down.png</file>
+</qresource>
+</RCC>

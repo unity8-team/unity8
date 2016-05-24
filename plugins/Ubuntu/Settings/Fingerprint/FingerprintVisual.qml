@@ -41,16 +41,16 @@ Image {
         source = s;
     }
 
-    Repeater {
-        model: parent.masks
+    // Repeater {
+    //     model: parent.masks
 
-        // For testing.
-        Rectangle {
-            color: "#20000000"
-            x: modelData.x
-            y: modelData.y
-            width: modelData.width
-            height: modelData.height
-        }
-    }
+    //     // For testing.
+    //     Rectangle {
+    //         color: "#20000000"
+    //         x: modelData.x
+    //         y: modelData.y
+    //         width: modelData.width
+    //         height: modelData.height
+    //     }
+    // }
 }

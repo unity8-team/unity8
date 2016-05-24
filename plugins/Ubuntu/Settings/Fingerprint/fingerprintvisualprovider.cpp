@@ -22,7 +22,7 @@
 FingerprintVisualProvider::FingerprintVisualProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
-    Q_INIT_RESOURCE(paths);
+    Q_INIT_RESOURCE(assets);
 }
 
 QPixmap FingerprintVisualProvider::requestPixmap(

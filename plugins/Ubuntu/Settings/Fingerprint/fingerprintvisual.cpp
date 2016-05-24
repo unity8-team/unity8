@@ -23,8 +23,8 @@ FingerprintVisual::FingerprintVisual(const QList<QRectF> &masks, const QSize &si
     m_masks(masks)
     , m_size(size)
     , m_scale(4)
-    , m_unenrolled_paths(QLatin1String(":paths/unenrolled.svg"))
-    , m_enrolled_paths(QLatin1String(":paths/enrolled.svg"))
+    , m_unenrolled_paths(QLatin1String(":assets/unenrolled.svg"))
+    , m_enrolled_paths(QLatin1String(":assets/enrolled.svg"))
 {
     if (!m_unenrolled_paths.isValid())
         qCritical() << "failed to open inactive paths";

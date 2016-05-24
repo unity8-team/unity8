@@ -42,6 +42,9 @@ Page {
     function enrollmentProgressed(progress, hints) {
         root.state = "reading";
         imageDefault.masks = hints[FingerprintReader.masks];
+
+        statusLabel.setText(i18n.dtr("ubuntu-settings-components",
+                            "Lift and press your finger again."));
     }
 
     Component.onDestruction: cancel();
@@ -98,6 +101,10 @@ Page {
             PropertyChanges {
                 target: imageDone
                 visible: true
+            }
+            PropertyChanges {
+                target: cancelButton
+                visible: false
             }
             StateChangeScript {
                 script: statusLabel.setText(
@@ -156,7 +163,7 @@ Page {
                     id: imageContainer
 
                     anchors.centerIn: parent
-                    height: width * 1.227 // preserves aspect ratio
+                    height: units.gu(20)
                     width: units.gu(16)
 
                     // Default image.
@@ -177,7 +184,7 @@ Page {
                         fillMode: Image.Pad
                         sourceSize.width: parent.width
                         sourceSize.height: parent.height
-                        source: "fingerprint_failed.svg"
+                        source: "qrc:/assets/fingerprint_failed.svg"
                         visible: false
                     }
 
@@ -190,7 +197,7 @@ Page {
                         fillMode: Image.Pad
                         sourceSize.width: parent.width
                         sourceSize.height: parent.height
-                        source: "fingerprint_done.svg"
+                        source: "qrc:/assets/fingerprint_done.svg"
                         visible: false
                     }
                 }

@@ -22,52 +22,16 @@ import Ubuntu.Components 1.3
 Item {
     id: root
 
-    /*!
-        \qmlproperty string initialText
-
-        The initial text of the label which will not be animated.
-        Note: use setText() to change the text of the status label.
-    */
     property string initialText
-
-    /*!
-        \qmlproperty int origX
-
-        The original x value of the label.
-    */
     property int origX: 0
-
-    /*!
-        \qmlproperty string text
-        \readonly
-
-        The current text of the status label.
-        Note: to set the text of the status label, you should call setText().
-    */
     readonly property alias text: label.text
 
-    /*!
-        \qmlsignal slideStarted
-
-        This signal is emitted when the main animation of the status label
-        has started (the text slides to the left).
-    */
     signal slideStarted()
-
-    /*!
-        \qmlsignal slideCompleted
-
-        This signal is emitted when the main animation of the status label
-        has completed.
-    */
     signal slideCompleted()
 
     Component.onCompleted: origX = label.x
 
     function setText(text) {
-        if (text == label.text) {
-            return;
-        }
         function outStoppedHandler () {
             label.text = text;
             label.x = units.gu(50)

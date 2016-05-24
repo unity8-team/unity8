@@ -40,16 +40,19 @@ Page {
     property var setupPage: null
 
     function enroll () {
+        console.warn('debug: enroll() in Fingerprint', user.uid);
         enrollmentOperation = ts.enroll(user);
         enrollmentOperation.start(enrollmentObserver);
     }
 
     function cancel () {
+        console.warn('debug: cancel() in Fingerprint')
         if (enrollmentOperation !== null)
             enrollmentOperation.cancel();
     }
 
     function remove() {
+        console.warn('debug: remove() in Fingerprint')
         clearanceOperation = ts.clear(user);
         clearanceOperation.start(clearanceObserver);
     }
@@ -63,6 +66,7 @@ Page {
     }
 
     Component.onDestruction: {
+        console.warn('Fingerprint onDestruction');
         if (enrollmentOperation !== null)
             enrollmentOperation.cancel();
 
@@ -294,22 +298,30 @@ Page {
 
     Connections {
         target: setupPage
-        onEnroll: enroll()
-        onCanceled: cancel()
+        onEnroll: {
+            console.warn('debug: enroll from setup pagge')
+            root.enroll()
+        }
+        onCancel: {
+            console.warn('debug: cancel from setup page');
+            root.cancel()
+        }
     }
 
     Observer {
         id: enrollmentObserver
         objectName: "enrollmentObserver"
+        onStarted: console.warn('debug: enrollment started');
         onFailed: {
             setupPage.enrollmentFailed(reason);
             enrollmentOperation = null;
+            console.error("Enrollment failed", reason);
         }
         onProgressed: {
             // biometryd API users can use details to receive
             // device/operation-specific information about the
             // operation. We illustrate the case of a FingerprintReader here.
-            // console.log("enrollmentObserver: progressed: ", percent);
+            console.warn("enrollmentObserver debug: progressed: ", percent);
 
             var isFingerPresent             = details[FingerprintReader.isFingerPresent]
             var hasMainClusterIdentified    = details[FingerprintReader.hasMainClusterIdentified]
@@ -318,7 +330,7 @@ Page {
             var estimatedFingerSize         = details[FingerprintReader.estimatedFingerSize]
             setupPage.enrollmentProgressed(percent, details);
 
-            console.log("isFingerPresent:",            isFingerPresent,
+            console.warn("enrollmentObserver debug: isFingerPresent:",            isFingerPresent,
                         "hasMainClusterIdentified:",   hasMainClusterIdentified,
                         "suggestedNextDirection:",     suggestedNextDirection,
                         "masks:",                      masks,
@@ -328,8 +340,12 @@ Page {
             root.storedFingerprints = root.storedFingerprints + 1;
             setupPage.enrollmentCompleted();
             enrollmentOperation = null;
+            console.warn('enrollmentObserver debug: onSucceeded');
         }
-        onCanceled: enrollmentOperation = null
+        onCanceled: {
+            enrollmentOperation = null
+            console.warn('enrollmentObserver debug cancelled');
+        }
     }
 
     Observer {
