@@ -149,18 +149,18 @@ Page {
                 BorderImage {
                     id: shapeDown
                     objectName: "fingerprintDownVisual"
-                    anchors {
-                        fill: parent
-                        margins: units.gu(0.6)
-                    }
                     visible: false
+                    anchors.fill: parent
                     source: "qrc:/assets/shape-down.sci"
                 }
 
                 BorderImage {
                     id: shapeUp
                     objectName: "fingerprintUpVisual"
-                    anchors.fill: parent
+                    anchors {
+                        fill: parent
+                        margins: units.gu(0.4)
+                    }
                     source: "qrc:/assets/shape-up.sci"
                 }
 
