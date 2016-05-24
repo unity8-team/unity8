@@ -6,7 +6,6 @@ Build-Depends: cmake,
                debhelper (>= 9),
                libqt5svg5-dev,
                pkg-config,
-               qml-module-biometryd,
                qml-module-qtquick-layouts,
                qt5-default,
                qtbase5-private-dev,
@@ -29,7 +28,8 @@ Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
 Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: qml-module-qtquick-layouts,
+Depends: qml-module-biometryd,
+         qml-module-qtquick-layouts,
          qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 1.1) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 1.1),
          suru-icon-theme,
          ${misc:Depends},
