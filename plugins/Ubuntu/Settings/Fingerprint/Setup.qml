@@ -40,9 +40,12 @@ Page {
     }
 
     function enrollmentProgressed(progress, hints) {
+        var fingerPresent = !!hints[FingerprintReader.isFingerPresent];
+        shapeDown.visible = fingerPresent;
+        shapeUp.visible = !fingerPresent;
+
         root.state = "reading";
         imageDefault.masks = hints[FingerprintReader.masks];
-
         statusLabel.setText(i18n.dtr("ubuntu-settings-components",
                             "Lift and press your finger again."));
     }
@@ -139,25 +142,27 @@ Page {
                 topMargin: units.gu(28.5)
             }
 
-            DropShadow {
-                anchors.fill: readerVisual
-                color: "#33000000"
-                horizontalOffset: 0
-                radius: 9.0
-                samples: 9
-                source: readerVisual
-                transparentBorder: true
-                verticalOffset: 0
-            }
-
-            UbuntuShape {
-                id: readerVisual
-
-                backgroundColor: "white"
-                borderSource: ""
-                height: units.gu(26)
-                radius: "medium"
+            Item {
                 width: units.gu(24)
+                height: units.gu(26)
+
+                BorderImage {
+                    id: shapeDown
+                    objectName: "fingerprintDownVisual"
+                    anchors {
+                        fill: parent
+                        margins: units.gu(0.6)
+                    }
+                    visible: false
+                    source: "qrc:/assets/shape-down.sci"
+                }
+
+                BorderImage {
+                    id: shapeUp
+                    objectName: "fingerprintUpVisual"
+                    anchors.fill: parent
+                    source: "qrc:/assets/shape-up.sci"
+                }
 
                 Item {
                     id: imageContainer

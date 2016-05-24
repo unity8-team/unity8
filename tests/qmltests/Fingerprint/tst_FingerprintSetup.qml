@@ -169,5 +169,26 @@ Item {
             statusLabelSpy.wait();
             compare(getStatusLabel().text, "foo");
         }
+
+        function test_fingerPresent () {
+            var eobs = getEnrollmentObserver();
+            var up = findChild(getSetupPage(), "fingerprintUpVisual");
+            var down = findChild(getSetupPage(), "fingerprintDownVisual");
+            enrollmentObserverProgressedSpy.target = eobs;
+
+            eobs.mockEnrollProgress(0.5, {
+                isFingerPresent: false
+            });
+            enrollmentObserverProgressedSpy.wait();
+            verify(up.visible);
+            verify(!down.visible);
+
+            eobs.mockEnrollProgress(0.5, {
+                isFingerPresent: true
+            });
+            enrollmentObserverProgressedSpy.wait();
+            verify(!up.visible);
+            verify(down.visible);
+        }
     }
 }
