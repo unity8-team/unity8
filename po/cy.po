@@ -1,4 +1,4 @@
-# Brazilian Portuguese translation for ubuntu-settings-components
+# Welsh translation for ubuntu-settings-components
 # Copyright (c) 2016 Rosetta Contributors and Canonical Ltd 2016
 # This file is distributed under the same license as the ubuntu-settings-components package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-04-25 15:44+0200\n"
-"PO-Revision-Date: 2016-03-08 17:40+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
+"PO-Revision-Date: 2016-03-22 18:46+0000\n"
+"Last-Translator: Owen Llywelyn <owen.llywelyn@gmail.com>\n"
+"Language-Team: Welsh <cy@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,54 +19,54 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Components/QuickReply.qml:63
 msgid "Quick reply with:"
-msgstr ""
+msgstr "Ateb cyflym gyda:"
 
 #: plugins/Ubuntu/Settings/Menus/CalendarMenu.qml:57
 #, qt-format
 msgctxt "%1=month name, %2=4-digit year"
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:100
 msgid "Roaming"
-msgstr ""
+msgstr "Crwydrol"
 
 #: plugins/Ubuntu/Settings/Menus/ModemInfoItem.qml:122
 msgid "Unlock SIM"
-msgstr ""
+msgstr "Datgloi SIM"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:30
 msgid "Call back"
-msgstr ""
+msgstr "Galw nôl"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:33
 #: plugins/Ubuntu/Settings/Menus/TextMessageMenu.qml:29
 msgid "Send"
-msgstr ""
+msgstr "Anfon"
 
 #: plugins/Ubuntu/Settings/Menus/SnapDecisionMenu.qml:58
 msgid "Message"
-msgstr ""
+msgstr "Neges"
 
 #: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:161
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:134
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:104
 msgid "Cancel"
-msgstr ""
+msgstr "Diddymu"
 
 #: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:170
 msgid "Accept"
-msgstr ""
+msgstr "Derbyn"
 
 #: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:25
 msgid "Choose…"
-msgstr ""
+msgstr "Dewiswch…"
 
 #: plugins/Ubuntu/Settings/Vpn/FileSelector.qml:34
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:431
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:513
 msgid "None"
-msgstr ""
+msgstr "Dim"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/AuthTypeField.qml:29
 msgid "Authentication type:"
@@ -91,11 +91,11 @@ msgstr ""
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:123
 #: plugins/Ubuntu/Settings/Vpn/Pptp/Editor.qml:114
 msgid "Server:"
-msgstr ""
+msgstr "Gweinydd:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:137
 msgid "Port:"
-msgstr ""
+msgstr "Porth:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:187
 msgid "Use custom gateway port"
@@ -103,7 +103,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:215
 msgid "Protocol:"
-msgstr ""
+msgstr "Protocol:"
 
 #: plugins/Ubuntu/Settings/Vpn/Openvpn/Editor.qml:304
 msgid "Username:"

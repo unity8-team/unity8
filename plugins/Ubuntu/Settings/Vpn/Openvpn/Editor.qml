@@ -43,6 +43,7 @@ Column {
             PropertyChanges { target: routesField; enabled: false }
             PropertyChanges { target: tcpToggle; enabled: false }
             PropertyChanges { target: udpToggle; enabled: false }
+            PropertyChanges { target: authTypeField; enabled: false }
             PropertyChanges { target: certField; enabled: false }
             PropertyChanges { target: caField; enabled: false }
             PropertyChanges { target: keyField; enabled: false }
@@ -74,23 +75,35 @@ Column {
     // the field value.
     function getChanges () {
         var fields = [
-            ["remote",           serverField.text],
-            ["portSet",          customPortToggle.checked],
-            ["port",             parseInt(portField.text, 10) || 0],
-            ["neverDefault",     routesField.neverDefault],
-            ["protoTcp",         tcpToggle.checked],
-            ["cert",             certField.path],
-            ["ca",               caField.path],
-            ["key",              keyField.path],
-            ["certPass",         certPassField.text],
-            ["ta",               taField.path],
-            ["taSet",            taSetToggle.checked],
-            ["taDir",            parseInt(taDirSelector.selectedIndex, 10) || 0],
-            ["remoteCertTlsSet", remoteCertSetToggle.checked],
-            ["remoteCertTls",    parseInt(remoteCertTlsSelector.selectedIndex, 10) || 0],
-            ["cipher",           parseInt(cipherSelector.selectedIndex, 10) || 0],
-            ["compLzo",          compressionToggle.checked]
+            ["remote",             serverField.text],
+            ["portSet",            customPortToggle.checked],
+            ["port",               parseInt(portField.text, 10) || 0],
+            ["neverDefault",       routesField.neverDefault],
+            ["protoTcp",           tcpToggle.checked],
+            ["connectionType",     authTypeField.type],
+
+            ["username",           usernameField.text],
+            ["password",           passwordField.text],
+
+            ["cert",               certField.path],
+            ["ca",                 caField.path],
+            ["key",                keyField.path],
+            ["certPass",           certPassField.text],
+
+            ["staticKey",          staticKeyField.path],
+            ["staticKeyDirection", parseInt(staticKeyDirectionSelector.selectedIndex, 10) || 0],
+            ["remoteIp",           remoteIpField.text],
+            ["localIp",            localIpField.text],
+
+            ["ta",                 taField.path],
+            ["taSet",              taSetToggle.checked],
+            ["taDir",              parseInt(taDirSelector.selectedIndex, 10) || 0],
+            ["remoteCertTlsSet",   remoteCertSetToggle.checked],
+            ["remoteCertTls",      parseInt(remoteCertTlsSelector.selectedIndex, 10) || 0],
+            ["cipher",             parseInt(cipherSelector.selectedIndex, 10) || 0],
+            ["compLzo",            compressionToggle.checked]
         ]
+
         var changedFields = [];
 
         // Push all fields that differs from the server to chanagedFields.
@@ -109,7 +122,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Server:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             Layout.fillWidth: true
         }
@@ -123,7 +136,7 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Port:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
             Layout.preferredWidth: units.gu(10)
         }
@@ -177,9 +190,9 @@ Column {
     }
 
     VpnRoutesField {
+        id: routesField
         objectName: "vpnOpenvpnRoutesField"
         anchors { left: parent.left; right: parent.right }
-        id: routesField
         neverDefault: connection.neverDefault
     }
 
@@ -201,13 +214,13 @@ Column {
         Label {
             text: i18n.dtr("ubuntu-settings-components", "Protocol:")
             font.bold: true
-            color: Theme.palette.normal.baseText
+            color: theme.palette.normal.baseText
             elide: Text.ElideRight
         }
 
         Label {
             id: tcpLabel
-            text: i18n.dtr("ubuntu-settings-components", "TCP")
+            text: "TCP"
         }
 
         CheckBox {
@@ -217,7 +230,7 @@ Column {
         }
 
         Label {
-            text: i18n.dtr("ubuntu-settings-components", "UDP")
+            text: "UDP"
         }
 
         CheckBox {
@@ -233,24 +246,144 @@ Column {
         }
     }
 
-    Label {
-        font.bold: true
-        color: Theme.palette.normal.baseText
-        elide: Text.ElideRight
-        text: i18n.dtr("ubuntu-settings-components", "Client certificate:")
-    }
-
-    FileSelector {
+    AuthTypeField {
+        id: authTypeField
+        objectName: "vpnOpenvpnAuthTypeField"
         anchors { left: parent.left; right: parent.right }
-        id: certField
-        objectName: "vpnOpenvpnCertField"
-        path: connection.cert
-        chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Certificate…")
+        states: [
+            State {
+                name: "tls"
+                PropertyChanges { target: authTls; visible: true }
+            },
+            State {
+                name: "password"
+                PropertyChanges { target: authPassword; visible: true }
+            },
+            State {
+                name: "passwordtls"
+                PropertyChanges { target: authPassword; visible: true }
+                PropertyChanges { target: authTls; visible: true }
+            },
+            State {
+                name: "static"
+                PropertyChanges { target: authStatic; visible: true }
+                PropertyChanges { target: caLabel; visible: false }
+                PropertyChanges { target: caField; visible: false }
+            }
+        ]
+        type: connection.connectionType
+        onAuthTypeRequested: {
+            switch (index) {
+            case 0: // OpenvpnConnection.TLS
+                state = "tls";
+                break
+            case 1: // OpenvpnConnection.PASSWORD
+                state = "password";
+                break
+            case 2: // OpenvpnConnection.PASSWORD_TLS
+                state = "passwordtls";
+                break
+            case 3: // OpenvpnConnection.STATIC_KEY
+                state = "static";
+                break
+            }
+        }
+        Component.onCompleted: authTypeRequested(connection.connectionType)
+    }
+
+    Column {
+        id: authPassword
+        anchors { left: parent.left; right: parent.right }
+        visible: false
+        spacing: openVpnEditor.spacing
+
+        Label {
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+            text: i18n.dtr("ubuntu-settings-components", "Username:")
+        }
+
+        TextField {
+            id: usernameField
+            anchors { left: parent.left; right: parent.right }
+            objectName: "vpnOpenvpnUsernameField"
+            text: connection.username
+            inputMethodHints: Qt.ImhNoPredictiveText
+        }
+
+        Label {
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+            text: i18n.dtr("ubuntu-settings-components", "Password:")
+        }
+
+        TextField {
+            id: passwordField
+            anchors { left: parent.left; right: parent.right }
+            objectName: "vpnOpenvpnPasswordField"
+            text: connection.password
+            echoMode: TextInput.PasswordEchoOnEdit
+        }
+    }
+
+    Column {
+        id: authTls
+        anchors { left: parent.left; right: parent.right }
+        visible: false
+        spacing: openVpnEditor.spacing
+
+        Label {
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+            text: i18n.dtr("ubuntu-settings-components", "Client certificate:")
+        }
+
+        FileSelector {
+            anchors { left: parent.left; right: parent.right }
+            id: certField
+            objectName: "vpnOpenvpnCertField"
+            path: connection.cert
+            chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Certificate…")
+        }
+
+        Label {
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+            text: i18n.dtr("ubuntu-settings-components", "Private key:")
+        }
+
+        FileSelector {
+            anchors { left: parent.left; right: parent.right }
+            id: keyField
+            objectName: "vpnOpenvpnKeyField"
+            path: connection.key
+            chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Key…")
+        }
+
+        Label {
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+            text: i18n.dtr("ubuntu-settings-components", "Key password:")
+        }
+
+        TextField {
+            anchors { left: parent.left; right: parent.right }
+            id: certPassField
+            objectName: "vpnOpenvpnCertPassField"
+            echoMode: TextInput.Password
+            text: connection.certPass
+        }
     }
 
     Label {
+        id: caLabel
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "CA certificate:")
     }
@@ -263,34 +396,74 @@ Column {
         chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Certificate…")
     }
 
-    Label {
-        font.bold: true
-        color: Theme.palette.normal.baseText
-        elide: Text.ElideRight
-        text: i18n.dtr("ubuntu-settings-components", "Private key:")
-    }
-
-    FileSelector {
+    Column {
+        id: authStatic
         anchors { left: parent.left; right: parent.right }
-        id: keyField
-        objectName: "vpnOpenvpnKeyField"
-        path: connection.key
-        chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Key…")
-    }
+        visible: false
+        spacing: openVpnEditor.spacing
 
-    Label {
-        font.bold: true
-        color: Theme.palette.normal.baseText
-        elide: Text.ElideRight
-        text: i18n.dtr("ubuntu-settings-components", "Key password:")
-    }
+        Label {
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+            text: i18n.dtr("ubuntu-settings-components", "Static key:")
+        }
 
-    TextField {
-        anchors { left: parent.left; right: parent.right }
-        id: certPassField
-        objectName: "vpnOpenvpnCertPassField"
-        echoMode: TextInput.Password
-        text: connection.certPass
+        FileSelector {
+            id: staticKeyField
+            anchors { left: parent.left; right: parent.right }
+            objectName: "vpnOpenvpnStaticKeyField"
+            path: connection.staticKey
+            chooseLabel: i18n.dtr("ubuntu-settings-components", "Choose Key…")
+        }
+
+        Label {
+            text: i18n.dtr("ubuntu-settings-components", "Key direction:")
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+        }
+
+        ListItems.ItemSelector {
+            id: staticKeyDirectionSelector
+            objectName: "vpnOpenvpnStaticKeyDirectionSelector"
+            model: [
+                i18n.dtr("ubuntu-settings-components", "None"),
+                0,
+                1,
+            ]
+            selectedIndex: connection.staticKeyDirection
+        }
+
+        Label {
+            text: i18n.dtr("ubuntu-settings-components", "Remote IP:")
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+        }
+
+        TextField {
+            id: remoteIpField
+            anchors { left: parent.left; right: parent.right }
+            text: connection.remoteIp
+            objectName: "vpnOpenvpnRemoteIpField"
+            inputMethodHints: Qt.ImhNoPredictiveText
+        }
+
+        Label {
+            text: i18n.dtr("ubuntu-settings-components", "Local IP:")
+            font.bold: true
+            color: theme.palette.normal.baseText
+            elide: Text.ElideRight
+        }
+
+        TextField {
+            id: localIpField
+            anchors { left: parent.left; right: parent.right }
+            text: connection.localIp
+            objectName: "vpnOpenvpnLocalIpField"
+            inputMethodHints: Qt.ImhNoPredictiveText
+        }
     }
 
     RowLayout {
@@ -310,7 +483,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "TLS key:")
         visible: taSetToggle.checked
@@ -328,7 +501,7 @@ Column {
     Label {
         text: i18n.dtr("ubuntu-settings-components", "Key direction:")
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         visible: taSetToggle.checked
     }
@@ -338,8 +511,8 @@ Column {
         objectName: "vpnOpenvpnTaDirSelector"
         model: [
             i18n.dtr("ubuntu-settings-components", "None"),
-            i18n.dtr("ubuntu-settings-components", "0"),
-            i18n.dtr("ubuntu-settings-components", "1"),
+            0,
+            1,
         ]
         selectedIndex: connection.taDir
         visible: taSetToggle.checked
@@ -361,7 +534,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "Peer certificate TLS type:")
         visible: remoteCertSetToggle.checked
@@ -380,7 +553,7 @@ Column {
 
     Label {
         font.bold: true
-        color: Theme.palette.normal.baseText
+        color: theme.palette.normal.baseText
         elide: Text.ElideRight
         text: i18n.dtr("ubuntu-settings-components", "Cipher:")
     }
@@ -390,22 +563,22 @@ Column {
         objectName: "vpnOpenvpnCipherSelector"
         model: [
             i18n.dtr("ubuntu-settings-components", "Default"),
-            i18n.dtr("ubuntu-settings-components", "DES-CBC"),
-            i18n.dtr("ubuntu-settings-components", "RC2-CBC"),
-            i18n.dtr("ubuntu-settings-components", "DES-EDE-CBC"),
-            i18n.dtr("ubuntu-settings-components", "DES-EDE3-CBC"),
-            i18n.dtr("ubuntu-settings-components", "DESX-CBC"),
-            i18n.dtr("ubuntu-settings-components", "RC2-40-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAST5-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-128-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-192-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-256-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAMELLIA-128-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAMELLIA-192-CBC"),
-            i18n.dtr("ubuntu-settings-components", "CAMELLIA-256-CBC"),
-            i18n.dtr("ubuntu-settings-components", "SEED-CBC"),
-            i18n.dtr("ubuntu-settings-components", "AES-128-CBC-HMAC-SHA1"),
-            i18n.dtr("ubuntu-settings-components", "AES-256-CBC-HMAC-SHA1"),
+            "DES-CBC",
+            "RC2-CBC",
+            "DES-EDE-CBC",
+            "DES-EDE3-CBC",
+            "DESX-CBC",
+            "RC2-40-CBC",
+            "CAST5-CBC",
+            "AES-128-CBC",
+            "AES-192-CBC",
+            "AES-256-CBC",
+            "CAMELLIA-128-CBC",
+            "CAMELLIA-192-CBC",
+            "CAMELLIA-256-CBC",
+            "SEED-CBC",
+            "AES-128-CBC-HMAC-SHA1",
+            "AES-256-CBC-HMAC-SHA1",
         ]
         selectedIndex: connection.cipher
     }
