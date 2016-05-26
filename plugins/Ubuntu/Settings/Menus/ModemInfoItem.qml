@@ -78,6 +78,7 @@ ListItem.Empty {
                     color: theme.palette.normal.backgroundText
 
                     width: statusIcon.width // fix lp:1585645 by breaking the binding loop
+                    height: width
 
                     visible: name !== ""
                 }
