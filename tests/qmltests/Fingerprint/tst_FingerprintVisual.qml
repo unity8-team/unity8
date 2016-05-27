@@ -52,79 +52,66 @@ Item {
             var src = "image://fingerprintvisual/";
             var visHeight = vis.sourceSize.height;
             return [
-                { masks: null, targetSource: src },
-                { masks: [], targetSource: src },
+                { masks: null, targetSource: src, tag: "null" },
+                { masks: [], targetSource: src, tag: "no masks" },
                 {
                     masks: [{x: 0, y: 0, width: 0, height: 0 }],
-                    targetSource: src + "[0,0,0,0]"
-                },
-                {
-                    masks: [{x: 0, y: 0, width: 100, height: 100 }],
-                    targetSource: src + "[0,0,100,100]"
+                    targetSource: src + "[400,0,0,0]",
+                    tag: "0"
                 },
                 {
                     masks: [
-                        {x: 0, y: 0, width: 10, height: 10 },
-                        {x: 10, y: 10, width: 10, height: 10 },
+                        {x: 0, y: 0, width: 0.5, height: 0.5 },
+                        {x: 0.5, y: 0.5, width: 1, height: 1 },
+                        {x: 1, y: 1, width: 1, height: 1 },
                     ],
-                    targetSource: src + "[0,0,10,10],[10,10,10,10]"
-                },
-                {
-                    masks: [
-                        {x: 0, y: 0, width: 10, height: 10 },
-                        {x: 10, y: 10, width: 10, height: 10 },
-                        {x: 20, y: 20, width: 20, height: 20 },
-                    ],
-                    targetSource: src + "[0,0,10,10],[10,10,10,10],[20,20,20,20]"
-                },
-                {
-                    masks: [{x: 0, y: 0, width: vis.width, height: vis.height }],
-                    targetSource: src + "[0,0,"+vis.width+"," + vis.height + "]"
+                    targetSource: src + "[200,0,200,245.4],[-200,245.4,400,490.8],[-400,490.8,400,490.8]",
+                    tag: "bunch"
                 },
                 {
                     masks: [
                         {x: null, y: "-a", width: "0x1", height: true },
                         {},
                     ],
-                    targetSource: src + "[null,-a,0x1,true],[undefined,undefined,undefined,undefined]",
+                    targetSource: src,
                     tag: "bad values"
                 },
 
-                // Masks that can be used for manual, visual checks.
+                // // Masks that can be used for manual, visual checks.
                 {
                     masks: [
-                        {x: 0, y: 0, width: 200, height: (visHeight / 2) },
-                    ],
-                    visualCheck: true,
-                    tag: "top left corner"
-                },
-                {
-                    masks: [
-                        {x: 200, y: 0, width: 200, height: (visHeight / 2) },
+                        {x: 0, y: 0, width: 0.5, height: 0.5 },
                     ],
                     visualCheck: true,
                     tag: "top right corner"
                 },
                 {
                     masks: [
-                        {x: 0, y: (visHeight / 2), width: 200, height: (visHeight / 2) },
+                        {x: 0.5, y: 0, width: 0.5, height: 0.5 },
                     ],
                     visualCheck: true,
-                    tag: "bottom left corner"
+                    tag: "top left corner"
                 },
                 {
                     masks: [
-                        {x: 200, y: (visHeight / 2), width: 200, height: (visHeight / 2) },
+                        {x: 0, y: 0.5, width: 0.5, height: 0.5 },
                     ],
                     visualCheck: true,
                     tag: "bottom right corner"
                 },
                 {
                     masks: [
-                        {x: 0, y: 0, width: 200, height: (visHeight / 2) },
-                        {x: 200, y: 0, width: 200, height: (visHeight / 2) },
-                        {x: 0, y: (visHeight / 2), width: 200, height: (visHeight / 2) },
-                        {x: 200, y: (visHeight / 2), width: 200, height: (visHeight / 2) }
+                        {x: 0.5, y: 0.5, width: 0.5, height: 0.5 },
+                    ],
+                    visualCheck: true,
+                    tag: "bottom left corner"
+                },
+                {
+                    masks: [
+                        {x: 0, y: 0, width: 0.5, height: 0.5 },
+                        {x: 0.5, y: 0, width: 0.5, height: 0.5 },
+                        {x: 0, y: 0.5, width: 0.5, height: 0.5 },
+                        {x: 0.5, y: 0.5, width: 0.5, height: 0.5 }
                     ],
                     visualCheck: true,
                     tag: "all corners"

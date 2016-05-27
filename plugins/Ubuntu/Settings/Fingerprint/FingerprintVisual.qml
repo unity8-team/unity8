@@ -22,14 +22,36 @@ Image {
     property var masks
 
     source: "image://fingerprintvisual/"
+
+    function relativeToAbsolute (relRect) {
+        var absRect = {
+            // Translate the box so as to reverse it's x coord.
+            x: (1 - (relRect.x + relRect.width)) * width,
+            y: relRect.y * height,
+            width: relRect.width * width,
+            height: relRect.height * height
+        };
+        console.log(1 - (relRect.x + relRect.width))
+        return absRect;
+    }
+
+    // http://stackoverflow.com/a/1830844/538866
+    function isNumeric (n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
     onMasksChanged: {
         var s = "image://fingerprintvisual/";
 
         if (masks && masks.length) {
             masks.forEach(function (mask, i) {
+                mask = relativeToAbsolute(mask);
                 // Format is "<source>/[x1,y1,w1,h1],…,[xn,yn,wn,hn]"
-                // These values are passed as JavaScript sees them, without
-                // any validation.
+                // If any value is non-numeric, we drop the mask.
+                if (!isNumeric(mask.x) || !isNumeric(mask.y) || !isNumeric(mask.width)
+                    || !isNumeric(mask.height))
+                    return;
+
                 s += "[" + mask.x + "," + mask.y + ","
                      + mask.width + "," + mask.height + "]";
 
@@ -41,16 +63,16 @@ Image {
         source = s;
     }
 
-    // Repeater {
-    //     model: parent.masks
+    Repeater {
+        model: parent.masks
 
-    //     // For testing.
-    //     Rectangle {
-    //         color: "#20000000"
-    //         x: modelData.x
-    //         y: modelData.y
-    //         width: modelData.width
-    //         height: modelData.height
-    //     }
-    // }
+        // For testing.
+        Rectangle {
+            color: "#20000000"
+            x: modelData.x
+            y: modelData.y
+            width: modelData.width
+            height: modelData.height
+        }
+    }
 }
