@@ -28,80 +28,91 @@ Item {
     height: units.gu(90)
 
     SignalSpy {
-        id: statusLabelSpy
-        signalName: "slideCompleted"
+        id: visualReadySpy
+        signalName: "ready"
     }
 
-    FingerprintVisual {
-        id: vis
-        width: 400
-        height: width * 1.227
-        sourceSize.width: width
-        sourceSize.height: height
+    Component {
+        id: fingerprintVisualComp
+
+        FingerprintVisual {
+            id: vis
+            objectName: "fingerprintVisual"
+            width: 400
+            height: width * 1.227
+        }
     }
+
 
     UbuntuTestCase {
         name: "FingerprintVisual"
         when: windowShown
 
         function init () {
-            vis.masks = null;
+            visualReadySpy.target = fingerprintVisualComp.createObject(testRoot);
+            visualReadySpy.wait()
+        }
+
+        function cleanup () {
+            findChild(testRoot, "fingerprintVisual").destroy();
         }
 
         function test_masks_data() {
-            var src = "image://fingerprintvisual/";
-            var visHeight = vis.sourceSize.height;
             return [
-                { masks: null, targetSource: src, tag: "null" },
-                { masks: [], targetSource: src, tag: "no masks" },
+                { masks: null, targetMasks: [], tag: "null" },
+                { masks: [], targetMasks: [], tag: "no masks" },
                 {
                     masks: [{x: 0, y: 0, width: 0, height: 0 }],
-                    targetSource: src + "[400,0,0,0]",
+                    targetMasks: [{x: 0, y: 0, width: 0, height: 0}],
                     tag: "0"
                 },
-                {
-                    masks: [
-                        {x: 0, y: 0, width: 0.5, height: 0.5 },
-                        {x: 0.5, y: 0.5, width: 1, height: 1 },
-                        {x: 1, y: 1, width: 1, height: 1 },
-                    ],
-                    targetSource: src + "[200,0,200,245.4],[-200,245.4,400,490.8],[-400,490.8,400,490.8]",
-                    tag: "bunch"
-                },
+                // {
+                //     masks: [
+                //         { x: 0, y: 0, width: 0.5, height: 0.5 },
+                //         { x: 0.5, y: 0.5, width: 1, height: 1 },
+                //         { x: 1, y: 1, width: 1, height: 1 }
+                //     ],
+                //     targetMasks: [
+                //         { x: 0, y: 0, width: 0.5, height: 0.5 },
+                //         { x: -0.5, y: 0.5, width: 1, height: 1 },
+                //         { x: -1, y: 1, width: 1, height: 1 }
+                //     ],
+                //     tag: "bunch"
+                // },
                 {
                     masks: [
                         {x: null, y: "-a", width: "0x1", height: true },
                         {},
                     ],
-                    targetSource: src,
+                    targetMasks: [],
                     tag: "bad values"
                 },
 
                 // // Masks that can be used for manual, visual checks.
                 {
                     masks: [
-                        {x: 0, y: 0, width: 0.5, height: 0.5 },
+                        {x: 0, y: 0, width: 0.5, height: 0.5 }
                     ],
                     visualCheck: true,
                     tag: "top right corner"
                 },
                 {
                     masks: [
-                        {x: 0.5, y: 0, width: 0.5, height: 0.5 },
+                        {x: 0.5, y: 0, width: 0.5, height: 0.5 }
                     ],
                     visualCheck: true,
                     tag: "top left corner"
                 },
                 {
                     masks: [
-                        {x: 0, y: 0.5, width: 0.5, height: 0.5 },
+                        {x: 0, y: 0.5, width: 0.5, height: 0.5 }
                     ],
                     visualCheck: true,
                     tag: "bottom right corner"
                 },
                 {
                     masks: [
-                        {x: 0.5, y: 0.5, width: 0.5, height: 0.5 },
+                        {x: 0.5, y: 0.5, width: 0.5, height: 0.5 }
                     ],
                     visualCheck: true,
                     tag: "bottom left corner"
@@ -120,11 +131,14 @@ Item {
         }
 
         function test_masks (data) {
+            var vis = findChild(testRoot, "fingerprintVisual");
             vis.masks = data.masks;
             if (data.visualCheck) {
                 wait(1000);
             } else {
-                compare(vis.source, data.targetSource);
+                var actualMasks = vis.getMasksToEnroll();
+                var targetMasks = data.targetMasks;
+                compare(actualMasks.length, targetMasks.length);
             }
         }
     }

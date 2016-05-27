@@ -1,12 +1,14 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>assets/enrolled.svg</file>
-    <file>assets/unenrolled.svg</file>
     <file>assets/fingerprint_done.svg</file>
     <file>assets/fingerprint_failed.svg</file>
+
     <file>assets/shape-up@27.png</file>
     <file>assets/shape-up@27.sci</file>
     <file>assets/shape-down@27.png</file>
     <file>assets/shape-down@27.sci</file>
+
+    <file>assets/fingerprint_segmented@27.png</file>
+    <file>assets/fingerprint_boxes.json</file>
 </qresource>
 </RCC>

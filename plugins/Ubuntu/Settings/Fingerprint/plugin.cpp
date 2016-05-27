@@ -16,19 +16,10 @@
 
 #include "plugin.h"
 #include "ubuntusettingsfingerprint.h"
-#include "fingerprintvisualprovider.h"
 
 #include <QtQml/qqml.h>
 
 void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
 {
-
     qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
-}
-
-void UbuntuSettingsFingerprintPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
-{
-    QQmlExtensionPlugin::initializeEngine(engine, uri);
-    engine->addImageProvider(QLatin1String("fingerprintvisual"),
-                             new FingerprintVisualProvider);
 }

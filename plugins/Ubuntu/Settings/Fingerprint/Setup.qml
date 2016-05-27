@@ -142,18 +142,18 @@ Page {
 
             anchors {
                 bottom: actions.top
-                bottomMargin: units.gu(26.5)
+                bottomMargin: units.gu(25.5)
                 left: parent.left
-                leftMargin: units.gu(13)
+                leftMargin: units.gu(12)
                 right: parent.right
-                rightMargin: units.gu(13)
+                rightMargin: units.gu(12)
                 top: parent.top
-                topMargin: units.gu(28.5)
+                topMargin: units.gu(27.5)
             }
 
             Item {
-                width: units.gu(24)
-                height: units.gu(26)
+                width: units.gu(26)
+                height: units.gu(29)
 
                 BorderImage {
                     id: shapeDown
@@ -175,18 +175,16 @@ Page {
 
                 Item {
                     id: imageContainer
-
                     anchors.centerIn: parent
-                    height: units.gu(20)
-                    width: units.gu(16)
+                    width: imageDefault.implicitWidth
+                    height: imageDefault.implicitHeight
+
 
                     // Default image.
                     FingerprintVisual {
                         id: imageDefault
                         objectName: "fingerprintDefaultVisual"
-                        anchors.fill: parent
-                        sourceSize.width: parent.width
-                        sourceSize.height: parent.height
+                        anchors.centerIn: parent
                     }
 
                     // Failed image.

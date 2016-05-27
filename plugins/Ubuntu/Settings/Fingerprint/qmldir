@@ -1,7 +1,5 @@
 module Ubuntu.Settings.Fingerprint
 plugin UbuntuSettingsFingerprintQml
 
-internal StatusLabel StatusLabel.qml
-
 Fingerprint 0.1 Fingerprint.qml
 FingerprintVisual 0.1 FingerprintVisual.qml

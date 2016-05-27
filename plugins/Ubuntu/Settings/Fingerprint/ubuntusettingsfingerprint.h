@@ -20,7 +20,6 @@
 #define UBUNTUSETTINGSFINGERPRINT_H
 
 #include <QObject>
-#include <QSvgRenderer>
 
 class UbuntuSettingsFingerprint : public QObject
 {
