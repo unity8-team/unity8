@@ -29,11 +29,12 @@ Page {
 
     title: i18n.dtr("ubuntu-settings-components", "Fingerprint ID")
 
-
     property var ts: Biometryd.defaultDevice.templateStore
+
     property var sizeOperation: null
     property var enrollmentOperation: null
     property var clearanceOperation: null
+
     property Dialog diag: null
     property bool passcodeSet: false
     property int storedFingerprints: 0
@@ -89,6 +90,14 @@ Page {
                 enabled: false
             }
             when: !passcodeSet
+        },
+        State {
+            name: "noScanner"
+            PropertyChanges {
+                target: setupFingerprint
+                enabled: false
+            }
+            when: !Biometryd.available
         }
     ]
 
@@ -379,12 +388,6 @@ Page {
             if (diag) PopupUtils.close(diag);
         }
         onCanceled: clearanceOperation = null
-    }
-
-    Connections {
-        target: setupPage
-        onEnroll: root.enroll()
-        onCancel: root.cancel()
     }
 
     UbuntuSettingsFingerprint {

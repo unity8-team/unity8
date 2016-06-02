@@ -29,11 +29,18 @@ class MockService : public QObject
 public:
     explicit MockService(QObject *parent = 0);
     Q_PROPERTY(MockDevice* defaultDevice READ defaultDevice)
+    Q_PROPERTY(bool available READ isAvailable NOTIFY availableChanged)
 
     MockDevice* defaultDevice();
+    bool isAvailable() const;
+    Q_INVOKABLE void setAvailable(const bool available);
+
+Q_SIGNALS:
+    void availableChanged(bool);
 
 private:
     MockDevice* m_device;
+    bool m_available;
 };
 
 #endif // MOCK_SERVICE_H

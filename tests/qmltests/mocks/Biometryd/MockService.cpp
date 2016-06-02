@@ -19,12 +19,24 @@
 MockService::MockService(QObject *parent)
     : QObject(parent)
     , m_device(new MockDevice(this))
+    , m_available(false)
 {
 }
 
 MockDevice* MockService::defaultDevice()
 {
     return m_device;
+}
+
+bool MockService::isAvailable() const
+{
+    return m_available;
+}
+
+void MockService::setAvailable(const bool available)
+{
+    m_available = available;
+    Q_EMIT (availableChanged(available));
 }
 
 #include "MockService.moc"

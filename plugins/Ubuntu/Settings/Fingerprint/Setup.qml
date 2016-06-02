@@ -50,8 +50,6 @@ Page {
                             "Lift and press your finger again."));
     }
 
-    Component.onDestruction: cancel();
-
     states: [
         State {
             name: ""
@@ -253,7 +251,10 @@ Page {
                 }
                 height: parent.height
                 width: units.gu(10)
-                onClicked: pageStack.pop()
+                onClicked: {
+                    root.cancel();
+                    pageStack.pop();
+                }
 
                 Label {
                     id: cancelButtonText
