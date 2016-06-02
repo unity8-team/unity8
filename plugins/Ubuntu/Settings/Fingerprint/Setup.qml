@@ -199,16 +199,31 @@ Page {
                     }
 
                     // Done image.
-                    Image {
+                    CircularSegment {
                         id: imageDone
                         objectName: "fingerprintDoneVisual"
-                        anchors.fill: parent
-                        asynchronous: true
-                        fillMode: Image.Pad
-                        sourceSize.width: parent.width
-                        sourceSize.height: parent.height
-                        source: "qrc:/assets/fingerprint_done.svg"
                         visible: false
+                        width: units.gu(18)
+                        anchors.centerIn: parent
+                        NumberAnimation on angleStop {
+                            from: 0
+                            to: 360
+                            duration: UbuntuAnimation.SlowDuration
+                            easing: UbuntuAnimation.StandardEasing
+                        }
+                        NumberAnimation on thickness {
+                            from: 0
+                            to: units.dp(3)
+                            duration: UbuntuAnimation.SlowDuration
+                            easing: UbuntuAnimation.StandardEasing
+                        }
+
+                        Icon {
+                            name: "tick"
+                            color: "#3EB34F"
+                            width: units.gu(13)
+                            anchors.centerIn: parent
+                        }
                     }
                 }
             }

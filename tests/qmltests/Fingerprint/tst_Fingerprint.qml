@@ -72,6 +72,10 @@ Item {
         name: "FingerprintPanel"
         when: windowShown
 
+        function init() {
+            Biometryd.setAvailable(true);
+        }
+
         function cleanup() {
             setPasscodeSpy.clear();
             sizeSuccessSpy.clear();
@@ -80,7 +84,6 @@ Item {
         }
 
         function test_sizeOperation() {
-            Biometryd.setAvailable(true);
             var sizeObserver = findInvisibleChild(fingerprintPage, "sizeObserver");
             sizeObserver.mockSize(100, "");
             var sizeLabel = findChild(fingerprintPage, "fingerprintFingerprintCount");
@@ -88,7 +91,6 @@ Item {
         }
 
         function test_sizeOperationFailure() {
-            Biometryd.setAvailable(true);
             var sizeObserver = findInvisibleChild(fingerprintPage, "sizeObserver");
             sizeFailureSpy.target = sizeObserver;
             sizeObserver.mockSize(100, "device borked");
@@ -104,7 +106,6 @@ Item {
         }
 
         function test_noPasscode() {
-            Biometryd.setAvailable(true);
             fingerprintPage.passcodeSet = false;
             compare(fingerprintPage.state, "noPasscode");
             var setButton = findChild(fingerprintPage, "fingerprintSetPasscodeButton");
@@ -114,7 +115,6 @@ Item {
         }
 
         function test_passcode() {
-            Biometryd.setAvailable(true);
             fingerprintPage.passcodeSet = true;
             compare(fingerprintPage.state, "", "page did not have clean state with passcode set");
             var setButton = findChild(fingerprintPage, "fingerprintSetPasscodeButton");
@@ -124,7 +124,6 @@ Item {
         }
 
         function test_changePasscode() {
-            Biometryd.setAvailable(true);
             fingerprintPage.passcodeSet = false;
             var setButton = findChild(fingerprintPage, "fingerprintSetPasscodeButton");
             mouseClick(setButton, setButton.width / 2, setButton.height / 2);
@@ -142,7 +141,6 @@ Item {
         }
 
         function test_counting(data) {
-            Biometryd.setAvailable(true);
             fingerprintPage.storedFingerprints = data.count;
             var c = findChild(fingerprintPage, "fingerprintFingerprintCount");
             var naturalNumber = c.getNaturalNumber(data.count);
@@ -155,7 +153,6 @@ Item {
         }
 
         function test_setup() {
-            Biometryd.setAvailable(true);
             fingerprintPage.passcodeSet = false;
             var add = findChild(fingerprintPage, "fingerprintAddFingerprintButton");
             var remove = findChild(fingerprintPage, "fingerprintRemoveAllButton");
@@ -164,7 +161,6 @@ Item {
         }
 
         function test_noRemove() {
-            Biometryd.setAvailable(true);
             fingerprintPage.passcodeSet = true;
             fingerprintPage.storedFingerprints = 0;
             var remove = findChild(fingerprintPage, "fingerprintRemoveAllButton");
@@ -172,7 +168,6 @@ Item {
         }
 
         function test_remove() {
-            Biometryd.setAvailable(true);
             fingerprintPage.passcodeSet = true;
             fingerprintPage.storedFingerprints = 1;
 
@@ -197,7 +192,6 @@ Item {
         }
 
         function test_removeFailure() {
-            Biometryd.setAvailable(true);
             var clearanceObserver = findInvisibleChild(fingerprintPage, "clearanceObserver");
             cleranceFailureSpy.target = clearanceObserver;
             clearanceObserver.mockClearance("device borked");
@@ -214,7 +208,6 @@ Item {
         }
 
         function test_enrollmentSucceeded() {
-            Biometryd.setAvailable(true);
             var enrollmentObserver = findInvisibleChild(fingerprintPage, "enrollmentObserver");
             compare(fingerprintPage.storedFingerprints, 0);
             enrollmentSucceededSpy.target = enrollmentObserver;

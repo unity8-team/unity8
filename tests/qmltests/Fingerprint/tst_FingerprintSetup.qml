@@ -21,6 +21,7 @@ import QtTest 1.0
 import Ubuntu.Components 1.3
 import Ubuntu.Settings.Fingerprint 0.1
 import Ubuntu.Test 0.1
+import Biometryd 0.0
 
 Item {
     id: testRoot
@@ -68,12 +69,14 @@ Item {
         when: windowShown
 
         function init () {
+            Biometryd.setAvailable(true);
             pageStack.push(fingerprintPage);
 
             var setupButton = findChild(pageStack, "fingerprintAddFingerprintButton");
             mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
 
             statusLabelSpy.target = getStatusLabel();
+
         }
 
         function cleanup () {
@@ -162,6 +165,7 @@ Item {
             var button = findChild(pageStack, "fingerprintSetupDoneButton");
             getEnrollmentObserver().mockEnroll("");
             compare(button.enabled, true, "button was disabled when done");
+            wait(3000)
         }
 
         function test_statusLabel() {
