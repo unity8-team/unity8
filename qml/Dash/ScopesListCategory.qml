@@ -92,6 +92,7 @@ Item {
 
                 hideChildren: dragItem.loaderToShrink == loader
 
+                Mouse.forwardTo: [root]
                 onClicked: {
                     if (!editMode) {
                         if (root.isFavoritesFeed)

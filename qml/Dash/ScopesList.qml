@@ -15,7 +15,9 @@
  */
 
 import QtQuick 2.4
+import Ubuntu.Components 1.3
 import Dash 0.1
+import "../Components"
 
 Item {
     id: root
@@ -70,50 +72,61 @@ Item {
         onStoreClicked: root.storeClicked();
         z: 1
     }
+    Autoscroller {
+        id: autoscroller
 
-    Flickable {
         anchors {
-            top: header.bottom
             bottom: parent.bottom
             left: parent.left
             right: parent.right
+            top: header.bottom
         }
-        clip: true
-        contentWidth: root.width
-        contentHeight: column.height
-        onContentHeightChanged: returnToBounds();
-        Column {
-            id: column
-            Repeater {
-                model: scope ? scope.categories : null
 
-                delegate: Loader {
-                    asynchronous: true
-                    width: root.width
-                    active: results.count > 0
-                    visible: active
-                    sourceComponent: ScopesListCategory {
-                        objectName: "scopesListCategory" + categoryId
+        enabled: root.state == "edit"
+        flickable: flickable
 
-                        model: results
+        Flickable {
+            id: flickable
+            objectName: "scopesListFlickable"
 
-                        title: {
-                            if (isFavoritesFeed) return i18n.tr("Home");
-                            else if (isAlsoInstalled) return i18n.tr("Also installed");
-                            else return name;
+            anchors.fill: parent
+            clip: true
+            contentWidth: root.width
+            contentHeight: column.height
+            onContentHeightChanged: returnToBounds();
+            Column {
+                id: column
+                Repeater {
+                    model: scope ? scope.categories : null
+
+                    delegate: Loader {
+                        asynchronous: true
+                        width: root.width
+                        active: results.count > 0
+                        visible: active
+                        sourceComponent: ScopesListCategory {
+                            objectName: "scopesListCategory" + categoryId
+
+                            Mouse.forwardTo: [autoscroller]
+                            model: results
+                            title: {
+                                if (isFavoritesFeed) return i18n.tr("Home");
+                                else if (isAlsoInstalled) return i18n.tr("Also installed");
+                                else return name;
+                            }
+
+                            editMode: root.state == "edit"
+
+                            scopeStyle: root.scopeStyle
+                            isFavoritesFeed: categoryId == "favorites"
+                            isAlsoInstalled: categoryId == "other"
+
+                            onRequestFavorite: root.requestFavorite(scopeId, favorite);
+                            onRequestEditMode: root.state = "edit";
+                            onRequestScopeMoveTo: root.requestFavoriteMoveTo(scopeId, index);
+                            onRequestActivate: root.scope.activate(result, categoryId);
+                            onRequestRestore: root.requestRestore(scopeId);
                         }
-
-                        editMode: root.state == "edit"
-
-                        scopeStyle: root.scopeStyle
-                        isFavoritesFeed: categoryId == "favorites"
-                        isAlsoInstalled: categoryId == "other"
-
-                        onRequestFavorite: root.requestFavorite(scopeId, favorite);
-                        onRequestEditMode: root.state = "edit";
-                        onRequestScopeMoveTo: root.requestFavoriteMoveTo(scopeId, index);
-                        onRequestActivate: root.scope.activate(result, categoryId);
-                        onRequestRestore: root.requestRestore(scopeId);
                     }
                 }
             }

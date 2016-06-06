@@ -58,7 +58,7 @@ Item {
             tryCompare(dashContentList, "count", 0);
             scopes.load();
             tryCompare(dashContentList, "currentIndex", 0);
-            tryCompare(dashContentList, "count", 7);
+            tryCompare(dashContentList, "count", 27);
             tryCompare(scopes, "loaded", true);
             tryCompareFunction(function() {
                 var mockScope1Loader = findChild(dash, "scopeLoader0");
@@ -249,6 +249,9 @@ Item {
             var nonfavScopesListCategory = findChild(dash, "scopesListCategoryother");
             var nonfavScopesListCategoryList = findChild(nonfavScopesListCategory, "scopesListCategoryInnerList");
             tryCompare(nonfavScopesListCategoryList, "currentIndex", 0);
+
+            // Ensure non favorites are visible
+            flickToYEnd(findChild(dash,"scopesListFlickable"));
 
             // Click on a non favorite scope
             mouseClick(nonfavScopesListCategoryList.currentItem);
@@ -512,6 +515,9 @@ Item {
             var nonfavScopesListCategoryList = findChild(nonfavScopesListCategory, "scopesListCategoryInnerList");
             tryCompare(nonfavScopesListCategoryList, "currentIndex", 0);
 
+            // Ensure non favorite scopes are visible
+            flickToYEnd(findChild(dash, "scopesListFlickable"));
+
             // Click on a non favorite scope
             mouseClick(nonfavScopesListCategoryList.currentItem);
 
@@ -603,6 +609,7 @@ Item {
             tryCompare(bottomEdgeController, "progress", 1);
             var nonfavScopesListCategory = findChild(dash, "scopesListCategoryother");
             var nonfavScopesListCategoryList = findChild(nonfavScopesListCategory, "scopesListCategoryInnerList");
+            flickToYEnd(findChild(dash, "scopesListFlickable"));
             tryCompare(nonfavScopesListCategoryList, "currentIndex", 0);
             mouseClick(nonfavScopesListCategoryList.currentItem);
             var dashTempScopeItem = findChild(dash, "dashTempScopeItem");
@@ -645,7 +652,11 @@ Item {
             tryCompare(bottomEdgeController, "progress", 1);
             var nonfavScopesListCategory = findChild(dash, "scopesListCategoryother");
             var nonfavScopesListCategoryList = findChild(nonfavScopesListCategory, "scopesListCategoryInnerList");
+            var scopesListFlickable = findChild(dash, "scopesListFlickable");
             tryCompare(nonfavScopesListCategoryList, "currentIndex", 0);
+
+            // Ensure the non-favorites, located at the bottom, are visible
+            flickToYEnd(scopesListFlickable);
             mouseClick(nonfavScopesListCategoryList.currentItem);
             var dashTempScopeItem = findChild(dash, "dashTempScopeItem");
             tryCompare(dashTempScopeItem, "x", 0);

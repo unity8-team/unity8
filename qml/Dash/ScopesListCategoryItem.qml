@@ -84,19 +84,33 @@ AbstractButton {
                 visible: text != ""
             }
         }
-        AbstractButton {
+        Item {
             id: starArea
             objectName: "starArea"
             height: parent.height
             width: height
             anchors.right: parent.right
-            onClicked: if (!editMode) root.requestFavorite(model.scopeId, !isFavorite);
-            onPressedChanged: {
+
+            MouseArea {
+                id: mouseArea
+                anchors.fill: parent
+                Mouse.forwardTo:[starArea]
+            }
+
+            Mouse.forwardTo: [root]
+            Mouse.onClicked: if (!editMode) root.requestFavorite(model.scopeId, !isFavorite);
+            Mouse.onPressed: {
                 if (editMode) {
-                    if (pressed) root.handlePressed(starArea.__mouseArea);
-                    else root.handleReleased(starArea.__mouseArea);
+                    root.handlePressed(mouseArea);
                 }
             }
+
+            Mouse.onReleased: {
+                if (editMode) {
+                    root.handleReleased(mouseArea);
+                }
+            }
+
             visible: editMode || showStar
             Icon {
                 id: star

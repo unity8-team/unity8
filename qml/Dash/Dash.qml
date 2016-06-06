@@ -36,7 +36,7 @@ Showable {
         }
     }
 
-    property bool windowActive: window.active
+    property bool windowActive: typeof(window) !== "undefined" ? window.active : false
     property bool showOverlayScope: false
 
     DashCommunicatorService {

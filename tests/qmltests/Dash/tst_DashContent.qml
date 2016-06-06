@@ -124,7 +124,7 @@ Item {
 
             loadScopes();
 
-            compare(dashContentList.count, 7);
+            compare(dashContentList.count, 27);
             verify(dashContentList.currentIndex >= 0 && dashContentList.currentIndex < dashContentList.count);
         }
 
@@ -181,7 +181,7 @@ Item {
 
             // test greater than scope count.
             var currentScopeIndex = dashContent.currentIndex;
-            dashContent.setCurrentScopeAtIndex(18, true, false);
+            dashContent.setCurrentScopeAtIndex(scopesModel.count, true, false);
             compare(dashContent.currentIndex, currentScopeIndex, "Scope should not change if changing to greater index than count");
         }
 
