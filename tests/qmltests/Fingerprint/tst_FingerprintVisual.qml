@@ -48,12 +48,12 @@ Item {
         name: "FingerprintVisual"
         when: windowShown
 
-        function init () {
+        function init() {
             visualReadySpy.target = fingerprintVisualComp.createObject(testRoot);
             visualReadySpy.wait()
         }
 
-        function cleanup () {
+        function cleanup() {
             findChild(testRoot, "fingerprintVisual").destroy();
         }
 
@@ -66,19 +66,6 @@ Item {
                     targetMasks: [{x: 0, y: 0, width: 0, height: 0}],
                     tag: "0"
                 },
-                // {
-                //     masks: [
-                //         { x: 0, y: 0, width: 0.5, height: 0.5 },
-                //         { x: 0.5, y: 0.5, width: 1, height: 1 },
-                //         { x: 1, y: 1, width: 1, height: 1 }
-                //     ],
-                //     targetMasks: [
-                //         { x: 0, y: 0, width: 0.5, height: 0.5 },
-                //         { x: -0.5, y: 0.5, width: 1, height: 1 },
-                //         { x: -1, y: 1, width: 1, height: 1 }
-                //     ],
-                //     tag: "bunch"
-                // },
                 {
                     masks: [
                         {x: null, y: "-a", width: "0x1", height: true },
@@ -88,7 +75,7 @@ Item {
                     tag: "bad values"
                 },
 
-                // // Masks that can be used for manual, visual checks.
+                // Masks for manual, visual checks.
                 {
                     masks: [
                         {x: 0, y: 0, width: 0.5, height: 0.5 }

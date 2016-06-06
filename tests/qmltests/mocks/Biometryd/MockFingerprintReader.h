@@ -28,6 +28,7 @@ class MockFingerprintReader : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(MockFingerprintReader)
+    Q_ENUMS(Direction)
     Q_PROPERTY(QString isFingerPresent READ isFingerPresent)
     Q_PROPERTY(QString hasMainClusterIdentified READ hasMainClusterIdentified)
     Q_PROPERTY(QString suggestedNextDirection READ suggestedNextDirection)
@@ -35,6 +36,19 @@ class MockFingerprintReader : public QObject
 
 public:
     explicit MockFingerprintReader(QObject *parent = 0);
+
+    enum class Direction
+    {
+        NotAvailable,
+        SouthWest,
+        South,
+        SouthEast,
+        NorthWest,
+        North,
+        NorthEast,
+        East,
+        West
+    };
 
     Q_INVOKABLE QString isFingerPresent() const;
     Q_INVOKABLE QString hasMainClusterIdentified() const;

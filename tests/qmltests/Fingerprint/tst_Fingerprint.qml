@@ -100,7 +100,7 @@ Item {
             mouseClick(ok, ok.width / 2, ok.height / 2);
 
             // Halt testing until dialog has been destroyed.
-            tryCompareFunction(function () {
+            tryCompareFunction(function() {
                 return findChild(fingerprintPage, "fingerprintReaderBrokenDialog");
             }, null);
         }
@@ -186,7 +186,7 @@ Item {
 
             // Wait for dialog destruction (which is required for other tests)
             // to function.
-            tryCompareFunction(function () {
+            tryCompareFunction(function() {
                 return findChild(testRoot, "fingerprintRemoveAllDialog");
             }, null);
         }
@@ -202,7 +202,7 @@ Item {
 
             // Wait for dialog destruction (which is required for other tests)
             // to function.
-            tryCompareFunction(function () {
+            tryCompareFunction(function() {
                 return findChild(fingerprintPage, "fingerprintReaderBrokenDialog");
             }, null);
         }
@@ -214,7 +214,7 @@ Item {
             enrollmentObserver.mockEnroll("");
             enrollmentSucceededSpy.wait();
 
-            tryCompareFunction(function () {
+            tryCompareFunction(function() {
                 return fingerprintPage.storedFingerprints
             }, 1);
         }

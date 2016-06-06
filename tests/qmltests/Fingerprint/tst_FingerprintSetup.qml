@@ -68,7 +68,7 @@ Item {
         name: "SetupUI"
         when: windowShown
 
-        function init () {
+        function init() {
             Biometryd.setAvailable(true);
             pageStack.push(fingerprintPage);
 
@@ -79,79 +79,91 @@ Item {
 
         }
 
-        function cleanup () {
+        function cleanup() {
             // Pop fingerprint and setup pages.
             pageStack.pop();
             pageStack.pop();
             statusLabelSpy.clear();
         }
 
-        function getStatusLabel () {
+        function getStatusLabel() {
             return findChild(getSetupPage(), "fingerprintStatusLabel");
         }
 
-        function getSetupPage () {
+        function getSetupPage() {
             return findChild(pageStack, "fingerprintSetupPage");
         }
 
-        function getFingerprintPage () {
+        function getFingerprintPage() {
             return findChild(testRoot, "fingerprintPage");
         }
 
-        function getEnrollmentObserver () {
+        function getEnrollmentObserver() {
             return findInvisibleChild(getFingerprintPage(), "enrollmentObserver");
         }
 
-        function getFailedVisual () {
+        function getFailedVisual() {
             return findChild(getSetupPage(), "fingerprintFailedVisual");
         }
 
-        function getDefaultVisual () {
+        function getDefaultVisual() {
             return findChild(getSetupPage(), "fingerprintDefaultVisual");
         }
 
-        function getDoneVisual () {
+        function getDoneVisual() {
             return findChild(getSetupPage(), "fingerprintDoneVisual");
         }
 
-        function test_initialState () {
+        function getDirectionEl() {
+            return findChild(getSetupPage(), "fingerprintDirection");
+        }
+
+        function getDirectionVisual() {
+            return findChild(getSetupPage(), "fingerprintDirectionVisual");
+        }
+
+        function test_initialState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.");
             compare(getStatusLabel().text, targetText);
 
             verify(getDefaultVisual().visible);
             verify(!getFailedVisual().visible);
             verify(!getDoneVisual().visible);
+            verify(!getDirectionEl().visible);
         }
 
-        function test_startedState () {
+        function test_startedState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.");
             getEnrollmentObserver().mockEnrollProgress(0.5, {});
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
             verify(getDefaultVisual().visible);
+            verify(getDirectionEl().visible);
             verify(!getFailedVisual().visible);
             verify(!getDoneVisual().visible);
         }
 
-        function test_failedStatus () {
+        function test_failedStatus() {
             var targetText = i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.");
             getEnrollmentObserver().mockEnroll("test failure");
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
             verify(!getDefaultVisual().visible);
+            verify(!getDirectionEl().visible);
             verify(getFailedVisual().visible);
             verify(!getDoneVisual().visible);
         }
 
-        function test_successfulState () {
+        function test_successfulState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
             getEnrollmentObserver().mockEnroll("");
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
             verify(!getDefaultVisual().visible);
+            verify(!getDirectionEl().visible);
             verify(!getFailedVisual().visible);
             verify(getDoneVisual().visible);
         }
@@ -165,7 +177,6 @@ Item {
             var button = findChild(pageStack, "fingerprintSetupDoneButton");
             getEnrollmentObserver().mockEnroll("");
             compare(button.enabled, true, "button was disabled when done");
-            wait(3000)
         }
 
         function test_statusLabel() {
@@ -174,7 +185,7 @@ Item {
             compare(getStatusLabel().text, "foo");
         }
 
-        function test_fingerPresent () {
+        function test_fingerPresent() {
             var eobs = getEnrollmentObserver();
             var up = findChild(getSetupPage(), "fingerprintUpVisual");
             var down = findChild(getSetupPage(), "fingerprintDownVisual");
@@ -193,6 +204,38 @@ Item {
             enrollmentObserverProgressedSpy.wait();
             verify(!up.visible);
             verify(down.visible);
+        }
+
+        function test_direction_data() {
+            // List of
+            return [
+                { tag: "empty", visual: { visible: false, rotation: 0 }},
+                { tag: "not available", dir: FingerprintReader.NotAvailable, visual: { visible: false, rotation: 0 }},
+                { tag: "SouthWest", dir: FingerprintReader.SouthWest, visual: { visible: true, rotation: 225 }},
+                { tag: "South", dir: FingerprintReader.South, visual: { visible: true, rotation: 180 }},
+                { tag: "SouthEast", dir: FingerprintReader.SouthEast, visual: { visible: true, rotation: 135 }},
+                { tag: "NorthWest", dir: FingerprintReader.NorthWest, visual: { visible: true, rotation: 315 }},
+                { tag: "North", dir: FingerprintReader.North, visual: { visible: true, rotation: 0 }},
+                { tag: "NorthEast", dir: FingerprintReader.NorthEast, visual: { visible: true, rotation: 45 }},
+                { tag: "East", dir: FingerprintReader.East, visual: { visible: true, rotation: 90 }},
+                { tag: "West", dir: FingerprintReader.West, visual: { visible: true, rotation: 270 }}
+            ]
+        }
+
+        function test_direction(data) {
+            var eobs = getEnrollmentObserver();
+            var vis = getDirectionVisual();
+
+            var hints = {};
+            hints[FingerprintReader.suggestedNextDirection] = data.dir;
+
+            enrollmentObserverProgressedSpy.target = eobs;
+            eobs.mockEnrollProgress(0.5, hints);
+            enrollmentObserverProgressedSpy.wait();
+
+            tryCompare(vis, "opacity", data.visual.visible ? 1 : 0)
+            compare(vis.opacity, data.visual.visible ? 1 : 0);
+            compare(vis.rotation, data.visual.rotation);
         }
     }
 }

@@ -48,6 +48,7 @@ Page {
         imageDefault.masks = hints[FingerprintReader.masks];
         statusLabel.setText(i18n.dtr("ubuntu-settings-components",
                             "Lift and press your finger again."));
+        directionVisual.direction = hints[FingerprintReader.suggestedNextDirection] || FingerprintReader.NotAvailable;
     }
 
     states: [
@@ -65,7 +66,10 @@ Page {
                              "Lift and press your finger again.")
                 )
             }
-
+            PropertyChanges {
+                target: directionItem
+                visible: true
+            }
         },
         State {
             name: "longer"
@@ -74,6 +78,10 @@ Page {
                     i18n.dtr("ubuntu-settings-components",
                              "Keep your finger on the button for longer.")
                 )
+            }
+            PropertyChanges {
+                target: directionItem
+                visible: true
             }
         },
         State {
@@ -125,6 +133,9 @@ Page {
                 enabled: true
                 text: i18n.dtr("ubuntu-settings-components", "OK")
             }
+            StateChangeScript {
+                script: imageDone.start()
+            }
         }
     ]
 
@@ -134,6 +145,80 @@ Page {
 
     Item {
         anchors.fill: parent
+
+        Item {
+            id: directionItem
+            objectName: "fingerprintDirection"
+            visible: false
+            anchors {
+                horizontalCenter: readerPositioner.horizontalCenter
+                bottom: readerPositioner.top
+            }
+
+            Label {
+                anchors {
+                    bottom: directionVisual.top
+                    bottomMargin: units.gu(2)
+                    horizontalCenter: parent.horizontalCenter
+                }
+                opacity: (directionVisual.opacity === 1) ? 1 : 0
+                horizontalAlignment: Text.AlignHCenter
+                text: i18n.dtr("ubuntu-settings-components", "Suggested direction of finger placement")
+                fontSize: "small"
+                color: theme.palette.normal.backgroundSecondaryText
+
+                Behavior on opacity { UbuntuNumberAnimation {} }
+            }
+
+            Item {
+                id: directionVisual
+                objectName: "fingerprintDirectionVisual"
+                property int direction: FingerprintReader.NotAvailable
+
+                anchors {
+                    bottom: parent.bottom
+                    bottomMargin: units.gu(2)
+                    horizontalCenter: parent.horizontalCenter
+                }
+                width: units.gu(5)
+                height: width
+                opacity: (direction !== undefined &&
+                          direction !== FingerprintReader.NotAvailable) ?
+                          1 : 0
+
+                Behavior on rotation { UbuntuNumberAnimation {} }
+                Behavior on opacity { UbuntuNumberAnimation {} }
+
+                rotation: {
+                    switch (direction) {
+                    case FingerprintReader.SouthWest:
+                        return 225;
+                    case FingerprintReader.South:
+                        return 180;
+                    case FingerprintReader.SouthEast:
+                        return 135;
+                    case FingerprintReader.NorthWest:
+                        return 315;
+                    case FingerprintReader.North:
+                        return 0;
+                    case FingerprintReader.NorthEast:
+                        return 45;
+                    case FingerprintReader.East:
+                        return 90;
+                    case FingerprintReader.West:
+                        return 270;
+                    default:
+                        return 0;
+                    }
+                }
+
+                Icon {
+                    name: "up"
+                    anchors.fill: parent
+                    color: theme.palette.normal.backgroundSecondaryText
+                }
+            }
+        }
 
         Item {
             id: readerPositioner
@@ -205,13 +290,24 @@ Page {
                         visible: false
                         width: units.gu(18)
                         anchors.centerIn: parent
+
+                        function start () {
+                            angstopAnim.start();
+                            thickAnim.start();
+                        }
+
                         NumberAnimation on angleStop {
+                            id: angstopAnim
+                            running: false
                             from: 0
                             to: 360
                             duration: UbuntuAnimation.SlowDuration
                             easing: UbuntuAnimation.StandardEasing
                         }
+
                         NumberAnimation on thickness {
+                            id: thickAnim
+                            running: false
                             from: 0
                             to: units.dp(3)
                             duration: UbuntuAnimation.SlowDuration
