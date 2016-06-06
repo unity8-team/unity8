@@ -64,6 +64,7 @@ Item {
         if (wasPrompted) // stay in text field if second prompt
             passwordInput.focus = true;
         wasPrompted = true;
+        passwordInput.forceActiveFocus();
     }
 
     function showError() {
