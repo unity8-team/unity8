@@ -72,8 +72,10 @@ Item {
         onStoreClicked: root.storeClicked();
         z: 1
     }
+
     Autoscroller {
         id: autoscroller
+    	objectName: "scopesListFlickable"
 
         anchors {
             bottom: parent.bottom
