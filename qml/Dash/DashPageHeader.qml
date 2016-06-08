@@ -79,8 +79,7 @@ Item {
     }
 
     function closePopup(keepFocus, keepSearch) {
-        if (!extraPanel) return;
-        if (extraPanel.visible) {
+        if (extraPanel && extraPanel.visible) {
             extraPanel.visible = false;
         } else if (!keepFocus) {
             unfocus(keepSearch);
