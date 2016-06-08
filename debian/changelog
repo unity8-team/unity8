@@ -1,3 +1,48 @@
+unity8 (8.12+16.10.20160608-0ubuntu1) yakkety; urgency=medium
+
+  * Remove DirectionalDragArea and libs/UbuntuGestures and port to SDK
+    equivalents
+  * Resolve cardArtStyle on compile time
+  * Concierge mode generated code optimization
+  * Change the art back to the cardData value if it changes from broken
+    to valid image (LP: #1533577)
+  * Remove  workaround not needed anymore (LP: #1475643)
+  * Don't use context properties but properties of the delegates
+  * Activate on click for SimpleMessages (LP: #1421696)
+  * Hide the preview review input field when a rating is required (LP:
+    #1541971)
+  * WindowInputMonitor - also map Qt::Key_HomePage to our home key
+  * Wrap primaryFilter in a flickable to make it behave nicely. (LP:
+    #1569492)
+  * With a maximized window, "dragging" the panel down should restore it
+  * Use new setTimeZone method to set user-friendly timezone name in the
+    wizard. (LP: #1566295)
+  * reenable or drop disabled tests
+  * Make some AP code faster
+  * Set the theme earlier (LP: #1574048)
+  * Add override
+  * Implement maximizing windows horizontally/vertically
+  * First snap decision should always be expanded, unless user decides
+    otherwise (LP: #1575045, #1580090)
+  * Close the PageHeaderExtraPanel when a filter option is selected (LP:
+    #1569498)
+  * Make unity8 and unity8-dash handle termination signals
+  * Remove the background dimming when the launcher is revealed by a
+    drag (LP: #1575137)
+  * plugins/Cursor: properly register to the screen's QPlatformCursor
+    when screen changes (LP: #1579742)
+  * Listen to contentItem::widthChanged instead of
+    Flickable::contentWidthChanged (LP: #1565763)
+  * Make tests a bit more stable
+  * Lock the session when putting the laptop into sleep (LP: #1581063)
+  * Support animated cursors
+  * Use PageHeader instead Ambiance's PageHeadStyle
+  * Change some dash button colors from orange to green. (LP: #1581047)
+  * Fix DragHandle so it works in all directions
+  * Fullscreen notification bug fixes (LP: #1422711, #1581498, #1583944)
+
+ -- Robert Bruce Park <robert.park@canonical.com>  Wed, 08 Jun 2016 17:51:19 +0000
+
 unity8 (8.12+16.10.20160527-0ubuntu1) yakkety; urgency=medium
 
   [ Albert Astals Cid ]
