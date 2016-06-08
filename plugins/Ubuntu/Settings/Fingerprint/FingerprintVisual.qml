@@ -52,4 +52,19 @@ SegmentedImage {
 
     textureSource: "qrc:/assets/fingerprint_segmented.png"
     boxesSource: "qrc:/assets/fingerprint_boxes.json"
+
+    Repeater {
+        model: segmentedImage.masks
+
+        Rectangle {
+            color: "red"
+            opacity: 0.25
+            x: modelData.x * segmentedImage.implicitWidth
+            y: modelData.y * segmentedImage.implicitHeight
+            width: modelData.width * segmentedImage.implicitWidth
+            height: modelData.height * segmentedImage.implicitHeight
+
+            Component.onCompleted: console.log('Scanner mask (x, y, w, h):', x, y, width, height)
+        }
+    }
 }
