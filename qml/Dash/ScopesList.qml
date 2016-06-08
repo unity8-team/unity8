@@ -75,7 +75,7 @@ Item {
 
     Autoscroller {
         id: autoscroller
-    	objectName: "scopesListFlickable"
+        objectName: "scopesListFlickable"
 
         anchors {
             bottom: parent.bottom
