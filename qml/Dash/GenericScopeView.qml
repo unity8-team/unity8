@@ -349,7 +349,7 @@ FocusScope {
                         } else {
                             // Should be ubuntu store icon
                             cardTool.artShapeStyle = "flat";
-                            if (cardTool.categoryLayout == "grid") {
+                            if (categoryId == "store") {
                                 item.backgroundShapeStyle = "shadow";
                             }
                         }
