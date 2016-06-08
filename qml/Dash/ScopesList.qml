@@ -75,16 +75,16 @@ Item {
 
     Autoscroller {
         id: autoscroller
-        objectName: "scopesListFlickable"
+        objectName: "scopesListAutoscroller"
 
         anchors {
+            top: header.bottom
             bottom: parent.bottom
             left: parent.left
             right: parent.right
-            top: header.bottom
         }
 
-        enabled: root.state == "edit"
+        enabled: root.state === "edit"
         flickable: flickable
 
         Flickable {
@@ -117,7 +117,7 @@ Item {
                                 else return name;
                             }
 
-                            editMode: root.state == "edit"
+                            editMode: root.state === "edit"
 
                             scopeStyle: root.scopeStyle
                             isFavoritesFeed: categoryId == "favorites"

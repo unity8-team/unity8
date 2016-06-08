@@ -43,16 +43,16 @@ Item {
      */
     function stepSize() {
         if (!root.variableVelocity) return root.maximumStep;
-        var delta;
         var step;
         if (!progressiveScrollingTimer.scrollPositiveDirection) {
+            var delta;
             delta = d.relevantMouseAxis - d.lowerLimit;
             delta = delta / root.areaLength;
-            step = Math.abs(delta * root.maximumStep);
+            step = Math.abs(delta) * root.maximumStep;
         } else {
             delta = d.relevantMouseAxis - d.upperLimit;
-            delta = delta / root.areaLength
-            step = Math.abs(delta * root.maximumStep)
+            delta = delta / root.areaLength;
+            step = Math.abs(delta) * root.maximumStep;
         }
 
         return step;
@@ -120,7 +120,7 @@ Item {
     }
 
     property alias animationProperty: d.relevantContentAxis
-    Behavior on animationProperty { UbuntuNumberAnimation{}  }
+    Behavior on animationProperty { UbuntuNumberAnimation{} }
 
     Binding {
         target: root.flickable
@@ -146,8 +146,6 @@ Item {
         } else {
             stopScrolling();
         }
-
-        //mouse.accepted = root.enabled
     }
 
     Mouse.onReleased: {
