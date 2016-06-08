@@ -25,7 +25,7 @@ Item {
     property bool variableVelocity: true
     property int delay: 2 // ms delay between scrolls
     property real areaLength: units.gu(5)
-    property real maxStep: units.dp(2)
+    property real maximumStep: units.dp(2)
     property Flickable flickable
 
     function startScrolling(positiveDirection) {
@@ -42,17 +42,17 @@ Item {
      * is to the upper/lower limit
      */
     function stepSize() {
-        if (!root.variableVelocity) return root.maxStep;
+        if (!root.variableVelocity) return root.maximumStep;
         var delta;
         var step;
         if (!progressiveScrollingTimer.scrollPositiveDirection) {
             delta = d.relevantMouseAxis - d.lowerLimit;
             delta = delta / root.areaLength;
-            step = Math.abs(delta * root.maxStep);
+            step = Math.abs(delta * root.maximumStep);
         } else {
             delta = d.relevantMouseAxis - d.upperLimit;
             delta = delta / root.areaLength
-            step = Math.abs(delta * root.maxStep)
+            step = Math.abs(delta * root.maximumStep)
         }
 
         return step;
