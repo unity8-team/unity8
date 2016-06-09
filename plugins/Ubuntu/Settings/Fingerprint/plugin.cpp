@@ -19,7 +19,17 @@
 
 #include <QtQml/qqml.h>
 
+static QObject* fp_singletonprovider(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    return new UbuntuSettingsFingerprint;
+}
+
 void UbuntuSettingsFingerprintPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<UbuntuSettingsFingerprint>(uri, 0, 1, "UbuntuSettingsFingerprint");
+    qmlRegisterSingletonType<UbuntuSettingsFingerprint>(
+        uri, 0, 1, "UbuntuSettingsFingerprint", fp_singletonprovider
+    );
 }

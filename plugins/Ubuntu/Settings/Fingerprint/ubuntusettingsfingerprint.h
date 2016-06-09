@@ -25,10 +25,13 @@ class UbuntuSettingsFingerprint : public QObject
 {
     Q_OBJECT
 public:
-    explicit UbuntuSettingsFingerprint(QObject* parent = nullptr);
+    explicit UbuntuSettingsFingerprint(QObject* parent = 0);
 
     Q_PROPERTY(qlonglong uid READ uid CONSTANT)
+    Q_PROPERTY(bool debug READ debug CONSTANT)
+
     qlonglong uid() const;
+    bool debug() const;
 };
 
 #endif // UBUNTUSETTINGSFINGERPRINT_H

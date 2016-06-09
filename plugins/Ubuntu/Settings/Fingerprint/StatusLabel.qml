@@ -57,7 +57,8 @@ Item {
         id: outAnim
 
         alwaysRunToEnd: true
-        duration: UbuntuAnimation.SlowDuration
+        duration: UbuntuAnimation.FastDuration
+        easing: UbuntuAnimation.StandardEasing
         onStarted: root.slideStarted()
         property: "x"
         target: label
@@ -68,7 +69,8 @@ Item {
         id: inAnim
 
         alwaysRunToEnd: true
-        duration: UbuntuAnimation.SlowDuration
+        duration: UbuntuAnimation.FastDuration
+        easing: UbuntuAnimation.StandardEasing
         onStopped: root.slideCompleted()
         property: "x"
         target: label

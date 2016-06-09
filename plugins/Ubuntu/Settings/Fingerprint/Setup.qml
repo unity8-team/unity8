@@ -41,14 +41,13 @@ Page {
 
     function enrollmentProgressed(progress, hints) {
         var fingerPresent = !!hints[FingerprintReader.isFingerPresent];
-        shapeDown.visible = fingerPresent;
-        shapeUp.visible = !fingerPresent;
+        // shapeDown.visible = fingerPresent;
+        // shapeUp.visible = !fingerPresent;
 
         root.state = "reading";
         imageDefault.masks = hints[FingerprintReader.masks];
-        statusLabel.setText(i18n.dtr("ubuntu-settings-components",
-                            "Lift and press your finger again."));
-        directionVisual.direction = hints[FingerprintReader.suggestedNextDirection] || FingerprintReader.NotAvailable;
+        progressLabel.progress = 100 * progress;
+        directionContainer.direction = hints[FingerprintReader.suggestedNextDirection] || FingerprintReader.NotAvailable;
     }
 
     states: [
@@ -67,8 +66,12 @@ Page {
                 )
             }
             PropertyChanges {
-                target: directionItem
+                target: directionContainer
                 visible: true
+            }
+            PropertyChanges {
+                target: progressLabel
+                opacity: 1
             }
         },
         State {
@@ -76,11 +79,11 @@ Page {
             StateChangeScript {
                 script: statusLabel.setText(
                     i18n.dtr("ubuntu-settings-components",
-                             "Keep your finger on the button for longer.")
+                             "Keep your finger on the reader for longer.")
                 )
             }
             PropertyChanges {
-                target: directionItem
+                target: directionContainer
                 visible: true
             }
         },
@@ -147,179 +150,147 @@ Page {
         anchors.fill: parent
 
         Item {
-            id: directionItem
-            objectName: "fingerprintDirection"
-            visible: false
-            anchors {
-                horizontalCenter: readerPositioner.horizontalCenter
-                bottom: readerPositioner.top
-            }
+            id: fingerprintBox
+            anchors.centerIn: parent
+            width: units.gu(26)
+            height: units.gu(29)
 
-            Label {
-                anchors {
-                    bottom: directionVisual.top
-                    bottomMargin: units.gu(2)
-                    horizontalCenter: parent.horizontalCenter
-                }
-                opacity: (directionVisual.opacity === 1) ? 1 : 0
-                horizontalAlignment: Text.AlignHCenter
-                text: i18n.dtr("ubuntu-settings-components", "Suggested direction of finger placement")
-                fontSize: "small"
-                color: theme.palette.normal.backgroundSecondaryText
+            // BorderImage {
+            //     id: shapeDown
+            //     objectName: "fingerprintDownVisual"
+            //     visible: false
+            //     anchors.fill: parent
+            //     source: "qrc:/assets/shape-down.sci"
+            // }
 
-                Behavior on opacity { UbuntuNumberAnimation {} }
-            }
+            // BorderImage {
+            //     id: shapeUp
+            //     objectName: "fingerprintUpVisual"
+            //     anchors {
+            //         fill: parent
+            //         margins: units.gu(0.4)
+            //     }
+            //     source: "qrc:/assets/shape-up.sci"
+            // }
 
             Item {
-                id: directionVisual
-                objectName: "fingerprintDirectionVisual"
-                property int direction: FingerprintReader.NotAvailable
+                id: imageContainer
+                anchors.centerIn: parent
+                width: imageDefault.implicitWidth
+                height: imageDefault.implicitHeight
 
-                anchors {
-                    bottom: parent.bottom
-                    bottomMargin: units.gu(2)
-                    horizontalCenter: parent.horizontalCenter
-                }
-                width: units.gu(5)
-                height: width
-                opacity: (direction !== undefined &&
-                          direction !== FingerprintReader.NotAvailable) ?
-                          1 : 0
-
-                Behavior on rotation { UbuntuNumberAnimation {} }
-                Behavior on opacity { UbuntuNumberAnimation {} }
-
-                rotation: {
-                    switch (direction) {
-                    case FingerprintReader.SouthWest:
-                        return 225;
-                    case FingerprintReader.South:
-                        return 180;
-                    case FingerprintReader.SouthEast:
-                        return 135;
-                    case FingerprintReader.NorthWest:
-                        return 315;
-                    case FingerprintReader.North:
-                        return 0;
-                    case FingerprintReader.NorthEast:
-                        return 45;
-                    case FingerprintReader.East:
-                        return 90;
-                    case FingerprintReader.West:
-                        return 270;
-                    default:
-                        return 0;
-                    }
+                // Default image.
+                FingerprintVisual {
+                    id: imageDefault
+                    objectName: "fingerprintDefaultVisual"
+                    anchors.centerIn: parent
                 }
 
-                Icon {
-                    name: "up"
+                // Failed image.
+                Image {
+                    id: imageFailed
+                    objectName: "fingerprintFailedVisual"
                     anchors.fill: parent
-                    color: theme.palette.normal.backgroundSecondaryText
-                }
-            }
-        }
-
-        Item {
-            id: readerPositioner
-
-            anchors {
-                bottom: actions.top
-                bottomMargin: units.gu(25.5)
-                left: parent.left
-                leftMargin: units.gu(12)
-                right: parent.right
-                rightMargin: units.gu(12)
-                top: parent.top
-                topMargin: units.gu(27.5)
-            }
-
-            Item {
-                width: units.gu(26)
-                height: units.gu(29)
-
-                BorderImage {
-                    id: shapeDown
-                    objectName: "fingerprintDownVisual"
+                    asynchronous: true
+                    fillMode: Image.Pad
+                    sourceSize.width: parent.width
+                    sourceSize.height: parent.height
+                    source: "qrc:/assets/fingerprint_failed.svg"
                     visible: false
-                    anchors.fill: parent
-                    source: "qrc:/assets/shape-down.sci"
                 }
 
-                BorderImage {
-                    id: shapeUp
-                    objectName: "fingerprintUpVisual"
-                    anchors {
-                        fill: parent
-                        margins: units.gu(0.4)
+                // Done image.
+                CircularSegment {
+                    id: imageDone
+                    objectName: "fingerprintDoneVisual"
+                    visible: false
+                    width: units.gu(18)
+                    anchors.centerIn: parent
+
+                    function start () {
+                        angstopAnim.start();
+                        thickAnim.start();
                     }
-                    source: "qrc:/assets/shape-up.sci"
+
+                    NumberAnimation on angleStop {
+                        id: angstopAnim
+                        running: false
+                        from: 0
+                        to: 360
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+
+                    NumberAnimation on thickness {
+                        id: thickAnim
+                        running: false
+                        from: 0
+                        to: units.dp(3)
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+
+                    Icon {
+                        name: "tick"
+                        color: "#3EB34F"
+                        width: units.gu(13)
+                        anchors.centerIn: parent
+                    }
                 }
 
                 Item {
-                    id: imageContainer
+                    id: directionContainer
+                    objectName: "fingerprintDirectionVisual"
+                    property int direction: FingerprintReader.NotAvailable
+
                     anchors.centerIn: parent
-                    width: imageDefault.implicitWidth
-                    height: imageDefault.implicitHeight
 
+                    width: Math.sqrt(
+                        imageContainer.width*imageContainer.width
+                        + imageContainer.height*imageContainer.height
+                    )
+                    height: width
+                    visible: false
+                    opacity: direction !== FingerprintReader.NotAvailable ? 1 : 0
+                    Behavior on opacity { UbuntuNumberAnimation {} }
+                    Behavior on rotation { UbuntuNumberAnimation {} }
 
-                    // Default image.
-                    FingerprintVisual {
-                        id: imageDefault
-                        objectName: "fingerprintDefaultVisual"
-                        anchors.centerIn: parent
+                    rotation: {
+                        switch (direction) {
+                        case FingerprintReader.North:
+                            return 0
+                        case FingerprintReader.NorthEast:
+                            return 45
+                        case FingerprintReader.East:
+                            return 90
+                        case FingerprintReader.SouthEast:
+                            return 135
+                        case FingerprintReader.South:
+                            return 180
+                        case FingerprintReader.SouthWest:
+                            return 225
+                        case FingerprintReader.West:
+                            return 270
+                        case FingerprintReader.NorthWest:
+                            return 315
+                        default:
+                            return 0;
+                        }
                     }
 
-                    // Failed image.
-                    Image {
-                        id: imageFailed
-                        objectName: "fingerprintFailedVisual"
-                        anchors.fill: parent
-                        asynchronous: true
-                        fillMode: Image.Pad
-                        sourceSize.width: parent.width
-                        sourceSize.height: parent.height
-                        source: "qrc:/assets/fingerprint_failed.svg"
-                        visible: false
-                    }
-
-                    // Done image.
-                    CircularSegment {
-                        id: imageDone
-                        objectName: "fingerprintDoneVisual"
-                        visible: false
-                        width: units.gu(18)
-                        anchors.centerIn: parent
-
-                        function start () {
-                            angstopAnim.start();
-                            thickAnim.start();
+                    Icon {
+                        id: directionArrow
+                        objectName: "fingerprintDirectionLabel"
+                        anchors {
+                            top: parent.top
+                            topMargin: -units.gu(2)
+                            horizontalCenter: parent.horizontalCenter
                         }
+                        width: units.gu(5)
+                        height: width
 
-                        NumberAnimation on angleStop {
-                            id: angstopAnim
-                            running: false
-                            from: 0
-                            to: 360
-                            duration: UbuntuAnimation.SlowDuration
-                            easing: UbuntuAnimation.StandardEasing
-                        }
-
-                        NumberAnimation on thickness {
-                            id: thickAnim
-                            running: false
-                            from: 0
-                            to: units.dp(3)
-                            duration: UbuntuAnimation.SlowDuration
-                            easing: UbuntuAnimation.StandardEasing
-                        }
-
-                        Icon {
-                            name: "tick"
-                            color: "#3EB34F"
-                            width: units.gu(13)
-                            anchors.centerIn: parent
-                        }
+                        name: "down"
+                        color: theme.palette.normal.activity
                     }
                 }
             }
@@ -333,11 +304,36 @@ Page {
                 right: parent.right
                 rightMargin: units.gu(2.9)
                 top: parent.top
-                topMargin: units.gu(4.9)
+                topMargin: units.gu(5)
             }
             initialText: i18n.dtr("ubuntu-settings-components",
                                   "Place your finger on the home button.")
             objectName: "fingerprintStatusLabel"
+        }
+
+
+        Label {
+            id: progressLabel
+            objectName: "fingerprintProgressLabel"
+            property int progress: 0
+            anchors {
+                top: fingerprintBox.bottom
+                topMargin: units.gu(1.5)
+                horizontalCenter: parent.horizontalCenter
+            }
+            text: i18n.dtr("ubuntu-settings-components", "%1%").arg((progress).toFixed());
+            opacity: 0
+            horizontalAlignment: Text.AlignHCenter
+            fontSize: "large"
+            color: theme.palette.normal.backgroundTertiaryText
+
+            Behavior on opacity { UbuntuNumberAnimation {} }
+            Behavior on progress {
+                NumberAnimation {
+                    duration: UbuntuAnimation.SlowDuration
+                    easing: UbuntuAnimation.StandardEasing
+                }
+            }
         }
 
         Rectangle {
@@ -348,8 +344,10 @@ Page {
                 right: parent.right
                 bottom: parent.bottom
             }
-            color: "#FFF7F7F7"
-            height: units.gu(4.9)
+
+            // Color and height values are copied from the Wizard.
+            color: "#f5f5f5"
+            height: units.gu(5)
 
             AbstractButton {
                 id: cancelButton

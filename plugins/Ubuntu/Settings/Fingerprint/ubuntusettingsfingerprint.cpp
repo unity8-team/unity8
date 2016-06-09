@@ -17,6 +17,7 @@
  */
 #include <unistd.h>
 #include <sys/types.h>
+#include <QProcessEnvironment>
 
 #include "ubuntusettingsfingerprint.h"
 
@@ -28,4 +29,11 @@ UbuntuSettingsFingerprint::UbuntuSettingsFingerprint(QObject* parent)
 qlonglong UbuntuSettingsFingerprint::uid() const
 {
     return qlonglong(getuid());
+}
+
+bool UbuntuSettingsFingerprint::debug() const
+{
+    return QProcessEnvironment::systemEnvironment().contains(
+        QLatin1String("USC_FINGERPRINT_DEBUG")
+    );
 }

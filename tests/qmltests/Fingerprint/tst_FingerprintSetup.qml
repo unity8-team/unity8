@@ -72,7 +72,7 @@ Item {
             Biometryd.setAvailable(true);
             pageStack.push(fingerprintPage);
 
-            var setupButton = findChild(pageStack, "fingerprintAddFingerprintButton");
+            var setupButton = findChild(pageStack, "fingerprintAddListItemLayout");
             mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
 
             statusLabelSpy.target = getStatusLabel();
@@ -114,12 +114,8 @@ Item {
             return findChild(getSetupPage(), "fingerprintDoneVisual");
         }
 
-        function getDirectionEl() {
-            return findChild(getSetupPage(), "fingerprintDirection");
-        }
-
-        function getDirectionVisual() {
-            return findChild(getSetupPage(), "fingerprintDirectionVisual");
+        function getProgressLabel() {
+            return findChild(getSetupPage(), "fingerprintProgressLabel");
         }
 
         function test_initialState() {
@@ -129,7 +125,6 @@ Item {
             verify(getDefaultVisual().visible);
             verify(!getFailedVisual().visible);
             verify(!getDoneVisual().visible);
-            verify(!getDirectionEl().visible);
         }
 
         function test_startedState() {
@@ -139,7 +134,6 @@ Item {
             compare(getStatusLabel().text, targetText);
 
             verify(getDefaultVisual().visible);
-            verify(getDirectionEl().visible);
             verify(!getFailedVisual().visible);
             verify(!getDoneVisual().visible);
         }
@@ -151,7 +145,6 @@ Item {
             compare(getStatusLabel().text, targetText);
 
             verify(!getDefaultVisual().visible);
-            verify(!getDirectionEl().visible);
             verify(getFailedVisual().visible);
             verify(!getDoneVisual().visible);
         }
@@ -163,7 +156,6 @@ Item {
             compare(getStatusLabel().text, targetText);
 
             verify(!getDefaultVisual().visible);
-            verify(!getDirectionEl().visible);
             verify(!getFailedVisual().visible);
             verify(getDoneVisual().visible);
         }
@@ -185,29 +177,28 @@ Item {
             compare(getStatusLabel().text, "foo");
         }
 
-        function test_fingerPresent() {
-            var eobs = getEnrollmentObserver();
-            var up = findChild(getSetupPage(), "fingerprintUpVisual");
-            var down = findChild(getSetupPage(), "fingerprintDownVisual");
-            enrollmentObserverProgressedSpy.target = eobs;
+        // function test_fingerPresent() {
+        //     var eobs = getEnrollmentObserver();
+        //     var up = findChild(getSetupPage(), "fingerprintUpVisual");
+        //     var down = findChild(getSetupPage(), "fingerprintDownVisual");
+        //     enrollmentObserverProgressedSpy.target = eobs;
 
-            eobs.mockEnrollProgress(0.5, {
-                isFingerPresent: false
-            });
-            enrollmentObserverProgressedSpy.wait();
-            verify(up.visible);
-            verify(!down.visible);
+        //     eobs.mockEnrollProgress(0.5, {
+        //         isFingerPresent: false
+        //     });
+        //     enrollmentObserverProgressedSpy.wait();
+        //     // verify(up.visible);
+        //     // verify(!down.visible);
 
-            eobs.mockEnrollProgress(0.5, {
-                isFingerPresent: true
-            });
-            enrollmentObserverProgressedSpy.wait();
-            verify(!up.visible);
-            verify(down.visible);
-        }
+        //     eobs.mockEnrollProgress(0.5, {
+        //         isFingerPresent: true
+        //     });
+        //     enrollmentObserverProgressedSpy.wait();
+        //     // verify(!up.visible);
+        //     // verify(down.visible);
+        // }
 
         function test_direction_data() {
-            // List of
             return [
                 { tag: "empty", visual: { visible: false, rotation: 0 }},
                 { tag: "not available", dir: FingerprintReader.NotAvailable, visual: { visible: false, rotation: 0 }},
@@ -224,7 +215,7 @@ Item {
 
         function test_direction(data) {
             var eobs = getEnrollmentObserver();
-            var vis = getDirectionVisual();
+            var vis = findChild(getSetupPage(), "fingerprintDirectionVisual");
 
             var hints = {};
             hints[FingerprintReader.suggestedNextDirection] = data.dir;
@@ -236,6 +227,23 @@ Item {
             tryCompare(vis, "opacity", data.visual.visible ? 1 : 0)
             compare(vis.opacity, data.visual.visible ? 1 : 0);
             compare(vis.rotation, data.visual.rotation);
+        }
+
+        function test_progressHidden() {
+            var pl = getProgressLabel();
+            compare(pl.opacity, 0);
+        }
+
+        function test_progressVisible() {
+            var pl = getProgressLabel();
+            getEnrollmentObserver().mockEnrollProgress(0.5, {});
+            tryCompare(pl, "opacity", 1);
+            tryCompare(pl, "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(50));
+        }
+
+        function test_progressReadable() {
+            getEnrollmentObserver().mockEnrollProgress(0.6666666667, {});
+            tryCompare(getProgressLabel(), "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(66));
         }
     }
 }

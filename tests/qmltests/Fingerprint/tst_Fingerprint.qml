@@ -86,7 +86,7 @@ Item {
         function test_sizeOperation() {
             var sizeObserver = findInvisibleChild(fingerprintPage, "sizeObserver");
             sizeObserver.mockSize(100, "");
-            var sizeLabel = findChild(fingerprintPage, "fingerprintFingerprintCount");
+            var sizeLabel = findChild(fingerprintPage, "fingerprintAddListItemLayout").subtitle;
             compare(sizeLabel.text, i18n.dtr("ubuntu-settings-components", "%1 fingerprints registered.").arg(100));
         }
 
@@ -142,19 +142,19 @@ Item {
 
         function test_counting(data) {
             fingerprintPage.storedFingerprints = data.count;
-            var c = findChild(fingerprintPage, "fingerprintFingerprintCount");
+            var c = findChild(fingerprintPage, "fingerprintAddListItemLayout");
             var naturalNumber = c.getNaturalNumber(data.count);
             if (data.count > 0 && data.count < 10) {
                 compare(naturalNumber, data.natural, "natural number not as expected");
             } else {
                 compare(parseInt(naturalNumber, 10), data.count, "non-natural number not as expected");
             }
-            compare(c.text, data.natural);
+            compare(c.subtitle.text, data.natural);
         }
 
         function test_setup() {
             fingerprintPage.passcodeSet = false;
-            var add = findChild(fingerprintPage, "fingerprintAddFingerprintButton");
+            var add = findChild(fingerprintPage, "fingerprintAddListItemLayout");
             var remove = findChild(fingerprintPage, "fingerprintRemoveAllButton");
             compare(add.enabled, false, "add button enabled even though no passcode set");
             compare(remove.enabled, false, "remove button enabled even though no passcode set");
@@ -222,8 +222,8 @@ Item {
         function test_noScanner() {
             Biometryd.setAvailable(false);
             compare(fingerprintPage.state, "noScanner");
-            var addButton = findChild(fingerprintPage, "fingerprintAddFingerprintButton");
-            compare(addButton.enabled, false);
+            var addItem = findChild(fingerprintPage, "fingerprintAddListItemLayout");
+            compare(addItem.enabled, false);
             var removeButton = findChild(fingerprintPage, "fingerprintRemoveAllButton");
             compare(removeButton.enabled, false);
         }
