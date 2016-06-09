@@ -4,7 +4,6 @@ Priority: optional
 Maintainer: Andrea Cimitan <andrea.cimitan@canonical.com>
 Build-Depends: cmake,
                debhelper (>= 9),
-               libqt5svg5-dev,
                pkg-config,
                qml-module-qtquick-layouts,
                qt5-default,
