@@ -62,8 +62,10 @@ Page {
 
     Component.onCompleted: {
         // Start a size operation immediately.
-        sizeOperation = ts.size(user);
-        sizeOperation.start(sizeObserver);
+        if (Biometryd.available) {
+            sizeOperation = ts.size(user);
+            sizeOperation.start(sizeObserver);
+        }
     }
 
     Component.onDestruction: {

@@ -33,7 +33,7 @@ public:
 
     MockDevice* defaultDevice();
     bool isAvailable() const;
-    Q_INVOKABLE void setAvailable(const bool available);
+    Q_INVOKABLE void setAvailable(const bool available); // mock only
 
 Q_SIGNALS:
     void availableChanged(bool);
