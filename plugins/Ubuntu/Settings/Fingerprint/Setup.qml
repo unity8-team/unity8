@@ -66,8 +66,8 @@ Page {
                 )
             }
             PropertyChanges {
-                target: directionContainer
-                visible: true
+                target: imageDefault
+                opacity: 1
             }
             PropertyChanges {
                 target: progressLabel
@@ -82,20 +82,16 @@ Page {
                              "Keep your finger on the reader for longer.")
                 )
             }
-            PropertyChanges {
-                target: directionContainer
-                visible: true
-            }
         },
         State {
             name: "failed"
             PropertyChanges {
                 target: imageDefault
-                visible: false
+                opacity: 0
             }
             PropertyChanges {
                 target: imageFailed
-                visible: true
+                opacity: 1
             }
             PropertyChanges {
                 target: cancelButton
@@ -108,19 +104,27 @@ Page {
             StateChangeScript {
                 script: statusLabel.setText(
                     i18n.dtr("ubuntu-settings-components",
-                             "Sorry, the reader doesn’t seem to be working.")
+                             "Sorry, the reader doesn’t seem to be working."),
+                    false // No animation
                 )
+            }
+            StateChangeScript {
+                script: imageFailed.start()
+            }
+            PropertyChanges {
+                target: directionContainer
+                opacity: 0
             }
         },
         State {
             name: "done"
             PropertyChanges {
                 target: imageDefault
-                visible: false
+                opacity: 0
             }
             PropertyChanges {
                 target: imageDone
-                visible: true
+                opacity: 1
             }
             PropertyChanges {
                 target: cancelButton
@@ -128,7 +132,8 @@ Page {
             }
             StateChangeScript {
                 script: statusLabel.setText(
-                    i18n.dtr("ubuntu-settings-components", "All done!")
+                    i18n.dtr("ubuntu-settings-components", "All done!"),
+                    true // No animation
                 )
             }
             PropertyChanges {
@@ -138,6 +143,10 @@ Page {
             }
             StateChangeScript {
                 script: imageDone.start()
+            }
+            PropertyChanges {
+                target: directionContainer
+                opacity: 0
             }
         }
     ]
@@ -184,27 +193,66 @@ Page {
                     id: imageDefault
                     objectName: "fingerprintDefaultVisual"
                     anchors.centerIn: parent
+
+                    Behavior on opacity { UbuntuNumberAnimation {
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }}
                 }
 
                 // Failed image.
-                Image {
+                CircularSegment {
                     id: imageFailed
                     objectName: "fingerprintFailedVisual"
-                    anchors.fill: parent
-                    asynchronous: true
-                    fillMode: Image.Pad
-                    sourceSize.width: parent.width
-                    sourceSize.height: parent.height
-                    source: "qrc:/assets/fingerprint_failed.svg"
-                    visible: false
+                    opacity: 0
+                    color: "#ED3146"
+                    width: directionContainer.width - units.dp(3)
+
+                    anchors.centerIn: parent
+
+                    function start () {
+                        failAngstopAnim.start();
+                        failThichAnim.start();
+                    }
+
+                    NumberAnimation on angleStop {
+                        id: failAngstopAnim
+                        running: false
+                        from: 0
+                        to: 360
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+
+                    NumberAnimation on thickness {
+                        id: failThichAnim
+                        running: false
+                        from: 0
+                        to: units.dp(3)
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }
+
+                    Icon {
+                        name: "close"
+                        color: "#ED3146"
+                        width: units.gu(18)
+                        anchors.centerIn: parent
+                    }
+
+                    Behavior on opacity { UbuntuNumberAnimation {
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }}
                 }
 
                 // Done image.
                 CircularSegment {
                     id: imageDone
                     objectName: "fingerprintDoneVisual"
-                    visible: false
-                    width: units.gu(18)
+                    opacity: 0
+                    width: directionContainer.width - units.dp(3)
+
                     anchors.centerIn: parent
 
                     function start () {
@@ -233,9 +281,14 @@ Page {
                     Icon {
                         name: "tick"
                         color: "#3EB34F"
-                        width: units.gu(13)
+                        width: units.gu(18)
                         anchors.centerIn: parent
                     }
+
+                    Behavior on opacity { UbuntuNumberAnimation {
+                        duration: UbuntuAnimation.SlowDuration
+                        easing: UbuntuAnimation.StandardEasing
+                    }}
                 }
 
                 Item {
@@ -250,7 +303,6 @@ Page {
                         + imageContainer.height*imageContainer.height
                     )
                     height: width
-                    visible: false
                     opacity: direction !== FingerprintReader.NotAvailable ? 1 : 0
                     Behavior on opacity { UbuntuNumberAnimation {} }
                     Behavior on rotation { UbuntuNumberAnimation {} }

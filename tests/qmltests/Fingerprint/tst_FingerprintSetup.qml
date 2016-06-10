@@ -122,9 +122,9 @@ Item {
             var targetText = i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.");
             compare(getStatusLabel().text, targetText);
 
-            verify(getDefaultVisual().visible);
-            verify(!getFailedVisual().visible);
-            verify(!getDoneVisual().visible);
+            tryCompare(getDefaultVisual(), "opacity", 1);
+            tryCompare(getFailedVisual(), "opacity", 0);
+            tryCompare(getDoneVisual(), "opacity", 0);
         }
 
         function test_startedState() {
@@ -133,9 +133,9 @@ Item {
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
-            verify(getDefaultVisual().visible);
-            verify(!getFailedVisual().visible);
-            verify(!getDoneVisual().visible);
+            tryCompare(getDefaultVisual(), "opacity", 1);
+            tryCompare(getFailedVisual(), "opacity", 0);
+            tryCompare(getDoneVisual(), "opacity", 0);
         }
 
         function test_failedStatus() {
@@ -144,20 +144,19 @@ Item {
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
-            verify(!getDefaultVisual().visible);
-            verify(getFailedVisual().visible);
-            verify(!getDoneVisual().visible);
+            tryCompare(getDefaultVisual(), "opacity", 0);
+            tryCompare(getFailedVisual(), "opacity", 1);
+            tryCompare(getDoneVisual(), "opacity", 0);
         }
 
         function test_successfulState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
             getEnrollmentObserver().mockEnroll("");
-            statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
-            verify(!getDefaultVisual().visible);
-            verify(!getFailedVisual().visible);
-            verify(getDoneVisual().visible);
+            tryCompare(getDefaultVisual(), "opacity", 0);
+            tryCompare(getFailedVisual(), "opacity", 0);
+            tryCompare(getDoneVisual(), "opacity", 1);
         }
 
         function test_notDone() {

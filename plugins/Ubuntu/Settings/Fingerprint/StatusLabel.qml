@@ -31,7 +31,12 @@ Item {
 
     Component.onCompleted: origX = label.x
 
-    function setText(text) {
+    function setText(text, noAnimation) {
+        if (noAnimation === true) {
+            label.text = text;
+            return;
+        }
+
         function outStoppedHandler () {
             label.text = text;
             label.x = units.gu(50)
