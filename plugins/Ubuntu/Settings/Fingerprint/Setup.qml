@@ -295,7 +295,6 @@ Page {
                     id: directionContainer
                     objectName: "fingerprintDirectionVisual"
                     property int direction: FingerprintReader.NotAvailable
-
                     anchors.centerIn: parent
 
                     width: Math.sqrt(
@@ -305,29 +304,69 @@ Page {
                     height: width
                     opacity: direction !== FingerprintReader.NotAvailable ? 1 : 0
                     Behavior on opacity { UbuntuNumberAnimation {} }
-                    Behavior on rotation { UbuntuNumberAnimation {} }
 
-                    rotation: {
+                    UbuntuNumberAnimation {
+                        id: rotationAnimation
+                        alwaysRunToEnd: true
+
+                        target: directionContainer
+                        property: "rotation"
+
+                        function normalizeAngle(v) {
+                            if (v < 0)
+                                return 360 + v;
+                            else
+                                return v % 360;
+                        }
+
+                        onStopped: {
+                            directionContainer.rotation = normalizeAngle(directionContainer.rotation);
+                        }
+                    }
+
+
+                    onDirectionChanged: {
+                        var v1 = rotation;
+                        var v2;
+                        var length;
+
                         switch (direction) {
                         case FingerprintReader.North:
-                            return 0
+                            v2 = 0; break;
                         case FingerprintReader.NorthEast:
-                            return 45
+                            v2 = 45; break;
                         case FingerprintReader.East:
-                            return 90
+                            v2 = 90; break;
                         case FingerprintReader.SouthEast:
-                            return 135
+                            v2 = 135; break;
                         case FingerprintReader.South:
-                            return 180
+                            v2 = 180; break;
                         case FingerprintReader.SouthWest:
-                            return 225
+                            v2 = 225; break;
                         case FingerprintReader.West:
-                            return 270
+                            v2 = 270; break;
                         case FingerprintReader.NorthWest:
-                            return 315
-                        default:
-                            return 0;
+                            v2 = 315; break;
                         }
+                        console.log('v2', v2);
+
+                        length = Math.min(Math.abs(v1 - v2),
+                                     Math.abs(v1 - 360 - v2),
+                                     Math.abs(v1 + 360 - v2));
+
+                        if (length !== 180)
+                            length = length % 180;
+
+
+                        if (((length + v1) % 360) === v2)
+                            v1 = v1 + length;
+                        else
+                            v1 = v1 -length;
+
+                        rotationAnimation.from = rotation;
+                        rotationAnimation.to = v1;
+                        console.log('dest', v1)
+                        rotationAnimation.start();
                     }
 
                     Icon {

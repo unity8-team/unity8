@@ -341,11 +341,11 @@ Page {
             var estimatedFingerSize         = details[FingerprintReader.estimatedFingerSize]
             setupPage.enrollmentProgressed(percent, details);
 
-            console.warn("enrollmentObserver debug: isFingerPresent:",            isFingerPresent,
-                        "hasMainClusterIdentified:",   hasMainClusterIdentified,
-                        "suggestedNextDirection:",     suggestedNextDirection,
-                        "masks:",                      masks,
-                        "estimatedFingerSize",         estimatedFingerSize);
+            // console.warn("enrollmentObserver debug: isFingerPresent:",            isFingerPresent,
+            //             "hasMainClusterIdentified:",   hasMainClusterIdentified,
+            //             "suggestedNextDirection:",     suggestedNextDirection,
+            //             "masks:",                      masks,
+            //             "estimatedFingerSize",         estimatedFingerSize);
         }
         onSucceeded: {
             root.storedFingerprints = root.storedFingerprints + 1;
