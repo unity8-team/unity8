@@ -44,19 +44,16 @@ Page {
     property var setupPage: null
 
     function enroll () {
-        console.warn('debug: enroll() in Fingerprint---user:', user.uid);
         enrollmentOperation = ts.enroll(user);
         enrollmentOperation.start(enrollmentObserver);
     }
 
     function cancel () {
-        console.warn('debug: cancel() in Fingerprint')
         if (enrollmentOperation !== null)
             enrollmentOperation.cancel();
     }
 
     function remove() {
-        console.warn('debug: remove() in Fingerprint')
         clearanceOperation = ts.clear(user);
         clearanceOperation.start(clearanceObserver);
     }
@@ -323,40 +320,18 @@ Page {
     Observer {
         id: enrollmentObserver
         objectName: "enrollmentObserver"
-        onStarted: console.warn('debug: enrollmentObserver started');
         onFailed: {
             setupPage.enrollmentFailed(reason);
             enrollmentOperation = null;
             console.error("Enrollment failed", reason);
         }
-        onProgressed: {
-            // biometryd API users can use details to receive
-            // device/operation-specific information about the
-            // operation. We illustrate the case of a FingerprintReader here.
-
-            var isFingerPresent             = details[FingerprintReader.isFingerPresent]
-            var hasMainClusterIdentified    = details[FingerprintReader.hasMainClusterIdentified]
-            var suggestedNextDirection      = details[FingerprintReader.suggestedNextDirection]
-            var masks                       = details[FingerprintReader.masks]
-            var estimatedFingerSize         = details[FingerprintReader.estimatedFingerSize]
-            setupPage.enrollmentProgressed(percent, details);
-
-            // console.warn("enrollmentObserver debug: isFingerPresent:",            isFingerPresent,
-            //             "hasMainClusterIdentified:",   hasMainClusterIdentified,
-            //             "suggestedNextDirection:",     suggestedNextDirection,
-            //             "masks:",                      masks,
-            //             "estimatedFingerSize",         estimatedFingerSize);
-        }
+        onProgressed: setupPage.enrollmentProgressed(percent, details)
         onSucceeded: {
             root.storedFingerprints = root.storedFingerprints + 1;
             setupPage.enrollmentCompleted();
             enrollmentOperation = null;
-            console.warn('enrollmentObserver debug: onSucceeded');
         }
-        onCanceled: {
-            enrollmentOperation = null
-            console.warn('enrollmentObserver debug cancelled');
-        }
+        onCanceled: enrollmentOperation = null
     }
 
     Observer {

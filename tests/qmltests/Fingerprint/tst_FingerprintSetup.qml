@@ -118,162 +118,141 @@ Item {
             return findChild(getSetupPage(), "fingerprintProgressLabel");
         }
 
-        // function test_initialState() {
-        //     var targetText = i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.");
-        //     compare(getStatusLabel().text, targetText);
+        function test_initialState() {
+            var targetText = i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.");
+            compare(getStatusLabel().text, targetText);
 
-        //     tryCompare(getDefaultVisual(), "opacity", 1);
-        //     tryCompare(getFailedVisual(), "opacity", 0);
-        //     tryCompare(getDoneVisual(), "opacity", 0);
-        // }
+            tryCompare(getDefaultVisual(), "opacity", 1);
+            tryCompare(getFailedVisual(), "opacity", 0);
+            tryCompare(getDoneVisual(), "opacity", 0);
+        }
 
-        // function test_startedState() {
-        //     var targetText = i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.");
-        //     getEnrollmentObserver().mockEnrollProgress(0.5, {});
-        //     statusLabelSpy.wait();
-        //     compare(getStatusLabel().text, targetText);
+        function test_startedState() {
+            var targetText = i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.");
+            getEnrollmentObserver().mockEnrollProgress(0.5, {});
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, targetText);
 
-        //     tryCompare(getDefaultVisual(), "opacity", 1);
-        //     tryCompare(getFailedVisual(), "opacity", 0);
-        //     tryCompare(getDoneVisual(), "opacity", 0);
-        // }
+            tryCompare(getDefaultVisual(), "opacity", 1);
+            tryCompare(getFailedVisual(), "opacity", 0);
+            tryCompare(getDoneVisual(), "opacity", 0);
+        }
 
-        // function test_failedStatus() {
-        //     var targetText = i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.");
-        //     getEnrollmentObserver().mockEnroll("test failure");
-        //     statusLabelSpy.wait();
-        //     compare(getStatusLabel().text, targetText);
+        function test_failedStatus() {
+            var targetText = i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.");
+            getEnrollmentObserver().mockEnroll("test failure");
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, targetText);
 
-        //     tryCompare(getDefaultVisual(), "opacity", 0);
-        //     tryCompare(getFailedVisual(), "opacity", 1);
-        //     tryCompare(getDoneVisual(), "opacity", 0);
-        // }
+            tryCompare(getDefaultVisual(), "opacity", 0);
+            tryCompare(getFailedVisual(), "opacity", 1);
+            tryCompare(getDoneVisual(), "opacity", 0);
+        }
 
-        // function test_successfulState() {
-        //     var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
-        //     getEnrollmentObserver().mockEnroll("");
-        //     compare(getStatusLabel().text, targetText);
+        function test_successfulState() {
+            var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
+            getEnrollmentObserver().mockEnroll("");
+            compare(getStatusLabel().text, targetText);
 
-        //     tryCompare(getDefaultVisual(), "opacity", 0);
-        //     tryCompare(getFailedVisual(), "opacity", 0);
-        //     tryCompare(getDoneVisual(), "opacity", 1);
-        // }
+            tryCompare(getDefaultVisual(), "opacity", 0);
+            tryCompare(getFailedVisual(), "opacity", 0);
+            tryCompare(getDoneVisual(), "opacity", 1);
+        }
 
-        // function test_notDone() {
-        //     var button = findChild(pageStack, "fingerprintSetupDoneButton");
-        //     compare(button.enabled, false, "button was enabled initially");
-        // }
+        function test_notDone() {
+            var button = findChild(pageStack, "fingerprintSetupDoneButton");
+            compare(button.enabled, false, "button was enabled initially");
+        }
 
-        // function test_done() {
-        //     var button = findChild(pageStack, "fingerprintSetupDoneButton");
-        //     getEnrollmentObserver().mockEnroll("");
-        //     compare(button.enabled, true, "button was disabled when done");
-        // }
+        function test_done() {
+            var button = findChild(pageStack, "fingerprintSetupDoneButton");
+            getEnrollmentObserver().mockEnroll("");
+            compare(button.enabled, true, "button was disabled when done");
+        }
 
-        // function test_statusLabel() {
-        //     getStatusLabel().setText("foo");
-        //     statusLabelSpy.wait();
-        //     compare(getStatusLabel().text, "foo");
-        // }
+        function test_statusLabel() {
+            getStatusLabel().setText("foo");
+            statusLabelSpy.wait();
+            compare(getStatusLabel().text, "foo");
+        }
 
-        // // function test_fingerPresent() {
-        // //     var eobs = getEnrollmentObserver();
-        // //     var up = findChild(getSetupPage(), "fingerprintUpVisual");
-        // //     var down = findChild(getSetupPage(), "fingerprintDownVisual");
-        // //     enrollmentObserverProgressedSpy.target = eobs;
+        function test_direction_data() {
+            return [
+                { tag: "empty", visual: { visible: false, rotation: 0 }},
+                { tag: "not available", dir: FingerprintReader.NotAvailable, visual: { visible: false, rotation: 0 }},
+                { tag: "SouthWest", dir: FingerprintReader.SouthWest, visual: { visible: true, rotation: 225 }},
+                { tag: "South", dir: FingerprintReader.South, visual: { visible: true, rotation: 180 }},
+                { tag: "SouthEast", dir: FingerprintReader.SouthEast, visual: { visible: true, rotation: 135 }},
+                { tag: "NorthWest", dir: FingerprintReader.NorthWest, visual: { visible: true, rotation: 315 }},
+                { tag: "North", dir: FingerprintReader.North, visual: { visible: true, rotation: 0 }},
+                { tag: "NorthEast", dir: FingerprintReader.NorthEast, visual: { visible: true, rotation: 45 }},
+                { tag: "East", dir: FingerprintReader.East, visual: { visible: true, rotation: 90 }},
+                { tag: "West", dir: FingerprintReader.West, visual: { visible: true, rotation: 270 }}
+            ]
+        }
 
-        // //     eobs.mockEnrollProgress(0.5, {
-        // //         isFingerPresent: false
-        // //     });
-        // //     enrollmentObserverProgressedSpy.wait();
-        // //     // verify(up.visible);
-        // //     // verify(!down.visible);
+        function test_direction(data) {
+            var eobs = getEnrollmentObserver();
+            var vis = findChild(getSetupPage(), "fingerprintDirectionVisual");
 
-        // //     eobs.mockEnrollProgress(0.5, {
-        // //         isFingerPresent: true
-        // //     });
-        // //     enrollmentObserverProgressedSpy.wait();
-        // //     // verify(!up.visible);
-        // //     // verify(down.visible);
-        // // }
+            var hints = {};
+            hints[FingerprintReader.suggestedNextDirection] = data.dir;
 
-        // function test_direction_data() {
-        //     return [
-        //         { tag: "empty", visual: { visible: false, rotation: 0 }},
-        //         { tag: "not available", dir: FingerprintReader.NotAvailable, visual: { visible: false, rotation: 0 }},
-        //         { tag: "SouthWest", dir: FingerprintReader.SouthWest, visual: { visible: true, rotation: 225 }},
-        //         { tag: "South", dir: FingerprintReader.South, visual: { visible: true, rotation: 180 }},
-        //         { tag: "SouthEast", dir: FingerprintReader.SouthEast, visual: { visible: true, rotation: 135 }},
-        //         { tag: "NorthWest", dir: FingerprintReader.NorthWest, visual: { visible: true, rotation: 315 }},
-        //         { tag: "North", dir: FingerprintReader.North, visual: { visible: true, rotation: 0 }},
-        //         { tag: "NorthEast", dir: FingerprintReader.NorthEast, visual: { visible: true, rotation: 45 }},
-        //         { tag: "East", dir: FingerprintReader.East, visual: { visible: true, rotation: 90 }},
-        //         { tag: "West", dir: FingerprintReader.West, visual: { visible: true, rotation: 270 }}
-        //     ]
-        // }
+            enrollmentObserverProgressedSpy.target = eobs;
+            eobs.mockEnrollProgress(0.5, hints);
+            enrollmentObserverProgressedSpy.wait();
 
-        // function test_direction(data) {
-        //     var eobs = getEnrollmentObserver();
-        //     var vis = findChild(getSetupPage(), "fingerprintDirectionVisual");
+            tryCompare(vis, "opacity", data.visual.visible ? 1 : 0)
+            compare(vis.opacity, data.visual.visible ? 1 : 0);
+            compare(vis.rotation, data.visual.rotation);
+        }
 
-        //     var hints = {};
-        //     hints[FingerprintReader.suggestedNextDirection] = data.dir;
+        function test_progressHidden() {
+            var pl = getProgressLabel();
+            compare(pl.opacity, 0);
+        }
 
-        //     enrollmentObserverProgressedSpy.target = eobs;
-        //     eobs.mockEnrollProgress(0.5, hints);
-        //     enrollmentObserverProgressedSpy.wait();
+        function test_progressVisible() {
+            var pl = getProgressLabel();
+            getEnrollmentObserver().mockEnrollProgress(0.5, {});
+            tryCompare(pl, "opacity", 1);
+            tryCompare(pl, "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(50));
+        }
 
-        //     tryCompare(vis, "opacity", data.visual.visible ? 1 : 0)
-        //     compare(vis.opacity, data.visual.visible ? 1 : 0);
-        //     compare(vis.rotation, data.visual.rotation);
-        // }
+        function test_progressReadable() {
+            getEnrollmentObserver().mockEnrollProgress(0.6666666667, {});
+            tryCompare(getProgressLabel(), "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(66));
+        }
 
-        // function test_progressHidden() {
-        //     var pl = getProgressLabel();
-        //     compare(pl.opacity, 0);
-        // }
-
-        // function test_progressVisible() {
-        //     var pl = getProgressLabel();
-        //     getEnrollmentObserver().mockEnrollProgress(0.5, {});
-        //     tryCompare(pl, "opacity", 1);
-        //     tryCompare(pl, "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(50));
-        // }
-
-        // function test_progressReadable() {
-        //     getEnrollmentObserver().mockEnrollProgress(0.6666666667, {});
-        //     tryCompare(getProgressLabel(), "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(66));
-        // }
-
+        // This is a visual test where we can confirm that the arrow
+        // rotates using the orthodromic distance.
         function test_directions() {
             var hints = {};
 
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.North;
             getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            wait(1000)
+            wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.East;
             getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            wait(1000)
+            wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.South;
             getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            wait(1000)
+            wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.West;
             getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            wait(1000)
+            wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.SouthEast;
             getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            wait(1000)
-            // for (var i = 0; i <= 8; i++) {
-            //     for (var j = 0; j <= 8; j++) {
-            //         if (i === FingerprintReader.NotAvailable || j === FingerprintReader.NotAvailable)
-            //             continue;
-            //         hints[FingerprintReader.suggestedNextDirection] = i;
-            //         getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            //         hints[FingerprintReader.suggestedNextDirection] = j;
-            //         getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
-            //         wait(500)
-            //     }
-            // }
+            wait(200)
+            hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.NorthEast;
+            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            wait(200)
+            hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.NorthWest;
+            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            wait(200)
+            hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.NorthEast;
+            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            wait(200)
         }
     }
 }

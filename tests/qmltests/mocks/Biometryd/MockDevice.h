@@ -27,7 +27,7 @@ class MockDevice : public QObject
 
 public:
     explicit MockDevice(QObject *parent = 0);
-    Q_PROPERTY(MockTemplateStore* templateStore READ templateStore)
+    Q_PROPERTY(MockTemplateStore* templateStore READ templateStore CONSTANT)
 
     MockTemplateStore* templateStore();
 
