@@ -11,6 +11,7 @@ set(MOCK_BIOMETRYD_SOURCES
     MockService.cpp
     MockTemplateStore.cpp
     MockUser.cpp
+    MockTemplateListModel.cpp
 )
 
 add_library(MockBiometryd MODULE ${MOCK_BIOMETRYD_SOURCES})

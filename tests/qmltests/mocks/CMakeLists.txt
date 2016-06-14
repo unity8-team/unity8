@@ -29,3 +29,4 @@ macro(add_usc_mock PLUGIN VERSION PATH)
 endmacro()
 
 add_subdirectory(Biometryd)
+add_subdirectory(GSettings.1.0)

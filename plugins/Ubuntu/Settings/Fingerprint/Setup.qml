@@ -105,7 +105,7 @@ Page {
                 script: statusLabel.setText(
                     i18n.dtr("ubuntu-settings-components",
                              "Sorry, the reader doesn’t seem to be working."),
-                    false // No animation
+                    true // No animation
                 )
             }
             StateChangeScript {
@@ -163,24 +163,6 @@ Page {
             anchors.centerIn: parent
             width: units.gu(26)
             height: units.gu(29)
-
-            // BorderImage {
-            //     id: shapeDown
-            //     objectName: "fingerprintDownVisual"
-            //     visible: false
-            //     anchors.fill: parent
-            //     source: "qrc:/assets/shape-down.sci"
-            // }
-
-            // BorderImage {
-            //     id: shapeUp
-            //     objectName: "fingerprintUpVisual"
-            //     anchors {
-            //         fill: parent
-            //         margins: units.gu(0.4)
-            //     }
-            //     source: "qrc:/assets/shape-up.sci"
-            // }
 
             Item {
                 id: imageContainer

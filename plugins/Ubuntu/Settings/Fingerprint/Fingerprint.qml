@@ -42,6 +42,7 @@ Page {
     property bool passcodeSet: false
     property int storedFingerprints: 0
     property var setupPage: null
+    property var fingerprintModel:
 
     function enroll () {
         enrollmentOperation = ts.enroll(user);
@@ -104,9 +105,7 @@ Page {
 
     Flickable {
         id: content
-        anchors {
-            fill: parent
-        }
+        anchors.fill: parent
         boundsBehavior: (contentHeight > root.height) ?
                             Flickable.DragAndOvershootBounds :
                             Flickable.StopAtBounds
@@ -370,5 +369,11 @@ Page {
     User {
         id: user
         uid: UbuntuSettingsFingerprint.uid
+    }
+
+    TemplateListModel {
+        id: templates
+        uid: UbuntuSettingsFingerprint.uid
+        templateStore: root.ts
     }
 }

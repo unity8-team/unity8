@@ -23,6 +23,7 @@
 #include "MockService.h"
 #include "MockTemplateStore.h"
 #include "MockUser.h"
+#include "MockTemplateListModel.h"
 
 #include <QtQml>
 
@@ -32,6 +33,7 @@ void BackendPlugin::registerTypes(const char *uri)
 
     qmlRegisterType<MockObserver>(uri, 0, 0, "Observer");
     qmlRegisterType<MockUser>(uri, 0, 0, "User");
+    qmlRegisterType<MockTemplateListModel>(uri, 0, 0, "TemplateListModel");
 
     qmlRegisterUncreatableType<MockDevice>(uri, 0, 0, "Device", "Rely on Biometryd.instance");
 
