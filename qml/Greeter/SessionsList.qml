@@ -50,12 +50,14 @@ Item {
             delegate: OptionSelectorDelegate {
                 objectName: "sessionDelegate" + index
                 iconSource: icon_url
+                colourImage: true
+                assetColour: theme.palette.normal.raisedSecondaryText
                 text: display
                 selected: display.toLowerCase() === initiallySelectedSession.toLowerCase()
             }
 
             Component.onCompleted: {
-                // Disbale the highlighting since it leaks outside of rounded corners
+                // Disable the highlighting since it leaks outside of rounded corners
                 originalBackground = theme.palette.selected.background
                 theme.palette.selected.background = "transparent"
             }

@@ -21,7 +21,7 @@ namespace QLightDM
 {
 
 SessionsModelPrivate::SessionsModelPrivate(SessionsModel* parent)
-    : testScenario("singleSession")
+    : testScenario("multipleSession")
     , q_ptr(parent)
 {
     resetEntries();
