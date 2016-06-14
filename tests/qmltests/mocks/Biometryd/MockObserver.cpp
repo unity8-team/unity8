@@ -45,10 +45,10 @@ void MockObserver::mockSize(int size, const QString &error)
         Q_EMIT failed(error);
 }
 
-void MockObserver::mockEnroll(const QString &error)
+void MockObserver::mockEnroll(const QString &templateId, const QString &error)
 {
     if (error.isEmpty())
-        Q_EMIT succeeded(QVariant());
+        Q_EMIT succeeded(templateId);
     else
         Q_EMIT failed(error);
 }
@@ -63,6 +63,24 @@ void MockObserver::mockClearance(const QString &error)
 {
     if (error.isEmpty())
         Q_EMIT succeeded(QVariant());
+    else
+        Q_EMIT failed(error);
+}
+
+void MockObserver::mockRemoval(const QString &templateId,
+                               const QString &error)
+{
+    if (error.isEmpty())
+        Q_EMIT succeeded(templateId);
+    else
+        Q_EMIT failed(error);
+}
+
+void MockObserver::mockList(const QStringList &templateIds,
+                            const QString &error)
+{
+    if (error.isEmpty())
+        Q_EMIT succeeded(templateIds);
     else
         Q_EMIT failed(error);
 }

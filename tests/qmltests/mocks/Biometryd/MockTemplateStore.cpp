@@ -39,4 +39,18 @@ MockClearance* MockTemplateStore::clear(MockUser* user)
     return new MockClearance(this);
 }
 
+MockRemoval* MockTemplateStore::remove(MockUser* user,
+                                       const QString &templateId)
+{
+    Q_UNUSED(user);
+    Q_UNUSED(templateId);
+    return new MockRemoval(this);
+}
+
+MockList* MockTemplateStore::list(MockUser* user)
+{
+    Q_UNUSED(user);
+    return new MockList(this);
+}
+
 #include "MockTemplateStore.moc"

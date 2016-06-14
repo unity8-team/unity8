@@ -49,6 +49,24 @@ public:
     }
 };
 
+class MockRemoval : public MockOperation
+{
+    Q_OBJECT
+public:
+    MockRemoval(QObject *parent) :  MockOperation(parent)
+    {
+    }
+};
+
+class MockList : public MockOperation
+{
+    Q_OBJECT
+public:
+    MockList(QObject *parent) :  MockOperation(parent)
+    {
+    }
+};
+
 class MockTemplateStore : public QObject
 {
     Q_OBJECT
@@ -60,6 +78,9 @@ public:
     Q_INVOKABLE MockSizeQuery* size(MockUser* user);
     Q_INVOKABLE MockEnrollment* enroll(MockUser* user);
     Q_INVOKABLE MockClearance* clear(MockUser* user);
+    Q_INVOKABLE MockRemoval* remove(MockUser* user,
+                                    const QString &templateId);
+    Q_INVOKABLE MockList* list(MockUser* user);
 };
 
 #endif // MOCK_TEMPLATESTORE_H

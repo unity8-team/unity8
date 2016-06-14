@@ -211,7 +211,7 @@ Item {
             var enrollmentObserver = findInvisibleChild(fingerprintPage, "enrollmentObserver");
             compare(fingerprintPage.storedFingerprints, 0);
             enrollmentSucceededSpy.target = enrollmentObserver;
-            enrollmentObserver.mockEnroll("");
+            enrollmentObserver.mockEnroll("", "");
             enrollmentSucceededSpy.wait();
 
             tryCompareFunction(function() {

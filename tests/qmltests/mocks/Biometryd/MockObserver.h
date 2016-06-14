@@ -30,10 +30,16 @@ public:
     explicit MockObserver(QObject *parent = 0);
 
     Q_INVOKABLE void mockSize(int size, const QString &error); // only in mock
-    Q_INVOKABLE void mockEnroll(const QString &error); // only in mock
+    Q_INVOKABLE void mockEnroll(const QString &templateId,
+                                const QString &error); // only in mock
     Q_INVOKABLE void mockEnrollProgress(double percent,
                                         const QVariantMap& details); // only in mock
     Q_INVOKABLE void mockClearance(const QString &error); // only in mock
+    Q_INVOKABLE void mockRemoval(const QString &templateId,
+                                 const QString &error); // only in mock
+    Q_INVOKABLE void mockList(const QStringList &templateIds,
+                              const QString &error); // only in mock
+
 
 Q_SIGNALS:
     void progressed(double percent, const QVariantMap& details);

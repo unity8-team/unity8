@@ -140,7 +140,7 @@ Item {
 
         function test_failedStatus() {
             var targetText = i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.");
-            getEnrollmentObserver().mockEnroll("test failure");
+            getEnrollmentObserver().mockEnroll("", "test failure");
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
@@ -151,7 +151,7 @@ Item {
 
         function test_successfulState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
-            getEnrollmentObserver().mockEnroll("");
+            getEnrollmentObserver().mockEnroll("", "");
             compare(getStatusLabel().text, targetText);
 
             tryCompare(getDefaultVisual(), "opacity", 0);
@@ -166,7 +166,7 @@ Item {
 
         function test_done() {
             var button = findChild(pageStack, "fingerprintSetupDoneButton");
-            getEnrollmentObserver().mockEnroll("");
+            getEnrollmentObserver().mockEnroll("", "");
             compare(button.enabled, true, "button was disabled when done");
         }
 

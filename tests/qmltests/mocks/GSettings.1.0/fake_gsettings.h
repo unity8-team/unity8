@@ -28,7 +28,6 @@ class GSettingsSchemaQml: public QObject
     Q_OBJECT
 
     Q_PROPERTY(QByteArray id READ id WRITE setId)
-
 public:
     GSettingsSchemaQml(QObject *parent = nullptr);
 
@@ -84,7 +83,7 @@ public:
     static GSettingsControllerQml* instance();
     ~GSettingsControllerQml();
 
-    QVariantMap fingerprintNames() const;
+    Q_INVOKABLE QVariantMap fingerprintNames() const;
     Q_INVOKABLE void setFingerprintNames(QVariantMap map);
 
 Q_SIGNALS:

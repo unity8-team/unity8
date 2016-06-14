@@ -18,10 +18,11 @@
 
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
+import Biometryd 0.0
+import GSettings 1.0
 import Ubuntu.Components 1.3
 import Ubuntu.Components.Popups 1.3
 import Ubuntu.Settings.Fingerprint 0.1
-import Biometryd 0.0
 
 Page {
     id: root
@@ -32,52 +33,102 @@ Page {
         flickable: content
     }
 
-    property var ts: Biometryd.defaultDevice.templateStore
+    property var _ts: Biometryd.defaultDevice.templateStore
+    property var _enrollmentOperation: null
+    property var _clearanceOperation: null
+    property var _removalOperation: null
+    property var _listOperation: null
+    property var _setupPage: null
+    property var _fpInstancePage: null
+    property var _settings: sysSettings
 
-    property var sizeOperation: null
-    property var enrollmentOperation: null
-    property var clearanceOperation: null
-
-    property Dialog diag: null
+    property Dialog _diag: null
     property bool passcodeSet: false
-    property int storedFingerprints: 0
-    property var setupPage: null
-    property var fingerprintModel:
 
     function enroll () {
-        enrollmentOperation = ts.enroll(user);
-        enrollmentOperation.start(enrollmentObserver);
+        _enrollmentOperation = _ts.enroll(user);
+        _enrollmentOperation.start(enrollmentObserver);
     }
 
     function cancel () {
-        if (enrollmentOperation !== null)
-            enrollmentOperation.cancel();
+        if (_enrollmentOperation !== null)
+            _enrollmentOperation.cancel();
     }
 
-    function remove() {
-        clearanceOperation = ts.clear(user);
-        clearanceOperation.start(clearanceObserver);
+    function clear() {
+        _clearanceOperation = _ts.clear(user);
+        _clearanceOperation.start(clearanceObserver);
+    }
+
+    function removeTemplate(templateId) {
+        var names = sysSettings.fingerprintNames;
+        delete names[templateId];
+        sysSettings.fingerprintNames = names;
+    }
+
+    function renameTemplate(templateId, newName) {
+        var names = sysSettings.fingerprintNames;
+        names[templateId] = newName;
+        sysSettings.fingerprintNames = names;
+    }
+
+    function addTemplate(templateId, name) {
+        var names = sysSettings.fingerprintNames;
+        names[templateId] = name;
+        sysSettings.fingerprintNames = names;
+    }
+
+    function createTemplateName() {
+        var map = sysSettings.fingerprintNames;
+        var currentNames = [];
+        var newName;
+        for (var k in map) {
+            if (map.hasOwnProperty(k))
+                currentNames.push(map[k]);
+        }
+
+        var i = 0;
+        do {
+            newName = i18n.dtr("ubuntu-settings-components",
+                               "Finger %1").arg(i++);
+        } while (currentNames.indexOf(newName) >= 0);
+        return newName;
+    }
+
+    // Loops through template ids and assigns names to those
+    // that have none. Ideally, we will always set a name for
+    // every template id, but this can't be guaranteed.
+    function assignNames(templateIds) {
+        var names = sysSettings.fingerprintNames;
+        for (var i = 0; i < templateIds.length; i++) {
+            if ( !(templateIds[i] in names) || !names[templateIds[i]])
+                names[templateIds[i]] = createTemplateName();
+                sysSettings.fingerprintNames = names;
+        }
     }
 
     signal requestPasscode()
 
     Component.onCompleted: {
-        // Start a size operation immediately.
+        // Start a list operation immediately.
         if (Biometryd.available) {
-            sizeOperation = ts.size(user);
-            sizeOperation.start(sizeObserver);
+            _listOperation = _ts.list(user);
+            _listOperation.start(listObserver);
         }
     }
 
     Component.onDestruction: {
-        if (enrollmentOperation !== null)
-            enrollmentOperation.cancel();
+        if (_enrollmentOperation !== null)
+            _enrollmentOperation.cancel();
 
-        if (sizeOperation !== null)
-            sizeOperation.cancel();
+        if (_clearanceOperation !== null)
+            _clearanceOperation.cancel();
 
-        if (clearanceOperation !== null)
-            clearanceOperation.cancel();
+        if (_removalOperation !== null)
+            _removalOperation.cancel();
+
+        if (_listOperation !== null)
+            _listOperation.cancel();
     }
 
     states: [
@@ -145,6 +196,50 @@ Page {
             }
 
             Column {
+                id: existingFingerprints
+                anchors { left: parent.left; right: parent.right }
+
+                Repeater {
+                    model: {
+                        var map = sysSettings.fingerprintNames;
+                        var m = [];
+                        for (var k in map) {
+                            if (map.hasOwnProperty(k)) {
+                                m.push({
+                                    templateId: k,
+                                    name: map[k]
+                                });
+                            }
+                        }
+                        m.sort(function (a, b) {
+                            if (a.name < b.name) return -1;
+                            if (a.name > b.name) return 1;
+                            if (a.name == b.name) return 0;
+                        });
+                        return m;
+                    }
+
+                    ListItem {
+                        height: fpLayout.height + (divider.visible ? divider.height : 0)
+                        onClicked: _fpInstancePage = pageStack.push(
+                                Qt.resolvedUrl("FingerprintInstance.qml"), {
+                                name: modelData.name,
+                                templateId: modelData.templateId
+                            }
+                        )
+
+                        ListItemLayout {
+                            id: fpLayout
+                            objectName: "fingerprintInstance-" + index
+                            title.text: modelData.name
+
+                            ProgressionSlot {}
+                        }
+                    }
+                }
+            }
+
+            Column {
                 id: setupFingerprint
 
                 anchors { left: parent.left; right: parent.right }
@@ -155,7 +250,7 @@ Page {
                 ListItem {
                     height: addFpLayout.height + (divider.visible ? divider.height : 0)
                     onClicked: {
-                        setupPage = pageStack.push(Qt.resolvedUrl("Setup.qml"));
+                        _setupPage = pageStack.push(Qt.resolvedUrl("Setup.qml"));
                         root.enroll();
                     }
                     enabled: parent.enabled
@@ -168,82 +263,82 @@ Page {
                             "Add fingerprint"
                         )
 
-                        readonly property string one: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "One fingerprint registered."
-                        )
-                        readonly property string two: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Two fingerprints registered."
-                        )
-                        readonly property string three: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Three fingerprints registered."
-                        )
-                        readonly property string four: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Four fingerprints registered."
-                        )
-                        readonly property string five: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Five fingerprints registered."
-                        )
-                        readonly property string six: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Six fingerprints registered."
-                        )
-                        readonly property string seven: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Seven fingerprints registered."
-                        )
-                        readonly property string eight: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Eight fingerprints registered."
-                        )
-                        readonly property string nine: i18n.dtr(
-                            "ubuntu-settings-components",
-                            "Nine fingerprints registered."
-                        )
+                        // readonly property string one: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "One fingerprint registered."
+                        // )
+                        // readonly property string two: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Two fingerprints registered."
+                        // )
+                        // readonly property string three: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Three fingerprints registered."
+                        // )
+                        // readonly property string four: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Four fingerprints registered."
+                        // )
+                        // readonly property string five: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Five fingerprints registered."
+                        // )
+                        // readonly property string six: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Six fingerprints registered."
+                        // )
+                        // readonly property string seven: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Seven fingerprints registered."
+                        // )
+                        // readonly property string eight: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Eight fingerprints registered."
+                        // )
+                        // readonly property string nine: i18n.dtr(
+                        //     "ubuntu-settings-components",
+                        //     "Nine fingerprints registered."
+                        // )
 
-                        function getNaturalNumber(fpc) {
-                            switch (fpc) {
-                            case 1:
-                                return one;
-                            case 2:
-                                return two;
-                            case 3:
-                                return three;
-                            case 4:
-                                return four;
-                            case 5:
-                                return five;
-                            case 6:
-                                return six;
-                            case 7:
-                                return seven;
-                            case 8:
-                                return eight;
-                            case 9:
-                                return nine;
-                            default:
-                                return fpc.toString();
-                            }
-                        }
+                        // function getNaturalNumber(fpc) {
+                        //     switch (fpc) {
+                        //     case 1:
+                        //         return one;
+                        //     case 2:
+                        //         return two;
+                        //     case 3:
+                        //         return three;
+                        //     case 4:
+                        //         return four;
+                        //     case 5:
+                        //         return five;
+                        //     case 6:
+                        //         return six;
+                        //     case 7:
+                        //         return seven;
+                        //     case 8:
+                        //         return eight;
+                        //     case 9:
+                        //         return nine;
+                        //     default:
+                        //         return fpc.toString();
+                        //     }
+                        // }
 
-                        subtitle.text: {
-                            var count = root.storedFingerprints;
-                            if (count == 0) {
-                                return i18n.dtr("ubuntu-settings-components",
-                                                "No fingerprints registered.");
-                            } else if (count > 0 && count < 10) {
-                                return getNaturalNumber(count);
-                            } else {
-                                // TRANSLATORS: %1 is the number of stored fingerprints > 9 (i.e. always plural)
-                                return i18n.dtr("ubuntu-settings-components",
-                                                "%1 fingerprints registered.")
-                                                .arg(count);
-                            }
-                        }
+                        // subtitle.text: {
+                        //     var count = root.storedFingerprints;
+                        //     if (count == 0) {
+                        //         return i18n.dtr("ubuntu-settings-components",
+                        //                         "No fingerprints registered.");
+                        //     } else if (count > 0 && count < 10) {
+                        //         return getNaturalNumber(count);
+                        //     } else {
+                        //         // TRANSLATORS: %1 is the number of stored fingerprints > 9 (i.e. always plural)
+                        //         return i18n.dtr("ubuntu-settings-components",
+                        //                         "%1 fingerprints registered.")
+                        //                         .arg(count);
+                        //     }
+                        // }
 
                         ProgressionSlot {}
                     }
@@ -251,9 +346,9 @@ Page {
 
                 Button {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    enabled: parent.enabled && root.storedFingerprints
+                    enabled: parent.enabled
                     objectName: "fingerprintRemoveAllButton"
-                    onClicked: diag = PopupUtils.open(removeAllAlert)
+                    onClicked: _diag = PopupUtils.open(removeAllAlert)
                     text: i18n.dtr("ubuntu-settings-components",
                                    "Remove All…")
                 }
@@ -285,7 +380,7 @@ Page {
 
                 Button {
                     objectName: "fingerprintRemoveAllConfirmationButton"
-                    onClicked: root.remove()
+                    onClicked: root.clear()
                     text: i18n.dtr("ubuntu-settings-components", "Remove")
                     Layout.fillWidth: true
                 }
@@ -311,59 +406,92 @@ Page {
     }
 
     Connections {
-        target: setupPage
+        target: _setupPage
         onEnroll: root.enroll()
         onCancel: root.cancel()
+    }
+
+    Connections {
+        target: _fpInstancePage
+
+        onRequestDeletion: {
+            _removalOperation = _ts.remove(user, templateId);
+            _removalOperation.start(removalObserver);
+        }
+        onRequestRename: renameTemplate(templateId, name)
     }
 
     Observer {
         id: enrollmentObserver
         objectName: "enrollmentObserver"
         onFailed: {
-            setupPage.enrollmentFailed(reason);
-            enrollmentOperation = null;
+            if (_setupPage)
+                _setupPage.enrollmentFailed(reason);
+            _enrollmentOperation = null;
             console.error("Enrollment failed", reason);
         }
-        onProgressed: setupPage.enrollmentProgressed(percent, details)
+        onProgressed: _setupPage.enrollmentProgressed(percent, details)
         onSucceeded: {
-            root.storedFingerprints = root.storedFingerprints + 1;
-            setupPage.enrollmentCompleted();
-            enrollmentOperation = null;
+            root.addTemplate(
+                result,
+                root.createTemplateName()
+            );
+            if (_setupPage)
+                _setupPage.enrollmentCompleted();
+            _enrollmentOperation = null;
         }
-        onCanceled: enrollmentOperation = null
-    }
-
-    Observer {
-        id: sizeObserver
-        objectName: "sizeObserver"
-        onFailed: {
-            sizeOperation = null;
-            if (diag) PopupUtils.close(diag);
-            diag = PopupUtils.open(fingerprintReaderBroken);
-            console.error("Biometry size operation failed:", reason);
-        }
-        onSucceeded: {
-            root.storedFingerprints = result;
-            sizeOperation = null;
-        }
-        onCanceled: sizeOperation = null
+        onCanceled: _enrollmentOperation = null
     }
 
     Observer {
         id: clearanceObserver
         objectName: "clearanceObserver"
         onFailed: {
-            clearanceOperation = null;
-            if (diag) PopupUtils.close(diag);
-            diag = PopupUtils.open(fingerprintReaderBroken);
+            _clearanceOperation = null;
+            if (_diag) PopupUtils.close(_diag);
+            _diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometry clearance failed:", reason);
         }
         onSucceeded: {
-            clearanceOperation = null;
-            root.storedFingerprints = 0;
-            if (diag) PopupUtils.close(diag);
+            _clearanceOperation = null;
+            if (_diag) PopupUtils.close(_diag);
+            sysSettings.fingerprintNames = {};
         }
-        onCanceled: clearanceOperation = null
+        onCanceled: _clearanceOperation = null
+    }
+
+    Observer {
+        id: removalObserver
+        objectName: "removalObserver"
+        onFailed: {
+            _removalOperation = null;
+            if (_fpInstancePage)
+                _fpInstancePage.deletionFailed()
+            console.error("Biometryd template deletion failed:", reason);
+        }
+        onSucceeded: {
+            _removalOperation = null;
+            if (pageStack.currentPage === _fpInstancePage)
+                pageStack.pop();
+            root.removeTemplate(result);
+        }
+        onCanceled: _removalOperation = null
+    }
+
+    Observer {
+        id: listObserver
+        objectName: "listObserver"
+        onFailed: {
+            _listOperation = null;
+            // if (_fpInstancePage)
+            //     _fpInstancePage.deletionFailed()
+            console.error("Biometryd template deletion failed:", reason);
+        }
+        onSucceeded: {
+            _listOperation = null;
+            root.assignNames(result);
+        }
+        onCanceled: _listOperation = null
     }
 
     User {
@@ -371,9 +499,9 @@ Page {
         uid: UbuntuSettingsFingerprint.uid
     }
 
-    TemplateListModel {
-        id: templates
-        uid: UbuntuSettingsFingerprint.uid
-        templateStore: root.ts
+    GSettings {
+        id: sysSettings
+        objectName: "systemSettings"
+        schema.id: "com.ubuntu.touch.system"
     }
 }

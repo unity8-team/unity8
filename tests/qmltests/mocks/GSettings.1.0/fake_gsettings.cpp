@@ -16,7 +16,7 @@
 
 #include "fake_gsettings.h"
 
-#include <QList>
+#include <QDebug>
 
 GSettingsControllerQml* GSettingsControllerQml::s_controllerInstance = 0;
 
