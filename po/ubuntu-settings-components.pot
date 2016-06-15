@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-15 12:46+0200\n"
+"POT-Creation-Date: 2016-06-15 14:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 
 #: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:129
 #: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:338
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:138
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:137
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:148
 msgid "OK"
 msgstr ""
@@ -74,7 +74,7 @@ msgid "Are you sure you want to forget all stored fingerprints?"
 msgstr ""
 
 #: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:312
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:358
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:357
 #: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:161
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:135
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:104
@@ -87,36 +87,36 @@ msgid "Remove"
 msgstr ""
 
 #: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:333
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:103
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:102
 msgid "Sorry, the reader doesn’t seem to be working."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:61
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:60
 msgid "Lift and press your finger again."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:78
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:77
 msgid "Keep your finger on the reader for longer."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:94
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:93
 msgid "Back"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:131
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:130
 msgid "All done!"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:297
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:296
 msgid "Place your finger on the home button."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:311
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:310
 #, qt-format
 msgid "%1%"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:383
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:382
 msgid "Next"
 msgstr ""
 
