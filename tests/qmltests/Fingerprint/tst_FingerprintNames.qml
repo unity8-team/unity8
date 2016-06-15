@@ -34,6 +34,15 @@ Item {
     }
 
     Component {
+        id: fingerprintsComponent
+
+        Fingerprints {
+            anchors.fill: parent
+            visible: false
+        }
+    }
+
+    Component {
         id: fingerprintComponent
 
         Fingerprint {
@@ -50,22 +59,11 @@ Item {
         }
     }
 
-    SignalSpy {
-        id: requestDeletionSpy
-        signalName: "requestDeletion"
-    }
-
-    SignalSpy {
-        id: requestRenameSpy
-        signalName: "requestRename"
-    }
-
     UbuntuTestCase {
         name: "TestOverview"
         when: windowShown
 
         property var pageInstance: null
-        property var templateInstance: null
         property var gsettingsInstance: null
 
         function getTemplateEntry(i) {
@@ -95,7 +93,7 @@ Item {
 
         function init() {
             gsettingsInstance = gsettingsComponent.createObject(testRoot);
-            pageInstance = fingerprintComponent.createObject(testRoot, {
+            pageInstance = fingerprintsComponent.createObject(testRoot, {
                 _settings: gsettingsInstance,
                 passcodeSet: true
             });
@@ -174,15 +172,14 @@ Item {
 
         function test_createTemplateName() {
             GSettingsController.setFingerprintNames({
-                "tmplId": i18n.dtr("ubuntu-settings-components", "Finger %1").arg(0)
+                "tmplId": i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1)
             });
+            compare(pageInstance.createTemplateName(), i18n.dtr("ubuntu-settings-components", "Finger %1").arg(2));
+            pageInstance.renameTemplate("tmplId", i18n.dtr("ubuntu-settings-components", "Finger %1").arg(2));
             compare(pageInstance.createTemplateName(), i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1));
-            pageInstance.renameTemplate("tmplId", i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1));
-            compare(pageInstance.createTemplateName(), i18n.dtr("ubuntu-settings-components", "Finger %1").arg(0));
         }
 
         function test_assignNames() {
-            var targetName = i18n.dtr("ubuntu-settings-components", "Finger %1").arg(0);
             var templateIds = ["tmplId0", "tmplId1", "tmplId2"];
 
             // This name shouldn't be overwritten
@@ -193,10 +190,10 @@ Item {
             getListObserver().mockList(templateIds, "");
 
             verify(getTemplateEntry(0));
-            compare(getTemplateEntry(0).title.text, i18n.dtr("ubuntu-settings-components", "Finger %1").arg(0));
+            compare(getTemplateEntry(0).title.text, i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1));
 
             verify(getTemplateEntry(1));
-            compare(getTemplateEntry(1).title.text, i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1));
+            compare(getTemplateEntry(1).title.text, i18n.dtr("ubuntu-settings-components", "Finger %1").arg(2));
 
             verify(getTemplateEntry(2));
             compare(getTemplateEntry(2).title.text, "My finger");
@@ -221,7 +218,34 @@ Item {
             compare(getTemplateEntry(0).title.text, "Existing finger");
 
             verify(getTemplateEntry(1));
-            compare(getTemplateEntry(1).title.text, i18n.dtr("ubuntu-settings-components", "Finger %1").arg(0));
+            compare(getTemplateEntry(1).title.text, i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1));
+        }
+
+        function test_serviceEnrollmentFirstRun() {
+            var targetName = i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1);
+
+            // A test where the template id is 0.
+            getEnrollmentObserver().mockEnroll(0, "");
+
+            verify(getTemplateEntry(0));
+            compare(getTemplateEntry(0).title.text, targetName);
+        }
+
+        function test_serviceEnrollmentReusesId() {
+            // Test a case where enrollment processes re-uses the template id
+            // Hopefully this will never happen, but it currently does in testing,
+            // so test it.
+            var targetName = i18n.dtr("ubuntu-settings-components", "Finger %1").arg(1);
+
+            getEnrollmentObserver().mockEnroll(0, "");
+            verify(getTemplateEntry(0));
+            compare(getTemplateEntry(0).title.text, targetName);
+
+            // Re-enroll same id, make sure it doesn't change the name
+            getEnrollmentObserver().mockEnroll(0, "");
+            verify(getTemplateEntry(0));
+            compare(getTemplateEntry(0).title.text, targetName);
+
         }
 
         function test_serviceClearance() {
@@ -242,6 +266,99 @@ Item {
             gsettingsInstance = null;
             pageInstance.destroy();
             pageInstance = null;
+        }
+    }
+
+    SignalSpy {
+        id: requestDeletionSpy
+        signalName: "requestDeletion"
+    }
+
+    SignalSpy {
+        id: requestRenameSpy
+        signalName: "requestRename"
+    }
+
+    UbuntuTestCase {
+        name: "TestTemplate"
+        when: windowShown
+
+        property var templateInstance: null
+
+        function getDeleteButton() {
+            return findChild(templateInstance, "templateDelete");
+        }
+
+        function getHeader() {
+            return findChild(templateInstance, "templateHeader");
+        }
+
+        function getNameInput() {
+            return findChild(templateInstance, "nameInput");
+        }
+
+        function getFailedDialog() {
+            return findChild(testRoot, "fingerprintDeletionFailedDialog");
+        }
+
+        function getFailedDialogOk() {
+            return findChild(testRoot, "fingerprintDeleteionFailedOk");
+        }
+
+        function init() {
+            templateInstance = fingerprintComponent.createObject(testRoot);
+            pageStack.push(templateInstance);
+            requestRenameSpy.target = templateInstance;
+            requestDeletionSpy.target = templateInstance;
+        }
+
+        function cleanup() {
+            requestRenameSpy.clear();
+            requestDeletionSpy.clear();
+            pageStack.pop();
+            templateInstance.destroy();
+            templateInstance = null;
+        }
+
+        function test_name() {
+            templateInstance.name = "My finger";
+            compare(getHeader().title, "My finger");
+            compare(getNameInput().text, "My finger");
+        }
+
+        function test_requestDeletion() {
+            templateInstance.templateId = "tmplId";
+            var button = getDeleteButton();
+            mouseClick(button, button.width / 2, button.height / 2);
+            requestDeletionSpy.wait();
+            compare(requestDeletionSpy.count, 1);
+            compare(requestDeletionSpy.signalArguments[0][0], "tmplId");
+        }
+
+        function test_requestRename() {
+            templateInstance.templateId = "tmplId";
+            templateInstance.name = "My finger";
+            requestRenameSpy.clear();
+
+            getNameInput().text = "Your finger";
+            requestRenameSpy.wait();
+            compare(requestRenameSpy.count, 1);
+            compare(requestRenameSpy.signalArguments[0][0], "tmplId");
+            compare(requestRenameSpy.signalArguments[0][1], "Your finger");
+        }
+
+        function test_deletionFailed() {
+            templateInstance.deletionFailed();
+            tryCompareFunction(function () {
+                return !!getFailedDialog();
+            }, true);
+
+            var button = getFailedDialogOk();
+            mouseClick(button, button.width / 2, button.height / 2);
+
+            tryCompareFunction(function () {
+                return !!getFailedDialog();
+            }, false);
         }
     }
 }

@@ -29,11 +29,11 @@ Item {
     height: units.gu(90)
 
     Component {
-        id: fingerprintPage
-        Fingerprint {
-            objectName: "fingerprintPage"
+        id: setupComponent
+
+        Setup {
             anchors.fill: parent
-            passcodeSet: true
+            visible: false
         }
     }
 
@@ -48,19 +48,16 @@ Item {
 
     SignalSpy {
         id: enrollmentObserverProgressedSpy
-        target: null
         signalName: "progressed"
     }
 
     SignalSpy {
         id: enrollmentObserverSucceededSpy
-        target: null
         signalName: "succeeded"
     }
 
     SignalSpy {
         id: enrollmentObserverFailedSpy
-        target: null
         signalName: "failed"
     }
 
@@ -68,54 +65,42 @@ Item {
         name: "SetupUI"
         when: windowShown
 
+        property var setupInstance: null
+
         function init() {
             Biometryd.setAvailable(true);
-            pageStack.push(fingerprintPage);
-
-            var setupButton = findChild(pageStack, "fingerprintAddListItemLayout");
-            mouseClick(setupButton, setupButton.width / 2, setupButton.height / 2);
+            setupInstance = setupComponent.createObject(testRoot);
+            pageStack.push(setupInstance);
 
             statusLabelSpy.target = getStatusLabel();
-
         }
 
         function cleanup() {
-            // Pop fingerprint and setup pages.
-            pageStack.pop();
-            pageStack.pop();
             statusLabelSpy.clear();
+
+            pageStack.pop();
+            setupInstance.destroy();
+            setupInstance = null
         }
 
         function getStatusLabel() {
-            return findChild(getSetupPage(), "fingerprintStatusLabel");
-        }
-
-        function getSetupPage() {
-            return findChild(pageStack, "fingerprintSetupPage");
-        }
-
-        function getFingerprintPage() {
-            return findChild(testRoot, "fingerprintPage");
-        }
-
-        function getEnrollmentObserver() {
-            return findInvisibleChild(getFingerprintPage(), "enrollmentObserver");
+            return findChild(setupInstance, "fingerprintStatusLabel");
         }
 
         function getFailedVisual() {
-            return findChild(getSetupPage(), "fingerprintFailedVisual");
+            return findChild(setupInstance, "fingerprintFailedVisual");
         }
 
         function getDefaultVisual() {
-            return findChild(getSetupPage(), "fingerprintDefaultVisual");
+            return findChild(setupInstance, "fingerprintDefaultVisual");
         }
 
         function getDoneVisual() {
-            return findChild(getSetupPage(), "fingerprintDoneVisual");
+            return findChild(setupInstance, "fingerprintDoneVisual");
         }
 
         function getProgressLabel() {
-            return findChild(getSetupPage(), "fingerprintProgressLabel");
+            return findChild(setupInstance, "fingerprintProgressLabel");
         }
 
         function test_initialState() {
@@ -129,7 +114,7 @@ Item {
 
         function test_startedState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.");
-            getEnrollmentObserver().mockEnrollProgress(0.5, {});
+            setupInstance.enrollmentProgressed(0.5, {});
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);
 
@@ -140,8 +125,7 @@ Item {
 
         function test_failedStatus() {
             var targetText = i18n.dtr("ubuntu-settings-components", "Sorry, the reader doesn’t seem to be working.");
-            getEnrollmentObserver().mockEnroll("", "test failure");
-            statusLabelSpy.wait();
+            setupInstance.enrollmentFailed("test failure");
             compare(getStatusLabel().text, targetText);
 
             tryCompare(getDefaultVisual(), "opacity", 0);
@@ -151,23 +135,21 @@ Item {
 
         function test_successfulState() {
             var targetText = i18n.dtr("ubuntu-settings-components", "All done!");
-            getEnrollmentObserver().mockEnroll("", "");
+
+            setupInstance.enrollmentCompleted();
             compare(getStatusLabel().text, targetText);
 
             tryCompare(getDefaultVisual(), "opacity", 0);
             tryCompare(getFailedVisual(), "opacity", 0);
             tryCompare(getDoneVisual(), "opacity", 1);
+
+            var button = findChild(pageStack, "fingerprintSetupDoneButton");
+            compare(button.enabled, true, "button was disabled when done");
         }
 
         function test_notDone() {
             var button = findChild(pageStack, "fingerprintSetupDoneButton");
             compare(button.enabled, false, "button was enabled initially");
-        }
-
-        function test_done() {
-            var button = findChild(pageStack, "fingerprintSetupDoneButton");
-            getEnrollmentObserver().mockEnroll("", "");
-            compare(button.enabled, true, "button was disabled when done");
         }
 
         function test_statusLabel() {
@@ -192,15 +174,11 @@ Item {
         }
 
         function test_direction(data) {
-            var eobs = getEnrollmentObserver();
-            var vis = findChild(getSetupPage(), "fingerprintDirectionVisual");
-
+            var vis = findChild(setupInstance, "fingerprintDirectionVisual");
             var hints = {};
             hints[FingerprintReader.suggestedNextDirection] = data.dir;
 
-            enrollmentObserverProgressedSpy.target = eobs;
-            eobs.mockEnrollProgress(0.5, hints);
-            enrollmentObserverProgressedSpy.wait();
+            setupInstance.enrollmentProgressed(0.5, hints);
 
             tryCompare(vis, "opacity", data.visual.visible ? 1 : 0)
             compare(vis.opacity, data.visual.visible ? 1 : 0);
@@ -214,13 +192,13 @@ Item {
 
         function test_progressVisible() {
             var pl = getProgressLabel();
-            getEnrollmentObserver().mockEnrollProgress(0.5, {});
+            setupInstance.enrollmentProgressed(0.5, {});
             tryCompare(pl, "opacity", 1);
             tryCompare(pl, "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(50));
         }
 
         function test_progressReadable() {
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, {});
+            setupInstance.enrollmentProgressed(0.6666666667, {});
             tryCompare(getProgressLabel(), "text", i18n.dtr("ubuntu-settings-components", "%1%").arg(66));
         }
 
@@ -230,28 +208,28 @@ Item {
             var hints = {};
 
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.North;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.East;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.South;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.West;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.SouthEast;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.NorthEast;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.NorthWest;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
             hints[FingerprintReader.suggestedNextDirection] = FingerprintReader.NorthEast;
-            getEnrollmentObserver().mockEnrollProgress(0.6666666667, hints);
+            setupInstance.enrollmentProgressed(0.6666666667, hints);
             wait(200)
         }
     }

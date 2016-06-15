@@ -40,10 +40,6 @@ Page {
     }
 
     function enrollmentProgressed(progress, hints) {
-        var fingerPresent = !!hints[FingerprintReader.isFingerPresent];
-        // shapeDown.visible = fingerPresent;
-        // shapeUp.visible = !fingerPresent;
-
         root.state = "reading";
         imageDefault.masks = hints[FingerprintReader.masks];
         progressLabel.progress = 100 * progress;

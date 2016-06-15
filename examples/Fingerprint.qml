@@ -35,7 +35,7 @@ MainView {
 
         Component {
             id: fingerprintPage
-            Fingerprint {
+            Fingerprints {
                 onRequestPasscode: passcodeSet = !passcodeSet
             }
         }
