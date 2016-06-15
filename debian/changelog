@@ -1,3 +1,10 @@
+ubuntu-settings-components (0.8+16.10.20160615-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ jonas-drange ]
+  * Add components for Fingerprint management.
+
+ -- Jonas G. Drange <jonas.drange@canonical.com>  Wed, 15 June 2016 13:17:23 +0200
+
 ubuntu-settings-components (0.7+16.10.20160519-0ubuntu1) yakkety; urgency=medium
 
   [ CI Train Bot ]
@@ -218,8 +225,8 @@ ubuntu-settings-components (0.3+14.10.20140708-0ubuntu1) utopic; urgency=medium
 
 ubuntu-settings-components (0.2+14.10.20140701.2-0ubuntu2) utopic; urgency=medium
 
-  * debian/control: 
-    list qtdeclarative5-ubuntu-ui-toolkit-plugin-gles as an alternative 
+  * debian/control:
+    list qtdeclarative5-ubuntu-ui-toolkit-plugin-gles as an alternative
     choice, since provides are not versionned, should restore installability
     on amd64 and i386
 
