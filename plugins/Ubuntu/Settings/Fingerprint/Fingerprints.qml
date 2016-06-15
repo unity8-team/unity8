@@ -51,7 +51,7 @@ Page {
     }
 
     function cancel () {
-        if (_enrollmentOperation !== null)
+        if (_enrollmentOperation)
             _enrollmentOperation.cancel();
     }
 
@@ -118,16 +118,16 @@ Page {
     }
 
     Component.onDestruction: {
-        if (_enrollmentOperation !== null)
+        if (_enrollmentOperation)
             _enrollmentOperation.cancel();
 
-        if (_clearanceOperation !== null)
+        if (_clearanceOperation)
             _clearanceOperation.cancel();
 
-        if (_removalOperation !== null)
+        if (_removalOperation)
             _removalOperation.cancel();
 
-        if (_listOperation !== null)
+        if (_listOperation)
             _listOperation.cancel();
     }
 
@@ -365,6 +365,7 @@ Page {
             _enrollmentOperation = null;
             console.error("Enrollment failed", reason);
         }
+        onCanceled: _enrollmentOperation = null
         onProgressed: _setupPage.enrollmentProgressed(percent, details)
         onSucceeded: {
             if (!(result in sysSettings.fingerprintNames))
@@ -373,7 +374,6 @@ Page {
                 _setupPage.enrollmentCompleted();
             _enrollmentOperation = null;
         }
-        onCanceled: _enrollmentOperation = null
     }
 
     Observer {
@@ -385,12 +385,12 @@ Page {
             _diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometry clearance failed:", reason);
         }
+        onCanceled: _clearanceOperation = null
         onSucceeded: {
             _clearanceOperation = null;
             if (_diag) PopupUtils.close(_diag);
             sysSettings.fingerprintNames = {};
         }
-        onCanceled: _clearanceOperation = null
     }
 
     Observer {
@@ -402,13 +402,13 @@ Page {
                 _fpInstancePage.deletionFailed()
             console.error("Biometryd template deletion failed:", reason);
         }
+        onCanceled: _removalOperation = null
         onSucceeded: {
             _removalOperation = null;
             if (pageStack.currentPage === _fpInstancePage)
                 pageStack.pop();
             root.removeTemplate(result);
         }
-        onCanceled: _removalOperation = null
     }
 
     Observer {
@@ -420,11 +420,11 @@ Page {
             _diag = PopupUtils.open(fingerprintReaderBroken);
             console.error("Biometryd list failed:", reason);
         }
+        onCanceled: _listOperation = null
         onSucceeded: {
             _listOperation = null;
             root.assignNames(result);
         }
-        onCanceled: _listOperation = null
     }
 
     User {
