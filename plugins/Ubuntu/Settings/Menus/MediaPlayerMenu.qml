@@ -82,10 +82,10 @@ ListItem.Empty {
 
                 image: Image {
                     id: albumArtImage
-                    width:units.gu(8)
-                    height:width
-                    fillMode:Image.PreserveAspectFit
-                    sourceSize:Qt.size(width, height)
+                    width: units.gu(8)
+                    height: width
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize: Qt.size(width, height)
                     anchors.centerIn: parent
                 }
             }
