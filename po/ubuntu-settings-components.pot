@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-settings-components\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-09 13:33+0200\n"
+"POT-Creation-Date: 2016-06-15 12:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,125 +21,102 @@ msgstr ""
 msgid "Quick reply with:"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:30
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:80
+msgid "Fingerprint Name"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:107
+msgid "Delete Fingerprint"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:124
+msgid "Sorry, the fingerprint could not be deleted."
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:129
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:338
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:138
+#: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:148
+msgid "OK"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:32
 msgid "Fingerprint ID"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:134
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:93
+#, qt-format
+msgid "Finger %1"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:188
+msgid "Passcode required"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:192
 msgid "You must set a passcode to use fingerprint ID"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:142
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:199
 msgid "Set Passcode…"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:161
-msgid "One fingerprint registered."
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:275
+msgid "Add fingerprint"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:165
-msgid "Two fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:169
-msgid "Three fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:173
-msgid "Four fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:177
-msgid "Five fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:181
-msgid "Six fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:185
-msgid "Seven fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:189
-msgid "Eight fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:193
-msgid "Nine fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:225
-msgid "No fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:231
-#, qt-format
-msgid "%1 fingerprints registered."
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:245
-msgid "Add Fingerprint…"
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:253
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:288
 msgid "Remove All…"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:268
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:303
 msgid "Are you sure you want to forget all stored fingerprints?"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:277
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:373
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:312
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:358
 #: plugins/Ubuntu/Settings/Vpn/DialogFile.qml:161
 #: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:135
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:104
 msgid "Cancel"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:284
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:319
 #: plugins/Ubuntu/Settings/Vpn/VpnPreviewDialog.qml:84
 msgid "Remove"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:298
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:108
+#: plugins/Ubuntu/Settings/Fingerprint/Fingerprints.qml:333
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:103
 msgid "Sorry, the reader doesn’t seem to be working."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Fingerprint.qml:303
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:134
-#: plugins/Ubuntu/Settings/Vpn/VpnEditor.qml:148
-msgid "OK"
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:50
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:66
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:61
 msgid "Lift and press your finger again."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:79
-msgid "Keep your finger on the button for longer."
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:78
+msgid "Keep your finger on the reader for longer."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:99
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:94
 msgid "Back"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:128
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:131
 msgid "All done!"
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:166
-msgid "Suggested direction of finger placement"
-msgstr ""
-
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:339
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:297
 msgid "Place your finger on the home button."
 msgstr ""
 
-#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:398
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:311
+#, qt-format
+msgid "%1%"
+msgstr ""
+
+#: plugins/Ubuntu/Settings/Fingerprint/Setup.qml:383
 msgid "Next"
 msgstr ""
 
