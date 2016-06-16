@@ -172,7 +172,6 @@ Page {
 
         Column {
             anchors { left: parent.left; right: parent.right }
-            // spacing: units.gu(3)
 
             Column {
                 id: setupPasscode
