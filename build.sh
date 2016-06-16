@@ -55,6 +55,7 @@ install_dependencies() {
                          qml-module-ubuntu-connectivity \
                          ubuntu-mobile-icons \
                          ubuntu-system-settings \
+                         ubuntu-wallpapers \
                          unity-plugin-scopes \
                          xvfb \
         || exit 5

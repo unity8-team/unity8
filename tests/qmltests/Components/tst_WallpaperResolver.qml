@@ -32,7 +32,6 @@ Image {
 
     WallpaperResolver {
         id: wallpaperResolver
-        width: units.gu(70)
     }
 
     UnityTestCase {
@@ -81,8 +80,10 @@ Image {
 
             if (data.output === "defaultBackground") {
                 tryCompare(wallpaperResolver, "background", wallpaperResolver.defaultBackground);
+                verify(!wallpaperResolver.hasCustomBackground);
             } else {
                 tryCompare(wallpaperResolver, "background", data.output);
+                verify(wallpaperResolver.hasCustomBackground);
             }
         }
     }
