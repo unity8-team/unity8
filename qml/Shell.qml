@@ -146,7 +146,7 @@ StyledItem {
 
     WallpaperResolver {
         id: wallpaperResolver
-        width: shell.width
+        objectName: "wallpaperResolver"
     }
 
     readonly property alias greeter: greeterLoader.item
@@ -421,6 +421,7 @@ StyledItem {
             launcherOffset: launcher.progress
             forcedUnlock: wizard.active
             background: wallpaperResolver.background
+            hasCustomBackground: wallpaperResolver.hasCustomBackground
 
             // avoid overlapping with Launcher's edge drag area
             // FIXME: Fix TouchRegistry & friends and remove this workaround

@@ -27,6 +27,7 @@ FocusScope {
     property alias delayMinutes: lockscreen.delayMinutes
     property alias backgroundTopMargin: coverPage.backgroundTopMargin
     property url background
+    property bool hasCustomBackground
     property bool locked
     property bool alphanumeric
     property var userModel // unused
@@ -107,7 +108,7 @@ FocusScope {
         visible: required
         enabled: !coverPage.shown
         background: root.background
-        darkenBackground: 0.4
+        darkenBackground: root.hasCustomBackground ? 0.4 : 0
         alphaNumeric: root.alphanumeric
         minPinLength: 4
         maxPinLength: 4
@@ -156,6 +157,7 @@ FocusScope {
         height: parent.height
         width: parent.width
         background: root.background
+        hasCustomBackground: root.hasCustomBackground
         onTease: root.tease()
         onClicked: hide()
 

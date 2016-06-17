@@ -45,7 +45,7 @@ Item {
                 WideView {
                     id: view
 
-                    background: Qt.resolvedUrl("../../../qml/graphics/tablet_background.jpg")
+                    background: "/usr/share/backgrounds/warty-final-ubuntu.png"
                     userModel: LightDM.Users
                     infographicModel: LightDM.Infographic
 
@@ -386,6 +386,16 @@ Item {
             compare(selectedSpy.count, 1);
             compare(selectedSpy.signalArguments[0][0], 2);
             compare(view.currentIndex, 0); // confirm we didn't change
+        }
+
+        function test_customBackground() {
+            var coverPage = findChild(view, "coverPage");
+            var backgroundShade = findChild(coverPage, "backgroundShade");
+
+            verify(!backgroundShade.visible);
+
+            view.hasCustomBackground = true;
+            verify(backgroundShade.visible);
         }
 
         function test_respondedWithPassword() {

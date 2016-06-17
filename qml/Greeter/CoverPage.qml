@@ -25,6 +25,7 @@ Showable {
     property real dragHandleLeftMargin
     property real launcherOffset
     property alias background: greeterBackground.source
+    property alias hasCustomBackground: backgroundShade.visible
     property real backgroundTopMargin
     property var infographicModel
     property bool draggable: true
@@ -89,6 +90,8 @@ Showable {
     }
 
     Rectangle {
+        id: backgroundShade
+        objectName: "backgroundShade"
         anchors.fill: parent
         color: "black"
         opacity: 0.4

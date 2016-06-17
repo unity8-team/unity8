@@ -1287,6 +1287,22 @@ Rectangle {
             tryCompare(tutorial, "paused", false);
         }
 
+
+        function test_customBackground() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+
+            var wallpaperResolver = findInvisibleChild(shell, "wallpaperResolver");
+            var greeter = findChild(shell, "greeter");
+            verify(!greeter.hasCustomBackground);
+            compare(greeter.background, wallpaperResolver.defaultBackground);
+
+            AccountsService.backgroundFile = Qt.resolvedUrl("../graphics/applicationIcons/dash.png");
+            tryCompare(greeter, "hasCustomBackground", true);
+            compare(greeter.background, AccountsService.backgroundFile);
+        }
+
         function test_tapOnRightEdgeReachesApplicationSurface() {
             loadShell("phone");
             swipeAwayGreeter();
