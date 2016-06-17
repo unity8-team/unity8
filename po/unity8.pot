@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 20:59+0000\n"
+"POT-Creation-Date: 2016-06-17 12:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -262,7 +262,7 @@ msgid ""
 "touch pad to interact with the pointer."
 msgstr ""
 
-#: qml/Greeter/CoverPage.qml:118
+#: qml/Greeter/CoverPage.qml:121
 msgid "Unlock"
 msgstr ""
 
@@ -274,58 +274,58 @@ msgstr ""
 msgid "Tap to unlock"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:54
+#: qml/Greeter/NarrowView.qml:55
 msgid "Sorry, incorrect passphrase."
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:55
+#: qml/Greeter/NarrowView.qml:56
 msgid "Sorry, incorrect passcode."
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:56
+#: qml/Greeter/NarrowView.qml:57
 msgid "This will be your last attempt."
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:58
+#: qml/Greeter/NarrowView.qml:59
 msgid ""
 "If passphrase is entered incorrectly, your phone will conduct a factory "
 "reset and all personal data will be deleted."
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:59
+#: qml/Greeter/NarrowView.qml:60
 msgid ""
 "If passcode is entered incorrectly, your phone will conduct a factory reset "
 "and all personal data will be deleted."
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:116
+#: qml/Greeter/NarrowView.qml:117
 #, qt-format
 msgid "Enter %1"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:117
+#: qml/Greeter/NarrowView.qml:118
 msgid "Enter passphrase"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:118
+#: qml/Greeter/NarrowView.qml:119
 msgid "Enter passcode"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:119
+#: qml/Greeter/NarrowView.qml:120
 #, qt-format
 msgid "Sorry, incorrect %1"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:120
+#: qml/Greeter/NarrowView.qml:121
 msgid "Sorry, incorrect passphrase"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:121
+#: qml/Greeter/NarrowView.qml:122
 msgctxt "passphrase"
 msgid "Please re-enter"
 msgstr ""
 
-#: qml/Greeter/NarrowView.qml:122
+#: qml/Greeter/NarrowView.qml:123
 msgid "Sorry, incorrect passcode"
 msgstr ""
 
