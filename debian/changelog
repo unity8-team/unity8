@@ -1,3 +1,15 @@
+ubuntu-settings-components (0.7+16.10.20160617-0ubuntu1) yakkety; urgency=medium
+
+  [ Lukáš Tinkl ]
+  * Fix huge icons in network indicator caused by a binding loop (LP:
+    #1585645, #1586667)
+
+  [ Nick Dedekind ]
+  * Removed some of the timezone sensitive date code from calendar (LP:
+    #1450036, #1560188)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Fri, 17 Jun 2016 13:02:37 +0000
+
 ubuntu-settings-components (0.7+16.10.20160615.2-0ubuntu1) yakkety; urgency=medium
 
   * Make sure a size is specified for the albumArtImage for indicator-
