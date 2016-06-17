@@ -1,3 +1,11 @@
+ubuntu-settings-components (0.7+16.10.20160615.2-0ubuntu1) yakkety; urgency=medium
+
+  * Make sure a size is specified for the albumArtImage for indicator-
+    sound or else the albumart lookup via thumbnailer will fail and the
+    albumArtImage will not render.
+
+ -- Jim Hodapp <jim.hodapp@canonical.com>  Wed, 15 Jun 2016 20:33:30 +0000
+
 ubuntu-settings-components (0.7+16.10.20160519-0ubuntu1) yakkety; urgency=medium
 
   [ CI Train Bot ]
