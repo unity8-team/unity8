@@ -17,44 +17,31 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import "dateExt.js" as DateExt
+import "Calendar.js" as Cal
 
 ListView {
     id: monthView
 
     property bool collapsed: false
-    property var currentDate: selectedDate.monthStart().addDays(15)
+    property var currentDate: new Date(priv.today.year, priv.today.month, 1)
     property var firstDayOfWeek: Qt.locale(i18n.language).firstDayOfWeek
     property var maximumDate
     property var minimumDate
-    property var selectedDate: priv.today
+    property var selectedDate: new Date(priv.today.year, priv.today.month, priv.today.day)
+
+    function reset() {
+        if (!priv.ready) return;
+        currentDate = new Date(priv.today.year, priv.today.month, 1)
+    }
 
     Component.onCompleted: {
-        priv.__populateModel()
-        timer.start()
-    }
-
-    onCurrentIndexChanged: {
-        if (!priv.ready) return
-
-        currentDate = currentItem.monthStart
-    }
-
-    onCurrentDateChanged: {
-        if (!priv.ready) return
-
         priv.__populateModel();
     }
 
-    onMaximumDateChanged: {
-        if (!priv.ready) return
+    onCurrentIndexChanged: {
+        if (!priv.ready) return;
 
-        priv.__populateModel()
-    }
-
-    onMinimumDateChanged: {
-        if (!priv.ready) return
-
-        priv.__populateModel()
+        currentDate = new Date(currentItem.month.year, currentItem.month.month, 1);
     }
 
     ListModel {
@@ -67,89 +54,107 @@ ListView {
         property bool ready: false
         property int squareUnit: monthView.width / 7
         property int verticalMargin: units.gu(1)
-        property var today: (new Date()).midnight()
+        property var today: new Cal.Day().fromDate((new Date()))
 
-        function __withinLowerMonthBound(date) {
-            return minimumDate == undefined || date.monthStart() >= minimumDate.monthStart()
+        property var currentMonth: new Cal.Month().fromDate(currentDate)
+        property var selectedDay: new Cal.Day().fromDate(selectedDate)
+        property var minimumMonth: minimumDate ? new Cal.Month().fromDate(minimumDate) : undefined
+        property var maximumMonth: maximumDate ? new Cal.Month().fromDate(maximumDate) : undefined
+
+        property var minimumDay: minimumDate ? new Cal.Day().fromDate(minimumDate) : undefined
+        property var maximumDay: maximumDate ? new Cal.Day().fromDate(maximumDate) : undefined
+
+        onCurrentMonthChanged: {
+            if (!ready) return
+            __populateModel();
+        }
+        onSelectedDayChanged: {
+            if (!ready) return
+            __populateModel();
+        }
+        onMinimumMonthChanged: {
+            if (!ready) return
+            __populateModel();
+        }
+        onMaximumMonthChanged: {
+            if (!ready) return
+            __populateModel();
         }
 
-        function __withinUpperMonthBound(date) {
-            return maximumDate == undefined || date.monthStart() <= maximumDate.monthStart()
-        }
-
-        function __getRealMinimumDate(date) {
-            if (minimumDate != undefined && minimumDate > date) {
-                return minimumDate;
+        function __getRealMinimumMonth(month) {
+            if (minimumMonth !== undefined && minimumMonth > month) {
+                return minimumMonth;
             }
-            return date;
+            return month;
         }
 
-        function __getRealMaximumDate(date) {
-            if (maximumDate != undefined && maximumDate < date) {
-                return maximumDate;
+        function __getRealMaximumMonth(date) {
+            if (maximumMonth !== undefined && maximumMonth < month) {
+                return maximumMonth;
             }
-            return date;
+            return month;
         }
 
         function __populateModel() {
             //  disable the onCurrentIndexChanged logic
-            priv.ready = false
+            priv.ready = false;
 
-            var minimumAddedDate = priv.__getRealMinimumDate(currentDate.addMonths(-2)).monthStart();
-            var maximumAddedDate = priv.__getRealMaximumDate(currentDate.addMonths(2)).monthStart();
+            var minimumMonth = __getRealMinimumMonth(currentMonth).addMonths(-2);
+            var maximumMonth = __getRealMinimumMonth(currentMonth).addMonths(2);
 
             // Remove old minimum months
-            while (calendarModel.count > 0 && calendarModel.get(0).monthStart < minimumAddedDate) {
+            while (calendarModel.count > 0 && new Cal.Month(calendarModel.get(0).month) < minimumMonth) {
                 calendarModel.remove(0);
             }
             // Remove old maximum months
-            while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).monthStart > maximumAddedDate) {
+            while (calendarModel.count > 0 && new Cal.Month(calendarModel.get(calendarModel.count - 1).month) > maximumMonth) {
                 calendarModel.remove(calendarModel.count - 1);
             }
 
-            // Add new months
-            var i = 0;
-            while (calendarModel.count > 0 && calendarModel.get(0).monthStart > minimumAddedDate) {
-                calendarModel.insert(0, { "monthStart": calendarModel.get(0).monthStart.addMonths(-1) });
-                ++i;
-            }
-
             if (calendarModel.count > 0) {
-                i = 0;
-                while (calendarModel.count > 0 && calendarModel.get(calendarModel.count - 1).monthStart < maximumAddedDate) {
-                    calendarModel.append({ "monthStart": calendarModel.get(calendarModel.count - 1).monthStart.addMonths(1) });
-                    ++i;
+                // Add new months
+                var firstMonth = new Cal.Month(calendarModel.get(0).month);
+                while (firstMonth > minimumMonth) {
+                    calendarModel.insert(0, { "month": firstMonth.addMonths(-1) });
+                    firstMonth = new Cal.Month(calendarModel.get(0).month);
+                }
+
+                var lastMonth = new Cal.Month(calendarModel.get(calendarModel.count - 1).month);
+                while (lastMonth < maximumMonth) {
+                    calendarModel.append({ "month": lastMonth.addMonths(1) });
+                    lastMonth = new Cal.Month(calendarModel.get(calendarModel.count - 1).month);
                 }
             } else {
-                i = 0;
+                var i = 0;
                 do {
-                    calendarModel.append({ "monthStart": minimumAddedDate.addMonths(i) });
+                    calendarModel.append({ "month": minimumMonth.addMonths(i) });
                     ++i;
-                } while (calendarModel.get(i-1).monthStart < maximumAddedDate)
+                } while (minimumMonth.addMonths(i) <= maximumMonth)
             }
 
-            currentIndex = DateExt.diffMonths(minimumAddedDate, currentDate);
+            currentIndex = currentMonth - minimumMonth;
 
             // Ok, we're all set up. enable the onCurrentIndexChanged logic
             priv.ready = true
         }
     }
 
-    Timer {
-        id: timer
-        interval: 60000
-        repeat: true
-        running: true
-        triggeredOnStart: true
-
-        onTriggered: priv.today = (new Date()).midnight()
+    LiveTimer {
+        frequency: LiveTimer.Minute
+        onTrigger: {
+            var today = new Cal.Day().fromDate((new Date()));
+            if (!priv.today.equals(today)) {
+                priv.today = today;
+                reset();
+            }
+        }
     }
 
     width: parent.width
     height: priv.squareUnit * (collapsed ? 1 : 6) + priv.verticalMargin * 2
     interactive: !collapsed
     clip: true
-    cacheBuffer: Math.max(width + 1, 0)
+    cacheBuffer: Math.max((width+1) * 3, 0) // one page left, one page right
     highlightRangeMode: ListView.StrictlyEnforceRange
     preferredHighlightBegin: 0
     preferredHighlightEnd: width
@@ -157,6 +162,7 @@ ListView {
     orientation: ListView.Horizontal
     snapMode: ListView.SnapOneItem
     focus: true
+    highlightFollowsCurrentItem: true
 
     Keys.onLeftPressed: selectedDate.addDays(-1)
     Keys.onRightPressed: selectedDate.addDays(1)
@@ -164,10 +170,12 @@ ListView {
     delegate: Item {
         id: monthItem
 
-        property int currentWeekRow: Math.floor((selectedDate.getTime() - gridStart.getTime()) / Date.msPerWeek)
+        property int currentWeekRow: Math.floor((priv.selectedDay - gridStart) / 7)
         property var gridStart: monthStart.weekStart(firstDayOfWeek)
         property var monthEnd: monthStart.addMonths(1)
-        property var monthStart: model.monthStart
+        property var monthStart: new Cal.Day(model.month.year, model.month.month, 1)
+
+        property var month: new Cal.Month(model.month)
 
         width: monthView.width
         height: monthView.height
@@ -187,33 +195,23 @@ ListView {
                     id: dayItem
                     objectName: "dayItem" + index
 
-                    property bool isCurrent: (dayStart.getFullYear() == selectedDate.getFullYear() &&
-                                              dayStart.getMonth() == selectedDate.getMonth() &&
-                                              dayStart.getDate() == selectedDate.getDate())
-                    property bool isCurrentMonth: monthStart <= dayStart && dayStart < monthEnd
+                    property bool isCurrent: dayStart.equals(priv.selectedDay)
+                    property bool isCurrentMonth: (monthStart < dayStart || monthStart.equals(dayStart))  && dayStart < monthEnd
                     property bool isCurrentWeek: row == currentWeekRow
                     property bool isSunday: weekday == 0
-                    property bool isToday: dayStart.getTime() == priv.today.getTime()
-                    property bool isWithinBounds: (minimumDate == undefined || dayStart >= minimumDate) &&
-                                                  (maximumDate == undefined || dayStart <= maximumDate)
+                    property bool isToday: dayStart.equals(priv.today)
+                    property bool isWithinBounds: (priv.minimumDay === undefined || dayStart >= priv.minimumDay) &&
+                                                  (priv.maximumDay === undefined || dayStart <= priv.maximumDay)
                     property int row: Math.floor(index / 7)
                     property int weekday: (index % 7 + firstDayOfWeek) % 7
                     property real bottomMargin: (row == 5 || (collapsed && isCurrentWeek)) ? -priv.verticalMargin : 0
                     property real topMargin: (row == 0 || (collapsed && isCurrentWeek)) ? -priv.verticalMargin : 0
                     property var dayStart: gridStart.addDays(index)
 
-                    // Styling properties
-                    property color color: theme.palette.normal.backgroundText
-                    property color todayColor: theme.palette.normal.positive
-                    property string fontSize: "large"
-                    property var backgroundColor: "transparent" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
-                    property var sundayBackgroundColor: "#19AEA79F" // FIXME use color instead var when Qt will fix the bug with the binding (loses alpha)
-
                     visible: collapsed ? isCurrentWeek : true
                     width: priv.squareUnit
                     height: priv.squareUnit
 
-//                    ItemStyle.class: "day"
                     Item {
                         anchors {
                             fill: parent
@@ -223,19 +221,21 @@ ListView {
 
                         Rectangle {
                             anchors.fill: parent
-                            visible: color.a > 0
-                            color: isSunday ? dayItem.sundayBackgroundColor : dayItem.backgroundColor
+                            visible: isSunday
+                            opacity: 0.1
+                            color: UbuntuColors.warmGrey
                         }
 
                         Label {
                             anchors.centerIn: parent
-                            text: dayStart.getDate()
-                            fontSize: dayItem.fontSize
-                            color: isToday ? dayItem.todayColor : dayItem.color
-                            scale: isCurrent ? 1.8 : 1.
-                            opacity: isWithinBounds ? isCurrentMonth ? 1. : 0.3 : 0.1
+                            text: dayStart.day
+                            font.pixelSize: units.dp(isCurrent ? 36 : 20)
+                            color: isCurrentMonth && isWithinBounds ? isToday ? UbuntuColors.green :
+                                                                                theme.palette.normal.backgroundText :
+                                                                      theme.palette.disabled.backgroundText
+                            opacity: isWithinBounds ? 1. : 0.33
 
-                            Behavior on scale {
+                            Behavior on font.pixelSize {
                                 NumberAnimation { duration: 50 }
                             }
                         }
@@ -248,7 +248,9 @@ ListView {
                             bottomMargin: dayItem.bottomMargin
                         }
 
-                        onReleased: if (isWithinBounds) monthView.selectedDate = dayStart
+                        onClicked: {
+                            if (isWithinBounds) monthView.selectedDate = new Date(dayStart.year, dayStart.month, dayStart.day)
+                        }
                     }
                 }
             }
