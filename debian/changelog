@@ -1,9 +1,10 @@
-ubuntu-settings-components (0.8+16.10.20160615-0ubuntu1) UNRELEASED; urgency=medium
+ubuntu-settings-components (0.8+16.10.20160620-0ubuntu1) yakkety; urgency=medium
 
+  [ Jonas G. Drange ]
   jonas-drange
   * Add components for Fingerprint management.
 
- -- Jonas G. Drange <jonas.drange@canonical.com>  Wed, 15 June 2016 13:17:23 +0200
+ -- Ken VanDine <ken.vandine@canonical.com>  Mon, 20 Jun 2016 14:01:31 +0000
 
 ubuntu-settings-components (0.7+16.10.20160617-0ubuntu1) yakkety; urgency=medium
 
