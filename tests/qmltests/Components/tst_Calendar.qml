@@ -20,12 +20,15 @@ import QtQuick 2.4
 import QtTest 1.0
 import Ubuntu.Test 0.1
 import Ubuntu.Settings.Components 0.1
+import Ubuntu.Components 1.3
 
-Item {
+Rectangle {
     width: units.gu(42)
     height: units.gu(75)
 
-    Text {
+    color: theme.palette.normal.background
+
+    Label {
         id: label
         anchors {
             left: parent.left
@@ -44,8 +47,6 @@ Item {
             right: parent.right
             top: label.bottom
         }
-
-        selectedDate: new Date()
     }
 
     UbuntuTestCase {

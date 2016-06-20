@@ -5,6 +5,26 @@ ubuntu-settings-components (0.8+16.10.20160615-0ubuntu1) UNRELEASED; urgency=med
 
  -- Jonas G. Drange <jonas.drange@canonical.com>  Wed, 15 June 2016 13:17:23 +0200
 
+ubuntu-settings-components (0.7+16.10.20160617-0ubuntu1) yakkety; urgency=medium
+
+  [ Lukáš Tinkl ]
+  * Fix huge icons in network indicator caused by a binding loop (LP:
+    #1585645, #1586667)
+
+  [ Nick Dedekind ]
+  * Removed some of the timezone sensitive date code from calendar (LP:
+    #1450036, #1560188)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Fri, 17 Jun 2016 13:02:37 +0000
+
+ubuntu-settings-components (0.7+16.10.20160615.2-0ubuntu1) yakkety; urgency=medium
+
+  * Make sure a size is specified for the albumArtImage for indicator-
+    sound or else the albumart lookup via thumbnailer will fail and the
+    albumArtImage will not render.
+
+ -- Jim Hodapp <jim.hodapp@canonical.com>  Wed, 15 Jun 2016 20:33:30 +0000
+
 ubuntu-settings-components (0.7+16.10.20160519-0ubuntu1) yakkety; urgency=medium
 
   [ CI Train Bot ]
