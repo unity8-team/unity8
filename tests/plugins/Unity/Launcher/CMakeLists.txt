@@ -1,6 +1,6 @@
 pkg_check_modules(GSETTINGS_QT REQUIRED gsettings-qt)
 pkg_check_modules(GLIB REQUIRED glib-2.0>=2.32)
-pkg_check_modules(LAUNCHER_API REQUIRED unity-shell-launcher=7)
+pkg_check_modules(LAUNCHER_API REQUIRED unity-shell-launcher=9)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
