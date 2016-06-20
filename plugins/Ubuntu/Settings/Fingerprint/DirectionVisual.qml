@@ -97,7 +97,7 @@ Item {
         width: units.gu(5)
         height: width
 
-        name: "down"
+        name: "up"
         color: theme.palette.normal.activity
     }
 }
