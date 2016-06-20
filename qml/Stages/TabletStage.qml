@@ -656,11 +656,17 @@ AbstractStage {
                 Behavior on opacity { UbuntuNumberAnimation {} }
 
                 onShownChanged: {
-                    if (!shown && priv.sideStageDelegate && priv.focusedAppDelegate === priv.sideStageDelegate
-                            && priv.mainStageDelegate) {
-                        priv.mainStageDelegate.focus = true;
-                    } else if (shown && priv.sideStageDelegate) {
-                        priv.sideStageDelegate.focus = true;
+
+                    if (!shown && priv.sideStageDelegate && priv.focusedAppDelegate === priv.sideStageDelegate) {
+                        priv.updateMainAndSideStageIndexes();
+                        if (priv.mainStageDelegate) {
+                            priv.mainStageDelegate.focus = true;
+                        }
+                    } else if (shown) {
+                        priv.updateMainAndSideStageIndexes();
+                        if (priv.sideStageDelegate) {
+                            priv.sideStageDelegate.focus = true;
+                        }
                     }
                 }
 
@@ -835,11 +841,6 @@ AbstractStage {
                     }
 
                     property bool _constructing: true;
-                    onStageChanged: {
-                        if (!_constructing) {
-                            priv.updateMainAndSideStageIndexes();
-                        }
-                    }
 
                     Component.onCompleted: {
                         // a top level window is always the focused one when it first appears, unfocusing
@@ -948,6 +949,7 @@ AbstractStage {
                                             // Sidestage was focused, so show the side stage.
                                             sideStage.show();
                                         }
+                                        priv.updateMainAndSideStageIndexes();
                                     }
                                 }
                             }
@@ -959,8 +961,11 @@ AbstractStage {
                                     script: {
                                         if (priv.sideStageDelegate === spreadTile &&
                                                 mainApp && (mainApp.supportedOrientations & (Qt.PortraitOrientation|Qt.InvertedPortraitOrientation)) == 0) {
-                                            // The mainstage app did not natively support portrait orientation, so focus the sidestage.
+                                            // The mainstage app did not natively support portrait orientation, so focus the sidestage app.
                                             spreadTile.focus = true;
+                                            // Hide the sidestage.
+                                            // Since if we flip back the landscape only app, it will open the sidestage and go back to portrait.
+                                            sideStage.hide();
                                         }
                                     }
                                 }
@@ -968,7 +973,12 @@ AbstractStage {
                                     target: spreadTile
                                     properties: "width,height,supportedOrientations,shellOrientationAngle,shellOrientation,orientations"
                                 }
-                                ScriptAction { script: { spreadTile.matchShellOrientation(); } }
+                                ScriptAction {
+                                    script: {
+                                        spreadTile.matchShellOrientation();
+                                        priv.updateMainAndSideStageIndexes();
+                                    }
+                                }
                             }
                         }
                     ]

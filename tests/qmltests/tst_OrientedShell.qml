@@ -1388,6 +1388,49 @@ Rectangle {
             compare(shell.orientation, orientedShell.orientations.landscape);
         }
 
+        /*
+          Tests that if the device is rotated to portrait when a sidetage is open when a mainstage app
+          that does not support portrait orientation, the sidestage will be on top with focus and correct
+          portrait orientation.
+        */
+        function test_sideStageOnTopIfRotatedWithUnsupportedOrientationMainstageApp_data() {
+            return [
+                {tag: "manta-mainAppFocused", deviceName: "manta", mainFocued: true},
+                {tag: "manta-sideStageFocused", deviceName: "manta", mainFocued: false},
+                {tag: "flo-mainAppFocused", deviceName: "flo", mainFocued: true},
+                {tag: "flo-sideStageFocused", deviceName: "flo", mainFocued: false}
+            ];
+        }
+        function test_sideStageOnTopIfRotatedWithUnsupportedOrientationMainstageApp(data) {
+            loadShell(data.deviceName);
+            WindowStateStorage.saveStage("dialer-app", ApplicationInfoInterface.SideStage)
+
+            var primarySurfaceId = topLevelSurfaceList.nextId;
+            var primaryApp = ApplicationManager.startApplication("primary-oriented-app");
+            verify(primaryApp);
+            waitUntilAppWindowIsFullyLoaded(primarySurfaceId);
+
+            var dialerSurfaceId = topLevelSurfaceList.nextId;
+            var dialerApp = ApplicationManager.startApplication("dialer-app");
+            verify(dialerApp);
+            waitUntilAppWindowIsFullyLoaded(dialerSurfaceId);
+
+            var dialerAppWindow = findAppWindowForSurfaceId(dialerSurfaceId);
+            verify(dialerAppWindow)
+
+            if (data.mainFocused) {
+                ApplicationManager.requestFocusApplication("primary-oriented-app");
+                verify(isAppSurfaceFocused(primaryAppWindow));
+            }
+
+            // when rotating to portrait, the dialer should be in portrait and on top.
+            rotateTo(90);
+            tryCompareFunction(function(){return checkAppSurfaceOrientation(dialerAppWindow, dialerApp, root.primaryOrientationAngle + 90)}, true);
+            compare(shell.transformRotationAngle, root.primaryOrientationAngle + 90);
+            verify(isAppSurfaceFocused(dialerSurfaceId));
+        }
+
+
         //  angle - rotation angle in degrees clockwise, relative to the primary orientation.
         function rotateTo(angle) {
             switch (angle) {
