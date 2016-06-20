@@ -104,7 +104,7 @@ Item {
         }
 
         function test_initialState() {
-            var targetText = i18n.dtr("ubuntu-settings-components", "Place your finger on the home button.");
+            var targetText = i18n.dtr("ubuntu-settings-components", "Swipe your finger over the reader.");
             compare(getStatusLabel().text, targetText);
 
             tryCompare(getDefaultVisual(), "opacity", 1);
@@ -113,7 +113,7 @@ Item {
         }
 
         function test_startedState() {
-            var targetText = i18n.dtr("ubuntu-settings-components", "Lift and press your finger again.");
+            var targetText = i18n.dtr("ubuntu-settings-components", "Swipe your finger repeatedly over the reader.");
             setupInstance.enrollmentProgressed(0.5, {});
             statusLabelSpy.wait();
             compare(getStatusLabel().text, targetText);

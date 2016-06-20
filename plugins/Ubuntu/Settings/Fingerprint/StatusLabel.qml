@@ -51,7 +51,7 @@ Item {
         id: label
 
         font.pixelSize: units.gu(3.3)
-        horizontalAlignment: Text.AlignHCenter
+        horizontalAlignment: Text.AlignLeft
         height: units.gu(4)
         text: initialText
         width: parent.width

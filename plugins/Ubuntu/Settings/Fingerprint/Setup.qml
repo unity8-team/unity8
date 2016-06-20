@@ -57,7 +57,7 @@ Page {
             StateChangeScript {
                 script: statusLabel.setText(
                     i18n.dtr("ubuntu-settings-components",
-                             "Lift and press your finger again.")
+                             "Swipe your finger repeatedly over the reader.")
                 )
             }
             PropertyChanges {
@@ -293,7 +293,7 @@ Page {
                 topMargin: units.gu(5)
             }
             initialText: i18n.dtr("ubuntu-settings-components",
-                                  "Place your finger on the home button.")
+                                  "Swipe your finger over the reader.")
             objectName: "fingerprintStatusLabel"
         }
 
