@@ -38,16 +38,31 @@ BUILD_TYPE="debug"
 install_dependencies() {
     sudo apt-get update || exit 4
     echo "Installing Unity 8 dependencies.."
-    sudo apt-get install devscripts \
+    sudo apt-get install android-headers \
+                         dbus-test-runner \
+                         devscripts \
                          equivs \
                          gsettings-desktop-schemas \
                          gsettings-ubuntu-schemas \
+                         libandroid-properties-dev \
+                         libconnectivity-qt1-dev \
+                         libevdev-dev \
+                         libgeonames-dev \
+                         libgsettings-qt-dev \
+                         libhardware-dev \
+                         libpam0g-dev\
+                         libpay2-dev \
+                         libqmenumodel-dev \
+                         libsystemsettings-dev \
+                         libubuntugestures5-private-dev \
                          pay-service \
                          qmenumodel-qml \
                          qml-module-qtquick-layouts \
                          qml-module-qtquick-xmllistmodel \
                          qml-module-ubuntu-connectivity \
+                         qtbase5-private-dev \
                          qtdeclarative5-gsettings1.0 \
+                         qtdeclarative5-private-dev \
                          qtdeclarative5-ubuntu-settings-components \
                          qtdeclarative5-ubuntu-telephony0.1 \
                          qtdeclarative5-ubuntu-thumbnailer0.1 \
