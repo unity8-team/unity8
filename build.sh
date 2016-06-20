@@ -46,13 +46,13 @@ install_dependencies() {
                          qmenumodel-qml \
                          qml-module-qtquick-layouts \
                          qml-module-qtquick-xmllistmodel \
+                         qml-module-ubuntu-connectivity \
                          qtdeclarative5-gsettings1.0 \
-                         qtdeclarative5-ubuntu-ui-toolkit-plugin \
                          qtdeclarative5-ubuntu-settings-components \
                          qtdeclarative5-ubuntu-telephony0.1 \
                          qtdeclarative5-ubuntu-thumbnailer0.1 \
+                         qtdeclarative5-ubuntu-ui-toolkit-plugin \
                          qtdeclarative5-unity-notifications-plugin \
-                         qml-module-ubuntu-connectivity \
                          ubuntu-mobile-icons \
                          ubuntu-system-settings \
                          unity-plugin-scopes \
