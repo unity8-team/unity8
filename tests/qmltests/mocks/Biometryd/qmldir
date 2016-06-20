@@ -1,0 +1,2 @@
+module Biometryd
+plugin MockBiometryd

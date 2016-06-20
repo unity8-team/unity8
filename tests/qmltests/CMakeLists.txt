@@ -1,6 +1,8 @@
 # add_qml_test macro
 include(QmlTest)
 
+add_subdirectory(mocks)
+
 set(qmltest_DEFAULT_TARGETS qmluitests)
 set(qmltest_DEFAULT_NO_ADD_TEST TRUE)
 set(qmltest_DEFAULT_PROPERTIES ENVIRONMENT "LC_ALL=C")
@@ -40,3 +42,8 @@ add_qml_test(Vpn VpnOpenvpnEditor)
 add_qml_test(Vpn VpnPptpEditor)
 add_qml_test(Vpn VpnPreviewDialogCertificateChecks)
 add_qml_test(Vpn VpnPreviewDialog ENVIRONMENT NO_SSL_CERTIFICATE_CHECK=1)
+
+add_qml_test(Fingerprint Fingerprints IMPORT_PATHS ${CMAKE_CURRENT_BINARY_DIR}/mocks)
+add_qml_test(Fingerprint FingerprintNames IMPORT_PATHS ${CMAKE_CURRENT_BINARY_DIR}/mocks)
+add_qml_test(Fingerprint FingerprintSetup IMPORT_PATHS ${CMAKE_CURRENT_BINARY_DIR}/mocks)
+add_qml_test(Fingerprint FingerprintVisual)

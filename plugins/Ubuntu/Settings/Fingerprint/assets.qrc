@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>assets/shape-up@27.png</file>
+    <file>assets/shape-up@27.sci</file>
+    <file>assets/shape-down@27.png</file>
+    <file>assets/shape-down@27.sci</file>
+
+    <file>assets/fingerprint_segmented@27.png</file>
+    <file>assets/fingerprint_boxes.json</file>
+</qresource>
+</RCC>

@@ -1,0 +1,7 @@
+module Ubuntu.Settings.Fingerprint
+plugin UbuntuSettingsFingerprintQml
+
+Fingerprint 0.1 Fingerprint.qml
+Fingerprints 0.1 Fingerprints.qml
+FingerprintVisual 0.1 FingerprintVisual.qml
+Setup 0.1 Setup.qml

@@ -27,7 +27,10 @@ Package: qtdeclarative5-ubuntu-settings-components
 Architecture: any
 Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: qml-module-qtquick-layouts,
+Depends: gsettings-ubuntu-schemas (>= 0.0.7),
+         qml-module-biometryd,
+         qml-module-qtquick-layouts,
+         qtdeclarative5-gsettings1.0 (>=0.1+14.10.20140801.1),
          qtdeclarative5-ubuntu-ui-toolkit-plugin (>= 1.1) | qtdeclarative5-ubuntu-ui-toolkit-plugin-gles (>= 1.1),
          suru-icon-theme,
          ${misc:Depends},
