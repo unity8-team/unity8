@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014,2015 Canonical, Ltd.
+ * Copyright (C) 2013-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,9 @@ Showable {
             showNow(); // loader.onLoaded will select a user
         } else {
             d.selectUser(d.currentIndex, true);
+            if (loader.item) {
+                loader.item.reset(true /* forceShow */);
+            }
         }
     }
 
@@ -168,7 +171,7 @@ Showable {
                 return;
             d.waiting = true;
             if (reset) {
-                loader.item.reset();
+                loader.item.reset(false /* forceShow */);
             }
             currentIndex = index;
             var user = LightDMService.users.data(index, LightDMService.userRoles.NameRole);
@@ -211,6 +214,29 @@ Showable {
                     root.hideNow(); // skip hide animation
                 }
             }
+        }
+
+        function showPromptMessage(text, isError) {
+            // inefficient, but we only rarely deal with messages
+            var html = text.replace(/&/g, "&amp;")
+                           .replace(/</g, "&lt;")
+                           .replace(/>/g, "&gt;")
+                           .replace(/\n/g, "<br>");
+            if (isError) {
+                html = "<font color=\"#df382c\">" + html + "</font>";
+            }
+
+            if (loader.item) {
+                loader.item.showMessage(html);
+            }
+        }
+
+        function showFingerprintMessage(msg) {
+            if (loader.item) {
+                loader.item.reset(false /* forceShow */);
+                loader.item.showErrorMessage(msg);
+            }
+            showPromptMessage(msg, true);
         }
     }
 
@@ -427,20 +453,7 @@ Showable {
 
         onHideGreeter: d.login()
 
-        onShowMessage: {
-            // inefficient, but we only rarely deal with messages
-            var html = text.replace(/&/g, "&amp;")
-                           .replace(/</g, "&lt;")
-                           .replace(/>/g, "&gt;")
-                           .replace(/\n/g, "<br>");
-            if (isError) {
-                html = "<font color=\"#df382c\">" + html + "</font>";
-            }
-
-            if (loader.item) {
-                loader.item.showMessage(html);
-            }
-        }
+        onShowMessage: d.showPromptMessage(text, isError)
 
         onShowPrompt: {
             if (loader.item) {
@@ -545,10 +558,8 @@ Showable {
             if (!d.secureFingerprint) {
                 d.startUnlock(false /* toTheRight */); // use normal login instead
             }
-            if (loader.item) {
-                var msg = d.secureFingerprint ? i18n.tr("Try again") : "";
-                loader.item.showErrorMessage(msg);
-            }
+            var msg = d.secureFingerprint ? i18n.tr("Try again") : "";
+            d.showFingerprintMessage(msg);
         }
 
         Component.onCompleted: restartOperation()
@@ -566,8 +577,10 @@ Showable {
                 return;
             }
             console.log("Identified user by fingerprint:", result);
-            if (loader.item)
+            if (loader.item) {
+                loader.item.enabled = false;
                 loader.item.notifyAuthenticationSucceeded(true /* showFakePassword */);
+            }
             if (root.active)
                 root.forcedUnlock = true;
         }

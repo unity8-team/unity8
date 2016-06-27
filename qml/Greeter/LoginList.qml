@@ -28,6 +28,7 @@ StyledItem {
     property int currentIndex
     property bool locked
     property bool waiting
+    property alias boxVerticalOffset: highlightItem.y
 
     readonly property int numAboveBelow: 4
     readonly property int cellHeight: units.gu(5)
@@ -76,6 +77,10 @@ StyledItem {
 
     function reset() {
         root.resetAuthentication();
+    }
+
+    function showFakePassword() {
+        passwordInput.showFakePassword();
     }
 
     QtObject {
@@ -133,7 +138,6 @@ StyledItem {
             leftMargin: units.gu(2)
             right: parent.right
             rightMargin: units.gu(2)
-            verticalCenter: parent.verticalCenter
         }
         height: root.highlightedHeight
         aspect: UbuntuShape.Flat
@@ -148,8 +152,8 @@ StyledItem {
         anchors.leftMargin: units.gu(2)
         anchors.rightMargin: units.gu(2)
 
-        preferredHighlightBegin: userList.height / 2 - root.highlightedHeight / 2
-        preferredHighlightEnd: userList.height / 2 - root.highlightedHeight / 2
+        preferredHighlightBegin: highlightItem.y
+        preferredHighlightEnd: highlightItem.y
         highlightRangeMode: ListView.StrictlyEnforceRange
         highlightMoveDuration: root.moveDuration
         flickDeceleration: 10000

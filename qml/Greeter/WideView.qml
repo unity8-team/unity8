@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2015-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,9 @@ FocusScope {
     }
 
     function notifyAuthenticationSucceeded(showFakePassword) {
-        // Nothing needed
+        if (showFakePassword) {
+            loginList.showFakePassword();
+        }
     }
 
     function notifyAuthenticationFailed() {
@@ -72,7 +74,7 @@ FocusScope {
         coverPage.showErrorMessage(msg);
     }
 
-    function reset() {
+    function reset(forceShow) {
         loginList.reset();
     }
 
@@ -126,11 +128,13 @@ FocusScope {
                 left: parent.left
                 leftMargin: Math.min(parent.width * 0.16, units.gu(20))
                 top: parent.top
+                bottom: parent.bottom
             }
             width: units.gu(40)
-            height: inputMethod && inputMethod.visible ? parent.height - inputMethod.keyboardRectangle.height
-                                                       : parent.height
-            Behavior on height { UbuntuNumberAnimation {} }
+            boxVerticalOffset: (height - highlightedHeight -
+                               (inputMethod && inputMethod.visible ?
+                                inputMethod.keyboardRectangle.height : 0)) / 2
+            Behavior on boxVerticalOffset { UbuntuNumberAnimation {} }
 
             locked: root.locked
             waiting: root.waiting
