@@ -82,6 +82,11 @@ ListItem.Empty {
 
                     visible: name !== ""
                 }
+            }
+
+            Row {
+                spacing: units.gu(0.5)
+                height: parent.height
 
                 Label {
                     id: labelRoaming
