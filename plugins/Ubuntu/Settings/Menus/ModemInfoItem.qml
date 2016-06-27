@@ -47,7 +47,7 @@ ListItem.Empty {
             opacity: menu.locked ? 0.6 : 1.0
         }
 
-        RowLayout {
+        Row {
             id: statusRow
             spacing: units.gu(1)
 
@@ -60,7 +60,7 @@ ListItem.Empty {
                 opacity: 0.6
             }
 
-            RowLayout {
+            Row {
                 spacing: units.gu(0.5)
                 height: parent.height
                 Icon {
@@ -82,34 +82,25 @@ ListItem.Empty {
 
                     visible: name !== ""
                 }
-            }
 
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                RowLayout {
+                Label {
+                    id: labelRoaming
                     visible: menu.roaming
-                    anchors.fill: parent
+                    elide: Text.ElideRight
+                    fontSize: "x-small"
+                    text: i18n.dtr("ubuntu-settings-components", "Roaming")
+                    opacity: 0.6
+                }
 
-                    spacing: units.gu(0.5)
-                    Label {
-                        id: labelRoaming
-                        elide: Text.ElideRight
-                        fontSize: "x-small"
-                        text: i18n.dtr("ubuntu-settings-components", "Roaming")
-                        opacity: 0.6
-                    }
+                Icon {
+                    id: iconRoaming
+                    color: theme.palette.normal.backgroundText
+                    visible: menu.roaming
 
-                    Icon {
-                        id: iconRoaming
-                        color: theme.palette.normal.backgroundText
+                    height: labelStatus.height
+                    width: height
 
-                        height: labelStatus.height
-                        width: height
-
-                        name: "network-cellular-roaming"
-                    }
+                    name: "network-cellular-roaming"
                 }
             }
         }
