@@ -57,7 +57,7 @@ Item {
             }
         }
 
-        property point tp: recognizedPress ? Qt.point(touchPoints[0].x, touchPoints[0].y) : Qt.point(-1, -1)
+        readonly property point tp: recognizedPress ? Qt.point(touchPoints[0].x, touchPoints[0].y) : Qt.point(-1, -1)
         onUpdated: {
             if (recognizedDrag) {
                 priv.handlePositionChanged(tp.x, tp.y);
