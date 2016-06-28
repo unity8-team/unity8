@@ -34,9 +34,9 @@ Item {
         id: gestureArea
         anchors.fill: parent
 
-        // NB: for testing set to 2, not to clash with unity7 touch overlay controls
-        minimumTouchPoints: 3
-        maximumTouchPoints: minimumTouchPoints
+        // NB: for testing set maximumTouchPoints to 2, not to clash with unity7 touch overlay controls
+        minimumTouchPoints: priv.dragging ? 1 : maximumTouchPoints
+        maximumTouchPoints: 3
 
         readonly property bool recognizedPress: status == TouchGestureArea.Recognized &&
                                                 touchPoints.length >= minimumTouchPoints &&
@@ -57,7 +57,7 @@ Item {
             }
         }
 
-        readonly property point tp: recognizedPress ? Qt.point(touchPoints[0].x, touchPoints[0].y) : Qt.point(-1, -1)
+        property point tp: recognizedPress ? Qt.point(touchPoints[0].x, touchPoints[0].y) : Qt.point(-1, -1)
         onUpdated: {
             if (recognizedDrag) {
                 priv.handlePositionChanged(tp.x, tp.y);
