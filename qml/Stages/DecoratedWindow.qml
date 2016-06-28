@@ -23,8 +23,8 @@ import Unity.Application 0.1
 FocusScope {
     id: root
 
-    width: !counterRotate ? applicationWindow.width : applicationWindow.height
-    height: visibleDecorationHeight + (!counterRotate ? applicationWindow.height : applicationWindow.width)
+    implicitWidth: !counterRotate ? applicationWindow.implicitWidth : applicationWindow.implicitHeight
+    implicitHeight: visibleDecorationHeight + (!counterRotate ? applicationWindow.implicitHeight : applicationWindow.implicitWidth)
 
     property alias application: applicationWindow.application
     property alias surface: applicationWindow.surface
@@ -32,12 +32,17 @@ FocusScope {
     readonly property alias title: applicationWindow.title
     property alias fullscreen: applicationWindow.fullscreen
 
-    readonly property bool decorationShown: !fullscreen
+    // Whether we want it to sho in general
+    property bool showDecoration: true
+    // Whether it is actually shown. Even if showDecoration is true, this might be false for other reasons (e.g. app is fullscreened)
+    readonly property bool decorationShown: showDecoration && !fullscreen
     property bool highlightShown: false
     property real shadowOpacity: 1
 
-    property real requestedWidth
-    property real requestedHeight
+    property alias resizeSurface: applicationWindow.resizeSurface
+    property alias requestedWidth: applicationWindow.requestedWidth
+    property alias requestedHeight: applicationWindow.requestedHeight
+
     property alias surfaceOrientationAngle: applicationWindow.surfaceOrientationAngle
     readonly property real visibleDecorationHeight: root.decorationShown ? decoration.height : 0
     readonly property bool counterRotate: surfaceOrientationAngle != 0 && surfaceOrientationAngle != 180
@@ -105,13 +110,19 @@ FocusScope {
         id: applicationWindow
         objectName: "appWindow"
         anchors.top: parent.top
-        anchors.topMargin: decoration.height
+        anchors.topMargin: root.decorationShown ? decoration.height : 0
         anchors.left: parent.left
+        width: root.width
+        height: root.height - anchors.topMargin
         readonly property real requestedHeightMinusDecoration: root.requestedHeight - root.visibleDecorationHeight
         requestedHeight: !counterRotate ? requestedHeightMinusDecoration : root.requestedWidth
         requestedWidth: !counterRotate ? root.requestedWidth : requestedHeightMinusDecoration
         interactive: true
         focus: true
+
+        Behavior on anchors.topMargin {
+            UbuntuNumberAnimation { duration: 4000 }
+        }
 
         transform: Rotation {
                 readonly property int rotationAngle: applicationWindow.application &&
