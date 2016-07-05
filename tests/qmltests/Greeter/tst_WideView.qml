@@ -18,7 +18,7 @@ import QtQuick 2.4
 import QtTest 1.0
 import ".."
 import "../../../qml/Greeter"
-import LightDM.IntegratedLightDM 0.1 as LightDM
+import LightDM 0.1 as LightDM
 import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
 
@@ -28,12 +28,6 @@ StyledItem {
     height: units.gu(80)
 
     theme.name: "Ubuntu.Components.Themes.SuruDark"
-
-    Binding {
-        target: LightDM.Users
-        property: "mockMode"
-        value: "full"
-    }
 
     Row {
         anchors.fill: parent

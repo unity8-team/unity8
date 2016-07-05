@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013-2016 Canonical, Ltd.
  * Copyright (C) 2010-2011 David Edmundson.
  * Copyright (C) 2010-2011 Robert Ancell
  *
@@ -21,17 +21,12 @@
 #ifndef UNITY_MOCK_GREETER_H
 #define UNITY_MOCK_GREETER_H
 
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
-
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * CHANGES MADE HERE MUST BE REFLECTED ON THE MOCK LIB
- * COUNTERPART IN tests/mocks/Lightdm/liblightdm
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+#include <QObject>
+#include <QVariant>
 
 namespace QLightDM
 {
-    class GreeterPrivate;
+class GreeterPrivate;
 
 class Q_DECL_EXPORT Greeter : public QObject
 {
@@ -48,6 +43,8 @@ class Q_DECL_EXPORT Greeter : public QObject
     Q_PROPERTY(bool locked READ lockHint CONSTANT)
 
     Q_ENUMS(PromptType MessageType)
+
+    Q_PROPERTY(QObject *mock READ mock CONSTANT) // only in mock
 
 public:
     enum PromptType {
@@ -81,6 +78,8 @@ public:
     QString authenticationUser() const;
     QString hostname() const;
 
+    QObject *mock();
+
 public Q_SLOTS:
     bool connectSync();
     void authenticate(const QString &username=QString());
@@ -98,10 +97,12 @@ Q_SIGNALS:
     void authenticationComplete();
     void autologinTimerExpired();
 
-protected:
-    void sendAuthenticationComplete();
+private Q_SLOTS:
+    void handleAuthenticate();
 
 private:
+    void sendAuthenticationComplete();
+
     GreeterPrivate *d_ptr;
     Q_DECLARE_PRIVATE(Greeter)
 };
