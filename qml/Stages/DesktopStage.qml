@@ -669,6 +669,7 @@ AbstractStage {
                     surface: model.surface
                     active: appDelegate.focus
                     focus: true
+                    roundedBottomCorners: !appDelegate.maximized && !appDelegate.fullscreen
                     maximizeButtonShown: (maximumWidth == 0 || maximumWidth >= appContainer.width) &&
                                          (maximumHeight == 0 || maximumHeight >= appContainer.height)
                     overlayShown: touchControls.overlayShown

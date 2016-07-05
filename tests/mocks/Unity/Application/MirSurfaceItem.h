@@ -25,6 +25,8 @@
 // unity-api
 #include <unity/shell/application/MirSurfaceItemInterface.h>
 
+#include <private/qquickshadereffectsource_p.h>
+
 class MirSurfaceItem : public unity::shell::application::MirSurfaceItemInterface
 {
     Q_OBJECT
@@ -70,10 +72,10 @@ public:
     FillMode fillMode() const override { return m_fillMode; }
     void setFillMode(FillMode value) override;
 
+    QSGTextureProvider *textureProvider() const override;
+
     /////
     // For use in qml tests
-
-    void setLive(bool live);
 
     int touchPressCount() const { return m_touchPressCount; }
     void setTouchPressCount(int count) { m_touchPressCount = count; Q_EMIT touchPressCountChanged(count); }
@@ -98,6 +100,7 @@ protected:
     void mousePressEvent(QMouseEvent * event) override;
     void mouseMoveEvent(QMouseEvent * event) override;
     void mouseReleaseEvent(QMouseEvent * event) override;
+    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
 
 private Q_SLOTS:
     void onComponentStatusChanged(QQmlComponent::Status status);
@@ -114,6 +117,7 @@ private:
 
     QQmlComponent *m_qmlContentComponent;
     QQuickItem *m_qmlItem;
+    QQuickShaderEffectSource m_shaderEffectSource;
 
     bool m_consumesInput;
 

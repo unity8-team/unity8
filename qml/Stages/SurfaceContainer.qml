@@ -37,6 +37,7 @@ FocusScope {
     // FIME - dont export, use interactive property. Need to fix qtmir to handle consumesInputChanged
     // to update surface activeFocus. See mock MirSurfaceItem.
     property alias consumesInput: surfaceItem.consumesInput
+    property bool roundedBottomCorners: false
 
     onSurfaceChanged: {
         // Not a binding because animations might remove the surface from the surfaceItem
@@ -91,6 +92,19 @@ FocusScope {
         enabled: root.interactive
         antialiasing: !root.interactive
         orientationAngle: root.surfaceOrientationAngle
+    }
+
+    Loader {
+        anchors.fill: surfaceItem
+        active: root.roundedBottomCorners && surfaceItem.visible
+
+        sourceComponent: BottomCornerRounder {
+            textureItem: surfaceItem
+
+            ItemCuller {
+                target: surfaceItem
+            }
+        }
     }
 
     TouchGate {

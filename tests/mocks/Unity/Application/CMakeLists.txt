@@ -1,3 +1,7 @@
+include_directories(
+    ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
+)
+
 set(FakeUnityApplicationQml_SOURCES
     plugin.cpp
     ApplicationInfo.cpp

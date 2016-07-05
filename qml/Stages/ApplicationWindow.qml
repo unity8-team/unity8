@@ -46,6 +46,7 @@ FocusScope {
     property alias resizeSurface: surfaceContainer.resizeSurface
     property int requestedWidth: -1
     property int requestedHeight: -1
+    property alias roundedBottomCorners: surfaceContainer.roundedBottomCorners
 
     readonly property int minimumWidth: surface ? surface.minimumWidth : 0
     readonly property int minimumHeight: surface ? surface.minimumHeight : 0
@@ -184,6 +185,7 @@ FocusScope {
                 backgroundColor: d.splashColor
                 headerColor: d.splashColorHeader
                 footerColor: d.splashColorFooter
+                roundedBottomCorners: root.roundedBottomCorners
             }
         }
     }

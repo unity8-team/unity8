@@ -42,6 +42,7 @@ MirSurfaceItem::MirSurfaceItem(QQuickItem *parent)
     , m_qmlSurface(nullptr)
     , m_qmlContentComponent(nullptr)
     , m_qmlItem(nullptr)
+    , m_shaderEffectSource(this)
     , m_consumesInput(false)
     , m_surfaceWidth(0)
     , m_surfaceHeight(0)
@@ -62,6 +63,8 @@ MirSurfaceItem::MirSurfaceItem(QQuickItem *parent)
     connect(this, &MirSurfaceItem::consumesInputChanged, this, [this]() {
         updateMirSurfaceActiveFocus(hasActiveFocus());
     });
+
+    m_shaderEffectSource.setHideSource(true);
 }
 
 MirSurfaceItem::~MirSurfaceItem()
@@ -168,6 +171,8 @@ void MirSurfaceItem::createQmlContentItem()
     m_qmlItem = qobject_cast<QQuickItem*>(m_qmlContentComponent->create());
     m_qmlItem->setParentItem(this);
 
+    m_shaderEffectSource.setSourceItem(m_qmlItem);
+
     setImplicitWidth(m_qmlItem->implicitWidth());
     setImplicitHeight(m_qmlItem->implicitHeight());
 
@@ -233,6 +238,8 @@ void MirSurfaceItem::setSurface(MirSurfaceInterface* surface)
     }
 
     if (m_qmlSurface) {
+        m_shaderEffectSource.setSourceItem(nullptr);
+
         delete m_qmlItem;
         m_qmlItem = nullptr;
 
@@ -301,6 +308,15 @@ void MirSurfaceItem::updateMirSurfaceActiveFocus(bool focused)
     }
 }
 
+void MirSurfaceItem::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+{
+    unity::shell::application::MirSurfaceItemInterface::geometryChanged(newGeometry, oldGeometry);
+    if (newGeometry != oldGeometry) {
+        m_shaderEffectSource.setWidth(newGeometry.width());
+        m_shaderEffectSource.setHeight(newGeometry.height());
+    }
+}
+
 void MirSurfaceItem::updateMirSurfaceVisibility()
 {
     if (!m_qmlSurface) return;
@@ -357,4 +373,11 @@ void MirSurfaceItem::setFillMode(FillMode value)
         m_fillMode = value;
         Q_EMIT fillModeChanged(m_fillMode);
     }
+}
+
+QSGTextureProvider *MirSurfaceItem::textureProvider() const
+{
+    // This is so that the fake MirSurfaceItem is a texture provider
+    // the real qtmir is already one without the need for extra layering
+    return m_shaderEffectSource.textureProvider();
 }
