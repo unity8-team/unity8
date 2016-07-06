@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.4
+import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
 import Ubuntu.Telephony 0.1 as Telephony
 import "../Components"
@@ -116,6 +117,7 @@ FocusScope {
         id: lockscreen
         objectName: "lockscreen"
         anchors.fill: parent
+        shown: false
 
         showAnimation: StandardAnimation { property: "opacity"; to: 1 }
         hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
@@ -130,8 +132,8 @@ FocusScope {
             source: root.background
             fillMode: Image.PreserveAspectCrop
             // Limit how much memory we'll reserve for this image
-            sourceSize.height: height
-            sourceSize.width: width
+            sourceSize.height: Math.max(Screen.width, Screen.height)
+            sourceSize.width: 0
         }
 
         // Darken background to match CoverPage
@@ -203,6 +205,7 @@ FocusScope {
             }
 
             Label {
+                objectName: "emergencyCallLabel"
                 text: callManager.hasCalls ? i18n.tr("Return to Call") : i18n.tr("Emergency")
                 anchors.right: parent.right
                 anchors.rightMargin: units.gu(2)
@@ -216,7 +219,6 @@ FocusScope {
                 enabled: visible
 
                 AbstractButton {
-                    objectName: "emergencyCallButton"
                     anchors.fill: parent
                     anchors.leftMargin: -units.gu(2)
                     anchors.rightMargin: -units.gu(2)

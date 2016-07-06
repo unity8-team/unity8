@@ -24,6 +24,10 @@
 class MockTelepathyHelper : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool emergencyCallsAvailable
+               READ emergencyCallsAvailable
+               WRITE setEmergencyCallsAvailable // only in mock
+               NOTIFY emergencyCallsAvailableChanged)
     Q_DISABLE_COPY(MockTelepathyHelper)
 public:
     MockTelepathyHelper(QObject *parent = 0);
@@ -31,6 +35,15 @@ public:
     static MockTelepathyHelper *instance();
 
     Q_INVOKABLE void registerChannelObserver(const QString& name);
+
+    bool emergencyCallsAvailable() const;
+    void setEmergencyCallsAvailable(bool value);
+
+Q_SIGNALS:
+    void emergencyCallsAvailableChanged();
+
+private:
+    bool m_emergencyCallsAvailable;
 };
 
 #endif // MOCKCONTACTWATCHER_H

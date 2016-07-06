@@ -63,7 +63,7 @@ FocusScope {
 
         onEnabledChanged: {
             if (!enabled) {
-                fakeLabel.text = displayText;
+                fakeLabel.text = passwordInput.displayText;
             }
         }
     }

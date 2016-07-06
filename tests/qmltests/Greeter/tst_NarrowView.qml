@@ -328,14 +328,6 @@ Item {
             waitForRendering(view);
         }
 
-        function enterPin(pin) {
-            for (var i = 0; i < pin.length; ++i) {
-                var character = pin.charAt(i);
-                var button = findChild(view, "pinPadButton" + character);
-                tap(button);
-            }
-        }
-
         function test_tease_data() {
             return [
                 {tag: "left", x: 0, offset: 0, count: 1},
@@ -352,8 +344,9 @@ Item {
 
         function test_respondedWithPin() {
             view.locked = true;
+            view.showPrompt("", true, true);
             swipeAwayCover();
-            enterPin("1234");
+            typeString("1234");
             compare(respondedSpy.count, 1);
             compare(respondedSpy.signalArguments[0][0], "1234");
         }
@@ -361,6 +354,7 @@ Item {
         function test_respondedWithPassphrase() {
             view.locked = true;
             view.alphanumeric = true;
+            view.showPrompt("", true, true);
             swipeAwayCover();
             typeString("test");
             keyClick(Qt.Key_Enter);
@@ -491,7 +485,7 @@ Item {
             touchFlick(view,
                     data.startX, view.height / 2, // start pos
                     data.endX, view.height / 2); // end pos
-
+    
             tryCompare(coverPage, "x", data.hiddenX);
             tryCompare(coverPage, "visible", false);
             tryCompare(coverPage, "shown", false);

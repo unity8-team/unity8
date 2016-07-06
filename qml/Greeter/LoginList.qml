@@ -133,6 +133,7 @@ StyledItem {
 
     UbuntuShape {
         id: highlightItem
+        objectName: "highlightItem"
         anchors {
             left: parent.left
             leftMargin: units.gu(2)
