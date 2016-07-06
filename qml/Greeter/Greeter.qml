@@ -200,7 +200,7 @@ Showable {
         }
 
         function startUnlock(toTheRight) {
-            if (loader.item && !d.waiting) {
+            if (loader.item) {
                 return loader.item.tryToUnlock(toTheRight);
             } else {
                 return false;
