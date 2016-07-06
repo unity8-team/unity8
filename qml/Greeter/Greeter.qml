@@ -71,14 +71,17 @@ Showable {
             d.isLockscreen = true;
         }
         forcedUnlock = false;
-        if (!required) {
-            showNow(); // loader.onLoaded will select a user
-        } else {
+        if (required) {
+            // Normally loader.onLoaded will select a user, but if we're
+            // already shown, do it manually.
             d.selectUser(d.currentIndex, true);
             if (loader.item) {
                 loader.item.reset(true /* forceShow */);
             }
         }
+        // Even though we may already be shown, we want to call show() for its
+        // possible side effects, like hiding indicators and such.
+        showNow();
     }
 
     function notifyAppFocusRequested(appId) {
