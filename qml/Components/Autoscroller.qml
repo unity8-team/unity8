@@ -22,6 +22,13 @@ Item {
 
     property bool enabled: false
     property bool horizontal: false
+
+    // Uses an animation to smooth scrolling.
+    // This is useful for a large delay/step, but with smaller
+    // values it creates too much lag and should be disabled.
+    // The default value of 2dp/2ms ensures an update for every event loop
+    // and an animation can't smooth that anyway.
+    property bool smoothScrolling: false
     property bool variableVelocity: true
     property int delay: 2 // ms delay between scrolls
     property real areaLength: units.gu(5)
@@ -81,6 +88,11 @@ Item {
 
         property real relevantContentAxis
         property real relevantMouseAxis
+
+        Behavior on relevantContentAxis {
+            animation: UbuntuNumberAnimation{}
+            enabled: root.smoothScrolling
+        }
     }
 
     Timer {
@@ -118,9 +130,6 @@ Item {
             }
         }
     }
-
-    property alias animationProperty: d.relevantContentAxis
-    Behavior on animationProperty { UbuntuNumberAnimation{} }
 
     Binding {
         target: root.flickable
