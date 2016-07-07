@@ -20,6 +20,7 @@ import ".."
 import "../../../qml/Greeter"
 import LightDM.IntegratedLightDM 0.1 as LightDM
 import Ubuntu.Components 1.3
+import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Test 0.1 as UT
 
 Item {
@@ -293,6 +294,7 @@ Item {
         function init() {
             view.currentIndex = 0; // break binding with text field
 
+            telepathyHelper.emergencyCallsAvailable = true;
             selectedSpy.clear();
             respondedSpy.clear();
             teaseSpy.clear();
@@ -376,12 +378,20 @@ Item {
             compare(respondedSpy.signalArguments[0][0], "");
         }
 
-        function test_emergencyCall() {
+        function test_emergencyCall_data() {
+            return [
+                {tag: "phone", available: true},
+                {tag: "desktop", available: false},
+            ];
+        }
+        function test_emergencyCall(data) {
+            telepathyHelper.emergencyCallsAvailable = data.available;
             view.locked = true;
             swipeAwayCover();
             var emergencyCallLabel = findChild(view, "emergencyCallLabel");
             tap(emergencyCallLabel);
-            compare(emergencySpy.count, 1);
+            compare(emergencyCallLabel.visible, data.available ? true : false);
+            compare(emergencySpy.count, data.available ? 1 : 0);
         }
 
         function test_fullyShown() {
