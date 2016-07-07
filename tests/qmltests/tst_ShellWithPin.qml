@@ -578,6 +578,7 @@ Item {
             tryCompare(launcherPanel, "x", 0);
 
             // Greeter should be displaced
+            var coverPage = findChild(shell, "coverPage");
             tryCompareFunction(function() { return coverPage.mapToItem(shell, 0, 0).x > shell.width*0.2; }, true);
 
             touchRelease(shell, toX, shell.height * 0.5);

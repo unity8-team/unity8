@@ -41,7 +41,7 @@ FocusScope {
     // so that it can be replaced in tests with a mock object
     property var inputMethod: Qt.inputMethod
 
-    signal selected(int index) // unused
+    signal selected(int index)
     signal responded(string response)
     signal tease()
     signal emergencyCall()
@@ -159,7 +159,7 @@ FocusScope {
 
             locked: root.locked
 
-            onSelected: root.selected(index)
+            onSelected: if (enabled) root.selected(index)
             onResponded: root.responded(response)
         }
 
