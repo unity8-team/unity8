@@ -19,6 +19,7 @@
 // Qt
 #include <QLibrary>
 #include <QScreen>
+#include <QQmlContext>
 
 #include <libintl.h>
 
@@ -94,7 +95,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     }
     #endif
 
-    new DebuggingController(this);
+    m_qmlEngine->rootContext()->setContextProperty("DebuggingController", new DebuggingController(this));
 
     // Some hard-coded policy for now.
     // NB: We don't support more than two screens at the moment
