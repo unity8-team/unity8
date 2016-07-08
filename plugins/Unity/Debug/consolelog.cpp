@@ -121,8 +121,6 @@ void LogRedirector::run()
 
 void LogRedirector::checkLog()
 {
-    std::string captured;
-
     // Do not allow read to block with no data.
     // If we stop the thread while waiting a read,
     // it will block the main thread waiting for this thread to stop.
@@ -130,6 +128,7 @@ void LogRedirector::checkLog()
     ioctl(m_pipe[READ], FIONREAD, &count);
     if (count <= 0) return;
 
+    std::string captured;
     std::string buf;
     const int bufSize = 1024;
     buf.resize(bufSize);
