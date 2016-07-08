@@ -121,11 +121,11 @@ void LogRedirector::run()
 
 void LogRedirector::checkLog()
 {
-    // dont allow a start/stop stop while in checkLog
     std::string captured;
 
     // Do not allow read to block with no data.
-    // This would cause thread to block until new data arrives.
+    // If we stop the thread while waiting a read,
+    // it will block the main thread waiting for this thread to stop.
     int count = 0;
     ioctl(m_pipe[READ], FIONREAD, &count);
     if (count <= 0) return;
