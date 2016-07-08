@@ -16,8 +16,6 @@
 
 #include "consolelog.h"
 
-#include <QDebug>
-
 #include <unistd.h>
 #include <stdio.h>
 #include <thread>
