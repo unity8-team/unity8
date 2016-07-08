@@ -27,7 +27,7 @@
 namespace
 {
 
-int secure_fd(std::function<int(void)> fn)
+int wait_fd(std::function<int(void)> fn)
 {
     int ret = -1;
     bool fd_blocked = false;
@@ -36,11 +36,16 @@ int secure_fd(std::function<int(void)> fn)
          ret = fn();
          fd_blocked = (errno == EINTR ||  errno == EBUSY);
          if (fd_blocked)
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            QThread::msleep(10);
     }
     while (ret < 0);
     return ret;
 }
+
+#define PIPE_WAIT(val) wait_fd(std::bind(pipe, val))
+#define DUP_WAIT(fd) wait_fd(std::bind(dup, fd))
+#define DUP2_WAIT(fd1, fd2) wait_fd(std::bind(dup2, fd1, fd2))
+#define CLOSE_WAIT(fd) wait_fd(std::bind(close, fd))
 
 }
 
@@ -60,13 +65,14 @@ LogRedirector::LogRedirector()
 
 void LogRedirector::run()
 {
-    secure_fd(std::bind(pipe, m_pipe));
+    PIPE_WAIT(m_pipe);
 
-    int oldStdOut = secure_fd(std::bind(dup, fileno(stdout)));
-    int oldStdErr = secure_fd(std::bind(dup, fileno(stderr)));
+    int oldStdOut = DUP_WAIT(fileno(stdout));
+    int oldStdErr = DUP_WAIT(fileno(stderr));
 
-    secure_fd(std::bind(dup2, m_pipe[WRITE], fileno(stdout)));
-    secure_fd(std::bind(dup2, m_pipe[WRITE], fileno(stderr)));
+    DUP2_WAIT(m_pipe[WRITE], fileno(stdout));
+    DUP2_WAIT(m_pipe[WRITE], fileno(stderr));
+    CLOSE_WAIT(m_pipe[WRITE]);
 
     while(true) {
         {
@@ -74,15 +80,15 @@ void LogRedirector::run()
             if (m_stop) break;
         }
         checkLog();
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        QThread::msleep(50);
     }
 
-    secure_fd(std::bind(dup2, oldStdOut, fileno(stdout)));
-    secure_fd(std::bind(dup2, oldStdErr, fileno(stderr)));
+    DUP2_WAIT(oldStdOut, fileno(stdout));
+    DUP2_WAIT(oldStdErr, fileno(stderr));
 
-    secure_fd(std::bind(close, oldStdOut));
-    secure_fd(std::bind(close, oldStdErr));
-    secure_fd(std::bind(close, m_pipe[READ]));
+    CLOSE_WAIT(oldStdOut);
+    CLOSE_WAIT(oldStdErr);
+    CLOSE_WAIT(m_pipe[READ]);
 }
 
 
