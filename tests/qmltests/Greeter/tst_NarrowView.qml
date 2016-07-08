@@ -495,7 +495,7 @@ Item {
             touchFlick(view,
                     data.startX, view.height / 2, // start pos
                     data.endX, view.height / 2); // end pos
-    
+
             tryCompare(coverPage, "x", data.hiddenX);
             tryCompare(coverPage, "visible", false);
             tryCompare(coverPage, "shown", false);
