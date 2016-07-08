@@ -22,13 +22,18 @@
 #include <iostream>
 #include <sys/ioctl.h>
 
-int secure_dup(int src)
+#include <functional>
+
+namespace
+{
+
+int secure_fd(std::function<int(void)> fn)
 {
     int ret = -1;
     bool fd_blocked = false;
     do
     {
-         ret = dup(src);
+         ret = fn();
          fd_blocked = (errno == EINTR ||  errno == EBUSY);
          if (fd_blocked)
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -36,46 +41,7 @@ int secure_dup(int src)
     while (ret < 0);
     return ret;
 }
-void secure_pipe(int * pipes)
-{
-    int ret = -1;
-    bool fd_blocked = false;
-    do
-    {
-        ret = pipe(pipes) == -1;
-        fd_blocked = (errno == EINTR ||  errno == EBUSY);
-        if (fd_blocked)
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-    while (ret < 0);
-}
-void secure_dup2(int src, int dest)
-{
-    int ret = -1;
-    bool fd_blocked = false;
-    do
-    {
-         ret = dup2(src,dest);
-         fd_blocked = (errno == EINTR ||  errno == EBUSY);
-         if (fd_blocked)
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-    while (ret < 0);
-}
 
-void secure_close(int & fd)
-{
-    int ret = -1;
-    bool fd_blocked = false;
-    do
-    {
-         ret = close(fd);
-         fd_blocked = (errno == EINTR);
-         if (fd_blocked)
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-    while (ret < 0);
-    fd = -1;
 }
 
 LogRedirector::LogRedirector()
@@ -94,12 +60,13 @@ LogRedirector::LogRedirector()
 
 void LogRedirector::run()
 {
-    secure_pipe(m_pipe);
-    int oldStdOut = secure_dup(fileno(stdout));
-    int oldStdErr = secure_dup(fileno(stderr));
+    secure_fd(std::bind(pipe, m_pipe));
 
-    secure_dup2(m_pipe[WRITE], fileno(stdout));
-    secure_dup2(m_pipe[WRITE], fileno(stderr));
+    int oldStdOut = secure_fd(std::bind(dup, fileno(stdout)));
+    int oldStdErr = secure_fd(std::bind(dup, fileno(stderr)));
+
+    secure_fd(std::bind(dup2, m_pipe[WRITE], fileno(stdout)));
+    secure_fd(std::bind(dup2, m_pipe[WRITE], fileno(stderr)));
 
     while(true) {
         {
@@ -110,12 +77,12 @@ void LogRedirector::run()
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
-    secure_dup2(oldStdOut, fileno(stdout));
-    secure_dup2(oldStdErr, fileno(stderr));
+    secure_fd(std::bind(dup2, oldStdOut, fileno(stdout)));
+    secure_fd(std::bind(dup2, oldStdErr, fileno(stderr)));
 
-    secure_close(oldStdOut);
-    secure_close(oldStdErr);
-    secure_close(m_pipe[READ]);
+    secure_fd(std::bind(close, oldStdOut));
+    secure_fd(std::bind(close, oldStdErr));
+    secure_fd(std::bind(close, m_pipe[READ]));
 }
 
 
