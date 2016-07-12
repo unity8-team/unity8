@@ -20,6 +20,7 @@
 
 MockTelepathyHelper::MockTelepathyHelper(QObject *parent)
     : QObject(parent)
+    , m_ready(true)
     , m_emergencyCallsAvailable(true)
 {
 }
@@ -35,6 +36,18 @@ void MockTelepathyHelper::registerChannelObserver(const QString& name)
     Q_UNUSED(name);
 }
 
+bool MockTelepathyHelper::ready() const
+{
+    return m_ready;
+}
+
+void MockTelepathyHelper::setReady(bool value)
+{
+    if (m_ready != value) {
+        m_ready = value;
+        Q_EMIT readyChanged();
+    }
+}
 bool MockTelepathyHelper::emergencyCallsAvailable() const
 {
     return m_emergencyCallsAvailable;

@@ -294,6 +294,7 @@ Item {
         function init() {
             view.currentIndex = 0; // break binding with text field
 
+            telepathyHelper.ready = true;
             telepathyHelper.emergencyCallsAvailable = true;
             selectedSpy.clear();
             respondedSpy.clear();
@@ -392,6 +393,20 @@ Item {
             tap(emergencyCallLabel);
             compare(emergencyCallLabel.visible, data.available ? true : false);
             compare(emergencySpy.count, data.available ? 1 : 0);
+        }
+
+        function test_emergencyCallAvailability() {
+            view.locked = true;
+            var emergencyCallLabel = findChild(view, "emergencyCallLabel");
+            verify(emergencyCallLabel.visible);
+
+            telepathyHelper.emergencyCallsAvailable = false;
+            telepathyHelper.ready = true;
+            verify(!emergencyCallLabel.visible);
+
+            telepathyHelper.emergencyCallsAvailable = true;
+            telepathyHelper.ready = false;
+            verify(!emergencyCallLabel.visible);
         }
 
         function test_fullyShown() {
