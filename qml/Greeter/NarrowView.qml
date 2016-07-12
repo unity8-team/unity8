@@ -215,7 +215,7 @@ FocusScope {
                 font.weight: Font.Light
                 fontSize: "small"
                 color: UbuntuColors.slate
-                visible: telepathyHelper.emergencyCallsAvailable
+                visible: telepathyHelper.ready && telepathyHelper.emergencyCallsAvailable
                 enabled: visible
 
                 AbstractButton {
