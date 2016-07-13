@@ -201,6 +201,7 @@ Showable {
         function checkForcedUnlock(hideNow) {
             if (forcedUnlock && shown && loader.item) {
                 // pretend we were just authenticated
+                d.waiting = false;
                 loader.item.notifyAuthenticationSucceeded(false /* showFakePassword */);
                 loader.item.hide();
                 if (hideNow) {
