@@ -37,6 +37,7 @@ class Greeter : public QObject
     Q_PROPERTY(bool authenticated READ isAuthenticated NOTIFY isAuthenticatedChanged)
     Q_PROPERTY(QString authenticationUser READ authenticationUser NOTIFY authenticationUserChanged)
     Q_PROPERTY(QString defaultSession READ defaultSessionHint CONSTANT)
+    Q_PROPERTY(bool locked READ lockHint CONSTANT)
     Q_PROPERTY(bool promptless READ promptless NOTIFY promptlessChanged)
     Q_PROPERTY(QString selectUser READ selectUser CONSTANT)
 
@@ -47,6 +48,7 @@ public:
     bool isAuthenticated() const;
     QString authenticationUser() const;
     QString defaultSessionHint() const;
+    bool lockHint() const;
     bool promptless() const;
     QString selectUser() const;
 
