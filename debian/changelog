@@ -1,3 +1,15 @@
+unity8 (8.12+16.10.20160713-0ubuntu1) yakkety; urgency=medium
+
+  [ Josh Arenson ]
+  * Add a SessionsModel to lightdm to support the greeter's session
+    chooser
+  * Add a frontend to the sessions model and enable a session chooser in
+    the greeter. (LP: #1512470)
+  * Add unity8-greeter package which contains a basic, but usable
+    LightDM greeter. (LP: #1324602)
+
+ -- Robert Bruce Park <robert.park@canonical.com>  Wed, 13 Jul 2016 22:29:35 +0000
+
 unity8 (8.12+16.10.20160707-0ubuntu1) yakkety; urgency=medium
 
   [ Michael Zanetti ]
