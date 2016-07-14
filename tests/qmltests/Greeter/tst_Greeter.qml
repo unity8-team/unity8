@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canonical Ltd.
+ * Copyright 2015-2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,6 +191,8 @@ Item {
             var i = getIndexOf(name);
             view.selected(i);
             verifySelected(name);
+            compare(greeter.waiting, true);
+            tryCompare(greeter, "waiting", false);
             return i;
         }
 
@@ -320,18 +322,6 @@ Item {
             compare(viewShowMessageSpy.signalArguments[0][0], "Welcome to Unity Greeter");
             compare(viewShowMessageSpy.signalArguments[1][0], "<font color=\"#df382c\">This is an error</font>");
             compare(viewShowMessageSpy.signalArguments[2][0], "You should have seen three messages");
-        }
-
-        function test_waiting() {
-            // Make sure we unset 'waiting' on prompt
-            selectUser("has-password");
-            compare(greeter.waiting, true);
-            tryCompare(greeter, "waiting", false);
-
-            // Make sure we unset 'waiting' on authentication
-            selectUser("no-password");
-            compare(greeter.waiting, true);
-            tryCompare(greeter, "waiting", false);
         }
 
         function test_locked() {

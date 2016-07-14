@@ -499,7 +499,7 @@ Rectangle {
         }
 
         function cleanup() {
-            tryCompare(shell, "enabled", true); // make sure greeter didn't leave us in disabled state
+            tryCompare(shell, "waitingOnGreeter", false); // make sure greeter didn't leave us in disabled state
             shell = null;
             topLevelSurfaceList = null;
 
@@ -1589,7 +1589,7 @@ Rectangle {
             var stageLoader = findChild(shell, "applicationsDisplayLoader");
             verify(stageLoader);
 
-            tryCompare(shell, "enabled", true); // enabled by greeter when ready
+            tryCompare(shell, "waitingOnGreeter", false); // reset by greeter when ready
 
             waitUntilShellIsInOrientation(root.physicalOrientation0);
 
