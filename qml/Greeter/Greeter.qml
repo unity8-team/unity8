@@ -185,18 +185,22 @@ Showable {
                 loader.item.enabled = false; // drop OSK and prevent interaction
                 loader.item.notifyAuthenticationSucceeded(false /* showFakePassword */);
                 loader.item.hide();
+                sessionStarted();
             }
         }
 
         function login() {
             d.waiting = true;
-            if (LightDM.Greeter.startSessionSync()) {
-                sessionStarted();
-                hideView();
-            } else if (loader.item) {
-                loader.item.notifyAuthenticationFailed();
-            }
+            var success = LightDM.Greeter.startSessionSync();
             d.waiting = false;
+
+            // If successful as a lockscreen, we don't need to hide ourselves.
+            // logind will tell us to unlock if our current user logged in.
+
+            if (!success) {
+                loader.item.notifyAuthenticationFailed();
+                d.selectUser(d.currentIndex, false);
+            }
         }
 
         function startUnlock(toTheRight) {
@@ -429,7 +433,7 @@ Showable {
 
         onShowGreeter: root.forceShow()
 
-        onHideGreeter: d.login()
+        onHideGreeter: root.forcedUnlock = true
 
         onShowMessage: {
             // inefficient, but we only rarely deal with messages
