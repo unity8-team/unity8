@@ -18,13 +18,13 @@ import QtQuick 2.4
 import AccountsService 0.1
 import Biometryd 0.0
 import GSettings 1.0
+import LightDM 0.1 as LightDM
 import Powerd 0.1
 import Ubuntu.Components 1.3
 import Ubuntu.SystemImage 0.1
 import Unity.Launcher 0.1
 import Unity.Session 0.1
 
-import "." 0.1
 import "../Components"
 
 Showable {
@@ -50,7 +50,7 @@ Showable {
     readonly property bool hasLockedApp: lockedApp !== ""
 
     property bool forcedUnlock
-    readonly property bool locked: LightDMService.greeter.active && !LightDMService.greeter.authenticated && !forcedUnlock
+    readonly property bool locked: LightDM.Greeter.active && !LightDM.Greeter.authenticated && !forcedUnlock
 
     property bool tabletMode
     property url viewSource // only used for testing
@@ -128,8 +128,8 @@ Showable {
     QtObject {
         id: d
 
-        readonly property bool multiUser: LightDMService.users.count > 1
-        readonly property int selectUserIndex: d.getUserIndex(LightDMService.greeter.selectUser)
+        readonly property bool multiUser: LightDM.Users.count > 1
+        readonly property int selectUserIndex: d.getUserIndex(LightDM.Greeter.selectUser)
         property int currentIndex: Math.max(selectUserIndex, 0)
         property bool waiting
         property bool isLockscreen // true when we are locking an active session, rather than first user login
@@ -157,8 +157,8 @@ Showable {
                 return -1;
 
             // Find index for requested user, if it exists
-            for (var i = 0; i < LightDMService.users.count; i++) {
-                if (username === LightDMService.users.data(i, LightDMService.userRoles.NameRole)) {
+            for (var i = 0; i < LightDM.Users.count; i++) {
+                if (username === LightDM.Users.data(i, LightDM.UserRoles.NameRole)) {
                     return i;
                 }
             }
@@ -167,17 +167,17 @@ Showable {
         }
 
         function selectUser(index, reset) {
-            if (index < 0 || index >= LightDMService.users.count)
+            if (index < 0 || index >= LightDM.Users.count)
                 return;
             d.waiting = true;
             if (reset) {
                 loader.item.reset();
             }
             currentIndex = index;
-            var user = LightDMService.users.data(index, LightDMService.userRoles.NameRole);
+            var user = LightDM.Users.data(index, LightDM.UserRoles.NameRole);
             AccountsService.user = user;
             LauncherModel.setUser(user);
-            LightDMService.greeter.authenticate(user); // always resets auth state
+            LightDM.Greeter.authenticate(user); // always resets auth state
         }
 
         function hideView() {
@@ -190,7 +190,7 @@ Showable {
 
         function login() {
             d.waiting = true;
-            if (LightDMService.greeter.startSessionSync()) {
+            if (LightDM.Greeter.startSessionSync()) {
                 sessionStarted();
                 hideView();
             } else if (loader.item) {
@@ -333,7 +333,7 @@ Showable {
             root.lockedApp = "";
             item.forceActiveFocus();
             d.selectUser(d.currentIndex, true);
-            LightDMService.infographic.readyForDataChange();
+            LightDM.Infographic.readyForDataChange();
         }
 
         Connections {
@@ -343,7 +343,7 @@ Showable {
             }
             onResponded: {
                 if (root.locked) {
-                    LightDMService.greeter.respond(response);
+                    LightDM.Greeter.respond(response);
                 } else {
                     d.login();
                 }
@@ -414,18 +414,18 @@ Showable {
         Binding {
             target: loader.item
             property: "userModel"
-            value: LightDMService.users
+            value: LightDM.Users
         }
 
         Binding {
             target: loader.item
             property: "infographicModel"
-            value: LightDMService.infographic
+            value: LightDM.Infographic
         }
     }
 
     Connections {
-        target: LightDMService.greeter
+        target: LightDM.Greeter
 
         onShowGreeter: root.forceShow()
 
@@ -457,12 +457,12 @@ Showable {
         onAuthenticationComplete: {
             d.waiting = false;
 
-            if (LightDMService.greeter.authenticated) {
-                if (!LightDMService.greeter.promptless) {
+            if (LightDM.Greeter.authenticated) {
+                if (!LightDM.Greeter.promptless) {
                     d.login();
                 }
             } else {
-                if (!LightDMService.greeter.promptless) {
+                if (!LightDM.Greeter.promptless) {
                     AccountsService.failedLogins++;
                 }
 
@@ -483,7 +483,7 @@ Showable {
                 }
 
                 loader.item.notifyAuthenticationFailed();
-                if (!LightDMService.greeter.promptless) {
+                if (!LightDM.Greeter.promptless) {
                     d.selectUser(d.currentIndex, false);
                 }
             }
@@ -502,20 +502,20 @@ Showable {
     }
 
     Binding {
-        target: LightDMService.greeter
+        target: LightDM.Greeter
         property: "active"
         value: root.active
     }
 
     Binding {
-        target: LightDMService.infographic
+        target: LightDM.Infographic
         property: "username"
-        value: AccountsService.statsWelcomeScreen ? LightDMService.users.data(d.currentIndex, LightDMService.userRoles.NameRole) : ""
+        value: AccountsService.statsWelcomeScreen ? LightDM.Users.data(d.currentIndex, LightDM.UserRoles.NameRole) : ""
     }
 
     Connections {
         target: i18n
-        onLanguageChanged: LightDMService.infographic.readyForDataChange()
+        onLanguageChanged: LightDM.Infographic.readyForDataChange()
     }
 
     Observer {
@@ -567,7 +567,7 @@ Showable {
                 failOperation("fingerprint reader is locked");
                 return;
             }
-            if (result !== LightDMService.users.data(d.currentIndex, LightDMService.userRoles.UidRole)) {
+            if (result !== LightDM.Users.data(d.currentIndex, LightDM.UserRoles.UidRole)) {
                 AccountsService.failedFingerprintLogins++;
                 failOperation("not the selected user");
                 return;
