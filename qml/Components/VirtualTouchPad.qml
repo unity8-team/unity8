@@ -19,12 +19,10 @@ import Ubuntu.Components 1.3
 import UInput 0.1
 
 Item {
-    property var uinput: UInput {
-        Component.onCompleted: createMouse();
-        Component.onDestruction: removeMouse();
-    }
-
     readonly property bool pressed: point1.pressed || point2.pressed
+
+    Component.onCompleted: UInput.createMouse()
+    Component.onDestruction: UInput.removeMouse()
 
     MultiPointTouchArea {
         objectName: "touchPadArea"
@@ -42,7 +40,7 @@ Item {
             if (((point1.pressed && !point2.pressed) || (!point1.pressed && point2.pressed))
                     && clickTimer.running) {
                 clickTimer.stop();
-                uinput.pressMouse(UInput.ButtonLeft)
+                UInput.pressMouse(UInput.ButtonLeft)
                 isDoubleClick = true;
             }
             isClick = true;
@@ -61,7 +59,7 @@ Item {
 
         onReleased: {
             if (isDoubleClick || isDrag) {
-                uinput.releaseMouse(UInput.ButtonLeft)
+                UInput.releaseMouse(UInput.ButtonLeft)
                 isDoubleClick = false;
             }
             if (isClick) {
@@ -77,8 +75,8 @@ Item {
             interval: 200
             property int button: UInput.ButtonLeft
             onTriggered: {
-                uinput.pressMouse(button);
-                uinput.releaseMouse(button);
+                UInput.pressMouse(button);
+                UInput.releaseMouse(button);
             }
             function scheduleClick(button) {
                 clickTimer.button = button;
@@ -95,7 +93,7 @@ Item {
                 isDrag = true;
             }
 
-            uinput.moveMouse(tp.x - tp.previousX, tp.y - tp.previousY);
+            UInput.moveMouse(tp.x - tp.previousX, tp.y - tp.previousY);
         }
 
         function scroll(touchPoints) {
@@ -123,7 +121,7 @@ Item {
             dh /= 2;
             dv /= 2;
 
-            uinput.scrollMouse(dh, dv);
+            UInput.scrollMouse(dh, dv);
         }
 
         touchPoints: [

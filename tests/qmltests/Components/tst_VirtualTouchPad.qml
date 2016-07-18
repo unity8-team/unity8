@@ -33,11 +33,11 @@ Item {
 
     SignalSpy {
         id: mouseEventSpy1
-        target: touchScreenPad.uinput
+        target: UInput
     }
     SignalSpy {
         id: mouseEventSpy2
-        target: touchScreenPad.uinput
+        target: UInput
     }
 
     UnityTestCase {
