@@ -27,9 +27,7 @@ set(SOURCE_FILES
     ApplicationArguments.cpp
     main.cpp
     CachingNetworkManagerFactory.cpp
-    SecondaryWindow.cpp
     ShellApplication.cpp
-    ShellView.cpp
     UnityCommandLineParser.cpp
     UnixSignalHandler.cpp
     DebuggingController.cpp

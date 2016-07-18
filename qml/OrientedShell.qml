@@ -32,12 +32,13 @@ Item {
     implicitWidth: units.gu(40)
     implicitHeight: units.gu(71)
 
+    property alias deviceConfiguration: _deviceConfiguration
+    property alias orientations: d.orientations
+
     DeviceConfiguration {
-        id: deviceConfiguration
+        id: _deviceConfiguration
         name: applicationArguments.deviceName
     }
-
-    property alias orientations: d.orientations
 
     Item {
         id: d
@@ -144,10 +145,6 @@ Item {
         return false;
     }
 
-    Screens {
-        id: screens
-    }
-
     property int orientation
     onPhysicalOrientationChanged: {
         if (!orientationLocked) {
@@ -245,7 +242,7 @@ Item {
 
     Shell {
         id: shell
-        objectName: "shell"
+        objectName: "shell-"+screenWindow.objectName
         width: root.width
         height: root.height
         orientation: root.angleToOrientation(orientationAngle)
@@ -258,7 +255,7 @@ Item {
         //       have multiple keyboards around. For now we only enable one keyboard at a time
         //       thus hiding it here if there is a physical one around or if we have a second
         //       screen (the virtual touchpad & osk on the phone) attached.
-        oskEnabled: (keyboardsModel.count === 0 && screens.count === 1) ||
+        oskEnabled: (keyboardsModel.count === 0 && Screens.count === 1) ||
                     forceOSKEnabled
 
         usageScenario: {
