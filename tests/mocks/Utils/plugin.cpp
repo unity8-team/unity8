@@ -39,7 +39,6 @@
 #include <inputeventgenerator.h>
 #include <deviceconfigparser.h>
 #include <globalfunctions.h>
-#include <virtualposition.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -81,6 +80,4 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<InputEventGenerator>(uri, 0, 1, "InputEventGenerator");
     qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
     qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
-    qmlRegisterType<VirtualPosition>(uri, 0, 1, "VirtualPosition");
-
 }

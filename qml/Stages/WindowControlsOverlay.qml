@@ -29,7 +29,6 @@ Item {
 
     // to be read from outside
     readonly property alias overlayShown: overlay.visible
-    readonly property alias dragging: gestureArea.recognizedDrag
 
     TouchGestureArea {
         id: gestureArea

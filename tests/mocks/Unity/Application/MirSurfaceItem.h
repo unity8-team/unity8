@@ -67,9 +67,6 @@ public:
     int surfaceHeight() const override;
     void setSurfaceHeight(int value) override;
 
-    QPoint surfaceTopLeft() const override;
-    void setSurfaceTopLeft(const QPoint &value) override;
-
     FillMode fillMode() const override { return m_fillMode; }
     void setFillMode(FillMode value) override;
 
@@ -111,7 +108,6 @@ private Q_SLOTS:
 private:
     void createQmlContentItem();
     void printComponentErrors();
-    void updateMirSurfacePosition();
     void updateSurfaceSize();
 
     MirSurface* m_qmlSurface;
@@ -123,9 +119,6 @@ private:
 
     int m_surfaceWidth;
     int m_surfaceHeight;
-
-    bool m_positionSet;
-    QPoint m_topLeft;
 
     int m_touchPressCount;
     int m_touchReleaseCount;

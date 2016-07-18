@@ -105,14 +105,6 @@ QString MirSurface::name() const
     return m_name;
 }
 
-void MirSurface::moveTo(const QPoint &topLeft)
-{
-    if (m_topLeft != topLeft) {
-        m_topLeft = topLeft;
-        Q_EMIT topLeftChanged(topLeft);
-    }
-}
-
 Mir::Type MirSurface::type() const
 {
     return m_type;

@@ -74,10 +74,6 @@ public:
 
     QString name() const override;
 
-    QPoint topLeft() const override { return m_topLeft; }
-    void moveTo(int x, int y) override { moveTo(QPoint(x, y)); }
-    void moveTo(const QPoint &topLeft) override;
-
     QSize size() const override { return QSize(width(),height()); }
     void resize(int width, int height) override;
     void resize(const QSize &size) override { resize(size.width(), size.height()); }
@@ -183,7 +179,6 @@ private:
     bool m_activeFocus;
     int m_width;
     int m_height;
-    QPoint m_topLeft;
 
     int m_minimumWidth{0};
     int m_minimumHeight{0};

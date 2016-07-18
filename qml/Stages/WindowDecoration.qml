@@ -30,7 +30,6 @@ MouseArea {
     property bool active: false
     acceptedButtons: Qt.AllButtons // prevent leaking unhandled mouse events
     property alias overlayShown: buttons.overlayShown
-    readonly property alias dragging: priv.dragging
 
     signal closeClicked()
     signal minimizeClicked()

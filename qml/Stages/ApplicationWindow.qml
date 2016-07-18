@@ -43,11 +43,7 @@ FocusScope {
     property QtObject surface
     property QtObject application
     property int surfaceOrientationAngle
-    property alias moveSurface: surfaceContainer.moveSurface
     property alias resizeSurface: surfaceContainer.resizeSurface
-    property alias surfaceTopLeft: surfaceContainer.surfaceTopLeft
-    property alias requestedX: surfaceContainer.requestedX
-    property alias requestedY: surfaceContainer.requestedY
     property int requestedWidth: -1
     property int requestedHeight: -1
 
