@@ -29,6 +29,7 @@ class MousePointer : public MirMousePointerInterface {
     Q_OBJECT
 public:
     MousePointer(QQuickItem *parent = nullptr);
+    ~MousePointer();
 
     void setCursorName(const QString &qtCursorName) override;
     QString cursorName() const override { return m_cursorName; }
@@ -37,6 +38,8 @@ public:
     QString themeName() const override { return m_themeName; }
 
     void setCustomCursor(const QCursor &) override;
+
+    QScreen* screen() const { return m_registeredScreen; }
 
 public Q_SLOTS:
     void handleMouseEvent(ulong timestamp, QPointF movement, Qt::MouseButtons buttons,

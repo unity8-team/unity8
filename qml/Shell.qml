@@ -764,16 +764,7 @@ StyledItem {
         id: cursor
         visible: shell.hasMouse
         z: itemGrabber.z + 1
-
-        property bool mouseNeverMoved: true
-        Binding {
-            target: cursor; property: "x"; value: shell.width / 2
-            when: cursor.mouseNeverMoved && cursor.visible
-        }
-        Binding {
-            target: cursor; property: "y"; value: shell.height / 2
-            when: cursor.mouseNeverMoved && cursor.visible
-        }
+        opacity: 0
 
         onPushedLeftBoundary: {
             if (buttons === Qt.NoButton) {
@@ -789,7 +780,6 @@ StyledItem {
         }
 
         onMouseMoved: {
-            mouseNeverMoved = false;
             cursor.opacity = 1;
         }
     }
