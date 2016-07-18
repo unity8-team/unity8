@@ -37,7 +37,6 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     : QGuiApplication(argc, argv)
     , m_qmlArgs(this)
 {
-
     setApplicationName(QStringLiteral("unity8"));
 
     setupQmlEngine(isMirServer);
@@ -68,7 +67,8 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     bindtextdomain("unity8", translationDirectory().toUtf8().data());
     textdomain("unity8");
 
-    m_qmlEngine->rootContext()->setContextProperty("DebuggingController", new DebuggingController(this));
+    new DebuggingController(this);
+
     m_qmlEngine->rootContext()->setContextProperty(QStringLiteral("applicationArguments"), &m_qmlArgs);
 
     QByteArray pxpguEnv = qgetenv("GRID_UNIT_PX");
