@@ -45,6 +45,7 @@ MirSurfaceItem::MirSurfaceItem(QQuickItem *parent)
     , m_consumesInput(false)
     , m_surfaceWidth(0)
     , m_surfaceHeight(0)
+    , m_positionSet(false)
     , m_touchPressCount(0)
     , m_touchReleaseCount(0)
     , m_mousePressCount(0)
@@ -75,6 +76,17 @@ void MirSurfaceItem::printComponentErrors()
     QList<QQmlError> errors = m_qmlContentComponent->errors();
     for (int i = 0; i < errors.count(); ++i) {
         qDebug() << errors[i];
+    }
+}
+
+void MirSurfaceItem::updateMirSurfacePosition()
+{
+    if (!m_positionSet) return;
+
+    if (m_qmlSurface) {
+        m_qmlSurface->moveTo(m_topLeft);
+    } else {
+        Q_EMIT surfaceTopLeftChanged(m_topLeft);
     }
 }
 
@@ -252,6 +264,7 @@ void MirSurfaceItem::setSurface(MirSurfaceInterface* surface)
     if (m_qmlSurface) {
         m_qmlSurface->registerView((qintptr)this);
 
+        updateMirSurfacePosition();
         updateSurfaceSize();
         updateMirSurfaceVisibility();
 
@@ -259,6 +272,7 @@ void MirSurfaceItem::setSurface(MirSurfaceInterface* surface)
         connect(m_qmlSurface, &MirSurface::screenshotUrlChanged, this, &MirSurfaceItem::updateScreenshot);
         connect(m_qmlSurface, &MirSurface::liveChanged, this, &MirSurfaceItem::liveChanged);
         connect(m_qmlSurface, &MirSurface::stateChanged, this, &MirSurfaceItem::surfaceStateChanged);
+        connect(m_qmlSurface, &MirSurface::topLeftChanged, this, &MirSurfaceItem::surfaceTopLeftChanged);
 
         QUrl qmlComponentFilePath;
         if (!m_qmlSurface->qmlFilePath().isEmpty()) {
@@ -348,6 +362,20 @@ void MirSurfaceItem::updateSurfaceSize()
 {
     if (m_qmlSurface && m_surfaceWidth > 0 && m_surfaceHeight > 0) {
         m_qmlSurface->resize(m_surfaceWidth, m_surfaceHeight);
+    }
+}
+
+QPoint MirSurfaceItem::surfaceTopLeft() const
+{
+    return m_qmlSurface ? m_qmlSurface->topLeft() : m_topLeft;
+}
+
+void MirSurfaceItem::setSurfaceTopLeft(const QPoint &value)
+{
+    m_positionSet = true;
+    if (m_topLeft != value) {
+        m_topLeft = value;
+        updateMirSurfacePosition();
     }
 }
 

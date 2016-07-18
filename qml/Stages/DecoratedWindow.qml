@@ -30,10 +30,15 @@ FocusScope {
     readonly property alias title: applicationWindow.title
     property alias fullscreen: applicationWindow.fullscreen
     property alias maximizeButtonShown: decoration.maximizeButtonShown
+    property alias dragging: decoration.dragging
 
     readonly property bool decorationShown: !fullscreen
     property bool highlightShown: false
     property real shadowOpacity: 1
+
+    property alias surfaceTopLeft: applicationWindow.surfaceTopLeft
+    property alias requestedX: applicationWindow.requestedX
+    property alias requestedY: applicationWindow.requestedY
 
     property real requestedWidth
     property real requestedHeight
@@ -112,6 +117,7 @@ FocusScope {
         requestedHeight: !counterRotate ? requestedHeightMinusDecoration : root.requestedWidth
         requestedWidth: !counterRotate ? root.requestedWidth : requestedHeightMinusDecoration
         interactive: true
+        moveSurface: true
         focus: true
 
         transform: Rotation {

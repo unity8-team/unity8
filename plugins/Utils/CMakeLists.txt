@@ -29,6 +29,7 @@ set(QMLPLUGIN_SRC
     inputeventgenerator.cpp
     deviceconfigparser.cpp
     globalfunctions.cpp
+    virtualposition.cpp
     plugin.cpp
     )
 

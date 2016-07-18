@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.4
+import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
 import "../Components/PanelState"
@@ -263,10 +264,22 @@ AbstractStage {
                     }
                 }
                 z: normalZ
-                x: requestedX // may be overridden in some states. Do not directly write to this.
-                y: requestedY // may be overridden in some states. Do not directly write to this.
+                x: relativeMappedPosition.mappedFromDesktop.x // may be overridden in some states. Do not directly write to this.
+                y: relativeMappedPosition.mappedFromDesktop.y // may be overridden in some states. Do not directly write to this.
                 property real requestedX: priv.focusedAppDelegate ? priv.focusedAppDelegate.x + units.gu(3) : (normalZ - 1) * units.gu(3)
                 property real requestedY: priv.focusedAppDelegate ? priv.focusedAppDelegate.y + units.gu(3) : normalZ * units.gu(3)
+
+                VirtualPosition {
+                    id: desktopMappedPosition
+                    position: Qt.point(appDelegate.requestedX, appDelegate.requestedY)
+                    enableWindowChanges: false
+                }
+
+                VirtualPosition {
+                    id: relativeMappedPosition
+                    position: decoratedWindow.surfaceTopLeft
+                    enableWindowChanges: true
+                }
 
                 Binding {
                     target: appDelegate
@@ -332,6 +345,8 @@ AbstractStage {
 
                 readonly property var surface: model.surface
                 readonly property alias resizeArea: resizeArea
+
+                readonly property bool windowDragging: decoratedWindow.dragging || touchControls.dragging
 
                 function claimFocus() {
                     if (spread.state == "altTab") {
@@ -413,49 +428,75 @@ AbstractStage {
 
                 onVisuallyMaximizedChanged: priv.updateForegroundMaximizedApp()
 
-                visible: (
+                visible: {
+                    if (windowDragging || decoratedWindow.fullscreen) return true;
+                    if (spread.state == "altTab" && index === spread.highlightedIndex) return true;
+                    return (
                           !visuallyMinimized
                           && !greeter.fullyShown
                           && (priv.foregroundMaximizedAppDelegate === null || priv.foregroundMaximizedAppDelegate.normalZ <= z)
-                         )
-                         || decoratedWindow.fullscreen
-                         || (spread.state == "altTab" && index === spread.highlightedIndex)
+                          && (x+width > 0 && x < Screen.width && y+height > 0 && y < Screen.height)
+                         );
+                }
+
+                onWindowDraggingChanged: {
+                }
 
                 function close() {
                     model.surface.close();
                 }
 
                 function maximize(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximized;
                 }
                 function maximizeLeft(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedLeft;
                 }
                 function maximizeRight(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedRight;
                 }
                 function maximizeHorizontally(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedHorizontally;
                 }
                 function maximizeVertically(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedVertically;
                 }
                 function minimize(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState |= WindowStateStorage.WindowStateMinimized; // add the minimized bit
                 }
                 function restoreFromMaximized(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateNormal;
                 }
                 function restore(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
                     if (maximized)
                         maximize();
                     else if (maximizedLeft)
@@ -466,12 +507,25 @@ AbstractStage {
                         maximizeHorizontally();
                     else if (maximizedVertically)
                         maximizeVertically();
+                    else {
+                        if (windowState == WindowStateStorage.WindowStateNormal) {
+                            refreshRequestedPosition();
+                        }
+                        windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
+                    }
 
                     focus = true;
                 }
 
                 function playFocusAnimation() {
                     focusAnimation.start()
+                }
+
+                function refreshRequestedPosition() {
+                    var mappedPosition = Qt.point(relativeMappedPosition.mappedFromDesktop.x,
+                                                  relativeMappedPosition.mappedFromDesktop.y);
+                    appDelegate.requestedX = mappedPosition.x;
+                    appDelegate.requestedY = mappedPosition.y;
                 }
 
                 UbuntuNumberAnimation {
@@ -513,6 +567,10 @@ AbstractStage {
                             visuallyMaximized: true
                         }
                         PropertyChanges {
+                            target: desktopMappedPosition
+                            position: Qt.point(appDelegate.x, appDelegate.y)
+                        }
+                        PropertyChanges {
                             target: decoratedWindow
                             requestedWidth: appContainer.width - root.leftMargin;
                             requestedHeight: appContainer.height;
@@ -524,6 +582,10 @@ AbstractStage {
                             target: appDelegate
                             x: root.leftMargin
                             y: PanelState.panelHeight
+                        }
+                        PropertyChanges {
+                            target: desktopMappedPosition
+                            position: Qt.point(appDelegate.x, appDelegate.y)
                         }
                         PropertyChanges {
                             target: decoratedWindow
@@ -539,6 +601,10 @@ AbstractStage {
                             y: PanelState.panelHeight
                         }
                         PropertyChanges {
+                            target: desktopMappedPosition
+                            position: Qt.point(appDelegate.x, appDelegate.y)
+                        }
+                        PropertyChanges {
                             target: decoratedWindow
                             requestedWidth: (appContainer.width - root.leftMargin)/2
                             requestedHeight: appContainer.height - PanelState.panelHeight
@@ -548,11 +614,19 @@ AbstractStage {
                         name: "maximizedHorizontally"; when: appDelegate.maximizedHorizontally && !appDelegate.minimized
                         PropertyChanges { target: appDelegate; x: root.leftMargin }
                         PropertyChanges { target: decoratedWindow; requestedWidth: appContainer.width - root.leftMargin }
+                        PropertyChanges {
+                            target: desktopMappedPosition
+                            position: Qt.point(appDelegate.x, appDelegate.y)
+                        }
                     },
                     State {
                         name: "maximizedVertically"; when: appDelegate.maximizedVertically && !appDelegate.minimized
                         PropertyChanges { target: appDelegate; y: PanelState.panelHeight }
                         PropertyChanges { target: decoratedWindow; requestedHeight: appContainer.height - PanelState.panelHeight }
+                        PropertyChanges {
+                            target: desktopMappedPosition
+                            position: Qt.point(appDelegate.x, appDelegate.y)
+                        }
                     },
                     State {
                         name: "minimized"; when: appDelegate.minimized
@@ -570,15 +644,21 @@ AbstractStage {
                     Transition {
                         to: "normal"
                         enabled: appDelegate.animationsEnabled
-                        PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
-                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
-                        UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight"; duration: UbuntuAnimation.FastDuration }
+                        SequentialAnimation {
+                            ParallelAnimation {
+                                PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
+                                UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: UbuntuAnimation.FastDuration }
+                                UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight"; duration: UbuntuAnimation.FastDuration }
+                            }
+                            PropertyAction { target: desktopMappedPosition; property: "position" }
+                        }
                     },
                     Transition {
                         to: "minimized"
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                         SequentialAnimation {
+                            PropertyAction { target: desktopMappedPosition; property: "position" }
                             ParallelAnimation {
                                 UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale"; duration: UbuntuAnimation.FastDuration }
                                 UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight"; duration: UbuntuAnimation.FastDuration }
@@ -599,6 +679,7 @@ AbstractStage {
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                         SequentialAnimation {
+                            PropertyAction { target: desktopMappedPosition; property: "position" }
                             ParallelAnimation {
                                 UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale"; duration: UbuntuAnimation.FastDuration }
                                 UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight"; duration: UbuntuAnimation.FastDuration }
@@ -673,6 +754,8 @@ AbstractStage {
                                          (maximumHeight == 0 || maximumHeight >= appContainer.height)
                     overlayShown: touchControls.overlayShown
 
+                    requestedX: desktopMappedPosition.mappedToDesktop.x
+                    requestedY: desktopMappedPosition.mappedToDesktop.y
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
 
