@@ -258,6 +258,8 @@ StyledItem {
             property string usageScenario: shell.usageScenario === "phone" || greeter.hasLockedApp
                                            ? "phone"
                                            : shell.usageScenario
+
+            source: "Stages/DesktopStage.qml"
             readonly property string qmlComponent: {
                 if (shell.mode === "greeter") {
                     return "Stages/AbstractStage.qml"
@@ -269,14 +271,6 @@ StyledItem {
                     return "Stages/DesktopStage.qml";
                 }
             }
-            // TODO: Ensure the current stage is destroyed before the new one gets loaded.
-            //       Currently the new one will get loaded while the old is still hanging
-            //       around for a bit, which might lead to conflicts where both stages
-            //       change the model simultaneously.
-            onQmlComponentChanged: {
-                if (item) item.stageAboutToBeUnloaded();
-                source = qmlComponent;
-            }
 
             property bool interactive: (!greeter || !greeter.shown)
                     && panel.indicators.fullyClosed
@@ -285,6 +279,13 @@ StyledItem {
 
             onInteractiveChanged: { if (interactive) { focus = true; } }
 
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "mode"
+                value: applicationsDisplayLoader.usageScenario == "phone" ? "staged"
+                        : applicationsDisplayLoader.usageScenario == "tablet" ? "stagedWithSideStage"
+                        : "windowed"
+            }
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "focus"
