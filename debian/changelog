@@ -1,3 +1,10 @@
+unity8 (8.12+16.10.20160719-0ubuntu1) yakkety; urgency=medium
+
+  * Support launching apps inside a unity8 session from the greeter and
+    support emergency dialing inside the greeter.
+
+ -- Michael Terry <michael.terry@canonical.com>  Tue, 19 Jul 2016 18:18:20 +0000
+
 unity8 (8.12+16.10.20160711-0ubuntu1) yakkety; urgency=medium
 
   [ Josh Arenson ]
