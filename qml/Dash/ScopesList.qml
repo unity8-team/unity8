@@ -66,6 +66,9 @@ Item {
             if (backIsClose) {
                 root.state = "browse"
             } else {
+                if (flickable.contentY > 0) {
+                    flickable.clip = true;
+                }
                 root.backClicked()
             }
         }
@@ -92,7 +95,9 @@ Item {
             objectName: "scopesListFlickable"
 
             anchors.fill: parent
-            clip: true
+
+            // Reset to false each time the list is opened. See header.onBackClicked
+            clip: !visible
             contentWidth: root.width
             contentHeight: column.height
             onContentHeightChanged: returnToBounds();
