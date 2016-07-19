@@ -293,6 +293,7 @@ AbstractStage {
         State {
             name: "spread"; when: root.altTabPressed || priv.goneToSpread
             PropertyChanges { target: floatingFlickable; enabled: true }
+            PropertyChanges { target: spreadItem; focus: true }
         },
         State {
             name: "stagedrightedge"; when: rightEdgeDragArea.dragging && root.mode == "staged"
@@ -311,6 +312,21 @@ AbstractStage {
         },
         State {
             name: "windowed"; when: root.mode === "windowed"
+        }
+    ]
+    transitions: [
+        Transition {
+            to: "spread"
+            PropertyAction { target: spreadItem; property: "highlightedIndex"; value: 1 }
+        },
+        Transition {
+            from: "spread"
+            ScriptAction { script: {
+                    var item = appRepeater.itemAt(spreadItem.highlightedIndex);
+                    item.claimFocus();
+                    item.playFocusAnimation();
+                }
+            }
         }
     ]
     onStateChanged: print("spread going to state:", state)
@@ -429,12 +445,21 @@ AbstractStage {
                     }
                 }
                 z: normalZ
-                x: requestedX // may be overridden in some states. Do not directly write to this.
-                y: requestedY // may be overridden in some states. Do not directly write to this.
+
+                x: requestedX
+                y: requestedY
+
+                // requestedX/Y/width/height is what we ask the actual surface to be.
+                // Do not write to those, they will be set by states
+                // Also do not write to the appWindow's actual x,y,width,height as they
+                // will be set by states too.
                 property real requestedX: 0
                 property real requestedY: 0
                 property int requestedWidth: -1
                 property int requestedHeight: -1
+
+                // In those are for windowed mode. Those values basically store the window's properties
+                // when having a floating window. If you want to move/resize a window in normal mode, this is what you want to write to.
                 property int windowedX: priv.focusedAppDelegate ? priv.focusedAppDelegate.x + units.gu(3) : (normalZ - 1) * units.gu(3)
                 property int windowedY: priv.focusedAppDelegate ? priv.focusedAppDelegate.y + units.gu(3) : normalZ * units.gu(3)
                 property int windowedWidth
@@ -511,10 +536,7 @@ AbstractStage {
                 readonly property alias resizeArea: resizeArea
 
                 function claimFocus() {
-//                    if (spread.state == "altTab") {
-//                        spread.cancel();
-//                    }
-//                    appDelegate.restore();
+                    appDelegate.focus = true;
                 }
                 Connections {
                     target: model.surface
@@ -742,6 +764,8 @@ AbstractStage {
                             scaleToPreviewProgress: 1
                             hasDecoration: root.mode === "windowed"
                             shadowOpacity: spreadMaths.shadowOpacity
+                            showHighlight: spreadItem.highlightedIndex === index
+                            anchors.topMargin: dragArea.distance
                         }
                         PropertyChanges {
                             target: appDelegate
@@ -753,7 +777,7 @@ AbstractStage {
                             requestedHeight: decoratedWindow.oldRequestedHeight
                             visible: spreadMaths.itemVisible
                         }
-                        PropertyChanges { target: inputBlocker; enabled: true }
+                        PropertyChanges { target: dragArea; enabled: true }
                         PropertyChanges { target: windowInfoItem; opacity: spreadMaths.tileInfoOpacity; visible: spreadMaths.itemVisible }
                     },
                     State {
@@ -772,6 +796,7 @@ AbstractStage {
                             height: stagedRightEdgeMaths.animatedHeight
                             requestedWidth: decoratedWindow.oldRequestedWidth
                             requestedHeight: decoratedWindow.oldRequestedHeight
+                            visible: stagedRightEdgeMaths.itemVisible
                         }
                         PropertyChanges {
                             target: decoratedWindow;
@@ -1103,17 +1128,25 @@ AbstractStage {
                     surface: model.surface
                 }
 
-                MouseArea {
-                    id: inputBlocker
+                DragToCloseArea {
+                    id: dragArea
                     anchors.fill: parent
                     enabled: false
-                    onPressed: mouse.accepted = true;
+                    closeable: model.application.appId !== "unity8-dash"
+
                     onClicked: {
-                        print("focusing because of inputBlocker click")
-                        appDelegate.focus = true
-                        priv.goneToSpread = false;
+                        spreadItem.highlightedIndex = index;
+                        if (distance == 0) {
+                            print("focusing because of inputBlocker click")
+                            priv.goneToSpread = false;
+                        }
                     }
+                    onContainsMouseChanged: {
+                        if (containsMouse) spreadItem.highlightedIndex = index
+                    }
+                    onClose: model.surface.close()
                 }
+
 //                Rectangle { anchors.fill: parent; color: "blue"; opacity: .4 }
 
                 WindowInfoItem {
@@ -1124,7 +1157,6 @@ AbstractStage {
                     height: spreadItem.appInfoHeight
                     opacity: 0
                     visible: opacity > 0
-                    Behavior on opacity { UbuntuNumberAnimation { duration: priv.animationDuration } }
                 }
             }
         }
