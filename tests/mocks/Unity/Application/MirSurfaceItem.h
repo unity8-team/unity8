@@ -107,6 +107,7 @@ private Q_SLOTS:
     void updateScreenshot(QUrl screenshot);
     void updateMirSurfaceVisibility();
     void updateMirSurfaceActiveFocus(bool focused);
+    void onActualSurfaceSizeChanged(const QSize &size);
 
 private:
     void createQmlContentItem();
