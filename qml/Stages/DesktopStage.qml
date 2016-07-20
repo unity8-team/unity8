@@ -451,6 +451,8 @@ AbstractStage {
                     id: relativeMappedPosition
                     position: decoratedWindow.surfaceTopLeft
                     enableWindowChanges: true
+
+                    onPositionChanged: console.log("pLOP", position, mappedFromDesktop)
                 }
                 x: relativeMappedPosition.mappedFromDesktop.x // may be overridden in some states. Do not directly write to this.
                 y: relativeMappedPosition.mappedFromDesktop.y // may be overridden in some states. Do not directly write to this.

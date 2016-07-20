@@ -25,6 +25,7 @@ import Unity.Launcher 0.1
 import Unity.Session 0.1
 
 import "." 0.1
+import ".." 0.1
 import "../Components"
 
 Showable {
@@ -209,10 +210,7 @@ Showable {
 
         function checkForcedUnlock(hideNow) {
             if (forcedUnlock && shown) {
-                hideView();
-                if (hideNow) {
-                    root.hideNow(); // skip hide animation
-                }
+                ShellNotifier.greeter.hide(hideNow);
             }
         }
     }
@@ -344,7 +342,7 @@ Showable {
                 if (root.locked) {
                     LightDMService.greeter.respond(response);
                 } else {
-                    d.login();
+                    ShellNotifier.greeter.login()
                 }
             }
             onTease: root.tease()
@@ -489,6 +487,17 @@ Showable {
         }
 
         onRequestAuthenticationUser: d.selectUser(d.getUserIndex(user), true)
+    }
+
+    Connections {
+        target: ShellNotifier.greeter
+        onLogin: d.login()
+        onHide: {
+            hideView();
+            if (now) {
+                root.hideNow(); // skip hide animation
+            }
+        }
     }
 
     Connections {

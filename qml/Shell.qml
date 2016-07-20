@@ -410,8 +410,13 @@ StyledItem {
         id: greeterLoader
         anchors.fill: parent
         anchors.topMargin: panel.panelHeight
-        sourceComponent: shell.mode != "shell" ? integratedGreeter :
-            Qt.createComponent(Qt.resolvedUrl("Greeter/ShimGreeter.qml"));
+        sourceComponent: {
+            if (shell.mode != "shell") {
+                if (screenWindow.primary) return integratedGreeter;
+                return secondaryGreeter;
+            }
+            return Qt.createComponent(Qt.resolvedUrl("Greeter/ShimGreeter.qml"));
+        }
         onLoaded: {
             item.objectName = "greeter"
         }
@@ -447,6 +452,13 @@ StyledItem {
             }
 
             onEmergencyCall: startLockedApp("dialer-app")
+        }
+    }
+
+    Component {
+        id: secondaryGreeter
+        SecondaryGreeter {
+            hides: [launcher, panel.indicators]
         }
     }
 
