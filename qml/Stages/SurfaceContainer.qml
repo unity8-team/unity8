@@ -30,10 +30,14 @@ FocusScope {
     property var surface: null
 
     // Might be changed from outside
+    property alias surfaceTopLeft: surfaceItem.surfaceTopLeft
+    property int requestedX: 0
+    property int requestedY: 0
     property int requestedWidth: -1
     property int requestedHeight: -1
     property bool interactive
     property int surfaceOrientationAngle: 0
+    property bool moveSurface: false
     property bool resizeSurface: true
     property bool isPromptSurface: false
     // FIME - dont export, use interactive property. Need to fix qtmir to handle consumesInputChanged
@@ -94,6 +98,13 @@ FocusScope {
 //                return -1;
 //            }
 //        }
+
+        Binding {
+            when: root.moveSurface
+            target: surfaceItem
+            property: "surfaceTopLeft"
+            value: Qt.point(requestedX, requestedY)
+        }
 
         enabled: root.interactive
         antialiasing: !root.interactive

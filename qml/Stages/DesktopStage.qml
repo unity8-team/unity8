@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.4
+import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
 import "../Components/PanelState"
@@ -446,8 +447,13 @@ AbstractStage {
                 }
                 z: normalZ
 
-                x: requestedX
-                y: requestedY
+                VirtualPosition {
+                    id: relativeMappedPosition
+                    position: decoratedWindow.surfaceTopLeft
+                    enableWindowChanges: true
+                }
+                x: relativeMappedPosition.mappedFromDesktop.x // may be overridden in some states. Do not directly write to this.
+                y: relativeMappedPosition.mappedFromDesktop.y // may be overridden in some states. Do not directly write to this.
 
                 // requestedX/Y/width/height is what we ask the actual surface to be.
                 // Do not write to those, they will be set by states
@@ -534,6 +540,8 @@ AbstractStage {
 
                 readonly property var surface: model.surface
                 readonly property alias resizeArea: resizeArea
+
+                readonly property bool windowDragging: decoratedWindow.dragging || touchControls.dragging
 
                 function claimFocus() {
                     appDelegate.focus = true;
@@ -642,36 +650,56 @@ AbstractStage {
                 }
 
                 function maximize(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximized;
                 }
                 function maximizeLeft(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedLeft;
                 }
                 function maximizeRight(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedRight;
                 }
                 function maximizeHorizontally(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedHorizontally;
                 }
                 function maximizeVertically(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedVertically;
                 }
                 function minimize(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState |= WindowStateStorage.WindowStateMinimized; // add the minimized bit
                 }
                 function restoreFromMaximized(animated) {
+                    if (windowState == WindowStateStorage.WindowStateNormal) {
+                        refreshRequestedPosition();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateNormal;
                 }
                 function restore(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
                     if (maximized)
                         maximize();
                     else if (maximizedLeft)
@@ -682,6 +710,12 @@ AbstractStage {
                         maximizeHorizontally();
                     else if (maximizedVertically)
                         maximizeVertically();
+                    else {
+                        if (windowState == WindowStateStorage.WindowStateNormal) {
+                            refreshRequestedPosition();
+                        }
+                        windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
+                    }
 
                     print("***** focusing because of window restore", model.application.appId)
                     focus = true;
@@ -696,6 +730,13 @@ AbstractStage {
                 }
                 function playHidingAnimation() {
                     hidingAnimation.start()
+                }
+
+                function refreshRequestedPosition() {
+//                    var mappedPosition = Qt.point(relativeMappedPosition.mappedFromDesktop.x,
+//                                                  relativeMappedPosition.mappedFromDesktop.y);
+//                    appDelegate.windowedX = mappedPosition.x;
+//                    appDelegate.windowedX = mappedPosition.y;
                 }
 
                 UbuntuNumberAnimation {
@@ -769,13 +810,15 @@ AbstractStage {
                         }
                         PropertyChanges {
                             target: appDelegate
-                            x: spreadMaths.targetX
-                            y: spreadMaths.targetY
                             z: index
                             height: spreadItem.spreadItemHeight
                             requestedWidth: decoratedWindow.oldRequestedWidth
                             requestedHeight: decoratedWindow.oldRequestedHeight
                             visible: spreadMaths.itemVisible
+                        }
+                        PropertyChanges {
+                            target: relativeMappedPosition
+                            position: Qt.point(spreadMaths.targetX, spreadMaths.targetY)
                         }
                         PropertyChanges { target: dragArea; enabled: true }
                         PropertyChanges { target: windowInfoItem; opacity: spreadMaths.tileInfoOpacity; visible: spreadMaths.itemVisible }
@@ -790,13 +833,15 @@ AbstractStage {
                         }
                         PropertyChanges {
                             target: appDelegate
-                            y: stagedRightEdgeMaths.animatedY
-                            x: stagedRightEdgeMaths.animatedX
                             z: index +1
                             height: stagedRightEdgeMaths.animatedHeight
                             requestedWidth: decoratedWindow.oldRequestedWidth
                             requestedHeight: decoratedWindow.oldRequestedHeight
                             visible: stagedRightEdgeMaths.itemVisible
+                        }
+                        PropertyChanges {
+                            target: relativeMappedPosition
+                            position: Qt.point(stagedRightEdgeMaths.animatedX, stagedRightEdgeMaths.animatedY)
                         }
                         PropertyChanges {
                             target: decoratedWindow;
@@ -812,8 +857,8 @@ AbstractStage {
                         name: "staged"; when: root.state == "staged"
                         PropertyChanges {
                             target: appDelegate
-                            x: appDelegate.focus ? 0 : root.width
-                            y: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            requestedX: appDelegate.focus ? 0 : root.width
+                            requestedY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
                             requestedWidth: appContainer.width
                             requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
                             visuallyMaximized: true
@@ -835,8 +880,8 @@ AbstractStage {
                         }
                         PropertyChanges {
                             target: appDelegate
-                            x: stageMaths.itemX
-                            y: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            requestedX: stageMaths.itemX
+                            requestedY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
                             z: stageMaths.itemZ
                             requestedWidth: stageMaths.itemWidth
                             requestedHeight: appContainer.height - PanelState.panelHeight
@@ -855,8 +900,8 @@ AbstractStage {
                         name: "maximized"; when: root.state === "windowed" && appDelegate.maximized && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            x: root.leftMargin;
-                            y: 0;
+                            requestedX: root.leftMargin;
+                            requestedY: 0;
                             visuallyMinimized: false;
                             visuallyMaximized: true
                             requestedWidth: appContainer.width - root.leftMargin;
@@ -867,8 +912,8 @@ AbstractStage {
                         name: "fullscreen"; when: surface ? surface.state === Mir.FullscreenState : application.fullscreen && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            x: rotation == 0 ? 0 : (parent.width - width) / 2 + (shellOrientationAngle == 90 ? 0 : PanelState.panelHeight)
-                            y: rotation == 0 ? 0 : (parent.height - height) / 2
+                            requestedX: rotation == 0 ? 0 : (parent.width - width) / 2 + (shellOrientationAngle == 90 ? 0 : PanelState.panelHeight)
+                            requestedY: rotation == 0 ? 0 : (parent.height - height) / 2
                             requestedWidth: appContainer.width;
                             requestedHeight: appContainer.height;
                         }
@@ -894,8 +939,8 @@ AbstractStage {
                         name: "maximizedLeft"; when: appDelegate.maximizedLeft && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate
-                            x: root.leftMargin
-                            y: PanelState.panelHeight
+                            requestedX: root.leftMargin
+                            requestedY: PanelState.panelHeight
                         }
                         PropertyChanges {
                             target: decoratedWindow
@@ -908,8 +953,8 @@ AbstractStage {
                         name: "maximizedRight"; when: appDelegate.maximizedRight && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            x: (appContainer.width + root.leftMargin)/2
-                            y: PanelState.panelHeight
+                            requestedX: (appContainer.width + root.leftMargin)/2
+                            requestedY: PanelState.panelHeight
                         }
                         PropertyChanges {
                             target: decoratedWindow
@@ -920,7 +965,10 @@ AbstractStage {
                     },
                     State {
                         name: "maximizedHorizontally"; when: appDelegate.maximizedHorizontally && !appDelegate.minimized
-                        PropertyChanges { target: appDelegate; x: root.leftMargin }
+                        PropertyChanges {
+                            target: appDelegate;
+                            requestedX: root.leftMargin
+                        }
                         PropertyChanges {
                             target: decoratedWindow;
                             requestedWidth: appContainer.width - root.leftMargin
@@ -929,7 +977,10 @@ AbstractStage {
                     },
                     State {
                         name: "maximizedVertically"; when: appDelegate.maximizedVertically && !appDelegate.minimized
-                        PropertyChanges { target: appDelegate; y: PanelState.panelHeight }
+                        PropertyChanges {
+                            target: appDelegate;
+                            requestedY: PanelState.panelHeight
+                        }
                         PropertyChanges {
                             target: decoratedWindow;
                             requestedHeight: appContainer.height - PanelState.panelHeight
@@ -940,7 +991,7 @@ AbstractStage {
                         name: "minimized"; when: appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            x: -appDelegate.width / 2;
+                            requestedX: -appDelegate.width / 2;
                             scale: units.gu(5) / appDelegate.width;
                             opacity: 0;
                             visuallyMinimized: true;
@@ -954,11 +1005,11 @@ AbstractStage {
                         from: "staged,stagedWithSideStage"; to: "normal"
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
-                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,requestedWidth,requestedHeight,scale"; duration: priv.animationDuration }
+                        UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,opacity,requestedWidth,requestedHeight,scale"; duration: priv.animationDuration }
                     },
                     Transition {
                         from: "spread"; to: "*"
-//                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,height"; duration: priv.animationDuration }
+//                        UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,height"; duration: priv.animationDuration }
 //                        UbuntuNumberAnimation { target: decoratedWindow; properties: "width,height,itemScale,angle"; duration: priv.animationDuration }
                         ScriptAction { script: if (appDelegate.focus) appDelegate.playFocusAnimation() }
                     },
@@ -968,7 +1019,7 @@ AbstractStage {
                         PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                         SequentialAnimation {
                             ParallelAnimation {
-                                UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale"; duration: priv.animationDuration }
+                                UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,opacity,scale"; duration: priv.animationDuration }
                                 UbuntuNumberAnimation { target: decoratedWindow; properties: "requestedWidth,requestedHeight"; duration: priv.animationDuration }
                             }
                             PropertyAction { target: appDelegate; property: "visuallyMinimized" }
@@ -988,7 +1039,7 @@ AbstractStage {
                         SequentialAnimation {
                             PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                             ParallelAnimation {
-                                UbuntuNumberAnimation { target: appDelegate; properties: "x,y,opacity,scale,requestedWidth,requestedHeight"; duration: UbuntuAnimation.FastDuration }
+                                UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,opacity,scale,requestedWidth,requestedHeight"; duration: UbuntuAnimation.FastDuration }
                             }
                             PropertyAction { target: appDelegate; property: "visuallyMaximized" }
                         }
@@ -997,12 +1048,12 @@ AbstractStage {
                         to: "spread"
                         // DecoratedWindow wants the sceleToPreviewSize set before enabling scaleToPreview
                         PropertyAction { target: decoratedWindow; property: "scaleToPreviewSize" }
-                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y,height"; duration: priv.animationDuration }
+                        UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,height"; duration: priv.animationDuration }
                         UbuntuNumberAnimation { target: decoratedWindow; properties: "width,height,itemScale,angle,scaleToPreviewProgress"; duration: priv.animationDuration }
                     },
                     Transition {
                         from: "normal,staged"; to: "stagedWithSideStage"
-                        UbuntuNumberAnimation { target: appDelegate; properties: "x,y"; duration: priv.animationDuration }
+                        UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY"; duration: priv.animationDuration }
                         UbuntuNumberAnimation { target: appDelegate; properties: "requestedWidth,requestedHeight"; duration: priv.animationDuration }
                     }
                 ]
@@ -1079,6 +1130,14 @@ AbstractStage {
                     width: implicitWidth
                     height: implicitHeight
 
+                    VirtualPosition {
+                        id: requestedScreenPosition
+                        position: Qt.point(appDelegate.requestedX, appDelegate.requestedY)
+                        enableWindowChanges: false
+                    }
+
+                    requestedX: requestedScreenPosition.mappedToDesktop.x
+                    requestedY: requestedScreenPosition.mappedToDesktop.y
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
 

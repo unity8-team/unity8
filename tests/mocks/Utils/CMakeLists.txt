@@ -24,6 +24,7 @@ set(QMLPLUGIN_SRC
     ${CMAKE_SOURCE_DIR}/plugins/Utils/inputeventgenerator.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/deviceconfigparser.cpp
     ${CMAKE_SOURCE_DIR}/plugins/Utils/globalfunctions.cpp
+    ${CMAKE_SOURCE_DIR}/plugins/Utils/virtualposition.cpp
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h

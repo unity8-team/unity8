@@ -34,6 +34,7 @@ FocusScope {
     property alias active: decoration.active
     readonly property alias title: applicationWindow.title
     property alias maximizeButtonShown: decoration.maximizeButtonShown
+    property alias dragging: decoration.dragging
 
     // Changing this will actually add/remove a decoration, meaning, requestedHeight will take the decoration into account.
     property bool hasDecoration: true
@@ -42,6 +43,10 @@ FocusScope {
     property bool animateDecoration: false
     property bool showHighlight: false
     property real shadowOpacity: 0
+
+    property alias surfaceTopLeft: applicationWindow.surfaceTopLeft
+    property alias requestedX: applicationWindow.requestedX
+    property alias requestedY: applicationWindow.requestedY
 
     property real requestedWidth
     property real requestedHeight
@@ -138,6 +143,7 @@ FocusScope {
         onRequestedWidthChanged: oldRequestedWidth = requestedWidth
         onRequestedHeightChanged: oldRequestedHeight = requestedHeight
         interactive: true
+        moveSurface: true
         focus: true
 
         property real itemScale: 1
