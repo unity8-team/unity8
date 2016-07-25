@@ -97,7 +97,8 @@ Item {
             anchors.fill: parent
 
             // Reset to false each time the list is opened. See header.onBackClicked
-            clip: !visible
+            onVisibleChanged: clip = !visible
+            onClipChanged: console.log("clip->"+clip)
             contentWidth: root.width
             contentHeight: column.height
             onContentHeightChanged: returnToBounds();
