@@ -172,6 +172,12 @@ StyledItem {
         value: ApplicationManager
     }
 
+    Binding {
+        target: AccountsService
+        property: "greeterMode"
+        value: shell.mode === "greeter"
+    }
+
     Component.onCompleted: {
         finishStartUpTimer.start();
     }
