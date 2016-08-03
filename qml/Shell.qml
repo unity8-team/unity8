@@ -434,6 +434,7 @@ StyledItem {
         id: integratedGreeter
         Greeter {
 
+            enabled: panel.indicators.fullyClosed // hides OSK when panel is open
             hides: [launcher, panel.indicators]
             tabletMode: shell.usageScenario != "phone"
             launcherOffset: launcher.progress
