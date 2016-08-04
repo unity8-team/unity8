@@ -30,6 +30,7 @@ set(QMLPLUGIN_SRC
     deviceconfigparser.cpp
     globalfunctions.cpp
     virtualposition.cpp
+    sharedwindowstate.cpp
     plugin.cpp
     )
 

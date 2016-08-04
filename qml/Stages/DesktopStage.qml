@@ -219,7 +219,15 @@ AbstractStage {
         target: PanelState
         onCloseClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.close(); } }
         onMinimizeClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.minimize(); } }
-        onRestoreClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.restoreFromMaximized(); } }
+        onRestoreClicked: {
+            if (!priv.focusedAppDelegate) return;
+
+            if (priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight ||
+                    priv.focusedAppDelegate.maximizedHorizontally || priv.focusedAppDelegate.maximizedVertically) {
+
+                priv.focusedAppDelegate.restoreFromMaximized();
+            }
+        }
         onFocusMaximizedApp: {
             if (priv.foregroundMaximizedAppDelegate) {
                 print("***** focusing because of Panel request", model.application.appId)
@@ -447,15 +455,27 @@ AbstractStage {
                 }
                 z: normalZ
 
+                // map from absulte "virtual desktop" position to position relative to window.
                 VirtualPosition {
                     id: relativeMappedPosition
-                    position: decoratedWindow.surfaceTopLeft
-                    enableWindowChanges: true
+                    objectName: screenWindow.objectName
+                    direction: VirtualPosition.FromDesktop
+                    x: decoratedWindow.surfaceTopLeft.x
+                    y: decoratedWindow.surfaceTopLeft.y
+                    enableWindowChanges: false
 
-                    onPositionChanged: console.log("pLOP", position, mappedFromDesktop)
+                    onXChanged: appDelegate.windowedX = mappedX
+                    onYChanged: appDelegate.windowedY = mappedY
                 }
-                x: relativeMappedPosition.mappedFromDesktop.x // may be overridden in some states. Do not directly write to this.
-                y: relativeMappedPosition.mappedFromDesktop.y // may be overridden in some states. Do not directly write to this.
+                x: relativeMappedPosition.mappedX // may be overridden in some states. Do not directly write to this.
+                y: relativeMappedPosition.mappedY // may be overridden in some states. Do not directly write to this.
+
+                // Requests for surface position changes.
+                VirtualPosition {
+                    id: spreadPositioner
+                    direction: VirtualPosition.ToDesktop
+                    enableWindowChanges: false
+                }
 
                 // requestedX/Y/width/height is what we ask the actual surface to be.
                 // Do not write to those, they will be set by states
@@ -653,52 +673,49 @@ AbstractStage {
 
                 function maximize(animated) {
                     if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
+                        resizeArea.saveWindowState();
                     }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximized;
                 }
                 function maximizeLeft(animated) {
                     if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
+                        resizeArea.saveWindowState();
                     }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedLeft;
                 }
                 function maximizeRight(animated) {
                     if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
+                        resizeArea.saveWindowState();
                     }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedRight;
                 }
                 function maximizeHorizontally(animated) {
                     if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
+                        resizeArea.saveWindowState();
                     }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedHorizontally;
                 }
                 function maximizeVertically(animated) {
                     if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
+                        resizeArea.saveWindowState();
                     }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState = WindowStateStorage.WindowStateMaximizedVertically;
                 }
                 function minimize(animated) {
                     if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
+                        resizeArea.saveWindowState();
                     }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState |= WindowStateStorage.WindowStateMinimized; // add the minimized bit
                 }
                 function restoreFromMaximized(animated) {
-                    if (windowState == WindowStateStorage.WindowStateNormal) {
-                        refreshRequestedPosition();
-                    }
                     animationsEnabled = (animated === undefined) || animated;
-                    windowState = WindowStateStorage.WindowStateNormal;
+                    resizeArea.loadWindowState();
                 }
                 function restore(animated) {
                     animationsEnabled = (animated === undefined) || animated;
@@ -713,9 +730,6 @@ AbstractStage {
                     else if (maximizedVertically)
                         maximizeVertically();
                     else {
-                        if (windowState == WindowStateStorage.WindowStateNormal) {
-                            refreshRequestedPosition();
-                        }
                         windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
                     }
 
@@ -732,13 +746,6 @@ AbstractStage {
                 }
                 function playHidingAnimation() {
                     hidingAnimation.start()
-                }
-
-                function refreshRequestedPosition() {
-//                    var mappedPosition = Qt.point(relativeMappedPosition.mappedFromDesktop.x,
-//                                                  relativeMappedPosition.mappedFromDesktop.y);
-//                    appDelegate.windowedX = mappedPosition.x;
-//                    appDelegate.windowedX = mappedPosition.y;
                 }
 
                 UbuntuNumberAnimation {
@@ -819,8 +826,13 @@ AbstractStage {
                             visible: spreadMaths.itemVisible
                         }
                         PropertyChanges {
-                            target: relativeMappedPosition
+                            target: spreadPositioner
                             position: Qt.point(spreadMaths.targetX, spreadMaths.targetY)
+                        }
+                        PropertyChanges {
+                            target: relativeMappedPosition
+                            x: spreadPositioner.mappedX
+                            y: spreadPositioner.mappedY
                         }
                         PropertyChanges { target: dragArea; enabled: true }
                         PropertyChanges { target: windowInfoItem; opacity: spreadMaths.tileInfoOpacity; visible: spreadMaths.itemVisible }
@@ -842,8 +854,13 @@ AbstractStage {
                             visible: stagedRightEdgeMaths.itemVisible
                         }
                         PropertyChanges {
-                            target: relativeMappedPosition
+                            target: spreadPositioner
                             position: Qt.point(stagedRightEdgeMaths.animatedX, stagedRightEdgeMaths.animatedY)
+                        }
+                        PropertyChanges {
+                            target: relativeMappedPosition
+                            x: spreadPositioner.mappedX
+                            y: spreadPositioner.mappedY
                         }
                         PropertyChanges {
                             target: decoratedWindow;
@@ -1132,14 +1149,28 @@ AbstractStage {
                     width: implicitWidth
                     height: implicitHeight
 
+                    // Requests for surface position changes.
                     VirtualPosition {
                         id: requestedScreenPosition
-                        position: Qt.point(appDelegate.requestedX, appDelegate.requestedY)
-                        enableWindowChanges: false
-                    }
+                        objectName: screenWindow.objectName
+                        direction: VirtualPosition.ToDesktop
+                        x: appDelegate.requestedX
+                        y: appDelegate.requestedY
 
-                    requestedX: requestedScreenPosition.mappedToDesktop.x
-                    requestedY: requestedScreenPosition.mappedToDesktop.y
+                        enableWindowChanges: true
+                        onWindowGeometryChanged: {
+                            // if it's visible in this screen; move the item with the screen
+                            if (appDelegate.x+appDelegate.width > 0 && appDelegate.y+appDelegate.height > 0 &&
+                                appDelegate.x < windowGeometry.height && appDelegate.y < windowGeometry.width) {
+
+                                xChanged();
+                                yChanged();
+                            }
+                        }
+                    }
+                    requestedX: requestedScreenPosition.mappedX
+                    requestedY: requestedScreenPosition.mappedY
+
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
 

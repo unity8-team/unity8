@@ -6,6 +6,9 @@
 
 VirtualPosition::VirtualPosition(QObject *parent)
     : QObject(parent)
+    , m_x(0)
+    , m_y(0)
+    , m_direction(ToDesktop)
     , m_enabled(true)
     , m_enableWindowChanges(true)
     , m_complete(false)
@@ -18,20 +21,30 @@ void VirtualPosition::componentComplete()
         // connect to window geometry & screen changes
         auto updateWindow = [this/*, updateScreen*/](QQuickWindow* window) {
             updateWindowConnections(window);
-            if (m_complete && m_enableWindowChanges) {
-                emitPositionChanged();
-            }
+//            if (m_complete && m_enableWindowChanges) {
+//                emitPositionChanged();
+//            }
         };
         connect(screenItem, &QQuickItem::windowChanged, this, updateWindow);
         updateWindow(screenItem->window());
     }
     m_complete = true;
-    emitPositionChanged();
+//    emitPositionChanged();
+}
+
+void VirtualPosition::setDirection(VirtualPosition::Direction direction)
+{
+    if (m_direction == direction) {
+        return;
+    }
+
+    m_direction = direction;
+    Q_EMIT directionChanged();
 }
 
 void VirtualPosition::setEnabled(bool enabled)
 {
-    if (m_enabled != enabled) {
+    if (m_enabled == enabled) {
         return;
     }
 
@@ -51,33 +64,71 @@ void VirtualPosition::setEnableWindowChanges(bool enable)
     Q_EMIT enableWindowChangesChanged();
 }
 
-void VirtualPosition::setPosition(const QPoint &pt)
+void VirtualPosition::setX(int x)
 {
-    if (m_pt == pt) {
+    if (m_x == x) {
         return;
     }
 
-    m_pt = pt;
-    emitPositionChanged();
+    m_x = x;
+    emitXChanged();
 }
 
-QPoint VirtualPosition::mappedToDesktop() const
+void VirtualPosition::setY(int y)
 {
-    if (!m_window) return m_pt;
-    return m_window->geometry().topLeft() + m_pt;
+    if (m_y == y) {
+        return;
+    }
+
+    m_y = y;
+    emitYChanged();
 }
 
-QPoint VirtualPosition::mappedFromDesktop() const
+int VirtualPosition::mappedX() const
 {
-    if (!m_window) return m_pt;
-    return m_pt - m_window->geometry().topLeft();
+    if (!m_window) return m_x;
+
+    if (m_direction == ToDesktop) {
+        return m_window->geometry().left() + m_x;
+    } else {
+        return m_x - m_window->geometry().left();
+    }
 }
 
-void VirtualPosition::emitPositionChanged()
+int VirtualPosition::mappedY() const
+{
+    if (!m_window) return m_y;
+
+    if (m_direction == ToDesktop) {
+        return m_window->geometry().top() + m_y;
+    } else {
+        return m_y - m_window->geometry().top();
+    }
+}
+
+void VirtualPosition::emitXChanged()
+{
+    if (!m_complete || !m_enabled) return;
+    Q_EMIT xChanged();
+}
+
+void VirtualPosition::emitYChanged()
+{
+    if (!m_complete || !m_enabled) return;
+    Q_EMIT yChanged();
+}
+
+
+void VirtualPosition::emitWindowGeometryChanged()
 {
     if (!m_complete || !m_enabled) return;
 
-    Q_EMIT positionChanged();
+    if (m_enableWindowChanges && m_window) {
+        if (m_window->geometry() != m_lastWindowGeometry) {
+            m_lastWindowGeometry = m_window->geometry();
+            Q_EMIT windowGeometryChanged(m_lastWindowGeometry);
+        }
+    }
 }
 
 void VirtualPosition::updateWindowConnections(QQuickWindow *window)
@@ -87,8 +138,12 @@ void VirtualPosition::updateWindowConnections(QQuickWindow *window)
     m_window = window;
 
     if (window && m_enableWindowChanges) {
-        connect(window, &QQuickWindow::xChanged, this, &VirtualPosition::emitPositionChanged);
-        connect(window, &QQuickWindow::yChanged, this, &VirtualPosition::emitPositionChanged);
-        connect(window, &QQuickWindow::screenChanged, this, &VirtualPosition::emitPositionChanged);
+        m_lastWindowGeometry = window->geometry();
+
+        connect(window, &QQuickWindow::xChanged, this, &VirtualPosition::emitWindowGeometryChanged);
+        connect(window, &QQuickWindow::yChanged, this, &VirtualPosition::emitWindowGeometryChanged);
+        connect(window, &QQuickWindow::widthChanged, this, &VirtualPosition::emitWindowGeometryChanged);
+        connect(window, &QQuickWindow::heightChanged, this, &VirtualPosition::emitWindowGeometryChanged);
+        connect(window, &QQuickWindow::screenChanged, this, &VirtualPosition::emitWindowGeometryChanged);
     }
 }

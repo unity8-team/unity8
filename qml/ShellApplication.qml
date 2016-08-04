@@ -25,6 +25,7 @@ Instantiator {
     ShellScreen {
         id: screen
         objectName: "screen"+index
+        title: "Unity8 Shell - " + objectName
         screen: model.screen
         visibility:  applicationArguments.hasFullscreen ? Window.FullScreen : Window.Windowed
         flags: applicationArguments.hasFrameless ? Qt.FramelessWindowHint : 0

@@ -76,17 +76,18 @@ MouseArea {
                                                             Qt.rect(target.windowedX, target.windowedY, defaultWidth, defaultHeight));
 
 
-        print("loading Window state!", root.windowId, windowGeometry.width, windowGeometry.height)
+        print("loading Window state!", root.windowId, windowGeometry.x, windowGeometry.y, windowGeometry.width, windowGeometry.height)
         target.windowedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin); });
         target.windowedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight),
                                                                          root.screenHeight - (target.fullscreen ? 0 : PanelState.panelHeight)); });
-        target.windowedX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - target.windowedWidth),
+        target.windowedX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - 1),
                                                            (target.fullscreen ? 0 : root.leftMargin)); });
-        target.windowedY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - target.windowedHeight), PanelState.panelHeight); });
+        target.windowedY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - 1), PanelState.panelHeight); });
 
         var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal)
         switch (windowState) {
             case WindowStateStorage.WindowStateNormal:
+                target.windowState = windowState;
                 break;
             case WindowStateStorage.WindowStateMaximized:
                 target.maximize(false);
