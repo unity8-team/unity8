@@ -49,7 +49,7 @@ QString Greeter::authenticationUser() const
 
 bool Greeter::hasGuestAccountHint() const
 {
-    return true;
+    return false;
 }
 
 QString Greeter::getHint(const QString &name) const

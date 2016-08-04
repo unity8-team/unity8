@@ -69,9 +69,11 @@ public:
     bool showRemoteLoginHint() const;
     bool lockHint () const;
     bool hasGuestAccountHint() const;
+    void setHasGuestAccountHint(bool hasGuestAccountHint); // only in mock
     QString selectUserHint() const;
     void setSelectUserHint(const QString &selectUserHint); // only in mock
     bool selectGuestHint() const;
+    void setSelectGuestHint(bool selectGuestHint); // only in mock
     QString autologinUserHint() const;
     bool autologinGuestHint() const;
     int autologinTimeoutHint() const;

@@ -40,7 +40,14 @@ QString Greeter::authenticationUser() const
 
 bool Greeter::hasGuestAccountHint() const
 {
-    return true;
+    Q_D(const Greeter);
+    return d->hasGuestAccountHint;
+}
+
+void Greeter::setHasGuestAccountHint(bool hasGuestAccountHint)
+{
+    Q_D(Greeter);
+    d->hasGuestAccountHint = hasGuestAccountHint;
 }
 
 QString Greeter::getHint(const QString &name) const
@@ -88,7 +95,14 @@ void Greeter::setSelectUserHint(const QString &selectUserHint)
 
 bool Greeter::selectGuestHint() const
 {
-    return false;
+    Q_D(const Greeter);
+    return d->selectGuestHint;
+}
+
+void Greeter::setSelectGuestHint(bool selectGuestHint)
+{
+    Q_D(Greeter);
+    d->selectGuestHint = selectGuestHint;
 }
 
 QString Greeter::autologinUserHint() const

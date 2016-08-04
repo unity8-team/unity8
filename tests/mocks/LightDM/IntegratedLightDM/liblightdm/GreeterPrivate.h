@@ -34,7 +34,9 @@ public:
     bool authenticated;
     QString authenticationUser;
     bool twoFactorDone;
+    bool hasGuestAccountHint;
     QString selectUserHint;
+    bool selectGuestHint;
 
     QString mockMode;
 

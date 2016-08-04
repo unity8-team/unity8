@@ -49,3 +49,19 @@ void MockGreeter::setSelectUserHint(const QString &selectUserHint)
         Q_EMIT selectUserHintChanged();
     }
 }
+
+bool MockGreeter::hasGuestAccount() const
+{
+    Q_D(const Greeter);
+    return d->m_greeter->hasGuestAccountHint();
+}
+
+void MockGreeter::setHasGuestAccount(bool hasGuestAccount)
+{
+    Q_D(Greeter);
+
+    if (d->m_greeter->hasGuestAccountHint() != hasGuestAccount) {
+        d->m_greeter->setHasGuestAccountHint(hasGuestAccount);
+        Q_EMIT hasGuestAccountChanged();
+    }
+}
