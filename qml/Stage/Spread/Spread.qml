@@ -6,12 +6,12 @@ Item {
     id: root
 
     // Information about the environment
-    property int totalItemCount: 0
     property int highlightedIndex: 1
+    property var model: null
 
     // some config options
     property real contentMargin: 0.16 * root.height
-    property real contentTopMargin: 0.65 * contentMargin
+    property real contentTopMargin: contentMargin
     property real contentBottomMargin: 0.35 * contentMargin
     property real windowTitleTopMargin: 3/4 * (contentTopMargin - windowTitle.height)
     property int stackItemCount: 3
@@ -22,6 +22,7 @@ Item {
 
 
     // Calculated stuff
+    readonly property int totalItemCount: model.count
     readonly property real leftStackXPos: 0.03 * root.width
     readonly property real rightStackXPos: root.width - 1.5 * leftStackXPos
 
@@ -30,7 +31,7 @@ Item {
 
     readonly property real spreadWidth: rightStackXPos - leftStackXPos
     readonly property real spreadHeight: root.height
-    readonly property real spreadItemHeight: 0.84 * spreadHeight
+    readonly property real spreadItemHeight: spreadHeight - contentTopMargin - contentBottomMargin
     readonly property real spreadItemWidth: stackHeight
 
     readonly property real dynamicLeftRotationAngle: leftRotationAngle * rotationAngleFactor
@@ -89,9 +90,11 @@ Item {
         y: windowTitleTopMargin
 //        //y: priv.spreadTopMargin + priv.contentTopMargin + settings.spreadOffset + settings.titleOffset - height -  (priv.contentTopMargin - height) / 4
 //        visible: height < priv.contentTopMargin
-        text: "focused window title"
+        text: root.highlightedIndex >= 0 && root.model ? root.model.surfaceAt(root.highlightedIndex).name : ""
         fontSize: root.height < units.gu(85) ? 'medium' : 'large'
         color: "white"
+        opacity: root.highlightedIndex >= 0 ? 1 : 0
+        Behavior on opacity { UbuntuNumberAnimation { } }
     }
 
 //    Label {
@@ -105,6 +108,7 @@ Item {
 
 
     Keys.onPressed: {
+        print("key pressed")
         switch (event.key) {
         case Qt.Key_Left:
         case Qt.Key_Backtab:

@@ -106,6 +106,7 @@ public:
     Mir::ShellChrome shellChrome() const override;
 
     bool focused() const override;
+    QRect inputBounds() const override;
 
     Q_INVOKABLE void requestFocus() override;
 
@@ -131,6 +132,8 @@ public:
     Q_INVOKABLE void setMaximumHeight(int);
     Q_INVOKABLE void setWidthIncrement(int);
     Q_INVOKABLE void setHeightIncrement(int);
+
+    Q_INVOKABLE virtual void setInputBounds(const QRect &boundsRect);
 
     /////
     // internal mock stuff
@@ -163,6 +166,9 @@ Q_SIGNALS:
     void activeFocusChanged(bool);
     void raiseRequested();
     void closeRequested();
+
+protected:
+    virtual void updateInputBoundsAfterResize();
 
 private Q_SLOTS:
     void applyDelayedResize();
@@ -207,6 +213,8 @@ private:
     QHash<qintptr, View> m_views;
 
     QTimer m_zombieTimer;
+
+    QRect m_inputBounds;
 };
 
 #endif // MOCK_MIR_SURFACE_H

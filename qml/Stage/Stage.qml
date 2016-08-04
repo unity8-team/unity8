@@ -15,7 +15,6 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
 import "../Components/PanelState"
@@ -106,23 +105,13 @@ AbstractStage {
         active: priv.focusedAppDelegate !== null
     }
 
-    Connections {
-        target: root.topLevelSurfaceList
-        onCountChanged: {
-            if (root.state == "spread") {
-                priv.goneToSpread = false;
-            }
-        }
-    }
-
     QtObject {
         id: priv
         objectName: "DesktopStagePrivate"
 
         property var focusedAppDelegate: null
         onFocusedAppDelegateChanged: {
-            print("focusedAppDelegate changed", focusedAppDelegate.objectName)
-            if (root.state == "spread") {
+            if (focusedAppDelegate && root.state == "spread") {
                 goneToSpread = false;
             }
         }
@@ -130,6 +119,7 @@ AbstractStage {
         property var foregroundMaximizedAppDelegate: null // for stuff like drop shadow and focusing maximized app by clicking panel
 
         property bool goneToSpread: false
+        property int closingIndex: -1
 //        property int animationDuration: 4000
         property int animationDuration: UbuntuAnimation.FastDuration
 
@@ -174,8 +164,14 @@ AbstractStage {
         property string mainStageAppId: ""
         property string sideStageAppId: ""
 
+        onSideStageDelegateChanged: {
+            if (!sideStageDelegate) {
+                sideStage.hide();
+            }
+        }
+
         function updateMainAndSideStageIndexes() {
-            print("updating stage indexes, sideStage shown:", sideStage.shown)
+//            print("updating stage indexes, sideStage shown:", sideStage.shown)
             var choseMainStage = false;
             var choseSideStage = false;
 
@@ -184,8 +180,7 @@ AbstractStage {
 
             for (var i = 0; i < appRepeater.count && (!choseMainStage || !choseSideStage); ++i) {
                 var appDelegate = appRepeater.itemAt(i);
-                print("have app on stage", appDelegate.applicationId, appDelegate.stage)
-                if (sideStage.shown && appDelegate.stage == ApplicationInfoInterface.SideStage
+                if (/*sideStage.shown && */appDelegate.stage == ApplicationInfoInterface.SideStage
                         && !choseSideStage) {
                     priv.sideStageDelegate = appDelegate
                     priv.sideStageItemId = root.topLevelSurfaceList.idAt(i);
@@ -213,21 +208,17 @@ AbstractStage {
         }
 
         property int nextInStack: 1
+
+        readonly property real virtualKeyboardHeight: SurfaceManager.inputMethodSurface
+                                                          ? SurfaceManager.inputMethodSurface.inputBounds.height
+                                                          : 0
     }
 
     Connections {
         target: PanelState
         onCloseClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.close(); } }
         onMinimizeClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.minimize(); } }
-        onRestoreClicked: {
-            if (!priv.focusedAppDelegate) return;
-
-            if (priv.focusedAppDelegate.maximized || priv.focusedAppDelegate.maximizedLeft || priv.focusedAppDelegate.maximizedRight ||
-                    priv.focusedAppDelegate.maximizedHorizontally || priv.focusedAppDelegate.maximizedVertically) {
-
-                priv.focusedAppDelegate.restoreFromMaximized();
-            }
-        }
+        onRestoreClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.restoreFromMaximized(); } }
         onFocusMaximizedApp: {
             if (priv.foregroundMaximizedAppDelegate) {
                 print("***** focusing because of Panel request", model.application.appId)
@@ -308,6 +299,10 @@ AbstractStage {
             name: "stagedrightedge"; when: rightEdgeDragArea.dragging && root.mode == "staged"
         },
         State {
+            name: "sidestagedrightedge"; when: rightEdgeDragArea.dragging && root.mode == "stagedWithSideStage"
+            PropertyChanges { target: priv; nextInStack: priv.sideStageDelegate && priv.sideStageDelegate.itemIndex < 2 ? 2 : 1 }
+        },
+        State {
             name: "windowedrightedge"; when: rightEdgeDragArea.dragging && root.mode == "windowed"
         },
         State {
@@ -316,7 +311,7 @@ AbstractStage {
         State {
             name: "stagedWithSideStage"; when: root.mode === "stagedWithSideStage"
             PropertyChanges { target: triGestureArea; enabled: true }
-            PropertyChanges { target: priv; nextInStack: priv.sideStageDelegate ? 3 : 2 }
+            PropertyChanges { target: priv; nextInStack: priv.sideStageDelegate && priv.sideStageDelegate.itemIndex < 2 ? 2 : 1 }
             PropertyChanges { target: sideStage; visible: true }
         },
         State {
@@ -325,18 +320,31 @@ AbstractStage {
     ]
     transitions: [
         Transition {
+            from: "stagedrightedge"; to: "spread"
+            PropertyAction { target: spreadItem; property: "highlightedIndex"; value: -1 }
+        },
+        Transition {
             to: "spread"
             PropertyAction { target: spreadItem; property: "highlightedIndex"; value: 1 }
+            PropertyAction { target: floatingFlickable; property: "contentX"; value: 0 }
         },
         Transition {
             from: "spread"
-            ScriptAction { script: {
-                    var item = appRepeater.itemAt(spreadItem.highlightedIndex);
-                    item.claimFocus();
-                    item.playFocusAnimation();
+            SequentialAnimation {
+                ScriptAction { script: {
+                        var item = appRepeater.itemAt(spreadItem.highlightedIndex);
+                        item.claimFocus();
+                        item.playFocusAnimation();
+                    }
                 }
+                PropertyAction { target: spreadItem; property: "highlightedIndex"; value: -1 }
             }
+        },
+        Transition {
+            to: "stagedrightedge"
+            PropertyAction { target: floatingFlickable; property: "contentX"; value: 0 }
         }
+
     ]
     onStateChanged: print("spread going to state:", state)
 
@@ -358,7 +366,7 @@ AbstractStage {
         Spread {
             id: spreadItem
             anchors.fill: appContainer
-            totalItemCount: appRepeater.count
+            model: root.topLevelSurfaceList
             z: 10
         }
 
@@ -408,6 +416,28 @@ AbstractStage {
                 return 2;
             }
 
+
+            onShownChanged: {
+                print("sidestage shown changed:", shown)
+                if (!shown && priv.mainStageDelegate) {
+                    priv.mainStageDelegate.claimFocus();
+                }
+            }
+
+//            onShownChanged: {
+//                if (!shown && priv.sideStageDelegate && priv.focusedAppDelegate === priv.sideStageDelegate) {
+//                    priv.updateMainAndSideStageIndexes();
+//                    if (priv.mainStageDelegate) {
+//                        priv.mainStageDelegate.focus = true;
+//                    }
+//                } else if (shown) {
+//                    priv.updateMainAndSideStageIndexes();
+//                    if (priv.sideStageDelegate) {
+//                        priv.sideStageDelegate.focus = true;
+//                    }
+//                }
+//            }
+
             DropArea {
                 id: sideStageDropArea
                 objectName: "SideStageDropArea"
@@ -445,6 +475,7 @@ AbstractStage {
             delegate: FocusScope {
                 id: appDelegate
                 objectName: "appDelegate_" + model.id
+                property int itemIndex: index // We need this from outside the repeater
                 // z might be overriden in some cases by effects, but we need z ordering
                 // to calculate occlusion detection
                 property int normalZ: topLevelSurfaceList.count - index
@@ -467,8 +498,6 @@ AbstractStage {
                     onXChanged: appDelegate.windowedX = mappedX
                     onYChanged: appDelegate.windowedY = mappedY
                 }
-                x: relativeMappedPosition.mappedX // may be overridden in some states. Do not directly write to this.
-                y: relativeMappedPosition.mappedY // may be overridden in some states. Do not directly write to this.
 
                 // Requests for surface position changes.
                 VirtualPosition {
@@ -476,6 +505,14 @@ AbstractStage {
                     direction: VirtualPosition.ToDesktop
                     enableWindowChanges: false
                 }
+
+                // Normally we want x/y where we request it to be. Width/height of our delegate will
+                // match what the actual surface size is.
+                // Don't write to those, they will be set by states
+                x: relativeMappedPosition.mappedX // may be overridden in some states. Do not directly write to this.
+                y: relativeMappedPosition.mappedY // may be overridden in some states. Do not directly write to this.
+                width: decoratedWindow.implicitWidth
+                height: decoratedWindow.implicitHeight
 
                 // requestedX/Y/width/height is what we ask the actual surface to be.
                 // Do not write to those, they will be set by states
@@ -498,7 +535,7 @@ AbstractStage {
                     property: "y"
                     value: appDelegate.requestedY -
                            Math.min(appDelegate.requestedY - PanelState.panelHeight,
-                                    Math.max(0, UbuntuKeyboardInfo.height - (appContainer.height - (appDelegate.requestedY + appDelegate.height))))
+                                    Math.max(0, priv.virtualKeyboardHeight - (appContainer.height - (appDelegate.requestedY + appDelegate.height))))
                     when: root.oskEnabled && appDelegate.focus && appDelegate.state == "normal"
                           && SurfaceManager.inputMethodSurface
                           && SurfaceManager.inputMethodSurface.state != Mir.HiddenState
@@ -506,8 +543,7 @@ AbstractStage {
 
                 }
 
-                width: decoratedWindow.implicitWidth
-                height: decoratedWindow.implicitHeight
+                Behavior on x { id: xBehavior; enabled: priv.closingIndex >= 0; UbuntuNumberAnimation { onRunningChanged: if (!running) priv.closingIndex = -1} }
 
                 Connections {
                     target: root
@@ -563,10 +599,12 @@ AbstractStage {
                 readonly property var surface: model.surface
                 readonly property alias resizeArea: resizeArea
 
-                readonly property bool windowDragging: decoratedWindow.dragging || touchControls.dragging
-
                 function claimFocus() {
                     appDelegate.focus = true;
+                    print("focusing app", priv.sideStageDelegate, appDelegate, sideStage.shown)
+                    if (appDelegate.stage == ApplicationInfoInterface.SideStage && !sideStage.shown) {
+                        sideStage.show();
+                    }
                 }
                 Connections {
                     target: model.surface
@@ -738,8 +776,17 @@ AbstractStage {
                 }
 
                 function playFocusAnimation() {
+                    print("playing focus animation", state, root.mode, "app", model.application.appId)
                     if (state == "stagedrightedge") {
-                        rightEdgeFocusAnimation.start()
+                        // TODO: Can we drop this if and find something that always works?
+                        if (root.mode == "staged") {
+                            rightEdgeFocusAnimation.targetX = 0
+                            print("doing it to 0")
+                            rightEdgeFocusAnimation.start()
+                        } else if (root.mode == "stagedWithSideStage") {
+                            rightEdgeFocusAnimation.targetX = appDelegate.stage == ApplicationInfoInterface.SideStage ? sideStage.x : 0
+                            rightEdgeFocusAnimation.start()
+                        }
                     } else {
                         focusAnimation.start()
                     }
@@ -758,7 +805,8 @@ AbstractStage {
                 }
                 ParallelAnimation {
                     id: rightEdgeFocusAnimation
-                    UbuntuNumberAnimation { target: appDelegate; properties: "x"; to: 0; duration: priv.animationDuration }
+                    property int targetX: 0
+                    UbuntuNumberAnimation { target: appDelegate; properties: "x"; to: rightEdgeFocusAnimation.targetX; duration: priv.animationDuration }
                     UbuntuNumberAnimation { target: decoratedWindow; properties: "angle"; to: 0; duration: priv.animationDuration }
                     UbuntuNumberAnimation { target: decoratedWindow; properties: "itemScale"; to: 1; duration: priv.animationDuration }
                     onStopped: appDelegate.focus = true
@@ -788,12 +836,17 @@ AbstractStage {
 
                 StagedRightEdgeMaths {
                     id: stagedRightEdgeMaths
-                    itemIndex: index
                     sceneWidth: appContainer.width - root.leftMargin
                     sceneHeight: appContainer.height
+                    isMainStageApp: priv.mainStageDelegate == appDelegate
+                    isSideStageApp: priv.sideStageDelegate == appDelegate
+                    sideStageWidth: sideStage.width
+                    itemIndex: index
+                    nextInStack: priv.nextInStack
                     progress: 0
                     targetHeight: spreadMaths.stackHeight
                     targetX: spreadMaths.targetX
+                    startY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
                     targetY: spreadMaths.targetY
                     targetAngle: spreadMaths.targetAngle
                     targetScale: spreadMaths.targetScale
@@ -827,7 +880,8 @@ AbstractStage {
                         }
                         PropertyChanges {
                             target: spreadPositioner
-                            position: Qt.point(spreadMaths.targetX, spreadMaths.targetY)
+                            x: spreadMaths.targetX
+                            y: spreadMaths.targetY
                         }
                         PropertyChanges {
                             target: relativeMappedPosition
@@ -838,12 +892,11 @@ AbstractStage {
                         PropertyChanges { target: windowInfoItem; opacity: spreadMaths.tileInfoOpacity; visible: spreadMaths.itemVisible }
                     },
                     State {
-                        name: "stagedrightedge";
-                        when: root.state == "stagedrightedge" || rightEdgeFocusAnimation.running || hidingAnimation.running
+                        name: "stagedrightedge"
+                        when: root.state == "sidestagedrightedge" || root.state == "stagedrightedge" || rightEdgeFocusAnimation.running || hidingAnimation.running
                         PropertyChanges {
                             target: stagedRightEdgeMaths
                             progress: rightEdgeDragArea.progress
-                            startY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
                         }
                         PropertyChanges {
                             target: appDelegate
@@ -851,11 +904,11 @@ AbstractStage {
                             height: stagedRightEdgeMaths.animatedHeight
                             requestedWidth: decoratedWindow.oldRequestedWidth
                             requestedHeight: decoratedWindow.oldRequestedHeight
-                            visible: stagedRightEdgeMaths.itemVisible
                         }
                         PropertyChanges {
                             target: spreadPositioner
-                            position: Qt.point(stagedRightEdgeMaths.animatedX, stagedRightEdgeMaths.animatedY)
+                            x: stagedRightEdgeMaths.animatedX
+                            y: stagedRightEdgeMaths.animatedY
                         }
                         PropertyChanges {
                             target: relativeMappedPosition
@@ -863,13 +916,13 @@ AbstractStage {
                             y: spreadPositioner.mappedY
                         }
                         PropertyChanges {
-                            target: decoratedWindow;
+                            target: decoratedWindow
                             hasDecoration: false
                             angle: stagedRightEdgeMaths.animatedAngle
                             itemScale: stagedRightEdgeMaths.animatedScale
                             scaleToPreviewSize: spreadItem.stackHeight
                             scaleToPreviewProgress: stagedRightEdgeMaths.scaleToPreviewProgress
-                            shadowOpacity: 0.3
+                            shadowOpacity: .3
                         }
                     },
                     State {
@@ -903,7 +956,7 @@ AbstractStage {
                             requestedY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
                             z: stageMaths.itemZ
                             requestedWidth: stageMaths.itemWidth
-                            requestedHeight: appContainer.height - PanelState.panelHeight
+                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
                             visuallyMaximized: true
                         }
                         PropertyChanges {
@@ -1066,6 +1119,7 @@ AbstractStage {
                     Transition {
                         to: "spread"
                         // DecoratedWindow wants the sceleToPreviewSize set before enabling scaleToPreview
+                        PropertyAction { target: appDelegate; property: "z" }
                         PropertyAction { target: decoratedWindow; property: "scaleToPreviewSize" }
                         UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,height"; duration: priv.animationDuration }
                         UbuntuNumberAnimation { target: decoratedWindow; properties: "width,height,itemScale,angle,scaleToPreviewProgress"; duration: priv.animationDuration }
@@ -1199,7 +1253,7 @@ AbstractStage {
                             yScale: decoratedWindow.itemScale
                         },
                         Rotation {
-                            origin { x: 0; y: (decoratedWindow.height * decoratedWindow.itemScale / 2) }
+                            origin { x: 0; y: (decoratedWindow.height / 2) }
                             axis { x: 0; y: 1; z: 0 }
                             angle: decoratedWindow.angle
                         }
@@ -1220,7 +1274,7 @@ AbstractStage {
                     surface: model.surface
                 }
 
-                DragToCloseArea {
+                SpreadDelegateInputArea {
                     id: dragArea
                     anchors.fill: parent
                     enabled: false
@@ -1236,7 +1290,10 @@ AbstractStage {
                     onContainsMouseChanged: {
                         if (containsMouse) spreadItem.highlightedIndex = index
                     }
-                    onClose: model.surface.close()
+                    onClose: {
+                        priv.closingIndex = index
+                        model.surface.close()
+                    }
                 }
 
 //                Rectangle { anchors.fill: parent; color: "blue"; opacity: .4 }
@@ -1336,11 +1393,13 @@ AbstractStage {
                 gesturePoints = [];
             } else {
                 if (gesturePoints[gesturePoints.length - 1] < -root.width * 0.4 ) {
+                    print("gone to spread true")
                     priv.goneToSpread = true;
                 } else {
                     if (appRepeater.count > 1) {
+                        print("playing focus animation for", priv.nextInStack)
                         appRepeater.itemAt(0).playHidingAnimation()
-                        appRepeater.itemAt(1).playFocusAnimation()
+                        appRepeater.itemAt(priv.nextInStack).playFocusAnimation()
                     } else {
                         appRepeater.itemAt(0).playFocusAnimation();
                     }
