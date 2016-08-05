@@ -18,7 +18,7 @@ import QtQuick 2.4
 import QtTest 1.0
 import ".."
 import "../../../qml/Greeter"
-import LightDM.IntegratedLightDM 0.1 as LightDM
+import LightDM 0.1 as LightDM
 import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
 
@@ -28,6 +28,12 @@ Item {
     height: units.gu(80)
 
     Component.onCompleted: theme.name = "Ubuntu.Components.Themes.SuruDark" // use the same theme as the real shell
+
+    Binding {
+        target: LightDM.Users.mock
+        property: "userMode"
+        value: "single"
+    }
 
     Row {
         anchors.fill: parent
@@ -251,7 +257,7 @@ Item {
     Binding {
         target: LightDM.Infographic
         property: "username"
-        value: "single"
+        value: "has-password"
     }
 
     SignalSpy {
