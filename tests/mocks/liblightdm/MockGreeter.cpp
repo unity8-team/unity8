@@ -180,7 +180,7 @@ void Greeter::authenticateAsGuest()
     Q_D(Greeter);
 
     d->authenticated = true;
-    d->authenticationUser = "";
+    d->authenticationUser = QString();
     d->twoFactorDone = false;
     QTimer::singleShot(0, this, &Greeter::authenticationComplete);
 }

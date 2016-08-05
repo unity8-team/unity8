@@ -45,6 +45,15 @@ MockController *MockController::instance()
     return m_instance;
 }
 
+void MockController::reset()
+{
+    setSelectUserHint("");
+    setSelectGuestHint(false);
+    setHasGuestAccountHint(false);
+    setUserMode("full");
+    setSessionMode("full");
+}
+
 QString MockController::selectUserHint() const
 {
     return m_selectUserHint;

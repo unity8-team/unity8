@@ -35,6 +35,7 @@ class Greeter : public QObject
 
     Q_PROPERTY(bool active READ isActive WRITE setIsActive NOTIFY isActiveChanged)
     Q_PROPERTY(bool authenticated READ isAuthenticated NOTIFY isAuthenticatedChanged)
+    Q_PROPERTY(QString authenticationUser READ authenticationUser NOTIFY authenticationUserChanged
     Q_PROPERTY(QString defaultSession READ defaultSessionHint CONSTANT)
     Q_PROPERTY(bool promptless READ promptless NOTIFY promptlessChanged)
     Q_PROPERTY(QString selectUser READ selectUser CONSTANT)

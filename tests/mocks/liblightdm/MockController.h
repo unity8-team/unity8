@@ -41,6 +41,8 @@ public:
     static MockController *instance();
     virtual ~MockController();
 
+    Q_INVOKABLE void reset();
+
     QString selectUserHint() const;
     void setSelectUserHint(const QString &selectUserHint);
 
