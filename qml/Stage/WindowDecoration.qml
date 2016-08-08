@@ -31,6 +31,7 @@ MouseArea {
     acceptedButtons: Qt.AllButtons // prevent leaking unhandled mouse events
     property alias overlayShown: buttons.overlayShown
     readonly property alias dragging: priv.dragging
+    property PanelState panelState
 
     signal closeClicked()
     signal minimizeClicked()
@@ -71,7 +72,7 @@ MouseArea {
             // position. Mouse movement could have subpixel precision, yielding a fractional
             // mouse position.
             root.target.windowedX = Math.round(pos.x - priv.distanceX);
-            root.target.windowedY = Math.round(Math.max(pos.y - priv.distanceY, PanelState.panelHeight));
+            root.target.windowedY = Math.round(Math.max(pos.y - priv.distanceY, panelState.panelHeight));
         }
     }
 

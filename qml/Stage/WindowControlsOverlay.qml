@@ -26,6 +26,7 @@ Item {
 
     // to be set from outside
     property Item target // appDelegate
+    property PanelState panelState
 
     // to be read from outside
     readonly property alias overlayShown: overlay.visible
@@ -96,7 +97,7 @@ Item {
             if (priv.dragging) {
                 var pos = mapToItem(root.target.parent, mouseX, mouseY);
                 root.target.windowedX = Math.round(pos.x - priv.distanceX);
-                root.target.windowedY = Math.round(Math.max(pos.y - priv.distanceY, PanelState.panelHeight));
+                root.target.windowedY = Math.round(Math.max(pos.y - priv.distanceY, panelState.panelHeight));
             }
         }
     }

@@ -18,6 +18,7 @@ import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
 import "Spread/MathUtils.js" as MathUtils
+import "../Components/PanelState"
 
 FocusScope {
     id: root
@@ -65,6 +66,8 @@ FocusScope {
     readonly property int heightIncrement: !counterRotate ? applicationWindow.heightIncrement : applicationWindow.widthIncrement
 
     property alias overlayShown: decoration.overlayShown
+
+    property PanelState panelState
 
     signal closeClicked()
     signal maximizeClicked()
@@ -115,6 +118,7 @@ FocusScope {
         width: root.width
         title: applicationWindow.title
         opacity: root.hasDecoration && root.showDecoration ? 1 : 0
+        panelState: root.panelState
 
         // FIXME: priv.animationDuration reaches out of context... neads cleanup before landing
         Behavior on opacity { UbuntuNumberAnimation { duration: priv.animationDuration } }

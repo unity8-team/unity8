@@ -40,6 +40,8 @@ AbstractStage {
 
     property string mode: "staged"
 
+    property PanelState panelState
+
     // Used by TutorialRight
     property bool spreadShown: state == "altTab"
 
@@ -215,7 +217,7 @@ AbstractStage {
     }
 
     Connections {
-        target: PanelState
+        target: panelState
         onCloseClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.close(); } }
         onMinimizeClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.minimize(); } }
         onRestoreClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.restoreFromMaximized(); } }
@@ -228,43 +230,43 @@ AbstractStage {
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "buttonsVisible"
         value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
                && spread.state == ""
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "title"
         value: {
-//            if (priv.focusedAppDelegate !== null && spread.state == "") {
-//                if (priv.focusedAppDelegate.maximized)
-//                    return priv.focusedAppDelegate.title
-//                else
-//                    return priv.focusedAppDelegate.appName
-//            }
+            if (priv.focusedAppDelegate !== null && root.state === "windowed") {
+                if (priv.focusedAppDelegate.maximized)
+                    return priv.focusedAppDelegate.title
+                else
+                    return priv.focusedAppDelegate.appName
+            }
             return ""
         }
         when: priv.focusedAppDelegate
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "dropShadow"
         value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppDelegate !== null
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "closeButtonShown"
         value: priv.focusedAppDelegate && priv.focusedAppDelegate.maximized && priv.focusedAppDelegate.application.appId !== "unity8-dash"
     }
 
     Component.onDestruction: {
-        PanelState.title = "";
-        PanelState.buttonsVisible = false;
-        PanelState.dropShadow = false;
+        panelState.title = "";
+        panelState.buttonsVisible = false;
+        panelState.dropShadow = false;
     }
 
     Instantiator {
@@ -534,7 +536,7 @@ AbstractStage {
                     target: appDelegate
                     property: "y"
                     value: appDelegate.requestedY -
-                           Math.min(appDelegate.requestedY - PanelState.panelHeight,
+                           Math.min(appDelegate.requestedY - panelState.panelHeight,
                                     Math.max(0, priv.virtualKeyboardHeight - (appContainer.height - (appDelegate.requestedY + appDelegate.height))))
                     when: root.oskEnabled && appDelegate.focus && appDelegate.state == "normal"
                           && SurfaceManager.inputMethodSurface
@@ -600,10 +602,14 @@ AbstractStage {
                 readonly property alias resizeArea: resizeArea
 
                 function claimFocus() {
-                    appDelegate.focus = true;
-                    print("focusing app", priv.sideStageDelegate, appDelegate, sideStage.shown)
-                    if (appDelegate.stage == ApplicationInfoInterface.SideStage && !sideStage.shown) {
-                        sideStage.show();
+                    if (root.state == "windowed") {
+                        appDelegate.restore(true);
+                    } else {
+                        appDelegate.focus = true;
+                        print("focusing app", priv.sideStageDelegate, appDelegate, sideStage.shown)
+                        if (appDelegate.stage == ApplicationInfoInterface.SideStage && !sideStage.shown) {
+                            sideStage.show();
+                        }
                     }
                 }
                 Connections {
@@ -757,19 +763,23 @@ AbstractStage {
                 }
                 function restore(animated) {
                     animationsEnabled = (animated === undefined) || animated;
-                    if (maximized)
-                        maximize();
-                    else if (maximizedLeft)
-                        maximizeLeft();
-                    else if (maximizedRight)
-                        maximizeRight();
-                    else if (maximizedHorizontally)
-                        maximizeHorizontally();
-                    else if (maximizedVertically)
-                        maximizeVertically();
-                    else {
-                        windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
+                    if (windowState != WindowStateStorage.WindowStateNormal) {
+                        resizeArea.loadWindowState();
                     }
+
+//                    if (maximized)
+//                        maximize();
+//                    else if (maximizedLeft)
+//                        maximizeLeft();
+//                    else if (maximizedRight)
+//                        maximizeRight();
+//                    else if (maximizedHorizontally)
+//                        maximizeHorizontally();
+//                    else if (maximizedVertically)
+//                        maximizeVertically();
+//                    else {
+//                        windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
+//                    }
 
                     print("***** focusing because of window restore", model.application.appId)
                     focus = true;
@@ -846,7 +856,7 @@ AbstractStage {
                     progress: 0
                     targetHeight: spreadMaths.stackHeight
                     targetX: spreadMaths.targetX
-                    startY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                    startY: appDelegate.fullscreen ? 0 : panelState.panelHeight
                     targetY: spreadMaths.targetY
                     targetAngle: spreadMaths.targetAngle
                     targetScale: spreadMaths.targetScale
@@ -930,9 +940,9 @@ AbstractStage {
                         PropertyChanges {
                             target: appDelegate
                             requestedX: appDelegate.focus ? 0 : root.width
-                            requestedY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            requestedY: appDelegate.fullscreen ? 0 : panelState.panelHeight
                             requestedWidth: appContainer.width
-                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
+                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
                             visuallyMaximized: true
                         }
                         PropertyChanges {
@@ -953,10 +963,10 @@ AbstractStage {
                         PropertyChanges {
                             target: appDelegate
                             requestedX: stageMaths.itemX
-                            requestedY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            requestedY: appDelegate.fullscreen ? 0 : panelState.panelHeight
                             z: stageMaths.itemZ
                             requestedWidth: stageMaths.itemWidth
-                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
+                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
                             visuallyMaximized: true
                         }
                         PropertyChanges {
@@ -984,7 +994,7 @@ AbstractStage {
                         name: "fullscreen"; when: surface ? surface.state === Mir.FullscreenState : application.fullscreen && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            requestedX: rotation == 0 ? 0 : (parent.width - width) / 2 + (shellOrientationAngle == 90 ? 0 : PanelState.panelHeight)
+                            requestedX: rotation == 0 ? 0 : (parent.width - width) / 2 + (shellOrientationAngle == 90 ? 0 : panelState.panelHeight)
                             requestedY: rotation == 0 ? 0 : (parent.height - height) / 2
                             requestedWidth: appContainer.width;
                             requestedHeight: appContainer.height;
@@ -1012,12 +1022,12 @@ AbstractStage {
                         PropertyChanges {
                             target: appDelegate
                             requestedX: root.leftMargin
-                            requestedY: PanelState.panelHeight
+                            requestedY: panelState.panelHeight
                         }
                         PropertyChanges {
                             target: decoratedWindow
                             requestedWidth: (appContainer.width - root.leftMargin)/2
-                            requestedHeight: appContainer.height - PanelState.panelHeight
+                            requestedHeight: appContainer.height - panelState.panelHeight
                             shadowOpacity: .3
                         }
                     },
@@ -1026,12 +1036,12 @@ AbstractStage {
                         PropertyChanges {
                             target: appDelegate;
                             requestedX: (appContainer.width + root.leftMargin)/2
-                            requestedY: PanelState.panelHeight
+                            requestedY: panelState.panelHeight
                         }
                         PropertyChanges {
                             target: decoratedWindow
                             requestedWidth: (appContainer.width - root.leftMargin)/2
-                            requestedHeight: appContainer.height - PanelState.panelHeight
+                            requestedHeight: appContainer.height - panelState.panelHeight
                             shadowOpacity: .3
                         }
                     },
@@ -1051,11 +1061,11 @@ AbstractStage {
                         name: "maximizedVertically"; when: appDelegate.maximizedVertically && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            requestedY: PanelState.panelHeight
+                            requestedY: panelState.panelHeight
                         }
                         PropertyChanges {
                             target: decoratedWindow;
-                            requestedHeight: appContainer.height - PanelState.panelHeight
+                            requestedHeight: appContainer.height - panelState.panelHeight
                             shadowOpacity: .3
                         }
                     },
@@ -1074,7 +1084,7 @@ AbstractStage {
                 ]
                 transitions: [
                     Transition {
-                        from: "staged,stagedWithSideStage"; to: "normal"
+                        from: "staged,stagedWithSideStage,minimized"; to: "normal"
                         enabled: appDelegate.animationsEnabled
                         PropertyAction { target: appDelegate; properties: "visuallyMinimized,visuallyMaximized" }
                         UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,opacity,requestedWidth,requestedHeight,scale"; duration: priv.animationDuration }
@@ -1140,7 +1150,7 @@ AbstractStage {
 //                }
 
                 Binding {
-                    target: PanelState
+                    target: panelState
                     property: "buttonsAlwaysVisible"
                     value: appDelegate && appDelegate.maximized && touchControls.overlayShown
                 }
@@ -1153,6 +1163,7 @@ AbstractStage {
                     anchors.margins: touchControls.overlayShown ? borderThickness/2 : -borderThickness
 
                     target: appDelegate
+                    panelState: root.panelState
                     minWidth: units.gu(10)
                     minHeight: units.gu(10)
                     borderThickness: units.gu(2)
@@ -1202,6 +1213,7 @@ AbstractStage {
                     overlayShown: touchControls.overlayShown
                     width: implicitWidth
                     height: implicitHeight
+                    panelState: root.panelState
 
                     // Requests for surface position changes.
                     VirtualPosition {
@@ -1224,6 +1236,8 @@ AbstractStage {
                     }
                     requestedX: requestedScreenPosition.mappedX
                     requestedY: requestedScreenPosition.mappedY
+
+                    onRequestedXChanged: console.log("requestedX Changed", screenWindow.objectName, requestedX)
 
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
@@ -1266,6 +1280,7 @@ AbstractStage {
                     anchors.fill: appDelegate
                     target: appDelegate
                     enabled: false
+                    panelState: root.panelState
                 }
 
                 WindowedFullscreenPolicy {
