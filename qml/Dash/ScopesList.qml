@@ -133,6 +133,21 @@ Item {
                             onRequestScopeMoveTo: root.requestFavoriteMoveTo(scopeId, index);
                             onRequestActivate: root.scope.activate(result, categoryId);
                             onRequestRestore: root.requestRestore(scopeId);
+
+                            readonly property var contentYChangedTarget: isFavoritesFeed && dragItem.visible ? flickable : null
+                            property double flickableContentYDrag: 0
+                            onContentYChangedTargetChanged: {
+                                if (contentYChangedTarget) {
+                                    flickableContentYDrag = flickable.contentY
+                                }
+                            }
+                            Connections {
+                                target: contentYChangedTarget
+                                onContentYChanged: {
+                                    dragItem.y += (flickable.contentY - flickableContentYDrag);
+                                    flickableContentYDrag = flickable.contentY
+                                }
+                            }
                         }
                     }
                 }

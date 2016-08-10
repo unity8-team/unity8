@@ -28,6 +28,7 @@ Item {
     property bool editMode: false
     property bool isFavoritesFeed: false
     property bool isAlsoInstalled: false
+    readonly property alias dragItem: dragItem
 
     visible: !editMode || isFavoritesFeed
 
