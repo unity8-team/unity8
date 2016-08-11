@@ -79,9 +79,16 @@ Showable {
             // already shown, do it manually.
             d.selectUser(d.currentIndex, false);
         }
+
         // Even though we may already be shown, we want to call show() for its
         // possible side effects, like hiding indicators and such.
-        showNow();
+        //
+        // We re-check forcedUnlock here, because selectUser above might
+        // process events during authentication, and a request to unlock could
+        // have come in in the meantime.
+        if (!forcedUnlock) {
+            showNow();
+        }
     }
 
     function notifyAppFocusRequested(appId) {
@@ -126,6 +133,22 @@ Showable {
         }
 
         return d.startUnlock(true /* toTheRight */);
+    }
+
+    function sessionToStart() {
+        for (var i = 0; i < LightDMService.sessions.count; i++) {
+            var session = LightDMService.sessions.data(i,
+                LightDMService.sessionRoles.KeyRole);
+            if (loader.item.sessionToStart === session) {
+                return session;
+            }
+        }
+
+        if (loader.item.sessionToStart === LightDMService.greeter.defaultSession) {
+            return LightDMService.greeter.defaultSession;
+        } else {
+            return "ubuntu"; // The default / fallback
+        }
     }
 
     QtObject {
@@ -193,7 +216,7 @@ Showable {
 
         function login() {
             d.waiting = true;
-            if (LightDMService.greeter.startSessionSync()) {
+            if (LightDMService.greeter.startSessionSync(root.sessionToStart())) {
                 sessionStarted();
                 hideView();
             } else if (loader.item) {
@@ -453,8 +476,7 @@ Showable {
         target: LightDMService.greeter
 
         onShowGreeter: root.forceShow()
-
-        onHideGreeter: d.login()
+        onHideGreeter: root.forcedUnlock = true
 
         onShowMessage: d.showPromptMessage(text, isError)
 
