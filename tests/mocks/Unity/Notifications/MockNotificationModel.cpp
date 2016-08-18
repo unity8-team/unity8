@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canonical Ltd.
+ * Copyright 2015 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
+ * Authors:
+ *      Mirco Mueller <mirco.mueller@canonical.com>
  */
 
 #include "MockNotificationModel.h"
@@ -116,10 +118,10 @@ void MockNotificationModel::remove(const int id) {
     }
 }
 
-void MockNotificationModel::removeFirst() {
-    if(m_queue.isEmpty())
+void MockNotificationModel::removeSecond() {
+    if(m_queue.size() < 2)
         return;
-    removeInternal(0);
+    removeInternal(1);
 }
 
 void MockNotificationModel::removeInternal(int loc) {

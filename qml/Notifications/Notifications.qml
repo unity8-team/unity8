@@ -26,7 +26,7 @@ ListView {
     objectName: "notificationList"
     interactive: false
 
-    readonly property bool hasNotification: count > 0
+    readonly property bool hasNotification: count > 1 // placeholder is index 0
     property real margin
     property bool hasMouse
     property url background: ""
@@ -42,10 +42,17 @@ ListView {
         filterRegExp: RegExp(UnityNotifications.Notification.SnapDecision)
     }
 
-    property bool topmostIsFullscreen: false
+    readonly property bool topmostIsFullscreen: fullscreenIndex != -1
     spacing: topmostIsFullscreen ? 0 : units.gu(1)
 
-    currentIndex: -1
+    currentIndex: count > 1 ? 1 : -1
+
+    property int fullscreenIndex: -1
+    onFullscreenIndexChanged: {
+        if (fullscreenIndex != -1) {
+            positionViewAtIndex(fullscreenIndex, ListView.Beginning);
+        }
+    }
 
     delegate: Notification {
         objectName: "notification" + index
@@ -65,17 +72,25 @@ ListView {
         hasMouse: notificationList.hasMouse
         background: notificationList.background
 
-        Component.onCompleted: topmostIsFullscreen = false; // async, the factory loader will set fullscreen to true later
-
-        property int theIndex: index
-        onTheIndexChanged: {
-            ListView.view.topmostIsFullscreen = fullscreen; // when we get pushed down by e.g. volume notification
-        }
-
         // make sure there's no opacity-difference between the several
         // elements in a notification
         // FIXME: disabled all transitions because of LP: #1354406 workaround
         //layer.enabled: add.running || remove.running || populate.running
+
+        onFullscreenChanged: updateListTopMostIsFullscreen();
+
+        function updateListTopMostIsFullscreen() {
+            if (fullscreen) {
+                fullscreenIndex = index;
+            }
+        }
+
+        onDismissed: {
+            if (fullscreenIndex == index) {
+                fullscreenIndex = -1;
+                notificationList.positionViewAtBeginning();
+            }
+        }
     }
 
     // FIXME: disabled all transitions because of LP: #1354406 workaround
