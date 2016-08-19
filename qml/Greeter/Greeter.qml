@@ -77,9 +77,16 @@ Showable {
             // already shown, do it manually.
             d.selectUser(d.currentIndex, true);
         }
+
         // Even though we may already be shown, we want to call show() for its
         // possible side effects, like hiding indicators and such.
-        showNow();
+        //
+        // We re-check forcedUnlock here, because selectUser above might
+        // process events during authentication, and a request to unlock could
+        // have come in in the meantime.
+        if (!forcedUnlock) {
+            showNow();
+        }
     }
 
     function notifyAppFocusRequested(appId) {
@@ -425,8 +432,7 @@ Showable {
         target: LightDMService.greeter
 
         onShowGreeter: root.forceShow()
-
-        onHideGreeter: d.login()
+        onHideGreeter: root.forcedUnlock = true
 
         onShowMessage: {
             // inefficient, but we only rarely deal with messages
