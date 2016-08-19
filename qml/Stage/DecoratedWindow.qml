@@ -27,8 +27,8 @@ FocusScope {
     // (minus the window decoration size in case hasDecoration and showDecoration are true)
     // The surface might not be able to resize to the requested values. It will return its actual size
     // in implicitWidth/implicitHeight.
-    implicitWidth: !counterRotate ? applicationWindow.implicitWidth : applicationWindow.implicitHeight
-    implicitHeight: decorationHeight + (!counterRotate ? applicationWindow.implicitHeight : applicationWindow.implicitWidth)
+    implicitWidth: applicationWindow.implicitWidth
+    implicitHeight: decorationHeight + applicationWindow.implicitHeight
 
     property alias application: applicationWindow.application
     property alias surface: applicationWindow.surface
@@ -170,6 +170,7 @@ FocusScope {
 
         transform: [
             Rotation {
+                id: rotationTransform
                 readonly property int rotationAngle: applicationWindow.application &&
                                                      applicationWindow.application.rotatesWindowContents
                                                      ? ((360 - applicationWindow.surfaceOrientationAngle) % 360) : 0
@@ -194,6 +195,4 @@ FocusScope {
 
         ]
     }
-
-//    Rectangle { anchors.fill: parent; color: "blue"; opacity: .3 }
 }

@@ -8,6 +8,7 @@ Item {
     // Information about the environment
     property int highlightedIndex: 1
     property var model: null
+    property int leftMargin: 0
 
     // some config options
     property real contentMargin: 0.16 * root.height
@@ -20,11 +21,12 @@ Item {
     property real leftStackScale: .82
     property real rightStackScale: 1
 
+    signal leaveSpread()
 
     // Calculated stuff
     readonly property int totalItemCount: model.count
-    readonly property real leftStackXPos: 0.03 * root.width
-    readonly property real rightStackXPos: root.width - 1.5 * leftStackXPos
+    readonly property real leftStackXPos: 0.03 * root.width + leftMargin
+    readonly property real rightStackXPos: root.width - 1.5 * leftStackXPos + leftMargin
 
     readonly property real stackHeight: spreadItemHeight - appInfoHeight
     readonly property real stackWidth: Math.min(leftStackXPos/3, units.gu(1.5))
@@ -90,7 +92,8 @@ Item {
         y: windowTitleTopMargin
 //        //y: priv.spreadTopMargin + priv.contentTopMargin + settings.spreadOffset + settings.titleOffset - height -  (priv.contentTopMargin - height) / 4
 //        visible: height < priv.contentTopMargin
-        text: root.highlightedIndex >= 0 && root.model ? root.model.surfaceAt(root.highlightedIndex).name : ""
+        property var highlightedSurface: root.model ? root.model.surfaceAt(root.highlightedIndex) : null
+        text: root.highlightedIndex >= 0 && highlightedSurface ? highlightedSurface.name : ""
         fontSize: root.height < units.gu(85) ? 'medium' : 'large'
         color: "white"
         opacity: root.highlightedIndex >= 0 ? 1 : 0
@@ -121,12 +124,12 @@ Item {
             event.accepted = true;
             break;
         case Qt.Key_Escape:
-            spreadItem.highlightedIndex = -1
+            highlightedIndex = -1
             // Falling through intentionally
         case Qt.Key_Enter:
         case Qt.Key_Return:
         case Qt.Key_Space:
-            root.state = ""
+            root.leaveSpread();
             event.accepted = true;
         }
     }

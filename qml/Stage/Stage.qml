@@ -54,6 +54,8 @@ AbstractStage {
 
     orientationChangesEnabled: true
 
+    onAltTabPressedChanged: priv.goneToSpread = altTabPressed
+
     GlobalShortcut {
         id: showSpreadShortcut
         shortcut: Qt.MetaModifier|Qt.Key_W
@@ -228,14 +230,13 @@ AbstractStage {
         target: panelState
         property: "buttonsVisible"
         value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
-               && root.state !== "spread"
     }
 
     Binding {
         target: panelState
         property: "title"
         value: {
-            if (priv.focusedAppDelegate !== null && root.state === "windowed") {
+            if (priv.focusedAppDelegate !== null) {
                 if (priv.focusedAppDelegate.maximized)
                     return priv.focusedAppDelegate.title
                 else
@@ -249,7 +250,7 @@ AbstractStage {
     Binding {
         target: panelState
         property: "dropShadow"
-        value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppDelegate !== null
+        value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppDelegate !== null && mode == "windowed"
     }
 
     Binding {
@@ -288,7 +289,7 @@ AbstractStage {
 
     states: [
         State {
-            name: "spread"; when: root.altTabPressed || priv.goneToSpread
+            name: "spread"; when: priv.goneToSpread
             PropertyChanges { target: floatingFlickable; enabled: true }
             PropertyChanges { target: spreadItem; focus: true }
         },
@@ -328,8 +329,9 @@ AbstractStage {
         Transition {
             from: "spread"
             SequentialAnimation {
-                ScriptAction { script: {
-                        var item = appRepeater.itemAt(spreadItem.highlightedIndex);
+                ScriptAction {
+                    script: {
+                        var item = appRepeater.itemAt(Math.max(0, spreadItem.highlightedIndex));
                         item.claimFocus();
                         item.playFocusAnimation();
                     }
@@ -343,8 +345,6 @@ AbstractStage {
         }
 
     ]
-    onStateChanged: print("spread going to state:", state)
-
 
     FocusScope {
         id: appContainer
@@ -363,8 +363,13 @@ AbstractStage {
         Spread {
             id: spreadItem
             anchors.fill: appContainer
+            leftMargin: root.leftMargin
             model: root.topLevelSurfaceList
             z: 10
+
+            onLeaveSpread: {
+                priv.goneToSpread = false;
+            }
         }
 
         Connections {
@@ -584,7 +589,7 @@ AbstractStage {
                 readonly property bool maximizedHorizontally: windowState.state & WindowState.MaximizedHorizontally
                 readonly property bool maximizedVertically: windowState.state & WindowState.MaximizedVertically
                 readonly property bool minimized: windowState.state & WindowState.Minimized
-                readonly property bool fullscreen: surface.state === Mir.FullscreenState;
+                readonly property bool fullscreen: surface && surface.state === Mir.FullscreenState;
 
                 property bool animationsEnabled: true
                 property alias title: decoratedWindow.title
@@ -606,15 +611,14 @@ AbstractStage {
                 readonly property bool isDash: model.application.appId == "unity8-dash"
 
                 function claimFocus() {
-                    if (root.state == "windowed") {
-                        appDelegate.restore(true);
-                    } else {
-                        appDelegate.focus = true;
-                        print("focusing app", priv.sideStageDelegate, appDelegate, sideStage.shown)
-                        if (appDelegate.stage == ApplicationInfoInterface.SideStage && !sideStage.shown) {
-                            sideStage.show();
-                        }
+                    print("focusing app", priv.sideStageDelegate, appDelegate, sideStage.shown)
+                    if (root.mode == "windowed" && minimized) {
+                        restore(true)
                     }
+                    if (appDelegate.stage == ApplicationInfoInterface.SideStage && !sideStage.shown) {
+                        sideStage.show();
+                    }
+                    appDelegate.focus = true;
                 }
                 Connections {
                     target: model.surface
@@ -826,7 +830,7 @@ AbstractStage {
                     itemIndex: index
                     nextInStack: priv.nextInStack
                     progress: 0
-                    targetHeight: spreadMaths.stackHeight
+                    targetHeight: spreadItem.stackHeight
                     targetX: spreadMaths.targetX
                     startY: appDelegate.fullscreen ? 0 : panelState.panelHeight
                     targetY: spreadMaths.targetY
@@ -1317,14 +1321,6 @@ AbstractStage {
                     }
 
                     property bool saveStateOnDestruction: true
-                    Connections {
-                        target: root
-                        onStageAboutToBeUnloaded: {
-                            windowState.saveWindowState();
-                            resizeArea.saveStateOnDestruction = false;
-                            fullscreenPolicy.active = false;
-                        }
-                    }
                     Component.onDestruction: {
                         if (saveStateOnDestruction) {
                             windowState.saveWindowState();
@@ -1413,8 +1409,13 @@ AbstractStage {
                 }
 
                 WindowedFullscreenPolicy {
-                    id: fullscreenPolicy
-                    active: true
+                    id: windowedFullscreenPolicy
+                    active: root.mode == "windowed"
+                    surface: model.surface
+                }
+                StagedFullscreenPolicy {
+                    id: stagedFullscreenPolicy
+                    active: root.mode == "staged" || root.mode == "stagedWithSideStage"
                     surface: model.surface
                 }
 
