@@ -36,6 +36,7 @@ Item {
     property alias orientations: d.orientations
 
     onWidthChanged: calculateUsageMode();
+    onHeightChanged: calculateUsageMode();
 
     DeviceConfiguration {
         id: _deviceConfiguration
@@ -78,13 +79,11 @@ Item {
     InputDeviceModel {
         id: miceModel
         deviceFilter: InputInfo.Mouse
-        property int oldCount: 0
     }
 
     InputDeviceModel {
         id: touchPadModel
         deviceFilter: InputInfo.TouchPad
-        property int oldCount: 0
     }
 
     InputDeviceModel {
@@ -119,7 +118,7 @@ Item {
             }
         } else {
             if (Math.min(root.width, root.height) > units.gu(60)) {
-                if (pointerInputDevices > 0 && pointerInputDevices > miceModel.oldCount + touchPadModel.oldCount) {
+                if (pointerInputDevices > 0 && pointerInputDevices > 0) {
                     unity8Settings.usageMode = "Windowed";
                 }
             } else {
@@ -127,8 +126,6 @@ Item {
                 unity8Settings.usageMode = "Staged";
             }
         }
-        miceModel.oldCount = miceModel.count;
-        touchPadModel.oldCount = touchPadModel.count;
     }
 
     /* FIXME: This exposes the NameRole as a work arround for lp:1542224.

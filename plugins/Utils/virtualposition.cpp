@@ -50,6 +50,11 @@ void VirtualPosition::setEnabled(bool enabled)
 
     m_enabled = enabled;
     Q_EMIT enabledChanged();
+
+    if (m_enabled) {
+        emitXChanged();
+        Q_EMIT yChanged();
+    }
 }
 
 void VirtualPosition::setEnableWindowChanges(bool enable)

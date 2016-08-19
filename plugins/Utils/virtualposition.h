@@ -26,6 +26,7 @@ class VirtualPosition : public QObject, public QQmlParserStatus
     Q_PROPERTY(int mappedX READ mappedX NOTIFY xChanged)
     Q_PROPERTY(int mappedY READ mappedY NOTIFY yChanged)
 
+
 public:
     VirtualPosition(QObject* parent = 0);
     enum Direction {

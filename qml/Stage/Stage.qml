@@ -316,6 +316,8 @@ AbstractStage {
             name: "windowed"; when: root.mode === "windowed"
         }
     ]
+    onStateChanged: console.log("Stage state changed", state)
+
     transitions: [
         Transition {
             from: "stagedrightedge"; to: "spread"
@@ -492,7 +494,7 @@ AbstractStage {
 
                 width: decoratedWindow.implicitWidth
                 height: decoratedWindow.implicitHeight
-                opacity: windowState.valid ? windowState.opacity : 1
+                opacity: windowState.valid ? windowState.opacity2 : 1
                 scale: windowState.valid ? windowState.scale : 1
 
                 WindowedState {
@@ -502,16 +504,17 @@ AbstractStage {
                     windowId: model.application.appId
 
                     relativePosition {
+                        objectName: "relativePosition"
                         x: windowState.geometry.x
                         y: windowState.geometry.y
 
                         onXChanged: {
-                            if (windowState.state === WindowState.Normal) {
+                            if (appDelegate.state == "normal" && windowState.state === WindowState.Normal) {
                                 appDelegate.windowedX = relativePosition.mappedX;
                             }
                         }
                         onYChanged: {
-                            if (windowState.state === WindowState.Normal) {
+                            if (appDelegate.state == "normal" && windowState.state === WindowState.Normal) {
                                 appDelegate.windowedY = relativePosition.mappedY;
                             }
                         }
@@ -724,36 +727,54 @@ AbstractStage {
                 }
 
                 function maximize(animated) {
+                    if (windowState.state == WindowState.Normal) {
+                        windowState.saveWindowState();
+                    }
                     windowState.state = WindowState.Maximized;
                 }
 
-                function unmaximize(animated) {
-                    priv.focusedAppDelegate = appDelegate;
-                    windowState.state = WindowState.Normal;
-                }
-
                 function maximizeLeft(animated) {
+                    if (windowState.state == WindowState.Normal) {
+                        windowState.saveWindowState();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState.state = WindowState.MaximizedLeft;
                 }
 
                 function maximizeRight(animated) {
+                    if (windowState.state == WindowState.Normal) {
+                        windowState.saveWindowState();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState.state = WindowState.MaximizedRight;
                 }
 
                 function maximizeHorizontally(animated) {
+                    if (windowState.state == WindowState.Normal) {
+                        windowState.saveWindowState();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState.state = WindowState.MaximizedHorizontally;
                 }
 
                 function maximizeVertically(animated) {
+                    if (windowState.state == WindowState.Normal) {
+                        windowState.saveWindowState();
+                    }
                     animationsEnabled = (animated === undefined) || animated;
                     windowState.state = WindowState.MaximizedVertically;
                 }
 
                 function minimize(animated) {
+                    if (windowState.state == WindowState.Normal) {
+                        windowState.saveWindowState();
+                    }
                     windowState.state |= WindowState.Minimized;
+                }
+
+                function unmaximize(animated) {
+                    priv.focusedAppDelegate = appDelegate;
+                    windowState.state = WindowState.Normal;
                 }
 
                 function restore(animated) {
@@ -799,8 +820,8 @@ AbstractStage {
                 }
                 ParallelAnimation {
                     id: hidingAnimation
-                    UbuntuNumberAnimation { target: appDelegate; property: "opacity"; to: 0; duration: priv.animationDuration }
-                    onStopped: appDelegate.opacity = 1
+                    UbuntuNumberAnimation { target: windowState; property: "opacity"; to: 0; duration: priv.animationDuration }
+                    onStopped: windowState.opacity = 1
                 }
 
                 SpreadMaths {
@@ -841,6 +862,7 @@ AbstractStage {
                 states: [
                     State {
                         name: "offscreen"
+                        when: !windowState.valid
                     },
                     State {
                         name: "spread"; when: root.state == "spread"
@@ -858,7 +880,6 @@ AbstractStage {
                         PropertyChanges {
                             target: appDelegate
                             z: index
-                            height: spreadItem.spreadItemHeight
                             visible: spreadMaths.itemVisible
                         }
                         PropertyChanges {
@@ -868,8 +889,7 @@ AbstractStage {
                         }
                         PropertyChanges {
                             target: windowState.geometry
-                            width: appContainer.width
-                            height: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
+                            height: spreadItem.spreadItemHeight
                         }
                         PropertyChanges { target: dragArea; enabled: true }
                         PropertyChanges { target: windowInfoItem; opacity: spreadMaths.tileInfoOpacity; visible: spreadMaths.itemVisible }
@@ -900,6 +920,12 @@ AbstractStage {
                             scaleToPreviewProgress: stagedRightEdgeMaths.scaleToPreviewProgress
                             shadowOpacity: .3
                         }
+                        PropertyChanges {
+                            target: windowState.geometry
+                            width: appDelegate.windowedWidth
+                            height: appDelegate.windowedHeight
+                            restoreEntryValues: false // leave the geometry alone unless we change it in another state.
+                        }
                     },
                     State {
                         name: "staged"
@@ -908,14 +934,41 @@ AbstractStage {
                             target: windowState.absolutePosition
                             x: appDelegate.focus ? 0 : root.width
                             y: appDelegate.fullscreen ? 0 : panelState.panelHeight
+                            restoreEntryValues: false
                         }
                         PropertyChanges {
                             target: windowState.geometry
                             width: appContainer.width
                             height: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
+                            restoreEntryValues: false
                         }
                         PropertyChanges {
                             target: appDelegate
+                            visuallyMaximized: true
+                        }
+                    },
+                    State {
+                        name: "stagedWithSideStage"
+                        when: root.state == "stagedWithSideStage"
+                        PropertyChanges {
+                            target: stageMaths
+                            itemIndex: index
+                        }
+                        PropertyChanges {
+                            target: windowState.absolutePosition
+                            x: stageMaths.itemX
+                            y: appDelegate.fullscreen ? 0 : panelState.panelHeight
+                            restoreEntryValues: false
+                        }
+                        PropertyChanges {
+                            target: windowState.geometry
+                            width: stageMaths.itemWidth
+                            height: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
+                            restoreEntryValues: false
+                        }
+                        PropertyChanges {
+                            target: appDelegate
+                            z: stageMaths.itemZ
                             visuallyMaximized: true
                         }
                     },
@@ -924,15 +977,19 @@ AbstractStage {
                         when: windowState.valid && windowState.state === WindowState.Normal
                         PropertyChanges {
                             target: windowState.absolutePosition
-                            restoreEntryValues: false
                             x: appDelegate.windowedX
                             y: appDelegate.windowedY
+                            restoreEntryValues: false
                         }
                         PropertyChanges {
                             target: windowState.geometry
-                            restoreEntryValues: false
                             width: appDelegate.windowedWidth
                             height: appDelegate.windowedHeight
+                            restoreEntryValues: false
+                        }
+                        PropertyChanges {
+                            target: resizeArea
+                            enabled: true
                         }
                     },
                     State {
@@ -976,32 +1033,91 @@ AbstractStage {
                 transitions: [
                     Transition {
                         from: ""
-                        PropertyAction { target: appDelegate; properties: "maximized" }
+                        PropertyAction { target: appDelegate; properties: "visuallyMaximized,visuallyMaximized" }
                         PropertyAction { target: windowState.absolutePosition; properties: "x,y" }
                         PropertyAction { target: windowState.geometry; properties: "width,height" }
                         PropertyAction { target: windowState; properties: "scale,opacity" }
                     },
                     Transition {
-                        to: "normal"
-                        PropertyAction { target: appDelegate; properties: "maximized" }
-                        UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
-                        UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
-                        UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                        from: "spread"; to: "*"
+                        PropertyAction { target: windowState.absolutePosition; properties: "x,y"}
+                        PropertyAction { target: windowState.geometry; properties: "height" }
+                        ScriptAction { script: if (appDelegate.focus) appDelegate.playFocusAnimation() }
                     },
                     Transition {
-                        to: "maximized"
-                        PropertyAction { target: appDelegate; properties: "maximized" }
-                        UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
-                        UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
-                        UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                        to: "staged"
+                        SequentialAnimation {
+                            ScriptAction {
+                                script: {
+                                    windowState.saveWindowState();
+                                }
+                            }
+                            ParallelAnimation {
+                                PropertyAction { target: appDelegate; properties: "visuallyMaximized,visuallyMaximized" }
+                                UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
+                                UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
+                                UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                            }
+                        }
+                    },
+                    Transition {
+                        to: "normal"
+                        SequentialAnimation {
+                            ScriptAction {
+                                script: {
+                                    windowState.loadWindowState();
+                                }
+                            }
+                            ParallelAnimation {
+                                PropertyAction { target: appDelegate; properties: "visuallyMaximized,visuallyMaximized" }
+                                UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
+                                UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
+                                UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                            }
+                        }
+                    },
+                    Transition {
+                        to: "maximized,fullscreen"
+                        SequentialAnimation {
+                            ParallelAnimation {
+                                PropertyAction { target: appDelegate; properties: "visuallyMinimized" }
+                                UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
+                                UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
+                                UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                            }
+                            PropertyAction { target: appDelegate; property: "visuallyMaximized" }
+                        }
                     },
                     Transition {
                         to: "minimized"
-                        PropertyAction { target: appDelegate; properties: "maximized" }
+                        SequentialAnimation {
+                            ParallelAnimation {
+                                PropertyAction { target: appDelegate; properties: "visuallyMaximized" }
+                                UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
+                                UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
+                                UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                            }
+                            PropertyAction { target: appDelegate; property: "visuallyMinimized" }
+                            ScriptAction {
+                                script: {
+                                    if (appDelegate.minimized) {
+                                        appDelegate.focus = false;
+                                        priv.focusNext();
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    Transition {
+                        to: "spread"
+                        PropertyAction { target: appDelegate; properties: "visuallyMaximized,visuallyMaximized" }
+                        PropertyAction { target: decoratedWindow; property: "scaleToPreviewSize" }
                         UbuntuNumberAnimation { target: windowState.absolutePosition; properties: "x,y" }
-                        UbuntuNumberAnimation { target: windowState.geometry; properties: "width,height" }
+                        UbuntuNumberAnimation { target: windowState.geometry; properties: "height" }
                         UbuntuNumberAnimation { target: windowState; properties: "scale,opacity" }
+                        UbuntuNumberAnimation { target: decoratedWindow; properties: "itemScale,angle,scaleToPreviewProgress" }
                     }
+
                 ]
 
 //                onXChanged: if (model.application.appId == "unity8-dash") print("dash moved to", x)

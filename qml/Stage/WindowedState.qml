@@ -17,7 +17,7 @@
 import QtQuick 2.4
 import Utils 0.1
 
-UnityObject {
+Item { // needs to be an item for the Virtual Positions to work.
     id: root
     property Item target: null
 
@@ -31,16 +31,18 @@ UnityObject {
     property alias state: sharedState.state
     property alias stateSource: sharedState.stateSource
     property alias stage: sharedState.stage
-    property alias opacity: sharedState.opacity
     property alias scale: sharedState.scale
     readonly property alias geometry: sharedState.geometry
+    opacity: sharedState.opacity
 
     property alias relativePosition: relativeMappedPosition
     property alias absolutePosition: absoluteMappedPosition
 
-    property list<QtObject> objects
-    default property alias children: root.objects
-
+    Binding {
+        target: sharedState
+        property: "opacity"
+        value: root.opacity
+    }
 
     SharedWindowState {
         id: sharedState
@@ -58,6 +60,7 @@ UnityObject {
 
     VirtualPosition {
         id: relativeMappedPosition
+        objectName: "relativePosition"
         direction: VirtualPosition.FromDesktop
         enableWindowChanges: false
     }
@@ -65,6 +68,7 @@ UnityObject {
     // map from postion relative to window to the "virtual desktop" space.
     VirtualPosition {
         id: absoluteMappedPosition
+        objectName: "absolutePosition"
         direction: VirtualPosition.ToDesktop
         enableWindowChanges: false
     }
@@ -113,10 +117,11 @@ UnityObject {
     }
 
     function saveWindowState() {
-        var geo = Qt.rect(windowState.geometry.x,
-                          windowState.geometry.y,
-                          windowState.geometry.width,
-                          windowState.geometry.height);
+        var absPosition = absoluteMappedPosition.map(Qt.point(target.windowedX,target.windowedY));
+        var geo = Qt.rect(absPosition.x,
+                          absPosition.y,
+                          target.windowedWidth,
+                          target.windowedHeight);
         console.log("saveWindowState", screenWindow.objectName, geo, state);
 
         WindowStateStorage.saveGeometry(windowId, geo);
