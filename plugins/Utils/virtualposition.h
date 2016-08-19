@@ -33,7 +33,7 @@ public:
         FromDesktop
     };
 
-    void classBegin() override {}
+    void classBegin() override;
     void componentComplete() override;
 
     Direction direction() const { return m_direction; }
@@ -52,6 +52,8 @@ public:
 
     int mappedX() const;
     int mappedY() const;
+
+    Q_INVOKABLE QPoint map(const QPoint& pt) const;
 
 Q_SIGNALS:
     void directionChanged();

@@ -17,11 +17,13 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import GSettings 1.0
+import "../Components/PanelState"
 
 FocusScope {
     id: root
 
     // Controls to be set from outside
+    property PanelState panelState
     property QtObject applicationManager
     property QtObject topLevelSurfaceList
     property bool altTabPressed

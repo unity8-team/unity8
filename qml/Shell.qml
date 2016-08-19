@@ -255,9 +255,10 @@ StyledItem {
                                                        ? "phone"
                                                        : shell.usageScenario
 
-            mode: usageScenario == "phone" ? "staged"
-                     : usageScenario == "tablet" ? "stagedWithSideStage"
-                     : "windowed"
+            mode: "staged"
+//                usageScenario == "phone" ? "staged"
+//                     : usageScenario == "tablet" ? "stagedWithSideStage"
+//                     : "windowed"
 
             shellOrientation: shell.orientation
             shellOrientationAngle: shell.orientationAngle

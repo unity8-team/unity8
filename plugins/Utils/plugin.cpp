@@ -39,6 +39,8 @@
 #include "deviceconfigparser.h"
 #include "globalfunctions.h"
 #include "virtualposition.h"
+#include "sharedwindowstate.h"
+#include "unityobject.h"
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -82,4 +84,9 @@ void UtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
     qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
     qmlRegisterType<VirtualPosition>(uri, 0, 1, "VirtualPosition");
+    qmlRegisterType<UnityObject>(uri, 0, 1, "UnityObject");
+
+    qmlRegisterUncreatableType<WindowData>(uri, 0, 1, "WindowState", "Cannot create WindowState type");
+    qmlRegisterType<WindowState>(uri, 0, 1, "SharedWindowState");
+    qmlRegisterType<WindowStateGeometry>();
 }

@@ -289,6 +289,7 @@ int MirSurface::height() const
 
 void MirSurface::resize(int width, int height)
 {
+//    qDebug() << "MIRSURFACE resize" << width << height;
     if (m_slowToResize) {
         if (!m_delayedResizeTimer.isActive()) {
             m_delayedResize.setWidth(width);

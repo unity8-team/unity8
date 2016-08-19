@@ -15,21 +15,21 @@ VirtualPosition::VirtualPosition(QObject *parent)
 {
 }
 
-void VirtualPosition::componentComplete()
+void VirtualPosition::classBegin()
 {
     if (auto screenItem = qobject_cast<QQuickItem*>(parent())) {
         // connect to window geometry & screen changes
         auto updateWindow = [this/*, updateScreen*/](QQuickWindow* window) {
             updateWindowConnections(window);
-//            if (m_complete && m_enableWindowChanges) {
-//                emitPositionChanged();
-//            }
         };
         connect(screenItem, &QQuickItem::windowChanged, this, updateWindow);
         updateWindow(screenItem->window());
     }
+}
+
+void VirtualPosition::componentComplete()
+{
     m_complete = true;
-//    emitPositionChanged();
 }
 
 void VirtualPosition::setDirection(VirtualPosition::Direction direction)
@@ -103,6 +103,17 @@ int VirtualPosition::mappedY() const
         return m_window->geometry().top() + m_y;
     } else {
         return m_y - m_window->geometry().top();
+    }
+}
+
+QPoint VirtualPosition::map(const QPoint &pt) const
+{
+    if (!m_window) return pt;
+
+    if (m_direction == ToDesktop) {
+        return m_window->geometry().topLeft() + pt;
+    } else {
+        return pt - m_window->geometry().topLeft();
     }
 }
 

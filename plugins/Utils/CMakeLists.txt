@@ -31,6 +31,8 @@ set(QMLPLUGIN_SRC
     globalfunctions.cpp
     virtualposition.cpp
     windowstatestorage.cpp
+    sharedwindowstate.cpp
+    unityobject.cpp
     plugin.cpp
     )
 

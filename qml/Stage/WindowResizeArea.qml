@@ -72,52 +72,52 @@ MouseArea {
         onHeightChanged: priv.updateNormalGeometry();
     }
 
-    function loadWindowState() {
-        var windowGeometry = windowStateStorage.getGeometry(root.windowId,
-                                                            Qt.rect(target.windowedX, target.windowedY, defaultWidth, defaultHeight));
-        var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal);
+//    function loadWindowState() {
+//        var windowGeometry = windowStateStorage.getGeometry(root.windowId,
+//                                                            Qt.rect(target.windowedX, target.windowedY, defaultWidth, defaultHeight));
+//        var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal);
 
-        print("loading Window state!", root.windowId, windowState, windowGeometry.x, windowGeometry.y, windowGeometry.width, windowGeometry.height)
-        target.windowedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin); });
-        target.windowedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight),
-                                                                         root.screenHeight - (target.fullscreen ? 0 : panelState.panelHeight)); });
-        target.windowedX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - 1),
-                                                           (target.fullscreen ? 0 : root.leftMargin)); });
-        target.windowedY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - 1), panelState.panelHeight); });
+//        print("loading Window state!", root.windowId, windowState, windowGeometry.x, windowGeometry.y, windowGeometry.width, windowGeometry.height)
+//        target.windowedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin); });
+//        target.windowedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight),
+//                                                                         root.screenHeight - (target.fullscreen ? 0 : panelState.panelHeight)); });
+//        target.windowedX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - 1),
+//                                                           (target.fullscreen ? 0 : root.leftMargin)); });
+//        target.windowedY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - 1), panelState.panelHeight); });
 
-        switch (windowState) {
-            case WindowStateStorage.WindowStateNormal:
-                target.windowState = windowState;
-                break;
-            case WindowStateStorage.WindowStateMaximized:
-                target.maximize(false);
-                break;
-            case WindowStateStorage.WindowStateMaximizedLeft:
-                target.maximizeLeft(false);
-                break;
-            case WindowStateStorage.WindowStateMaximizedRight:
-                target.maximizeRight(false);
-                break;
-            case WindowStateStorage.WindowStateMaximizedHorizontally:
-                target.maximizeHorizontally(false);
-                break;
-            case WindowStateStorage.WindowStateMaximizedVertically:
-                target.maximizeVertically(false);
-                break;
-            default:
-                console.warn("Unsupported window state");
-                break;
-        }
+//        switch (windowState) {
+//            case WindowStateStorage.WindowStateNormal:
+//                target.windowState = windowState;
+//                break;
+//            case WindowStateStorage.WindowStateMaximized:
+//                target.maximize(false);
+//                break;
+//            case WindowStateStorage.WindowStateMaximizedLeft:
+//                target.maximizeLeft(false);
+//                break;
+//            case WindowStateStorage.WindowStateMaximizedRight:
+//                target.maximizeRight(false);
+//                break;
+//            case WindowStateStorage.WindowStateMaximizedHorizontally:
+//                target.maximizeHorizontally(false);
+//                break;
+//            case WindowStateStorage.WindowStateMaximizedVertically:
+//                target.maximizeVertically(false);
+//                break;
+//            default:
+//                console.warn("Unsupported window state");
+//                break;
+//        }
 
-        priv.updateNormalGeometry();
-    }
+//        priv.updateNormalGeometry();
+//    }
 
-    function saveWindowState() {
-        print("saving Window state!", root.windowId, target.windowState, priv.normalX, priv.normalY, priv.normalWidth, priv.normalHeight)
+//    function saveWindowState() {
+//        print("saving Window state!", root.windowId, target.windowState, priv.normalX, priv.normalY, priv.normalWidth, priv.normalHeight)
 
-        windowStateStorage.saveState(root.windowId, target.windowState & ~WindowStateStorage.WindowStateMinimized); // clear the minimized bit when saving
-        windowStateStorage.saveGeometry(root.windowId, Qt.rect(priv.normalX, priv.normalY, priv.normalWidth, priv.normalHeight));
-    }
+//        windowStateStorage.saveState(root.windowId, target.windowState & ~WindowStateStorage.WindowStateMinimized); // clear the minimized bit when saving
+//        windowStateStorage.saveGeometry(root.windowId, Qt.rect(priv.normalX, priv.normalY, priv.normalWidth, priv.normalHeight));
+//    }
 
     QtObject {
         id: d
