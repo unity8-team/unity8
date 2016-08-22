@@ -151,6 +151,22 @@ StyledItem {
     readonly property alias greeter: greeterLoader.item
 
     function activateApplication(appId) {
+        // Either open the app in our own session, or -- if we're acting as a
+        // greeter -- ask the user's session to open it for us.
+        if (shell.mode === "greeter") {
+            activateURL("application:///" + appId + ".desktop");
+        } else {
+            startApp(appId);
+        }
+    }
+
+    function activateURL(url) {
+        SessionBroadcast.requestUrlStart(AccountsService.user, url);
+        greeter.notifyUserRequestedApp();
+        panel.indicators.hide();
+    }
+
+    function startApp(appId) {
         if (ApplicationManager.findApplication(appId)) {
             ApplicationManager.requestFocusApplication(appId);
         } else {
@@ -162,7 +178,7 @@ StyledItem {
         if (greeter.locked) {
             greeter.lockedApp = app;
         }
-        shell.activateApplication(app);
+        startApp(app); // locked apps are always in our same session
     }
 
     Binding {
@@ -259,9 +275,7 @@ StyledItem {
                                            ? "phone"
                                            : shell.usageScenario
             readonly property string qmlComponent: {
-                if (shell.mode === "greeter") {
-                    return "Stages/AbstractStage.qml"
-                } else if (applicationsDisplayLoader.usageScenario === "phone") {
+                if (applicationsDisplayLoader.usageScenario === "phone") {
                     return "Stages/PhoneStage.qml";
                 } else if (applicationsDisplayLoader.usageScenario === "tablet") {
                     return "Stages/TabletStage.qml";
@@ -420,6 +434,7 @@ StyledItem {
         id: integratedGreeter
         Greeter {
 
+            enabled: panel.indicators.fullyClosed // hides OSK when panel is open
             hides: [launcher, panel.indicators]
             tabletMode: shell.usageScenario != "phone"
             launcherOffset: launcher.progress
@@ -499,11 +514,15 @@ StyledItem {
     }
 
     function showHome() {
-        greeter.notifyUserRequestedApp("unity8-dash");
+        greeter.notifyUserRequestedApp();
 
-        var animate = !LightDMService.greeter.active && !stages.shown
-        dash.setCurrentScope(0, animate, false)
-        ApplicationManager.requestFocusApplication("unity8-dash")
+        if (shell.mode === "greeter") {
+            SessionBroadcast.requestHomeShown(AccountsService.user);
+        } else {
+            var animate = !LightDMService.greeter.active && !stages.shown;
+            dash.setCurrentScope(0, animate, false);
+            ApplicationManager.requestFocusApplication("unity8-dash");
+        }
     }
 
     function showDash() {
@@ -599,7 +618,7 @@ StyledItem {
                 }
             }
             onLauncherApplicationSelected: {
-                greeter.notifyUserRequestedApp(appId);
+                greeter.notifyUserRequestedApp();
                 shell.activateApplication(appId);
             }
             onShownChanged: {
@@ -660,7 +679,7 @@ StyledItem {
             objectName: "tutorial"
             anchors.fill: parent
 
-            paused: callManager.hasCalls || !greeter || greeter.shown ||
+            paused: callManager.hasCalls || !greeter || greeter.active ||
                     wizard.active
             delayed: dialogs.hasActiveDialog || notifications.hasNotification ||
                      inputMethod.visible ||
@@ -745,7 +764,14 @@ StyledItem {
 
     Connections {
         target: SessionBroadcast
-        onShowHome: showHome()
+        onShowHome: if (shell.mode !== "greeter") showHome()
+    }
+
+    URLDispatcher {
+        id: urlDispatcher
+        objectName: "urlDispatcher"
+        active: shell.mode === "greeter"
+        onUrlRequested: shell.activateURL(url)
     }
 
     ItemGrabber {
