@@ -1,3 +1,10 @@
+unity8 (8.14+16.10.20160822-0ubuntu1) yakkety; urgency=medium
+
+  * Switch from lockscreen PIN pad to a passcode entry box that uses the
+    OSK.
+
+ -- Michael Terry <michael.terry@canonical.com>  Mon, 22 Aug 2016 17:04:14 +0000
+
 unity8 (8.14+16.10.20160811.1-0ubuntu1) yakkety; urgency=medium
 
   [ Albert Astals Cid ]
