@@ -247,7 +247,7 @@ Showable {
     onRequiredChanged: {
         if (required) {
             d.waiting = true;
-            lockedApp = "";
+            loader.resetState();
         }
     }
 
@@ -336,12 +336,14 @@ Showable {
         source: root.viewSource.toString() ? root.viewSource :
                 (d.multiUser || root.tabletMode) ? "WideView.qml" : "NarrowView.qml"
 
-        onLoaded: {
+        function resetState() {
             root.lockedApp = "";
             item.forceActiveFocus();
             d.selectUser(d.currentIndex, true);
             LightDMService.infographic.readyForDataChange();
         }
+
+        onLoaded: if (root.required) resetState()
 
         Connections {
             target: loader.item
