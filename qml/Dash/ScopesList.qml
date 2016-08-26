@@ -141,9 +141,29 @@ Item {
                                     flickableContentYDrag = flickable.contentY
                                 }
                             }
+
+                            Mouse.onPressed: hasBeenReleased = false
+                            Mouse.onReleased: hasBeenReleased = true
+
+                            Connections {
+                                target: flickable
+                                onAtYEndChanged: {
+                                    console.log("YEnd? ->" + flickable.atYEnd);
+                                    if (!hasBeenReleased && flickable.atYEnd) {
+                                        console.log("CONT = FALSE")
+                                        cont = false;
+                                    }
+                                }
+                            }
+                            property bool hasBeenReleased: true
+                            property bool cont: true
                             Connections {
                                 target: contentYChangedTarget
                                 onContentYChanged: {
+                                    if (!cont) {
+                                        console.log("RETURNING")
+                                        return;
+                                    }
                                     dragItem.y += (flickable.contentY - flickableContentYDrag);
                                     flickableContentYDrag = flickable.contentY
                                 }
