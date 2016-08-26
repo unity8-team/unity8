@@ -142,26 +142,25 @@ Item {
                                 }
                             }
 
-                            Mouse.onPressed: hasBeenReleased = false
-                            Mouse.onReleased: hasBeenReleased = true
 
+                            // Since tracking the drag item can change the flickable
+                            // size, this "kill switch" prevents overscrolling locally.
+                            // The Autoscroller should take care of everything else.
+                            property bool overscrolling: false
+                            Mouse.onReleased: overscrolling = false
                             Connections {
                                 target: flickable
                                 onAtYEndChanged: {
-                                    console.log("YEnd? ->" + flickable.atYEnd);
-                                    if (!hasBeenReleased && flickable.atYEnd) {
-                                        console.log("CONT = FALSE")
-                                        cont = false;
+                                    if (flickable.atYEnd && Mouse.pressed) {
+                                        overscrolling = true;
                                     }
                                 }
                             }
-                            property bool hasBeenReleased: true
-                            property bool cont: true
+
                             Connections {
                                 target: contentYChangedTarget
                                 onContentYChanged: {
-                                    if (!cont) {
-                                        console.log("RETURNING")
+                                    if (overscrolling) {
                                         return;
                                     }
                                     dragItem.y += (flickable.contentY - flickableContentYDrag);
