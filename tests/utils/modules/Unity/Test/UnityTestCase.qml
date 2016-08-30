@@ -647,7 +647,7 @@ TestCase {
             ApplicationManager.stopApplication(application.appId);
             // wait until all zombie surfaces are gone. As MirSurfaceItems hold references over them.
             // They won't be gone until those surface items are destroyed.
-            tryCompareFunction(function() { return application.surfaceList.count }, 0);
+            tryCompareFunction(function() { return application.instanceList.count }, 0);
             tryCompare(application, "state", ApplicationInfo.Stopped);
         }
         compare(ApplicationManager.count, 1);

@@ -86,7 +86,7 @@ AbstractStage {
             if (delta < 0) { delta += 360; }
             delta = delta % 360;
 
-            var supportedOrientations = spreadDelegate.application.supportedOrientations;
+            var supportedOrientations = spreadDelegate.applicationInstance.application.supportedOrientations;
             if (supportedOrientations === Qt.PrimaryOrientation) {
                 supportedOrientations = root.orientations.primary;
             }
@@ -114,7 +114,9 @@ AbstractStage {
         }
     }
 
-    mainApp: priv.focusedAppDelegate ? priv.focusedAppDelegate.application : null
+    mainApp: priv.focusedAppDelegate && priv.focusedAppDelegate.applicationInstance
+                ? priv.focusedAppDelegate.applicationInstance.application
+                : null
 
     orientationChangesEnabled: priv.focusedAppOrientationChangesEnabled
                                && !priv.focusedAppDelegateIsDislocated
@@ -171,7 +173,9 @@ AbstractStage {
         property var focusedAppDelegate
         // NB! This may differ from applicationManager.focusedApplicationId if focusedAppDelegate
         // contains a screenshot instead of a surface.
-        property string focusedAppId: focusedAppDelegate ? focusedAppDelegate.application.appId : ""
+        property string focusedAppId: focusedAppDelegate && focusedAppDelegate.applicationInstance
+                                            ? focusedAppDelegate.applicationInstance.application.appId
+                                            : ""
 
         property real oldInverseProgress: 0
         property bool animateX: false
@@ -183,7 +187,7 @@ AbstractStage {
 
         function indexOf(appId) {
             for (var i = 0; i < spreadRepeater.count; i++) {
-                if (spreadRepeater.itemAt(i).application.appId == appId) {
+                if (spreadRepeater.itemAt(i).applicationInstance.application.appId == appId) {
                     return i;
                 }
             }
@@ -219,18 +223,24 @@ AbstractStage {
     }
 
     Instantiator {
-        model: root.applicationManager
+        model: root.applicationInstanceList
         delegate: QtObject {
             property var stateBinding: Binding {
-                readonly property bool isDash: model.application ? model.application.appId == "unity8-dash" : false
-                target: model.application
+                readonly property bool isDash: model.applicationInstance ? model.applicationInstance.application.appId == "unity8-dash" : false
+                target: model.applicationInstance
                 property: "requestedState"
                 value: (isDash && root.keepDashRunning)
-                           || (!root.suspended && model.application && priv.focusedAppId === model.application.appId)
-                       ? ApplicationInfoInterface.RequestedRunning
-                       : ApplicationInfoInterface.RequestedSuspended
+                           || (!root.suspended && model.applicationInstance && priv.focusedAppDelegate
+                               && priv.focusedAppDelegate.applicationInstance === model.applicationInstance)
+                       ? ApplicationInstanceInterface.RequestedRunning
+                       : ApplicationInstanceInterface.RequestedSuspended
             }
+        }
+    }
 
+    Instantiator {
+        model: root.applicationManager
+        delegate: QtObject {
             property var lifecycleBinding: Binding {
                 target: model.application
                 property: "exemptFromLifecycle"
@@ -507,7 +517,7 @@ AbstractStage {
                     focusFirstApp: root.focusFirstApp
                     highlightShown: root.altTabPressed && index === priv.highlightIndex
 
-                    readonly property bool isDash: model.application.appId == "unity8-dash"
+                    readonly property bool isDash: model.applicationInstance.application.appId == "unity8-dash"
 
                     Component.onCompleted: {
                         // NB: We're differentiating if this delegate was created in response to a new entry in the model
@@ -545,7 +555,7 @@ AbstractStage {
                         onFocusRequested: claimFocus()
                     }
                     Connections {
-                        target: model.application
+                        target: model.applicationInstance.application
                         onFocusRequested: {
                             if (!model.surface) {
                                 // when an app has no surfaces, we assume there's only one entry representing it:
@@ -575,7 +585,7 @@ AbstractStage {
                         return spreadView.width + spreadIndex * spreadView.tileDistance;
                     }
 
-                    application: model.application
+                    applicationInstance: model.applicationInstance
                     surface: model.surface
                     closeable: !isDash
 
@@ -676,8 +686,8 @@ AbstractStage {
                         spreadView.closingIndex = index;
                         if (appDelegate.surface) {
                             appDelegate.surface.close();
-                        } else if (appDelegate.application) {
-                            root.applicationManager.stopApplication(appDelegate.application.appId);
+                        } else if (appDelegate.applicationInstance) {
+                            root.applicationManager.stopApplication(appDelegate.applicationInstance.application.appId);
                         } else {
                             // should never happen
                             console.warn("Can't close topLevelSurfaceList entry as it has neither"

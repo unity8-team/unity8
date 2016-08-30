@@ -24,6 +24,7 @@ FocusScope {
 
     // Controls to be set from outside
     property QtObject applicationManager
+    property QtObject applicationInstanceList
     property QtObject topLevelSurfaceList
     property bool altTabPressed
     property url background

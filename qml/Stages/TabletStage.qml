@@ -538,10 +538,6 @@ AbstractStage {
             // only shuffle when we've got a main and overlay
             if (state !== "mainAndOverlay") return index;
 
-            var app = root.topLevelSurfaceList.applicationAt(index);
-            if (!app) {
-                return index;
-            }
             var stage = spreadRepeater.itemAt(index) ? spreadRepeater.itemAt(index).stage : ApplicationInfoInterface.MainStage;
 
             // don't shuffle indexes greater than "actives or next"
@@ -590,7 +586,6 @@ AbstractStage {
                 script: {
                     if (spreadView.selectedIndex >= 0) {
                         var newIndex = spreadView.selectedIndex;
-                        var application = root.topLevelSurfaceList.applicationAt(newIndex);
                         var spreadDelegate = spreadRepeater.itemAt(newIndex);
                         if (spreadDelegate.stage === ApplicationInfoInterface.SideStage) {
                             sideStage.showNow();

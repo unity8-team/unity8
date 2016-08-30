@@ -32,7 +32,7 @@ FocusScope {
     readonly property alias appWindowOrientationAngle: appWindowWithShadow.orientationAngle
     readonly property alias appWindowRotation: appWindowWithShadow.rotation
     readonly property alias orientationChangesEnabled: appWindow.orientationChangesEnabled
-    property int supportedOrientations: application ? application.supportedOrientations :
+    property int supportedOrientations: applicationInstance ? applicationInstance.application.supportedOrientations :
                                                       Qt.PortraitOrientation
                                                       | Qt.LandscapeOrientation
                                                       | Qt.InvertedPortraitOrientation
@@ -44,7 +44,7 @@ FocusScope {
     property real maximizedAppTopMargin
     property alias swipeToCloseEnabled: dragArea.enabled
     property bool closeable
-    property alias application: appWindow.application
+    property alias applicationInstance: appWindow.applicationInstance
     property alias surface: appWindow.surface
     property int shellOrientationAngle
     property int shellOrientation
@@ -55,16 +55,16 @@ FocusScope {
     property alias fullscreen: appWindow.fullscreen
 
     function matchShellOrientation() {
-        if (!root.application)
+        if (!root.applicationInstance)
             return;
         appWindowWithShadow.orientationAngle = root.shellOrientationAngle;
     }
 
     function animateToShellOrientation() {
-        if (!root.application)
+        if (!root.applicationInstance)
             return;
 
-        if (root.application.rotatesWindowContents) {
+        if (root.applicationInstance.application.rotatesWindowContents) {
             appWindowWithShadow.orientationAngle = root.shellOrientationAngle;
         } else {
             orientationChangeAnimation.start();
@@ -186,7 +186,7 @@ FocusScope {
             }
 
             state: {
-                if (root.application && root.application.rotatesWindowContents) {
+                if (root.applicationInstance && root.applicationInstance.application.rotatesWindowContents) {
                     return "counterRotate";
                 } else if (orientationChangeAnimation.running) {
                     return "animatingRotation";
@@ -287,7 +287,8 @@ FocusScope {
                 focus: true
                 anchors {
                     fill: parent
-                    topMargin: appWindow.fullscreen || (application && application.rotatesWindowContents)
+                    topMargin: appWindow.fullscreen || (applicationInstance &&
+                                                        applicationInstance.application.rotatesWindowContents)
                                    ? 0 : maximizedAppTopMargin
                 }
 

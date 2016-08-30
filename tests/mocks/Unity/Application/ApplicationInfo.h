@@ -19,40 +19,24 @@
 
 #include <QObject>
 
-class MirSurface;
-
 // unity-api
 #include <unity/shell/application/ApplicationInfoInterface.h>
 #include <unity/shell/application/Mir.h>
 
-#include "MirSurfaceListModel.h"
-
-#include <QList>
-#include <QTimer>
+#include "ApplicationInstanceListModel.h"
 
 using namespace unity::shell::application;
 
 class ApplicationInfo : public ApplicationInfoInterface {
     Q_OBJECT
 
-    ////
-    // FIXME: Remove those
-    Q_PROPERTY(bool fullscreen READ fullscreen WRITE setFullscreen NOTIFY fullscreenChanged)
 
     // Only exists in this fake implementation
-
-    // whether the test code will explicitly control the creation of the application surface
-    Q_PROPERTY(bool manualSurfaceCreation READ manualSurfaceCreation WRITE setManualSurfaceCreation NOTIFY manualSurfaceCreationChanged)
-
     Q_PROPERTY(QString screenshot READ screenshot CONSTANT)
-
 public:
     ApplicationInfo(QObject *parent = nullptr);
     ApplicationInfo(const QString &appId, QObject *parent = nullptr);
     ~ApplicationInfo();
-
-    RequestedState requestedState() const override;
-    void setRequestedState(RequestedState) override;
 
     void setIconId(const QString &iconId);
     void setScreenshotId(const QString &screenshotId);
@@ -67,9 +51,6 @@ public:
 
     QUrl icon() const override { return m_icon; }
 
-    Q_INVOKABLE void setState(State value);
-    State state() const override { return m_state; }
-
     bool focused() const override;
 
     QString splashTitle() const override { return QString(); }
@@ -81,17 +62,12 @@ public:
 
     QString screenshot() const { return m_screenshotFileName; }
 
-    void setFullscreen(bool value);
-    bool fullscreen() const;
 
     Qt::ScreenOrientations supportedOrientations() const override;
     void setSupportedOrientations(Qt::ScreenOrientations orientations);
 
     bool rotatesWindowContents() const override;
     void setRotatesWindowContents(bool value);
-
-    bool manualSurfaceCreation() const { return m_manualSurfaceCreation; }
-    void setManualSurfaceCreation(bool value);
 
     bool isTouchApp() const override;
     void setIsTouchApp(bool isTouchApp); // only in mock
@@ -102,29 +78,27 @@ public:
     QSize initialSurfaceSize() const override;
     void setInitialSurfaceSize(const QSize &size) override;
 
+    ApplicationInstanceListInterface* instanceList() const override { return m_applicationInstances; }
+
     Q_INVOKABLE void setShellChrome(Mir::ShellChrome shellChrome);
 
-    MirSurfaceListInterface* surfaceList() const override { return m_surfaceList; }
-    MirSurfaceListInterface* promptSurfaceList() const override { return m_promptSurfaceList; }
-    int surfaceCount() const override { return m_surfaceList->count(); }
+    int surfaceCount() const override;
 
     void setFocused(bool value);
 
     //////
     // internal mock stuff
+    void start();
     void close();
     void requestFocus();
-
-Q_SIGNALS:
-    void fullscreenChanged(bool value);
-    void manualSurfaceCreationChanged(bool value);
-    void closed();
+    void setFullscreen(bool value) { m_fullscreen = value; }
+    Mir::ShellChrome shellChrome() const { return m_shellChrome; }
 
 public Q_SLOTS:
-    Q_INVOKABLE void createSurface();
+    Q_INVOKABLE void createInstance();
 
-private Q_SLOTS:
-    void onSurfaceCountChanged();
+Q_SIGNALS:
+    void closed();
 
 private:
     void setIcon(const QUrl &value);
@@ -134,24 +108,18 @@ private:
     QString m_appId;
     QString m_name;
     QUrl m_icon;
-    State m_state{Stopped};
-    bool m_fullscreen{false};
     Qt::ScreenOrientations m_supportedOrientations{Qt::PortraitOrientation |
             Qt::LandscapeOrientation |
             Qt::InvertedPortraitOrientation |
             Qt::InvertedLandscapeOrientation};
     bool m_rotatesWindowContents{false};
-    RequestedState m_requestedState{RequestedRunning};
     bool m_isTouchApp{true};
     bool m_exemptFromLifecycle{false};
     QSize m_initialSurfaceSize;
-    MirSurfaceListModel *m_surfaceList;
-    MirSurfaceListModel *m_promptSurfaceList;
-    int m_liveSurfaceCount{0};
-    QTimer m_surfaceCreationTimer;
-    QList<MirSurface*> m_closingSurfaces;
-    bool m_manualSurfaceCreation{false};
     Mir::ShellChrome m_shellChrome{Mir::NormalChrome};
+    bool m_fullscreen{false};
+
+    ApplicationInstanceListModel *m_applicationInstances;
 };
 
 Q_DECLARE_METATYPE(ApplicationInfo*)

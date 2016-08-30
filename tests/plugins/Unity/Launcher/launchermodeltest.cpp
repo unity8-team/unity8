@@ -43,13 +43,10 @@ class MockApp: public unity::shell::application::ApplicationInfoInterface
 public:
     MockApp(const QString &appId, QObject *parent = 0): ApplicationInfoInterface(appId, parent), m_appId(appId), m_focused(false) { }
 
-    RequestedState requestedState() const override { return RequestedRunning; }
-    void setRequestedState(RequestedState) override {}
     QString appId() const override { return m_appId; }
     QString name() const override { return "mock"; }
     QString comment() const override { return "this is a mock"; }
     QUrl icon() const override { return QUrl(); }
-    ApplicationInfoInterface::State state() const override { return ApplicationInfoInterface::Running; }
     bool focused() const override { return m_focused; }
     QString splashTitle() const override { return QString(); }
     QUrl splashImage() const override { return QUrl(); }
@@ -64,9 +61,8 @@ public:
     void setExemptFromLifecycle(bool) override {}
     QSize initialSurfaceSize() const override { return QSize(); }
     void setInitialSurfaceSize(const QSize &) override {}
-    MirSurfaceListInterface* surfaceList() const override { return nullptr; }
-    MirSurfaceListInterface* promptSurfaceList() const override { return nullptr; }
     int surfaceCount() const override { return m_surfaceCount; }
+    ApplicationInstanceListInterface* instanceList() const override { return nullptr; }
     void setSurfaceCount(int count) { m_surfaceCount = count; Q_EMIT surfaceCountChanged(count); }
 
     // Methods used for mocking (not in the interface)

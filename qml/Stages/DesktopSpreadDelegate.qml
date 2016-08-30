@@ -24,7 +24,7 @@ Item {
     id: root
 
     property alias window: applicationWindow
-    property alias application: applicationWindow.application
+    property alias applicationInstance: applicationWindow.applicationInstance
     property alias surface: applicationWindow.surface
 
     property bool highlightShown: false
@@ -94,7 +94,7 @@ Item {
 
         ApplicationWindow {
             id: applicationWindow
-            objectName: application ? "appWindow_" + application.appId : "appWindow_null"
+            objectName: applicationInstance ? "appWindow_" + applicationInstance.application.appId : "appWindow_null"
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.left: parent.left

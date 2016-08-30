@@ -15,7 +15,6 @@
  */
 
 #include "MirSurfaceListModel.h"
-#include "ApplicationInfo.h"
 
 #include "MirSurface.h"
 

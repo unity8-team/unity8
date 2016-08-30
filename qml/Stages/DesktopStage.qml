@@ -213,9 +213,9 @@ AbstractStage {
     }
 
     Instantiator {
-        model: root.applicationManager
+        model: root.applicationInstanceList
         delegate: Binding {
-            target: model.application
+            target: model.applicationInstance
             property: "requestedState"
 
             // TODO: figure out some lifecycle policy, like suspending minimized apps
@@ -223,7 +223,7 @@ AbstractStage {
             // TODO: If the device has a dozen suspended apps because it was running
             //       in staged mode, when it switches to Windowed mode it will suddenly
             //       resume all those apps at once. We might want to avoid that.
-            value: ApplicationInfoInterface.RequestedRunning // Always running for now
+            value: ApplicationInstanceInterface.RequestedRunning // Always running for now
         }
     }
 
@@ -290,7 +290,7 @@ AbstractStage {
                     target: root
                     onShellOrientationAngleChanged: {
                         // at this point decoratedWindow.surfaceOrientationAngle is the old shellOrientationAngle
-                        if (application && application.rotatesWindowContents) {
+                        if (model.application && model.application.rotatesWindowContents) {
                             if (state == "normal") {
                                 var angleDiff = decoratedWindow.surfaceOrientationAngle - shellOrientationAngle;
                                 angleDiff = (360 + angleDiff) % 360;
@@ -307,7 +307,7 @@ AbstractStage {
                     }
                 }
 
-                readonly property alias application: decoratedWindow.application
+                readonly property var application: model.application
                 readonly property alias minimumWidth: decoratedWindow.minimumWidth
                 readonly property alias minimumHeight: decoratedWindow.minimumHeight
                 readonly property alias maximumWidth: decoratedWindow.maximumWidth
@@ -669,7 +669,7 @@ AbstractStage {
                     objectName: "decoratedWindow"
                     anchors.left: appDelegate.left
                     anchors.top: appDelegate.top
-                    application: model.application
+                    applicationInstance: model.applicationInstance
                     surface: model.surface
                     active: appDelegate.focus
                     focus: true

@@ -32,8 +32,8 @@ FocusScope {
     property bool fullscreen: {
         if (surface) {
             return surface.state === Mir.FullscreenState;
-        } else if (application) {
-            return application.fullscreen;
+        } else if (applicationInstance) {
+            return applicationInstance.fullscreen;
         } else {
             return false;
         }
@@ -41,7 +41,7 @@ FocusScope {
 
     // to be set from outside
     property QtObject surface
-    property QtObject application
+    property QtObject applicationInstance
     property int surfaceOrientationAngle
     property alias resizeSurface: surfaceContainer.resizeSurface
     property int requestedWidth: -1
@@ -77,6 +77,8 @@ FocusScope {
     QtObject {
         id: d
 
+        readonly property QtObject application: root.applicationInstance ? root.applicationInstance.application : null
+
         property bool liveSurface: false;
         property var con: Connections {
             target: root.surface
@@ -85,7 +87,7 @@ FocusScope {
         // using liveSurface instead of root.surface.live because with the latter
         // this expression is not reevaluated when root.surface changes
         readonly property bool needToTakeScreenshot: root.surface && d.surfaceInitialized && !d.liveSurface
-                                                  && applicationState !== ApplicationInfoInterface.Running
+                                                  && applicationState !== ApplicationInstanceInterface.Running
         onNeedToTakeScreenshotChanged: {
             if (needToTakeScreenshot && screenshotImage.status === Image.Null) {
                 screenshotImage.take();
@@ -94,15 +96,15 @@ FocusScope {
 
         // helpers so that we don't have to check for the existence of an application everywhere
         // (in order to avoid breaking qml binding due to a javascript exception)
-        readonly property string name: root.application ? root.application.name : ""
-        readonly property url icon: root.application ? root.application.icon : ""
-        readonly property int applicationState: root.application ? root.application.state : -1
-        readonly property string splashTitle: root.application ? root.application.splashTitle : ""
-        readonly property url splashImage: root.application ? root.application.splashImage : ""
-        readonly property bool splashShowHeader: root.application ? root.application.splashShowHeader : true
-        readonly property color splashColor: root.application ? root.application.splashColor : "#00000000"
-        readonly property color splashColorHeader: root.application ? root.application.splashColorHeader : "#00000000"
-        readonly property color splashColorFooter: root.application ? root.application.splashColorFooter : "#00000000"
+        readonly property string name: application ? application.name : ""
+        readonly property url icon: application ? application.icon : ""
+        readonly property int applicationState: applicationInstance ? applicationInstance.state : -1
+        readonly property string splashTitle: application ? application.splashTitle : ""
+        readonly property url splashImage: application ? application.splashImage : ""
+        readonly property bool splashShowHeader: application ? application.splashShowHeader : true
+        readonly property color splashColor: application ? application.splashColor : "#00000000"
+        readonly property color splashColorHeader: application ? application.splashColorHeader : "#00000000"
+        readonly property color splashColorFooter: application ? application.splashColorFooter : "#00000000"
 
         // Whether the Application had a surface before but lost it.
         property bool hadSurface: false
@@ -132,7 +134,7 @@ FocusScope {
     }
 
     Binding {
-        target: root.application
+        target: d.application
         property: "initialSurfaceSize"
         value: Qt.size(root.requestedWidth, root.requestedHeight)
     }
@@ -199,7 +201,7 @@ FocusScope {
         z: splashLoader.z + 1
         requestedWidth: root.requestedWidth
         requestedHeight: root.requestedHeight
-        surfaceOrientationAngle: application && application.rotatesWindowContents ? root.surfaceOrientationAngle : 0
+        surfaceOrientationAngle: d.application && d.application.rotatesWindowContents ? root.surfaceOrientationAngle : 0
     }
 
     Repeater {
@@ -207,8 +209,8 @@ FocusScope {
         objectName: "promptSurfacesRepeater"
         // show only along with the top-most application surface
         model: {
-            if (root.application && root.surface === root.application.surfaceList.first) {
-                return root.application.promptSurfaceList;
+            if (root.applicationInstance && root.surface === root.applicationInstance.surfaceList.first) {
+                return root.applicationInstance.promptSurfaceList;
             } else {
                 return null;
             }
@@ -284,7 +286,7 @@ FocusScope {
                       (root.surface && d.surfaceInitialized)
                       &&
                       (d.liveSurface ||
-                       (d.applicationState !== ApplicationInfoInterface.Running
+                       (d.applicationState !== ApplicationInstanceInterface.Running
                         && screenshotImage.status !== Image.Ready))
             },
             State {
@@ -292,7 +294,7 @@ FocusScope {
                 when:
                       screenshotImage.status === Image.Ready
                       &&
-                      (d.applicationState !== ApplicationInfoInterface.Running
+                      (d.applicationState !== ApplicationInstanceInterface.Running
                        || !root.surface || !d.surfaceInitialized)
             },
             State {
@@ -303,7 +305,7 @@ FocusScope {
                       // The surface died while the application is running. It must have been closed
                       // by the shell or the application decided to destroy it by itself
                       root.surface && d.surfaceInitialized && !d.liveSurface
-                      && d.applicationState === ApplicationInfoInterface.Running
+                      && d.applicationState === ApplicationInstanceInterface.Running
             }
         ]
 

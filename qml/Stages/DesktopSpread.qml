@@ -187,7 +187,7 @@ FocusScope {
                     objectName: "clippedSpreadDelegate"
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    application: model.application
+                    applicationInstance: model.applicationInstance
                     surface: model.surface
                     width: spreadMaths.spreadHeight
                     height: spreadMaths.spreadHeight

@@ -1,6 +1,8 @@
 set(FakeUnityApplicationQml_SOURCES
     plugin.cpp
     ApplicationInfo.cpp
+    ApplicationInstance.cpp
+    ApplicationInstanceListModel.cpp
     ApplicationManager.cpp
     MirSurface.cpp
     MirSurfaceItem.cpp
@@ -9,6 +11,8 @@ set(FakeUnityApplicationQml_SOURCES
     SurfaceManager.cpp
     VirtualKeyboard.cpp
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInstanceInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInstanceListInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/Mir.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h

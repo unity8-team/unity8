@@ -31,11 +31,12 @@ Rectangle {
     height: units.gu(70)
 
     Component.onCompleted: {
-        root.fakeApplication = ApplicationManager.add("gallery-app");
-        root.fakeApplication.manualSurfaceCreation = true;
-        applicationWindowLoader.item.application = root.fakeApplication;
+        var fakeApp = ApplicationManager.add("gallery-app");
+        root.fakeAppInstance = fakeApp.instanceList.get(0);
+        root.fakeAppInstance.manualSurfaceCreation = true;
+        applicationWindowLoader.item.applicationInstance = root.fakeAppInstance;
     }
-    property QtObject fakeApplication: null
+    property QtObject fakeAppInstance: null
 
     Loader {
         id: applicationWindowLoader
@@ -85,8 +86,8 @@ Rectangle {
                             return;
 
                         if (checked) {
-                            root.fakeApplication.createSurface();
-                            applicationWindowLoader.item.surface = root.fakeApplication.surfaceList.get(0);
+                            root.fakeAppInstance.createSurface();
+                            applicationWindowLoader.item.surface = root.fakeAppInstance.surfaceList.get(0);
                         } else {
                             if (applicationWindowLoader.item.surface) {
                                 applicationWindowLoader.item.surface.setLive(false);
@@ -101,7 +102,7 @@ Rectangle {
             }
 
             RowLayout {
-                property var promptSurfaceList: root.fakeApplication ? root.fakeApplication.promptSurfaceList : null
+                property var promptSurfaceList: root.fakeAppInstance ? root.fakeAppInstance.promptSurfaceList : null
                 Button {
                     enabled: parent.promptSurfaceList !== null && parent.promptSurfaceList.count > 0
                     activeFocusOnPress: false
@@ -128,23 +129,23 @@ Rectangle {
                         "Stopped"]
                 property int selectedApplicationState: {
                     if (model[selectedIndex] === "Starting") {
-                        return ApplicationInfoInterface.Starting;
+                        return ApplicationInstanceInterface.Starting;
                     } else if (model[selectedIndex] === "Running") {
-                        return ApplicationInfoInterface.Running;
+                        return ApplicationInstanceInterface.Running;
                     } else if (model[selectedIndex] === "Suspended") {
-                        return ApplicationInfoInterface.Suspended;
+                        return ApplicationInstanceInterface.Suspended;
                     } else {
-                        return ApplicationInfoInterface.Stopped;
+                        return ApplicationInstanceInterface.Stopped;
                     }
                 }
                 onSelectedApplicationStateChanged: {
                     // state is a read-only property, thus we have to call the setter function
-                    if (fakeApplication && fakeApplication.state != selectedApplicationState) {
-                        fakeApplication.setState(selectedApplicationState);
+                    if (fakeAppInstance && fakeAppInstance.state != selectedApplicationState) {
+                        fakeAppInstance.setState(selectedApplicationState);
                     }
                 }
                 Connections {
-                    target: fakeApplication
+                    target: fakeAppInstance
                     onStateChanged: {
                         testCase.setApplicationState(state);
                     }
@@ -179,10 +180,10 @@ Rectangle {
         when: windowShown
 
         // just to make them shorter
-        property int appStarting: ApplicationInfoInterface.Starting
-        property int appRunning: ApplicationInfoInterface.Running
-        property int appSuspended: ApplicationInfoInterface.Suspended
-        property int appStopped: ApplicationInfoInterface.Stopped
+        property int appStarting: ApplicationInstanceInterface.Starting
+        property int appRunning: ApplicationInstanceInterface.Running
+        property int appSuspended: ApplicationInstanceInterface.Suspended
+        property int appStopped: ApplicationInstanceInterface.Stopped
 
         function setApplicationState(appState) {
             switch (appState) {
@@ -243,12 +244,13 @@ Rectangle {
 
             killApps();
 
-            root.fakeApplication = ApplicationManager.add("gallery-app");
-            root.fakeApplication.manualSurfaceCreation = true;
+            var fakeApp = ApplicationManager.add("gallery-app");
+            root.fakeAppInstance = fakeApp.instanceList.get(0);
+            root.fakeAppInstance.manualSurfaceCreation = true;
 
             applicationWindowLoader.active = true;
 
-            applicationWindowLoader.item.application = root.fakeApplication;
+            applicationWindowLoader.item.applicationInstance = root.fakeAppInstance;
         }
 
         function waitUntilSurfaceContainerStopsAnimating(container) {
@@ -310,14 +312,14 @@ Rectangle {
             setApplicationState(appSuspended);
 
             verify(stateGroup.state === "surface");
-            verify(fakeApplication.surface !== null);
+            tryCompare(fakeAppInstance.surfaceList, "count", 1);
 
             // kill it!
             surfaceCheckbox.checked = false;
             setApplicationState(appStopped);
 
             tryCompare(stateGroup, "state", "screenshot");
-            tryCompare(fakeApplication.surfaceList, "count", 0);
+            tryCompare(fakeAppInstance.surfaceList, "count", 0);
         }
 
         function test_restartApp() {
@@ -439,7 +441,7 @@ Rectangle {
         function test_promptSurfaceDestructionReturnsFocusToPreviousSurface() {
             surfaceCheckbox.checked = true;
             var promptSurfaces = testCase.findChild(applicationWindow, "promptSurfacesRepeater");
-            var promptSurfaceList = root.fakeApplication.promptSurfaceList;
+            var promptSurfaceList = root.fakeAppInstance.promptSurfaceList;
             compare(promptSurfaces.count, 0);
 
             var i;
@@ -470,7 +472,7 @@ Rectangle {
         }
 
         function test_promptSurfaceAdjustsForParentSize() {
-            var promptSurfaceList = root.fakeApplication.promptSurfaceList;
+            var promptSurfaceList = root.fakeAppInstance.promptSurfaceList;
 
             promptSurfaceList.createSurface();
 
@@ -502,7 +504,7 @@ Rectangle {
         // for index 0 to lowest for the last index in the prompt surface list.
         // Regression test for https://bugs.launchpad.net/bugs/1586219
         function test_promptSurfacesZOrdering() {
-            var promptSurfaceList = root.fakeApplication.promptSurfaceList;
+            var promptSurfaceList = root.fakeAppInstance.promptSurfaceList;
             var promptSurfaces = testCase.findChild(applicationWindow, "promptSurfacesRepeater");
 
             promptSurfaceList.createSurface();

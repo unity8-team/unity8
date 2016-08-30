@@ -235,10 +235,14 @@ StyledItem {
         width: parent.width
         height: parent.height
 
+        AllApplicationInstances {
+            id: allAppInstances
+            applicationsModel: ApplicationManager
+        }
         TopLevelSurfaceList {
             id: topLevelSurfaceList
             objectName: "topLevelSurfaceList"
-            applicationsModel: ApplicationManager
+            applicationInstancesModel: allAppInstances
         }
 
         Loader {
@@ -380,6 +384,11 @@ StyledItem {
                 target: applicationsDisplayLoader.item
                 property: "applicationManager"
                 value: ApplicationManager
+            }
+            Binding {
+                target: applicationsDisplayLoader.item
+                property: "applicationInstanceList"
+                value: allAppInstances
             }
             Binding {
                 target: applicationsDisplayLoader.item

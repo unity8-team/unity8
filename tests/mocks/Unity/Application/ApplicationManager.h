@@ -36,6 +36,7 @@ namespace unity {
 
 class QQuickItem;
 using namespace unity::shell::application;
+class MirSurface;
 
 class ApplicationManager : public ApplicationManagerInterface {
     Q_OBJECT
@@ -64,6 +65,7 @@ class ApplicationManager : public ApplicationManagerInterface {
 
     // Only for testing
     QStringList availableApplications();
+    Q_INVOKABLE ApplicationInfo* getAvailableApplication(const QString &appId);
     Q_INVOKABLE ApplicationInfo* add(QString appId);
 
     QModelIndex findIndex(ApplicationInfo* application);

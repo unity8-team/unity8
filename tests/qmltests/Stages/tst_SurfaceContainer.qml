@@ -104,12 +104,13 @@ Rectangle {
 
                         if (checked) {
                             var application = ApplicationManager.add("music-app");
-                            application.manualSurfaceCreation = true;
+                            var appInstance = application.instances.get(0);
+                            appInstance.manualSurfaceCreation = true;
 
-                            application.createSurface();
-                            surfaceContainerLoader.item.surface = application.surfaceList.get(0);
+                            appInstance.createSurface();
+                            surfaceContainerLoader.item.surface = appInstance.surfaceList.get(0);
 
-                            application.setState(ApplicationInfoInterface.Running);
+                            appInstance.setState(ApplicationInfoInterface.Running);
                         } else {
                             if (surfaceContainerLoader.item.surface) {
                                 surfaceContainerLoader.item.surface.setLive(false);

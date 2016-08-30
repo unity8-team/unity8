@@ -21,6 +21,8 @@
 #include "SurfaceManager.h"
 
 // unity-api
+#include <unity/shell/application/ApplicationInstanceInterface.h>
+#include <unity/shell/application/ApplicationInstanceListInterface.h>
 #include <unity/shell/application/Mir.h>
 
 #include <qqml.h>
@@ -65,11 +67,14 @@ void FakeUnityApplicationQmlPlugin::registerTypes(const char *uri)
     qRegisterMetaType<ApplicationInfo*>("ApplicationInfo*");
     qRegisterMetaType<unity::shell::application::MirSurfaceInterface*>("unity::shell::application::MirSurfaceInterface*");
     qRegisterMetaType<unity::shell::application::MirSurfaceListInterface*>("unity::shell::application::MirSurfaceListInterface*");
+    qRegisterMetaType<unity::shell::application::ApplicationInstanceListInterface*>("unity::shell::application::ApplicationInstanceListInterface*");
     qRegisterMetaType<Mir::Type>("Mir::Type");
     qRegisterMetaType<Mir::State>("Mir::State");
 
     qmlRegisterUncreatableType<unity::shell::application::ApplicationManagerInterface>(uri, 0, 1, "ApplicationManagerInterface", "Abstract interface. Cannot be created in QML");
     qmlRegisterUncreatableType<unity::shell::application::ApplicationInfoInterface>(uri, 0, 1, "ApplicationInfoInterface", "Abstract interface. Cannot be created in QML");
+    qmlRegisterUncreatableType<unity::shell::application::ApplicationInstanceInterface>(uri, 0, 1, "ApplicationInstanceInterface", "Abstract interface. Cannot be created in QML");
+    qmlRegisterUncreatableType<unity::shell::application::ApplicationInstanceListInterface>(uri, 0, 1, "ApplicationInstanceListInterface", "Abstract interface. Cannot be created in QML");
     qmlRegisterUncreatableType<MirSurface>(uri, 0, 1, "MirSurface", "MirSurface can't be instantiated from QML");
     qmlRegisterUncreatableType<unity::shell::application::MirSurfaceInterface>(
                     uri, 0, 1, "MirSurface", "MirSurface can't be instantiated from QML");

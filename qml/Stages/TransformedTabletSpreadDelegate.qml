@@ -171,7 +171,7 @@ SpreadDelegate {
             // The tile should move a bit to the left if a new one comes on top of it, but not for the Side Stage and not
             // when we're only dragging the side stage in on top of a main stage app
             var shouldMoveAway = spreadView.nextInStack >= 0 && priv.movedActive && root.stage === ApplicationInfoInterface.MainStage &&
-                    topLevelSurfaceList.applicationAt(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage;
+                    spreadRepeater.itemAt(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage;
 
             if (active) {
                 newTranslate -= root.width
@@ -308,7 +308,7 @@ SpreadDelegate {
             // The tile should rotate a bit when another one comes on top, but not when only dragging the side stage in
             var shouldMoveAway = spreadView.nextInStack == -1 ||
                     spreadView.nextInStack >= 0 && priv.movedActive &&
-                    (topLevelSurfaceList.applicationAt(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage ||
+                    (spreadRepeater.itemAt(spreadView.nextInStack).stage === ApplicationInfoInterface.MainStage ||
                      root.stage == ApplicationInfoInterface.SideStage);
 
             if (spreadView.phase == 0) {

@@ -18,6 +18,7 @@
 
 // unity-api
 #include <unity/shell/application/ApplicationInfoInterface.h>
+#include <unity/shell/application/ApplicationInstanceInterface.h>
 #include <unity/shell/application/MirSurfaceInterface.h>
 #include <unity/shell/application/MirSurfaceListInterface.h>
 
@@ -53,8 +54,10 @@ QVariant TopLevelSurfaceList::data(const QModelIndex& index, int role) const
     if (role == SurfaceRole) {
         MirSurfaceInterface *surface = m_surfaceList.at(index.row()).surface;
         return QVariant::fromValue(surface);
+    } else if (role == ApplicationInstanceRole) {
+        return QVariant::fromValue(m_surfaceList.at(index.row()).appInstance);
     } else if (role == ApplicationRole) {
-        return QVariant::fromValue(m_surfaceList.at(index.row()).application);
+        return QVariant::fromValue(m_surfaceList.at(index.row()).appInstance->application());
     } else if (role == IdRole) {
         return QVariant::fromValue(m_surfaceList.at(index.row()).id);
     } else {
@@ -75,24 +78,24 @@ void TopLevelSurfaceList::raise(MirSurfaceInterface *surface)
     }
 }
 
-void TopLevelSurfaceList::appendPlaceholder(ApplicationInfoInterface *application)
+void TopLevelSurfaceList::appendPlaceholder(ApplicationInstanceInterface *appInstance)
 {
-    DEBUG_MSG << "(" << application->appId() << ")";
+    DEBUG_MSG << "(" << appInstance->application()->appId() << ")";
 
-    appendSurfaceHelper(nullptr, application);
+    appendSurfaceHelper(nullptr, appInstance);
 }
 
-void TopLevelSurfaceList::appendSurface(MirSurfaceInterface *surface, ApplicationInfoInterface *application)
+void TopLevelSurfaceList::appendSurface(MirSurfaceInterface *surface, ApplicationInstanceInterface *appInstance)
 {
     Q_ASSERT(surface != nullptr);
 
     bool filledPlaceholder = false;
     for (int i = 0; i < m_surfaceList.count() && !filledPlaceholder; ++i) {
         ModelEntry &entry = m_surfaceList[i];
-        if (entry.application == application && entry.surface == nullptr) {
+        if (entry.appInstance == appInstance && entry.surface == nullptr) {
             entry.surface = surface;
             connectSurface(surface);
-            DEBUG_MSG << " appId=" << application->appId() << " surface=" << surface
+            DEBUG_MSG << " appId=" << appInstance->application()->appId() << " surface=" << surface
                       << ", filling out placeholder. after: " << toString();
             Q_EMIT dataChanged(index(i) /* topLeft */, index(i) /* bottomRight */, QVector<int>() << SurfaceRole);
             filledPlaceholder = true;
@@ -100,12 +103,12 @@ void TopLevelSurfaceList::appendSurface(MirSurfaceInterface *surface, Applicatio
     }
 
     if (!filledPlaceholder) {
-        DEBUG_MSG << " appId=" << application->appId() << " surface=" << surface << ", adding new row";
-        appendSurfaceHelper(surface, application);
+        DEBUG_MSG << " appId=" << appInstance->application()->appId() << " surface=" << surface << ", adding new row";
+        appendSurfaceHelper(surface, appInstance);
     }
 }
 
-void TopLevelSurfaceList::appendSurfaceHelper(MirSurfaceInterface *surface, ApplicationInfoInterface *application)
+void TopLevelSurfaceList::appendSurfaceHelper(MirSurfaceInterface *surface, ApplicationInstanceInterface *appInstance)
 {
     if (m_modelState == IdleState) {
         m_modelState = InsertingState;
@@ -116,7 +119,7 @@ void TopLevelSurfaceList::appendSurfaceHelper(MirSurfaceInterface *surface, Appl
     }
 
     int id = generateId();
-    m_surfaceList.append(ModelEntry(surface, application, id));
+    m_surfaceList.append(ModelEntry(surface, appInstance, id));
     if (surface) {
         connectSurface(surface);
     }
@@ -153,12 +156,12 @@ void TopLevelSurfaceList::onSurfaceDied(MirSurfaceInterface *surface)
         return;
     }
 
-    auto application = m_surfaceList[i].application;
+    auto appInstance = m_surfaceList[i].appInstance;
 
     // can't be starting if it already has a surface
-    Q_ASSERT(application->state() != ApplicationInfoInterface::Starting);
+    Q_ASSERT(appInstance->state() != ApplicationInstanceInterface::Starting);
 
-    if (application->state() == ApplicationInfoInterface::Running) {
+    if (appInstance->state() == ApplicationInstanceInterface::Running) {
         m_surfaceList[i].removeOnceSurfaceDestroyed = true;
     } else {
         // assume it got killed by the out-of-memory daemon.
@@ -254,7 +257,7 @@ MirSurfaceInterface *TopLevelSurfaceList::surfaceAt(int index) const
 ApplicationInfoInterface *TopLevelSurfaceList::applicationAt(int index) const
 {
     if (index >=0 && index < m_surfaceList.count()) {
-        return m_surfaceList[index].application;
+        return m_surfaceList[index].appInstance->application();
     } else {
         return nullptr;
     }
@@ -331,9 +334,10 @@ QString TopLevelSurfaceList::toString()
     for (int i = 0; i < m_surfaceList.count(); ++i) {
         auto item = m_surfaceList.at(i);
 
-        QString itemStr = QString("(index=%1,appId=%2,surface=0x%3,id=%4)")
+        QString itemStr = QString("(index=%1,appId=%2,instance=0x%3,surface=0x%4,id=%5)")
             .arg(i)
-            .arg(item.application->appId())
+            .arg(item.appInstance->application()->appId())
+            .arg((qintptr)item.appInstance, 0, 16)
             .arg((qintptr)item.surface, 0, 16)
             .arg(item.id);
 
@@ -345,39 +349,39 @@ QString TopLevelSurfaceList::toString()
     return str;
 }
 
-void TopLevelSurfaceList::addApplication(ApplicationInfoInterface *application)
+void TopLevelSurfaceList::addAppInstance(ApplicationInstanceInterface *appInstance)
 {
-    DEBUG_MSG << "(" << application->appId() << ")";
-    Q_ASSERT(!m_applications.contains(application));
-    m_applications.append(application);
+    DEBUG_MSG << "(" << appInstance->application()->appId() << "," << (void*)appInstance << ")";
+    Q_ASSERT(!m_appInstances.contains(appInstance));
+    m_appInstances.append(appInstance);
 
-    MirSurfaceListInterface *surfaceList = application->surfaceList();
+    MirSurfaceListInterface *surfaceList = appInstance->surfaceList();
 
-    if (application->state() != ApplicationInfoInterface::Stopped) {
+    if (appInstance->state() != ApplicationInstanceInterface::Stopped) {
         if (surfaceList->count() == 0) {
-            appendPlaceholder(application);
+            appendPlaceholder(appInstance);
         } else {
             for (int i = 0; i < surfaceList->count(); ++i) {
-                appendSurface(surfaceList->get(i), application);
+                appendSurface(surfaceList->get(i), appInstance);
             }
         }
     }
 
     connect(surfaceList, &QAbstractItemModel::rowsInserted, this,
-            [this, application, surfaceList](const QModelIndex & /*parent*/, int first, int last)
+            [this, appInstance, surfaceList](const QModelIndex & /*parent*/, int first, int last)
             {
                 for (int i = last; i >= first; --i) {
-                    this->appendSurface(surfaceList->get(i), application);
+                    this->appendSurface(surfaceList->get(i), appInstance);
                 }
             });
 }
 
-void TopLevelSurfaceList::removeApplication(ApplicationInfoInterface *application)
+void TopLevelSurfaceList::removeAppInstance(ApplicationInstanceInterface *appInstance)
 {
-    DEBUG_MSG << "(" << application->appId() << ")";
-    Q_ASSERT(m_applications.contains(application));
+    DEBUG_MSG << "(" << appInstance->application()->appId() << "," << (void*)appInstance << ")";
+    Q_ASSERT(m_appInstances.contains(appInstance));
 
-    MirSurfaceListInterface *surfaceList = application->surfaceList();
+    MirSurfaceListInterface *surfaceList = appInstance->surfaceList();
 
     disconnect(surfaceList, 0, this, 0);
 
@@ -386,7 +390,7 @@ void TopLevelSurfaceList::removeApplication(ApplicationInfoInterface *applicatio
 
     int i = 0;
     while (i < m_surfaceList.count()) {
-        if (m_surfaceList.at(i).application == application) {
+        if (m_surfaceList.at(i).appInstance == appInstance) {
             beginRemoveRows(QModelIndex(), i, i);
             m_surfaceList.removeAt(i);
             endRemoveRows();
@@ -401,17 +405,17 @@ void TopLevelSurfaceList::removeApplication(ApplicationInfoInterface *applicatio
 
     DEBUG_MSG << " after " << toString();
 
-    m_applications.removeAll(application);
+    m_appInstances.removeAll(appInstance);
 }
 
-QAbstractListModel *TopLevelSurfaceList::applicationsModel() const
+QAbstractListModel *TopLevelSurfaceList::applicationInstancesModel() const
 {
-    return m_applicationsModel;
+    return m_appInstancesModel;
 }
 
-void TopLevelSurfaceList::setApplicationsModel(QAbstractListModel* value)
+void TopLevelSurfaceList::setApplicationInstancesModel(QAbstractListModel* value)
 {
-    if (m_applicationsModel == value) {
+    if (m_appInstancesModel == value) {
         return;
     }
 
@@ -422,36 +426,55 @@ void TopLevelSurfaceList::setApplicationsModel(QAbstractListModel* value)
 
     beginResetModel();
 
-    if (m_applicationsModel) {
+    if (m_appInstancesModel) {
         m_surfaceList.clear();
-        m_applications.clear();
-        disconnect(m_applicationsModel, 0, this, 0);
+        m_appInstances.clear();
+        disconnect(m_appInstancesModel, 0, this, 0);
     }
 
-    m_applicationsModel = value;
+    m_appInstancesModel = value;
 
-    if (m_applicationsModel) {
-        findApplicationRole();
+    if (m_appInstancesModel) {
+        findAppInstanceRole();
 
-        connect(m_applicationsModel, &QAbstractItemModel::rowsInserted,
+        connect(m_appInstancesModel, &QAbstractItemModel::rowsInserted,
                 this, [this](const QModelIndex &/*parent*/, int first, int last) {
                     for (int i = first; i <= last; ++i) {
-                        auto application = getApplicationFromModelAt(i);
-                        addApplication(application);
+                        auto appInstance = getAppInstanceFromModelAt(i);
+                        addAppInstance(appInstance);
                     }
                 });
 
-        connect(m_applicationsModel, &QAbstractItemModel::rowsAboutToBeRemoved,
+        connect(m_appInstancesModel, &QAbstractItemModel::rowsAboutToBeRemoved,
                 this, [this](const QModelIndex &/*parent*/, int first, int last) {
                     for (int i = first; i <= last; ++i) {
-                        auto application = getApplicationFromModelAt(i);
-                        removeApplication(application);
+                        auto appInstance = getAppInstanceFromModelAt(i);
+                        removeAppInstance(appInstance);
                     }
                 });
 
-        for (int i = 0; i < m_applicationsModel->rowCount(); ++i) {
-            auto application = getApplicationFromModelAt(i);
-            addApplication(application);
+        connect(m_appInstancesModel, &QAbstractItemModel::modelAboutToBeReset,
+                this, [this]() {
+                    Q_ASSERT(m_modelState == IdleState);
+                    m_modelState = ResettingState;
+                    beginResetModel();
+                    m_surfaceList.clear();
+                    m_appInstances.clear();
+                });
+
+        connect(m_appInstancesModel, &QAbstractItemModel::modelReset,
+                this, [this]() {
+                    for (int i = 0; i < m_appInstancesModel->rowCount(); ++i) {
+                        auto appInstance = getAppInstanceFromModelAt(i);
+                        addAppInstance(appInstance);
+                    }
+                    endResetModel();
+                    m_modelState = IdleState;
+                });
+
+        for (int i = 0; i < m_appInstancesModel->rowCount(); ++i) {
+            auto appInstance = getAppInstanceFromModelAt(i);
+            addAppInstance(appInstance);
         }
     }
 
@@ -459,28 +482,28 @@ void TopLevelSurfaceList::setApplicationsModel(QAbstractListModel* value)
     m_modelState = IdleState;
 }
 
-ApplicationInfoInterface *TopLevelSurfaceList::getApplicationFromModelAt(int index)
+ApplicationInstanceInterface *TopLevelSurfaceList::getAppInstanceFromModelAt(int index)
 {
-    QModelIndex modelIndex = m_applicationsModel->index(index);
+    QModelIndex modelIndex = m_appInstancesModel->index(index);
 
-    QVariant variant =  m_applicationsModel->data(modelIndex, m_applicationRole);
+    QVariant variant =  m_appInstancesModel->data(modelIndex, m_appInstanceRole);
 
-    // variant.value<ApplicationInfoInterface*>() returns null for some reason.
-    return static_cast<ApplicationInfoInterface*>(variant.value<QObject*>());
+    // variant.value<ApplicationInstanceInterface*>() returns null for some reason.
+    return static_cast<ApplicationInstanceInterface*>(variant.value<QObject*>());
 }
 
-void TopLevelSurfaceList::findApplicationRole()
+void TopLevelSurfaceList::findAppInstanceRole()
 {
-    QHash<int, QByteArray> namesHash = m_applicationsModel->roleNames();
+    QHash<int, QByteArray> namesHash = m_appInstancesModel->roleNames();
 
-    m_applicationRole = -1;
-    for (auto i = namesHash.begin(); i != namesHash.end() && m_applicationRole == -1; ++i) {
-        if (i.value() == "application") {
-            m_applicationRole = i.key();
+    m_appInstanceRole = -1;
+    for (auto i = namesHash.begin(); i != namesHash.end() && m_appInstanceRole == -1; ++i) {
+        if (i.value() == "applicationInstance") {
+            m_appInstanceRole = i.key();
         }
     }
 
-    if (m_applicationRole == -1) {
-        qFatal("TopLevelSurfaceList: applicationsModel must have a \"application\" role.");
+    if (m_appInstanceRole == -1) {
+        qFatal("TopLevelSurfaceList: applicationInstancesModel must have a \"applicationInstance\" role.");
     }
 }

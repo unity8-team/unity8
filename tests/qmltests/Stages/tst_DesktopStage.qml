@@ -57,9 +57,13 @@ Item {
         }
     }
 
+    AllApplicationInstances {
+        id: allAppInstances
+        applicationsModel: ApplicationManager
+    }
     TopLevelSurfaceList {
         id: topSurfaceList
-        applicationsModel: ApplicationManager
+        applicationInstancesModel: allAppInstances
     }
 
     Loader {
@@ -86,6 +90,7 @@ Item {
                 }
                 orientations: Orientations {}
                 applicationManager: ApplicationManager
+                applicationInstanceList: allAppInstances
                 topLevelSurfaceList: topSurfaceList
             }
         }
@@ -137,8 +142,8 @@ Item {
 
                 Repeater {
                     model: ApplicationManager.availableApplications
-                    ApplicationCheckBox {
-                        appId: modelData
+                    ApplicationControls {
+                        application: ApplicationManager.getAvailableApplication(modelData)
                     }
                 }
 

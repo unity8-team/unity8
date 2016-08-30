@@ -21,92 +21,35 @@ import Unity.Application 0.1
 
 Column {
     id: root
-    property string appId
     property bool checked: false
 
+    // set from outside
+    property var applicationInstance
+    property string instanceName
+
     function createSurface() {
-        if (d.application) {
-            d.application.createSurface();
+        if (applicationInstance) {
+            applicationInstance.createSurface();
         }
-    }
-
-    enabled: appId !== "unity8-dash"
-
-    onCheckedChanged: {
-        if (d.bindGuard) { return; }
-        d.bindGuard = true;
-
-        if (checked) {
-            ApplicationManager.startApplication(root.appId);
-        } else {
-            ApplicationManager.stopApplication(root.appId);
-        }
-        d.bindGuard = false;
     }
 
     // Application checkbox row
     RowLayout {
 
-        QtObject {
-            id: d
-            property bool bindGuard: false
-            property var application: null
-            Component.onCompleted: {
-                application = ApplicationManager.findApplication(root.appId);
-            }
-        }
-
-        Connections {
-            target: ApplicationManager
-            onCountChanged: {
-                d.application = ApplicationManager.findApplication(root.appId);
-            }
-        }
-
         Layout.fillWidth: true
-        CheckBox {
-            id: checkbox
-            checked: false
-            activeFocusOnPress: false
-
-            onTriggered: {
-                if (d.bindGuard) { return; }
-                d.bindGuard = true;
-
-                if (checked) {
-                    ApplicationManager.startApplication(root.appId);
-                } else {
-                    ApplicationManager.stopApplication(root.appId);
-                }
-                d.bindGuard = false;
-            }
-            onCheckedChanged: {
-                if (d.bindGuard) { return; }
-                d.bindGuard = true;
-
-                root.checked = checked;
-
-                d.bindGuard = false;
-            }
-            Binding {
-                target: checkbox
-                property: "checked"
-                value: d.application != null
-            }
-        }
         Label {
             id: appIdLabel
-            text: root.appId
+            text: root.instanceName
             anchors.verticalCenter: parent.verticalCenter
         }
         Rectangle {
             color: {
-                if (d.application) {
-                    if (d.application.state === ApplicationInfoInterface.Starting) {
+                if (root.applicationInstance) {
+                    if (root.applicationInstance.state === ApplicationInstanceInterface.Starting) {
                         return "yellow";
-                    } else if (d.application.state === ApplicationInfoInterface.Running) {
+                    } else if (root.applicationInstance.state === ApplicationInstanceInterface.Running) {
                         return "green";
-                    } else if (d.application.state === ApplicationInfoInterface.Suspended) {
+                    } else if (root.applicationInstance.state === ApplicationInstanceInterface.Suspended) {
                         return "blue";
                     } else {
                         return "darkred";
@@ -125,7 +68,7 @@ Column {
             height: appIdLabel.height * 0.7
             anchors.verticalCenter: parent.verticalCenter
             onClicked: root.createSurface()
-            enabled: d.application && d.application.state === ApplicationInfoInterface.Running
+            enabled: root.applicationInstance && root.applicationInstance.state === ApplicationInstanceInterface.Running
             visible: enabled
             Label {
                 text: "➕"
@@ -138,10 +81,10 @@ Column {
     RowLayout {
         anchors.left: root.left
         anchors.leftMargin: units.gu(2)
-        visible: root.checked === true && d.application !== null && root.enabled
+        visible: root.checked === true && root.applicationInstance !== null && root.enabled
         spacing: units.gu(1)
         Label {
-            property int promptCount: d.application ? d.application.promptSurfaceList.count : 0
+            property int promptCount: root.applicationInstance ? root.applicationInstance.promptSurfaceList.count : 0
             id: promptsLabel
             text: promptCount + " prompts"
         }
@@ -149,22 +92,22 @@ Column {
             width: height
             height: promptsLabel.height * 0.7
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: d.application.promptSurfaceList.createSurface()
+            onClicked: root.applicationInstance.promptSurfaceList.createSurface()
             Label { text: "➕"; anchors.centerIn: parent }
         }
         MouseArea {
             width: height
             height: promptsLabel.height * 0.7
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: d.application.promptSurfaceList.get(0).close()
-            enabled: d.application && d.application.promptSurfaceList.count > 0
+            onClicked: root.applicationInstance.promptSurfaceList.get(0).close()
+            enabled: root.applicationInstance && root.applicationInstance.promptSurfaceList.count > 0
             Label { text: "➖"; anchors.centerIn: parent; enabled: parent.enabled }
         }
     }
 
     // Rows of application surfaces
     Repeater {
-        model: d.application ? d.application.surfaceList : null
+        model: root.applicationInstance ? root.applicationInstance.surfaceList : null
         RowLayout {
             anchors.left: root.left
             anchors.leftMargin: units.gu(2)

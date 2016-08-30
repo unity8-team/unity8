@@ -24,7 +24,7 @@ FocusScope {
     width: !counterRotate ? applicationWindow.width : applicationWindow.height
     height: visibleDecorationHeight + (!counterRotate ? applicationWindow.height : applicationWindow.width)
 
-    property alias application: applicationWindow.application
+    property alias applicationInstance: applicationWindow.applicationInstance
     property alias surface: applicationWindow.surface
     property alias active: decoration.active
     readonly property alias title: applicationWindow.title
@@ -115,8 +115,8 @@ FocusScope {
         focus: true
 
         transform: Rotation {
-                readonly property int rotationAngle: applicationWindow.application &&
-                                                     applicationWindow.application.rotatesWindowContents
+                readonly property int rotationAngle: applicationWindow.applicationInstance &&
+                                                     applicationWindow.applicationInstance.application.rotatesWindowContents
                                                      ? ((360 - applicationWindow.surfaceOrientationAngle) % 360) : 0
                 origin.x: {
                     if (rotationAngle == 90) return applicationWindow.height / 2;

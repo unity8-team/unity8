@@ -27,6 +27,7 @@ namespace unity {
     namespace shell {
         namespace application {
             class ApplicationInfoInterface;
+            class ApplicationInstanceInterface;
             class MirSurfaceInterface;
         }
     }
@@ -50,13 +51,13 @@ class TopLevelSurfaceList : public QAbstractListModel
     Q_OBJECT
 
     /**
-     * @brief A list model of applications.
+     * @brief A list model of application instances.
      *
-     * It's expected to have a role called "application" which returns a ApplicationInfoInterface
+     * It's expected to have a role called "applicationInstance" which returns an ApplicationInstanceInterface
      */
-    Q_PROPERTY(QAbstractListModel* applicationsModel READ applicationsModel
-                                                     WRITE setApplicationsModel
-                                                     NOTIFY applicationsModelChanged)
+    Q_PROPERTY(QAbstractListModel* applicationInstancesModel READ applicationInstancesModel
+                                                             WRITE setApplicationInstancesModel
+                                                             NOTIFY applicationInstancesModelChanged)
 
     /**
      * @brief Number of top-level surfaces in this model
@@ -76,13 +77,14 @@ public:
      * @brief The Roles supported by the model
      *
      * SurfaceRole - A MirSurfaceInterface. It will be null if the application is still starting up
-     * ApplicationRole - An ApplicationInfoInterface
+     * ApplicationInstanceRole - An ApplicationInstanceInterface
      * IdRole - A unique identifier for this entry. Useful to unambiguosly track elements as they move around in the list
      */
     enum Roles {
         SurfaceRole = Qt::UserRole,
-        ApplicationRole = Qt::UserRole + 1,
-        IdRole = Qt::UserRole + 2,
+        ApplicationInstanceRole = Qt::UserRole + 1,
+        ApplicationRole = Qt::UserRole + 2,
+        IdRole = Qt::UserRole + 3,
     };
 
     explicit TopLevelSurfaceList(QObject *parent = nullptr);
@@ -93,6 +95,7 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     QHash<int, QByteArray> roleNames() const override {
         QHash<int, QByteArray> roleNames { {SurfaceRole, "surface"},
+                                           {ApplicationInstanceRole, "applicationInstance"},
                                            {ApplicationRole, "application"},
                                            {IdRole, "id"} };
         return roleNames;
@@ -100,8 +103,8 @@ public:
 
     int nextId() const { return m_nextId; }
 
-    QAbstractListModel *applicationsModel() const;
-    void setApplicationsModel(QAbstractListModel*);
+    QAbstractListModel *applicationInstancesModel() const;
+    void setApplicationInstancesModel(QAbstractListModel*);
 
 public Q_SLOTS:
     /**
@@ -148,17 +151,17 @@ Q_SIGNALS:
 
     void nextIdChanged();
 
-    void applicationsModelChanged();
+    void applicationInstancesModelChanged();
 
 private:
-    void addApplication(unity::shell::application::ApplicationInfoInterface *application);
-    void removeApplication(unity::shell::application::ApplicationInfoInterface *application);
+    void addAppInstance(unity::shell::application::ApplicationInstanceInterface *appInstance);
+    void removeAppInstance(unity::shell::application::ApplicationInstanceInterface *appInstance);
 
     int indexOf(unity::shell::application::MirSurfaceInterface *surface);
     void raise(unity::shell::application::MirSurfaceInterface *surface);
     void move(int from, int to);
     void appendSurfaceHelper(unity::shell::application::MirSurfaceInterface *surface,
-                              unity::shell::application::ApplicationInfoInterface *application);
+                             unity::shell::application::ApplicationInstanceInterface *appInstance);
     void connectSurface(unity::shell::application::MirSurfaceInterface *surface);
     int generateId();
     int nextFreeId(int candidateId);
@@ -166,18 +169,18 @@ private:
     void onSurfaceDestroyed(unity::shell::application::MirSurfaceInterface *surface);
     void onSurfaceDied(unity::shell::application::MirSurfaceInterface *surface);
     void removeAt(int index);
-    void findApplicationRole();
+    void findAppInstanceRole();
 
-    unity::shell::application::ApplicationInfoInterface *getApplicationFromModelAt(int index);
+    unity::shell::application::ApplicationInstanceInterface *getAppInstanceFromModelAt(int index);
 
     /*
-        Placeholder for a future surface from a starting or running application.
+        Placeholder for a future surface from a starting or running application instance.
         Enables shell to give immediate feedback to the user by showing, eg,
         a splash screen.
 
-        It's a model row containing a null surface and the given application.
+        It's a model row containing a null surface and the given application instance.
      */
-    void appendPlaceholder(unity::shell::application::ApplicationInfoInterface *application);
+    void appendPlaceholder(unity::shell::application::ApplicationInstanceInterface *applicationInstance);
 
     /*
         Adds a model row with the given surface and application
@@ -186,13 +189,15 @@ private:
         filled with the given surface instead.
      */
     void appendSurface(unity::shell::application::MirSurfaceInterface *surface,
-            unity::shell::application::ApplicationInfoInterface *application);
+            unity::shell::application::ApplicationInstanceInterface *appInstance);
 
     struct ModelEntry {
-        ModelEntry(unity::shell::application::MirSurfaceInterface *surface, unity::shell::application::ApplicationInfoInterface *application, int id)
-            : surface(surface), application(application), id(id) {}
+        ModelEntry(unity::shell::application::MirSurfaceInterface *surface,
+                   unity::shell::application::ApplicationInstanceInterface *appInstance,
+                   int id)
+            : surface(surface), appInstance(appInstance), id(id) {}
         unity::shell::application::MirSurfaceInterface *surface;
-        unity::shell::application::ApplicationInfoInterface *application;
+        unity::shell::application::ApplicationInstanceInterface *appInstance;
         int id;
         bool removeOnceSurfaceDestroyed{false};
     };
@@ -202,10 +207,10 @@ private:
     static const int m_maxId{1000000};
 
     // applications that are being monitored
-    QList<unity::shell::application::ApplicationInfoInterface *> m_applications;
+    QList<unity::shell::application::ApplicationInstanceInterface *> m_appInstances;
 
-    QAbstractListModel* m_applicationsModel{nullptr};
-    int m_applicationRole{-1};
+    QAbstractListModel* m_appInstancesModel{nullptr};
+    int m_appInstanceRole{-1};
 
     enum ModelState {
         IdleState,
@@ -218,6 +223,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(TopLevelSurfaceList*)
-Q_DECLARE_METATYPE(QAbstractListModel*)
+//Q_DECLARE_METATYPE(QAbstractListModel*)
 
 #endif // TOPLEVELSURFACELIST_H
