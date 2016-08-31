@@ -22,23 +22,28 @@ FocusScope {
     id: root
     focus: true
 
-    property alias background: coverPage.background
-    property alias backgroundTopMargin: coverPage.backgroundTopMargin
-    property alias hasCustomBackground: coverPage.hasCustomBackground
-    property alias dragHandleLeftMargin: coverPage.dragHandleLeftMargin
-    property alias infographicModel: coverPage.infographicModel
-    property alias launcherOffset: coverPage.launcherOffset
-    property alias currentIndex: loginList.currentIndex
-    property int delayMinutes // TODO
-    property alias alphanumeric: loginList.alphanumeric
-    property alias locked: loginList.locked
-    property alias sessionToStart: loginList.currentSession
-    property alias waiting: loginList.waiting
-    property var userModel // Set from outside
+    property alias background: lockscreen.background
+    property alias backgroundTopMargin: lockscreen.backgroundTopMargin
+    property alias hasCustomBackground: lockscreen.hasCustomBackground
+    property alias dragHandleLeftMargin: lockscreen.dragHandleLeftMargin
+    property alias infographicModel: infographics.model
+    property real launcherOffset // unused
+    property alias currentIndex: lockscreen.currentIndex
+    property alias delayMinutes: lockscreen.delayMinutes
+    property alias alphanumeric: lockscreen.alphanumeric
+    property alias locked: lockscreen.locked
+    property alias sessionToStart: lockscreen.currentSession
+    property alias waiting: lockscreen.waiting
+    property alias userModel: lockscreen.userModel
+    property bool oskEnabled
 
-    readonly property bool animating: coverPage.showAnimation.running || coverPage.hideAnimation.running
-    readonly property bool fullyShown: coverPage.showProgress === 1
-    readonly property bool required: coverPage.required
+    readonly property bool animating: false
+    readonly property bool fullyShown: lockscreen.shown
+    readonly property bool required: lockscreen.required
+    readonly property int supportedOrientations: Qt.PortraitOrientation |
+                                                 Qt.LandscapeOrientation |
+                                                 Qt.InvertedPortraitOrientation |
+                                                 Qt.InvertedLandscapeOrientation
 
     // so that it can be replaced in tests with a mock object
     property var inputMethod: Qt.inputMethod
@@ -49,165 +54,80 @@ FocusScope {
     signal emergencyCall() // unused
 
     function notifyAuthenticationFailed() {
-        loginList.showError();
+        lockscreen.notifyAuthenticationFailed();
     }
 
     function reset(forceShow) {
-        loginList.reset();
+        lockscreen.reset();
     }
 
     function showMessage(html) {
-        loginList.showMessage(html);
+        lockscreen.showMessage(html);
     }
 
     function showPrompt(text, isSecret, isDefaultPrompt) {
-        loginList.showPrompt(text, isSecret, isDefaultPrompt);
+        lockscreen.showPrompt(text, isSecret, isDefaultPrompt);
+    }
+
+    function showErrorMessage(msg) {
+        // Unused, only for optional coverPage message when prompt is covered,
+        // but we always show prompt, so we don't need this.
     }
 
     function tryToUnlock(toTheRight) {
-        if (root.locked) {
-            coverPage.show();
-            loginList.tryToUnlock();
-            return false;
-        } else {
-            var coverChanged = coverPage.shown;
-            if (toTheRight) {
-                coverPage.hideRight();
-            } else {
-                coverPage.hide();
-            }
-            return coverChanged;
-        }
+        lockscreen.tryToUnlock();
+        return false;
+    }
+
+    QtObject {
+        id: d
+        property bool landscape: root.width > root.height
     }
 
     function hide() {
-        coverPage.hide();
+        lockscreen.hide();
     }
 
     function notifyAuthenticationSucceeded(showFakePassword) {
-        if (showFakePassword) {
-            loginList.showFakePassword();
-        }
+        lockscreen.notifyAuthenticationSucceeded(showFakePassword);
     }
 
-    function showLastChance() {
-        // TODO
-    }
-
-    Rectangle {
+    LoginPage {
+        id: lockscreen
+        objectName: "lockscreen"
         anchors.fill: parent
-        color: "black"
-        opacity: coverPage.showProgress * 0.8
-    }
 
-    CoverPage {
-        id: coverPage
-        objectName: "coverPage"
-        height: parent.height
-        width: parent.width
-        draggable: !root.locked && !root.waiting
-        state: "LoginList"
+        promptHorizontalCenterOffset: d.landscape ? width / 4 : width / 2
+        promptVerticalCenterOffset: d.landscape && !root.oskEnabled ?
+                                    height / 2 :
+                                    Math.min(units.gu(22) + promptHeight / 2,
+                                             height / 2 - promptHeight / 2 - units.gu(1))
+        inputMethod: root.inputMethod
 
-        infographics {
-            height: 0.75 * parent.height
-            anchors.leftMargin: loginList.x + loginList.width
-        }
+        onEmergencyCall: root.emergencyCall()
+        onSelected: root.selected(index)
+        onResponded: root.responded(response)
+        onClicked: root.tease()
 
-        onTease: root.tease()
+        Infographics {
+            id: infographics
+            objectName: "infographics"
 
-        onShowProgressChanged: {
-            if (showProgress === 0 && !root.locked) {
-                root.responded("");
-            }
-        }
+            width: Math.min(units.gu(50),
+                            0.5 * Math.max(parent.width, parent.height),
+                            parent.width,
+                            parent.height)
+            height: width
 
-        LoginList {
-            id: loginList
-            objectName: "loginList"
+            useColor: !root.hasCustomBackground
 
-            width: units.gu(40)
             anchors {
-                left: parent.left
-                leftMargin: Math.min(parent.width * 0.16, units.gu(20))
-                top: parent.top
-                bottom: parent.bottom
-            }
+                horizontalCenter: parent.right
+                horizontalCenterOffset: -lockscreen.promptHorizontalCenterOffset
 
-            boxVerticalOffset: (height - highlightedHeight -
-                               (inputMethod && inputMethod.visible ?
-                                inputMethod.keyboardRectangle.height : 0)) / 2
-            Behavior on boxVerticalOffset { UbuntuNumberAnimation {} }
-
-            model: root.userModel
-            currentSession: LightDMService.greeter.defaultSession
-            onResponded: root.responded(response)
-            onSelected: root.selected(index)
-            onSessionChooserButtonClicked: parent.state = "SessionsList"
-
-            Keys.forwardTo: [sessionChooserLoader.item]
-        }
-
-        Loader {
-            id: sessionChooserLoader
-
-            height: loginList.height
-            width: loginList.width
-            anchors {
-                left: parent.left
-                leftMargin: Math.min(parent.width * 0.16, units.gu(20))
-                top: parent.top
-            }
-
-            active: false
-
-            onLoaded: sessionChooserLoader.item.forceActiveFocus();
-            Binding {
-                target: sessionChooserLoader.item
-                property: "initiallySelectedSession"
-                value: loginList.currentSession
-            }
-
-            Connections {
-                target: sessionChooserLoader.item
-                onSessionSelected: loginList.currentSession = sessionKey
-                onShowLoginList: {
-                    coverPage.state = "LoginList"
-                    loginList.passwordInput.forceActiveFocus();
-                }
-                ignoreUnknownSignals: true
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: d.landscape ? 0 : units.gu(20)
             }
         }
-
-        states: [
-            State {
-                name: "SessionsList"
-                PropertyChanges { target: loginList; opacity: 0 }
-                PropertyChanges { target: sessionChooserLoader;
-                                  active: true;
-                                  opacity: 1
-                                  source: "SessionsList.qml"
-                                }
-            },
-
-            State {
-                name: "LoginList"
-                PropertyChanges { target: loginList; opacity: 1 }
-                PropertyChanges { target: sessionChooserLoader;
-                                  active: false;
-                                  opacity: 0
-                                  source: "";
-                                }
-            }
-        ]
-
-        transitions: [
-            Transition {
-                from: "*"
-                to: "*"
-                UbuntuNumberAnimation {
-                    property: "opacity";
-                }
-            }
-        ]
     }
 }

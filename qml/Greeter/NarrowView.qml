@@ -17,28 +17,29 @@
 import QtQuick 2.4
 import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
-import Ubuntu.Telephony 0.1 as Telephony
-import "../Components"
 
 FocusScope {
     id: root
 
     property alias dragHandleLeftMargin: coverPage.dragHandleLeftMargin
     property alias launcherOffset: coverPage.launcherOffset
-    property alias currentIndex: loginList.currentIndex
-    property alias delayMinutes: delayedLockscreen.delayMinutes
-    property alias backgroundTopMargin: coverPage.backgroundTopMargin
-    property url background
-    property bool hasCustomBackground
-    property bool locked
-    property alias alphanumeric: loginList.alphanumeric
-    property alias userModel: loginList.model
+    property alias currentIndex: lockscreen.currentIndex
+    property alias delayMinutes: lockscreen.delayMinutes
+    property alias backgroundTopMargin: lockscreen.backgroundTopMargin
+    property alias background: lockscreen.background
+    property alias hasCustomBackground: lockscreen.hasCustomBackground
+    property alias locked: lockscreen.locked
+    property alias alphanumeric: lockscreen.alphanumeric
+    property alias userModel: lockscreen.userModel
     property alias infographicModel: coverPage.infographicModel
-    property string sessionToStart
-    property bool waiting
+    property alias sessionToStart: lockscreen.currentSession
+    property alias waiting: lockscreen.waiting
+    property bool oskEnabled
     readonly property bool fullyShown: coverPage.showProgress === 1 || lockscreen.shown
     readonly property bool required: coverPage.required || lockscreen.required
     readonly property bool animating: coverPage.showAnimation.running || coverPage.hideAnimation.running
+    readonly property int supportedOrientations: Qt.PortraitOrientation |
+                                                 Qt.InvertedPortraitOrientation
 
     // so that it can be replaced in tests with a mock object
     property var inputMethod: Qt.inputMethod
@@ -49,25 +50,11 @@ FocusScope {
     signal emergencyCall()
 
     function showMessage(html) {
-        loginList.showMessage(html);
+        lockscreen.showMessage(html);
     }
 
     function showPrompt(text, isSecret, isDefaultPrompt) {
-        loginList.showPrompt(text, isSecret, isDefaultPrompt);
-    }
-
-    function showLastChance() {
-        /* TODO: when we finish support for resetting device after too many
-                 failed logins, we should re-add this popup.
-        var title = lockscreen.alphaNumeric ?
-                    i18n.tr("Sorry, incorrect passphrase.") :
-                    i18n.tr("Sorry, incorrect passcode.");
-        var text = i18n.tr("This will be your last attempt.") + " " +
-                   (lockscreen.alphaNumeric ?
-                    i18n.tr("If passphrase is entered incorrectly, your phone will conduct a factory reset and all personal data will be deleted.") :
-                    i18n.tr("If passcode is entered incorrectly, your phone will conduct a factory reset and all personal data will be deleted."));
-        lockscreen.showInfoPopup(title, text);
-        */
+        lockscreen.showPrompt(text, isSecret, isDefaultPrompt);
     }
 
     function hide() {
@@ -76,21 +63,20 @@ FocusScope {
     }
 
     function notifyAuthenticationSucceeded(showFakePassword) {
-        if (showFakePassword) {
-            loginList.showFakePassword();
-        }
+        lockscreen.notifyAuthenticationSucceeded(showFakePassword);
     }
 
     function notifyAuthenticationFailed() {
-        loginList.showError();
+        lockscreen.notifyAuthenticationFailed();
     }
 
     function showErrorMessage(msg) {
+        // Only useful when coverPage is covering lockscreen, so only send there
         coverPage.showErrorMessage(msg);
     }
 
     function reset(forceShow) {
-        loginList.reset();
+        lockscreen.reset();
         if (forceShow) {
             coverPage.show();
         }
@@ -108,73 +94,31 @@ FocusScope {
     }
 
     onLockedChanged: {
-        if (locked) {
+        if (locked || userModel.count > 1) {
             lockscreen.maybeShow();
         } else {
             lockscreen.hide();
         }
     }
 
-    Showable {
+    LoginPage {
         id: lockscreen
         objectName: "lockscreen"
         anchors.fill: parent
         shown: false
 
-        showAnimation: StandardAnimation { property: "opacity"; to: 1 }
-        hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
+        hasCancel: true
+        covered: coverPage.shown
+        promptHorizontalCenterOffset: width / 2
+        promptVerticalCenterOffset: Math.min(units.gu(14) + promptHeight / 2,
+                                             height / 2 - promptHeight / 2 - units.gu(1) - bottomBar.height)
+        inputMethod: root.inputMethod
+        dragHandleLeftMargin: root.dragHandleLeftMargin
 
-        Wallpaper {
-            id: lockscreenBackground
-            objectName: "lockscreenBackground"
-            anchors {
-                fill: parent
-                topMargin: root.backgroundTopMargin
-            }
-            source: root.background
-        }
-
-        // Darken background to match CoverPage
-        Rectangle {
-            objectName: "lockscreenShade"
-            anchors.fill: parent
-            color: "black"
-            opacity: root.hasCustomBackground ? 0.4 : 0
-        }
-
-        LoginList {
-            id: loginList
-            objectName: "loginList"
-
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: parent.top
-                bottom: parent.bottom
-            }
-            width: units.gu(40)
-            boxVerticalOffset: units.gu(14)
-            enabled: !coverPage.shown && visible
-            visible: !delayedLockscreen.visible
-
-            locked: root.locked
-
-            onSelected: if (enabled) root.selected(index)
-            onResponded: root.responded(response)
-        }
-
-        DelayedLockscreen {
-            id: delayedLockscreen
-            objectName: "delayedLockscreen"
-            anchors.fill: parent
-            visible: delayMinutes > 0
-            alphaNumeric: loginList.alphanumeric
-        }
-
-        function maybeShow() {
-            if (root.locked && !shown) {
-                showNow();
-            }
-        }
+        onCancel: coverPage.show()
+        onEmergencyCall: root.emergencyCall()
+        onSelected: root.selected(index)
+        onResponded: root.responded(response)
     }
 
     Rectangle {
@@ -188,25 +132,20 @@ FocusScope {
         objectName: "coverPage"
         height: parent.height
         width: parent.width
+
         background: root.background
+        backgroundTopMargin: root.backgroundTopMargin
         hasCustomBackground: root.hasCustomBackground
         draggable: !root.waiting
+
         onTease: root.tease()
         onClicked: hide()
 
         onShowProgressChanged: {
             if (showProgress === 1) {
-                loginList.reset();
+                lockscreen.reset();
             } else if (showProgress === 0) {
-                loginList.tryToUnlock();
-            }
-        }
-
-        Clock {
-            anchors {
-                top: parent.top
-                topMargin: units.gu(2)
-                horizontalCenter: parent.horizontalCenter
+                lockscreen.tryToUnlock();
             }
         }
     }

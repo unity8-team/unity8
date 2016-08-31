@@ -582,11 +582,20 @@ Rectangle {
             compare(shell.transformRotationAngle, root.primaryOrientationAngle + 180);
         }
 
+        function checkRotationAngle(angle, shellRotates) {
+            rotateTo(angle);
+            var expectedAngle = root.primaryOrientationAngle;
+            if (shellRotates) {
+                expectedAngle = (expectedAngle + angle) % 360;
+            }
+            tryCompare(shell, "transformRotationAngle", expectedAngle);
+        }
+
         function test_greeterRemainsInPrimaryOrientation_data() {
             return [
-                {tag: "mako", deviceName: "mako"},
-                {tag: "manta", deviceName: "manta"},
-                {tag: "flo", deviceName: "flo"}
+                {tag: "mako", deviceName: "mako", rotates: false},
+                {tag: "manta", deviceName: "manta", rotates: true},
+                {tag: "flo", deviceName: "flo", rotates: true}
             ];
         }
         function test_greeterRemainsInPrimaryOrientation(data) {
@@ -604,18 +613,14 @@ Rectangle {
             tryCompare(shell, "orientationChangesEnabled", true);
 
             compare(shell.transformRotationAngle, root.primaryOrientationAngle);
-            rotateTo(90);
-            tryCompare(shell, "transformRotationAngle", root.primaryOrientationAngle + 90);
+            checkRotationAngle(90, true);
 
             showGreeter();
 
-            tryCompare(shell, "transformRotationAngle", root.primaryOrientationAngle);
-            rotateTo(180);
-            compare(shell.transformRotationAngle, root.primaryOrientationAngle);
-            rotateTo(270);
-            compare(shell.transformRotationAngle, root.primaryOrientationAngle);
-            rotateTo(0);
-            compare(shell.transformRotationAngle, root.primaryOrientationAngle);
+            checkRotationAngle(90, data.rotates);
+            checkRotationAngle(180, data.rotates);
+            checkRotationAngle(270, data.rotates);
+            checkRotationAngle(0, data.rotates);
         }
 
         function test_appRotatesWindowContents_data() {
@@ -1575,9 +1580,13 @@ Rectangle {
             var greeter = findChild(shell, "greeter");
             tryCompare(greeter, "fullyShown", true);
 
-            var touchX = shell.width - (shell.edgeSize / 2);
-            var touchY = shell.height / 2;
-            touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+            if (greeter.tabletMode) {
+                tap(findChild(greeter, "promptButton"));
+            } else {
+                var touchX = shell.width - (shell.edgeSize / 2);
+                var touchY = shell.height / 2;
+                touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+            }
 
             // wait until the animation has finished
             tryCompare(greeter, "shown", false);
@@ -1624,15 +1633,12 @@ Rectangle {
 
         function waitForGreeterToStabilize() {
             var greeter = findChild(shell, "greeter");
-            verify(greeter);
+            tryCompare(greeter, "created", true);
+            waitForRendering(greeter);
 
             var loginList = findChild(greeter, "loginList");
-            // Only present in WideView
-            if (loginList) {
-                var userList = findChild(loginList, "userList");
-                verify(userList);
-                tryCompare(userList, "movingInternally", false);
-            }
+            var userList = findChild(loginList, "userList");
+            tryCompare(userList, "movingInternally", false);
         }
 
         // expectedAngle is in orientedShell's coordinate system

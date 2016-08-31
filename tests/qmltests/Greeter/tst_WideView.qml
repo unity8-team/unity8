@@ -25,7 +25,7 @@ import Unity.Test 0.1 as UT
 StyledItem {
     id: root
 
-    width: units.gu(120)
+    width: units.gu(140)
     height: units.gu(80)
     focus: true
 
@@ -60,6 +60,7 @@ StyledItem {
                     backgroundTopMargin: parseFloat(backgroundTopMarginField.text)
                     locked: lockedCheckBox.checked
                     inputMethod: fakeInputMethod
+                    sessionToStart: LightDMService.greeter.defaultSession
 
                     Component.onDestruction: {
                         loader.itemDestroyed = true
@@ -115,12 +116,6 @@ StyledItem {
             Column {
                 anchors { left: parent.left; right: parent.right; top: parent.top; margins: units.gu(1) }
                 spacing: units.gu(1)
-                Row {
-                    Button {
-                        text: "Show Last Chance"
-                        onClicked: loader.item.showLastChance()
-                    }
-                }
                 Row {
                     Button {
                         text: "Hide"
@@ -406,22 +401,12 @@ StyledItem {
             return i;
         }
 
-        function swipeAwayCover() {
-            tryCompare(view, "fullyShown", true);
-            var touchY = view.height / 2;
-            touchFlick(view, view.width, touchY, 0, touchY);
-            var coverPage = findChild(view, "coverPage");
-            tryCompare(coverPage, "showProgress", 0);
-            waitForRendering(view);
-        }
-
         function test_tease_data() {
             return [
-                {tag: "locked", x: 0, offset: 0, count: 0, locked: true},
-                {tag: "left", x: 0, offset: 0, count: 1, locked: false},
-                {tag: "leftWithOffsetPass", x: 10, offset: 10, count: 1, locked: false},
-                {tag: "leftWithOffsetFail", x: 9, offset: 10, count: 0, locked: false},
-                {tag: "right", x: view.width, offset: 0, count: 1, locked: false},
+                {tag: "left", x: 0, offset: 0, count: 1},
+                {tag: "leftWithOffsetPass", x: 10, offset: 10, count: 1},
+                {tag: "leftWithOffsetFail", x: 9, offset: 10, count: 0},
+                {tag: "right", x: view.width, offset: 0, count: 1},
             ]
         }
 
@@ -441,8 +426,8 @@ StyledItem {
             compare(icon.indexOf(session) > -1, true);
 
             // Test the session list icons are valid
-            var coverPage = findChild(view, "coverPage");
-            coverPage.state = "SessionsList"
+            var lockscreen = findChild(view, "lockscreen");
+            lockscreen.state = "SessionsList";
             var sessionsList = findChild(view, "sessionsList");
             tryCompare(sessionsList, "visible", true);
         }
@@ -511,7 +496,6 @@ StyledItem {
         }
 
         function test_tease(data) {
-            view.locked = data.locked;
             view.dragHandleLeftMargin = data.offset;
             tap(view, data.x, 0);
             compare(teaseSpy.count, data.count);
@@ -526,14 +510,14 @@ StyledItem {
         }
 
         function test_customBackground() {
-            var coverPage = findChild(view, "coverPage");
-            var backgroundShade = findChild(coverPage, "backgroundShade");
+            var lockscreen = findChild(view, "lockscreen");
+            var lockscreenShade = findChild(lockscreen, "lockscreenShade");
 
             verify(!view.hasCustomBackground);
-            verify(!backgroundShade.visible);
+            compare(lockscreenShade.opacity, 0);
 
             view.hasCustomBackground = true;
-            verify(backgroundShade.visible);
+            compare(lockscreenShade.opacity, 0.4);
         }
 
         function test_respondedWithPassword() {
@@ -562,21 +546,9 @@ StyledItem {
             compare(respondedSpy.signalArguments[0][0], "foo");
         }
 
-        function test_respondedWithSwipe() {
-            swipeAwayCover();
-            compare(respondedSpy.count, 1);
-            compare(respondedSpy.signalArguments[0][0], "");
-        }
-
-        function test_fullyShown() {
-            tryCompare(view, "fullyShown", true);
-            swipeAwayCover();
-            tryCompare(view, "fullyShown", false);
-        }
-
         function test_required() {
             tryCompare(view, "required", true);
-            swipeAwayCover();
+            view.hide();
             tryCompare(view, "required", false);
         }
 
@@ -644,29 +616,24 @@ StyledItem {
             compare(respondedSpy.signalArguments[0][0], "");
         }
 
-        function test_loginListNotCoveredByKeyboard() {
-            var loginList = findChild(view, "loginList");
-            compare(loginList.height, view.height);
+        function test_loginListNotCoveredByKeyboard_data() {
+            return [
+                {tag: "keyboard", oskEnabled: false},
+                {tag: "osk", oskEnabled: true},
+            ]
+        }
+        function test_loginListNotCoveredByKeyboard(data) {
+            var lockscreen = findChild(view, "lockscreen");
+            view.oskEnabled = data.oskEnabled;
 
-            // when the vkb shows up, loginList is moved up to remain fully uncovered
-
-            keyboardVisibleCheckBox.checked = true;
-
-            var halfway = (view.height - loginList.highlightedHeight) / 2;
-            var halfwayWithOsk = halfway - view.inputMethod.keyboardRectangle.height / 2;
-            tryCompare(loginList, "boxVerticalOffset", halfwayWithOsk);
-
-            var highlightItem = findChild(loginList, "highlightItem");
-            tryCompareFunction( function() {
-                var highlightRect = highlightItem.mapToItem(view, 0, 0, highlightItem.width, highlightItem.height);
-                return highlightRect.y + highlightRect.height <= view.inputMethod.keyboardRectangle.y;
-            }, true);
-
-            // once the vkb goes away, loginList goes back to its full height
-
-            keyboardVisibleCheckBox.checked = false;
-
-            tryCompare(loginList, "boxVerticalOffset", halfway);
+            if (data.oskEnabled) {
+                // Actual algorithm is a bit complicated, just make sure we're less than halfway
+                tryCompareFunction( function() {
+                    return lockscreen.promptVerticalCenterOffset < view.height / 2;
+                }, true);
+            } else {
+                tryCompare(lockscreen, "promptVerticalCenterOffset", view.height / 2);
+            }
         }
 
         function test_passphrase() {

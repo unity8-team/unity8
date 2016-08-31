@@ -27,10 +27,8 @@ Showable {
     property alias background: greeterBackground.source
     property alias hasCustomBackground: backgroundShade.visible
     property real backgroundTopMargin
-    property var infographicModel
+    property alias infographicModel: infographics.model
     property bool draggable: true
-
-    property alias infographics: infographics
 
     readonly property real showProgress: MathUtils.clamp((width - Math.abs(x + launcherOffset)) / width, 0, 1)
 
@@ -102,12 +100,21 @@ Showable {
         visible: false
     }
 
+    Clock {
+        anchors {
+            top: parent.top
+            topMargin: units.gu(2)
+            horizontalCenter: parent.horizontalCenter
+        }
+    }
+
     Infographics {
         id: infographics
         objectName: "infographics"
         height: parent.height
-        model: root.infographicModel
         clip: true // clip large data bubbles
+
+        useColor: !root.hasCustomBackground
 
         anchors {
             verticalCenter: parent.verticalCenter
