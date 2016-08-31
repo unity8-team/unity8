@@ -62,7 +62,7 @@ Item {
             step = Math.abs(delta) * root.maximumStep;
         }
 
-        return step;
+        return Math.ceil(step);
     }
 
     QtObject {
@@ -101,11 +101,11 @@ Item {
         property bool scrollPositiveDirection: true
         readonly property real listEnd: {
             if (root.horizontal) {
-                return (1 - root.flickable.visibleArea.widthRatio) *
-                        root.flickable.contentWidth;
+                return Math.floor((1 - root.flickable.visibleArea.widthRatio) *
+                        root.flickable.contentWidth);
             } else {
-                return (1 - root.flickable.visibleArea.heightRatio) *
-                        root.flickable.contentHeight;
+                return Math.floor((1 - root.flickable.visibleArea.heightRatio) *
+                        root.flickable.contentHeight);
             }
         }
         interval: root.delay
@@ -118,14 +118,14 @@ Item {
                     d.relevantContentAxis -= root.stepSize();
                 } else {
                     d.relevantContentAxis = 0;
-                    stop();
+                    stopScrolling();
                 }
             } else if (scrollPositiveDirection && !d.atRelevantContentAxisEnd) {
                 if (listEnd - d.relevantContentAxis > root.stepSize()) {
                     d.relevantContentAxis += root.stepSize();
                 } else {
                     d.relevantContentAxis = listEnd;
-                    stop();
+                    stopScrolling();
                 }
             }
         }
