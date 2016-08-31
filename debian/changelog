@@ -1,3 +1,10 @@
+unity8 (8.14+16.10.20160831.1-0ubuntu1) yakkety; urgency=medium
+
+  * Implement edge maximizing (aka window snapping) (LP: #1602628,
+    #1608465)
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Wed, 31 Aug 2016 13:22:40 +0000
+
 unity8 (8.14+16.10.20160826-0ubuntu1) yakkety; urgency=medium
 
   * Make sure we emit sounds when taking a screenshot even after media-
