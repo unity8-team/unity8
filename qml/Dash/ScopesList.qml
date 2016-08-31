@@ -146,12 +146,17 @@ Item {
                             // Since tracking the drag item can change the flickable
                             // size, this "kill switch" prevents overscrolling locally.
                             // The Autoscroller should take care of everything else.
+                            property bool hasBeenReleased: true
                             property bool overscrolling: false
-                            Mouse.onReleased: overscrolling = false
+                            Mouse.onReleased: {
+                                hasBeenReleased = true;
+                                overscrolling = false;
+                            }
+                            Mouse.onPressed: hasBeenReleased = false;
                             Connections {
                                 target: flickable
                                 onAtYEndChanged: {
-                                    if (flickable.atYEnd && Mouse.pressed) {
+                                    if (flickable.atYEnd && !hasBeenReleased) {
                                         overscrolling = true;
                                     }
                                 }
