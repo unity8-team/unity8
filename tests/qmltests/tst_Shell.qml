@@ -478,6 +478,8 @@ Rectangle {
             shellLoader.state = formFactor;
             shellLoader.active = true;
             tryCompare(shellLoader, "status", Loader.Ready);
+            shell.usageScenario = formFactor;
+
             removeTimeConstraintsFromSwipeAreas(shellLoader.item);
             tryCompare(shell, "waitingOnGreeter", false); // reset by greeter when ready
 
@@ -517,13 +519,11 @@ Rectangle {
 
         function waitForGreeterToStabilize() {
             var greeter = findChild(shell, "greeter");
-            verify(greeter);
+            waitForRendering(greeter);
 
             var loginList = findChild(greeter, "loginList");
-            // Only present in WideView
             if (loginList) {
                 var userList = findChild(loginList, "userList");
-                verify(userList);
                 tryCompare(userList, "movingInternally", false);
             }
         }
@@ -811,9 +811,13 @@ Rectangle {
             waitForGreeterToStabilize();
             removeTimeConstraintsFromSwipeAreas(greeter);
 
-            var touchX = shell.width - (shell.edgeSize / 2);
-            var touchY = shell.height / 2;
-            touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+            if (greeter.tabletMode) {
+                tap(findChild(greeter, "promptButton"));
+            } else {
+                var touchX = shell.width - (shell.edgeSize / 2);
+                var touchY = shell.height / 2;
+                touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+            }
 
             // wait until the animation has finished
             tryCompare(greeter, "shown", false);
@@ -1528,7 +1532,7 @@ Rectangle {
             selectUser(data.user)
 
             var greeter = findChild(shell, "greeter")
-            var app = ApplicationManager.startApplication("dialer-app")
+            ApplicationManager.startApplication("dialer-app");
 
             confirmLoggedIn(data.loggedIn)
 
