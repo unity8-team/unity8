@@ -598,7 +598,7 @@ Item {
             var lockscreen = findChild(shell, "lockscreen");
             var launcher = findChild(shell, "launcherPanel");
             var galleryApp = ApplicationManager.startApplication("gallery-app");
-            tryCompare(shell, "mainApp", galleryApp);
+            tryCompare(ApplicationManager, "focusedApplicationId", "gallery-app");
 
             // Show greeter
             showGreeter();
@@ -608,13 +608,13 @@ Item {
             tryCompare(launcher, "x", -launcher.width);
             tryCompare(coverPage, "showProgress", 0);
             compare(lockscreen.shown, true);
-            tryCompare(shell, "mainApp", galleryApp);
+            tryCompare(ApplicationManager, "focusedApplicationId", "gallery-app");
 
             // Now attempt a swipe on lockscreen
             touchFlick(shell, 2, shell.height / 2, units.gu(30), shell.height / 2);
             tryCompare(launcher, "x", 0);
             compare(lockscreen.shown, true);
-            tryCompare(shell, "mainApp", galleryApp);
+            tryCompare(ApplicationManager, "focusedApplicationId", "gallery-app");
         }
     }
 }

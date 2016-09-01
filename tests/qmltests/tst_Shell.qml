@@ -565,6 +565,7 @@ Rectangle {
 
             GSettingsController.setLifecycleExemptAppids([]);
             GSettingsController.setPictureUri("");
+            GSettingsController.setAutohideLauncher(false);
 
             // there should be only unity8-dash window over there
             tryCompare(ApplicationManager, "count", 1);
@@ -2322,6 +2323,9 @@ Rectangle {
             var launcher = findChild(shell, "launcher");
             var shortcutHint = findChild(findChild(launcher, "launcherDelegate0"), "shortcutHint")
             var shortcutsOverlay = findChild(shell, "shortcutsOverlay");
+
+            GSettingsController.setAutohideLauncher(true);
+            waitForRendering(shell);
 
             compare(launcher.state, "");
             keyPress(Qt.Key_Super_L, Qt.MetaModifier);

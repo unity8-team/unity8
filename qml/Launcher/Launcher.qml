@@ -118,14 +118,14 @@ FocusScope {
     }
 
     function tease() {
-        if (available && !dragArea.dragging) {
+        if (!lockedVisible && available && !dragArea.dragging) {
             teaseTimer.mode = "teasing"
             teaseTimer.start();
         }
     }
 
     function hint() {
-        if (available && root.state == "") {
+        if (!lockedVisible && available && root.state == "") {
             teaseTimer.mode = "hinting"
             teaseTimer.start();
         }
