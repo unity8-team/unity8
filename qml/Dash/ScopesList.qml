@@ -148,11 +148,14 @@ Item {
                             // The Autoscroller should take care of everything else.
                             property bool hasBeenReleased: true
                             property bool overscrolling: false
+
                             Mouse.onReleased: {
                                 hasBeenReleased = true;
                                 overscrolling = false;
                             }
+
                             Mouse.onPressed: hasBeenReleased = false;
+
                             Connections {
                                 target: flickable
                                 onAtYEndChanged: {
@@ -162,14 +165,21 @@ Item {
                                 }
                             }
 
+                            property int lastYPos: -1
                             Connections {
                                 target: contentYChangedTarget
                                 onContentYChanged: {
-                                    if (overscrolling) {
+                                    // Cant scroll past the bottom if the dragItem is
+                                    // now scrolling towards the top
+                                    if (flickable.contentY < lastYPos) {
+                                        overscrolling = false;
+                                    } else if (overscrolling) {
                                         return;
                                     }
+
                                     dragItem.y += (flickable.contentY - flickableContentYDrag);
                                     flickableContentYDrag = flickable.contentY
+                                    lastYPos = flickable.contentY
                                 }
                             }
                         }
