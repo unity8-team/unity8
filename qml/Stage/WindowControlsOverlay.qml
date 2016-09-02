@@ -96,8 +96,8 @@ Item {
         function handlePositionChanged(mouseX, mouseY) {
             if (priv.dragging) {
                 var pos = mapToItem(root.target.parent, mouseX, mouseY);
-                root.target.windowedX = Math.round(pos.x - priv.distanceX);
-                root.target.windowedY = Math.round(Math.max(pos.y - priv.distanceY, panelState.panelHeight));
+                root.target.setWindowedX(Math.round(pos.x - priv.distanceX));
+                root.target.setWindowedY(Math.round(Math.max(pos.y - priv.distanceY, panelState.panelHeight)));
             }
         }
     }

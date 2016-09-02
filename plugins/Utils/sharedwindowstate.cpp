@@ -8,16 +8,17 @@ WindowData::WindowData(QObject *parent)
     , m_valid(false)
     , m_state(Normal)
     , m_stage(ApplicationInfoInterface::MainStage)
-    , m_geometry(0, 0, 0, 0)
+    , m_spread(false)
     , m_stateSource(0)
     , m_opacity(1.0)
     , m_scale(1.0)
+    , m_geometry(new WindowStateGeometry(this))
+    , m_windowedGeometry(new WindowStateGeometry(this))
 {
 }
 
 WindowState::WindowState(QObject *parent)
     : QObject(parent)
-    , m_geometry(new WindowStateGeometry(this))
     , m_created(false)
     , m_completed(false)
 {
@@ -42,7 +43,6 @@ void WindowState::setWindowId(const QString &windowId)
 
     if (!m_windowId.isEmpty()) {
         if (!m_data.isNull()) {
-            disconnect(m_data.data(), 0, m_geometry, 0);
             disconnect(m_data.data(), 0, this, 0);
             m_data.clear();
             Q_EMIT validChanged(false);
@@ -59,13 +59,9 @@ void WindowState::setWindowId(const QString &windowId)
         connect(m_data.data(), &WindowData::validChanged, this, &WindowState::validChanged);
         connect(m_data.data(), &WindowData::stateChanged, this, &WindowState::stateChanged);
         connect(m_data.data(), &WindowData::stageChanged, this, &WindowState::stageChanged);
+        connect(m_data.data(), &WindowData::spreadChanged, this, &WindowState::spreadChanged);
         connect(m_data.data(), &WindowData::scaleChanged, this, &WindowState::scaleChanged);
         connect(m_data.data(), &WindowData::opacityChanged, this, &WindowState::opacityChanged);
-
-        connect(m_data.data(), &WindowData::xChanged, m_geometry, &WindowStateGeometry::xChanged);
-        connect(m_data.data(), &WindowData::yChanged, m_geometry, &WindowStateGeometry::yChanged);
-        connect(m_data.data(), &WindowData::widthChanged, m_geometry, &WindowStateGeometry::widthChanged);
-        connect(m_data.data(), &WindowData::heightChanged, m_geometry, &WindowStateGeometry::heightChanged);
 
         initialize();
     }
@@ -73,7 +69,14 @@ void WindowState::setWindowId(const QString &windowId)
 
 WindowStateGeometry* WindowState::geometry() const
 {
-    return m_geometry;
+    if (!m_data) return nullptr;
+    return m_data->m_geometry;
+}
+
+WindowStateGeometry* WindowState::windowedGeometry() const
+{
+    if (!m_data) return nullptr;
+    return m_data->m_windowedGeometry;
 }
 
 WindowData::State WindowState::state() const
@@ -110,6 +113,23 @@ void WindowState::setStage(ApplicationInfoInterface::Stage stage)
     }
     m_data->m_stage = stage;
     Q_EMIT m_data->stageChanged(stage);
+}
+
+bool WindowState::spread() const
+{
+    if (!m_data)
+        return false;
+    return m_data->m_spread;
+}
+
+void WindowState::setSpread(bool spread)
+{
+    if (!m_data) return;
+    if (m_data->m_spread == spread) {
+        return;
+    }
+    m_data->m_spread = spread;
+    Q_EMIT m_data->spreadChanged(spread);
 }
 
 qreal WindowState::opacity() const
@@ -163,10 +183,7 @@ void WindowState::initialize()
     } else if (m_data) {
         Q_EMIT stateChanged(m_data->m_state);
         Q_EMIT stageChanged(m_data->m_stage);
-        Q_EMIT m_geometry->xChanged(m_data->m_geometry.x());
-        Q_EMIT m_geometry->yChanged(m_data->m_geometry.y());
-        Q_EMIT m_geometry->widthChanged(m_data->m_geometry.x());
-        Q_EMIT m_geometry->heightChanged(m_data->m_geometry.height());
+        Q_EMIT geometryChanged();
     }
 
     if (m_data) {
@@ -208,60 +225,55 @@ QSharedPointer<WindowData> SharedStateStorage::windowData(const QString &wid, bo
     return state;
 }
 
-WindowStateGeometry::WindowStateGeometry(WindowState *windowState)
-    : QObject(windowState)
-    , m_state(windowState)
+WindowStateGeometry::WindowStateGeometry(QObject *parent)
+    : QObject(parent)
 {
 }
 
 int WindowStateGeometry::x() const
 {
-    if (!m_state->m_data) return 0;
-    return m_state->m_data->m_geometry.x();
+    return m_rect.x();
 }
 
 void WindowStateGeometry::setX(int x)
 {
-    if (!m_state->m_data || m_state->m_data->m_geometry.x() == x) return;
-    m_state->m_data->m_geometry.moveLeft(x);
-    Q_EMIT m_state->m_data->xChanged(x);
+    if (m_rect.left() == x) return;
+    m_rect.moveLeft(x);
+    Q_EMIT xChanged(x);
 }
 
 int WindowStateGeometry::y() const
 {
-    if (!m_state->m_data) return 0;
-    return m_state->m_data->m_geometry.y();
+    return m_rect.y();
 }
 
 void WindowStateGeometry::setY(int y)
 {
-    if (!m_state->m_data || m_state->m_data->m_geometry.y() == y) return;
-    m_state->m_data->m_geometry.moveTop(y);
-    Q_EMIT m_state->m_data->yChanged(y);
+    if (m_rect.top() == y) return;
+    m_rect.moveTop(y);
+    Q_EMIT yChanged(y);
 }
 
 int WindowStateGeometry::width() const
 {
-    if (!m_state->m_data) return 0;
-    return m_state->m_data->m_geometry.width();
+    return m_rect.width();
 }
 
 void WindowStateGeometry::setWidth(int width)
 {
-    if (!m_state->m_data || m_state->m_data->m_geometry.width() == width) return;
-    m_state->m_data->m_geometry.setWidth(width);
-    Q_EMIT m_state->m_data->widthChanged(width);
+    if (m_rect.width() == width) return;
+    m_rect.setWidth(width);
+    Q_EMIT widthChanged(width);
 }
 
 int WindowStateGeometry::height() const
 {
-    if (!m_state->m_data) return 0;
-    return m_state->m_data->m_geometry.height();
+    return m_rect.height();
 }
 
 void WindowStateGeometry::setHeight(int height)
 {
-    if (!m_state->m_data || m_state->m_data->m_geometry.height() == height) return;
-    m_state->m_data->m_geometry.setHeight(height);
-    Q_EMIT m_state->m_data->heightChanged(height);
+    if (m_rect.height() == height) return;
+    m_rect.setHeight(height);
+    Q_EMIT heightChanged(height);
 }

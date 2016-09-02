@@ -118,7 +118,7 @@ Item {
             }
         } else {
             if (Math.min(root.width, root.height) > units.gu(60)) {
-                if (pointerInputDevices > 0 && pointerInputDevices > 0) {
+                if (pointerInputDevices > 0 && pointerInputDevices > miceModel.oldCount + touchPadModel.oldCount) {
                     unity8Settings.usageMode = "Windowed";
                 }
             } else {

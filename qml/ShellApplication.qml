@@ -30,18 +30,8 @@ Instantiator {
         visibility:  applicationArguments.hasFullscreen ? Window.FullScreen : Window.Windowed
         flags: applicationArguments.hasFrameless ? Qt.FramelessWindowHint : 0
 
-        Binding {
-            when: applicationArguments.hasGeometry
-            target: screen
-            property: "width"
-            value: applicationArguments.windowGeometry.width
-        }
-        Binding {
-            when: applicationArguments.hasGeometry
-            target: screen
-            property: "height"
-            value: applicationArguments.windowGeometry.height
-        }
+        width: applicationArguments.hasGeometry ? applicationArguments.windowGeometry.width : screen.implicitWidth
+        height: applicationArguments.hasGeometry ? applicationArguments.windowGeometry.height : screen.implicitHeight
 
         primary: index == 0
     }

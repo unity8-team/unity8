@@ -49,28 +49,28 @@ MouseArea {
         id: priv
         objectName: "priv"
 
-        property int normalX: 0
-        property int normalY: 0
-        property int normalWidth: 0
-        property int normalHeight: 0
+//        property int normalX: 0
+//        property int normalY: 0
+//        property int normalWidth: 0
+//        property int normalHeight: 0
 
-        function updateNormalGeometry() {
-            if (root.target.state == "normal") {
-                normalX = root.target.windowedX
-                normalY = root.target.windowedY
-                normalWidth = root.target.width
-                normalHeight = root.target.height
-            }
-        }
+//        function updateNormalGeometry() {
+//            if (root.target.state == "normal") {
+//                normalX = root.target.windowedX
+//                normalY = root.target.windowedY
+//                normalWidth = root.target.width
+//                normalHeight = root.target.height
+//            }
+//        }
     }
 
-    Connections {
-        target: root.target
-        onXChanged: priv.updateNormalGeometry();
-        onYChanged: priv.updateNormalGeometry();
-        onWidthChanged: priv.updateNormalGeometry();
-        onHeightChanged: priv.updateNormalGeometry();
-    }
+//    Connections {
+//        target: root.target
+//        onXChanged: priv.updateNormalGeometry();
+//        onYChanged: priv.updateNormalGeometry();
+//        onWidthChanged: priv.updateNormalGeometry();
+//        onHeightChanged: priv.updateNormalGeometry();
+//    }
 
 //    function loadWindowState() {
 //        var windowGeometry = windowStateStorage.getGeometry(root.windowId,
@@ -127,28 +127,28 @@ MouseArea {
 
         readonly property int minimumWidth: root.target ? Math.max(root.minWidth, root.target.minimumWidth) : root.minWidth
         onMinimumWidthChanged: {
-            if (target.windowedWidth < minimumWidth) {
-//                target.windowedWidth = minimumWidth;
+            if (target.localWindowedGeometry.width < minimumWidth) {
+//                target.setWindowedWidth(minimumWidth);
             }
         }
         readonly property int minimumHeight: root.target ? Math.max(root.minHeight, root.target.minimumHeight) : root.minHeight
         onMinimumHeightChanged: {
-            if (target.windowedHeight < minimumHeight) {
+            if (target.localWindowedGeometry.height < minimumHeight) {
 //                target.windowedHeight = minimumHeight;
             }
         }
         readonly property int maximumWidth: root.target && root.target.maximumWidth >= minimumWidth && root.target.maximumWidth > 0
             ? root.target.maximumWidth : maxSafeInt
         onMaximumWidthChanged: {
-            if (target.windowedWidth > maximumWidth) {
-//                target.windowedWidth = maximumWidth;
+            if (target.localWindowedGeometry.width > maximumWidth) {
+//                target.setWindowedWidth(maximumWidth);
             }
         }
         readonly property int maximumHeight: root.target && root.target.maximumHeight >= minimumHeight && root.target.maximumHeight > 0
             ? root.target.maximumHeight : maxSafeInt
         onMaximumHeightChanged: {
-            if (target.windowedHeight > maximumHeight) {
-//                target.windowedHeight = maximumHeight;
+            if (target.localWindowedGeometry.height > maximumHeight) {
+//                target.setWindowedWidth(maximumHeight);
             }
         }
         readonly property int widthIncrement: {
@@ -263,8 +263,8 @@ MouseArea {
             var pos = mapToItem(root.target.parent, mouseX, mouseY);
             d.startMousePosX = pos.x;
             d.startMousePosY = pos.y;
-            d.startX = target.windowedX;
-            d.startY = target.windowedY;
+            d.startX = target.localWindowedGeometry.x;
+            d.startY = target.localWindowedGeometry.y;
             d.startWidth = target.width;
             d.startHeight = target.height;
             d.currentWidth = target.width;
@@ -301,53 +301,53 @@ MouseArea {
 
         if (d.leftBorder) {
             var newTargetX = d.startX + deltaX;
-            var rightBorderX = target.windowedX + target.width;
+            var rightBorderX = target.localWindowedGeometry.x + target.width;
             if (rightBorderX > newTargetX + d.minimumWidth) {
                 if (rightBorderX  < newTargetX + d.maximumWidth) {
-                    target.windowedWidth = rightBorderX - newTargetX;
+                    target.setWindowedWidth(rightBorderX - newTargetX);
                 } else {
-                    target.windowedWidth = d.maximumWidth;
+                    target.setWindowedWidth(d.maximumWidth);
                 }
             } else {
-                target.windowedWidth = d.minimumWidth;
+                target.setWindowedWidth(d.minimumWidth);
             }
 
         } else if (d.rightBorder) {
             var newWidth = d.startWidth + deltaX;
             if (newWidth > d.minimumWidth) {
                 if (newWidth < d.maximumWidth) {
-                    target.windowedWidth = newWidth;
+                    target.setWindowedWidth(newWidth);
                 } else {
-                    target.windowedWidth = d.maximumWidth;
+                    target.setWindowedWidth(d.maximumWidth);
                 }
             } else {
-                target.windowedWidth = d.minimumWidth;
+                target.setWindowedWidth(d.minimumWidth);
             }
         }
 
         if (d.topBorder) {
             var newTargetY = Math.max(d.startY + deltaY, panelState.panelHeight); // disallow resizing up past Panel
-            var bottomBorderY = target.windowedY + target.height;
+            var bottomBorderY = target.localWindowedGeometry.y + target.height;
             if (bottomBorderY > newTargetY + d.minimumHeight) {
                 if (bottomBorderY < newTargetY + d.maximumHeight) {
-                    target.windowedHeight = bottomBorderY - newTargetY;
+                    target.setWindowedHeight(bottomBorderY - newTargetY);
                 } else {
-                    target.windowedHeight = d.maximumHeight;
+                    target.setWindowedHeight(d.maximumHeight);
                 }
             } else {
-                target.windowedHeight = d.minimumHeight;
+                target.setWindowedHeight(d.minimumHeight);
             }
 
         } else if (d.bottomBorder) {
             var newHeight = d.startHeight + deltaY;
             if (newHeight > d.minimumHeight) {
                 if (newHeight < d.maximumHeight) {
-                    target.windowedHeight = newHeight;
+                    target.setWindowedHeight(newHeight);
                 } else {
-                    target.windowedHeight = d.maximumHeight;
+                    target.setWindowedHeight(d.maximumHeight);
                 }
             } else {
-                target.windowedHeight = d.minimumHeight;
+                target.setWindowedHeight(d.minimumHeight);
             }
         }
     }
@@ -356,13 +356,13 @@ MouseArea {
         target: root.target
         onWidthChanged: {
             if (d.moveLeftBorder) {
-                target.windowedX += d.currentWidth - target.width;
+                target.moveWindow(d.currentWidth - target.width, 0);
             }
             d.currentWidth = target.width;
         }
         onHeightChanged: {
             if (d.moveTopBorder) {
-                target.windowedY += d.currentHeight - target.height;
+                target.moveWindow(0, d.currentHeight - target.height);
             }
             d.currentHeight = target.height;
         }

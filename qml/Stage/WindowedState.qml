@@ -17,7 +17,7 @@
 import QtQuick 2.4
 import Utils 0.1
 
-Item { // needs to be an item for the Virtual Positions to work.
+Item { // needs to be an item for VirtualPosition to work.
     id: root
     property Item target: null
 
@@ -31,30 +31,28 @@ Item { // needs to be an item for the Virtual Positions to work.
     property alias state: sharedState.state
     property alias stateSource: sharedState.stateSource
     property alias stage: sharedState.stage
+    property alias spread: sharedState.spread
     property alias scale: sharedState.scale
+    property alias opacity2: sharedState.opacity
     readonly property alias geometry: sharedState.geometry
-    opacity: sharedState.opacity
+    readonly property alias windowedGeometry: sharedState.windowedGeometry
 
     property alias relativePosition: relativeMappedPosition
     property alias absolutePosition: absoluteMappedPosition
 
-    Binding {
-        target: sharedState
-        property: "opacity"
-        value: root.opacity
-    }
-
     SharedWindowState {
         id: sharedState
 
-        // only first shared instnace gets this.
+        // only first shared instance should load state
+        property bool shouldLoadState: false
         onInitialized: {
-            loadWindowState();
+            shouldLoadState = true;
         }
+    }
 
-        geometry {
-            x: absoluteMappedPosition.mappedX
-            y: absoluteMappedPosition.mappedY
+    Component.onCompleted: {
+        if (sharedState.shouldLoadState) {
+            loadWindowedState();
         }
     }
 
@@ -73,21 +71,22 @@ Item { // needs to be an item for the Virtual Positions to work.
         enableWindowChanges: false
     }
 
-    function loadWindowState() {
+    function loadWindowedState() {
         var mapped0 = absoluteMappedPosition.map(Qt.point(defaultX,defaultY));
+        defaultX = -1; defaultX = -1;
 
         var geo = WindowStateStorage.getGeometry(model.application.appId,
                                        Qt.rect(mapped0.x,
-                                               mapped0.x,
+                                               mapped0.y,
                                                defaultWidth,
                                                defaultHeight));
         console.log("loadWindowState", screenWindow.objectName, geo);
 
         var mapped = relativeMappedPosition.map(Qt.point(geo.x, geo.y));
-        target.windowedX = mapped.x;
-        target.windowedY = mapped.y;
-        target.windowedWidth = geo.width;
-        target.windowedHeight = geo.height;
+        windowedGeometry.x = geo.x;
+        windowedGeometry.y = geo.y;
+        windowedGeometry.width = geo.width;
+        windowedGeometry.height = geo.height;
 
         target.animationsEnabled = false;
         var windowState = WindowStateStorage.getState(windowId, WindowState.Normal);
@@ -116,12 +115,11 @@ Item { // needs to be an item for the Virtual Positions to work.
         }
     }
 
-    function saveWindowState() {
-        var absPosition = absoluteMappedPosition.map(Qt.point(target.windowedX,target.windowedY));
-        var geo = Qt.rect(absPosition.x,
-                          absPosition.y,
-                          target.windowedWidth,
-                          target.windowedHeight);
+    function saveWindowedState() {
+        var geo = Qt.rect(windowedGeometry.x,
+                          windowedGeometry.y,
+                          windowedGeometry.width,
+                          windowedGeometry.height);
         console.log("saveWindowState", screenWindow.objectName, geo, state);
 
         WindowStateStorage.saveGeometry(windowId, geo);

@@ -32,7 +32,11 @@ ScreenWindow {
         name: applicationArguments.deviceName
     }
 
+    property int implicitWidth: loader.implicitWidth
+    property int implicitHeight: loader.implicitHeight
+
     Loader {
+        id: loader
         width: screenWindow.width
         height: screenWindow.height
 

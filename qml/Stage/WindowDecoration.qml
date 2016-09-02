@@ -33,6 +33,8 @@ MouseArea {
     readonly property alias dragging: priv.dragging
     property PanelState panelState
 
+    signal positionChangeRequested(int x, int y);
+
     signal closeClicked()
     signal minimizeClicked()
     signal maximizeClicked()
@@ -71,8 +73,8 @@ MouseArea {
             // Use integer coordinate values to ensure that target is left in a pixel-aligned
             // position. Mouse movement could have subpixel precision, yielding a fractional
             // mouse position.
-            root.target.windowedX = Math.round(pos.x - priv.distanceX);
-            root.target.windowedY = Math.round(Math.max(pos.y - priv.distanceY, panelState.panelHeight));
+            root.target.setWindowedX(Math.round(pos.x - priv.distanceX));
+            root.target.setWindowedY(Math.round(Math.max(pos.y - priv.distanceY, panelState.panelHeight)));
         }
     }
 

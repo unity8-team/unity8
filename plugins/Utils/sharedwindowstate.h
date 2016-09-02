@@ -10,7 +10,7 @@
 
 using namespace unity::shell::application;
 
-class WindowData;
+class WindowStateGeometry;
 
 class WindowData : public QObject
 {
@@ -38,10 +38,7 @@ Q_SIGNALS:
     void validChanged(bool valid);
     void stateChanged(State state);
     void stageChanged(ApplicationInfoInterface::Stage stage);
-    void xChanged(int);
-    void yChanged(int);
-    void widthChanged(int);
-    void heightChanged(int);
+    void spreadChanged(bool);
     void opacityChanged(qreal);
     void scaleChanged(qreal);
 
@@ -49,13 +46,14 @@ public:
     bool m_valid;
     State m_state;
     ApplicationInfoInterface::Stage m_stage;
-    QRect m_geometry;
+    bool m_spread;
     qintptr m_stateSource;
     qreal m_opacity;
     qreal m_scale;
-};
 
-class WindowStateGeometry;
+    WindowStateGeometry* m_geometry;
+    WindowStateGeometry* m_windowedGeometry;
+};
 
 class WindowState : public QObject,
                     public QQmlParserStatus
@@ -68,10 +66,12 @@ class WindowState : public QObject,
     Q_PROPERTY(WindowData::State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(bool stateSource READ stateSource NOTIFY stateChanged)
     Q_PROPERTY(ApplicationInfoInterface::Stage stage READ stage WRITE setStage NOTIFY stageChanged)
+    Q_PROPERTY(bool spread READ spread WRITE setSpread NOTIFY spreadChanged)
 
     Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
     Q_PROPERTY(qreal scale READ scale WRITE setScale NOTIFY scaleChanged)
-    Q_PROPERTY(WindowStateGeometry* geometry READ geometry CONSTANT)
+    Q_PROPERTY(WindowStateGeometry* geometry READ geometry CONSTANT NOTIFY geometryChanged)
+    Q_PROPERTY(WindowStateGeometry* windowedGeometry READ windowedGeometry NOTIFY windowedGeometryChanged)
 public:
 
     explicit WindowState(QObject *parent = 0);
@@ -83,12 +83,16 @@ public:
     void setWindowId(const QString& windowId);
 
     WindowStateGeometry* geometry() const;
+    WindowStateGeometry* windowedGeometry() const;
 
     WindowData::State state() const;
     void setState(WindowData::State state);
 
     ApplicationInfoInterface::Stage stage() const;
     void setStage(ApplicationInfoInterface::Stage stage);
+
+    bool spread() const;
+    void setSpread(bool spread);
 
     qreal opacity() const;
     void setOpacity(qreal opacity);
@@ -108,14 +112,17 @@ Q_SIGNALS:
     void windowIdChanged(const QString& windowId);
     void stateChanged(WindowData::State state);
     void stageChanged(ApplicationInfoInterface::Stage stage);
+    void spreadChanged(bool spread);
     void opacityChanged(qreal opacity);
     void scaleChanged(qreal scale);
+
+    void geometryChanged();
+    void windowedGeometryChanged();
 
 private:
     void initialize();
 
     QString m_windowId;
-    WindowStateGeometry* m_geometry;
     QSharedPointer<WindowData> m_data;
     bool m_created;
     bool m_completed;
@@ -132,7 +139,7 @@ class WindowStateGeometry : public QObject
     Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
     Q_PROPERTY(int height READ height WRITE setHeight NOTIFY heightChanged)
 public:
-    WindowStateGeometry(WindowState* windowState = 0);
+    WindowStateGeometry(QObject* parent = 0);
 
     int x() const;
     void setX(int x);
@@ -153,7 +160,7 @@ Q_SIGNALS:
     void heightChanged(int height);
 
 private:
-    WindowState* m_state;
+    QRect m_rect;
 };
 
 class SharedStateStorage : public QObject
