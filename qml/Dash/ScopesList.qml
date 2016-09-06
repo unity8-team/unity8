@@ -169,7 +169,7 @@ Item {
                             Connections {
                                 target: contentYChangedTarget
                                 onContentYChanged: {
-                                    // Cant scroll past the bottom if the dragItem is
+                                    // Can't scroll past the bottom if the dragItem is
                                     // now scrolling towards the top
                                     if (flickable.contentY < lastYPos) {
                                         overscrolling = false;

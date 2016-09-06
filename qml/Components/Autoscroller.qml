@@ -30,7 +30,7 @@ Item {
     // and an animation can't smooth that anyway.
     property bool smoothScrolling: false
     property bool variableVelocity: true
-    property int delay: 2 // ms delay between scrolls
+    property int delay: 32 // ms delay between scrolls
     property real areaLength: units.gu(5)
     property real maximumStep: units.dp(2)
     property Flickable flickable
