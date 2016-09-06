@@ -231,7 +231,9 @@ Showable {
         }
 
         function startUnlock(toTheRight) {
-            if (loader.item) {
+            // Don't bother trying to unlock if we're animating.  Avoids
+            // competing with user or looking frenetic.
+            if (loader.item && !loader.item.animating) {
                 return loader.item.tryToUnlock(toTheRight);
             } else {
                 return false;
