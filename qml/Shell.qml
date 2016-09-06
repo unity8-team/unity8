@@ -460,6 +460,7 @@ StyledItem {
             hides: [launcher, panel.indicators]
             tabletMode: shell.usageScenario != "phone"
             launcherOffset: launcher.progress
+            launcherLockedWidth: launcher.lockedVisible ? launcher.panelWidth : 0
             forcedUnlock: wizard.active || shell.mode === "full-shell"
             background: wallpaperResolver.cachedBackground
             hasCustomBackground: wallpaperResolver.hasCustomBackground

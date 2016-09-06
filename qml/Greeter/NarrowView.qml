@@ -23,6 +23,7 @@ FocusScope {
 
     property alias dragHandleLeftMargin: coverPage.dragHandleLeftMargin
     property alias launcherOffset: coverPage.launcherOffset
+    property real launcherLockedWidth // unused
     property alias currentIndex: lockscreen.currentIndex
     property alias delayMinutes: lockscreen.delayMinutes
     property alias backgroundTopMargin: lockscreen.backgroundTopMargin

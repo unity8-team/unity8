@@ -28,6 +28,7 @@ FocusScope {
     property alias dragHandleLeftMargin: lockscreen.dragHandleLeftMargin
     property alias infographicModel: infographics.model
     property real launcherOffset // unused
+    property real launcherLockedWidth
     property alias currentIndex: lockscreen.currentIndex
     property alias delayMinutes: lockscreen.delayMinutes
     property alias alphanumeric: lockscreen.alphanumeric
@@ -97,10 +98,12 @@ FocusScope {
         objectName: "lockscreen"
         anchors.fill: parent
 
-        promptHorizontalCenterOffset: d.landscape ? width / 4 : width / 2
+        property real layoutWidth: width - root.launcherLockedWidth
+        promptHorizontalCenterOffset: root.launcherLockedWidth +
+                                      (d.landscape ? layoutWidth / 4 : layoutWidth / 2)
         promptVerticalCenterOffset: d.landscape && !root.oskEnabled ?
                                     height / 2 :
-                                    Math.min(units.gu(22) + promptHeight / 2,
+                                    Math.min(units.gu(21) + promptHeight / 2,
                                              height / 2 - promptHeight / 2 - units.gu(1))
         inputMethod: root.inputMethod
 
@@ -114,8 +117,8 @@ FocusScope {
             objectName: "infographics"
 
             width: Math.min(units.gu(50),
-                            0.5 * Math.max(parent.width, parent.height),
-                            parent.width,
+                            0.5 * Math.max(parent.layoutWidth, parent.height),
+                            parent.layoutWidth,
                             parent.height)
             height: width
 
@@ -123,10 +126,10 @@ FocusScope {
 
             anchors {
                 horizontalCenter: parent.right
-                horizontalCenterOffset: -lockscreen.promptHorizontalCenterOffset
+                horizontalCenterOffset: root.launcherLockedWidth - lockscreen.promptHorizontalCenterOffset
 
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: d.landscape ? 0 : units.gu(20)
+                verticalCenterOffset: d.landscape ? 0 : ((lockscreen.promptVerticalCenterOffset + lockscreen.promptHeight / 2) / 2)
             }
         }
     }

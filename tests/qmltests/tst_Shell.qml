@@ -42,7 +42,7 @@ Rectangle {
     id: root
     color: "grey"
     width: units.gu(100) + controls.width
-    height: units.gu(71)
+    height: units.gu(100)
 
     Component.onCompleted: {
         // must set the mock mode before loading the Shell
@@ -87,6 +87,14 @@ Rectangle {
                         shellOrientation: Qt.LandscapeOrientation
                         nativeOrientation: Qt.LandscapeOrientation
                         primaryOrientation: Qt.LandscapeOrientation
+                    }
+                },
+                State {
+                    name: "tablet-rotated"
+                    PropertyChanges {
+                        target: shellLoader
+                        width: units.gu(71)
+                        height: units.gu(100)
                     }
                 },
                 State {
@@ -212,7 +220,7 @@ Rectangle {
                     anchors { left: parent.left; right: parent.right }
                     activeFocusOnPress: false
                     text: "Size"
-                    model: ["phone", "tablet", "desktop"]
+                    model: ["phone", "tablet", "tablet-rotated", "desktop"]
                     onSelectedIndexChanged: {
                         shellLoader.active = false;
                         shellLoader.state = model[selectedIndex];

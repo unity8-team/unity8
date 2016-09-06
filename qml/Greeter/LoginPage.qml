@@ -37,6 +37,7 @@ Showable {
     property real dragHandleLeftMargin
     property alias currentSession: loginList.currentSession
     readonly property alias promptHeight: loginList.highlightedHeight
+    readonly property alias promptWidth: loginList.width
 
     // so that it can be replaced in tests with a mock object
     property var inputMethod: Qt.inputMethod

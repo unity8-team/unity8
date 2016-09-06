@@ -40,6 +40,7 @@ Showable {
 
     // How far to offset the top greeter layer during a launcher left-drag
     property real launcherOffset
+    property real launcherLockedWidth
 
     readonly property bool active: required || hasLockedApp
     readonly property bool fullyShown: loader.item ? loader.item.fullyShown : false
@@ -419,6 +420,12 @@ Showable {
             target: loader.item
             property: "launcherOffset"
             value: d.launcherOffsetProxy
+        }
+
+        Binding {
+            target: loader.item
+            property: "launcherLockedWidth"
+            value: root.launcherLockedWidth
         }
 
         Binding {
