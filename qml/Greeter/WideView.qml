@@ -116,8 +116,10 @@ FocusScope {
             id: infographics
             objectName: "infographics"
 
+            readonly property real promptBottom: lockscreen.promptVerticalCenterOffset + lockscreen.promptHeight / 2
+
             width: Math.min(units.gu(50),
-                            0.5 * Math.max(parent.layoutWidth, parent.height),
+                            d.landscape ? 0.5 * parent.layoutWidth : 0.64 * (lockscreen.height - promptBottom),
                             parent.layoutWidth,
                             parent.height)
             height: width
@@ -129,7 +131,7 @@ FocusScope {
                 horizontalCenterOffset: root.launcherLockedWidth - lockscreen.promptHorizontalCenterOffset
 
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: d.landscape ? 0 : ((lockscreen.promptVerticalCenterOffset + lockscreen.promptHeight / 2) / 2)
+                verticalCenterOffset: d.landscape ? 0 : promptBottom / 2
             }
         }
     }
