@@ -39,7 +39,7 @@ Item {
 
     property bool _fullyShown: true
     property bool _required: true
-    property bool _animating: true
+    property bool _animating: false
     property int _supportedOrientations: Qt.PrimaryOrientation
 
     signal selected(int index)
