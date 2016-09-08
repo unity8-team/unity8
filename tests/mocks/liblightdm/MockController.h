@@ -28,6 +28,8 @@ class Q_DECL_EXPORT MockController : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString selectUserHint READ selectUserHint WRITE setSelectUserHint NOTIFY selectUserHintChanged)
+    Q_PROPERTY(bool selectGuestHint READ selectGuestHint WRITE setSelectGuestHint NOTIFY selectGuestHintChanged)
+    Q_PROPERTY(bool hasGuestAccountHint READ hasGuestAccountHint WRITE setHasGuestAccountHint NOTIFY hasGuestAccountHintChanged)
 
     // single, single-pin, single-passphrase, full
     Q_PROPERTY(QString userMode READ userMode WRITE setUserMode NOTIFY userModeChanged)
@@ -42,8 +44,16 @@ public:
     static MockController *instance();
     virtual ~MockController();
 
+    Q_INVOKABLE void reset();
+
     QString selectUserHint() const;
     void setSelectUserHint(const QString &selectUserHint);
+
+    bool selectGuestHint() const;
+    void setSelectGuestHint(bool selectGuestHint);
+
+    bool hasGuestAccountHint() const;
+    void setHasGuestAccountHint(bool hasGuestAccountHint);
 
     QString userMode() const;
     void setUserMode(const QString &userMode);
@@ -65,6 +75,8 @@ public:
 
 Q_SIGNALS:
     void selectUserHintChanged();
+    void selectGuestHintChanged();
+    void hasGuestAccountHintChanged();
     void userModeChanged();
     void sessionModeChanged();
     void numSessionsChanged();
@@ -73,6 +85,8 @@ private:
     explicit MockController(QObject* parent=0);
 
     QString m_selectUserHint;
+    bool m_selectGuestHint;
+    bool m_hasGuestAccountHint;
     QString m_userMode;
     QString m_sessionMode;
     QList<SessionItem> m_fullSessions;

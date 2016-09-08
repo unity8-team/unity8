@@ -35,7 +35,7 @@ static QObject *greeter_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
-    Greeter *greeter = new Greeter();
+    Greeter *greeter = Greeter::instance();
     new DBusGreeter(greeter, QStringLiteral("/"));
     new DBusGreeterList(greeter, QStringLiteral("/list"));
 
