@@ -24,7 +24,7 @@ namespace QLightDM
 MockController::MockController(QObject *parent)
     : QObject(parent)
     , m_selectGuestHint(false)
-    , m_hasGuestAccountHint(true)
+    , m_hasGuestAccountHint(false)
     , m_fullSessions(
         {
             {"ubuntu", "Ubuntu"},
