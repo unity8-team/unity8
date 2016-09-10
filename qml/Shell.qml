@@ -60,6 +60,7 @@ StyledItem {
     property bool beingResized
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
     property string mode: "full-greeter"
+    property bool launcherAvailable: true
     property alias oskEnabled: inputMethod.enabled
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
@@ -585,6 +586,7 @@ StyledItem {
                     && (!greeter.locked || AccountsService.enableLauncherWhileLocked)
                     && !greeter.hasLockedApp
                     && !shell.waitingOnGreeter
+                    && shell.launcherAvailable
             inverted: shell.usageScenario !== "desktop"
             superPressed: physicalKeysMapper.superPressed
             superTabPressed: physicalKeysMapper.superTabPressed
