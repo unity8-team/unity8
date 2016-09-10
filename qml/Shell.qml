@@ -62,6 +62,7 @@ StyledItem {
     property string mode: "full-greeter"
     property bool launcherAvailable: true
     property bool panelAvailable: true
+    property bool spreadAvailable: true
     property alias oskEnabled: inputMethod.enabled
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
@@ -316,7 +317,7 @@ StyledItem {
             Binding {
                 target: applicationsDisplayLoader.item
                 property: "spreadEnabled"
-                value: tutorial.spreadEnabled && (!greeter || (!greeter.hasLockedApp && !greeter.shown))
+                value: tutorial.spreadEnabled && (!greeter || (!greeter.hasLockedApp && !greeter.shown)) && shell.spreadAvailable
             }
             Binding {
                 target: applicationsDisplayLoader.item
