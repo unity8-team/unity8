@@ -58,6 +58,10 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
         m_qmlArgs.setLauncherAvailable(false);
     }
 
+    if (getenv("UNITY_PANEL_DISABLED")) {
+        m_qmlArgs.setPanelAvailable(false);
+    }
+
     // The testability driver is only loaded by QApplication but not by QGuiApplication.
     // However, QApplication depends on QWidget which would add some unneeded overhead => Let's load the testability driver on our own.
     if (parser.hasTestability() || getenv("QT_LOAD_TESTABILITY")) {

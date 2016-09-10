@@ -29,6 +29,7 @@ class ApplicationArguments : public QObject
     Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString mode READ mode CONSTANT)
     Q_PROPERTY(bool launcherAvailable READ launcherAvailable CONSTANT)
+    Q_PROPERTY(bool panelAvailable READ panelAvailable CONSTANT)
 public:
     ApplicationArguments(QObject *parent = nullptr);
 
@@ -46,6 +47,9 @@ public:
     void setLauncherAvailable(bool available) { m_launcherAvailable = available; }
     bool launcherAvailable() { return m_launcherAvailable; }
 
+    void setPanelAvailable(bool available) { m_panelAvailable = available; }
+    bool panelAvailable() { return m_panelAvailable; }
+
 Q_SIGNALS:
     void deviceNameChanged(const QString&);
 
@@ -53,6 +57,7 @@ private:
     QString m_deviceName;
     QString m_mode;
     bool m_launcherAvailable = true;
+    bool m_panelAvailable = true;
 };
 
 #endif // APPLICATION_ARGUMENTS_H

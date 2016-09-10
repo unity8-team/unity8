@@ -61,6 +61,7 @@ StyledItem {
     property string usageScenario: "phone" // supported values: "phone", "tablet" or "desktop"
     property string mode: "full-greeter"
     property bool launcherAvailable: true
+    property bool panelAvailable: true
     property alias oskEnabled: inputMethod.enabled
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
@@ -305,7 +306,7 @@ StyledItem {
                 target: applicationsDisplayLoader.item
                 property: "maximizedAppTopMargin"
                 // Not just using panel.panelHeight as that changes depending on the focused app.
-                value: panel.indicators.minimizedPanelHeight
+                value: shell.panelAvailable ? panel.indicators.minimizedPanelHeight : 0
             }
             Binding {
                 target: applicationsDisplayLoader.item
@@ -400,7 +401,7 @@ StyledItem {
         objectName: "inputMethod"
         anchors {
             fill: parent
-            topMargin: panel.panelHeight
+            topMargin: shell.panelAvailable ? panel.panelHeight : 0
             leftMargin: launcher.lockedVisible ? launcher.panelWidth : 0
         }
         z: notifications.useModal || panel.indicators.shown || wizard.active || tutorial.running ? overlay.z + 1 : overlay.z - 1
@@ -409,7 +410,7 @@ StyledItem {
     Loader {
         id: greeterLoader
         anchors.fill: parent
-        anchors.topMargin: panel.panelHeight
+        anchors.topMargin: shell.panelAvailable ? panel.panelHeight : 0
         sourceComponent: shell.mode != "shell" ? integratedGreeter :
             Qt.createComponent(Qt.resolvedUrl("Greeter/ShimGreeter.qml"));
         onLoaded: {
@@ -525,16 +526,21 @@ StyledItem {
 
         anchors.fill: parent
 
+
         Panel {
             id: panel
             objectName: "panel"
             anchors.fill: parent //because this draws indicator menus
+
+            visible: shell.panelAvailable
+
             indicators {
                 hides: [launcher]
                 available: tutorial.panelEnabled
                         && ((!greeter || !greeter.locked) || AccountsService.enableIndicatorsWhileLocked)
                         && (!greeter || !greeter.hasLockedApp)
                         && !shell.waitingOnGreeter
+                        && shell.panelAvailable
                 width: parent.width > units.gu(60) ? units.gu(40) : parent.width
 
                 minimizedPanelHeight: units.gu(3)
@@ -578,7 +584,7 @@ StyledItem {
             readonly property bool dashSwipe: progress > offset
 
             anchors.top: parent.top
-            anchors.topMargin: inverted ? 0 : panel.panelHeight
+            anchors.topMargin: (inverted || !shell.panelAvailable) ? 0 : panel.panelHeight
             anchors.bottom: parent.bottom
             width: parent.width
             dragAreaWidth: shell.edgeSize
@@ -645,10 +651,10 @@ StyledItem {
         KeyboardShortcutsOverlay {
             objectName: "shortcutsOverlay"
             enabled: launcher.shortcutHintsShown && width < parent.width - (launcher.lockedVisible ? launcher.panelWidth : 0) - padding
-                     && height < parent.height - padding - panel.panelHeight
+                     && height < parent.height - padding - (shell.panelAvailable ? panel.panelHeight : 0)
             anchors.centerIn: parent
             anchors.horizontalCenterOffset: launcher.lockedVisible ? launcher.panelWidth/2 : 0
-            anchors.verticalCenterOffset: panel.panelHeight/2
+            anchors.verticalCenterOffset: (shell.panelAvailable ? panel.panelHeight : 0) / 2
             visible: opacity > 0
             opacity: enabled ? 0.95 : 0
 
@@ -705,8 +711,8 @@ StyledItem {
             hasMouse: shell.hasMouse
             background: wallpaperResolver.background
 
-            y: topmostIsFullscreen ? 0 : panel.panelHeight
-            height: parent.height - (topmostIsFullscreen ? 0 : panel.panelHeight)
+            y: (topmostIsFullscreen || !shell.panelAvailable) ? 0 : panel.panelHeight
+            height: parent.height - ((topmostIsFullscreen || !shell.panelAvailable) ? 0 : panel.panelHeight)
 
             states: [
                 State {
