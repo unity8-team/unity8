@@ -63,6 +63,7 @@ StyledItem {
     property bool launcherAvailable: true
     property bool panelAvailable: true
     property bool spreadAvailable: true
+    property string dashApp: "unity8-dash"
     property alias oskEnabled: inputMethod.enabled
     function updateFocusedAppOrientation() {
         applicationsDisplayLoader.item.updateFocusedAppOrientation();
@@ -118,7 +119,7 @@ StyledItem {
         }
     }
     function _onMainAppChanged(appId) {
-        if (wizard.active && appId != "" && appId != "unity8-dash") {
+        if (wizard.active && appId != "" && appId != shell.dashApp) {
             // If this happens on first boot, we may be in the
             // wizard while receiving a call.  But a call is more
             // important than the wizard so just bail out of it.
@@ -502,11 +503,11 @@ StyledItem {
     }
 
     function showHome() {
-        greeter.notifyUserRequestedApp("unity8-dash");
+        greeter.notifyUserRequestedApp(shell.dashApp);
 
         var animate = !LightDMService.greeter.active && !stages.shown
         dash.setCurrentScope(0, animate, false)
-        ApplicationManager.requestFocusApplication("unity8-dash")
+        ApplicationManager.requestFocusApplication(shell.dashApp)
     }
 
     function showDash() {
@@ -515,8 +516,8 @@ StyledItem {
         }
 
         if (!greeter.locked && tutorial.launcherLongSwipeEnabled
-            && ApplicationManager.focusedApplicationId != "unity8-dash") {
-            ApplicationManager.requestFocusApplication("unity8-dash")
+            && ApplicationManager.focusedApplicationId != shell.dashApp) {
+            ApplicationManager.requestFocusApplication(shell.dashApp)
             launcher.fadeOut();
         }
     }
@@ -581,7 +582,7 @@ StyledItem {
              * does  with apps, and the dash is show instantly. This allows for some
              * leeway and prevents accidental home swipes.
              */
-            readonly property real offset: shell.focusedApplicationId == "unity8-dash" ? units.gu(12) : 0
+            readonly property real offset: shell.focusedApplicationId == shell.dashApp ? units.gu(12) : 0
             readonly property bool dashSwipe: progress > offset
 
             anchors.top: parent.top

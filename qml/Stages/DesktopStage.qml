@@ -336,7 +336,7 @@ AbstractStage {
                 readonly property alias resizeArea: resizeArea
                 readonly property alias focusedSurface: decoratedWindow.focusedSurface
 
-                readonly property bool isDash: model.application.appId == "unity8-dash"
+                readonly property bool isDash: model.application.appId == applicationArguments.dashApp
 
                 function claimFocus() {
                     if (spread.state == "altTab") {

@@ -143,7 +143,7 @@ AbstractStage {
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
             // left edge drag released. Minimum distance is given by design.
             if (priv.oldInverseProgress > units.gu(22)) {
-                applicationManager.requestFocusApplication("unity8-dash");
+                applicationManager.requestFocusApplication(applicationArguments.dashApp);
             }
         }
         priv.oldInverseProgress = inverseProgress;
@@ -222,7 +222,7 @@ AbstractStage {
         model: root.applicationManager
         delegate: QtObject {
             property var stateBinding: Binding {
-                readonly property bool isDash: model.application ? model.application.appId == "unity8-dash" : false
+                readonly property bool isDash: model.application ? model.application.appId == applicationArguments.dashApp : false
                 target: model.application
                 property: "requestedState"
                 value: (isDash && root.keepDashRunning)
@@ -507,7 +507,7 @@ AbstractStage {
                     focusFirstApp: root.focusFirstApp
                     highlightShown: root.altTabPressed && index === priv.highlightIndex
 
-                    readonly property bool isDash: model.application.appId == "unity8-dash"
+                    readonly property bool isDash: model.application.appId == applicationArguments.dashApp
 
                     Component.onCompleted: {
                         // NB: We're differentiating if this delegate was created in response to a new entry in the model

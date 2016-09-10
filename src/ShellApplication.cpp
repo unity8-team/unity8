@@ -66,6 +66,10 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
         m_qmlArgs.setSpreadAvailable(false);
     }
 
+    if (getenv("UNITY_DASH_APP")) {
+        m_qmlArgs.setDashApp(getenv("UNITY_DASH_APP"));
+    }
+
     // The testability driver is only loaded by QApplication but not by QGuiApplication.
     // However, QApplication depends on QWidget which would add some unneeded overhead => Let's load the testability driver on our own.
     if (parser.hasTestability() || getenv("QT_LOAD_TESTABILITY")) {

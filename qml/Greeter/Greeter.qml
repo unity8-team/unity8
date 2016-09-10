@@ -100,7 +100,7 @@ Showable {
                 show();
                 d.startUnlock(false /* toTheRight */);
             }
-        } else if (appId !== "unity8-dash") { // dash isn't started by user
+        } else if (appId !== applicationArguments.dashApp) { // dash isn't started by user
             d.startUnlock(false /* toTheRight */);
         }
     }

@@ -31,6 +31,7 @@ class ApplicationArguments : public QObject
     Q_PROPERTY(bool launcherAvailable READ launcherAvailable CONSTANT)
     Q_PROPERTY(bool panelAvailable READ panelAvailable CONSTANT)
     Q_PROPERTY(bool spreadAvailable READ spreadAvailable CONSTANT)
+    Q_PROPERTY(QString dashApp READ dashApp CONSTANT)
 public:
     ApplicationArguments(QObject *parent = nullptr);
 
@@ -54,6 +55,9 @@ public:
     void setSpreadAvailable(bool available) { m_spreadAvailable = available; }
     bool spreadAvailable() { return m_spreadAvailable; }
 
+    void setDashApp(QString dashApp) { m_dashApp = dashApp; }
+    QString dashApp() { return m_dashApp; }
+
 Q_SIGNALS:
     void deviceNameChanged(const QString&);
 
@@ -63,6 +67,7 @@ private:
     bool m_launcherAvailable = true;
     bool m_panelAvailable = true;
     bool m_spreadAvailable = true;
+    QString m_dashApp = "unity8-dash";
 };
 
 #endif // APPLICATION_ARGUMENTS_H

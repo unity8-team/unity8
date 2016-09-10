@@ -39,6 +39,10 @@ LauncherModel::LauncherModel(QObject *parent):
     m_asAdapter(new ASAdapter()),
     m_appManager(nullptr)
 {
+    if (getenv("UNITY_DASH_APP")) {
+        m_dashApp = getenv("UNITY_DASH_APP");
+    }
+
     connect(m_dbusIface, &DBusInterface::countChanged, this, &LauncherModel::countChanged);
     connect(m_dbusIface, &DBusInterface::countVisibleChanged, this, &LauncherModel::countVisibleChanged);
     connect(m_dbusIface, &DBusInterface::progressChanged, this, &LauncherModel::progressChanged);
@@ -510,7 +514,7 @@ void LauncherModel::applicationAdded(const QModelIndex &parent, int row)
         return;
     }
 
-    if (app->appId() == QLatin1String("unity8-dash")) {
+    if (app->appId() == m_dashApp) {
         // Not adding the dash app
         return;
     }

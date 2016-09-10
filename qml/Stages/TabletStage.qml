@@ -136,7 +136,7 @@ AbstractStage {
         if (inverseProgress == 0 && priv.oldInverseProgress > 0) {
             // left edge drag released. Minimum distance is given by design.
             if (priv.oldInverseProgress > units.gu(22)) {
-                root.applicationManager.requestFocusApplication("unity8-dash");
+                root.applicationManager.requestFocusApplication(applicationArguments.dashApp);
             }
         }
         priv.oldInverseProgress = inverseProgress;
@@ -278,7 +278,7 @@ AbstractStage {
         model: root.applicationManager
         delegate: QtObject {
             property var stateBinding: Binding {
-                readonly property bool isDash: model.application ? model.application.appId == "unity8-dash" : false
+                readonly property bool isDash: model.application ? model.application.appId == applicationArguments.dashApp : false
                 target: model.application
                 property: "requestedState"
 
@@ -758,7 +758,7 @@ AbstractStage {
 
                     readonly property bool wantsMainStage: stage == ApplicationInfoInterface.MainStage
 
-                    readonly property bool isDash: application.appId == "unity8-dash"
+                    readonly property bool isDash: application.appId == applicationArguments.dashApp
 
                     onFocusChanged: {
                         if (focus && !spreadRepeater.startingUp) {

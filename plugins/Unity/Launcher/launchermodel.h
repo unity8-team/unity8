@@ -90,6 +90,8 @@ private:
     ApplicationManagerInterface *m_appManager;
 
     friend class LauncherModelTest;
+
+    QString m_dashApp = "unity8-dash";
 };
 
 #endif // LAUNCHERMODEL_H

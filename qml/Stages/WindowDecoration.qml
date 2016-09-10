@@ -1,4 +1,3 @@
-/*
  * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -107,7 +106,7 @@ MouseArea {
             onMaximizeClicked: root.maximizeClicked();
             onMaximizeHorizontallyClicked: root.maximizeHorizontallyClicked();
             onMaximizeVerticallyClicked: root.maximizeVerticallyClicked();
-            closeButtonShown: root.target.application.appId !== "unity8-dash"
+            closeButtonShown: root.target.application.appId !== applicationArguments.dashApp
             target: root.target
         }
 
