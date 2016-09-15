@@ -96,6 +96,7 @@ Rectangle {
 
         function test_zoomableImageOpenClose() {
             var overlayCloseButton = findChild(overlay, "overlayCloseButton");
+            waitForRendering(lazyImage);
             mouseClick(lazyImage);
             tryCompare(overlay, "visible", true);
             tryCompare(overlay, "scale", 1.0);
