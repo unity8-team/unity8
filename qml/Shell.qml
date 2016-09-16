@@ -87,8 +87,10 @@ StyledItem {
         if (startingUp) {
             // Ensure we don't rotate during start up
             return Qt.PrimaryOrientation;
-        } else if (showingGreeter || notifications.topmostIsFullscreen) {
+        } else if (notifications.topmostIsFullscreen) {
             return Qt.PrimaryOrientation;
+        } else if (showingGreeter) {
+            return greeter.supportedOrientations;
         } else if (applicationsDisplayLoader.item) {
             return shell.orientations.map(applicationsDisplayLoader.item.supportedOrientations);
         } else {
@@ -100,22 +102,18 @@ StyledItem {
         }
     }
 
-    readonly property var mainApp:
-            applicationsDisplayLoader.item ? applicationsDisplayLoader.item.mainApp : null
-    onMainAppChanged: {
-        if (mainApp) {
-            _onMainAppChanged(mainApp.appId);
-        }
-    }
     Connections {
         target: ApplicationManager
         onFocusRequested: {
-            if (shell.mainApp && shell.mainApp.appId === appId) {
-                _onMainAppChanged(appId);
+            if (ApplicationManager.focusedApplicationId === appId) {
+                _onFocusChanged(ApplicationManager.focusedApplicationId);
             }
         }
+        onFocusedApplicationIdChanged: {
+            _onFocusChanged(ApplicationManager.focusedApplicationId);
+        }
     }
-    function _onMainAppChanged(appId) {
+    function _onFocusChanged(appId) {
         if (wizard.active && appId != "" && appId != "unity8-dash") {
             // If this happens on first boot, we may be in the
             // wizard while receiving a call.  But a call is more
@@ -135,8 +133,10 @@ StyledItem {
         launcher.hide();
     }
 
-    // For autopilot consumption
+    // For autopilot and test consumption
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
+    readonly property var mainApp:
+            applicationsDisplayLoader.item ? applicationsDisplayLoader.item.mainApp : null
 
     // Note when greeter is waiting on PAM, so that we can disable edges until
     // we know which user data to show and whether the session is locked.
@@ -460,12 +460,14 @@ StyledItem {
             hides: [launcher, panel.indicators]
             tabletMode: shell.usageScenario != "phone"
             launcherOffset: launcher.progress
+            launcherLockedWidth: launcher.lockedVisible ? launcher.panelWidth : 0
             forcedUnlock: wizard.active || shell.mode === "full-shell"
             background: wallpaperResolver.cachedBackground
             hasCustomBackground: wallpaperResolver.hasCustomBackground
             allowFingerprint: !dialogs.hasActiveDialog &&
                               !notifications.topmostIsFullscreen &&
                               !panel.indicators.shown
+            oskEnabled: shell.oskEnabled
 
             // avoid overlapping with Launcher's edge drag area
             // FIXME: Fix TouchRegistry & friends and remove this workaround

@@ -35,4 +35,8 @@ Item {
         aspect: UbuntuShape.Flat
         backgroundColor: theme.palette.normal.raised
     }
+
+    MouseArea {
+        anchors.fill: parent // eat events
+    }
 }

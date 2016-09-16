@@ -374,6 +374,14 @@ Item {
             verify(view.hasCustomBackground);
         }
 
+        function test_supportedOrientationsPassthrough() {
+            view._supportedOrientations = Qt.InvertedLandscapeOrientation;
+            compare(greeter.supportedOrientations, Qt.InvertedLandscapeOrientation);
+
+            view._supportedOrientations = Qt.PrimaryOrientation | Qt.PortraitOrientation;
+            compare(greeter.supportedOrientations, Qt.PrimaryOrientation | Qt.PortraitOrientation);
+        }
+
         function test_notifyAboutToFocusApp() {
             greeter.notifyUserRequestedApp("fake-app");
             compare(viewTryToUnlockSpy.count, 1);

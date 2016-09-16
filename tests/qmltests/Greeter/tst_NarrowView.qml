@@ -74,12 +74,6 @@ Item {
 
                 Row {
                     Button {
-                        text: "Show Last Chance"
-                        onClicked: loader.item.showLastChance()
-                    }
-                }
-                Row {
-                    Button {
                         text: "Hide"
                         onClicked: loader.item.hide()
                     }

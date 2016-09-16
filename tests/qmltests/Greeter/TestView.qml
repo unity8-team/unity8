@@ -35,10 +35,12 @@ Item {
     readonly property bool fullyShown: _fullyShown
     readonly property bool required: _required
     readonly property bool animating: _animating
+    readonly property int supportedOrientations: _supportedOrientations
 
     property bool _fullyShown: true
     property bool _required: true
-    property bool _animating: true
+    property bool _animating: false
+    property int _supportedOrientations: Qt.PrimaryOrientation
 
     signal selected(int index)
     signal responded(string response)

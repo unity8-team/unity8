@@ -42,7 +42,7 @@ Rectangle {
     id: root
     color: "grey"
     width: units.gu(100) + controls.width
-    height: units.gu(71)
+    height: units.gu(100)
 
     Component.onCompleted: {
         // must set the mock mode before loading the Shell
@@ -87,6 +87,14 @@ Rectangle {
                         shellOrientation: Qt.LandscapeOrientation
                         nativeOrientation: Qt.LandscapeOrientation
                         primaryOrientation: Qt.LandscapeOrientation
+                    }
+                },
+                State {
+                    name: "tablet-rotated"
+                    PropertyChanges {
+                        target: shellLoader
+                        width: units.gu(71)
+                        height: units.gu(100)
                     }
                 },
                 State {
@@ -212,7 +220,7 @@ Rectangle {
                     anchors { left: parent.left; right: parent.right }
                     activeFocusOnPress: false
                     text: "Size"
-                    model: ["phone", "tablet", "desktop"]
+                    model: ["phone", "tablet", "tablet-rotated", "desktop"]
                     onSelectedIndexChanged: {
                         shellLoader.active = false;
                         shellLoader.state = model[selectedIndex];
@@ -478,6 +486,8 @@ Rectangle {
             shellLoader.state = formFactor;
             shellLoader.active = true;
             tryCompare(shellLoader, "status", Loader.Ready);
+            shell.usageScenario = formFactor;
+
             removeTimeConstraintsFromSwipeAreas(shellLoader.item);
             tryCompare(shell, "waitingOnGreeter", false); // reset by greeter when ready
 
@@ -517,13 +527,11 @@ Rectangle {
 
         function waitForGreeterToStabilize() {
             var greeter = findChild(shell, "greeter");
-            verify(greeter);
+            waitForRendering(greeter);
 
             var loginList = findChild(greeter, "loginList");
-            // Only present in WideView
             if (loginList) {
                 var userList = findChild(loginList, "userList");
-                verify(userList);
                 tryCompare(userList, "movingInternally", false);
             }
         }
@@ -565,6 +573,7 @@ Rectangle {
 
             GSettingsController.setLifecycleExemptAppids([]);
             GSettingsController.setPictureUri("");
+            GSettingsController.setAutohideLauncher(false);
 
             // there should be only unity8-dash window over there
             tryCompare(ApplicationManager, "count", 1);
@@ -811,9 +820,13 @@ Rectangle {
             waitForGreeterToStabilize();
             removeTimeConstraintsFromSwipeAreas(greeter);
 
-            var touchX = shell.width - (shell.edgeSize / 2);
-            var touchY = shell.height / 2;
-            touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+            if (greeter.tabletMode) {
+                tap(findChild(greeter, "promptButton"));
+            } else {
+                var touchX = shell.width - (shell.edgeSize / 2);
+                var touchY = shell.height / 2;
+                touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+            }
 
             // wait until the animation has finished
             tryCompare(greeter, "shown", false);
@@ -1528,7 +1541,7 @@ Rectangle {
             selectUser(data.user)
 
             var greeter = findChild(shell, "greeter")
-            var app = ApplicationManager.startApplication("dialer-app")
+            ApplicationManager.startApplication("dialer-app");
 
             confirmLoggedIn(data.loggedIn)
 
@@ -2318,6 +2331,9 @@ Rectangle {
             var launcher = findChild(shell, "launcher");
             var shortcutHint = findChild(findChild(launcher, "launcherDelegate0"), "shortcutHint")
             var shortcutsOverlay = findChild(shell, "shortcutsOverlay");
+
+            GSettingsController.setAutohideLauncher(true);
+            waitForRendering(shell);
 
             compare(launcher.state, "");
             keyPress(Qt.Key_Super_L, Qt.MetaModifier);

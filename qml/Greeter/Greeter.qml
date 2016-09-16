@@ -36,11 +36,16 @@ Showable {
     property url background
     property bool hasCustomBackground
 
+    property bool oskEnabled
+
     // How far to offset the top greeter layer during a launcher left-drag
     property real launcherOffset
+    property real launcherLockedWidth
 
     readonly property bool active: required || hasLockedApp
     readonly property bool fullyShown: loader.item ? loader.item.fullyShown : false
+    readonly property int supportedOrientations: loader.item ? loader.item.supportedOrientations
+                                                             : Qt.PrimaryOrientation
 
     property bool allowFingerprint: true
 
@@ -155,7 +160,6 @@ Showable {
     QtObject {
         id: d
 
-        readonly property bool multiUser: LightDMService.users.count > 1
         readonly property int selectUserIndex: d.getUserIndex(LightDMService.greeter.selectUser)
         property int currentIndex: Math.max(selectUserIndex, 0)
         property bool waiting
@@ -227,7 +231,9 @@ Showable {
         }
 
         function startUnlock(toTheRight) {
-            if (loader.item) {
+            // Don't bother trying to unlock if we're animating.  Avoids
+            // competing with user or looking frenetic.
+            if (loader.item && !loader.item.animating) {
                 return loader.item.tryToUnlock(toTheRight);
             } else {
                 return false;
@@ -376,7 +382,7 @@ Showable {
 
         active: root.required
         source: root.viewSource.toString() ? root.viewSource :
-                (d.multiUser || root.tabletMode) ? "WideView.qml" : "NarrowView.qml"
+                root.tabletMode ? "WideView.qml" : "NarrowView.qml"
 
         onLoaded: {
             root.lockedApp = "";
@@ -420,6 +426,12 @@ Showable {
 
         Binding {
             target: loader.item
+            property: "launcherLockedWidth"
+            value: root.launcherLockedWidth
+        }
+
+        Binding {
+            target: loader.item
             property: "dragHandleLeftMargin"
             value: root.dragHandleLeftMargin
         }
@@ -440,6 +452,12 @@ Showable {
             target: loader.item
             property: "hasCustomBackground"
             value: root.hasCustomBackground
+        }
+
+        Binding {
+            target: loader.item
+            property: "oskEnabled"
+            value: root.oskEnabled
         }
 
         Binding {
@@ -510,7 +528,7 @@ Showable {
                 // Check if we should initiate a factory reset
                 if (maxFailedLogins >= 2) { // require at least a warning
                     if (AccountsService.failedLogins === maxFailedLogins - 1) {
-                        loader.item.showLastChance();
+                        //loader.item.showLastChance();
                     } else if (AccountsService.failedLogins >= maxFailedLogins) {
                         SystemImage.factoryReset(); // Ouch!
                     }
