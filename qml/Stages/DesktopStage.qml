@@ -369,7 +369,7 @@ AbstractStage {
                         // If we're orphan (!parent) it means this stage is no longer the current one
                         // and will be deleted shortly. So we should no longer have a say over the model
                         if (root.parent) {
-                            topLevelSurfaceList.raiseId(model.id);
+                            //topLevelSurfaceList.raiseId(model.id);
                         }
 
                         priv.focusedAppDelegate = appDelegate;

@@ -235,10 +235,9 @@ StyledItem {
         width: parent.width
         height: parent.height
 
-        TopLevelSurfaceList {
+        WindowModel {
             id: topLevelSurfaceList
             objectName: "topLevelSurfaceList"
-            applicationsModel: ApplicationManager
         }
 
         Loader {
