@@ -101,6 +101,9 @@ FocusScope {
         onMaximizeVerticallyClicked: { root.decorationPressed(); root.maximizeVerticallyClicked(); }
         onMinimizeClicked: root.minimizeClicked();
         onPressed: root.decorationPressed();
+        onPositionRequested: {
+            applicationWindow.surface.requestPosition(position);
+        }
     }
 
     ApplicationWindow {

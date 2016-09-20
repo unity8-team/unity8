@@ -78,9 +78,14 @@ MouseArea {
         target.requestedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin); });
         target.requestedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight),
                                                                          root.screenHeight - (target.fullscreen ? 0 : PanelState.panelHeight)); });
-        target.requestedX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - target.requestedWidth),
+        var initX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - target.requestedWidth),
                                                            (target.fullscreen ? 0 : root.leftMargin)); });
-        target.requestedY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - target.requestedHeight), PanelState.panelHeight); });
+        var initY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - target.requestedHeight), PanelState.panelHeight); });
+        target.initX = initX;
+        target.initY = initY;
+        if (target.surface) {
+            target.surface.requestPosition(Qt.point(initX, initY));
+        }
 
         var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal)
         switch (windowState) {
@@ -351,13 +356,19 @@ MouseArea {
         target: root.target
         onWidthChanged: {
             if (d.moveLeftBorder) {
-                target.requestedX += d.currentWidth - target.width;
+                if (target.surface) {
+                    var delta =  d.currentWidth - target.width;
+                    target.surface.requestPosition(Qt.point(target.surface.position.x + delta,
+                                                            target.surface.position.y));
+                }
             }
             d.currentWidth = target.width;
         }
         onHeightChanged: {
             if (d.moveTopBorder) {
-                target.requestedY += d.currentHeight - target.height;
+                delta = d.currentHeight - target.height;
+                target.surface.requestPosition(Qt.point(target.surface.position.x,
+                                                        target.surface.position.y + delta));
             }
             d.currentHeight = target.height;
         }

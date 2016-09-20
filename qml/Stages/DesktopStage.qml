@@ -267,8 +267,11 @@ AbstractStage {
                 z: normalZ
                 x: requestedX // may be overridden in some states. Do not directly write to this.
                 y: requestedY // may be overridden in some states. Do not directly write to this.
-                property real requestedX: priv.focusedAppDelegate ? priv.focusedAppDelegate.x + units.gu(3) : (normalZ - 1) * units.gu(3)
-                property real requestedY: priv.focusedAppDelegate ? priv.focusedAppDelegate.y + units.gu(3) : normalZ * units.gu(3)
+
+                property real initX: priv.focusedAppDelegate ? priv.focusedAppDelegate.x + units.gu(3) : (normalZ - 1) * units.gu(3)
+                property real initY: priv.focusedAppDelegate ? priv.focusedAppDelegate.y + units.gu(3) : normalZ * units.gu(3)
+                readonly property real requestedX: model.surface ? model.surface.position.x : fooX
+                readonly property real requestedY: model.surface ? model.surface.position.y : fooY
 
                 Binding {
                     target: appDelegate
