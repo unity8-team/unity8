@@ -42,7 +42,6 @@ import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
 import Unity.Indicators 0.1 as Indicators
 import Cursor 1.1
-import WindowManager 0.1
 
 
 StyledItem {
