@@ -50,7 +50,6 @@ Item {
     }
 
     visible: surfaceItem.surface &&
-              surfaceItem.surfaceState != Mir.HiddenState &&
-              surfaceItem.surfaceState != Mir.MinimizedState &&
-              root.enabled
+             surfaceItem.surface.visible &&
+             root.enabled
 }
