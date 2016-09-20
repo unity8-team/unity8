@@ -258,7 +258,7 @@ AbstractStage {
                 objectName: "appDelegate_" + model.id
                 // z might be overriden in some cases by effects, but we need z ordering
                 // to calculate occlusion detection
-                property int normalZ: topLevelSurfaceList.count - index
+                property int normalZ: index
                 onNormalZChanged: {
                     if (visuallyMaximized) {
                         priv.updateForegroundMaximizedApp();
