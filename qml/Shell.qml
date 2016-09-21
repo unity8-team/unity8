@@ -234,7 +234,7 @@ StyledItem {
         width: parent.width
         height: parent.height
 
-        WindowModel {
+        TopLevelWindowModel {
             id: topLevelSurfaceList
             objectName: "topLevelSurfaceList"
         }
