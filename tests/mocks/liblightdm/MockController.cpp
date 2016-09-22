@@ -25,6 +25,8 @@ MockController::MockController(QObject *parent)
     : QObject(parent)
     , m_selectGuestHint(false)
     , m_hasGuestAccountHint(false)
+    , m_showManualLoginHint(false)
+    , m_hideUsersHint(false)
     , m_fullSessions(
         {
             {"ubuntu", "Ubuntu"},
@@ -106,6 +108,32 @@ void MockController::setHasGuestAccountHint(bool hasGuestAccountHint)
     if (m_hasGuestAccountHint != hasGuestAccountHint) {
         m_hasGuestAccountHint = hasGuestAccountHint;
         Q_EMIT hasGuestAccountHintChanged();
+    }
+}
+
+bool MockController::showManualLoginHint() const
+{
+    return m_showManualLoginHint;
+}
+
+void MockController::setShowManualLoginHint(bool showManualLoginHint)
+{
+    if (m_showManualLoginHint != showManualLoginHint) {
+        m_showManualLoginHint = showManualLoginHint;
+        Q_EMIT showManualLoginHintChanged();
+    }
+}
+
+bool MockController::hideUsersHint() const
+{
+    return m_hideUsersHint;
+}
+
+void MockController::setHideUsersHint(bool hideUsersHint)
+{
+    if (m_hideUsersHint != hideUsersHint) {
+        m_hideUsersHint = hideUsersHint;
+        Q_EMIT hideUsersHintChanged();
     }
 }
 

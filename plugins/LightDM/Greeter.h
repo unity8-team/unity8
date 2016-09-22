@@ -21,8 +21,7 @@
    such edits in the future, and by inserting ourselves here, we have more
    control. */
 
-#ifndef UNITY_GREETER_H
-#define UNITY_GREETER_H
+#pragma once
 
 #include <QLightDM/Greeter>
 #include <QtCore/QObject>
@@ -53,6 +52,8 @@ public:
     bool promptless() const;
     QString selectUser() const;
     bool hasGuestAccount() const;
+    bool showManualLoginHint() const;
+    bool hideUsersHint() const;
 
     QObject *mock();
 
@@ -89,5 +90,3 @@ private Q_SLOTS:
     void showPromptFilter(const QString &text, QLightDM::Greeter::PromptType type);
     void authenticationCompleteFilter();
 };
-
-#endif
