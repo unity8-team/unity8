@@ -1,3 +1,9 @@
+unity8 (8.14+16.10.20160927-0ubuntu1) yakkety; urgency=medium
+
+  * Update virtual touchpad visuals and add a tutorial. (LP: #1585220)
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 27 Sep 2016 14:21:26 +0000
+
 unity8 (8.14+16.10.20160914-0ubuntu1) yakkety; urgency=medium
 
   [ Albert Astals Cid ]
