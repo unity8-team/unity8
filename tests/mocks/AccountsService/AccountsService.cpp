@@ -15,7 +15,8 @@
  */
 
 #include "AccountsService.h"
-#include "MockUsersModel.h"
+#include "MockController.h"
+#include "UsersModel.h"
 
 #include <QLightDM/UsersModel>
 #include <paths.h>
@@ -26,6 +27,7 @@ AccountsService::AccountsService(QObject* parent)
     m_enableLauncherWhileLocked(true),
     m_enableIndicatorsWhileLocked(true),
     m_backgroundFile(),
+    m_greeterMode(true),
     m_statsWelcomeScreen(true),
     m_failedLogins(0),
     m_failedFingerprintLogins(0),
@@ -33,9 +35,8 @@ AccountsService::AccountsService(QObject* parent)
     m_demoEdgesCompleted(),
     m_hereEnabled(false),
     m_hereLicensePath(""),
-    m_usersModel(new MockUsersModel(this))
+    m_usersModel(new UsersModel(this))
 {
-    m_usersModel->setMockMode("full");
 }
 
 QString AccountsService::user() const
@@ -49,6 +50,19 @@ void AccountsService::setUser(const QString &user)
     Q_EMIT userChanged();
     Q_EMIT passwordDisplayHintChanged();
     Q_EMIT backgroundFileChanged();
+}
+
+bool AccountsService::greeterMode() const
+{
+    return m_greeterMode;
+}
+
+void AccountsService::setGreeterMode(bool greeterMode)
+{
+    if (m_greeterMode != greeterMode) {
+        m_greeterMode = greeterMode;
+        Q_EMIT greeterModeChanged();
+    }
 }
 
 bool AccountsService::demoEdges() const
@@ -122,8 +136,8 @@ QString AccountsService::backgroundFile() const
 
     // Check if our mock user has a background set in liblightdm
     for (int i = 0; i < m_usersModel->count(); i++) {
-        if (m_usersModel->data(i, QLightDM::UsersModel::NameRole) == m_user) {
-            return m_usersModel->data(i, QLightDM::UsersModel::BackgroundPathRole).toString();
+        if (m_usersModel->data(m_usersModel->index(i, 0), QLightDM::UsersModel::NameRole) == m_user) {
+            return m_usersModel->data(m_usersModel->index(i, 0), QLightDM::UsersModel::BackgroundPathRole).toString();
         }
     }
 

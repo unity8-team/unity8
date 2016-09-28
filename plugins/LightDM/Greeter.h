@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012,2013,2015 Canonical, Ltd.
+ * Copyright (C) 2012-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
    such edits in the future, and by inserting ourselves here, we have more
    control. */
 
-#ifndef UNITY_GREETER_H
-#define UNITY_GREETER_H
+#pragma once
 
 #include <QLightDM/Greeter>
 #include <QtCore/QObject>
@@ -40,8 +39,11 @@ class Greeter : public QObject
     Q_PROPERTY(bool promptless READ promptless NOTIFY promptlessChanged)
     Q_PROPERTY(QString selectUser READ selectUser CONSTANT)
 
+    Q_PROPERTY(QObject *mock READ mock CONSTANT) // for testing
+
 public:
-    explicit Greeter(QObject* parent=0);
+    static Greeter *instance();
+    virtual ~Greeter();
 
     bool isActive() const;
     bool isAuthenticated() const;
@@ -49,6 +51,11 @@ public:
     QString defaultSessionHint() const;
     bool promptless() const;
     QString selectUser() const;
+    bool hasGuestAccount() const;
+    bool showManualLoginHint() const;
+    bool hideUsersHint() const;
+
+    QObject *mock();
 
 public Q_SLOTS:
     void authenticate(const QString &username=QString());
@@ -60,7 +67,7 @@ Q_SIGNALS:
     void showMessage(const QString &text, bool isError);
     void showPrompt(const QString &text, bool isSecret, bool isDefaultPrompt);
     void authenticationComplete();
-    void authenticationUserChanged(const QString &user);
+    void authenticationUserChanged();
     void isActiveChanged();
     void isAuthenticatedChanged();
     void promptlessChanged();
@@ -72,6 +79,8 @@ Q_SIGNALS:
     void requestAuthenticationUser(const QString &user);
 
 protected:
+    explicit Greeter(QObject* parent=0);
+
     GreeterPrivate * const d_ptr;
 
     Q_DECLARE_PRIVATE(Greeter)
@@ -81,5 +90,3 @@ private Q_SLOTS:
     void showPromptFilter(const QString &text, QLightDM::Greeter::PromptType type);
     void authenticationCompleteFilter();
 };
-
-#endif

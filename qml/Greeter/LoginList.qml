@@ -17,8 +17,8 @@
 import QtQuick 2.4
 import QtGraphicalEffects 1.0
 import Ubuntu.Components 1.3
+import LightDM 0.1 as LightDM
 import "../Components"
-import "." 0.1
 
 StyledItem {
     id: root
@@ -203,7 +203,10 @@ StyledItem {
                     // Add an offset to bottomMargin for any items below the highlight
                     bottomMargin: -(units.gu(4) + (parent.belowHighlight ? parent.belowOffset : 0))
                 }
-                text: realName
+                text: userList.currentIndex === index
+                      && name === "*other"
+                      && LightDM.Greeter.authenticationUser !== ""
+                      ?  LightDM.Greeter.authenticationUser : realName
                 color: userList.currentIndex !== index ? theme.palette.normal.raised
                                                        : theme.palette.normal.raisedText
 
@@ -255,8 +258,8 @@ StyledItem {
 
         readonly property alias icon: badge.source
 
-        visible: LightDMService.sessions.count > 1 &&
-            !LightDMService.users.data(userList.currentIndex, LightDMService.userRoles.LoggedInRole)
+        visible: LightDM.Sessions.count > 1 &&
+            !LightDM.Users.data(userList.currentIndex, LightDM.UserRoles.LoggedInRole)
 
         height: units.gu(3.5)
         width: units.gu(3.5)
@@ -287,7 +290,7 @@ StyledItem {
             anchors.margins: units.dp(3)
             keyColor: "#ffffff" // icon providers give us white icons
             color: theme.palette.normal.raisedSecondaryText
-            source: LightDMService.sessions.iconUrl(root.currentSession)
+            source: LightDM.Sessions.iconUrl(root.currentSession)
         }
 
         Keys.onReturnPressed: {
@@ -302,9 +305,9 @@ StyledItem {
         // Refresh the icon path if looking at different places at runtime
         // this is mainly for testing
         Connections {
-            target: LightDMService.sessions
+            target: LightDM.Sessions
             onIconSearchDirectoriesChanged: {
-                badge.source = LightDMService.sessions.iconUrl(root.currentSession)
+                badge.source = LightDM.Sessions.iconUrl(root.currentSession)
             }
         }
     }

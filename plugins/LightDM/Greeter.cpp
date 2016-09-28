@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2015 Canonical, Ltd.
+ * Copyright (C) 2013-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 #include "Greeter.h"
 #include "GreeterPrivate.h"
 #include <libintl.h>
+
+static Greeter *singleton = nullptr;
 
 GreeterPrivate::GreeterPrivate(Greeter* parent)
   : m_greeter(new QLightDM::Greeter(parent)),
@@ -42,6 +44,19 @@ Greeter::Greeter(QObject* parent)
             this, &Greeter::authenticationCompleteFilter);
 
     d->m_greeter->connectSync();
+}
+
+Greeter::~Greeter()
+{
+    singleton = nullptr;
+}
+
+Greeter *Greeter::instance()
+{
+    if (!singleton) {
+        singleton = new Greeter;
+    }
+    return singleton;
 }
 
 bool Greeter::isActive() const
@@ -86,7 +101,29 @@ bool Greeter::promptless() const
 QString Greeter::selectUser() const
 {
     Q_D(const Greeter);
-    return d->m_greeter->selectUserHint();
+    if (hasGuestAccount() && d->m_greeter->selectGuestHint()) {
+        return QStringLiteral("*guest");
+    } else {
+        return d->m_greeter->selectUserHint();
+    }
+}
+
+bool Greeter::hasGuestAccount() const
+{
+    Q_D(const Greeter);
+    return d->m_greeter->hasGuestAccountHint();
+}
+
+bool Greeter::showManualLoginHint() const
+{
+    Q_D(const Greeter);
+    return d->m_greeter->showManualLoginHint();
+}
+
+bool Greeter::hideUsersHint() const
+{
+    Q_D(const Greeter);
+    return d->m_greeter->hideUsersHint();
 }
 
 void Greeter::authenticate(const QString &username)
@@ -98,9 +135,16 @@ void Greeter::authenticate(const QString &username)
         Q_EMIT promptlessChanged();
     }
 
-    d->m_greeter->authenticate(username);
+    if (username == QStringLiteral("*guest")) {
+        d->m_greeter->authenticateAsGuest();
+    } else if (username == QStringLiteral("*other")) {
+        d->m_greeter->authenticate(nullptr);
+    } else {
+        d->m_greeter->authenticate(username);
+    }
+
     Q_EMIT isAuthenticatedChanged();
-    Q_EMIT authenticationUserChanged(username);
+    Q_EMIT authenticationUserChanged();
 }
 
 void Greeter::respond(const QString &response)
@@ -146,4 +190,10 @@ void Greeter::authenticationCompleteFilter()
 
     Q_EMIT isAuthenticatedChanged();
     Q_EMIT authenticationComplete();
+}
+
+QObject *Greeter::mock()
+{
+    Q_D(Greeter);
+    return d->m_greeter->property("mock").value<QObject*>();
 }

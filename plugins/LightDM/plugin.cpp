@@ -35,7 +35,7 @@ static QObject *greeter_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
-    Greeter *greeter = new Greeter();
+    Greeter *greeter = Greeter::instance();
     new DBusGreeter(greeter, QStringLiteral("/"));
     new DBusGreeterList(greeter, QStringLiteral("/list"));
 
@@ -63,20 +63,13 @@ static QObject *infographic_provider(QQmlEngine *engine, QJSEngine *scriptEngine
     return UserMetricsOutput::UserMetrics::getInstance();
 }
 
-void PLUGIN_CLASSNAME::registerTypes(const char *uri)
+void LightDM::registerTypes(const char *uri)
 {
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<UserMetricsOutput::ColorTheme>();
 
-#if defined INTEGRATED_LIGHTDM
-    Q_ASSERT(uri == QLatin1String("LightDM.IntegratedLightDM"));
-    qmlRegisterSingletonType<Greeter>(uri, 0, 1, "Greeter", greeter_provider);
-#elif defined FULL_LIGHTDM
-    Q_ASSERT(uri == QLatin1String("LightDM.FullLightDM"));
+    Q_ASSERT(uri == QLatin1String("LightDM"));
     qmlRegisterSingletonType<QLightDM::Greeter>(uri, 0, 1, "Greeter", greeter_provider);
-#else
-    #error No library defined in LightDM plugin
-#endif
 
     qRegisterMetaType<QLightDM::Greeter::MessageType>("QLightDM::Greeter::MessageType");
     qRegisterMetaType<QLightDM::Greeter::PromptType>("QLightDM::Greeter::PromptType");

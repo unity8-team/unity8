@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013,2015-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,12 @@
  * Author: Michael Terry <michael.terry@canonical.com>
  */
 
+#include "Greeter.h"
 #include "UsersModel.h"
 #include <QLightDM/UsersModel>
 #include <QtCore/QSortFilterProxyModel>
+
+#include <libintl.h>
 
 // First, we define an internal class that wraps LightDM's UsersModel.  This
 // class will modify some of the data coming from LightDM.  For example, we
@@ -60,12 +63,109 @@ QVariant MangleModel::data(const QModelIndex &index, int role) const
 
 UsersModel::UsersModel(QObject* parent)
   : UnitySortFilterProxyModelQML(parent)
+  , m_showManual(false)
 {
-    setModel(new MangleModel(this));
+    if (!Greeter::instance()->hideUsersHint()) {
+        setModel(new MangleModel(this));
+    }
     setSortCaseSensitivity(Qt::CaseInsensitive);
     setSortLocaleAware(true);
     setSortRole(QLightDM::UsersModel::RealNameRole);
     sort(0);
+
+    connect(this, &UnitySortFilterProxyModelQML::countChanged,
+            this, &UsersModel::updateShowManual);
+    updateShowManual();
+}
+
+void UsersModel::updateShowManual()
+{
+    // Show manual login if we are asked to OR if no other entry exists
+    bool showManual = Greeter::instance()->showManualLoginHint() ||
+                      (QSortFilterProxyModel::rowCount() == 0 &&
+                       !Greeter::instance()->hasGuestAccount());
+
+    if (m_showManual != showManual) {
+        int row = QSortFilterProxyModel::rowCount();
+        if (showManual)
+            beginInsertRows(QModelIndex(), row, row);
+        else
+            beginRemoveRows(QModelIndex(), row, row);
+
+        m_showManual = showManual;
+
+        if (showManual)
+            endInsertRows();
+        else
+            endRemoveRows();
+    }
+}
+
+int UsersModel::manualRow() const
+{
+    if (!m_showManual)
+        return -1;
+
+    return QSortFilterProxyModel::rowCount();
+}
+
+int UsersModel::guestRow() const
+{
+    if (!Greeter::instance()->hasGuestAccount())
+        return -1;
+
+    int row = QSortFilterProxyModel::rowCount();
+    if (m_showManual)
+        row++;
+
+    return row;
+}
+
+int UsersModel::rowCount(const QModelIndex &parent) const
+{
+    auto count = UnitySortFilterProxyModelQML::rowCount(parent);
+
+    if (m_showManual && !parent.isValid())
+        count++;
+    if (Greeter::instance()->hasGuestAccount() && !parent.isValid())
+        count++;
+
+    return count;
+}
+
+QModelIndex UsersModel::index(int row, int column, const QModelIndex &parent) const
+{
+    if ((row == manualRow() || row == guestRow()) && !parent.isValid()) {
+        return createIndex(row, column);
+    } else {
+        return UnitySortFilterProxyModelQML::index(row, column, parent);
+    }
+}
+
+QVariant UsersModel::data(const QModelIndex &index, int role) const
+{
+    if (index.row() == manualRow() && index.column() == 0) {
+        switch (role) {
+        case QLightDM::UsersModel::NameRole:       return QStringLiteral("*other");
+        case QLightDM::UsersModel::RealNameRole:   return gettext("Login");
+        default:                                   return QVariant();
+        }
+    } else if (index.row() == guestRow() && index.column() == 0) {
+        switch (role) {
+        case QLightDM::UsersModel::NameRole:       return QStringLiteral("*guest");
+        case QLightDM::UsersModel::RealNameRole:   return gettext("Guest Session");
+        default:                                   return QVariant();
+        }
+    }
+
+    return QSortFilterProxyModel::data(index, role);
+}
+
+QObject *UsersModel::mock()
+{
+    // get through MangleModel down to QLightDM::UsersModel
+    MangleModel *mangleModel = static_cast<MangleModel*>(sourceModel());
+    return mangleModel->sourceModel()->property("mock").value<QObject*>();
 }
 
 #include "UsersModel.moc"
