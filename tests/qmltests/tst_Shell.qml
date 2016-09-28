@@ -529,7 +529,7 @@ Rectangle {
             var greeter = findChild(shell, "greeter");
             waitForRendering(greeter);
 
-            var loginList = findChild(greeter, "loginList");
+            var loginList = findChild(greeter, "loginList", 0 /* timeout */);
             if (loginList) {
                 var userList = findChild(loginList, "userList");
                 tryCompare(userList, "movingInternally", false);
@@ -949,7 +949,7 @@ Rectangle {
 
         function findAppWindowForSurfaceId(surfaceId) {
             // for PhoneStage and TabletStage
-            var delegate = findChild(shell, "spreadDelegate_" + surfaceId);
+            var delegate = findChild(shell, "spreadDelegate_" + surfaceId, 0 /* timeout */);
             if (!delegate) {
                 // for DesktopStage
                 delegate = findChild(shell, "appDelegate_" + surfaceId);
@@ -2680,10 +2680,7 @@ Rectangle {
             appDelegate.maximize();
             tryCompare(appDelegate, "state", "maximized");
 
-            mousePress(panel);
-            mouseMove(shell, shell.width/2, shell.height/2);
-            mouseRelease(shell);
-
+            mouseDrag(panel, panel.width/3, panel.height/2, 0, shell.height/3, Qt.LeftButton, Qt.NoModifier, 500);
             tryCompare(appDelegate, "state", "normal");
         }
 

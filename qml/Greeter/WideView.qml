@@ -124,8 +124,6 @@ FocusScope {
                             parent.height)
             height: width
 
-            useColor: !root.hasCustomBackground
-
             anchors {
                 horizontalCenter: parent.right
                 horizontalCenterOffset: root.launcherLockedWidth - lockscreen.promptHorizontalCenterOffset

@@ -114,8 +114,6 @@ Showable {
         height: parent.height
         clip: true // clip large data bubbles
 
-        useColor: !root.hasCustomBackground
-
         anchors {
             verticalCenter: parent.verticalCenter
             left: parent.left
