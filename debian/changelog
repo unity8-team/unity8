@@ -1,3 +1,10 @@
+unity8 (8.14+16.10.20160928-0ubuntu1) yakkety; urgency=medium
+
+  * Add support for LightDM hints for manual logins and hiding normal
+    users.
+
+ -- Michael Terry <michael.terry@canonical.com>  Wed, 28 Sep 2016 18:43:09 +0000
+
 unity8 (8.14+16.10.20160922-0ubuntu1) yakkety; urgency=medium
 
   [ Albert Astals Cid ]

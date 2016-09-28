@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-22 07:46+0000\n"
+"POT-Creation-Date: 2016-09-28 18:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: plugins/LightDM/Greeter.cpp:123
+#: plugins/LightDM/Greeter.cpp:167
 msgid "Password: "
+msgstr ""
+
+#: plugins/LightDM/UsersModel.cpp:150
+msgid "Login"
+msgstr ""
+
+#: plugins/LightDM/UsersModel.cpp:156
+msgid "Guest Session"
 msgstr ""
 
 #: plugins/Unity/Launcher/launcheritem.cpp:49
@@ -437,7 +445,7 @@ msgid_plural "Please wait %1 minutes and then try again…"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Greeter/Greeter.qml:596
+#: qml/Greeter/Greeter.qml:600
 msgid "Try again"
 msgstr ""
 
