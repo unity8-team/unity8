@@ -16,7 +16,7 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
-import "." 0.1
+import LightDM 0.1 as LightDM
 
 FocusScope {
     id: root
@@ -139,7 +139,7 @@ FocusScope {
             Behavior on boxVerticalOffset { UbuntuNumberAnimation {} }
 
             model: root.userModel
-            currentSession: LightDMService.greeter.defaultSession
+            currentSession: LightDM.Greeter.defaultSession
             onResponded: root.responded(response)
             onSelected: root.selected(index)
             onSessionChooserButtonClicked: parent.state = "SessionsList"
