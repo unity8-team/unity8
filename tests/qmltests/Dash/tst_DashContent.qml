@@ -100,6 +100,21 @@ Item {
             tryCompare(dashContentList, "count", 0);
         }
 
+        function test_escape_clears_search() {
+            var dashContentList = findChild(dashContent, "dashContentList");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var searchButton = findChild(dashContentList.currentItem, "search_button");
+            var headerContainer = findChild(dashContentList.currentItem, "headerContainer");
+            var query = "This is a fun search query!";
+            mouseClick(searchButton);
+            typeString(query);
+            compare(searchHeaderContents.searchTextField.text, query);
+
+            keyClick(Qt.Key_Escape);
+            compare(searchHeaderContents.searchTextField.text, "");
+            tryCompare(headerContainer, "showSearch", false);
+        }
+
         function test_current_index() {
             var dashContentList = findChild(dashContent, "dashContentList");
             verify(dashContentList != undefined)
@@ -280,17 +295,30 @@ Item {
             verify(carouselLV.tileWidth / carouselLV.tileHeight == cardTool.components["art"]["aspect-ratio"]);
         }
 
+        // The extra panel changes parents based on state so this helper
+        // resolves that
+        function getExtraPanel(searchHeaderContents) {
+           if (searchHeaderContents.extraPanelVisible) {
+                return findChild(searchHeaderContents.thePopover, "extraPanel");
+           } else {
+                return findChild(searchHeaderContents, "extraPanel")
+            }
+        }
+
         function test_mainNavigation() {
             var dashContentList = findChild(dashContent, "dashContentList");
-            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
+            tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation") != null; }, true);
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var peExtraPanel = getExtraPanel(searchHeaderContents);
+            var dashNavigation = findChild(peExtraPanel, "dashNavigation");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
             var searchTextField = findChild(dashContentList.currentItem, "searchTextField");
             compare(peExtraPanel.visible, false);
             mouseClick(searchButton);
             tryCompare(peExtraPanel, "visible", true);
-            peExtraPanel.searchHistory.clear();
+            searchHeaderContents.searchHistory.clear();
 
+            tryCompareFunction(function() { return dashNavigation != null; }, true);
             var navigationListView = findChild(dashNavigation, "navigationListView");
             tryCompareFunction(function() {
                 return navigationListView.currentItem &&
@@ -300,9 +328,11 @@ Item {
             waitForRendering(navigationListView);
             waitForRendering(navigationListView.currentItem);
 
+            tryCompareFunction(function() { return dashNavigation != null; }, true);
+
             var navigation = findChild(dashNavigation, "navigation0child3");
             mouseClick(navigation);
-            compare(peExtraPanel.visible, false);
+            tryCompare(peExtraPanel, "visible", false);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle3");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "root");
 
@@ -314,19 +344,23 @@ Item {
             var header0 = findChild(dashNavigation, "dashNavigationHeader0");
             compare(header0.backVisible, false);
             mouseClick(header0);
-            compare(peExtraPanel.visible, false);
+            tryCompare(peExtraPanel, "visible", false);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "root");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "root");
 
             var headerContainer = findChild(dashContentList.currentItem, "headerContainer");
+
             tryCompare(headerContainer, "clip", false);
             verify(headerContainer.state !== "search");
             mouseClick(searchButton);
+
             tryCompare(peExtraPanel, "visible", true);
             waitForRendering(navigationListView);
             waitForRendering(navigationListView.currentItem);
 
             navigation = findChild(dashNavigation, "navigation0child2");
+
+            getSettledButtons();
             mouseClick(navigation);
             compare(peExtraPanel.visible, true);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle2");
@@ -340,7 +374,7 @@ Item {
             tryCompare(navigationListView, "contentX", navigationList1.x);
             waitForRendering(navigationListView);
             mouseClick(header1);
-            compare(peExtraPanel.visible, false);
+            tryCompare(peExtraPanel, "visible", false);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle2");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "middle2");
 
@@ -356,7 +390,7 @@ Item {
             tryCompare(navigationList1, "height", navigationList1.implicitHeight);
             navigation = findChild(dashNavigation, "navigation1child2");
             mouseClick(navigation);
-            compare(peExtraPanel.visible, false);
+            tryCompare(peExtraPanel, "visible", false);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "childmiddle22");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "middle2");
 
@@ -368,7 +402,7 @@ Item {
             tryCompare(navigationList1.navigation, "loaded", true);
             navigation = findChild(dashNavigation, "navigation1child3");
             mouseClick(navigation);
-            compare(peExtraPanel.visible, false);
+            tryCompare(peExtraPanel, "visible", false);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "childmiddle23");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "middle2");
 
@@ -380,9 +414,9 @@ Item {
 
             tryCompare(dashNavigation.currentNavigation, "navigationId", "root");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "root");
-            compare(peExtraPanel.visible, true);
+            tryCompare(peExtraPanel, "visible", true);
             mouseClick(header0);
-            compare(peExtraPanel.visible, false);
+            tryCompare(peExtraPanel, "visible", false);
 
             tryCompare(headerContainer, "clip", false);
             verify(headerContainer.state !== "search");
@@ -394,7 +428,7 @@ Item {
             tryCompare(navigationList0, "height", navigationList0.implicitHeight);
             navigation = findChild(dashNavigation, "navigation0child2");
             mouseClick(navigation);
-            compare(peExtraPanel.visible, true);
+            tryCompare(peExtraPanel, "visible", true);
             navigationList1 = findChild(dashNavigation, "navigation1");
             compare(navigationList1.navigation.loaded, false);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle2");
@@ -404,13 +438,16 @@ Item {
 
         function goToSecondLevel() {
             var dashContentList = findChild(dashContent, "dashContentList");
-            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
+            var searchHeaderContents = findChild(dashContentList.currentItem,
+                                                 "searchHeaderContents");
+            var extraPanel = getExtraPanel(searchHeaderContents);
+            var dashNavigation = findChild(extraPanel, "dashNavigation");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
             var searchTextField = findChild(dashContentList.currentItem, "searchTextField");
-            compare(peExtraPanel.visible, false);
+            compare(extraPanel.visible, false);
             mouseClick(searchButton);
-            tryCompare(peExtraPanel, "visible", true);
+            tryCompareFunction(function() { return findChild(extraPanel, "dashNavigation") != null; }, true);
+            tryCompare(extraPanel, "visible", true);
 
             var navigationListView = findChild(dashNavigation, "navigationListView");
             tryCompareFunction(function() {
@@ -420,6 +457,7 @@ Item {
             waitForRendering(navigationListView);
             waitForRendering(navigationListView.currentItem);
 
+            var dashNavigation = findChild(extraPanel, "dashNavigation");
             var navigation4 = findChild(dashNavigation, "navigation0child4");
             mouseClick(navigation4);
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle4");
@@ -447,9 +485,17 @@ Item {
             goToSecondLevel();
 
             var dashContentList = findChild(dashContent, "dashContentList");
-            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
+
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
+            var searchTextField = findChild(pageHeader, "searchTextField");
+            var extraPanel = getExtraPanel(searchHeaderContents);
+            var dashNavigation = findChild(extraPanel, "dashNavigation");
+
+            mouseClick(searchTextField);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
+
             var navigationListView = findChild(dashNavigation, "navigationListView");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
 
             // Go directly to the root pressing the back button of header1
             var header1 = findChild(dashNavigation, "dashNavigationHeader1");
@@ -458,16 +504,22 @@ Item {
 
             tryCompare(dashNavigation.currentNavigation, "navigationId", "root");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "root");
-            compare(peExtraPanel.visible, true);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
         }
 
         function test_navigationSecondLevelToFirstName() {
             goToSecondLevel();
 
             var dashContentList = findChild(dashContent, "dashContentList");
-            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var extraPanel = getExtraPanel(searchHeaderContents);
+            var dashNavigation = findChild(extraPanel, "dashNavigation");
+            var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
+            var searchTextField = findChild(pageHeader, "searchTextField");
             var navigationListView = findChild(dashNavigation, "navigationListView");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
+
+            mouseClick(searchTextField);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
 
             // Go directly to the first pressing the header1
             var header1 = findChild(dashNavigation, "dashNavigationHeader1");
@@ -475,57 +527,60 @@ Item {
 
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle4");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "middle4");
-            compare(peExtraPanel.visible, false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
         }
 
-        function test_navigationSecondLevelToFirstBack() {
+
+       function test_navigationSecondLevelToFirstBack() {
             goToSecondLevel();
 
             var dashContentList = findChild(dashContent, "dashContentList");
-            var dashNavigation = findChild(dashContentList.currentItem, "dashNavigation");
-            var navigationListView = findChild(dashNavigation, "navigationListView");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var extraPanel = getExtraPanel(searchHeaderContents);
+            var dashNavigation = findChild(extraPanel, "dashNavigation");
 
             // Go back to the first level pressing the back button of header2
             var header2 = findChild(dashNavigation, "dashNavigationHeader2");
             compare(header2.backVisible, true);
             mouseClick(findChild(header2, "backButton"));
 
+            var navigationListView = findChild(dashNavigation, "navigationListView");
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle4");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "middle4");
-            compare(peExtraPanel.visible, true);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
         }
 
         function test_clearSearchWithNavigationClosed() {
             var dashContentList = findChild(dashContent, "dashContentList");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
             var searchTextField = findChild(dashContentList.currentItem, "searchTextField");
 
-            compare(peExtraPanel.visible, false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
             mouseClick(searchButton);
-            tryCompare(peExtraPanel, "visible", true);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
 
             typeString("A");
-            compare(peExtraPanel.visible, false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
 
             var clearIcon = findChild(searchTextField, "clearIcon");
             mouseClick(clearIcon);
-            tryCompare(peExtraPanel, "visible", true);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
         }
 
         function test_navigationShowFilterPopup() {
             var dashContentList = findChild(dashContent, "dashContentList");
             var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
             var settingsButton = findChild(dashContentList.currentItem, "settingsButton");
+            var searchHeaderContents = findChild(dashContentList.currentItem,
+                                                 "searchHeaderContents");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
-            var cancelButton = findChild(dashContentList.currentItem, "cancelButton");
+            var cancelButton = findChild(searchHeaderContents, "cancelButton");
             var searchTextField = findChild(pageHeader, "searchTextField");
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
             var headerContainer = findChild(pageHeader, "headerContainer");
 
             mouseClick(searchButton);
-            tryCompare(peExtraPanel, "visible", true);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
 
             var filtersPopover = findChild(shell, "filtersPopover")
             verify(!filtersPopover);
@@ -550,10 +605,11 @@ Item {
             // test that closing the filters popover without a search unfocuses and removes the navigation
             mouseClick(shell, shell.width - 1, shell.height - 1);
 
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
             tryCompare(headerContainer, "showSearch", true);
             tryCompare(searchTextField, "focus", false);
 
+            getSettledButtons();
             mouseClick(cancelButton);
             tryCompare(headerContainer, "showSearch", false);
             tryCompare(headerContainer, "clip", false);
@@ -572,22 +628,23 @@ Item {
 
             mouseClick(shell, shell.width - 1, shell.height - 1);
 
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
             tryCompare(headerContainer, "showSearch", true);
         }
 
         function test_primaryFilter() {
             var dashContentList = findChild(dashContent, "dashContentList");
-            tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation", 0 /* timeout */) != null; }, true);
             dashContentList.currentItem.item.scope.setHasNavigation(false);
-            var peExtraPanel = findChild(dashContentList.currentItem, "peExtraPanel");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
+            var extraPanel = getExtraPanel(searchHeaderContents);
+            var dashNavigation = findChild(extraPanel, "dashNavigation");
 
-            compare(peExtraPanel.visible, false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
             mouseClick(searchButton);
-            tryCompare(peExtraPanel, "visible", true);
-
-            tryCompareFunction(function() { return findChild(peExtraPanel, "OSF3", 0 /* timeout */) != null; }, true);
+            tryCompare(searchHeaderContents, "extraPanelVisible", true);
+            tryCompareFunction(function() { return dashNavigation != null; }, true);
+            tryCompareFunction(function() { return findChild(extraPanel, "OSF3") != null; }, true);
         }
 
         function test_searchHint() {
@@ -681,6 +738,9 @@ Item {
         function test_extraPanel() {
             var dashContentList = findChild(dashContent, "dashContentList");
             var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
+            var searchHeaderContents = findChild(pageHeader, "searchHeaderContents");
+            var extraPanel = getExtraPanel(searchHeaderContents);
+
             pageHeader.searchEntryEnabled = true;
             pageHeader.searchHistory.clear();
 
@@ -688,25 +748,26 @@ Item {
             pageHeader.searchHistory.addQuery("Search2");
 
             pageHeader.triggerSearch();
-            tryCompare(pageHeader.extraPanel, "visible", true);
+            tryCompare(extraPanel, "visible", true);
 
             var searchTextField = findChild(pageHeader, "searchTextField");
             compare(searchTextField.focus, true);
 
-            var recentSearches = findChild(pageHeader.extraPanel, "recentSearchesRepeater");
+            var recentSearches = findChild(extraPanel, "recentSearchesRepeater");
             verify(recentSearches, "Could not find recent searches");
-
             waitForRendering(recentSearches);
 
+            tryCompare(recentSearches.itemAt(0), "visible", true);
             mouseClick(recentSearches.itemAt(0));
-            compare(pageHeader.searchQuery, "Search2");
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(pageHeader, "searchQuery", "Search2");
+            tryCompare(extraPanel, "visible", false);
             compare(searchTextField.focus, false);
         }
 
         function test_cancelSearch() {
             var dashContentList = findChild(dashContent, "dashContentList");
             var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
             pageHeader.searchEntryEnabled = true;
             pageHeader.searchHistory.clear();
 
@@ -714,15 +775,15 @@ Item {
             pageHeader.searchHistory.addQuery("Search2");
 
             pageHeader.triggerSearch();
-            tryCompare(pageHeader.extraPanel, "visible", true);
 
             var searchTextField = findChild(pageHeader, "searchTextField");
             compare(searchTextField.focus, true);
 
-            var cancelButton = findChild(dashContentList.currentItem, "cancelButton")
-
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents")
+            var cancelButton = findChild(searchHeaderContents, "cancelButton");
+            waitForRendering(cancelButton)
             mouseClick(cancelButton);
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(searchHeaderContents, "extraPanelVisible", false);
             compare(searchTextField.focus, false);
         }
     }

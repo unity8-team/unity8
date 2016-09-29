@@ -28,36 +28,42 @@ Item {
     readonly property real signatureLineHeight: showSignatureLine ? units.gu(2) : 0
     readonly property real headerDividerLuminance: Style.luminance(bottomBorder.color)
 
-    property int activeFiltersCount: 0
-    property bool scopeHasFilters: false
-    property bool showBackButton: false
-    property bool backIsClose: false
-    property string title
-    property var extraPanel
-    property string navigationTag
+    property alias extraPanelHeight: searchHeaderContents.extraPanelHeight
+    property alias searchContents: searchHeaderContents
+    property alias searchTextField: searchHeaderContents.searchTextField
 
-    property bool storeEntryEnabled: false
+    property bool backIsClose: false
+    property bool favorite: false
+    property bool favoriteEnabled: false
     property bool searchEntryEnabled: false
     property bool settingsEnabled: false
-    property bool favoriteEnabled: false
-    property bool favorite: false
-    property ListModel searchHistory
-    property alias searchQuery: searchTextField.text
-    property alias searchHint: searchTextField.placeholderText
+    property bool showBackButton: false
     property bool showSignatureLine: true
+    property bool storeEntryEnabled: false
 
+    property int activeFiltersCount: 0
     property int paginationCount: 0
     property int paginationIndex: -1
 
-    property var scopeStyle: null
+    property ListModel searchHistory
 
-    signal clearSearch(bool keepPanelOpen)
+    property string navigationTag
+    property string searchQuery
+    property string title
+
+    property var categoryView
+    property var scope
+    property var scopeStyle: null
+    property var scopeView
+    property var searchHint: searchTextField.placeholderText
+
     signal backClicked()
-    signal storeClicked()
-    signal settingsClicked()
+    signal clearSearch(bool keepPanelOpen)
     signal favoriteClicked()
     signal searchTextFieldFocused()
+    signal settingsClicked()
     signal showFiltersPopup(var item)
+    signal storeClicked()
 
     onScopeStyleChanged: refreshLogo()
     onSearchQueryChanged: {
@@ -80,40 +86,8 @@ Item {
         }
     }
 
-    function closePopup(keepFocus, keepSearch) {
-        if (extraPanel.visible) {
-            extraPanel.visible = false;
-        }
-        if (!keepFocus) {
-            unfocus(keepSearch);
-        }
-        if (!keepSearch && !searchTextField.text && !root.navigationTag && searchHistory.count == 0) {
-            headerContainer.showSearch = false;
-        }
-    }
-
-    function resetSearch(keepFocus) {
-        if (searchHistory) {
-            searchHistory.addQuery(searchTextField.text);
-        }
-        searchTextField.text = "";
-        closePopup(keepFocus);
-    }
-
-    function unfocus(keepSearch) {
-        searchTextField.focus = false;
-        if (!keepSearch && !searchTextField.text && !root.navigationTag) {
-            headerContainer.showSearch = false;
-        }
-    }
-
-    function openPopup() {
-        if (openSearchAnimation.running) {
-            openSearchAnimation.openPopup = true;
-        } else if (extraPanel.hasContents) {
-            // Show extraPanel
-            extraPanel.visible = true;
-        }
+    function resetSearch() {
+        searchHeaderContents.resetSearch();
     }
 
     function refreshLogo() {
@@ -131,10 +105,15 @@ Item {
     }
 
     InverseMouseArea {
-        anchors { fill: parent; margins: units.gu(1); bottomMargin: units.gu(3) + (extraPanel ? extraPanel.height : 0) }
+        anchors {
+            fill: parent
+            margins: units.gu(1)
+            bottomMargin: units.gu(3) + extraPanelHeight
+        }
+
         visible: headerContainer.showSearch
         onPressed: {
-            closePopup(/* keepFocus */false);
+            searchHeaderContents.closePopup(/* keepFocus */false);
             mouse.accepted = false;
         }
     }
@@ -202,136 +181,26 @@ Item {
                     dividerColor: "transparent"
                 }
 
-                contents: Item {
+                contents: SearchHeaderContents {
+                    id: searchHeaderContents
+                    objectName: "searchHeaderContents"
+
+                    property string searchQuery: searchTextField.text
+                    onSearchQueryChanged: {
+                        root.searchQuery = searchQuery;
+                    }
                     anchors.fill: parent
 
-                    Keys.onEscapePressed: { // clear the search text, dismiss the search in the second step
-                        if (searchTextField.text != "") {
-                            root.clearSearch(true);
-                        } else {
-                            root.clearSearch(false);
-                            headerContainer.showSearch = false;
-                        }
-                    }
+                    activeFiltersCount: root.activeFiltersCount
+                    categoryView: root.categoryView
+                    scope: root.scope
+                    scopeView: root.scopeView
+                    searchHistory: root.searchHistory
 
-                    TextField {
-                        id: searchTextField
-                        objectName: "searchTextField"
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        hasClearButton: false
-                        anchors {
-                            top: parent.top
-                            topMargin: units.gu(1)
-                            left: parent.left
-                            bottom: parent.bottom
-                            bottomMargin: units.gu(1)
-                            right: settingsButton.left
-                            rightMargin: settingsButton.visible ? 0 : units.gu(2)
-                        }
+                    navigationTag: root.navigationTag
 
-                        primaryItem: Rectangle {
-                            color: "#F5F4F5"
-                            width: root.navigationTag != "" ? tagLabel.width + units.gu(2) : 0
-                            height: root.navigationTag != "" ? tagLabel.height + units.gu(1) : 0
-                            radius: units.gu(0.5)
-                            Label {
-                                id: tagLabel
-                                text: root.navigationTag
-                                anchors.centerIn: parent
-                                color: "#333333"
-                            }
-                        }
-
-                        secondaryItem: AbstractButton {
-                            id: clearButton
-                            height: searchTextField.height
-                            width: height
-                            enabled: searchTextField.text.length > 0 || root.navigationTag != ""
-
-                            Image {
-                                objectName: "clearIcon"
-                                anchors.fill: parent
-                                anchors.margins: units.gu(1)
-                                source: "image://theme/clear"
-                                sourceSize.width: width
-                                sourceSize.height: height
-                                opacity: parent.enabled
-                                visible: opacity > 0
-                                Behavior on opacity {
-                                    UbuntuNumberAnimation { duration: UbuntuAnimation.FastDuration }
-                                }
-                            }
-
-                            onClicked: {
-                                root.clearSearch(true);
-                            }
-                        }
-
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                root.searchTextFieldFocused();
-                                root.openPopup();
-                            }
-                        }
-
-                        onTextChanged: {
-                            if (text != "") {
-                                closePopup(/* keepFocus */true);
-                            }
-                        }
-                    }
-
-                    AbstractButton {
-                        id: settingsButton
-                        objectName: "settingsButton"
-
-                        width: root.scopeHasFilters ? height : 0
-                        visible: width > 0
-                        anchors {
-                            top: parent.top
-                            right: cancelButton.left
-                            bottom: parent.bottom
-                            rightMargin: units.gu(-1)
-                        }
-
-                        Icon {
-                            anchors.fill: parent
-                            anchors.margins: units.gu(2)
-                            name: "filters"
-                            color: root.activeFiltersCount > 0 ? theme.palette.normal.positive : header.__styleInstance.foregroundColor
-                        }
-
-                        onClicked: {
-                            root.showFiltersPopup(settingsButton);
-                        }
-                    }
-
-                    AbstractButton {
-                        id: cancelButton
-                        objectName: "cancelButton"
-                        width: cancelLabel.width + cancelLabel.anchors.rightMargin + cancelLabel.anchors.leftMargin
-                        anchors {
-                            top: parent.top
-                            right: parent.right
-                            bottom: parent.bottom
-                        }
-                        onClicked: {
-                            root.clearSearch(false);
-                            headerContainer.showSearch = false;
-                        }
-                        Label {
-                            id: cancelLabel
-                            text: i18n.tr("Cancel")
-                            color: header.__styleInstance.foregroundColor
-                            verticalAlignment: Text.AlignVCenter
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                right: parent.right
-                                rightMargin: units.gu(2)
-                                leftMargin: units.gu(1)
-                            }
-                        }
-                    }
+                    onCancelSearch: headerContainer.showSearch = showSearch;
+                    onSearchTextFieldFocused: root.searchTextFieldFocused();
                 }
             }
 
