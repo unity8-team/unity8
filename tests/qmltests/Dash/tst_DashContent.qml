@@ -100,6 +100,21 @@ Item {
             tryCompare(dashContentList, "count", 0);
         }
 
+        function test_escape_clears_search() {
+            var dashContentList = findChild(dashContent, "dashContentList");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var searchButton = findChild(dashContentList.currentItem, "search_button");
+            var headerContainer = findChild(dashContentList.currentItem, "headerContainer");
+            var query = "This is a fun search query!";
+            mouseClick(searchButton);
+            typeString(query);
+            compare(searchHeaderContents.searchTextField.text, query);
+
+            keyClick(Qt.Key_Escape);
+            compare(searchHeaderContents.searchTextField.text, "");
+            tryCompare(headerContainer, "showSearch", false);
+        }
+
         function test_current_index() {
             var dashContentList = findChild(dashContent, "dashContentList");
             verify(dashContentList != undefined)

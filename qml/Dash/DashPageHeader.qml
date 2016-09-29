@@ -197,15 +197,6 @@ Item {
 
                     onCancelSearch: headerContainer.showSearch = showSearch;
                     onSearchTextFieldFocused: root.searchTextFieldFocused();
-
-                    Keys.onEscapePressed: { // clear the search text, dismiss the search in the second step
-                        if (searchTextField.text != "") {
-                            root.clearSearch(true);
-                        } else {
-                            root.clearSearch(false);
-                            headerContainer.showSearch = false;
-                        }
-                    }
                 }
             }
 

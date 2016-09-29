@@ -138,6 +138,13 @@ Item {
         property var extraPanelPopover
     }
 
+    Keys.onEscapePressed: { // clear the search text, dismiss the search in the second step
+        if (searchTextField.text != "") {
+            root.clearSearch(true);
+            root.cancelSearch(false);
+        }
+    }
+
     // The extra panel lives outside the popover so that its state can be read
     // even if the popover is closed (or has never been opened).
     // This also allows positioning things differently in the future.
