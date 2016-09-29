@@ -29,7 +29,7 @@ Item {
     property var scope
     property var scopeView
 
-    readonly property alias searchTextField: aSearchTextField
+    readonly property alias searchTextField: searchTextField
     readonly property bool extraPanelVisible: pageHeaderExtraPanel.visible
     readonly property bool scopeHasFilters: typeof(scope) !== "undefined" && scope &&  scope.filters != null ? true : false // Prevent warning
     readonly property real extraPanelHeight: extraPanelVisible ?
@@ -106,11 +106,11 @@ Item {
         }
     }
 
-    function showFiltersPopup(puParent) {
+    function showFiltersPopup(popupParent) {
         var url = Qt.resolvedUrl("FiltersPopover.qml");
 
         root.hideExtraPanel();
-        scopeView.filtersPopover = PopupUtils.open(url, item, {
+        scopeView.filtersPopover = PopupUtils.open(url, popupParent, {
             "contentWidth" : Qt.binding(function() {
                 return scopeView.width - units.gu(2);
             })}
@@ -202,7 +202,7 @@ Item {
     }
 
     TextField {
-        id: aSearchTextField
+        id: searchTextField
 
         objectName: "searchTextField"
         inputMethodHints: Qt.ImhNoPredictiveText

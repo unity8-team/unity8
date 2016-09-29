@@ -28,42 +28,42 @@ Item {
     readonly property real signatureLineHeight: showSignatureLine ? units.gu(2) : 0
     readonly property real headerDividerLuminance: Style.luminance(bottomBorder.color)
 
-    property int activeFiltersCount: 0
-    property bool showBackButton: false
-    property bool backIsClose: false
-    property string title
-
-    property var categoryView
     property alias extraPanelHeight: searchHeaderContents.extraPanelHeight
-    property var scope
-    property var scopeView
-
-    property string navigationTag
-
-    property bool storeEntryEnabled: false
-    property bool searchEntryEnabled: false
-    property bool settingsEnabled: false
-    property bool favoriteEnabled: false
-    property bool favorite: false
-    property ListModel searchHistory
     property alias searchContents: searchHeaderContents
     property alias searchTextField: searchHeaderContents.searchTextField
-    property string searchQuery
-    property var searchHint: searchTextField.placeholderText
-    property bool showSignatureLine: true
 
+    property bool backIsClose: false
+    property bool favorite: false
+    property bool favoriteEnabled: false
+    property bool searchEntryEnabled: false
+    property bool settingsEnabled: false
+    property bool showBackButton: false
+    property bool showSignatureLine: true
+    property bool storeEntryEnabled: false
+
+    property int activeFiltersCount: 0
     property int paginationCount: 0
     property int paginationIndex: -1
 
-    property var scopeStyle: null
+    property ListModel searchHistory
 
-    signal clearSearch(bool keepPanelOpen)
+    property string navigationTag
+    property string searchQuery
+    property string title
+
+    property var categoryView
+    property var scope
+    property var scopeStyle: null
+    property var scopeView
+    property var searchHint: searchTextField.placeholderText
+
     signal backClicked()
-    signal storeClicked()
-    signal settingsClicked()
+    signal clearSearch(bool keepPanelOpen)
     signal favoriteClicked()
     signal searchTextFieldFocused()
+    signal settingsClicked()
     signal showFiltersPopup(var item)
+    signal storeClicked()
 
     onScopeStyleChanged: refreshLogo()
     onSearchQueryChanged: {
