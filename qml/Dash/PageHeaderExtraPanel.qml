@@ -33,7 +33,7 @@ Item {
     property real windowHeight
 
     // Used by PageHeader
-    readonly property bool hasContents: searchHistory.count > 0 || scope && scope.hasNavigation || scope && scope.primaryNavigationFilter
+    readonly property bool hasContents: searchHistory ? searchHistory.count > 0 || scope && scope.hasNavigation || scope && scope.primaryNavigationFilter : false
 
     signal historyItemClicked(string text)
     signal dashNavigationLeafClicked()
@@ -176,10 +176,10 @@ Item {
             id: primaryFilter
             objectName: "primaryFilter"
 
-            active: scope && !scope.hasNavigation
+            active: scope && !scope.hasNavigation ? true : false // Prevent warning
 
             anchors.fill: parent
-            property var filter: active ? scope.primaryNavigationFilter : null
+            property var filter: active && scope ? scope.primaryNavigationFilter : null
 
             widgetId: filter ? filter.filterId : ""
             widgetType: filter ? filter.filterType : -1

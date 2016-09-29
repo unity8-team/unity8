@@ -29,12 +29,19 @@ Item {
     property int workaroundRestoreIndex: -1
     readonly property string currentScopeId: dashContentList.currentItem ? dashContentList.currentItem.scopeId : ""
     readonly property var currentScope: dashContentList.currentItem ? dashContentList.currentItem.theScope : null
+
     readonly property bool subPageShown: dashContentList.currentItem && dashContentList.currentItem.item ?
                                             dashContentList.currentItem.item.subPageShown : false
-    readonly property bool processing: dashContentList.currentItem && dashContentList.currentItem.item
+
+    readonly property bool processing: dashContentList.currentItem
+                                       && dashContentList.currentItem.item
                                        && dashContentList.currentItem.item.processing || false
+
     readonly property bool pageHeaderTotallyVisible: dashContentList.currentItem && dashContentList.currentItem.item
                                        && dashContentList.currentItem.item.pageHeaderTotallyVisible || false
+
+    readonly property var currentCategoryView: dashContentList.currentItem !== null ?
+                                               dashContentList.currentItem.categoryView : null
 
     signal scopeLoaded(string scopeId)
     signal gotoScope(string scopeId)
@@ -84,7 +91,6 @@ Item {
 
             if (reset) {
                 dashContentList.currentItem.item.positionAtBeginning()
-                dashContentList.currentItem.item.resetSearch()
             }
         }
 
@@ -168,7 +174,7 @@ Item {
                     objectName: "scopeLoader" + index
 
                     readonly property bool moving: item ? item.moving : false
-                    readonly property bool extraPanelShown: item ? item.extraPanelShown : false
+                    readonly property bool extraPanelShown: item ? item.searchContents.extraPanelVisible : false
                     readonly property bool subPageShown: item ? item.subPageShown : false
                     readonly property var categoryView: item ? item.categoryView : null
                     readonly property var theScope: scope
@@ -189,6 +195,7 @@ Item {
                         item.holdingList = dashContentList;
                         item.forceNonInteractive = Qt.binding(function() { return dashContent.forceNonInteractive } )
                     }
+
                     Connections {
                         target: isCurrent ? scope : null
                         onGotoScope: {
