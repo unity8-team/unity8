@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-22 07:46+0000\n"
+"POT-Creation-Date: 2016-09-29 23:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,7 @@ msgid "Log Out"
 msgstr ""
 
 #: qml/Components/Dialogs.qml:166 qml/Components/Dialogs.qml:222
-#: qml/Dash/DashPageHeader.qml:324 qml/Greeter/NarrowView.qml:232
+#: qml/Dash/SearchHeaderContents.qml:315 qml/Greeter/NarrowView.qml:232
 #: qml/Wizard/Pages/passcode-confirm.qml:32
 #: qml/Wizard/Pages/passcode-set.qml:32
 msgid "Cancel"
@@ -311,26 +311,26 @@ msgstr ""
 msgid "Preview Share Item"
 msgstr ""
 
-#: qml/Dash/DashPageHeader.qml:362
+#: qml/Dash/DashPageHeader.qml:231
 msgctxt "Button: Open the Ubuntu Store"
 msgid "Store"
 msgstr ""
 
-#: qml/Dash/DashPageHeader.qml:369
+#: qml/Dash/DashPageHeader.qml:238
 msgctxt "Button: Start a search in the current dash scope"
 msgid "Search"
 msgstr ""
 
-#: qml/Dash/DashPageHeader.qml:379
+#: qml/Dash/DashPageHeader.qml:248
 msgctxt "Button: Show the current dash scope settings"
 msgid "Settings"
 msgstr ""
 
-#: qml/Dash/DashPageHeader.qml:386
+#: qml/Dash/DashPageHeader.qml:255
 msgid "Remove from Favorites"
 msgstr ""
 
-#: qml/Dash/DashPageHeader.qml:386
+#: qml/Dash/DashPageHeader.qml:255
 msgid "Add to Favorites"
 msgstr ""
 
@@ -342,15 +342,15 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-#: qml/Dash/GenericScopeView.qml:586 qml/Dash/GenericScopeView.qml:782
+#: qml/Dash/GenericScopeView.qml:583 qml/Dash/GenericScopeView.qml:741
 msgid "Show less"
 msgstr ""
 
-#: qml/Dash/GenericScopeView.qml:586
+#: qml/Dash/GenericScopeView.qml:583
 msgid "Show all"
 msgstr ""
 
-#: qml/Dash/GenericScopeView.qml:643
+#: qml/Dash/GenericScopeView.qml:645
 msgctxt "Label: Hint for dash search line edit"
 msgid "Search"
 msgstr ""
