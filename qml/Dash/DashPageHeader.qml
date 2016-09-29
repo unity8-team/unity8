@@ -86,6 +86,10 @@ Item {
         }
     }
 
+    function resetSearch() {
+        searchHeaderContents.resetSearch();
+    }
+
     function refreshLogo() {
         if (root.scopeStyle ? root.scopeStyle.headerLogo != "" : false) {
             header.contents = imageComponent.createObject();

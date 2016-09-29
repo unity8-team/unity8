@@ -63,12 +63,7 @@ Item {
     ]
 
     function clearSearch(keepPanelOpen) {
-        if (searchHistory) {
-            searchHistory.addQuery(searchTextField.text);
-        }
-        searchTextField.text = "";
-        closePopup(true);
-
+        resetSearch();
         scope.resetPrimaryNavigationTag();
         if (root.pageHeaderExtraPanel) {
             root.pageHeaderExtraPanel.resetNavigation();
@@ -94,6 +89,14 @@ Item {
     function dashNavigationLeafClicked() {
         root.closePopup();
         categoryView.pageHeader.unfocus();
+    }
+
+    function resetSearch() {
+        if (root.searchHistory) {
+            root.searchHistory.addQuery(searchTextField.text);
+        }
+        searchTextField.text = "";
+        closePopup(true);
     }
 
     function unfocus(keepSearch) {

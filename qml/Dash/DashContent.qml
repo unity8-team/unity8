@@ -29,17 +29,13 @@ Item {
     property int workaroundRestoreIndex: -1
     readonly property string currentScopeId: dashContentList.currentItem ? dashContentList.currentItem.scopeId : ""
     readonly property var currentScope: dashContentList.currentItem ? dashContentList.currentItem.theScope : null
-
     readonly property bool subPageShown: dashContentList.currentItem && dashContentList.currentItem.item ?
-                                            dashContentList.currentItem.item.subPageShown : false
-
+                                         dashContentList.currentItem.item.subPageShown : false
     readonly property bool processing: dashContentList.currentItem
                                        && dashContentList.currentItem.item
                                        && dashContentList.currentItem.item.processing || false
-
     readonly property bool pageHeaderTotallyVisible: dashContentList.currentItem && dashContentList.currentItem.item
-                                       && dashContentList.currentItem.item.pageHeaderTotallyVisible || false
-
+                                                     && dashContentList.currentItem.item.pageHeaderTotallyVisible || false
     readonly property var currentCategoryView: dashContentList.currentItem !== null ?
                                                dashContentList.currentItem.categoryView : null
 
