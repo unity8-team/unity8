@@ -381,7 +381,10 @@ Showable {
 
         function resetState() {
             root.lockedApp = "";
-            item.forceActiveFocus();
+            if (item) {
+                item.reset(true /* forceShow */);
+                item.forceActiveFocus();
+            }
             d.selectUser(d.currentIndex, true);
             LightDMService.infographic.readyForDataChange();
         }
