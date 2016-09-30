@@ -40,7 +40,7 @@ Showable {
     property real launcherOffset
 
     readonly property bool active: required || hasLockedApp
-    readonly property bool fullyShown: loader.item ? loader.item.fullyShown : false
+    readonly property bool fullyShown: (loader.visible && loader.item) ? loader.item.fullyShown : false
 
     property bool allowFingerprint: true
 
@@ -61,7 +61,7 @@ Showable {
     property real failedLoginsDelayMinutes: 5 // minutes of forced waiting
     property int failedFingerprintLoginsDisableAttempts: 3 // number of failed fingerprint logins
 
-    readonly property bool animating: loader.item ? loader.item.animating : false
+    readonly property bool animating: (loader.visible && loader.item) ? loader.item.animating : false
 
     signal tease()
     signal sessionStarted()
@@ -290,7 +290,7 @@ Showable {
     onRequiredChanged: {
         if (required) {
             d.waiting = true;
-            lockedApp = "";
+            loader.resetState();
         }
     }
 
@@ -374,16 +374,22 @@ Showable {
 
         anchors.fill: parent
 
-        active: root.required
+        active: root.active
+        visible: root.required
         source: root.viewSource.toString() ? root.viewSource :
                 (d.multiUser || root.tabletMode) ? "WideView.qml" : "NarrowView.qml"
 
-        onLoaded: {
+        function resetState() {
             root.lockedApp = "";
-            item.forceActiveFocus();
+            if (item) {
+                item.reset(true /* forceShow */);
+                item.forceActiveFocus();
+            }
             d.selectUser(d.currentIndex, true);
             LightDMService.infographic.readyForDataChange();
         }
+
+        onLoaded: if (root.required) resetState()
 
         Connections {
             target: loader.item
