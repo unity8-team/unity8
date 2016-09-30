@@ -1,3 +1,12 @@
+unity8 (8.14+16.10.20160930-0ubuntu1) yakkety; urgency=medium
+
+  [ Michael Terry ]
+  * Keep greeter around during emergency call so it doesn't have to be
+    recreated when it ends.  Might help avoid a qt crash too. (LP:
+    #1616842)
+
+ -- Albert Astals Cid <albert.astals@canonical.com>  Fri, 30 Sep 2016 11:32:31 +0000
+
 unity8 (8.14+16.10.20160922-0ubuntu1) yakkety; urgency=medium
 
   [ Albert Astals Cid ]
