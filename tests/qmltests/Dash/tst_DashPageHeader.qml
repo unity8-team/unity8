@@ -108,7 +108,7 @@ Item {
             compare(searchQuery, "", "Reset search did not reset searchQuery correctly.")
         }
 
-        /*function test_history() {
+        function test_history() {
             pageHeader.triggerSearch()
             doTypeString("humppa1")
             doResetSearch();
@@ -194,7 +194,7 @@ Item {
             pageHeader.triggerSearch();
 
             var headerContainer = findChild(pageHeader, "headerContainer");
-            tryCompare(pageHeader.extraPanel, "visible", true);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", true);
 
             pageHeader.searchQuery = data.searchText;
 
@@ -205,12 +205,12 @@ Item {
             }
 
             tryCompare(headerContainer, "showSearch", !data.hideSearch);
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
 
             doResetSearch();
         }
 
-        function test_popup_closing_with_escape() {
+        /*function test_popup_closing_with_escape() {
             searchEnabled = true;
             pageHeader.searchHistory.clear();
 
