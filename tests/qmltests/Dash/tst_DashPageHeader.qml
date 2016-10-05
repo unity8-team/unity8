@@ -30,8 +30,8 @@ Item {
 
     SignalSpy {
         id: escapeSpy
-        target: pageHeader
-        signalName: "clearSearch"
+        target: pageHeader.searchContents
+        signalName: "aclearSearch"
     }
 
     UT.UnityTestCase {
@@ -210,7 +210,7 @@ Item {
             doResetSearch();
         }
 
-        /*function test_popup_closing_with_escape() {
+        function test_popup_closing_with_escape() {
             searchEnabled = true;
             pageHeader.searchHistory.clear();
 
@@ -220,7 +220,7 @@ Item {
             pageHeader.triggerSearch();
 
             var headerContainer = findChild(pageHeader, "headerContainer");
-            tryCompare(pageHeader.extraPanel, "visible", true);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", true);
 
             pageHeader.searchQuery = "foobar";
 
@@ -237,7 +237,7 @@ Item {
             tryCompare(headerContainer, "showSearch", false);
             compare(escapeSpy.count, 1);
             compare(escapeSpy.signalArguments[0][0], false);
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
 
             doResetSearch();
         }
@@ -249,7 +249,7 @@ Item {
 
             searchQuery = "H";
             compare(headerContainer.showSearch, true);
-        }*/
+        }
     }
 
     Column {

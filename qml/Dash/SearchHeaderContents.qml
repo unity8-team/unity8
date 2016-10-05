@@ -39,6 +39,7 @@ Item {
     readonly property alias thePopover: d.extraPanelPopover
 
     signal cancelSearch(bool showSearch);
+    signal aclearSearch(bool keepPanelOpen);
     signal searchTextFieldFocused();
 
     state: "noExtraPanel"
@@ -63,6 +64,7 @@ Item {
     ]
 
     function clearSearch(keepPanelOpen) {
+        aclearSearch(keepPanelOpen)
         resetSearch();
         if (typeof(scope) !== "undefined") scope.resetPrimaryNavigationTag();
         if (root.pageHeaderExtraPanel) {
@@ -127,15 +129,17 @@ Item {
     }
 
     function hideExtraPanel() {
+        state = "noExtraPanel"
+
         if (!root.extraPanelVisible) return;
         PopupUtils.close(d.extraPanelPopover);
-        state = "noExtraPanel"
     }
 
     function showExtraPanel() {
+        state = "yesExtraPanel"
+
         if (root.extraPanelVisible) return;
         d.extraPanelPopover = PopupUtils.open(extraPanelComponent, root);
-        state = "yesExtraPanel"
     }
 
     QtObject {
@@ -148,6 +152,8 @@ Item {
         if (searchTextField.text != "") {
             root.clearSearch(true);
             root.cancelSearch(false);
+        } else {
+            root.clearSearch(false);
         }
     }
 
