@@ -39,7 +39,6 @@ Item {
     readonly property alias thePopover: d.extraPanelPopover
 
     signal cancelSearch(bool showSearch);
-    signal aclearSearch(bool keepPanelOpen);
     signal searchTextFieldFocused();
 
     state: "noExtraPanel"
@@ -64,7 +63,6 @@ Item {
     ]
 
     function clearSearch(keepPanelOpen) {
-        aclearSearch(keepPanelOpen)
         resetSearch();
         if (typeof(scope) !== "undefined") scope.resetPrimaryNavigationTag();
         if (root.pageHeaderExtraPanel) {

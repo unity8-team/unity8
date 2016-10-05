@@ -28,12 +28,6 @@ Item {
     width: units.gu(110)
     height: units.gu(50)
 
-    SignalSpy {
-        id: escapeSpy
-        target: pageHeader.searchContents
-        signalName: "aclearSearch"
-    }
-
     UT.UnityTestCase {
         name: "PageHeaderLabelTest"
         when: windowShown
@@ -153,7 +147,6 @@ Item {
 
         function cleanup() {
             doResetSearch();
-            escapeSpy.clear();
         }
 
         function test_popup_closing_data() {
@@ -226,20 +219,12 @@ Item {
 
             // press Esc once, the search should be cleared
             keyClick(Qt.Key_Escape);
-            pageHeader.searchQuery = ""; // simulate clearing the text field, the clear button doesn't do anything on its own
-            compare(escapeSpy.count, 1);
-            compare(escapeSpy.signalArguments[0][0], true);
-
-            escapeSpy.clear();
+            verify(pageHeader.searchQuery.length === 0)
 
             // press Escape a second time, the whole search should be hidden
             keyClick(Qt.Key_Escape);
             tryCompare(headerContainer, "showSearch", false);
-            compare(escapeSpy.count, 1);
-            compare(escapeSpy.signalArguments[0][0], false);
             tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
-
-            doResetSearch();
         }
 
         function test_search_change_shows_search() {
@@ -266,7 +251,6 @@ Item {
             searchHistory: SearchHistoryModel
             searchEntryEnabled: true
             title: "%^$%^%^&%^&%^$%GHR%"
-            //extraPanel: peExtraPanel
             scopeStyle: QtObject {
                 readonly property color foreground: theme.palette.normal.baseText
                 readonly property url headerLogo: showImageCheckBox.checked ? pageHeader.titleImageSource : ""
@@ -277,18 +261,6 @@ Item {
             property date lastBackClicked
             onBackClicked: lastBackClicked = new Date()
         }
-
-        /*PageHeaderExtraPanel {
-            id: peExtraPanel
-            width: parent.width
-            z: 1
-            visible: false
-            searchHistory: SearchHistoryModel
-            onHistoryItemClicked: {
-                SearchHistoryModel.addQuery(text);
-                pageHeader.searchQuery = text;
-            }
-        }*/
 
         Row {
             spacing: units.gu(1)
