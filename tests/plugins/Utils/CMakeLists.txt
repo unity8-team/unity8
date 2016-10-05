@@ -21,9 +21,6 @@ foreach(util_test
 
 endforeach()
 
-# plain qml test
-add_unity8_qmlunittest(. UtilsStyle)
-
 # URLDispatcher test needs dbus-test-runner because it claims a dbus name
 add_executable(URLDispatcherTestExec URLDispatcherTest.cpp)
 qt5_use_modules(URLDispatcherTestExec Test Core Qml)

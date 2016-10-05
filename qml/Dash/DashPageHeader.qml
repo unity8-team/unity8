@@ -20,6 +20,7 @@ import Ubuntu.Components.Popups 1.3
 import Ubuntu.Components.ListItems 1.3
 import Utils 0.1
 import "../Components"
+import "../Components/Style.js" as Style
 
 Item {
     id: root

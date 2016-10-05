@@ -16,7 +16,7 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
-import Utils 0.1 as Utils
+import "Style.js" as Style
 
 Loader {
     id: root
@@ -27,8 +27,8 @@ Loader {
         .match(/^(color|gradient):\/\/\/(?:(#(?:[0-9a-f]{3,4}){1,2}|[a-z]{3,}))(?:\/(#(?:[0-9a-f]{3,4}){1,2}|[a-z]{3,}))?\/?$/i)
     readonly property var luminance: {
         if (!parsedStyle) return 0.5;
-        if (parsedStyle[1] === "color") return Utils.Style.luminance(parsedStyle[2]);
-        else if (parsedStyle[1] === "gradient") return Utils.Style.luminance(parsedStyle[2], parsedStyle[3]);
+        if (parsedStyle[1] === "color") return Style.luminance(parsedStyle[2]);
+        else if (parsedStyle[1] === "gradient") return Style.luminance(parsedStyle[2], parsedStyle[3]);
     }
 
     // FIXME this is only here for highlight purposes (see DashNavigation.qml, too)
