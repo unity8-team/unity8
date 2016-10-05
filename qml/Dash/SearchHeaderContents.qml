@@ -64,13 +64,15 @@ Item {
 
     function clearSearch(keepPanelOpen) {
         resetSearch();
-        scope.resetPrimaryNavigationTag();
+        if (typeof(scope) !== "undefined") scope.resetPrimaryNavigationTag();
         if (root.pageHeaderExtraPanel) {
             root.pageHeaderExtraPanel.resetNavigation();
         }
 
         if ((root.extraPanelVisible || searchHistory.count > 0) && keepPanelOpen) {
-            root.showExtraPanel();;
+            root.showExtraPanel();
+        } else {
+            root.hideExtraPanel();
         }
     }
 
@@ -96,6 +98,7 @@ Item {
             root.searchHistory.addQuery(searchTextField.text);
         }
         searchTextField.text = "";
+        cancelSearch(false);
         closePopup(true);
     }
 
@@ -185,8 +188,14 @@ Item {
             id: extraPanelPopover
             objectName: "extraPanelPlaceholder"
 
-            readonly property real yOffset: root.categoryView.pageHeader.height -
-                    root.categoryView.pageHeader.signatureLineHeight
+            readonly property real yOffset: {
+                if (typeof(categoryView) !== "undefined") {
+                    return root.categoryView.pageHeader.height -
+                           root.categoryView.pageHeader.signatureLineHeight;
+                } else {
+                    return 0;
+                }
+            }
 
             function maintainOffset() {
                 if (y != yOffset)

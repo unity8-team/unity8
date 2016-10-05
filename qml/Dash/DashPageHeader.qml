@@ -99,6 +99,12 @@ Item {
         }
     }
 
+    Binding {
+        target: searchHeaderContents.searchTextField
+        property: "text"
+        value: root.searchQuery
+    }
+
     Connections {
         target: root.scopeStyle
         onHeaderLogoChanged: root.refreshLogo()
@@ -185,10 +191,6 @@ Item {
                     id: searchHeaderContents
                     objectName: "searchHeaderContents"
 
-                    property string searchQuery: searchTextField.text
-                    onSearchQueryChanged: {
-                        root.searchQuery = searchQuery;
-                    }
                     anchors.fill: parent
 
                     activeFiltersCount: root.activeFiltersCount
@@ -196,11 +198,15 @@ Item {
                     scope: root.scope
                     scopeView: root.scopeView
                     searchHistory: root.searchHistory
-
                     navigationTag: root.navigationTag
-
                     onCancelSearch: headerContainer.showSearch = showSearch;
                     onSearchTextFieldFocused: root.searchTextFieldFocused();
+
+                    Binding {
+                        target: root
+                        property: "searchQuery"
+                        value: searchTextField.text
+                    }
                 }
             }
 

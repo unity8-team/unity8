@@ -58,7 +58,6 @@ Item {
             searchEnabled = true;
 
             // Reset to initial state
-            console.log("JOSH-> " + pageHeader.searchContents)
             pageHeader.searchContents.searchTextField.text = "";
             pageHeader.searchContents.closePopup();
             pageHeader.searchContents.searchHistory.clear();
@@ -78,7 +77,7 @@ Item {
             compare(searchQuery, "", "Search entry not disabled properly (could still type in textfield).")
         }
 
-        /*function test_search_enable() {
+        function test_search_enable() {
             searchEnabled = true
             doResetSearch();
 
@@ -109,7 +108,7 @@ Item {
             compare(searchQuery, "", "Reset search did not reset searchQuery correctly.")
         }
 
-        function test_history() {
+        /*function test_history() {
             pageHeader.triggerSearch()
             doTypeString("humppa1")
             doResetSearch();
