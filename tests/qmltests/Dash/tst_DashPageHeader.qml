@@ -221,12 +221,10 @@ Item {
             keyClick(Qt.Key_Escape);
             verify(pageHeader.searchQuery.length === 0)
 
-            wait(1000)
             // press Escape a second time, the whole search should be hidden
             keyClick(Qt.Key_Escape);
             tryCompare(headerContainer, "showSearch", false);
             verify(pageHeader.searchQuery === "")
-            console.log("STATE-> " + pageHeader.searchContents.state)
             tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
         }
 
