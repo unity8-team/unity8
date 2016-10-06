@@ -90,7 +90,7 @@ Item {
 
     function dashNavigationLeafClicked() {
         root.closePopup();
-        categoryView.pageHeader.unfocus();
+        root.unfocus();
     }
 
     function resetSearch() {
@@ -127,17 +127,17 @@ Item {
     }
 
     function hideExtraPanel() {
-        state = "noExtraPanel"
+        if (d.extraPanelPopover)
+            PopupUtils.close(d.extraPanelPopover);
 
-        if (!root.extraPanelVisible) return;
-        PopupUtils.close(d.extraPanelPopover);
+        state = "noExtraPanel"
     }
 
     function showExtraPanel() {
-        state = "yesExtraPanel"
+        if (!root.extraPanelVisible)
+            d.extraPanelPopover = PopupUtils.open(extraPanelComponent, root);
 
-        if (root.extraPanelVisible) return;
-        d.extraPanelPopover = PopupUtils.open(extraPanelComponent, root);
+        state = "yesExtraPanel"
     }
 
     QtObject {
@@ -150,6 +150,7 @@ Item {
         if (searchTextField.text != "") {
             root.clearSearch(true);
             root.cancelSearch(false);
+            forceActiveFocus(); // Focus is lost, but still needed.
         } else {
             root.clearSearch(false);
         }
@@ -183,6 +184,9 @@ Item {
             searchTextField.text = text;
             root.unfocus(false);
         }
+
+        // Prevent this object from becoming parentless during state changes
+        onParentChanged: if (parent === null) parent = root;
     }
 
     Component {

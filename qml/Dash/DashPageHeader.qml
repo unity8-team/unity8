@@ -193,6 +193,8 @@ Item {
 
                     anchors.fill: parent
 
+                    onFocusChanged: console.log("Root Focus-> " + focus)
+                    onActiveFocusChanged: console.log("Root Active Focus-> " + activeFocus);
                     activeFiltersCount: root.activeFiltersCount
                     categoryView: root.categoryView
                     scope: root.scope
