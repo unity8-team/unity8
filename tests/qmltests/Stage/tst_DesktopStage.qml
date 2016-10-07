@@ -19,6 +19,8 @@ import QtTest 1.0
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3
 import Unity.Application 0.1
+import Unity.ApplicationMenu 0.1
+import Unity.Indicators 0.1 as Indicators
 import Unity.Test 0.1
 import WindowManager 0.1
 import Utils 0.1
@@ -41,7 +43,10 @@ Item {
         value: false
     }
 
+    ApplicationMenuDataLoader { }
+
     Component.onCompleted: {
+        QuickUtils.keyboardAttached = true;
         theme.name = "Ubuntu.Components.Themes.SuruDark";
         resetGeometry();
     }

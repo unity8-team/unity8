@@ -35,6 +35,8 @@ Rectangle {
 
     property var greeter: { fullyShown: true }
 
+    ApplicationMenuDataLoader { }
+
     Stage {
         id: stage
         anchors { fill: parent; rightMargin: units.gu(30) }

@@ -25,9 +25,10 @@ import Ubuntu.Components 1.3
 import Unity.Session 0.1
 import Unity.Platform 1.0
 
-Item {
+Object {
     id: menuFactory
 
+    property string context
     property var rootModel: null
     property var menuModel: null
 
@@ -1041,7 +1042,7 @@ Item {
         }
     }
 
-    function load(modelData, context) {
+    function load(modelData) {
         // tweak indicator-session items
         if (context === "indicator-session") {
             if ((modelData.action === "indicator.logout" || modelData.action === "indicator.suspend" || modelData.action === "indicator.hibernate" ||
