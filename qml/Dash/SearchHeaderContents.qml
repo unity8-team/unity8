@@ -224,6 +224,7 @@ Item {
         objectName: "searchTextField"
         inputMethodHints: Qt.ImhNoPredictiveText
         hasClearButton: false
+        placeholderText: root.scope.searchHint
         anchors {
             top: parent.top
             topMargin: units.gu(1)
