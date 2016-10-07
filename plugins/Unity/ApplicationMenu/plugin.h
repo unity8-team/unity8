@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,25 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.4
-import Ubuntu.Components 1.3
+#ifndef APPLICATIONMENU_PLUGIN_H
+#define APPLICATIONMENU_PLUGIN_H
 
-Item {
-    BorderImage {
-        anchors {
-            fill: parent
-            topMargin: -units.gu(1)
-            leftMargin: -units.gu(1.5)
-            rightMargin: -units.gu(1.5)
-            bottomMargin: -units.gu(1.5)
-        }
-        source: "../graphics/dropshadow2gu.sci"
-        opacity: 0.35
-    }
+#include <QQmlExtensionPlugin>
 
-    UbuntuShape {
-        anchors.fill: parent
-        aspect: UbuntuShape.Flat
-        backgroundColor: theme.palette.normal.raised
-    }
-}
+class ApplicationMenuPlugin : public QQmlExtensionPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+
+public:
+    void registerTypes(const char *uri) override;
+    void initializeEngine(QQmlEngine *engine, const char *uri) override;
+};
+
+#endif // APPLICATIONMENU_PLUGIN_H
