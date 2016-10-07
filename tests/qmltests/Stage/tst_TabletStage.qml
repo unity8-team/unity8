@@ -589,7 +589,7 @@ Rectangle {
             var appDelegate = findChild(stage, "appDelegate_" + webbrowserSurfaceId);
             verify(appDelegate);
             waitForRendering(stage);
-            compare(appDelegate.stage, ApplicationInfoInterface.MainStage);
+            tryCompare(appDelegate, "stage", ApplicationInfoInterface.MainStage);
 
             dragToSideStage(webbrowserSurfaceId);
 
@@ -606,7 +606,7 @@ Rectangle {
             var appDelegate = findChild(stage, "appDelegate_" + webbrowserSurfaceId);
             verify(appDelegate);
             waitForRendering(stage);
-            compare(appDelegate.stage, ApplicationInfoInterface.SideStage);
+            tryCompare(appDelegate, "stage", ApplicationInfoInterface.SideStage);
 
             dragToMainStage(webbrowserSurfaceId);
 
