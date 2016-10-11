@@ -132,6 +132,7 @@ public:
         QDBusConnection::SM_BUSNAME().asyncCall(msg);
     }
 
+    // set the session as active or inactive
     void setActive(bool active)
     {
         isSessionActive = active;
@@ -278,7 +279,7 @@ DBusUnitySessionService::DBusUnitySessionService()
     if (!d->logindSessionPath.isEmpty()) {
         // connect our PromptLock() slot to the logind's session Lock() signal
         QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, QStringLiteral("Lock"), this, SLOT(PromptLock()));
-        // ... and our Unlocked() signal to the logind's session Unlock() signal
+        // ... and our doUnlock() slot to the logind's session Unlock() signal
         // (lightdm handles the unlocking by calling logind's Unlock method which in turn emits this signal we connect to)
         QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, QStringLiteral("Unlock"), this, SLOT(doUnlock()));
         connect(d, &DBusUnitySessionServicePrivate::prepareForSleep, this, &DBusUnitySessionService::PromptLock);
@@ -355,6 +356,7 @@ void DBusUnitySessionService::PromptLock()
     // user session.
     Q_EMIT LockRequested();
     Q_EMIT lockRequested();
+    d->setActive(false);
 }
 
 void DBusUnitySessionService::Lock()
@@ -413,6 +415,7 @@ void DBusUnitySessionService::doUnlock()
 {
     Q_EMIT Unlocked();
     Q_EMIT unlocked();
+    d->setActive(true);
 }
 
 bool DBusUnitySessionService::IsLocked() const
