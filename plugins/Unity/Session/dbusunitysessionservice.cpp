@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014, 2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -307,27 +307,12 @@ QString DBusUnitySessionService::UserName() const
 
 QString DBusUnitySessionService::RealName() const
 {
-    struct passwd *p = getpwuid(geteuid());
-    if (p) {
-        const QString gecos = QString::fromLocal8Bit(p->pw_gecos);
-        if (!gecos.isEmpty()) {
-            const QStringList splitGecos = gecos.split(QLatin1Char(','));
-            return splitGecos.first();
-        }
-    }
-
-    return QString();
+    return QString::fromUtf8(g_get_real_name());
 }
 
 QString DBusUnitySessionService::HostName() const
 {
-    char hostName[512];
-    if (gethostname(hostName, sizeof(hostName)) == -1) {
-        qWarning() << "Could not determine local hostname";
-        return QString();
-    }
-    hostName[sizeof(hostName) - 1] = '\0';
-    return QString::fromLocal8Bit(hostName);
+    return QString::fromUtf8(g_get_host_name());
 }
 
 void DBusUnitySessionService::PromptLock()
@@ -528,7 +513,7 @@ quint32 DBusGnomeScreensaverWrapper::GetActiveTime() const
 
 void DBusGnomeScreensaverWrapper::SimulateUserActivity()
 {
-    d->setIdleHint(false);
+    d->setActive(true);
 }
 
 
@@ -570,7 +555,7 @@ quint32 DBusScreensaverWrapper::GetSessionIdleTime() const
 
 void DBusScreensaverWrapper::SimulateUserActivity()
 {
-    d->setIdleHint(false);
+    d->setActive(true);
 }
 
 #include "dbusunitysessionservice.moc"
