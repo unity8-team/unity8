@@ -220,7 +220,7 @@ public:
      *
      * @return the inhibition cookie, or 0 if the call didn't succeed
      */
-    int keepDisplayOn() {
+    int keepDisplayOn() const {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
         QDBusReply<int> reply = QDBusConnection::SM_BUSNAME().call(msg);
         if (reply.isValid()) {
