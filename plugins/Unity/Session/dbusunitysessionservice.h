@@ -313,6 +313,9 @@ public Q_SLOTS:
      */
     Q_SCRIPTABLE quint32 GetActiveTime() const;
 
+    /**
+     * Simulate user activity, thus interrupting the screensaver
+     */
     Q_SCRIPTABLE void SimulateUserActivity();
 
 Q_SIGNALS:
@@ -354,7 +357,26 @@ public Q_SLOTS:
      */
     Q_SCRIPTABLE quint32 GetSessionIdleTime() const;
 
+    /**
+     * Simulate user activity, thus interrupting the screensaver
+     */
     Q_SCRIPTABLE void SimulateUserActivity();
+
+    /**
+     * Inhibit idleness (ie screen blanking) for the caller application.
+     *
+     * @param appName A unique identifier for the application, usually a reverse domain (such as 'org.freedesktop.example').
+     * @param reason A human-readable and possibly translated string explaining the reason why idleness is inhibited (such as 'Playing a movie').
+     * @return A cookie uniquely representing the inhibition request, to be passed to UnInhibit when done; 0 in case of error
+     */
+    Q_SCRIPTABLE uint Inhibit(const QString &appName, const QString &reason);
+
+    /**
+     * Disable inhibit idleness for the caller application.
+     *
+     * @param cookie A cookie representing the inhibition request, as returned by the 'Inhibit' function.
+     */
+    Q_SCRIPTABLE void UnInhibit(uint cookie);
 
 Q_SIGNALS:
     void ActiveChanged(bool active);

@@ -41,12 +41,16 @@
 #define ACTIVE_KEY QStringLiteral("Active")
 #define IDLE_SINCE_KEY QStringLiteral("IdleSinceHint")
 
+#define UNITY_SCREEN_SERVICE QStringLiteral("com.canonical.Unity.Screen")
+#define UNITY_SCREEN_PATH QStringLiteral("/com/canonical/Unity/Screen")
+#define UNITY_SCREEN_IFACE QStringLiteral("com.canonical.Unity.Screen")
+
 class DBusUnitySessionServicePrivate: public QObject
 {
     Q_OBJECT
 public:
     QString logindSessionPath;
-    bool isSessionActive = true;
+    bool isSessionActive{true};
     QElapsedTimer screensaverActiveTimer;
     QDBusUnixFileDescriptor m_systemdInhibitFd;
 
@@ -209,6 +213,35 @@ public:
                                                           QStringLiteral("SetIdleHint"));
         msg << idle;
         QDBusConnection::SM_BUSNAME().asyncCall(msg);
+    }
+
+    /**
+     * Check with (re)powerd whether we should keep the display on
+     *
+     * @return the inhibition cookie, or 0 if the call didn't succeed
+     */
+    int keepDisplayOn() {
+        QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
+        QDBusReply<int> reply = QDBusConnection::SM_BUSNAME().call(msg);
+        if (reply.isValid()) {
+            return reply;
+        } else {
+            qWarning() << "Failed to inhibit screen blanking" << reply.error().message();
+        }
+
+        return 0;
+    }
+
+    /**
+     * Release the repowerd screen inhibition based on @p cookie
+     */
+    void removeDisplayOnRequest(int cookie) {
+        QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("removeDisplayOnRequest"));
+        msg << cookie;
+        QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().call(msg);
+        if (!reply.isValid()) {
+            qWarning() << "Failed to release screen blanking inhibition" << reply.error().message();
+        }
     }
 
 private Q_SLOTS:
@@ -556,6 +589,19 @@ quint32 DBusScreensaverWrapper::GetSessionIdleTime() const
 void DBusScreensaverWrapper::SimulateUserActivity()
 {
     d->setActive(true);
+}
+
+uint DBusScreensaverWrapper::Inhibit(const QString &/*appName*/, const QString &/*reason*/)
+{
+    uint cookie = static_cast<uint>(d->keepDisplayOn());
+    d->checkActive();
+    return cookie;
+}
+
+void DBusScreensaverWrapper::UnInhibit(uint cookie)
+{
+    d->removeDisplayOnRequest(static_cast<int>(cookie));
+    d->checkActive();
 }
 
 #include "dbusunitysessionservice.moc"
