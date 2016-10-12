@@ -1090,6 +1090,7 @@ FocusScope {
                             scaleToPreviewSize: spreadItem.stackHeight
                             scaleToPreviewProgress: stagedRightEdgeMaths.scaleToPreviewProgress
                             shadowOpacity: .3
+                            interactive: false
                         }
                     },
                     State {
