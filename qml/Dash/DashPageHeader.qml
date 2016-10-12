@@ -199,8 +199,12 @@ Item {
                     scopeView: root.scopeView
                     searchHistory: root.searchHistory
                     navigationTag: root.navigationTag
+
+                    // PageHeader adds margins and that throws off the width
+                    parentWidth: root.width
                     onCancelSearch: headerContainer.showSearch = showSearch;
                     onSearchTextFieldFocused: root.searchTextFieldFocused();
+                    onShowSignatureLine: root.showSignatureLine = show;
 
                     Binding {
                         target: root

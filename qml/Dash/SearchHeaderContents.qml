@@ -22,6 +22,7 @@ Item {
     id: root
 
     property int activeFiltersCount
+    property real parentWidth
     property string navigationTag
 
     property ListModel searchHistory
@@ -40,6 +41,7 @@ Item {
 
     signal cancelSearch(bool showSearch);
     signal searchTextFieldFocused();
+    signal showSignatureLine(bool show);
 
     state: "noExtraPanel"
     states: [
@@ -52,7 +54,7 @@ Item {
 
             ParentChange {
                 target: pageHeaderExtraPanel
-                parent: d.extraPanelPopover
+                parent: extraPanelPopover
             }
 
             PropertyChanges {
@@ -127,16 +129,12 @@ Item {
     }
 
     function hideExtraPanel() {
-        if (d.extraPanelPopover)
-            PopupUtils.close(d.extraPanelPopover);
-
+        showSignatureLine(true);
         state = "noExtraPanel"
     }
 
     function showExtraPanel() {
-        if (!root.extraPanelVisible)
-            d.extraPanelPopover = PopupUtils.open(extraPanelComponent, root);
-
+        showSignatureLine(false);
         state = "yesExtraPanel"
     }
 
@@ -161,11 +159,9 @@ Item {
     // This also allows positioning things differently in the future.
     PageHeaderExtraPanel {
         id: pageHeaderExtraPanel
+        anchors.fill: parent
         objectName: "extraPanel"
 
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width >= units.gu(60) ? units.gu(40) : parent.width
         windowHeight: typeof(scopeView) !== "undefined" ? scopeView.height : 0
         visible: false
 
@@ -189,33 +185,16 @@ Item {
         onParentChanged: if (parent === null) parent = root;
     }
 
-    Component {
-        id: extraPanelComponent
 
-        Popover {
-            id: extraPanelPopover
-            objectName: "extraPanelPlaceholder"
+    StyledItem {
+        id: extraPanelPopover
+        objectName: "extraPanelPlaceholder"
 
-            readonly property real yOffset: {
-                if (typeof(categoryView) !== "undefined") {
-                    return root.categoryView.pageHeader.height -
-                           root.categoryView.pageHeader.signatureLineHeight;
-                } else {
-                    return 0;
-                }
-            }
+		anchors.horizontalCenter: root.horizontalCenter
+    	width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
+		height: pageHeaderExtraPanel.implicitHeight
 
-            function maintainOffset() {
-                if (y != yOffset)
-                    y = yOffset;
-            }
-
-            autoClose: false
-
-            // The popover likes to jump around, hold it still.
-            Component.onCompleted: maintainOffset();
-            onYChanged: maintainOffset();
-        }
+        y: categoryView.pageHeader.height
     }
 
     TextField {
@@ -226,7 +205,7 @@ Item {
         hasClearButton: false
         placeholderText: root.scope.searchHint
         anchors {
-            top: parent.top
+            top: root.top
             topMargin: units.gu(1)
             left: parent.left
             bottom: parent.bottom
