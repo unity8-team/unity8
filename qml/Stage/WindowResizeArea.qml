@@ -78,12 +78,12 @@ MouseArea {
                                                             Qt.rect(target.windowedX, target.windowedY, defaultWidth, defaultHeight));
 
 
-        target.windowedWidth = Qt.binding(function() { return Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin); });
-        target.windowedHeight = Qt.binding(function() { return Math.min(Math.max(windowGeometry.height, d.minimumHeight),
-                                                                         root.screenHeight - (target.fullscreen ? 0 : PanelState.panelHeight)); });
-        target.windowedX = Qt.binding(function() { return Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - target.windowedWidth),
-                                                           (target.fullscreen ? 0 : root.leftMargin)); });
-        target.windowedY = Qt.binding(function() { return Math.max(Math.min(windowGeometry.y, root.screenHeight - target.windowedHeight), PanelState.panelHeight); });
+        target.windowedWidth = Math.min(Math.max(windowGeometry.width, d.minimumWidth), screenWidth - root.leftMargin);
+        target.windowedHeight = Math.min(Math.max(windowGeometry.height, d.minimumHeight),
+                                                    root.screenHeight - (target.fullscreen ? 0 : PanelState.panelHeight));
+        target.windowedX = Math.max(Math.min(windowGeometry.x, root.screenWidth - root.leftMargin - target.windowedWidth),
+                                                   (target.fullscreen ? 0 : root.leftMargin));
+        target.windowedY = Math.max(Math.min(windowGeometry.y, root.screenHeight - target.windowedHeight), PanelState.panelHeight);
 
         var windowState = windowStateStorage.getState(root.windowId, WindowStateStorage.WindowStateNormal)
         target.restore(false /* animated */, windowState);
