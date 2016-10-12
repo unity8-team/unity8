@@ -35,6 +35,7 @@ set(QMLPLUGIN_SRC
     constants.cpp
     plugin.cpp
     windowstatestorage.cpp
+    URLDispatcher.cpp
     )
 
 add_library(FakeUtils-qml SHARED

@@ -25,6 +25,7 @@
 #include "plugin.h"
 #include "windowstatestorage.h"
 #include "constants.h"
+#include "URLDispatcher.h"
 
 // plugin
 #include <activefocuslogger.h>
@@ -41,7 +42,6 @@
 #include <globalfunctions.h>
 #include <virtualposition.h>
 #include <sharedwindowstate.h>
-#include <unityobject.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -83,9 +83,9 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<InputEventGenerator>(uri, 0, 1, "InputEventGenerator");
     qmlRegisterType<DeviceConfigParser>(uri, 0, 1, "DeviceConfigParser");
     qmlRegisterSingletonType<GlobalFunctions>(uri, 0, 1, "Functions", createGlobalFunctions);
-    qmlRegisterType<VirtualPosition>(uri, 0, 1, "VirtualPosition");
-    qmlRegisterType<UnityObject>(uri, 0, 1, "UnityObject");
+    qmlRegisterType<URLDispatcher>(uri, 0, 1, "URLDispatcher");
 
+    qmlRegisterType<VirtualPosition>(uri, 0, 1, "VirtualPosition");
     qmlRegisterUncreatableType<WindowData>(uri, 0, 1, "WindowState", "Cannot create WindowState type");
     qmlRegisterType<WindowState>(uri, 0, 1, "SharedWindowState");
     qmlRegisterType<WindowStateGeometry>();

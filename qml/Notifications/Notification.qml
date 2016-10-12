@@ -37,7 +37,8 @@ StyledItem {
     property var hints
     property var notification
     property color color: theme.palette.normal.background
-    property bool fullscreen: false
+    property bool fullscreen: notification.notification && typeof notification.notification.fullscreen != "undefined" ?
+                                  notification.notification.fullscreen : false // fullscreen prop only exists in the mock
     property int maxHeight
     property int margins: units.gu(1)
 
@@ -123,7 +124,9 @@ StyledItem {
         if (fullscreen) {
             notification.notification.urgency = Notification.Critical;
         }
-        ListView.view.topmostIsFullscreen = fullscreen;
+        if (index == 0) {
+            ListView.view.topmostIsFullscreen = fullscreen;
+        }
     }
 
     Behavior on implicitHeight {
@@ -140,7 +143,7 @@ StyledItem {
             fill: contents
             margins: shapedBack.visible ? -units.gu(1) : -units.gu(1.5)
         }
-        source: "../Stages/graphics/dropshadow2gu.sci"
+        source: "../graphics/dropshadow2gu.sci"
         opacity: notification.opacity * 0.5
         enabled: !fullscreen
     }

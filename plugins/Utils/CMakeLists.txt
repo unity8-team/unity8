@@ -29,10 +29,10 @@ set(QMLPLUGIN_SRC
     inputeventgenerator.cpp
     deviceconfigparser.cpp
     globalfunctions.cpp
+    URLDispatcher.cpp
     virtualposition.cpp
     windowstatestorage.cpp
     sharedwindowstate.cpp
-    unityobject.cpp
     plugin.cpp
     )
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 Canonical, Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Ubuntu.Gestures 0.1
@@ -10,7 +26,6 @@ Item {
     readonly property real minSpeedToClose: units.gu(40)
     property bool zeroVelocityCounts: false
 
-    readonly property alias containsMouse: mouseArea.containsMouse
     readonly property alias distance: d.distance
 
     signal clicked()
@@ -22,6 +37,7 @@ Item {
         property bool moving: false
         property var dragEvents: []
         property real dragVelocity: 0
+        property int threshold: units.gu(2)
 
         // Can be replaced with a fake implementation during tests
         // property var __getCurrentTimeMs: function () { return new Date().getTime() }
@@ -51,7 +67,6 @@ Item {
             for (var i = 0; i < dragEvents.length; i++) {
                 totalSpeed += dragEvents[i][3]
             }
-            print("total speed", totalSpeed)
 
             if (zeroVelocityCounts || Math.abs(totalSpeed) > 0.001) {
                 dragVelocity = totalSpeed / dragEvents.length * 1000
@@ -69,25 +84,24 @@ Item {
         }
     }
 
+    // Event eater
     MouseArea {
-        id: mouseArea
         anchors.fill: parent
-        hoverEnabled: true
         onClicked: root.clicked()
+        onWheel: wheel.accepted = true
     }
 
     MultiPointTouchArea {
         anchors.fill: parent
         mouseEnabled: false
         maximumTouchPoints: 1
+        property int offset: 0
 
-        onGestureStarted: {
-            if (!d.moving) {
-                d.moving = true
-                gesture.grab();
-                d.dragEvents = []
+        touchPoints: [
+            TouchPoint {
+                id: tp
             }
-        }
+        ]
 
         onCanceled: {
             d.moving = false
@@ -95,18 +109,21 @@ Item {
         }
 
         onTouchUpdated: {
-            if (touchPoints.length == 0 || !d.moving) {
-                return;
+            if (!d.moving) {
+                if (Math.abs(tp.startY - tp.y) > d.threshold) {
+                    d.moving = true;
+                    d.dragEvents = []
+                    offset = tp.y - tp.startY;
+                } else {
+                    return;
+                }
             }
 
-            var touchPoint = touchPoints[0];
-            d.distance = touchPoint.y - touchPoint.startY
-            d.pushDragEvent(touchPoint);
-            print("pushed event", touchPoint.y, "velocity is now", d.dragVelocity)
+            d.distance = tp.y - tp.startY - offset
+            d.pushDragEvent(tp);
         }
 
         onReleased: {
-            print("released", d.moving)
             if (!d.moving) {
                 root.clicked()
             }
@@ -118,7 +135,6 @@ Item {
 
             var touchPoint = touchPoints[0];
 
-            print("released velocity is", d.dragVelocity, "min velocity", root.minSpeedToClose)
             if ((d.dragVelocity < -root.minSpeedToClose && d.distance < -units.gu(8)) || d.distance < -root.height / 2) {
                 animation.animate("up")
             } else if ((d.dragVelocity > root.minSpeedToClose  && d.distance > units.gu(8)) || d.distance > root.height / 2) {
@@ -165,97 +181,3 @@ Item {
         }
     }
 }
-
-//DraggingArea {
-//    id: root
-//    onPressed: mouse.accepted = true;
-//    hoverEnabled: true
-
-
-//    property bool closeable: true
-
-//    property bool moving: false
-//    property real distance: 0
-//    readonly property int threshold: units.gu(2)
-//    property int offset: 0
-
-//    readonly property real minSpeedToClose: units.gu(40)
-
-//    signal close();
-
-//    onMouseYChanged: {
-//        if (pressed) {
-//            appDelegate.y
-//        }
-//    }
-
-//    onDragValueChanged: {
-//        if (!dragging) {
-//            return;
-//        }
-//        moving = moving || Math.abs(dragValue) > threshold;
-//        if (moving) {
-//            distance = dragValue + offset;
-//        }
-//    }
-
-//    onMovingChanged: {
-//        if (moving) {
-//            offset = (dragValue > 0 ? -threshold: threshold)
-//        } else {
-//            offset = 0;
-//        }
-//    }
-
-//    onDragEnd: {
-//        if (!root.closeable) {
-//            animation.animate("center")
-//            return;
-//        }
-
-//        // velocity and distance values specified by design prototype
-//        if ((dragVelocity < -minSpeedToClose && distance < -units.gu(8)) || distance < -root.height / 2) {
-//            animation.animate("up")
-//        } else if ((dragVelocity > minSpeedToClose  && distance > units.gu(8)) || distance > root.height / 2) {
-//            animation.animate("down")
-//        } else {
-//            animation.animate("center")
-//        }
-//    }
-
-//    UbuntuNumberAnimation {
-//        id: animation
-//        objectName: "closeAnimation"
-//        target: dragArea
-//        property: "distance"
-//        property bool requestClose: false
-
-//        function animate(direction) {
-//            animation.from = dragArea.distance;
-//            switch (direction) {
-//            case "up":
-//                animation.to = -root.height * 1.5;
-//                requestClose = true;
-//                break;
-//            case "down":
-//                animation.to = root.height * 1.5;
-//                requestClose = true;
-//                break;
-//            default:
-//                animation.to = 0
-//            }
-//            animation.start();
-//        }
-
-//        onRunningChanged: {
-//            if (!running) {
-//                dragArea.moving = false;
-//                if (requestClose) {
-//                    root.close();
-//                } else {
-//                    dragArea.distance = 0;
-//                }
-//            }
-//        }
-//    }
-//}

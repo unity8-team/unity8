@@ -60,51 +60,56 @@ MousePointer::MousePointer(QQuickItem *parent)
 
 MousePointer::~MousePointer()
 {
+    registerScreen(nullptr);
     InputDispatcherFilter::instance()->unregisterPointer(this);
 }
 
 void MousePointer::handleMouseEvent(ulong /*timestamp*/, QPointF /*movement*/, Qt::MouseButtons /*buttons*/,
         Qt::KeyboardModifiers /*modifiers*/)
 {
-//    if (!parentItem()) {
-//        return;
-//    }
+}
 
-//    if (!movement.isNull()) {
-//        Q_EMIT mouseMoved();
-//    }
+void MousePointer::applyItemConfinement(qreal &newX, qreal &newY)
+{
+    Q_ASSERT(parentItem() != nullptr);
 
-//    m_accumulatedMovement += movement;
-//    // don't apply the fractional part
-//    QPointF appliedMovement(int(m_accumulatedMovement.x()), int(m_accumulatedMovement.y()));
-//    m_accumulatedMovement -= appliedMovement;
+    if (m_confiningItem.isNull()) {
+        return;
+    }
 
-//    qreal newX = x() + appliedMovement.x();
-//    if (newX < 0) {
-//        Q_EMIT pushedLeftBoundary(qAbs(newX), buttons);
-//        newX = 0;
-//    } else if (newX > parentItem()->width()) {
-//        Q_EMIT pushedRightBoundary(newX - parentItem()->width(), buttons);
-//        newX = parentItem()->width();
-//    }
-//    setX(newX);
+    QRectF confiningItemGeometry(0, 0, m_confiningItem->width(), m_confiningItem->height());
 
-//    qreal newY = y() + appliedMovement.y();
-//    if (newY < 0) {
-//        newY = 0;
-//    } else if (newY > parentItem()->height()) {
-//        newY = parentItem()->height();
-//    }
-//    setY(newY);
+    QRectF confiningRect = m_confiningItem->mapRectToItem(parentItem(), confiningItemGeometry);
 
-//    QPointF scenePosition = mapToItem(nullptr, QPointF(0, 0));
-//    QWindowSystemInterface::handleMouseEvent(window(), timestamp, scenePosition /*local*/, scenePosition /*global*/,
-//        buttons, modifiers);
+    if (newX < confiningRect.x()) {
+        newX = confiningRect.x();
+    } else if (newX > confiningRect.right()) {
+        newX = confiningRect.right();
+    }
 
+    if (newY < confiningRect.y()) {
+        newY = confiningRect.y();
+    } else if (newY > confiningRect.bottom()) {
+        newY = confiningRect.bottom();
+    }
 }
 
 void MousePointer::handleWheelEvent(ulong /*timestamp*/, QPoint /*angleDelta*/, Qt::KeyboardModifiers /*modifiers*/)
 {
+}
+
+int MousePointer::topBoundaryOffset() const
+{
+    return m_topBoundaryOffset;
+}
+
+void MousePointer::setTopBoundaryOffset(int topBoundaryOffset)
+{
+    if (m_topBoundaryOffset == topBoundaryOffset)
+        return;
+
+    m_topBoundaryOffset = topBoundaryOffset;
+    Q_EMIT topBoundaryOffsetChanged(topBoundaryOffset);
 }
 
 void MousePointer::itemChange(ItemChange change, const ItemChangeData &value)
@@ -180,4 +185,17 @@ void MousePointer::setThemeName(const QString &themeName)
 void MousePointer::setCustomCursor(const QCursor &customCursor)
 {
     CursorImageProvider::instance()->setCustomCursor(customCursor);
+}
+
+QQuickItem* MousePointer::confiningItem() const
+{
+    return m_confiningItem.data();
+}
+
+void MousePointer::setConfiningItem(QQuickItem *item)
+{
+    if (item != m_confiningItem) {
+        m_confiningItem = item;
+        Q_EMIT confiningItemChanged();
+    }
 }

@@ -38,7 +38,7 @@ FocusScope {
     property bool interactive
     property int surfaceOrientationAngle: 0
     property bool moveSurface: false
-    property bool resizeSurface: true
+
     property bool isPromptSurface: false
     // FIME - dont export, use interactive property. Need to fix qtmir to handle consumesInputChanged
     // to update surface activeFocus. See mock MirSurfaceItem.
@@ -73,31 +73,6 @@ FocusScope {
 
         surfaceWidth: root.requestedWidth
         surfaceHeight: root.requestedHeight
-//        surfaceWidth: {
-//            print("surfaceWidth:", model.application.appId, root.resizeSurface, root.requestedWidth, width)
-//            if (root.resizeSurface) {
-//                if (root.requestedWidth >= 0) {
-//                    return root.requestedWidth;
-//                } else {
-//                    return width;
-//                }
-//            } else {
-//                return -1;
-//            }
-//        }
-
-//        surfaceHeight: {
-//            print("surfaceHeight:", model.application.appId, root.resizeSurface, root.requestedHeight, height)
-//            if (root.resizeSurface) {
-//                if (root.requestedHeight >= 0) {
-//                    return root.requestedHeight;
-//                } else {
-//                    return height;
-//                }
-//            } else {
-//                return -1;
-//            }
-//        }
 
         Binding {
             when: root.moveSurface
@@ -116,34 +91,6 @@ FocusScope {
         anchors.fill: root
         enabled: surfaceItem.enabled
     }
-
-//    // MirSurface size drives SurfaceContainer size
-//    Binding {
-//        target: surfaceItem; property: "width"; value: root.surface ? root.surface.size.width : 0
-//        when: root.requestedWidth >= 0 && root.surface
-//    }
-//    Binding {
-//        target: surfaceItem; property: "height"; value: root.surface ? root.surface.size.height : 0
-//        when: root.requestedHeight >= 0 && root.surface
-//    }
-//    Binding {
-//        target: root; property: "implicitWidth"; value: surfaceItem.width
-//        when: root.requestedWidth >= 0
-//    }
-//    Binding {
-//        target: root; property: "implicitHeight"; value: surfaceItem.height
-//        when: root.requestedHeight >= 0
-//    }
-
-//    // SurfaceContainer size drives MirSurface size
-//    Binding {
-//        target: surfaceItem; property: "width"; value: root.width
-//        when: root.requestedWidth < 0
-//    }
-//    Binding {
-//        target: surfaceItem; property: "height"; value: root.height
-//        when: root.requestedHeight < 0
-//    }
 
     Loader {
         id: animationsLoader

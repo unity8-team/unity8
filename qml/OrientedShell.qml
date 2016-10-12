@@ -105,7 +105,7 @@ Item {
         if (unity8Settings.usageMode === undefined)
             return; // gsettings isn't loaded yet, we'll try again in Component.onCompleted
 
-        console.log("Calculating new usage mode. Pointer devices:", pointerInputDevices, "current mode:", unity8Settings.usageMode, "old device count", miceModel.oldCount + touchPadModel.oldCount, "root width:", root.width / units.gu(1), "height:", root.height / units.gu(1))
+        console.log("Calculating new usage mode. Pointer devices:", pointerInputDevices, "current mode:", unity8Settings.usageMode, "root width:", root.width / units.gu(1), "height:", root.height / units.gu(1))
         if (unity8Settings.usageMode === "Windowed") {
             if (Math.min(root.width, root.height) > units.gu(60)) {
                 if (pointerInputDevices === 0) {
@@ -118,10 +118,12 @@ Item {
             }
         } else {
             if (Math.min(root.width, root.height) > units.gu(60)) {
-                if (pointerInputDevices > 0 && pointerInputDevices > miceModel.oldCount + touchPadModel.oldCount) {
+                if (pointerInputDevices > 0) {
                     unity8Settings.usageMode = "Windowed";
                 }
             } else {
+                console.log("staged")
+
                 // Make sure we initialize to something sane
                 unity8Settings.usageMode = "Staged";
             }

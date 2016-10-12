@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2015-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,17 @@ import UInput 0.1
 Canvas {
     id: root
 
+    property int topBoundaryOffset // effectively panel height
+    property Item confiningItem
+
     signal pushedLeftBoundary(real amount, int buttons)
     signal pushedRightBoundary(real amount, int buttons)
+    signal pushedTopBoundary(real amount, int buttons)
+    signal pushedTopLeftCorner(real amount, int buttons)
+    signal pushedTopRightCorner(real amount, int buttons)
+    signal pushedBottomLeftCorner(real amount, int buttons)
+    signal pushedBottomRightCorner(real amount, int buttons)
+    signal pushStopped()
     signal mouseMoved()
 
     width: units.gu(2)

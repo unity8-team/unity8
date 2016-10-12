@@ -25,7 +25,11 @@ public:
         MaximizedLeft = 1 << 4,
         MaximizedRight = 1 << 5,
         MaximizedHorizontally = 1 << 6,
-        MaximizedVertically = 1 << 7
+        MaximizedVertically = 1 << 7,
+        MaximizedTopLeft = 1 << 8,
+        MaximizedTopRight = 1 << 9,
+        MaximizedBottomLeft = 1 << 10,
+        MaximizedBottomRight = 1 << 11
     };
     Q_DECLARE_FLAGS(States, State)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))

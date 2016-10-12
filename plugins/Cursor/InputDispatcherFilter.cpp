@@ -86,6 +86,11 @@ bool InputDispatcherFilter::eventFilter(QObject *o, QEvent *e)
             if (currentScreen) {
                 QRect screenRect = currentScreen->geometry();
                 qreal unadjustedX = (oldPos + localPos).x();
+                qreal unadjustedY = (oldPos + localPos).x();
+
+                qDebug() << "FIXME - sync with trunk pushtopleft/right/bottom/etc";
+                // TODO - pushtopleft/right/bottomleft/right
+
                 if (unadjustedX < screenRect.left()) {
                     Q_EMIT pushedLeftBoundary(currentScreen, qAbs(unadjustedX - screenRect.left()), me->buttons());
                 } else if (unadjustedX > screenRect.right()) {

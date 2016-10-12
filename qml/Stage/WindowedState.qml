@@ -21,6 +21,7 @@ Item { // needs to be an item for VirtualPosition to work.
     id: root
     property Item target: null
 
+    property int leftMargin: 0
     property int defaultX: units.gu(10)
     property int defaultY: units.gu(10)
     property int defaultWidth: units.gu(60)
@@ -48,6 +49,14 @@ Item { // needs to be an item for VirtualPosition to work.
         onInitialized: {
             shouldLoadState = true;
         }
+    }
+
+    Connections {
+        target: windowedGeometry
+        onXChanged: console.log("MULTIWINDOW onWindowedGeometryChanged x", windowedGeometry.x);
+        onYChanged: console.log("MULTIWINDOW onWindowedGeometryChanged y", windowedGeometry.y);
+        onWidthChanged: console.log("MULTIWINDOW onWindowedGeometryChanged width", windowedGeometry.width);
+        onHeightChanged: console.log("MULTIWINDOW onWindowedGeometryChanged height", windowedGeometry.height);
     }
 
     Component.onCompleted: {
@@ -80,11 +89,10 @@ Item { // needs to be an item for VirtualPosition to work.
                                                mapped0.y,
                                                defaultWidth,
                                                defaultHeight));
-        console.log("loadWindowState", screenWindow.objectName, geo);
+        console.log("MULTIWINDOW loadWindowState", screenWindow.objectName, geo);
 
-        var mapped = relativeMappedPosition.map(Qt.point(geo.x, geo.y));
-        windowedGeometry.x = geo.x;
-        windowedGeometry.y = geo.y;
+        windowedGeometry.x = Qt.binding(function() { return geo.x + (target.fullscreen ? 0 : root.leftMargin); } );
+        windowedGeometry.y = Qt.binding(function() { return geo.y; } );
         windowedGeometry.width = geo.width;
         windowedGeometry.height = geo.height;
 

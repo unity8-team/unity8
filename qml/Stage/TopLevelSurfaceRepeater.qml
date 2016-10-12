@@ -27,7 +27,13 @@ Repeater {
         if (!startingUp) {
             // the top-most surface must be the focused one.
             var topmostDelegate = itemAt(0);
-            topmostDelegate.focus = true;
+            if (topmostDelegate.focus) {
+                // Delegate got focused while we were still starting up. Not good.
+                // Force signal handler to run again
+                topmostDelegate.onFocusChanged(true);
+            } else {
+                topmostDelegate.focus = true;
+            }
         }
     }
 
@@ -48,5 +54,14 @@ Repeater {
         if (!missingDelegate) {
             startingUp = false;
         }
+    }
+
+    function indexOf(delegateItem) {
+        for (var i = 0; i < count; i++) {
+            if (itemAt(i) === delegateItem) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

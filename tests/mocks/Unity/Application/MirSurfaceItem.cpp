@@ -396,15 +396,14 @@ void MirSurfaceItem::setSurfaceHeight(int value)
 
 void MirSurfaceItem::updateSurfaceSize()
 {
-    if (!m_qmlSurface || !m_qmlSurface->live() || (m_surfaceWidth <= 0 && m_surfaceHeight <= 0)) {
-        return;
+    if (m_qmlSurface && m_surfaceWidth > 0 && m_surfaceHeight > 0) {
+        m_qmlSurface->resize(m_surfaceWidth, m_surfaceHeight);
+        if (m_qmlItem) {
+            m_qmlItem->setWidth(m_surfaceWidth);
+            m_qmlItem->setHeight(m_surfaceHeight);
+        }
+        setImplicitSize(m_surfaceWidth, m_surfaceHeight);
     }
-
-    // If one dimension is not set, fallback to the current value
-    int width = m_surfaceWidth > 0 ? m_surfaceWidth : m_qmlSurface->size().width();
-    int height = m_surfaceHeight > 0 ? m_surfaceHeight : m_qmlSurface->size().height();
-
-    m_qmlSurface->resize(width, height);
 }
 
 void MirSurfaceItem::onActualSurfaceSizeChanged(const QSize &size)

@@ -74,6 +74,8 @@ public:
 
     QString name() const override;
 
+    QString persistentId() const override;
+
     QPoint topLeft() const override { return m_topLeft; }
     void moveTo(int x, int y) override { moveTo(QPoint(x, y)); }
     void moveTo(const QPoint &topLeft) override;
@@ -107,6 +109,8 @@ public:
 
     bool focused() const override;
     QRect inputBounds() const override;
+
+    bool confinesMousePointer() const override { return false; }
 
     Q_INVOKABLE void requestFocus() override;
 

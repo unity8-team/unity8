@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,16 @@ Item {
     property real stackingX: (MathUtils.easeOutCubic(rightStackingProgress) - MathUtils.easeOutCubic(leftStackingProgress)) * spread.stackWidth
 
 
+    QtObject {
+        id: d
+        property real spreadScale: MathUtils.clamp(
+                                       MathUtils.map(spreadPosition, 0, 1, spread.leftStackScale, spread.rightStackScale),
+                                                 spread.leftStackScale, spread.rightStackScale)
+
+        property real selectedScale: (spread.highlightedIndex == itemIndex ? 1.01 : 1)
+        Behavior on selectedScale { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
+
+    }
 
     // Output
     readonly property int targetX: spread.leftStackXPos +
@@ -48,14 +58,12 @@ Item {
                             Math.min(spread.dynamicLeftRotationAngle, spread.dynamicRightRotationAngle), Math.max(spread.dynamicLeftRotationAngle, spread.dynamicRightRotationAngle))
 
 
-    readonly property real targetScale: MathUtils.clamp(
-                            MathUtils.map(spreadPosition, 0, 1, spread.leftStackScale, spread.rightStackScale),
-                                      spread.leftStackScale, spread.rightStackScale)
+    readonly property real targetScale: d.spreadScale * d.selectedScale
 
     readonly property real shadowOpacity: 0.2 * (1  - rightStackingProgress) * (1 - leftStackingProgress)
 
 
-    readonly property real closeIconOffset: (scale - 1) * (-root.spreadHeight / 2)
+    readonly property real closeIconOffset: (targetScale - 1) * (-spread.stackHeight / 2)
 
     readonly property real tileInfoOpacity: Math.min(MathUtils.clamp(MathUtils.map(leftStackingProgress, 0 , 1/(spread.stackItemCount*3), 1, 0), 0 , 1),
                                                      MathUtils.clamp(MathUtils.map(spreadPosition, 0.9 , 1, 1, 0), 0 , 1)) /** MathUtils.map(curvedSwitcherProgress, 0.7, 0.9, 0, 1)*/

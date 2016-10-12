@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 Canonical, Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import "MathUtils.js" as MathUtils
@@ -6,9 +22,10 @@ Item {
     id: root
 
     // Information about the environment
-    property int highlightedIndex: 1
+    property int highlightedIndex: -1
     property var model: null
     property int leftMargin: 0
+    property var spreadFlickable
 
     // some config options
     property real contentMargin: 0.16 * root.height
@@ -20,6 +37,7 @@ Item {
     property real rightRotationAngle: 32
     property real leftStackScale: .82
     property real rightStackScale: 1
+    property real rightEdgeBreakPoint: Math.min(units.gu(40) / root.width, .35)
 
     signal leaveSpread()
 
@@ -90,28 +108,17 @@ Item {
         elide: Qt.ElideMiddle
         anchors.horizontalCenter: parent.horizontalCenter
         y: windowTitleTopMargin
-//        //y: priv.spreadTopMargin + priv.contentTopMargin + settings.spreadOffset + settings.titleOffset - height -  (priv.contentTopMargin - height) / 4
-//        visible: height < priv.contentTopMargin
-        property var highlightedSurface: root.model ? root.model.surfaceAt(root.highlightedIndex) : null
-        text: root.highlightedIndex >= 0 && highlightedSurface ? highlightedSurface.name : ""
+        readonly property var highlightedSurface: root.model ? root.model.surfaceAt(root.highlightedIndex) : null
+        readonly property var highlightedApp: root.model ? root.model.applicationAt(root.highlightedIndex) : null
+        text: root.highlightedIndex >= 0 && highlightedSurface && highlightedSurface.name != "" ? highlightedSurface.name :
+                                                                                                  highlightedApp ? highlightedApp.name : ""
         fontSize: root.height < units.gu(85) ? 'medium' : 'large'
         color: "white"
         opacity: root.highlightedIndex >= 0 ? 1 : 0
         Behavior on opacity { UbuntuNumberAnimation { } }
     }
 
-//    Label {
-//        anchors { left: parent.left; top: parent.top; margins: units.gu(4) }
-//        text: "spreadWidth: " + spreadWidth
-//              + "\n spreadItemWidth: " + spreadItemWidth
-//              + "\n flickableContentWidth: " + spreadTotalWidth
-//              + "\n visibleItemCount: " + visibleItemCount
-//              + "\n contentTopMargin: " + contentTopMargin
-//    }
-
-
     Keys.onPressed: {
-        print("key pressed")
         switch (event.key) {
         case Qt.Key_Left:
         case Qt.Key_Backtab:
@@ -141,10 +148,7 @@ Item {
         }
 
         highlightedIndex = (highlightedIndex + 1) % totalItemCount;
-        var newContentX = ((spreadTotalWidth) / (totalItemCount + 1)) * Math.max(0, Math.min(totalItemCount - 5, highlightedIndex - 3));
-//        if (spreadFlickable.contentX < newContentX || spreadRepeater.highlightedIndex == 0) {
-//            spreadFlickable.snapTo(newContentX)
-//        }
+        spreadFlickable.snap(highlightedIndex)
     }
 
     function selectPrevious(isAutoRepeat) {
@@ -152,12 +156,7 @@ Item {
             return; // AutoRepeat is not allowed to wrap around
         }
 
-        var newIndex = highlightedIndex - 1 >= 0 ? highlightedIndex - 1 : totalItemCount - 1;
-        highlightedIndex = newIndex;
-//        var newContentX = ((spreadFlickable.contentWidth) / (topLevelSurfaceList.count + 1)) * Math.max(0, Math.min(topLevelSurfaceList.count - 5, spreadRepeater.highlightedIndex - 1));
-//        if (spreadFlickable.contentX > newContentX || newIndex == topLevelSurfaceList.count -1) {
-//            spreadFlickable.snapTo(newContentX)
-//        }
+        highlightedIndex = highlightedIndex - 1 >= 0 ? highlightedIndex - 1 : totalItemCount - 1;
+        spreadFlickable.snap(highlightedIndex)
     }
-
 }

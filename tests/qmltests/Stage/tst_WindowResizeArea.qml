@@ -20,7 +20,7 @@ import QtTest 1.0
 import Unity.Test 0.1
 import ".."
 import "../../../qml/Components/PanelState"
-import "../../../qml/Stages"
+import "../../../qml/Stage"
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
@@ -34,7 +34,7 @@ Item {
     Binding {
         target: PanelState
         property: "panelHeight"
-        value: units.gu(2)
+        value: units.gu(3)
     }
 
     Component {
@@ -46,12 +46,16 @@ Item {
             property alias resizeAreaMinHeight: windowResizeArea.minHeight
             x: requestedX
             y: requestedY
-            property real requestedX: units.gu(20)
-            property real requestedY: units.gu(20)
+            property real requestedX: windowedX
+            property real requestedY: windowedY
             width: requestedWidth
             height: requestedHeight
-            property real requestedWidth
-            property real requestedHeight
+            property real requestedWidth: windowedWidth
+            property real requestedHeight: windowedHeight
+            property real windowedX: units.gu(20)
+            property real windowedY: units.gu(20)
+            property real windowedWidth
+            property real windowedHeight
             property real minimumWidth: 0
             property real minimumHeight: 0
             property real maximumWidth: 0
@@ -60,9 +64,12 @@ Item {
             property real heightIncrement: 0
 
             property int windowState: WindowStateStorage.WindowStateNormal
+            property real restoredX
+            property real restoredY
 
             states: [
                 State { name: "normal"; when: windowState == WindowStateStorage.WindowStateNormal },
+                State { name: "restored"; when: windowState == WindowStateStorage.WindowStateRestored },
                 State { name: "maximized"; when: windowState == WindowStateStorage.WindowStateMaximized }
             ]
 
@@ -71,7 +78,12 @@ Item {
             }
 
             function restoreFromMaximized() {
-                windowState = WindowStateStorage.WindowStateNormal
+                windowState = WindowStateStorage.WindowStateRestored
+            }
+
+            function restore(animated,state) {
+                windowState = state || WindowStateStorage.WindowStateRestored;
+                windowState &= ~WindowStateStorage.WindowStateMinimized; // clear the minimized bit
             }
 
             WindowResizeArea {
@@ -228,10 +240,10 @@ Item {
         property var fakeWindow: windowLoader.item
 
         function init() {
-            fakeWindow.requestedX = units.gu(20)
-            fakeWindow.requestedY = units.gu(20)
-            fakeWindow.requestedWidth = units.gu(20)
-            fakeWindow.requestedHeight = units.gu(20)
+            fakeWindow.windowedX = units.gu(20)
+            fakeWindow.windowedY = units.gu(20)
+            fakeWindow.windowedWidth = units.gu(20)
+            fakeWindow.windowedHeight = units.gu(20)
             fakeWindow.resizeAreaMinWidth = units.gu(15);
             fakeWindow.resizeAreaMinHeight = units.gu(10);
             fakeWindow.minimumWidth = 0;
@@ -256,8 +268,8 @@ Item {
         }
 
         function test_resizeWindowRightBottom(data) {
-            var initialWindowX = fakeWindow.requestedX;
-            var initialWindowY = fakeWindow.requestedY;
+            var initialWindowX = fakeWindow.windowedX;
+            var initialWindowY = fakeWindow.windowedY;
             var initialWindowWidth = fakeWindow.width
             var initialWindowHeight = fakeWindow.height
 
@@ -282,8 +294,8 @@ Item {
         }
 
         function test_resizeWindowLeftTop(data) {
-            var initialWindowX = fakeWindow.requestedX;
-            var initialWindowY = fakeWindow.requestedY;
+            var initialWindowX = fakeWindow.windowedX;
+            var initialWindowY = fakeWindow.windowedY;
             var initialWindowWidth = fakeWindow.width
             var initialWindowHeight = fakeWindow.height
 
@@ -301,8 +313,8 @@ Item {
         }
 
         function test_saveRestoreSize() {
-            var initialWindowX = fakeWindow.requestedX;
-            var initialWindowY = fakeWindow.requestedY;
+            var initialWindowX = fakeWindow.windowedX;
+            var initialWindowY = fakeWindow.windowedY;
             var initialWindowWidth = fakeWindow.width
             var initialWindowHeight = fakeWindow.height
 
@@ -334,8 +346,8 @@ Item {
         }
 
         function test_resizeSmallerAndLarger(data) {
-            var initialWindowX = fakeWindow.requestedX;
-            var initialWindowY = fakeWindow.requestedY;
+            var initialWindowX = fakeWindow.windowedX;
+            var initialWindowY = fakeWindow.windowedY;
             var initialWindowWidth = fakeWindow.width
             var initialWindowHeight = fakeWindow.height
 
@@ -350,18 +362,18 @@ Item {
         }
 
         function test_saveRestoreMaximized() {
-            var initialWindowX = fakeWindow.requestedX;
-            var initialWindowY = fakeWindow.requestedY;
+            var initialWindowX = fakeWindow.windowedX;
+            var initialWindowY = fakeWindow.windowedY;
 
             var moveDelta = units.gu(5);
 
-            fakeWindow.requestedX = initialWindowX + moveDelta
-            fakeWindow.requestedY = initialWindowY + moveDelta
+            fakeWindow.windowedX = initialWindowX + moveDelta
+            fakeWindow.windowedY = initialWindowY + moveDelta
 
             // Now change the state to maximized. The window should not keep updating the stored values
             fakeWindow.maximize()
-            fakeWindow.requestedX = 31415 // 0 is too risky to pass the test even when broken
-            fakeWindow.requestedY = 31415
+            fakeWindow.windowedX = 31415 // 0 is too risky to pass the test even when broken
+            fakeWindow.windowedY = 31415
 
             // This will destroy the window and recreate it
             windowLoader.active = false;
@@ -391,8 +403,8 @@ Item {
         }
 
         function test_restoreMovesIntoBounds(data) {
-            fakeWindow.requestedX = data.x;
-            fakeWindow.requestedY = data.y;
+            fakeWindow.windowedX = data.x;
+            fakeWindow.windowedY = data.y;
             fakeWindow.width = data.w;
             fakeWindow.height = data.h;
             waitForRendering(root);
@@ -419,8 +431,8 @@ Item {
             and height) increment value.
          */
         function test_sizeIncrement() {
-            var initialWindowX = fakeWindow.requestedX;
-            var initialWindowY = fakeWindow.requestedY;
+            var initialWindowX = fakeWindow.windowedX;
+            var initialWindowY = fakeWindow.windowedY;
             var initialWindowWidth = fakeWindow.width
             var initialWindowHeight = fakeWindow.height
 
@@ -450,12 +462,12 @@ Item {
             Tests that when dragging a window border you cannot make it bigger than its maximum size
          */
         function test_maximumSize() {
-            fakeWindow.requestedX = units.gu(1);
-            fakeWindow.requestedY = units.gu(1);
+            fakeWindow.windowedX = units.gu(1);
+            fakeWindow.windowedY = units.gu(1);
             fakeWindow.resizeAreaMinWidth = 1; // so it does not interfere with anything
             fakeWindow.resizeAreaMinHeight = 1; // so it does not interfere with anything
-            fakeWindow.requestedWidth = units.gu(10);
-            fakeWindow.requestedHeight = units.gu(10);
+            fakeWindow.windowedWidth = units.gu(10);
+            fakeWindow.windowedHeight = units.gu(10);
 
             fakeWindow.maximumWidth = units.gu(20);
             fakeWindow.maximumHeight = units.gu(20);
@@ -480,12 +492,12 @@ Item {
             Tests that when dragging a window border you cannot make it smaller than its minimum size
          */
         function test_minimumSize() {
-            fakeWindow.requestedX = units.gu(1);
-            fakeWindow.requestedY = units.gu(1);
+            fakeWindow.windowedX = units.gu(1);
+            fakeWindow.windowedY = units.gu(1);
             fakeWindow.resizeAreaMinWidth = 1; // so it does not interfere with anything
             fakeWindow.resizeAreaMinHeight = 1; // so it does not interfere with anything
-            fakeWindow.requestedWidth = units.gu(20);
-            fakeWindow.requestedHeight = units.gu(20);
+            fakeWindow.windowedWidth = units.gu(20);
+            fakeWindow.windowedHeight = units.gu(20);
 
             fakeWindow.minimumWidth = units.gu(10);
             fakeWindow.minimumHeight = units.gu(10);

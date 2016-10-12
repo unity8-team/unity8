@@ -32,7 +32,12 @@ public:
         WindowStateMaximizedLeft = 1 << 4,
         WindowStateMaximizedRight = 1 << 5,
         WindowStateMaximizedHorizontally = 1 << 6,
-        WindowStateMaximizedVertically = 1 << 7
+        WindowStateMaximizedVertically = 1 << 7,
+        WindowStateMaximizedTopLeft = 1 << 8,
+        WindowStateMaximizedTopRight = 1 << 9,
+        WindowStateMaximizedBottomLeft = 1 << 10,
+        WindowStateMaximizedBottomRight = 1 << 11,
+        WindowStateRestored = 1 << 12
     };
     Q_DECLARE_FLAGS(WindowStates, WindowState)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
