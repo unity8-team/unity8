@@ -29,6 +29,8 @@
 #include <QElapsedTimer>
 #include <QDateTime>
 #include <QDBusUnixFileDescriptor>
+#include <QDBusServiceWatcher>
+#include <QPointer>
 
 // Glib
 #include <glib.h>
@@ -54,7 +56,14 @@ public:
     QElapsedTimer screensaverActiveTimer;
     QDBusUnixFileDescriptor m_systemdInhibitFd;
 
-    DBusUnitySessionServicePrivate(): QObject() {
+    // inhibit stuff
+    QPointer<QDBusServiceWatcher> m_busWatcher;
+    QHash<uint, QString> m_cookieToBusService;
+
+    DBusUnitySessionServicePrivate():
+        QObject()
+      , m_busWatcher(new QDBusServiceWatcher(this))
+    {
         init();
         checkActive();
     }
@@ -84,6 +93,11 @@ public:
         } else {
             qWarning() << "Failed to get logind session path" << reply.error().message();
         }
+
+        // watch services
+        m_busWatcher->setConnection(QDBusConnection::sessionBus());
+        m_busWatcher->setWatchMode(QDBusServiceWatcher::WatchForUnregistration);
+        connect(m_busWatcher, &QDBusServiceWatcher::serviceUnregistered, this, &DBusUnitySessionServicePrivate::onServiceUnregistered);
     }
 
     void setupSystemdInhibition()
@@ -221,11 +235,16 @@ public:
      *
      * @return the inhibition cookie, or 0 if the call didn't succeed
      */
-    int keepDisplayOn() const {
+    int keepDisplayOn(const QString &service) {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
         QDBusReply<int> reply = QDBusConnection::SM_BUSNAME().call(msg);
         if (reply.isValid()) {
-            return reply;
+            const int cookie = reply.value();
+            if (!m_busWatcher.isNull() && !service.isEmpty()) {
+                m_cookieToBusService.insert(cookie, service);
+                m_busWatcher->addWatchedService(service);
+            }
+            return cookie;
         } else {
             qWarning() << "Failed to inhibit screen blanking" << reply.error().message();
         }
@@ -240,7 +259,13 @@ public:
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("removeDisplayOnRequest"));
         msg << cookie;
         QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().call(msg);
-        if (!reply.isValid()) {
+        if (reply.isValid()) {
+            const QString service = m_cookieToBusService.take(cookie);
+            if (!m_busWatcher.isNull() && !service.isEmpty() && !m_cookieToBusService.key(service)) {
+                // no cookies from service left
+                m_busWatcher->removeWatchedService(service);
+            }
+        } else {
             qWarning() << "Failed to release screen blanking inhibition" << reply.error().message();
         }
     }
@@ -263,6 +288,16 @@ private Q_SLOTS:
             setupSystemdInhibition();
         } else {
             Q_EMIT prepareForSleep();
+        }
+    }
+
+    void onServiceUnregistered(const QString &service)
+    {
+        if (m_cookieToBusService.values().contains(service)) {
+            // Ouch - the application quit or crashed without releasing its inhibitions. Let's fix that.
+            Q_FOREACH (uint cookie, m_cookieToBusService.keys(service)) {
+                removeDisplayOnRequest(cookie);
+            }
         }
     }
 
@@ -596,7 +631,11 @@ void DBusScreensaverWrapper::SimulateUserActivity()
 
 uint DBusScreensaverWrapper::Inhibit(const QString &/*appName*/, const QString &/*reason*/)
 {
-    uint cookie = static_cast<uint>(d->keepDisplayOn());
+    QString service;
+    if (calledFromDBus()) {
+        service = message().service();
+    }
+    uint cookie = static_cast<uint>(d->keepDisplayOn(service));
     d->checkActive();
     return cookie;
 }

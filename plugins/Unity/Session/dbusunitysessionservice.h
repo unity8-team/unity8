@@ -17,6 +17,7 @@
 #ifndef DBUSUNITYSESSIONSERVICE_H
 #define DBUSUNITYSESSIONSERVICE_H
 
+#include <QDBusContext>
 #include <QDBusObjectPath>
 
 #include "unitydbusobject.h"
@@ -322,7 +323,7 @@ Q_SIGNALS:
     void ActiveChanged(bool active);
 };
 
-class DBusScreensaverWrapper: public UnityDBusObject
+class DBusScreensaverWrapper: public UnityDBusObject, protected QDBusContext
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.freedesktop.ScreenSaver")
