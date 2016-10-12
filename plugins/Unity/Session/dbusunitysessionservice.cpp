@@ -235,18 +235,18 @@ public:
      *
      * @return the inhibition cookie, or 0 if the call didn't succeed
      */
-    int keepDisplayOn(const QString &service) {
+    int keepDisplayOn(const QString &service)
+    {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
-        QDBusReply<int> reply = QDBusConnection::SM_BUSNAME().call(msg);
-        if (reply.isValid()) {
-            const int cookie = reply.value();
+        QDBusReply<int> cookie = QDBusConnection::SM_BUSNAME().call(msg);
+        if (cookie.isValid()) {
             if (!m_busWatcher.isNull() && !service.isEmpty()) {
                 m_cookieToBusService.insert(cookie, service);
                 m_busWatcher->addWatchedService(service);
             }
             return cookie;
         } else {
-            qWarning() << "Failed to inhibit screen blanking" << reply.error().message();
+            qWarning() << "Failed to inhibit screen blanking" << cookie.error().message();
         }
 
         return 0;
@@ -255,7 +255,8 @@ public:
     /**
      * Release the repowerd screen inhibition based on @p cookie
      */
-    void removeDisplayOnRequest(int cookie) {
+    void removeDisplayOnRequest(int cookie)
+    {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("removeDisplayOnRequest"));
         msg << cookie;
         QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().call(msg);
@@ -295,7 +296,7 @@ private Q_SLOTS:
     {
         if (m_cookieToBusService.values().contains(service)) {
             // Ouch - the application quit or crashed without releasing its inhibitions. Let's fix that.
-            Q_FOREACH (uint cookie, m_cookieToBusService.keys(service)) {
+            Q_FOREACH(uint cookie, m_cookieToBusService.keys(service)) {
                 removeDisplayOnRequest(cookie);
             }
         }
