@@ -47,10 +47,10 @@ FocusScope {
     property int leftMargin: 0
     property bool oskEnabled: false
     property rect inputMethodRect
+    property real leftEdgeDragProgress: 0
 
     // Configuration
     property string mode: "staged"
-    property real leftEdgeDragProgress: 0
 
     // Used by the tutorial code
     readonly property bool spreadShown: state == "spread"
@@ -1137,6 +1137,7 @@ FocusScope {
                         PropertyChanges {
                             target: decoratedWindow
                             hasDecoration: false
+                            shadowOpacity: stageMaths.itemX != 0 ? .3 : 0
                         }
                         PropertyChanges {
                             target: resizeArea
