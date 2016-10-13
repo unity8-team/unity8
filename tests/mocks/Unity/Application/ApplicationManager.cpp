@@ -112,6 +112,8 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
         return app->exemptFromLifecycle();
     case RoleApplication:
         return QVariant::fromValue(static_cast<unityapi::ApplicationInfoInterface*>(app));
+    case RolePid:
+        return static_cast<int>(app->pid());
     default:
         return QVariant();
     }

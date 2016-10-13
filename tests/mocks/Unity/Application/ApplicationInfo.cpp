@@ -340,6 +340,11 @@ void ApplicationInfo::setShellChrome(Mir::ShellChrome shellChrome)
     }
 }
 
+pid_t ApplicationInfo::pid() const
+{
+    return qrand();
+}
+
 bool ApplicationInfo::focused() const
 {
     bool someSurfaceHasFocus = false; // to be proven wrong
