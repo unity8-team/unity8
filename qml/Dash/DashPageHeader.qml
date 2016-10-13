@@ -99,6 +99,10 @@ Item {
         }
     }
 
+    function unfocus(keepSearch) {
+        searchHeaderContents.unfocus(keepSearch);
+    }
+
     Binding {
         target: searchHeaderContents.searchTextField
         property: "text"

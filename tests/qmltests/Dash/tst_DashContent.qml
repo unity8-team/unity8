@@ -295,21 +295,11 @@ Item {
             verify(carouselLV.tileWidth / carouselLV.tileHeight == cardTool.components["art"]["aspect-ratio"]);
         }
 
-        // The extra panel changes parents based on state so this helper
-        // resolves that
-        function getExtraPanel(searchHeaderContents) {
-           if (searchHeaderContents.extraPanelVisible) {
-                return findChild(searchHeaderContents.thePopover, "extraPanel");
-           } else {
-                return findChild(searchHeaderContents, "extraPanel")
-            }
-        }
-
         function test_mainNavigation() {
             var dashContentList = findChild(dashContent, "dashContentList");
             tryCompareFunction(function() { return findChild(dashContentList.currentItem, "dashNavigation") != null; }, true);
             var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
-            var peExtraPanel = getExtraPanel(searchHeaderContents);
+            var peExtraPanel = findChild(searchHeaderContents, "extraPanel");
             var dashNavigation = findChild(peExtraPanel, "dashNavigation");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
             var searchTextField = findChild(dashContentList.currentItem, "searchTextField");
@@ -440,7 +430,7 @@ Item {
             var dashContentList = findChild(dashContent, "dashContentList");
             var searchHeaderContents = findChild(dashContentList.currentItem,
                                                  "searchHeaderContents");
-            var extraPanel = getExtraPanel(searchHeaderContents);
+            var extraPanel = findChild(searchHeaderContents, "extraPanel");
             var dashNavigation = findChild(extraPanel, "dashNavigation");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
             var searchTextField = findChild(dashContentList.currentItem, "searchTextField");
@@ -457,9 +447,11 @@ Item {
             waitForRendering(navigationListView);
             waitForRendering(navigationListView.currentItem);
 
-            var dashNavigation = findChild(extraPanel, "dashNavigation");
             var navigation4 = findChild(dashNavigation, "navigation0child4");
+            waitForRendering(navigation4);
+            getSettledButtons();
             mouseClick(navigation4);
+
             tryCompare(dashNavigation.currentNavigation, "navigationId", "middle4");
             tryCompare(navigationListView.currentItem.navigation, "navigationId", "middle4");
             tryCompare(dashNavigation.currentNavigation, "loaded", true);
@@ -489,7 +481,7 @@ Item {
             var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
             var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
             var searchTextField = findChild(pageHeader, "searchTextField");
-            var extraPanel = getExtraPanel(searchHeaderContents);
+            var extraPanel = findChild(searchHeaderContents, "extraPanel");
             var dashNavigation = findChild(extraPanel, "dashNavigation");
 
             mouseClick(searchTextField);
@@ -512,7 +504,7 @@ Item {
 
             var dashContentList = findChild(dashContent, "dashContentList");
             var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
-            var extraPanel = getExtraPanel(searchHeaderContents);
+            var extraPanel = findChild(searchHeaderContents, "extraPanel");
             var dashNavigation = findChild(extraPanel, "dashNavigation");
             var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
             var searchTextField = findChild(pageHeader, "searchTextField");
@@ -536,7 +528,7 @@ Item {
 
             var dashContentList = findChild(dashContent, "dashContentList");
             var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
-            var extraPanel = getExtraPanel(searchHeaderContents);
+            var extraPanel = findChild(searchHeaderContents, "extraPanel")
             var dashNavigation = findChild(extraPanel, "dashNavigation");
 
             // Go back to the first level pressing the back button of header2
@@ -637,7 +629,7 @@ Item {
             dashContentList.currentItem.item.scope.setHasNavigation(false);
             var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
             var searchButton = findChild(dashContentList.currentItem, "search_button");
-            var extraPanel = getExtraPanel(searchHeaderContents);
+            var extraPanel = findChild(searchHeaderContents, "extraPanel");
             var dashNavigation = findChild(extraPanel, "dashNavigation");
 
             tryCompare(searchHeaderContents, "extraPanelVisible", false);
@@ -739,7 +731,7 @@ Item {
             var dashContentList = findChild(dashContent, "dashContentList");
             var pageHeader = findChild(dashContentList.currentItem, "scopePageHeader")
             var searchHeaderContents = findChild(pageHeader, "searchHeaderContents");
-            var extraPanel = getExtraPanel(searchHeaderContents);
+            var extraPanel = findChild(searchHeaderContents, "extraPanel")
 
             pageHeader.searchEntryEnabled = true;
             pageHeader.searchHistory.clear();
@@ -758,6 +750,8 @@ Item {
             waitForRendering(recentSearches);
 
             tryCompare(recentSearches.itemAt(0), "visible", true);
+
+            getSettledButtons();
             mouseClick(recentSearches.itemAt(0));
             tryCompare(pageHeader, "searchQuery", "Search2");
             tryCompare(extraPanel, "visible", false);

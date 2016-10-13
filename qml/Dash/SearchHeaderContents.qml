@@ -36,9 +36,6 @@ Item {
     readonly property real extraPanelHeight: extraPanelVisible ?
                            pageHeaderExtraPanel.height : 0
 
-    // For testing only!
-    readonly property alias thePopover: d.extraPanelPopover
-
     signal cancelSearch(bool showSearch);
     signal searchTextFieldFocused();
     signal showSignatureLine(bool show);
@@ -52,11 +49,6 @@ Item {
         State {
             name: "yesExtraPanel"
 
-            ParentChange {
-                target: pageHeaderExtraPanel
-                parent: extraPanelPopover
-            }
-
             PropertyChanges {
                 target: pageHeaderExtraPanel
                 visible: true
@@ -65,7 +57,7 @@ Item {
     ]
 
     function clearSearch(keepPanelOpen) {
-        resetSearch();
+        resetSearch(keepPanelOpen);
         if (typeof(scope) !== "undefined") scope.resetPrimaryNavigationTag();
         if (root.pageHeaderExtraPanel) {
             root.pageHeaderExtraPanel.resetNavigation();
@@ -95,12 +87,12 @@ Item {
         root.unfocus();
     }
 
-    function resetSearch() {
+    function resetSearch(keepPanelOpen) {
         if (root.searchHistory) {
             root.searchHistory.addQuery(searchTextField.text);
         }
         searchTextField.text = "";
-        cancelSearch(false);
+        cancelSearch(keepPanelOpen);
         closePopup(true);
     }
 
@@ -138,12 +130,6 @@ Item {
         state = "yesExtraPanel"
     }
 
-    QtObject {
-        id: d
-
-        property var extraPanelPopover
-    }
-
     Keys.onEscapePressed: { // clear the search text, dismiss the search in the second step
         if (searchTextField.text != "") {
             root.clearSearch(true);
@@ -154,13 +140,14 @@ Item {
         }
     }
 
-    // The extra panel lives outside the popover so that its state can be read
-    // even if the popover is closed (or has never been opened).
-    // This also allows positioning things differently in the future.
     PageHeaderExtraPanel {
         id: pageHeaderExtraPanel
-        anchors.fill: parent
         objectName: "extraPanel"
+
+        anchors.horizontalCenter: root.horizontalCenter
+    	width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
+        height: implicitHeight
+        y: categoryView.pageHeader.height
 
         windowHeight: typeof(scopeView) !== "undefined" ? scopeView.height : 0
         visible: false
@@ -180,21 +167,6 @@ Item {
             searchTextField.text = text;
             root.unfocus(false);
         }
-
-        // Prevent this object from becoming parentless during state changes
-        onParentChanged: if (parent === null) parent = root;
-    }
-
-
-    StyledItem {
-        id: extraPanelPopover
-        objectName: "extraPanelPlaceholder"
-
-		anchors.horizontalCenter: root.horizontalCenter
-    	width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
-		height: pageHeaderExtraPanel.implicitHeight
-
-        y: categoryView.pageHeader.height
     }
 
     TextField {
