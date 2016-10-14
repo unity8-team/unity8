@@ -20,6 +20,7 @@ import Ubuntu.Gestures 0.1
 import Unity 0.2
 import Utils 0.1
 import Unity.DashCommunicator 0.1
+import "DashStateObserver" 1.0
 import "../Components"
 
 Showable {
@@ -38,6 +39,18 @@ Showable {
 
     property bool windowActive: window.active
     property bool showOverlayScope: false
+
+    // Update the dash state across all components
+    state: DashStateObserver.dashState
+    onWidthChanged: {
+        if (dash.width > units.gu(40) ) {
+            if (dash.state !== "Wide") {
+                DashStateObserver.dashState = "Wide"
+            }
+        } else if (dash.state !== "Narrow") {
+            DashStateObserver.dashState = "Narrow"
+        }
+    }
 
     DashCommunicatorService {
         objectName: "dashCommunicatorService"
