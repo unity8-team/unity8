@@ -30,6 +30,7 @@
 #include <QDateTime>
 #include <QDBusUnixFileDescriptor>
 #include <QDBusServiceWatcher>
+#include <QDBusConnectionInterface>
 #include <QPointer>
 
 // Glib
@@ -47,6 +48,14 @@
 #define UNITY_SCREEN_PATH QStringLiteral("/com/canonical/Unity/Screen")
 #define UNITY_SCREEN_IFACE QStringLiteral("com.canonical.Unity.Screen")
 
+struct InhibitionInfo {
+    int cookie{0};
+    QString dbusAppName;
+    QString dbusReason;
+    QString dbusService;
+    pid_t pid{0};
+};
+
 class DBusUnitySessionServicePrivate: public QObject
 {
     Q_OBJECT
@@ -57,12 +66,13 @@ public:
     QDBusUnixFileDescriptor m_systemdInhibitFd;
 
     // inhibit stuff
-    QPointer<QDBusServiceWatcher> m_busWatcher;
-    QHash<uint, QString> m_cookieToBusService;
+    QPointer<QDBusServiceWatcher> busWatcher;
+    std::list<InhibitionInfo> inhibitions;
+    QList<int> screenInhibitionsWhitelist; // list of PIDs
 
     DBusUnitySessionServicePrivate():
         QObject()
-      , m_busWatcher(new QDBusServiceWatcher(this))
+      , busWatcher(new QDBusServiceWatcher(this))
     {
         init();
         checkActive();
@@ -95,9 +105,9 @@ public:
         }
 
         // watch services
-        m_busWatcher->setConnection(QDBusConnection::sessionBus());
-        m_busWatcher->setWatchMode(QDBusServiceWatcher::WatchForUnregistration);
-        connect(m_busWatcher, &QDBusServiceWatcher::serviceUnregistered, this, &DBusUnitySessionServicePrivate::onServiceUnregistered);
+        busWatcher->setConnection(QDBusConnection::sessionBus());
+        busWatcher->setWatchMode(QDBusServiceWatcher::WatchForUnregistration);
+        connect(busWatcher, &QDBusServiceWatcher::serviceUnregistered, this, &DBusUnitySessionServicePrivate::onServiceUnregistered);
     }
 
     void setupSystemdInhibition()
@@ -235,14 +245,38 @@ public:
      *
      * @return the inhibition cookie, or 0 if the call didn't succeed
      */
-    int keepDisplayOn(const QString &service)
+    int addInhibition(const QString &service, int pid, const QString &appName, const QString &reason)
+    {
+        InhibitionInfo inh;
+        inh.dbusAppName = appName;
+        inh.dbusReason = reason;
+        inh.dbusService = service;
+        inh.pid = pid;
+
+        int cookie = 0;
+
+        if (screenInhibitionsWhitelist.contains(pid)) {
+            cookie = addInhibitionHelper(service);
+            if (cookie > 0) {
+                inh.cookie = cookie;
+            }
+        }
+
+        inhibitions.push_back(inh);
+        return cookie;
+    }
+
+    /**
+     * Ask repowerd to keep the display on (enable the inhibition), start watching the service
+     * @return cookie, 0 in failure
+     */
+    int addInhibitionHelper(const QString &service)
     {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
         QDBusReply<int> cookie = QDBusConnection::SM_BUSNAME().call(msg);
         if (cookie.isValid()) {
-            if (!m_busWatcher.isNull() && !service.isEmpty()) {
-                m_cookieToBusService.insert(cookie, service);
-                m_busWatcher->addWatchedService(service);
+            if (!busWatcher.isNull() && !service.isEmpty() && !busWatcher->watchedServices().contains(service)) {
+                busWatcher->addWatchedService(service);
             }
             return cookie;
         } else {
@@ -255,19 +289,47 @@ public:
     /**
      * Release the repowerd screen inhibition based on @p cookie
      */
-    void removeDisplayOnRequest(int cookie)
+    void removeInhibition(int cookie)
     {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("removeDisplayOnRequest"));
         msg << cookie;
         QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().call(msg);
-        if (reply.isValid()) {
-            const QString service = m_cookieToBusService.take(cookie);
-            if (!m_busWatcher.isNull() && !service.isEmpty() && !m_cookieToBusService.key(service)) {
-                // no cookies from service left
-                m_busWatcher->removeWatchedService(service);
-            }
-        } else {
+        if (!reply.isValid()) {
             qWarning() << "Failed to release screen blanking inhibition" << reply.error().message();
+        }
+    }
+
+    /**
+     * Drop the inhibition from the list with the matching @p cookie, cleaning up the bus watcher as well if needed
+     */
+    void removeInhibitionHelper(int cookie)
+    {
+        // drop the inhibition from the list with the matching cookie
+        QString service;
+        inhibitions.remove_if([&service, cookie](const InhibitionInfo & inh) {service = inh.dbusService; return inh.cookie == cookie;});
+
+        if (!busWatcher.isNull() && std::none_of(inhibitions.cbegin(), inhibitions.cend(),
+                                                  [service](const InhibitionInfo & inh){return inh.dbusService == service;})) {
+            // no cookies from service left
+            busWatcher->removeWatchedService(service);
+        }
+    }
+
+    /**
+     * Enable/disable inhibitions dynamically as the whitelist changes
+     */
+    void updateInhibitions()
+    {
+        if (inhibitions.empty()) // no inhibitions set up, bail out
+            return;
+
+        for (InhibitionInfo inh: inhibitions) {
+            if (!screenInhibitionsWhitelist.contains(inh.pid) && inh.cookie > 0) { // not on whitelist anymore, disable temporarily
+                removeInhibition(inh.cookie);
+                inh.cookie = 0; // reset the cookie
+            } else if (screenInhibitionsWhitelist.contains(inh.pid) && inh.cookie == 0) { // on whitelist but not enabled
+                inh.cookie = addInhibitionHelper(inh.dbusService);
+            }
         }
     }
 
@@ -294,10 +356,11 @@ private Q_SLOTS:
 
     void onServiceUnregistered(const QString &service)
     {
-        if (m_cookieToBusService.values().contains(service)) {
-            // Ouch - the application quit or crashed without releasing its inhibitions. Let's fix that.
-            Q_FOREACH(uint cookie, m_cookieToBusService.keys(service)) {
-                removeDisplayOnRequest(cookie);
+        // cleanup inhibitions
+        for (const InhibitionInfo &inh: inhibitions) {
+            if (inh.dbusService == service) {
+                removeInhibition(inh.cookie);
+                removeInhibitionHelper(inh.cookie);
             }
         }
     }
@@ -322,6 +385,21 @@ DBusUnitySessionService::DBusUnitySessionService()
     } else {
         qWarning() << "Failed to connect to logind's session Lock/Unlock signals";
     }
+}
+
+QList<int> DBusUnitySessionService::screenInhibitionsWhitelist() const
+{
+    return d->screenInhibitionsWhitelist;
+}
+
+void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist)
+{
+    if (d->screenInhibitionsWhitelist == screenInhibitionsWhitelist)
+        return;
+
+    d->screenInhibitionsWhitelist = screenInhibitionsWhitelist;
+    Q_EMIT screenInhibitionsWhitelistChanged();
+    d->updateInhibitions();
 }
 
 void DBusUnitySessionService::Logout()
@@ -630,20 +708,23 @@ void DBusScreensaverWrapper::SimulateUserActivity()
     d->setActive(true);
 }
 
-uint DBusScreensaverWrapper::Inhibit(const QString &/*appName*/, const QString &/*reason*/)
+uint DBusScreensaverWrapper::Inhibit(const QString &appName, const QString &reason)
 {
     QString service;
+    int pid = 0;
     if (calledFromDBus()) {
         service = message().service();
+        pid = connection().interface()->servicePid(service);
     }
-    uint cookie = static_cast<uint>(d->keepDisplayOn(service));
+    uint cookie = static_cast<uint>(d->addInhibition(service, pid, appName, reason));
     d->checkActive();
     return cookie;
 }
 
 void DBusScreensaverWrapper::UnInhibit(uint cookie)
 {
-    d->removeDisplayOnRequest(static_cast<int>(cookie));
+    d->removeInhibition(cookie);
+    d->removeInhibitionHelper(cookie);
     d->checkActive();
 }
 

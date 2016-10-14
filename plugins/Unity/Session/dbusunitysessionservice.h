@@ -37,6 +37,12 @@ class DBusUnitySessionService : public UnityDBusObject
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.canonical.Unity.Session")
 
+    /**
+      * List of PIDs allowed to request screen inhibition
+      */
+    Q_PROPERTY(QList<int> screenInhibitionsWhitelist READ screenInhibitionsWhitelist WRITE setScreenInhibitionsWhitelist
+               NOTIFY screenInhibitionsWhitelistChanged)
+
 public:
     DBusUnitySessionService();
     ~DBusUnitySessionService() = default;
@@ -49,6 +55,10 @@ public:
 
     // TODO: remove duplicate signals and split D-Bus and QML API's
     // Apparently QML needs the signals in lowercase, while DBUS spec needs the uppercase version
+
+    QList<int> screenInhibitionsWhitelist() const;
+    void setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist);
+
 Q_SIGNALS:
     /**
      * LogoutRequested signal
@@ -108,6 +118,8 @@ Q_SIGNALS:
      */
     Q_SCRIPTABLE void Unlocked();
     void unlocked();
+
+    void screenInhibitionsWhitelistChanged();
 
 public Q_SLOTS:
     /**

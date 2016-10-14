@@ -17,6 +17,7 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
+import Unity.Session 0.1
 import "../Components/PanelState"
 import "../Components"
 import Utils 0.1
@@ -311,6 +312,24 @@ FocusScope {
         }
 
         readonly property real virtualKeyboardHeight: root.inputMethodRect.height
+
+        function updateScreenInhibitionsWhiteList() {
+            var result = [];
+            if (root.state == "staged" && priv.mainStageDelegate) {
+                result.push(priv.mainStageDelegate.pid);
+            } else if (root.state == "stagedWithSideStage") {
+                if (priv.mainStageDelegate) {
+                    result.push(priv.mainStageDelegate.pid);
+                }
+                if (priv.sideStageDelegate) {
+                    result.push(priv.sideStageDelegate.pid);
+                }
+            } else if (root.state == "windowed") {
+
+            }
+
+            DBusUnitySessionService.screenInhibitionsWhitelist = result;
+        }
     }
 
     Component.onCompleted: priv.updateMainAndSideStageIndexes();
@@ -467,9 +486,16 @@ FocusScope {
         },
         Transition {
             to: "stagedWithSideStage"
-            ScriptAction { script: priv.updateMainAndSideStageIndexes(); }
+            ScriptAction { script: { priv.updateMainAndSideStageIndexes(); priv.updateScreenInhibitionsWhiteList(); }}
+        },
+        Transition {
+            to: "staged"
+            ScriptAction { script: priv.updateScreenInhibitionsWhiteList(); }
+        },
+        Transition {
+            to: "windowed"
+            ScriptAction { script: priv.updateScreenInhibitionsWhiteList(); }
         }
-
     ]
 
     MouseArea {
@@ -510,9 +536,11 @@ FocusScope {
 
         Connections {
             target: root.topLevelSurfaceList
-            onListChanged: priv.updateMainAndSideStageIndexes()
+            onListChanged: {
+                priv.updateMainAndSideStageIndexes();
+                priv.updateScreenInhibitionsWhiteList();
+            }
         }
-
 
         DropArea {
             objectName: "MainStageDropArea"
