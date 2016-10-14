@@ -1,3 +1,10 @@
+unity8 (8.14+16.10.20161014-0ubuntu1) yakkety; urgency=medium
+
+  * MenuItemFactory: activateByVariantString on calendar selection
+    change using proper type (LP: #1541125)
+
+ -- Marco Trevisan (Treviño) <mail@3v1n0.net>  Fri, 14 Oct 2016 16:09:40 +0000
+
 unity8 (8.14+16.10.20160922-0ubuntu2) yakkety; urgency=medium
 
   * debian/control:
