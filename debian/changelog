@@ -1,3 +1,23 @@
+unity8 (8.14+16.10.20161014.4-0ubuntu1) yakkety; urgency=medium
+
+  [ Albert Astals Cid ]
+  * Make more CardTool properties readonly
+  * Make PreviewProgress be thicker again (LP: #1629382)
+  * Make the > in Dash Section Header be after text
+  * Rework Dash Preview column margins
+  * Improve LVWPH <-> GenericScopeView interaction (LP: #1622423)
+  * Make the PreviewButtons be of the width of the button and not half
+    the total width
+  * Fix first column of the preview table to be 25%
+
+  [ Andrea Cimitan ]
+  * Remove background under header pagination dots, update dots assets,
+    remove dash paper background, update bottom edge asset
+  * Few styling changes for cards
+  * various tweaks to fonts inside previews
+
+ -- Andrea Cimitan <andrea.cimitan@canonical.com>  Fri, 14 Oct 2016 15:23:34 +0000
+
 unity8 (8.14+16.10.20160922-0ubuntu2) yakkety; urgency=medium
 
   * debian/control:
