@@ -256,11 +256,18 @@ public:
         int cookie = 0;
 
         if (screenInhibitionsWhitelist.contains(pid)) {
-            cookie = addInhibitionHelper(service);
+            cookie = addInhibitionHelper();
             if (cookie > 0) {
                 inh.cookie = cookie;
             }
         }
+
+        if (!busWatcher.isNull() && !service.isEmpty() && !busWatcher->watchedServices().contains(service)) {
+            qDebug() << "!!! Started watching service:" << service;
+            busWatcher->addWatchedService(service);
+        }
+
+        qDebug() << "!!! addInhibition, cookie:" << cookie;
 
         inhibitions.push_back(inh);
         return cookie;
@@ -270,14 +277,11 @@ public:
      * Ask repowerd to keep the display on (enable the inhibition), start watching the service
      * @return cookie, 0 in failure
      */
-    int addInhibitionHelper(const QString &service)
+    int addInhibitionHelper()
     {
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
         QDBusReply<int> cookie = QDBusConnection::SM_BUSNAME().call(msg);
         if (cookie.isValid()) {
-            if (!busWatcher.isNull() && !service.isEmpty() && !busWatcher->watchedServices().contains(service)) {
-                busWatcher->addWatchedService(service);
-            }
             return cookie;
         } else {
             qWarning() << "Failed to inhibit screen blanking" << cookie.error().message();
@@ -291,6 +295,7 @@ public:
      */
     void removeInhibition(int cookie)
     {
+        qDebug() << "!!! removeInhibition, cookie:" << cookie;
         QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("removeDisplayOnRequest"));
         msg << cookie;
         QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().call(msg);
@@ -304,13 +309,17 @@ public:
      */
     void removeInhibitionHelper(int cookie)
     {
+        qDebug() << "!!! removeInhibitionHelper, cookie:" << cookie;
         // drop the inhibition from the list with the matching cookie
         QString service;
         inhibitions.remove_if([&service, cookie](const InhibitionInfo & inh) {service = inh.dbusService; return inh.cookie == cookie;});
 
+        qDebug() << "!!! Removed inhibition for service?:" << service;
+
         if (!busWatcher.isNull() && std::none_of(inhibitions.cbegin(), inhibitions.cend(),
                                                   [service](const InhibitionInfo & inh){return inh.dbusService == service;})) {
             // no cookies from service left
+            qDebug() << "!!! Stopped watching service:" << service;
             busWatcher->removeWatchedService(service);
         }
     }
@@ -323,12 +332,16 @@ public:
         if (inhibitions.empty()) // no inhibitions set up, bail out
             return;
 
+        qDebug() << "!!! updateInhibitions, whitelist of PIDs:" << screenInhibitionsWhitelist;
+
         for (InhibitionInfo inh: inhibitions) {
-            if (!screenInhibitionsWhitelist.contains(inh.pid) && inh.cookie > 0) { // not on whitelist anymore, disable temporarily
+            if (!screenInhibitionsWhitelist.contains(inh.pid)) { // not on whitelist anymore, disable temporarily
+                qDebug() << "!!! Disabling inhibition, not on whitelist:" << inh.dbusService;
                 removeInhibition(inh.cookie);
                 inh.cookie = 0; // reset the cookie
             } else if (screenInhibitionsWhitelist.contains(inh.pid) && inh.cookie == 0) { // on whitelist but not enabled
-                inh.cookie = addInhibitionHelper(inh.dbusService);
+                qDebug() << "!!! Enabling inhibition, on whitelist but not enabled:" << inh.dbusService;
+                inh.cookie = addInhibitionHelper();
             }
         }
     }
@@ -357,8 +370,10 @@ private Q_SLOTS:
     void onServiceUnregistered(const QString &service)
     {
         // cleanup inhibitions
+        qDebug() << "!!! Cleanup inhibitions";
         for (const InhibitionInfo &inh: inhibitions) {
             if (inh.dbusService == service) {
+                qDebug() << "!!! Cleaning up cookie" << inh.cookie << ", after service:" << inh.dbusService;
                 removeInhibition(inh.cookie);
                 removeInhibitionHelper(inh.cookie);
             }
@@ -710,6 +725,7 @@ void DBusScreensaverWrapper::SimulateUserActivity()
 
 uint DBusScreensaverWrapper::Inhibit(const QString &appName, const QString &reason)
 {
+    qDebug() << "!!! INHIBIT (appName, reason)" << appName << reason;
     QString service;
     int pid = 0;
     if (calledFromDBus()) {
@@ -723,6 +739,7 @@ uint DBusScreensaverWrapper::Inhibit(const QString &appName, const QString &reas
 
 void DBusScreensaverWrapper::UnInhibit(uint cookie)
 {
+    qDebug() << "!!! UNINHIBIT (cookie)" << cookie;
     d->removeInhibition(cookie);
     d->removeInhibitionHelper(cookie);
     d->checkActive();
