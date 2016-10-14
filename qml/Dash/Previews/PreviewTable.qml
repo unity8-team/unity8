@@ -77,7 +77,12 @@ PreviewWidget {
                         font.weight: index == 0 ? Font.Normal : Font.Light
                         wrapMode: Text.Wrap
                         Layout.alignment: Qt.AlignTop
-                        Layout.maximumWidth: column.width - x
+                        Layout.minimumHeight: units.gu(2.75)
+                        Layout.maximumWidth: index == 0 ? column.width / 4 : column.width - x
+                        Layout.minimumWidth: index == 0 ? column.width / 4 : -1
+                        height: -1 // FIXME Qt 5.4 needs this otherwise wrapped columns
+                                   //       get the height wrong and the next row looks weird
+                                   //       remove once we stop supporting Qt 5.4 (if 5.5 doesn't need it)
                     }
                 }
             }
