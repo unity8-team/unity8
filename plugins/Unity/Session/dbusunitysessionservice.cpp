@@ -241,7 +241,7 @@ public:
     }
 
     /**
-     * Check with (re)powerd whether we should keep the display on
+     * Register inhibition, enable it if on whitelist
      *
      * @return the inhibition cookie, or 0 if the call didn't succeed
      */
@@ -371,7 +371,7 @@ private Q_SLOTS:
     {
         // cleanup inhibitions
         qDebug() << "!!! Cleanup inhibitions";
-        for (const InhibitionInfo &inh: inhibitions) {
+        Q_FOREACH(InhibitionInfo inh, inhibitions) {
             if (inh.dbusService == service) {
                 qDebug() << "!!! Cleaning up cookie" << inh.cookie << ", after service:" << inh.dbusService;
                 removeInhibition(inh.cookie);
@@ -409,7 +409,7 @@ QList<int> DBusUnitySessionService::screenInhibitionsWhitelist() const
 
 void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist)
 {
-    if (d->screenInhibitionsWhitelist == screenInhibitionsWhitelist)
+    if (std::is_permutation(d->screenInhibitionsWhitelist.cbegin(), d->screenInhibitionsWhitelist.cend(), screenInhibitionsWhitelist.cbegin()))
         return;
 
     d->screenInhibitionsWhitelist = screenInhibitionsWhitelist;
