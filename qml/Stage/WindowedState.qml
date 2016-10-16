@@ -41,6 +41,8 @@ Item { // needs to be an item for VirtualPosition to work.
     property alias relativePosition: relativeMappedPosition
     property alias absolutePosition: absoluteMappedPosition
 
+    property bool stateLoaded: fase
+
     SharedWindowState {
         id: sharedState
 
@@ -51,19 +53,13 @@ Item { // needs to be an item for VirtualPosition to work.
         }
     }
 
-    Connections {
-        target: windowedGeometry
-        onXChanged: console.log("MULTIWINDOW onWindowedGeometryChanged x", windowedGeometry.x);
-        onYChanged: console.log("MULTIWINDOW onWindowedGeometryChanged y", windowedGeometry.y);
-        onWidthChanged: console.log("MULTIWINDOW onWindowedGeometryChanged width", windowedGeometry.width);
-        onHeightChanged: console.log("MULTIWINDOW onWindowedGeometryChanged height", windowedGeometry.height);
-    }
-
-    Component.onCompleted: {
-        if (sharedState.shouldLoadState) {
-            loadWindowedState();
-        }
-    }
+//    Connections {
+//        target: windowedGeometry
+//        onXChanged: console.log("MULTIWINDOW onWindowedGeometryChanged x", windowedGeometry.x);
+//        onYChanged: console.log("MULTIWINDOW onWindowedGeometryChanged y", windowedGeometry.y);
+//        onWidthChanged: console.log("MULTIWINDOW onWindowedGeometryChanged width", windowedGeometry.width);
+//        onHeightChanged: console.log("MULTIWINDOW onWindowedGeometryChanged height", windowedGeometry.height);
+//    }
 
     VirtualPosition {
         id: relativeMappedPosition
@@ -81,21 +77,6 @@ Item { // needs to be an item for VirtualPosition to work.
     }
 
     function loadWindowedState() {
-        var mapped0 = absoluteMappedPosition.map(Qt.point(defaultX,defaultY));
-        defaultX = -1; defaultX = -1;
-
-        var geo = WindowStateStorage.getGeometry(model.application.appId,
-                                       Qt.rect(mapped0.x,
-                                               mapped0.y,
-                                               defaultWidth,
-                                               defaultHeight));
-        console.log("MULTIWINDOW loadWindowState", screenWindow.objectName, geo);
-
-        windowedGeometry.x = Qt.binding(function() { return geo.x + (target.fullscreen ? 0 : root.leftMargin); } );
-        windowedGeometry.y = Qt.binding(function() { return geo.y; } );
-        windowedGeometry.width = geo.width;
-        windowedGeometry.height = geo.height;
-
         target.animationsEnabled = false;
         var windowState = WindowStateStorage.getState(windowId, WindowState.Normal);
         switch (windowState) {
@@ -123,12 +104,40 @@ Item { // needs to be an item for VirtualPosition to work.
         }
     }
 
+    function loadWindowedGeometry() {
+        if (!sharedState.shouldLoadState) return;
+        stateLoaded = true;
+
+        var mapped0 = absoluteMappedPosition.map(Qt.point(defaultX,defaultY));
+
+        var geo = WindowStateStorage.getGeometry(model.application.appId,
+                                       Qt.rect(mapped0.x,
+                                               mapped0.y,
+                                               defaultWidth,
+                                               defaultHeight));
+
+        console.log("MULTIWINDOW loadWindowState", screenWindow.objectName, geo);
+
+        windowedGeometry.x = Qt.binding(function() {
+            return geo.x + (target.fullscreen ? 0 : root.leftMargin);
+        });
+        windowedGeometry.y = Qt.binding(function() { return geo.y; } );
+        windowedGeometry.width = geo.width;
+        windowedGeometry.height = geo.height;
+
+        // break binding
+        defaultX = defaultX;
+        defaultY = defaultY;
+    }
+
     function saveWindowedState() {
+        if (!stateLoaded) return;
+
         var geo = Qt.rect(windowedGeometry.x,
                           windowedGeometry.y,
                           windowedGeometry.width,
                           windowedGeometry.height);
-        console.log("saveWindowState", screenWindow.objectName, geo, state);
+        console.log("saveWindowedState", screenWindow.objectName, geo, state);
 
         WindowStateStorage.saveGeometry(windowId, geo);
         WindowStateStorage.saveState(windowId, state);

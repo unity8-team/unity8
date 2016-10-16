@@ -194,7 +194,7 @@ FocusScope {
 
         property bool goneToSpread: false
         property int closingIndex: -1
-        property int animationDuration: 5000//UbuntuAnimation.FastDuration
+        property int animationDuration: UbuntuAnimation.FastDuration
 
         function updateForegroundMaximizedApp() {
             var found = false;
@@ -460,7 +460,6 @@ FocusScope {
             to: "stagedWithSideStage"
             ScriptAction { script: priv.updateMainAndSideStageIndexes(); }
         }
-
     ]
 
     MouseArea {
@@ -614,11 +613,11 @@ FocusScope {
 
                 width: decoratedWindow.implicitWidth
                 height: decoratedWindow.implicitHeight
-                opacity: windowState.valid ? windowState.opacity2 : 1
+                opacity: 1//windowState.valid ? windowState.opacity2 : 1
                 scale: windowState.valid ? windowState.scale : 1
 
-                onXChanged: console.log("MULTIWINDOW XChanged ", screenWindow, appId, x)
-                onYChanged: console.log("MULTIWINDOW YChanged ", screenWindow, appId, y)
+//                onXChanged: console.log("MULTIWINDOW XChanged ", screenWindow, appId, x, width)
+//                onYChanged: console.log("MULTIWINDOW YChanged ", screenWindow, appId, y, height)
 
                 WindowedState {
                     id: windowState
@@ -627,7 +626,7 @@ FocusScope {
                     windowId: model.application.appId
 
                     leftMargin: root.leftMargin
-                    defaultX: priv.focusedAppDelegate ? priv.focusedAppDelegate.x + units.gu(3) : (normalZ - 1) * panelState.panelHeight;
+                    defaultX: priv.focusedAppDelegate ? priv.focusedAppDelegate.x + units.gu(3) : (normalZ - 1) * panelState.panelHeight + root.leftMargin;
                     defaultY: priv.focusedAppDelegate ? priv.focusedAppDelegate.y + units.gu(3) : normalZ * panelState.panelHeight;
 
                     relativePosition {
@@ -1238,7 +1237,18 @@ FocusScope {
                         }
                     },
                     State {
+                        name: "windowed"
+                        StateChangeScript {
+                            script: {
+                                if (!windowState.stateLoaded) {
+                                    windowState.loadWindowedGeometry();
+                                }
+                            }
+                        }
+                    },
+                    State {
                         name: "normal"
+                        extend: "windowed"
                         PropertyChanges {
                             target: windowState.geometry
                             x: windowState.windowedGeometry.x
@@ -1253,6 +1263,7 @@ FocusScope {
                     },
                     State {
                         name: "maximized"
+                        extend: "windowed"
                         PropertyChanges {
                             target: appDelegate
                             visuallyMinimized: false
@@ -1273,6 +1284,7 @@ FocusScope {
                     },
                     State {
                         name: "semiMaximized"
+                        extend: "windowed"
                         PropertyChanges { target: touchControls; enabled: true }
                         PropertyChanges { target: resizeArea; enabled: true }
                         PropertyChanges { target: decoratedWindow; shadowOpacity: .3 }
@@ -1389,6 +1401,7 @@ FocusScope {
                     },
                     State {
                         name: "minimized"
+                        extend: "windowed"
                         PropertyChanges {
                             target: appDelegate
                             visuallyMinimized: true
@@ -1456,9 +1469,11 @@ FocusScope {
                     },
                     Transition {
                         to: "normal"
-                        PropertyAction { target: appDelegate; properties: "visuallyMaximized,visuallyMaximized" }
-                        UbuntuNumberAnimation { target: windowState.geometry; properties: "x,y,width,height"; duration: priv.animationDuration }
-                        UbuntuNumberAnimation { target: windowState; properties: "scale,opacity2"; duration: priv.animationDuration }
+                        SequentialAnimation {
+                            PropertyAction { target: appDelegate; properties: "visuallyMaximized,visuallyMaximized" }
+                            UbuntuNumberAnimation { target: windowState.geometry; properties: "x,y,width,height"; duration: priv.animationDuration }
+                            UbuntuNumberAnimation { target: windowState; properties: "scale,opacity2"; duration: priv.animationDuration }
+                        }
                     },
                     Transition {
                         to: "maximized,fullscreen"

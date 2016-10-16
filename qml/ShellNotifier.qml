@@ -23,7 +23,9 @@ import QtQuick 2.4
 
 QtObject {
     property var greeter: QtObject {
-        signal login()
+        signal show()
         signal hide(bool now)
+
+        property bool shown: false
     }
 }

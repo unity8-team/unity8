@@ -40,17 +40,33 @@ Showable {
     showAnimation: StandardAnimation { property: "opacity"; to: 1 }
     hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
 
+    shown: ShellNotifier.greeter.shown
+    Component.onCompleted: opacity = shown ? 1 : 0
+    visible: opacity != 0
+
     Rectangle {
         anchors.fill: parent
         color: UbuntuColors.purple
     }
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.AllButtons
+        onWheel: wheel.accepted = true
+    }
+
     Connections {
         target: ShellNotifier.greeter
-        onLogin: root.hide()
         onHide: {
             if (now) {
                 root.hideNow(); // skip hide animation
+            } else {
+                root.hide();
+            }
+        }
+        onShownChanged: {
+            if (ShellNotifier.greeter.shown) {
+                root.show();
             } else {
                 root.hide();
             }

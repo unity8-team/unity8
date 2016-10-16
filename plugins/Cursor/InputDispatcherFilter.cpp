@@ -41,25 +41,27 @@ InputDispatcherFilter::InputDispatcherFilter(QObject *parent)
 
 void InputDispatcherFilter::registerPointer(MousePointer *pointer)
 {
-    // allow first registered pointer to be visible.
-    pointer->setVisible(m_pointers.count() == 0);
-
     m_pointers.insert(pointer);
-    connect(pointer, &MousePointer::mouseMoved, this, [this, pointer]() {
-        Q_FOREACH(auto p, m_pointers) {
-            p->setVisible(p == pointer);
-        }
-    });
+
+    // allow first registered pointer to be visible.
+//    pointer->setVisible(m_pointers.count() == 0);
+
+//    connect(pointer, &MousePointer::mouseMoved, this, [this, pointer]() {
+//        Q_FOREACH(auto p, m_pointers) {
+//            p->setVisible(p == pointer);
+//        }
+//    });
 }
 
 void InputDispatcherFilter::unregisterPointer(MousePointer *pointer)
 {
     m_pointers.remove(pointer);
-    disconnect(pointer, &MousePointer::mouseMoved, this, 0);
+//    disconnect(pointer, &MousePointer::mouseMoved, this, 0);
 }
 
 void InputDispatcherFilter::setPosition(const QPointF &pos)
 {
+    qDebug() << "InputDispatcherFilter::setPosition" << pos;
     mousePosition = pos;
 }
 
@@ -72,6 +74,8 @@ bool InputDispatcherFilter::eventFilter(QObject *o, QEvent *e)
         case QEvent::MouseButtonPress:
         case QEvent::MouseButtonRelease:
         {
+            return false;
+
             QMouseEvent* me = static_cast<QMouseEvent*>(e);
 
             // Local position gives relative change of mouse pointer.

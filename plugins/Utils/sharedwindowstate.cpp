@@ -55,6 +55,7 @@ void WindowState::setWindowId(const QString &windowId)
     if (!m_windowId.isEmpty()) {
         m_created = false;
         m_data = SharedStateStorage::instance()->windowData(windowId, m_created);
+        if (m_created) m_data->m_stateSource = (qintptr)this;
 
         connect(m_data.data(), &WindowData::validChanged, this, &WindowState::validChanged);
         connect(m_data.data(), &WindowData::stateChanged, this, &WindowState::stateChanged);

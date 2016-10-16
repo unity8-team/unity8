@@ -237,7 +237,10 @@ Showable {
 
         function checkForcedUnlock(hideNow) {
             if (forcedUnlock && shown) {
-                ShellNotifier.greeter.hide(hideNow);
+                hideView();
+                if (hideNow) {
+                    ShellNotifier.greeter.hide(true); // skip hide animation
+                }
             }
         }
 
@@ -392,14 +395,14 @@ Showable {
                 if (root.locked) {
                     LightDMService.greeter.respond(response);
                 } else {
-                    ShellNotifier.greeter.login()
+                    d.login();
                 }
             }
             onTease: root.tease()
             onEmergencyCall: root.emergencyCall()
             onRequiredChanged: {
                 if (!loader.item.required) {
-                    root.hide();
+                    ShellNotifier.greeter.hide(false);
                 }
             }
         }
@@ -533,13 +536,19 @@ Showable {
 
     Connections {
         target: ShellNotifier.greeter
-        onLogin: d.login()
         onHide: {
-            d.hideView();
             if (now) {
                 root.hideNow(); // skip hide animation
+            } else {
+                root.hide();
             }
         }
+    }
+
+    Binding {
+        target: ShellNotifier.greeter
+        property: "shown"
+        value: root.shown
     }
 
     Connections {
@@ -547,7 +556,7 @@ Showable {
         onLockRequested: root.forceShow()
         onUnlocked: {
             root.forcedUnlock = true;
-            root.hideNow();
+            ShellNotifier.greeter.hide(true);
         }
     }
 

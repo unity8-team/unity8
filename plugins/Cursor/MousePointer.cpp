@@ -32,7 +32,7 @@ MousePointer::MousePointer(QQuickItem *parent)
 
     auto mouseMovedFunc = [this]() {
         if (!isEnabled() || !window()) return;
-        QPointF globalPosition =  window()->geometry().topLeft() + mapToItem(nullptr, QPointF(0, 0));
+        QPointF globalPosition =  mapToItem(nullptr, QPointF(0, 0));
         InputDispatcherFilter::instance()->setPosition(globalPosition);
         Q_EMIT mouseMoved();
     };

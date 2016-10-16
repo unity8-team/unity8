@@ -290,14 +290,6 @@ StyledItem {
             topLevelSurfaceList: topLevelSurfaceList
             inputMethodRect: inputMethod.visibleRect
 
-            property string usageScenario: shell.usageScenario === "phone" || greeter.hasLockedApp
-                                                       ? "phone"
-                                                       : shell.usageScenario
-
-            mode: usageScenario == "phone" ? "staged"
-                     : usageScenario == "tablet" ? "stagedWithSideStage"
-                     : "windowed"
-
             shellOrientation: shell.orientation
             shellOrientationAngle: shell.orientationAngle
             orientations: shell.orientations
@@ -311,7 +303,6 @@ StyledItem {
 
             onInteractiveChanged: { if (interactive) { focus = true; } }
 
-            leftMargin: shell.usageScenario == "desktop" && !settings.autohideLauncher ? launcher.panelWidth: 0
             suspended: greeter.shown
             keepDashRunning: launcher.shown || launcher.dashSwipe
             altTabPressed: physicalKeysMapper.altTabPressed
@@ -321,6 +312,52 @@ StyledItem {
             spreadEnabled: tutorial.spreadEnabled && (!greeter || (!greeter.hasLockedApp && !greeter.shown))
 
             panelState: panelState
+
+            readonly property string usageScenario: (greeter && greeter.hasLockedApp) ? "phone" : shell.usageScenario
+
+            mode: {
+                if (stage.usageScenario == "phone") return "staged";
+                if (stage.usageScenario == "tablet") return "stagedWithSideStage";
+                return "windowed";
+            }
+
+            StateGroup {
+                states: [
+                    State {
+                        name: "phone"
+                        when: stage.usageScenario == "phone"
+                        PropertyChanges {
+                            target: stage
+                            mode: "staged"
+                        }
+                    },
+                    State {
+                        name: "tablet"
+                        when: stage.usageScenario == "tablet"
+                        PropertyChanges {
+                            target: stage
+                            mode: "staged"
+                        }
+                    },
+                    State {
+                        name: "desktop"
+                        when: stage.usageScenario !== "phone" && stage.usageScenario !== "tablet"
+                        PropertyChanges {
+                            target: stage
+                            mode: "windowed"
+                            leftMargin: settings.autohideLauncher ? 0 : launcher.panelWidth
+                        }
+                    }
+                ]
+                transitions: [
+                    Transition {
+                        to: "*"
+                        PropertyAction { target: stage; property: "leftMargin" }
+                        PropertyAction { target: stage; property: "mode" }
+                    }
+                ]
+            }
+
         }
     }
 
@@ -723,6 +760,8 @@ StyledItem {
         z: itemGrabber.z + 1
         opacity: 0
         topBoundaryOffset: panel.panelHeight
+
+        onXChanged: console.log("CURSOR", screenWindow.objectName, x, y)
 
         confiningItem: stage.itemConfiningMouseCursor
 
