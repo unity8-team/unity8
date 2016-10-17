@@ -643,12 +643,15 @@ Item {
             var dashContentList = findChild(dashContent, "dashContentList");
             verify(dashContentList !== null);
             var scope = findChild(dashContent, "scopeLoader0");
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents")
+            var searchTextField = findChild(searchHeaderContents, "searchTextField")
             waitForRendering(scope);
 
             var categoryListView = findChild(scope, "categoryListView");
             waitForRendering(categoryListView);
 
             compare(categoryListView.pageHeader.searchHint, "Search People");
+            compare(searchTextField.placeholderText, "Search People")
         }
 
         function compareArrays(a, b) {
