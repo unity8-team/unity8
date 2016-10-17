@@ -145,7 +145,7 @@ Item {
         objectName: "extraPanel"
 
         anchors.horizontalCenter: root.horizontalCenter
-    	width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
+        width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
         height: implicitHeight
         y: categoryView.pageHeader.height
 
