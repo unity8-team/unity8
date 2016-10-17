@@ -1,3 +1,10 @@
+unity8 (8.14+16.10.20161017.3-0ubuntu1) yakkety; urgency=medium
+
+  * Fix the Super key not invoking the dash scope home (LP: #1607427)
+  * Implement the FDO Inhibit DBUS API
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Mon, 17 Oct 2016 13:27:49 +0000
+
 unity8 (8.14+16.10.20160922-0ubuntu2) yakkety; urgency=medium
 
   * debian/control:
