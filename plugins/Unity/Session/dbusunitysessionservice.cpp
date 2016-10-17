@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014, 2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -29,6 +29,9 @@
 #include <QElapsedTimer>
 #include <QDateTime>
 #include <QDBusUnixFileDescriptor>
+#include <QDBusServiceWatcher>
+#include <QDBusConnectionInterface>
+#include <QPointer>
 
 // Glib
 #include <glib.h>
@@ -41,16 +44,36 @@
 #define ACTIVE_KEY QStringLiteral("Active")
 #define IDLE_SINCE_KEY QStringLiteral("IdleSinceHint")
 
+#define UNITY_SCREEN_SERVICE QStringLiteral("com.canonical.Unity.Screen")
+#define UNITY_SCREEN_PATH QStringLiteral("/com/canonical/Unity/Screen")
+#define UNITY_SCREEN_IFACE QStringLiteral("com.canonical.Unity.Screen")
+
+struct InhibitionInfo {
+    int cookie{0};
+    QString dbusAppName;
+    QString dbusReason;
+    QString dbusService;
+    pid_t pid{0};
+};
+
 class DBusUnitySessionServicePrivate: public QObject
 {
     Q_OBJECT
 public:
     QString logindSessionPath;
-    bool isSessionActive = true;
+    bool isSessionActive{true};
     QElapsedTimer screensaverActiveTimer;
     QDBusUnixFileDescriptor m_systemdInhibitFd;
 
-    DBusUnitySessionServicePrivate(): QObject() {
+    // inhibit stuff
+    QPointer<QDBusServiceWatcher> busWatcher;
+    std::list<InhibitionInfo> inhibitions;
+    QList<int> screenInhibitionsWhitelist; // list of PIDs
+
+    DBusUnitySessionServicePrivate():
+        QObject()
+      , busWatcher(new QDBusServiceWatcher(this))
+    {
         init();
         checkActive();
     }
@@ -80,6 +103,11 @@ public:
         } else {
             qWarning() << "Failed to get logind session path" << reply.error().message();
         }
+
+        // watch services
+        busWatcher->setConnection(QDBusConnection::sessionBus());
+        busWatcher->setWatchMode(QDBusServiceWatcher::WatchForUnregistration);
+        connect(busWatcher, &QDBusServiceWatcher::serviceUnregistered, this, &DBusUnitySessionServicePrivate::onServiceUnregistered);
     }
 
     void setupSystemdInhibition()
@@ -128,6 +156,7 @@ public:
         QDBusConnection::SM_BUSNAME().asyncCall(msg);
     }
 
+    // set the session as active or inactive
     void setActive(bool active)
     {
         isSessionActive = active;
@@ -211,6 +240,112 @@ public:
         QDBusConnection::SM_BUSNAME().asyncCall(msg);
     }
 
+    /**
+     * Register inhibition, enable it if on whitelist
+     *
+     * @return the inhibition cookie, or 0 if the call didn't succeed
+     */
+    int addInhibition(const QString &service, int pid, const QString &appName, const QString &reason)
+    {
+        InhibitionInfo inh;
+        inh.dbusAppName = appName;
+        inh.dbusReason = reason;
+        inh.dbusService = service;
+        inh.pid = pid;
+
+        int cookie = 0;
+
+        if (screenInhibitionsWhitelist.contains(pid)) {
+            cookie = addInhibitionHelper();
+            if (cookie > 0) {
+                inh.cookie = cookie;
+            }
+        }
+
+        if (!busWatcher.isNull() && !service.isEmpty() && !busWatcher->watchedServices().contains(service)) {
+            qDebug() << "!!! Started watching service:" << service;
+            busWatcher->addWatchedService(service);
+        }
+
+        qDebug() << "!!! addInhibition, cookie:" << cookie;
+
+        inhibitions.push_back(inh);
+        return cookie;
+    }
+
+    /**
+     * Ask repowerd to keep the display on (enable the inhibition), start watching the service
+     * @return cookie, 0 in failure
+     */
+    int addInhibitionHelper()
+    {
+        QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("keepDisplayOn"));
+        QDBusReply<int> cookie = QDBusConnection::SM_BUSNAME().call(msg);
+        if (cookie.isValid()) {
+            return cookie;
+        } else {
+            qWarning() << "Failed to inhibit screen blanking" << cookie.error().message();
+        }
+
+        return 0;
+    }
+
+    /**
+     * Release the repowerd screen inhibition based on @p cookie
+     */
+    void removeInhibition(int cookie)
+    {
+        qDebug() << "!!! removeInhibition, cookie:" << cookie;
+        QDBusMessage msg = QDBusMessage::createMethodCall(UNITY_SCREEN_SERVICE, UNITY_SCREEN_PATH, UNITY_SCREEN_IFACE, QStringLiteral("removeDisplayOnRequest"));
+        msg << cookie;
+        QDBusReply<void> reply = QDBusConnection::SM_BUSNAME().call(msg);
+        if (!reply.isValid()) {
+            qWarning() << "Failed to release screen blanking inhibition" << reply.error().message();
+        }
+    }
+
+    /**
+     * Drop the inhibition from the list with the matching @p cookie, cleaning up the bus watcher as well if needed
+     */
+    void removeInhibitionHelper(int cookie)
+    {
+        qDebug() << "!!! removeInhibitionHelper, cookie:" << cookie;
+        // drop the inhibition from the list with the matching cookie
+        QString service;
+        inhibitions.remove_if([&service, cookie](const InhibitionInfo & inh) {service = inh.dbusService; return inh.cookie == cookie;});
+
+        qDebug() << "!!! Removed inhibition for service?:" << service;
+
+        if (!busWatcher.isNull() && std::none_of(inhibitions.cbegin(), inhibitions.cend(),
+                                                  [service](const InhibitionInfo & inh){return inh.dbusService == service;})) {
+            // no cookies from service left
+            qDebug() << "!!! Stopped watching service:" << service;
+            busWatcher->removeWatchedService(service);
+        }
+    }
+
+    /**
+     * Enable/disable inhibitions dynamically as the whitelist changes
+     */
+    void updateInhibitions()
+    {
+        if (inhibitions.empty()) // no inhibitions set up, bail out
+            return;
+
+        qDebug() << "!!! updateInhibitions, whitelist of PIDs:" << screenInhibitionsWhitelist;
+
+        for (InhibitionInfo inh: inhibitions) {
+            if (!screenInhibitionsWhitelist.contains(inh.pid)) { // not on whitelist anymore, disable temporarily
+                qDebug() << "!!! Disabling inhibition, not on whitelist:" << inh.dbusService;
+                removeInhibition(inh.cookie);
+                inh.cookie = 0; // reset the cookie
+            } else if (screenInhibitionsWhitelist.contains(inh.pid) && inh.cookie == 0) { // on whitelist but not enabled
+                qDebug() << "!!! Enabling inhibition, on whitelist but not enabled:" << inh.dbusService;
+                inh.cookie = addInhibitionHelper();
+            }
+        }
+    }
+
 private Q_SLOTS:
     void onPropertiesChanged(const QString &iface, const QVariantMap &changedProps, const QStringList &invalidatedProps)
     {
@@ -232,6 +367,19 @@ private Q_SLOTS:
         }
     }
 
+    void onServiceUnregistered(const QString &service)
+    {
+        // cleanup inhibitions
+        qDebug() << "!!! Cleanup inhibitions";
+        Q_FOREACH(InhibitionInfo inh, inhibitions) {
+            if (inh.dbusService == service) {
+                qDebug() << "!!! Cleaning up cookie" << inh.cookie << ", after service:" << inh.dbusService;
+                removeInhibition(inh.cookie);
+                removeInhibitionHelper(inh.cookie);
+            }
+        }
+    }
+
 Q_SIGNALS:
     void screensaverActiveChanged(bool active);
     void prepareForSleep();
@@ -245,13 +393,28 @@ DBusUnitySessionService::DBusUnitySessionService()
     if (!d->logindSessionPath.isEmpty()) {
         // connect our PromptLock() slot to the logind's session Lock() signal
         QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, QStringLiteral("Lock"), this, SLOT(PromptLock()));
-        // ... and our Unlocked() signal to the logind's session Unlock() signal
+        // ... and our doUnlock() slot to the logind's session Unlock() signal
         // (lightdm handles the unlocking by calling logind's Unlock method which in turn emits this signal we connect to)
         QDBusConnection::SM_BUSNAME().connect(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, QStringLiteral("Unlock"), this, SLOT(doUnlock()));
         connect(d, &DBusUnitySessionServicePrivate::prepareForSleep, this, &DBusUnitySessionService::PromptLock);
     } else {
         qWarning() << "Failed to connect to logind's session Lock/Unlock signals";
     }
+}
+
+QList<int> DBusUnitySessionService::screenInhibitionsWhitelist() const
+{
+    return d->screenInhibitionsWhitelist;
+}
+
+void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist)
+{
+    if (std::is_permutation(d->screenInhibitionsWhitelist.cbegin(), d->screenInhibitionsWhitelist.cend(), screenInhibitionsWhitelist.cbegin()))
+        return;
+
+    d->screenInhibitionsWhitelist = screenInhibitionsWhitelist;
+    Q_EMIT screenInhibitionsWhitelistChanged();
+    d->updateInhibitions();
 }
 
 void DBusUnitySessionService::Logout()
@@ -307,27 +470,12 @@ QString DBusUnitySessionService::UserName() const
 
 QString DBusUnitySessionService::RealName() const
 {
-    struct passwd *p = getpwuid(geteuid());
-    if (p) {
-        const QString gecos = QString::fromLocal8Bit(p->pw_gecos);
-        if (!gecos.isEmpty()) {
-            const QStringList splitGecos = gecos.split(QLatin1Char(','));
-            return splitGecos.first();
-        }
-    }
-
-    return QString();
+    return QString::fromUtf8(g_get_real_name());
 }
 
 QString DBusUnitySessionService::HostName() const
 {
-    char hostName[512];
-    if (gethostname(hostName, sizeof(hostName)) == -1) {
-        qWarning() << "Could not determine local hostname";
-        return QString();
-    }
-    hostName[sizeof(hostName) - 1] = '\0';
-    return QString::fromLocal8Bit(hostName);
+    return QString::fromUtf8(g_get_host_name());
 }
 
 void DBusUnitySessionService::PromptLock()
@@ -337,6 +485,7 @@ void DBusUnitySessionService::PromptLock()
     // user session.
     Q_EMIT LockRequested();
     Q_EMIT lockRequested();
+    d->setActive(false);
 }
 
 void DBusUnitySessionService::Lock()
@@ -395,6 +544,7 @@ void DBusUnitySessionService::doUnlock()
 {
     Q_EMIT Unlocked();
     Q_EMIT unlocked();
+    d->setActive(true);
 }
 
 bool DBusUnitySessionService::IsLocked() const
@@ -528,7 +678,7 @@ quint32 DBusGnomeScreensaverWrapper::GetActiveTime() const
 
 void DBusGnomeScreensaverWrapper::SimulateUserActivity()
 {
-    d->setIdleHint(false);
+    d->setActive(true);
 }
 
 
@@ -570,7 +720,29 @@ quint32 DBusScreensaverWrapper::GetSessionIdleTime() const
 
 void DBusScreensaverWrapper::SimulateUserActivity()
 {
-    d->setIdleHint(false);
+    d->setActive(true);
+}
+
+uint DBusScreensaverWrapper::Inhibit(const QString &appName, const QString &reason)
+{
+    qDebug() << "!!! INHIBIT (appName, reason)" << appName << reason;
+    QString service;
+    int pid = 0;
+    if (calledFromDBus()) {
+        service = message().service();
+        pid = connection().interface()->servicePid(service);
+    }
+    uint cookie = static_cast<uint>(d->addInhibition(service, pid, appName, reason));
+    d->checkActive();
+    return cookie;
+}
+
+void DBusScreensaverWrapper::UnInhibit(uint cookie)
+{
+    qDebug() << "!!! UNINHIBIT (cookie)" << cookie;
+    d->removeInhibition(cookie);
+    d->removeInhibitionHelper(cookie);
+    d->checkActive();
 }
 
 #include "dbusunitysessionservice.moc"

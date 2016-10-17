@@ -28,7 +28,6 @@ public:
     explicit UnityDBusObject(const QString &path, const QString &service = QString(), bool async = true, QObject *parent = 0);
     ~UnityDBusObject();
 
-    QDBusConnection connection() const;
     QString path() const;
 
 protected:

@@ -107,6 +107,7 @@ public:
     MirSurfaceListInterface* surfaceList() const override { return m_surfaceList; }
     MirSurfaceListInterface* promptSurfaceList() const override { return m_promptSurfaceList; }
     int surfaceCount() const override { return m_surfaceList->count(); }
+    pid_t pid() const override;
 
     void setFocused(bool value);
 

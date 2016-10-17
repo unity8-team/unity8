@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2014, 2015 Canonical, Ltd.
+ * Copyright (C) 2014-2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -17,6 +17,7 @@
 #ifndef DBUSUNITYSESSIONSERVICE_H
 #define DBUSUNITYSESSIONSERVICE_H
 
+#include <QDBusContext>
 #include <QDBusObjectPath>
 
 #include "unitydbusobject.h"
@@ -36,6 +37,12 @@ class DBusUnitySessionService : public UnityDBusObject
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.canonical.Unity.Session")
 
+    /**
+      * List of PIDs allowed to request screen inhibition
+      */
+    Q_PROPERTY(QList<int> screenInhibitionsWhitelist READ screenInhibitionsWhitelist WRITE setScreenInhibitionsWhitelist
+               NOTIFY screenInhibitionsWhitelistChanged)
+
 public:
     DBusUnitySessionService();
     ~DBusUnitySessionService() = default;
@@ -48,6 +55,10 @@ public:
 
     // TODO: remove duplicate signals and split D-Bus and QML API's
     // Apparently QML needs the signals in lowercase, while DBUS spec needs the uppercase version
+
+    QList<int> screenInhibitionsWhitelist() const;
+    void setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist);
+
 Q_SIGNALS:
     /**
      * LogoutRequested signal
@@ -107,6 +118,8 @@ Q_SIGNALS:
      */
     Q_SCRIPTABLE void Unlocked();
     void unlocked();
+
+    void screenInhibitionsWhitelistChanged();
 
 public Q_SLOTS:
     /**
@@ -313,13 +326,16 @@ public Q_SLOTS:
      */
     Q_SCRIPTABLE quint32 GetActiveTime() const;
 
+    /**
+     * Simulate user activity, thus interrupting the screensaver
+     */
     Q_SCRIPTABLE void SimulateUserActivity();
 
 Q_SIGNALS:
     void ActiveChanged(bool active);
 };
 
-class DBusScreensaverWrapper: public UnityDBusObject
+class DBusScreensaverWrapper: public UnityDBusObject, protected QDBusContext
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.freedesktop.ScreenSaver")
@@ -354,7 +370,26 @@ public Q_SLOTS:
      */
     Q_SCRIPTABLE quint32 GetSessionIdleTime() const;
 
+    /**
+     * Simulate user activity, thus interrupting the screensaver
+     */
     Q_SCRIPTABLE void SimulateUserActivity();
+
+    /**
+     * Inhibit idleness (ie screen blanking) for the caller application.
+     *
+     * @param appName A unique identifier for the application, usually a reverse domain (such as 'org.freedesktop.example').
+     * @param reason A human-readable and possibly translated string explaining the reason why idleness is inhibited (such as 'Playing a movie').
+     * @return A cookie uniquely representing the inhibition request, to be passed to UnInhibit when done; 0 in case of error
+     */
+    Q_SCRIPTABLE uint Inhibit(const QString &appName, const QString &reason);
+
+    /**
+     * Disable inhibit idleness for the caller application.
+     *
+     * @param cookie A cookie representing the inhibition request, as returned by the 'Inhibit' function.
+     */
+    Q_SCRIPTABLE void UnInhibit(uint cookie);
 
 Q_SIGNALS:
     void ActiveChanged(bool active);

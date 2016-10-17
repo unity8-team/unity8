@@ -42,11 +42,6 @@ UnityDBusObject::~UnityDBusObject()
     m_connection.unregisterObject(path());
 }
 
-QDBusConnection UnityDBusObject::connection() const
-{
-    return m_connection;
-}
-
 QString UnityDBusObject::path() const
 {
     return m_path;
@@ -70,7 +65,7 @@ void UnityDBusObject::notifyPropertyChanged(const QString& propertyName, const Q
     message << changedProps;
     message << QStringList();
 
-    connection().send(message);
+    m_connection.send(message);
 }
 
 void UnityDBusObject::registerObject()
