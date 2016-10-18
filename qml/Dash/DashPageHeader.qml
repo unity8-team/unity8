@@ -128,6 +128,49 @@ Item {
         }
     }
 
+    Rectangle {
+        id: bottomBorder
+        visible: showSignatureLine
+        anchors {
+            top: headerContainer.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        color: root.scopeStyle ? root.scopeStyle.headerDividerColor : "#e0e0e0"
+
+        Rectangle {
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: units.dp(1)
+            color: Qt.darker(parent.color, 1.1)
+        }
+    }
+
+    Row {
+        visible: bottomBorder.visible
+        spacing: units.gu(.5)
+        Repeater {
+            objectName: "paginationRepeater"
+            model: root.paginationCount
+            Image {
+                objectName: "paginationDots_" + index
+                height: units.gu(1)
+                width: height
+                source: (index == root.paginationIndex) ? "graphics/pagination_dot_on.png" : "graphics/pagination_dot_off.png"
+            }
+        }
+        anchors {
+            top: headerContainer.bottom
+            horizontalCenter: headerContainer.horizontalCenter
+            topMargin: units.gu(.5)
+        }
+    }
+
     Item {
         id: headerContainer
         objectName: "headerContainer"
@@ -199,16 +242,16 @@ Item {
 
                     activeFiltersCount: root.activeFiltersCount
                     categoryView: root.categoryView
+                    extraPanelYOffset: root.signatureLineHeight
+                    navigationTag: root.navigationTag
                     scope: root.scope
                     scopeView: root.scopeView
                     searchHistory: root.searchHistory
-                    navigationTag: root.navigationTag
 
                     // PageHeader adds margins and that throws off the width
                     parentWidth: root.width
                     onCancelSearch: headerContainer.showSearch = showSearch;
                     onSearchTextFieldFocused: root.searchTextFieldFocused();
-                    onShowSignatureLine: root.showSignatureLine = show;
 
                     Binding {
                         target: root
@@ -293,49 +336,6 @@ Item {
                     }
                 }
             }
-        }
-    }
-
-    Rectangle {
-        id: bottomBorder
-        visible: showSignatureLine
-        anchors {
-            top: headerContainer.bottom
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-
-        color: root.scopeStyle ? root.scopeStyle.headerDividerColor : "#e0e0e0"
-
-        Rectangle {
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-            }
-            height: units.dp(1)
-            color: Qt.darker(parent.color, 1.1)
-        }
-    }
-
-    Row {
-        visible: bottomBorder.visible
-        spacing: units.gu(.5)
-        Repeater {
-            objectName: "paginationRepeater"
-            model: root.paginationCount
-            Image {
-                objectName: "paginationDots_" + index
-                height: units.gu(1)
-                width: height
-                source: (index == root.paginationIndex) ? "graphics/pagination_dot_on.png" : "graphics/pagination_dot_off.png"
-            }
-        }
-        anchors {
-            top: headerContainer.bottom
-            horizontalCenter: headerContainer.horizontalCenter
-            topMargin: units.gu(.5)
         }
     }
 

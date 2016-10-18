@@ -26,6 +26,7 @@ Item {
     property string navigationTag
 
     property ListModel searchHistory
+    property real extraPanelYOffset
     property var categoryView
     property var scope
     property var scopeView
@@ -38,7 +39,6 @@ Item {
 
     signal cancelSearch(bool showSearch);
     signal searchTextFieldFocused();
-    signal showSignatureLine(bool show);
 
     state: "noExtraPanel"
     states: [
@@ -121,12 +121,10 @@ Item {
     }
 
     function hideExtraPanel() {
-        showSignatureLine(true);
         state = "noExtraPanel"
     }
 
     function showExtraPanel() {
-        showSignatureLine(false);
         state = "yesExtraPanel"
     }
 
@@ -147,7 +145,7 @@ Item {
         anchors.horizontalCenter: root.horizontalCenter
         width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
         height: implicitHeight
-        y: categoryView.pageHeader.height
+        y: categoryView.pageHeader.height - root.extraPanelYOffset
 
         windowHeight: typeof(scopeView) !== "undefined" ? scopeView.height : 0
         visible: false
