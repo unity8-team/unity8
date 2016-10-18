@@ -1,3 +1,9 @@
+unity8 (8.14+17.04.20161018-0ubuntu1) zesty; urgency=medium
+
+  * No change rebuild against new qtdeclarative.
+
+ -- Timo Jyrinki <timo.jyrinki@canonical.com>  Tue, 18 Oct 2016 12:28:59 +0000
+
 unity8 (8.14+16.10.20160922-0ubuntu2) yakkety; urgency=medium
 
   * debian/control:
