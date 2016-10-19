@@ -771,7 +771,7 @@ FocusScope {
                 readonly property string appId: model.application.appId
                 readonly property bool isDash: appId == "unity8-dash"
                 readonly property alias clientAreaItem: decoratedWindow.clientAreaItem
-                readonly property alias pid: model.pid
+                readonly property int pid: model.pid
 
                 function claimFocus() {
                     if (root.state == "spread") {
