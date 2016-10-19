@@ -325,7 +325,12 @@ FocusScope {
                     result.push(priv.sideStageDelegate.pid);
                 }
             } else if (root.state == "windowed") {
-
+                for (var i = 0; i < appRepeater.count; i++) {
+                    var appDelegate = appRepeater.itemAt(i);
+                    if (appDelegate) {
+                        result.push(appDelegate.pid);
+                    }
+                }
             }
 
             DBusUnitySessionService.screenInhibitionsWhitelist = result;
@@ -766,6 +771,7 @@ FocusScope {
                 readonly property string appId: model.application.appId
                 readonly property bool isDash: appId == "unity8-dash"
                 readonly property alias clientAreaItem: decoratedWindow.clientAreaItem
+                readonly property alias pid: model.pid
 
                 function claimFocus() {
                     if (root.state == "spread") {
