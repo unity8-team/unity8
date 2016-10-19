@@ -333,6 +333,8 @@ FocusScope {
                 }
             }
 
+            print("!!! Inhibition whitelist updated:", result);
+
             DBusUnitySessionService.screenInhibitionsWhitelist = result;
         }
     }

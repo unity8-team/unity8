@@ -329,10 +329,11 @@ public:
      */
     void updateInhibitions()
     {
+        qDebug() << "!!! Update inhibitions, empty?" << inhibitions.empty();
         if (inhibitions.empty()) // no inhibitions set up, bail out
             return;
 
-        qDebug() << "!!! updateInhibitions, whitelist of PIDs:" << screenInhibitionsWhitelist;
+        qDebug() << "!!! Update inhibitions, whitelist of PIDs:" << screenInhibitionsWhitelist;
 
         for (InhibitionInfo inh: inhibitions) {
             if (!screenInhibitionsWhitelist.contains(inh.pid)) { // not on whitelist anymore, disable temporarily
@@ -409,6 +410,7 @@ QList<int> DBusUnitySessionService::screenInhibitionsWhitelist() const
 
 void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist)
 {
+    qDebug() << "!!! Update whitelist:" << screenInhibitionsWhitelist;
     if (std::is_permutation(d->screenInhibitionsWhitelist.cbegin(), d->screenInhibitionsWhitelist.cend(), screenInhibitionsWhitelist.cbegin()))
         return;
 
