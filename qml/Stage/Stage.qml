@@ -327,7 +327,7 @@ FocusScope {
             } else if (root.state == "windowed") {
                 for (var i = 0; i < appRepeater.count; i++) {
                     var appDelegate = appRepeater.itemAt(i);
-                    if (appDelegate) {
+                    if (appDelegate && appDelegate.pid > 0) {
                         result.push(appDelegate.pid);
                     }
                 }

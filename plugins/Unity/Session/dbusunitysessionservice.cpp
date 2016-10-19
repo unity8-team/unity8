@@ -255,12 +255,13 @@ public:
 
         int cookie = 0;
 
-        if (screenInhibitionsWhitelist.contains(pid)) {
+        if (whiteListCheck(pid)) {
             cookie = addInhibitionHelper();
             if (cookie > 0) {
                 inh.cookie = cookie;
             }
-        }
+        } else
+            qDebug() << "!!! Whitelist doesn't contain pid:" << pid << screenInhibitionsWhitelist;
 
         if (!busWatcher.isNull() && !service.isEmpty() && !busWatcher->watchedServices().contains(service)) {
             qDebug() << "!!! Started watching service:" << service;
@@ -317,7 +318,7 @@ public:
         qDebug() << "!!! Removed inhibition for service?:" << service;
 
         if (!busWatcher.isNull() && std::none_of(inhibitions.cbegin(), inhibitions.cend(),
-                                                  [service](const InhibitionInfo & inh){return inh.dbusService == service;})) {
+                                                 [service](const InhibitionInfo & inh){return inh.dbusService == service;})) {
             // no cookies from service left
             qDebug() << "!!! Stopped watching service:" << service;
             busWatcher->removeWatchedService(service);
@@ -336,15 +337,20 @@ public:
         qDebug() << "!!! Update inhibitions, whitelist of PIDs:" << screenInhibitionsWhitelist;
 
         for (InhibitionInfo inh: inhibitions) {
-            if (!screenInhibitionsWhitelist.contains(inh.pid)) { // not on whitelist anymore, disable temporarily
+            if (!whiteListCheck(inh.pid)) { // not on whitelist anymore, disable temporarily
                 qDebug() << "!!! Disabling inhibition, not on whitelist:" << inh.dbusService;
                 removeInhibition(inh.cookie);
                 inh.cookie = 0; // reset the cookie
-            } else if (screenInhibitionsWhitelist.contains(inh.pid) && inh.cookie == 0) { // on whitelist but not enabled
+            } else if (whiteListCheck(inh.pid) && inh.cookie == 0) { // on whitelist but not enabled
                 qDebug() << "!!! Enabling inhibition, on whitelist but not enabled:" << inh.dbusService;
                 inh.cookie = addInhibitionHelper();
             }
         }
+    }
+
+    bool whiteListCheck(int pid) const {
+        // FIXME for a container, we get a different PID than the real app inside which appears on DBUS!
+        return true; // screenInhibitionsWhitelist.contains(pid);
     }
 
 private Q_SLOTS:
@@ -410,8 +416,8 @@ QList<int> DBusUnitySessionService::screenInhibitionsWhitelist() const
 
 void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist)
 {
-    qDebug() << "!!! Update whitelist:" << screenInhibitionsWhitelist;
-    if (std::is_permutation(d->screenInhibitionsWhitelist.cbegin(), d->screenInhibitionsWhitelist.cend(), screenInhibitionsWhitelist.cbegin()))
+    qDebug() << "!!! Update whitelist, new one:" << screenInhibitionsWhitelist << ", old one:" << d->screenInhibitionsWhitelist;
+    if (std::is_permutation(screenInhibitionsWhitelist.begin(), screenInhibitionsWhitelist.end(), d->screenInhibitionsWhitelist.begin()))
         return;
 
     d->screenInhibitionsWhitelist = screenInhibitionsWhitelist;
@@ -727,13 +733,13 @@ void DBusScreensaverWrapper::SimulateUserActivity()
 
 uint DBusScreensaverWrapper::Inhibit(const QString &appName, const QString &reason)
 {
-    qDebug() << "!!! INHIBIT (appName, reason)" << appName << reason;
     QString service;
     int pid = 0;
     if (calledFromDBus()) {
         service = message().service();
         pid = connection().interface()->servicePid(service);
     }
+    qDebug() << "!!! INHIBIT (appName, reason, dbusService, pid)" << appName << reason << service << pid;
     uint cookie = static_cast<uint>(d->addInhibition(service, pid, appName, reason));
     d->checkActive();
     return cookie;
