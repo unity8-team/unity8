@@ -581,7 +581,6 @@ Rectangle {
 
         function test_loadSideStageByDraggingFromMainStage() {
             sideStage.showNow();
-            print("sidestage now shown. launching browser")
             var webbrowserSurfaceId = topSurfaceList.nextId;
             webbrowserCheckBox.checked = true;
             waitUntilAppSurfaceShowsUp(webbrowserSurfaceId);
@@ -599,6 +598,10 @@ Rectangle {
         function test_unloadSideStageByDraggingFromSideStage() {
             sideStage.showNow();
             WindowStateStorage.saveStage(webbrowserCheckBox.appId, ApplicationInfoInterface.SideStage)
+            // WindowStateStorage is async... Lets wait for it to be fully processed...
+            tryCompareFunction(function() {
+                return WindowStateStorage.getStage(webbrowserCheckBox.appId, ApplicationInfoInterface.MainStage) === ApplicationInfoInterface.SideStage
+            }, true);
             var webbrowserSurfaceId = topSurfaceList.nextId;
             webbrowserCheckBox.checked = true;
             waitUntilAppSurfaceShowsUp(webbrowserSurfaceId);
