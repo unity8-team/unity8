@@ -41,7 +41,7 @@ Item { // needs to be an item for VirtualPosition to work.
     property alias relativePosition: relativeMappedPosition
     property alias absolutePosition: absoluteMappedPosition
 
-    property bool stateLoaded: fase
+    property bool stateLoaded: false
 
     SharedWindowState {
         id: sharedState

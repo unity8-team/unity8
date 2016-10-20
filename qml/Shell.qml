@@ -761,8 +761,6 @@ StyledItem {
         opacity: 0
         topBoundaryOffset: panel.panelHeight
 
-        onXChanged: console.log("CURSOR", screenWindow.objectName, x, y)
-
         confiningItem: stage.itemConfiningMouseCursor
 
         height: units.gu(3)
