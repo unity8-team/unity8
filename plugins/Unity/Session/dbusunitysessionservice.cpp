@@ -251,7 +251,7 @@ public:
         inh.dbusAppName = appName;
         inh.dbusReason = reason;
         inh.dbusService = service;
-        inh.pid = pid;
+        inh.pid = static_cast<pid_t>(pid);
 
         int cookie = 0;
 
@@ -348,7 +348,7 @@ public:
         }
     }
 
-    bool whiteListCheck(int pid) const {
+    bool whiteListCheck(pid_t /*pid*/) const {
         // FIXME for a container, we get a different PID than the real app inside which appears on DBUS!
         return true; // screenInhibitionsWhitelist.contains(pid);
     }
@@ -434,11 +434,11 @@ void DBusUnitySessionService::Logout()
 
 void DBusUnitySessionService::EndSession()
 {
-    const QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("com.ubuntu.Upstart"),
-                                                            QStringLiteral("/com/ubuntu/Upstart"),
-                                                            QStringLiteral("com.ubuntu.Upstart0_6"),
-                                                            QStringLiteral("EndSession"));
-    QDBusConnection::sessionBus().asyncCall(msg);
+    const QDBusMessage msg = QDBusMessage::createMethodCall(LOGIN1_SERVICE,
+                                                            d->logindSessionPath,
+                                                            LOGIN1_SESSION_IFACE,
+                                                            QStringLiteral("Terminate"));
+    QDBusConnection::SM_BUSNAME().asyncCall(msg);
 }
 
 bool DBusUnitySessionService::CanHibernate() const
