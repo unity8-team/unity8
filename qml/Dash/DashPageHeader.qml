@@ -25,7 +25,7 @@ Item {
     id: root
     objectName: "pageHeader"
     implicitHeight: headerContainer.height + signatureLineHeight
-    readonly property real signatureLineHeight: showSignatureLine ? units.gu(2) : 0
+    readonly property real signatureLineHeight: showSignatureLine ? units.gu(2.5) : headerBottomLine.height
     readonly property real headerDividerLuminance: Style.luminance(bottomBorder.color)
 
     property alias extraPanelHeight: searchHeaderContents.extraPanelHeight
@@ -148,26 +148,6 @@ Item {
             }
             height: units.dp(1)
             color: Qt.darker(parent.color, 1.1)
-        }
-    }
-
-    Row {
-        visible: bottomBorder.visible
-        spacing: units.gu(.5)
-        Repeater {
-            objectName: "paginationRepeater"
-            model: root.paginationCount
-            Image {
-                objectName: "paginationDots_" + index
-                height: units.gu(1)
-                width: height
-                source: (index == root.paginationIndex) ? "graphics/pagination_dot_on.png" : "graphics/pagination_dot_off.png"
-            }
-        }
-        anchors {
-            top: headerContainer.bottom
-            horizontalCenter: headerContainer.horizontalCenter
-            topMargin: units.gu(.5)
         }
     }
 
@@ -339,26 +319,37 @@ Item {
         }
     }
 
-    // FIXME this doesn't work with solid scope backgrounds due to z-ordering
-    Item {
-        id: bottomHighlight
-        visible: bottomBorder.visible
+	Rectangle {
+        id: headerBottomLine
         anchors {
-            top: parent.bottom
+            top: headerContainer.bottom
             left: parent.left
             right: parent.right
         }
-        z: 1
         height: units.dp(1)
-        opacity: 0.6
+        color: theme.palette.normal.base
+    }
 
-        Rectangle {
-            anchors.fill: parent
-            color: if (root.scopeStyle) {
-                       Qt.lighter(Qt.rgba(root.scopeStyle.background.r,
-                                          root.scopeStyle.background.g,
-                                          root.scopeStyle.background.b, 1.0), 1.2);
-                   } else "#CCFFFFFF"
+    Row {
+        anchors {
+            top: headerContainer.bottom
+            horizontalCenter: headerContainer.horizontalCenter
+            topMargin: units.gu(1)
+        }
+        visible: showSignatureLine
+        spacing: units.gu(.5)
+        Repeater {
+            objectName: "paginationRepeater"
+            model: root.paginationCount
+            Rectangle {
+                objectName: "paginationDots_" + index
+                height: units.gu(1)
+                width: height
+                radius: height / 2
+                color: index == root.paginationIndex ? UbuntuColors.blue : "transparent"
+                border.width: index == root.paginationIndex ? 0 : 1 // yes, one pixel and not 1dp
+                border.color: theme.palette.normal.baseText
+            }
         }
     }
 }
