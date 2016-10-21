@@ -27,13 +27,13 @@ Item {
 
     property ListModel searchHistory
     property real extraPanelYOffset
-    property var categoryView
-    property var scope
-    property var scopeView
+    property var categoryView: null
+    property var scope: null
+    property var scopeView: null
 
     readonly property alias searchTextField: searchTextField
     readonly property bool extraPanelVisible: pageHeaderExtraPanel.visible
-    readonly property bool scopeHasFilters: typeof(scope) !== "undefined" && scope &&  scope.filters != null ? true : false // Prevent warning
+    readonly property bool scopeHasFilters: scope &&  scope.filters != null ? true : false // Prevent warning
     readonly property real extraPanelHeight: extraPanelVisible ?
                            pageHeaderExtraPanel.height : 0
 
@@ -58,7 +58,7 @@ Item {
 
     function clearSearch(keepPanelOpen) {
         resetSearch(keepPanelOpen);
-        if (typeof(scope) !== "undefined") scope.resetPrimaryNavigationTag();
+        if (scope) scope.resetPrimaryNavigationTag();
         if (root.pageHeaderExtraPanel) {
             root.pageHeaderExtraPanel.resetNavigation();
         }
@@ -145,9 +145,9 @@ Item {
         anchors.horizontalCenter: root.horizontalCenter
         width: parent.width >= units.gu(60) ? units.gu(40) : root.parentWidth
         height: implicitHeight
-        y: categoryView.pageHeader.height - root.extraPanelYOffset
+        y: categoryView ? categoryView.pageHeader.height - root.extraPanelYOffset : 0
 
-        windowHeight: typeof(scopeView) !== "undefined" ? scopeView.height : 0
+        windowHeight: scopeView ? scopeView.height : 0
         visible: false
 
         scope: root.scope
@@ -173,7 +173,7 @@ Item {
         objectName: "searchTextField"
         inputMethodHints: Qt.ImhNoPredictiveText
         hasClearButton: false
-        placeholderText: root.scope.searchHint
+        placeholderText: scope ? root.scope.searchHint : ""
         anchors {
             top: root.top
             topMargin: units.gu(1)
