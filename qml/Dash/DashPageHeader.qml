@@ -151,6 +151,41 @@ Item {
         }
     }
 
+
+	Rectangle {
+        id: headerBottomLine
+        anchors {
+            top: headerContainer.bottom
+            left: parent.left
+            right: parent.right
+        }
+        height: units.dp(1)
+        color: theme.palette.normal.base
+    }
+
+    Row {
+        anchors {
+            top: headerContainer.bottom
+            horizontalCenter: headerContainer.horizontalCenter
+            topMargin: units.gu(1)
+        }
+        visible: showSignatureLine
+        spacing: units.gu(.5)
+        Repeater {
+            objectName: "paginationRepeater"
+            model: root.paginationCount
+            Rectangle {
+                objectName: "paginationDots_" + index
+                height: units.gu(1)
+                width: height
+                radius: height / 2
+                color: index == root.paginationIndex ? UbuntuColors.blue : "transparent"
+                border.width: index == root.paginationIndex ? 0 : 1 // yes, one pixel and not 1dp
+                border.color: theme.palette.normal.baseText
+            }
+        }
+    }
+
     Item {
         id: headerContainer
         objectName: "headerContainer"
@@ -315,40 +350,6 @@ Item {
                         }
                     }
                 }
-            }
-        }
-    }
-
-	Rectangle {
-        id: headerBottomLine
-        anchors {
-            top: headerContainer.bottom
-            left: parent.left
-            right: parent.right
-        }
-        height: units.dp(1)
-        color: theme.palette.normal.base
-    }
-
-    Row {
-        anchors {
-            top: headerContainer.bottom
-            horizontalCenter: headerContainer.horizontalCenter
-            topMargin: units.gu(1)
-        }
-        visible: showSignatureLine
-        spacing: units.gu(.5)
-        Repeater {
-            objectName: "paginationRepeater"
-            model: root.paginationCount
-            Rectangle {
-                objectName: "paginationDots_" + index
-                height: units.gu(1)
-                width: height
-                radius: height / 2
-                color: index == root.paginationIndex ? UbuntuColors.blue : "transparent"
-                border.width: index == root.paginationIndex ? 0 : 1 // yes, one pixel and not 1dp
-                border.color: theme.palette.normal.baseText
             }
         }
     }
