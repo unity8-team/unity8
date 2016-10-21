@@ -152,7 +152,7 @@ Item {
     }
 
 
-	Rectangle {
+    Rectangle {
         id: headerBottomLine
         anchors {
             top: headerContainer.bottom
