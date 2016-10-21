@@ -658,13 +658,6 @@ FocusScope {
             onSettingsClicked: subPageLoader.openSubPage("settings")
             onFavoriteClicked: scopeView.scope.favorite = !scopeView.scope.favorite
             onSearchTextFieldFocused: scopeView.showHeader()
-            onShowFiltersPopup: { // item
-                scopeView.filtersPopover = PopupUtils.open(Qt.resolvedUrl("FiltersPopover.qml"), item, { "contentWidth": Qt.binding(function() { return scopeView.width - units.gu(2); } ) } );
-                scopeView.filtersPopover.Component.onDestruction.connect(function () {
-                    categoryView.pageHeader.closePopup(false, true);
-                    categoryView.pageHeader.unfocus(true); // remove the focus from the search field
-                })
-            }
         }
     }
 

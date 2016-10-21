@@ -36,8 +36,6 @@ Item {
                                        && dashContentList.currentItem.item.processing || false
     readonly property bool pageHeaderTotallyVisible: dashContentList.currentItem && dashContentList.currentItem.item
                                                      && dashContentList.currentItem.item.pageHeaderTotallyVisible || false
-    readonly property var currentCategoryView: dashContentList.currentItem !== null ?
-                                               dashContentList.currentItem.categoryView : null
 
     signal scopeLoaded(string scopeId)
     signal gotoScope(string scopeId)
