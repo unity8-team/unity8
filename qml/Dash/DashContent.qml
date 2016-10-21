@@ -85,6 +85,7 @@ Item {
 
             if (reset) {
                 dashContentList.currentItem.item.positionAtBeginning()
+                dashContentList.currentItem.item.searchContents.resetSearch(false);
             }
         }
 
