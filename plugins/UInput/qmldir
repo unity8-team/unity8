@@ -1,3 +1,0 @@
-module UInput
-plugin UInput-qml
-typeinfo UInput.qmltypes

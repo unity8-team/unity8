@@ -1,3 +1,0 @@
-module Powerd
-plugin Powerd-qml
-typeinfo Powerd.qmltypes
