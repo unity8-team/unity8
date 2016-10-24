@@ -16,10 +16,10 @@ add_dependencies(xvfballtests unittests xvfbuitests)
 # Support libraries and plugins
 add_subdirectory(mocks)
 add_subdirectory(utils)
-add_subdirectory(uqmlscene)
+#add_subdirectory(uqmlscene)
 
 # Use our custom implementation of qmlscene and import dbus-test-runner
-add_executable(qmlscene ALIAS uqmlscene)
+#add_executable(qmlscene ALIAS uqmlscene)
 import_executables(dbus-test-runner)
 
 set(UNITY_PLUGINPATH "${CMAKE_BINARY_DIR}/plugins" CACHE PATH "Path to pre-built unity8 plugin dir.")
