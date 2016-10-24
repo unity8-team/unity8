@@ -37,7 +37,7 @@ if(cmake_build_type_lower MATCHES coverage)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage" )
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage" )
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage" )
-  ENABLE_COVERAGE_REPORT(TARGETS ${SHELL_APP} FILTER /usr/include ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)
+#  ENABLE_COVERAGE_REPORT(TARGETS ${SHELL_APP} FILTER /usr/include ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)
 endif()
 
 # Make sure we have all the needed symbols
@@ -57,8 +57,8 @@ find_package(Qt5DBus 5.4 REQUIRED)
 find_package(Qt5Concurrent 5.4 REQUIRED)
 find_package(Qt5Sql 5.4 REQUIRED)
 
-pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=22)
-pkg_check_modules(GEONAMES REQUIRED geonames>=0.2)
+#pkg_check_modules(APPLICATION_API REQUIRED unity-shell-application=22)
+#pkg_check_modules(GEONAMES REQUIRED geonames>=0.2)
 pkg_check_modules(GIO REQUIRED gio-2.0>=2.32)
 pkg_check_modules(GLIB REQUIRED glib-2.0>=2.32)
 pkg_check_modules(QMENUMODEL REQUIRED qmenumodel)
@@ -94,10 +94,10 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
-execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=plugindir unity-shell-api OUTPUT_VARIABLE SHELL_PLUGINDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-if(SHELL_PLUGINDIR STREQUAL "")
-    message(FATAL_ERROR "Could not determine plugin import dir.")
-endif()
+#execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=plugindir unity-shell-api OUTPUT_VARIABLE SHELL_PLUGINDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+#if(SHELL_PLUGINDIR STREQUAL "")
+#    message(FATAL_ERROR "Could not determine plugin import dir.")
+#endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-permissive -pedantic -Wall -Wextra")
 
@@ -123,14 +123,14 @@ add_definitions(-DQT_USE_QSTRINGBUILDER)
 
 # Autopilot tests
 include(autopilot)
-declare_autopilot_test(shell unity8.shell ${CMAKE_SOURCE_DIR}/tests/autopilot/)
+#declare_autopilot_test(shell unity8.shell ${CMAKE_SOURCE_DIR}/tests/autopilot/)
 
-set(SHELL_APP unity8)
+#set(SHELL_APP unity8)
 set(DASH_APP unity8-dash)
 set(SCOPE_TOOL unity-scope-tool)
-set(INDICATORS_CLIENT_APP indicators-client)
-set(GREETER_APP unity8-greeter)
-set(MOCK_INDICATOR_SERVICE_APP unity-mock-indicator-service)
+#set(INDICATORS_CLIENT_APP indicators-client)
+#set(GREETER_APP unity8-greeter)
+#set(MOCK_INDICATOR_SERVICE_APP unity-mock-indicator-service)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include

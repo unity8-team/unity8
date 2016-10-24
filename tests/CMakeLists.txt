@@ -129,7 +129,7 @@ else()
 endif()
 
 # Actual test definitions
-add_subdirectory(plugins)
+#add_subdirectory(plugins)
 add_subdirectory(qmltests)
 add_subdirectory(whitespace)
 add_subdirectory(imports)

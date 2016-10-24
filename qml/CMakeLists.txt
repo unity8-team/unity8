@@ -5,17 +5,17 @@ install(FILES ${QML_JS_FILES}
     )
 
 set(QML_DIRS
-    Components
+#    Components
     Dash
-    graphics
-    Greeter
-    Launcher
-    Notifications
-    Panel
-    Stages
-    Rotation
-    Tutorial
-    Wizard
+#    graphics
+#    Greeter
+#    Launcher
+#    Notifications
+#    Panel
+#    Stages
+#    Rotation
+#    Tutorial
+#    Wizard
     )
 
 install(DIRECTORY ${QML_DIRS}
