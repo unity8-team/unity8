@@ -6,7 +6,7 @@ SET(POT_FILE
 )
 
 FILE(GLOB PO_FILES
-  *.po
+  en_GB.po
 )
 
 SET(MO_FILE unity8.mo)
