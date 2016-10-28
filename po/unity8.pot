@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-24 11:37+0000\n"
+"POT-Creation-Date: 2016-10-28 14:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,16 +22,16 @@ msgstr ""
 msgid "Password: "
 msgstr ""
 
-#: plugins/Unity/Launcher/launcheritem.cpp:49
-#: plugins/Unity/Launcher/launcheritem.cpp:108
+#: plugins/Unity/Launcher/launcheritem.cpp:50
+#: plugins/Unity/Launcher/launcheritem.cpp:109
 msgid "Pin shortcut"
 msgstr ""
 
-#: plugins/Unity/Launcher/launcheritem.cpp:54
+#: plugins/Unity/Launcher/launcheritem.cpp:55
 msgid "Quit"
 msgstr ""
 
-#: plugins/Unity/Launcher/launcheritem.cpp:108
+#: plugins/Unity/Launcher/launcheritem.cpp:109
 msgid "Unpin shortcut"
 msgstr ""
 

@@ -1,3 +1,11 @@
+unity8 (8.14+17.04.20161028-0ubuntu1) zesty; urgency=medium
+
+  [ Andrea Azzarone ]
+  * Do not show a divider between each quicklist entry but just between
+    each section, similar to how unity7 does. (LP: #1637478)
+
+ -- Marco Trevisan (Treviño) <mail@3v1n0.net>  Fri, 28 Oct 2016 14:15:27 +0000
+
 unity8 (8.14+17.04.20161024-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
