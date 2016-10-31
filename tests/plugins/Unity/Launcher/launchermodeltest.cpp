@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Canonical Ltd.
+ * Copyright 2013-2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12,9 +12,6 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Michael Zanetti <michael.zanetti@canonical.com>
  */
 
 // unity-api
@@ -178,7 +175,7 @@ private Q_SLOTS:
         appManager->addApplication(new MockApp("abs-icon"));
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
 
-        appManager->addApplication(new MockApp("no-icon"));
+        appManager->addApplication(new MockApp("rel-icon"));
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 2);
 
         launcherModel->m_settings->setStoredApplications(QStringList());
@@ -200,6 +197,10 @@ private Q_SLOTS:
                                                               QString::fromUtf8(g_get_user_name()));
         QVERIFY(removeReply.isValid());
         QCOMPARE(removeReply.value(), true);
+
+        // Some tests move the directory, so lets move it back if so.
+        // But this will usually fail.
+        QFile::rename("applications.old", "applications");
     }
 
     void testMove() {
@@ -332,7 +333,7 @@ private Q_SLOTS:
 
     void testApplicationRunning() {
         launcherModel->pin("abs-icon");
-        launcherModel->pin("no-icon");
+        launcherModel->pin("rel-icon");
 
         QCOMPARE(launcherModel->get(0)->running(), true);
         QCOMPARE(launcherModel->get(1)->running(), true);
@@ -341,7 +342,7 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->get(0)->running(), false);
         QCOMPARE(launcherModel->get(1)->running(), true);
 
-        appManager->stopApplication("no-icon");
+        appManager->stopApplication("rel-icon");
         QCOMPARE(launcherModel->get(0)->running(), false);
         QCOMPARE(launcherModel->get(1)->running(), false);
     }
@@ -356,7 +357,7 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->get(0)->focused(), true);
         QCOMPARE(launcherModel->get(1)->focused(), false);
 
-        appManager->focusApplication("no-icon");
+        appManager->focusApplication("rel-icon");
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 2);
         QCOMPARE(launcherModel->get(0)->focused(), false);
         QCOMPARE(launcherModel->get(1)->focused(), true);
@@ -378,8 +379,8 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->rowCount(), 2);
 
         // stop the second one keeping it pinned so that it doesn't go away
-        launcherModel->pin("no-icon");
-        appManager->stopApplication("no-icon");
+        launcherModel->pin("rel-icon");
+        appManager->stopApplication("rel-icon");
 
         // find the first Quit item, should be there
         QuickListModel *model = qobject_cast<QuickListModel*>(launcherModel->get(0)->quickList());
@@ -408,7 +409,7 @@ private Q_SLOTS:
         // first app should be gone...
         QCOMPARE(launcherModel->rowCount(QModelIndex()), 1);
         // ... the second app (now at index 0) should still be there, pinned and stopped
-        QCOMPARE(launcherModel->get(0)->appId(), QStringLiteral("no-icon"));
+        QCOMPARE(launcherModel->get(0)->appId(), QStringLiteral("rel-icon"));
         QCOMPARE(launcherModel->get(0)->pinned(), true);
         QCOMPARE(launcherModel->get(0)->running(), false);
     }
@@ -603,17 +604,16 @@ private Q_SLOTS:
 
         // pin both apps
         launcherModel->pin("abs-icon");
-        launcherModel->pin("no-icon");
+        launcherModel->pin("rel-icon");
         // close both apps
         appManager->removeApplication(0);
         appManager->removeApplication(0);
 
         // "delete" the .desktop files
-        QString oldCurrent = QDir::currentPath();
         if (deleted) {
             // In testing mode, the launcher searches the current dir for the sample .desktop file
-            // We can make that fail by changing the current dir
-            QDir::setCurrent("..");
+            // We can make that fail by moving the applications dir
+            QFile::rename("applications", "applications.old");
         }
 
         // Call refresh
@@ -624,9 +624,6 @@ private Q_SLOTS:
         QCOMPARE(reply.isValid(), true);
 
         QCOMPARE(launcherModel->rowCount(), deleted ? 0 : 2);
-
-        // Restoring current dir
-        QDir::setCurrent(oldCurrent);
     }
 
     void testSettings() {
@@ -638,7 +635,7 @@ private Q_SLOTS:
 
         // pin both apps
         launcherModel->pin("abs-icon");
-        launcherModel->pin("no-icon");
+        launcherModel->pin("rel-icon");
         QCOMPARE(spy.count(), 0);
 
         // Now settings should have 2 apps
@@ -660,9 +657,9 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->rowCount(), 1);
 
         // Add them back but in reverse order
-        settings->simulateDConfChanged(QStringList() << "no-icon" << "abs-icon");
+        settings->simulateDConfChanged(QStringList() << "rel-icon" << "abs-icon");
         QCOMPARE(launcherModel->rowCount(), 2);
-        QCOMPARE(launcherModel->get(0)->appId(), QString("no-icon"));
+        QCOMPARE(launcherModel->get(0)->appId(), QString("rel-icon"));
         QCOMPARE(launcherModel->get(1)->appId(), QString("abs-icon"));
         QCOMPARE(spy.count(), 2);
     }
@@ -672,7 +669,7 @@ private Q_SLOTS:
         QCOMPARE(launcherModel->rowCount(), getASConfig().count());
 
         int oldCount = launcherModel->rowCount();
-        appManager->addApplication(new MockApp("rel-icon"));
+        appManager->addApplication(new MockApp("click-icon"));
         QCOMPARE(launcherModel->rowCount(), oldCount + 1);
         QCOMPARE(launcherModel->rowCount(), getASConfig().count());
     }
