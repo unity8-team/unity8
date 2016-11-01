@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-24 11:37+0000\n"
+"POT-Creation-Date: 2016-11-01 23:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,66 +35,66 @@ msgstr ""
 msgid "Unpin shortcut"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:149
+#: qml/Components/Dialogs.qml:150
 msgctxt "Title: Lock/Log out dialog"
 msgid "Log out"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:150
+#: qml/Components/Dialogs.qml:151
 msgid "Are you sure you want to log out?"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:152
+#: qml/Components/Dialogs.qml:153
 msgctxt "Button: Lock the system"
 msgid "Lock"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:159
+#: qml/Components/Dialogs.qml:160
 msgctxt "Button: Log out from the system"
 msgid "Log Out"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:166 qml/Components/Dialogs.qml:222
+#: qml/Components/Dialogs.qml:167 qml/Components/Dialogs.qml:225
 #: qml/Dash/DashPageHeader.qml:324 qml/Greeter/NarrowView.qml:232
 #: qml/Wizard/Pages/passcode-confirm.qml:32
 #: qml/Wizard/Pages/passcode-set.qml:32
 msgid "Cancel"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:178
+#: qml/Components/Dialogs.qml:180
 msgctxt "Title: Reboot dialog"
 msgid "Reboot"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:179
+#: qml/Components/Dialogs.qml:181
 msgid "Are you sure you want to reboot?"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:181
+#: qml/Components/Dialogs.qml:183
 msgid "No"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:187
+#: qml/Components/Dialogs.qml:190
 msgid "Yes"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:202
+#: qml/Components/Dialogs.qml:205
 msgctxt "Title: Power off/Restart dialog"
 msgid "Power"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:203
+#: qml/Components/Dialogs.qml:206
 msgid ""
 "Are you sure you would like\n"
 "to power off?"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:205
+#: qml/Components/Dialogs.qml:208
 msgctxt "Button: Power off the system"
 msgid "Power off"
 msgstr ""
 
-#: qml/Components/Dialogs.qml:214
+#: qml/Components/Dialogs.qml:217
 msgctxt "Button: Restart the system"
 msgid "Restart"
 msgstr ""

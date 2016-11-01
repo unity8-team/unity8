@@ -1,3 +1,16 @@
+unity8 (8.14+17.04.20161101.4-0ubuntu1) zesty; urgency=medium
+
+  * Fix the Super key not invoking the dash scope home (LP: #1607427)
+  * Implement the FDO Inhibit DBUS API
+  * Brigthness control hooks (LP: #1595947)
+  * Enable loading the main Qt catalog which in turn allows for using
+    RTL languages
+  * Shell dialog improvements (kbd focus, mouse eater)
+  * Fix the pixelated notification icon by setting sourceSize (LP:
+    #1637712)
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Tue, 01 Nov 2016 23:24:05 +0000
+
 unity8 (8.14+17.04.20161024-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
