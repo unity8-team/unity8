@@ -348,9 +348,8 @@ public:
         }
     }
 
-    bool whiteListCheck(pid_t /*pid*/) const {
-        // FIXME for a container, we get a different PID than the real app inside which appears on DBUS!
-        return true; // screenInhibitionsWhitelist.contains(pid);
+    bool whiteListCheck(pid_t pid) const {
+        return screenInhibitionsWhitelist.contains(pid);
     }
 
 private Q_SLOTS:

@@ -65,7 +65,6 @@ public:
     MirSurfaceListInterface* promptSurfaceList() const override { return nullptr; }
     int surfaceCount() const override { return m_surfaceCount; }
     void setSurfaceCount(int count) { m_surfaceCount = count; Q_EMIT surfaceCountChanged(count); }
-    pid_t pid() const override { return qrand(); }
 
     // Methods used for mocking (not in the interface)
     void setFocused(bool focused) { m_focused = focused; Q_EMIT focusedChanged(focused); }
@@ -128,6 +127,8 @@ public:
         endRemoveRows();
     }
     bool requestFocusApplication(const QString &appId) override { Q_UNUSED(appId); return true; }
+
+    QList<int> pidsForApplicationId(const QString &) const override { return {}; }
 
 private:
     QList<MockApp*> m_list;

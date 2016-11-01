@@ -316,19 +316,19 @@ FocusScope {
         function updateScreenInhibitionsWhiteList() {
             var result = [];
             if (root.state == "staged" && priv.mainStageDelegate) {
-                result.push(priv.mainStageDelegate.pid);
+                result.push(applicationManager.pidsForApplicationId(priv.mainStageDelegate.appId));
             } else if (root.state == "stagedWithSideStage") {
                 if (priv.mainStageDelegate) {
-                    result.push(priv.mainStageDelegate.pid);
+                    result.push(applicationManager.pidsForApplicationId(priv.mainStageDelegate.appId));
                 }
                 if (priv.sideStageDelegate) {
-                    result.push(priv.sideStageDelegate.pid);
+                    result.push(applicationManager.pidsForApplicationId(priv.sideStageDelegate.appId));
                 }
             } else if (root.state == "windowed") {
                 for (var i = 0; i < appRepeater.count; i++) {
                     var appDelegate = appRepeater.itemAt(i);
-                    if (appDelegate && appDelegate.pid > 0 && !appDelegate.minimized) {
-                        result.push(appDelegate.pid);
+                    if (appDelegate && !appDelegate.minimized) {
+                        result.push(applicationManager.pidsForApplicationId(appDelegate.appId));
                     }
                 }
             }
@@ -774,7 +774,6 @@ FocusScope {
                 readonly property string appId: model.application.appId
                 readonly property bool isDash: appId == "unity8-dash"
                 readonly property alias clientAreaItem: decoratedWindow.clientAreaItem
-                readonly property int pid: model.application.pid
 
                 function claimFocus() {
                     if (root.state == "spread") {

@@ -62,6 +62,8 @@ class ApplicationManager : public ApplicationManagerInterface {
 
     QString focusedApplicationId() const override;
 
+    QList<int> pidsForApplicationId(const QString &appId) const override;
+
     // Only for testing
     QStringList availableApplications();
     Q_INVOKABLE ApplicationInfo* add(QString appId);

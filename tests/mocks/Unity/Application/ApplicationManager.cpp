@@ -112,8 +112,6 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
         return app->exemptFromLifecycle();
     case RoleApplication:
         return QVariant::fromValue(static_cast<unityapi::ApplicationInfoInterface*>(app));
-    case RolePid:
-        return static_cast<int>(app->pid());
     default:
         return QVariant();
     }
@@ -269,6 +267,11 @@ QString ApplicationManager::focusedApplicationId() const {
         }
     }
     return QString();
+}
+
+QList<int> ApplicationManager::pidsForApplicationId(const QString &/*appId*/) const
+{
+    return {qrand()};
 }
 
 bool ApplicationManager::requestFocusApplication(const QString &appId)
