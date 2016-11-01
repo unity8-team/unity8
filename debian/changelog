@@ -1,3 +1,11 @@
+unity8 (8.14+17.04.20161101.1-0ubuntu1) zesty; urgency=medium
+
+  [ Albert Astals Cid ]
+  * Make more CardTool properties readonly
+  * Improve LVWPH <-> GenericScopeView interaction (LP: #1622423)
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 01 Nov 2016 11:25:44 +0000
+
 unity8 (8.14+17.04.20161024-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
