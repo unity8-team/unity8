@@ -766,8 +766,9 @@ StyledItem {
         Behavior on opacity { UbuntuNumberAnimation {} }
     }
 
-    // non-visual object
+    // non-visual objects
     KeymapSwitcher {}
+    BrightnessControl {}
 
     Rectangle {
         id: shutdownFadeOutRectangle
