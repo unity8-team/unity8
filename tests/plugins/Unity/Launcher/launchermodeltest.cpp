@@ -128,8 +128,6 @@ public:
     }
     bool requestFocusApplication(const QString &appId) override { Q_UNUSED(appId); return true; }
 
-    QList<int> pidsForApplicationId(const QString &) const override { return {}; }
-
 private:
     QList<MockApp*> m_list;
 };

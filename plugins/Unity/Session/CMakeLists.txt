@@ -3,6 +3,7 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${GIO_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS}
+    ${UAL_INCLUDE_DIRS}
     ${libunity8-private_SOURCE_DIR}
 )
 
@@ -23,6 +24,7 @@ target_link_libraries(UnitySession-qml
     unity8-private
     ${GIO_LDFLAGS}
     ${GLIB_LIBRARIES}
+    ${UAL_LIBRARIES}
     )
 
 # export the qmldir and qmltypes files

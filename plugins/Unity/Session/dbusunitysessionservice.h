@@ -40,7 +40,7 @@ class DBusUnitySessionService : public UnityDBusObject
     /**
       * List of PIDs allowed to request screen inhibition
       */
-    Q_PROPERTY(QList<int> screenInhibitionsWhitelist READ screenInhibitionsWhitelist WRITE setScreenInhibitionsWhitelist
+    Q_PROPERTY(QStringList screenInhibitionsWhitelist READ screenInhibitionsWhitelist WRITE setScreenInhibitionsWhitelist
                NOTIFY screenInhibitionsWhitelistChanged)
 
 public:
@@ -56,8 +56,8 @@ public:
     // TODO: remove duplicate signals and split D-Bus and QML API's
     // Apparently QML needs the signals in lowercase, while DBUS spec needs the uppercase version
 
-    QList<int> screenInhibitionsWhitelist() const;
-    void setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist);
+    QStringList screenInhibitionsWhitelist() const;
+    void setScreenInhibitionsWhitelist(const QStringList &screenInhibitionsWhitelist);
 
 Q_SIGNALS:
     /**

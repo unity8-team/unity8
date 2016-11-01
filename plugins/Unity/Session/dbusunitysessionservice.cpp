@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <algorithm>
 
 // Qt
 #include <QDebug>
@@ -32,6 +33,11 @@
 #include <QDBusServiceWatcher>
 #include <QDBusConnectionInterface>
 #include <QPointer>
+
+// ual
+#include <ubuntu-app-launch/appid.h>
+#include <ubuntu-app-launch/application.h>
+#include <ubuntu-app-launch/registry.h>
 
 // Glib
 #include <glib.h>
@@ -47,6 +53,8 @@
 #define UNITY_SCREEN_SERVICE QStringLiteral("com.canonical.Unity.Screen")
 #define UNITY_SCREEN_PATH QStringLiteral("/com/canonical/Unity/Screen")
 #define UNITY_SCREEN_IFACE QStringLiteral("com.canonical.Unity.Screen")
+
+namespace ual = ubuntu::app_launch;
 
 struct InhibitionInfo {
     int cookie{0};
@@ -68,7 +76,8 @@ public:
     // inhibit stuff
     QPointer<QDBusServiceWatcher> busWatcher;
     std::list<InhibitionInfo> inhibitions;
-    QList<int> screenInhibitionsWhitelist; // list of PIDs
+    QStringList screenInhibitionsWhitelist; // list of appIds
+    std::shared_ptr<ual::Registry> m_ualRegistry{std::make_shared<ual::Registry>()};
 
     DBusUnitySessionServicePrivate():
         QObject()
@@ -349,7 +358,28 @@ public:
     }
 
     bool whiteListCheck(pid_t pid) const {
-        return screenInhibitionsWhitelist.contains(pid);
+        Q_FOREACH(const QString &appId, screenInhibitionsWhitelist) {
+            ual::AppID ualAppId = ual::AppID::find(m_ualRegistry, appId.toStdString());
+            if (ualAppId.empty()) {
+                continue;
+            }
+
+            std::shared_ptr<ual::Application> ualApp;
+            try {
+                ualApp = ual::Application::create(ualAppId, m_ualRegistry);
+            }
+            catch (std::runtime_error &e)  {
+                qWarning() << "Couldn't find UAL application object for" << appId << "-" << e.what();
+                continue;
+            }
+            if (ualApp) {
+                if (std::any_of(ualApp->instances().cbegin(), ualApp->instances().cend(),
+                                   [pid](const std::shared_ptr<ual::Application::Instance> &inst){ return inst && inst->hasPid(pid); })) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 private Q_SLOTS:
@@ -408,12 +438,12 @@ DBusUnitySessionService::DBusUnitySessionService()
     }
 }
 
-QList<int> DBusUnitySessionService::screenInhibitionsWhitelist() const
+QStringList DBusUnitySessionService::screenInhibitionsWhitelist() const
 {
     return d->screenInhibitionsWhitelist;
 }
 
-void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QList<int> &screenInhibitionsWhitelist)
+void DBusUnitySessionService::setScreenInhibitionsWhitelist(const QStringList &screenInhibitionsWhitelist)
 {
     qDebug() << "!!! Update whitelist, new one:" << screenInhibitionsWhitelist << ", old one:" << d->screenInhibitionsWhitelist;
     if (std::is_permutation(screenInhibitionsWhitelist.begin(), screenInhibitionsWhitelist.end(), d->screenInhibitionsWhitelist.begin()))

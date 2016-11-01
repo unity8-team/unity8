@@ -316,19 +316,19 @@ FocusScope {
         function updateScreenInhibitionsWhiteList() {
             var result = [];
             if (root.state == "staged" && priv.mainStageDelegate) {
-                result.push(applicationManager.pidsForApplicationId(priv.mainStageDelegate.appId));
+                result.push(priv.mainStageDelegate.appId);
             } else if (root.state == "stagedWithSideStage") {
                 if (priv.mainStageDelegate) {
-                    result.push(applicationManager.pidsForApplicationId(priv.mainStageDelegate.appId));
+                    result.push(priv.mainStageDelegate.appId);
                 }
                 if (priv.sideStageDelegate) {
-                    result.push(applicationManager.pidsForApplicationId(priv.sideStageDelegate.appId));
+                    result.push(priv.sideStageDelegate.appId);
                 }
             } else if (root.state == "windowed") {
                 for (var i = 0; i < appRepeater.count; i++) {
                     var appDelegate = appRepeater.itemAt(i);
                     if (appDelegate && !appDelegate.minimized) {
-                        result.push(applicationManager.pidsForApplicationId(appDelegate.appId));
+                        result.push(appDelegate.appId);
                     }
                 }
             }

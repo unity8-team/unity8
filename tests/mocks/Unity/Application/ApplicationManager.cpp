@@ -269,11 +269,6 @@ QString ApplicationManager::focusedApplicationId() const {
     return QString();
 }
 
-QList<int> ApplicationManager::pidsForApplicationId(const QString &/*appId*/) const
-{
-    return {qrand()};
-}
-
 bool ApplicationManager::requestFocusApplication(const QString &appId)
 {
     ApplicationInfo *application = findApplication(appId);

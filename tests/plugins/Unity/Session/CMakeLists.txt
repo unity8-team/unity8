@@ -13,6 +13,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/plugins/Unity/Session
     ${libunity8-private_SOURCE_DIR}
     ${GLIB_INCLUDE_DIRS}
+    ${UAL_INCLUDE_DIRS}
 )
 
 add_definitions(-DSM_BUSNAME=sessionBus)
@@ -38,6 +39,7 @@ add_executable(sessionbackendtestExec
 target_link_libraries(sessionbackendtestExec
     unity8-private
     ${GLIB_LIBRARIES}
+    ${UAL_LIBRARIES}
     )
 qt5_use_modules(sessionbackendtestExec Test Core Qml DBus)
 
