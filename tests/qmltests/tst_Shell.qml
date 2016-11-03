@@ -24,6 +24,7 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItem
 import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Application 0.1
+import Unity.ApplicationMenu 0.1
 import Unity.Connectivity 0.1
 import Unity.Indicators 0.1
 import Unity.Notifications 1.0
@@ -32,6 +33,7 @@ import Unity.Test 0.1
 import Powerd 0.1
 import Wizard 0.1 as Wizard
 import Utils 0.1
+import Unity.Indicators 0.1 as Indicators
 
 import "../../qml"
 import "../../qml/Components"
@@ -50,6 +52,8 @@ Rectangle {
         LightDM.Users.mockMode = "single";
         shellLoader.active = true;
     }
+
+    ApplicationMenuDataLoader {}
 
     property var shell: shellLoader.item ? shellLoader.item : null
 
@@ -1976,21 +1980,21 @@ Rectangle {
             var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
 
             tryCompare(appDelegate, "state", "normal");
-            tryCompare(PanelState, "buttonsVisible", false)
+            tryCompare(PanelState, "decorationsVisible", false)
 
             mouseClick(maximizeButton, maximizeButton.width / 2, maximizeButton.height / 2);
             tryCompare(appDelegate, "state", "maximized");
-            tryCompare(PanelState, "buttonsVisible", true)
+            tryCompare(PanelState, "decorationsVisible", true)
 
             ApplicationManager.stopApplication(application.appId);
-            tryCompare(PanelState, "buttonsVisible", false)
+            tryCompare(PanelState, "decorationsVisible", false)
 
             // wait until all zombie surfaces are gone. As MirSurfaceItems hold references over them.
             // They won't be gone until those surface items are destroyed.
             tryCompareFunction(function() { return application.surfaceList.count }, 0);
 
             ApplicationManager.startApplication(application.appId);
-            tryCompare(PanelState, "buttonsVisible", true)
+            tryCompare(PanelState, "decorationsVisible", true)
         }
 
         function test_newAppHasValidGeometry() {
@@ -2014,6 +2018,7 @@ Rectangle {
             var appRepeater = findChild(shell, "appRepeater")
             var appDelegate = appRepeater.itemAt(0);
             var panelButtons = findChild(shell, "panelWindowControlButtons")
+            verify(panelButtons)
 
             tryCompare(appDelegate, "state", "normal");
             tryCompare(panelButtons, "visible", false);
@@ -2022,7 +2027,8 @@ Rectangle {
 
             shell.usageScenario = "phone";
             waitForRendering(shell);
-            tryCompare(panelButtons, "visible", false);
+            panelButtons = findChild(shell, "panelWindowControlButtons")
+            verify(panelButtons === null)
         }
 
         function test_lockingGreeterHidesPanelButtons() {

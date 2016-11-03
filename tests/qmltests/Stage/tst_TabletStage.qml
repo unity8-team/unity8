@@ -35,6 +35,8 @@ Rectangle {
 
     property var greeter: { fullyShown: true }
 
+    ApplicationMenuDataLoader { }
+
     Stage {
         id: stage
         anchors { fill: parent; rightMargin: units.gu(30) }
@@ -581,6 +583,7 @@ Rectangle {
 
         function test_loadSideStageByDraggingFromMainStage() {
             sideStage.showNow();
+            print("sidestage now shown. launching browser")
             var webbrowserSurfaceId = topSurfaceList.nextId;
             webbrowserCheckBox.checked = true;
             waitUntilAppSurfaceShowsUp(webbrowserSurfaceId);

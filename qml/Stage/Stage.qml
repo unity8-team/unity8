@@ -324,7 +324,7 @@ FocusScope {
 
     Binding {
         target: PanelState
-        property: "buttonsVisible"
+        property: "decorationsVisible"
         value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
     }
 
@@ -345,6 +345,20 @@ FocusScope {
 
     Binding {
         target: PanelState
+        property: "focusedPersistentSurfaceId"
+        value: {
+            if (priv.focusedAppDelegate !== null) {
+                if (priv.focusedAppDelegate.surface) {
+                    return priv.focusedAppDelegate.surface.persistentId;
+                }
+            }
+            return "";
+        }
+        when: priv.focusedAppDelegate
+    }
+
+    Binding {
+        target: PanelState
         property: "dropShadow"
         value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppDelegate !== null && mode == "windowed"
     }
@@ -357,7 +371,7 @@ FocusScope {
 
     Component.onDestruction: {
         PanelState.title = "";
-        PanelState.buttonsVisible = false;
+        PanelState.decorationsVisible = false;
         PanelState.dropShadow = false;
     }
 
@@ -1407,7 +1421,7 @@ FocusScope {
 
                 Binding {
                     target: PanelState
-                    property: "buttonsAlwaysVisible"
+                    property: "decorationsAlwaysVisible"
                     value: appDelegate && appDelegate.maximized && touchControls.overlayShown
                 }
 
