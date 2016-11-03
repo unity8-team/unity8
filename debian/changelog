@@ -1,3 +1,11 @@
+unity8 (8.14+17.04.20161103-0ubuntu1) zesty; urgency=medium
+
+  [ Nick Dedekind ]
+  * Added registry for application menus
+  * Application menus
+
+ -- Nicholas Dedekind <nick.dedekind@canonical.com>  Thu, 03 Nov 2016 10:56:01 +0000
+
 unity8 (8.14+17.04.20161024-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
