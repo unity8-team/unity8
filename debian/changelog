@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20161108-0ubuntu1) zesty; urgency=medium
+
+  * More path lookup fixes for running inside of a snap. (LP: #1629009)
+
+ -- Michael Terry <michael.terry@canonical.com>  Tue, 08 Nov 2016 13:50:10 +0000
+
 unity8 (8.14+17.04.20161027-0ubuntu1) zesty; urgency=medium
 
   * MenuItemFactory: activate item on calendar selection change (LP:
