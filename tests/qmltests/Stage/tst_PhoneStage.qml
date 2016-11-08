@@ -22,7 +22,6 @@ import "../../../qml/Components"
 import "../../../qml/Stage"
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
-import WindowManager 0.1
 
 Item {
     id: root
@@ -41,9 +40,8 @@ Item {
         orientations: Orientations {}
         applicationManager: ApplicationManager
         mode: "staged"
-        topLevelSurfaceList: TopLevelSurfaceList {
+        topLevelSurfaceList: TopLevelWindowModel {
             id: topLevelSurfaceList
-            applicationsModel: ApplicationManager
         }
     }
 
@@ -505,7 +503,7 @@ Item {
         function test_selectSuspendedAppWithoutSurface() {
             compare(topLevelSurfaceList.applicationAt(0).appId, "unity8-dash");
             var dashSurfaceId = topLevelSurfaceList.idAt(0);
-            var dashSurface = topLevelSurfaceList.surfaceAt(0);
+            var dashWindow = topLevelSurfaceList.windowAt(0);
 
             var webbrowserSurfaceId = topLevelSurfaceList.nextId;
             var webbrowserApp  = ApplicationManager.startApplication("webbrowser-app");
@@ -513,7 +511,7 @@ Item {
 
             switchToSurface(dashSurfaceId);
 
-            tryCompare(MirFocusController, "focusedSurface", dashSurface);
+            tryCompare(topLevelSurfaceList, "focusedWindow", dashWindow);
             tryCompare(webbrowserApp, "state", ApplicationInfoInterface.Suspended);
 
             compare(webbrowserApp.surfaceList.count, 1);
@@ -549,7 +547,7 @@ Item {
         {
             compare(topLevelSurfaceList.applicationAt(0).appId, "unity8-dash");
             var dashSurfaceId = topLevelSurfaceList.idAt(0);
-            var dashSurface = topLevelSurfaceList.surfaceAt(0);
+            var dashWindow = topLevelSurfaceList.windowAt(0);
 
             var webbrowserSurfaceId = topLevelSurfaceList.nextId;
             var webbrowserApp  = ApplicationManager.startApplication("webbrowser-app");
@@ -557,7 +555,7 @@ Item {
 
             switchToSurface(dashSurfaceId);
 
-            tryCompare(MirFocusController, "focusedSurface", dashSurface);
+            tryCompare(topLevelSurfaceList, "focusedWindow", dashWindow);
             tryCompare(webbrowserApp, "state", ApplicationInfoInterface.Suspended);
 
             compare(webbrowserApp.surfaceList.count, 1);

@@ -7,14 +7,17 @@ set(FakeUnityApplicationQml_SOURCES
     MirSurfaceListModel.cpp
     ObjectListModel.h
     SurfaceManager.cpp
+    TopLevelWindowModel.cpp
     VirtualKeyboard.cpp
+    Window.cpp
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/Mir.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceItemInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceListInterface.h
-    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirFocusControllerInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/TopLevelWindowModelInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/WindowInterface.h
     resources/surfaces.qrc
 )
 

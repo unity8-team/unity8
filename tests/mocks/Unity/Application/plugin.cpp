@@ -19,6 +19,8 @@
 #include "ApplicationManager.h"
 #include "MirSurfaceItem.h"
 #include "SurfaceManager.h"
+#include "TopLevelWindowModel.h"
+#include "Window.h"
 
 // unity-api
 #include <unity/shell/application/Mir.h>
@@ -32,9 +34,6 @@ namespace {
 void createUnityApplicationSharedSingletons()
 {
     // they have to be created in a specific order
-    if (!MirFocusController::instance()) {
-        new MirFocusController;
-    }
     if (!SurfaceManager::instance()) {
         new SurfaceManager;
     }
@@ -48,14 +47,10 @@ QObject* applicationManagerSingleton(QQmlEngine*, QJSEngine*)
 
 QObject* surfaceManagerSingleton(QQmlEngine*, QJSEngine*)
 {
-    createUnityApplicationSharedSingletons();
+    if (!SurfaceManager::instance()) {
+        new SurfaceManager;
+    }
     return SurfaceManager::instance();
-}
-
-QObject* mirFocusControllerSingleton(QQmlEngine*, QJSEngine*)
-{
-    createUnityApplicationSharedSingletons();
-    return MirFocusController::instance();
 }
 
 } // anonymous namespace
@@ -67,18 +62,19 @@ void FakeUnityApplicationQmlPlugin::registerTypes(const char *uri)
     qRegisterMetaType<unity::shell::application::MirSurfaceListInterface*>("unity::shell::application::MirSurfaceListInterface*");
     qRegisterMetaType<Mir::Type>("Mir::Type");
     qRegisterMetaType<Mir::State>("Mir::State");
+    qRegisterMetaType<unity::shell::application::WindowInterface*>("unity::shell::application::WindowInterface*");
 
     qmlRegisterUncreatableType<unity::shell::application::ApplicationManagerInterface>(uri, 0, 1, "ApplicationManagerInterface", "Abstract interface. Cannot be created in QML");
     qmlRegisterUncreatableType<unity::shell::application::ApplicationInfoInterface>(uri, 0, 1, "ApplicationInfoInterface", "Abstract interface. Cannot be created in QML");
     qmlRegisterUncreatableType<MirSurface>(uri, 0, 1, "MirSurface", "MirSurface can't be instantiated from QML");
     qmlRegisterUncreatableType<unity::shell::application::MirSurfaceInterface>(
                     uri, 0, 1, "MirSurface", "MirSurface can't be instantiated from QML");
-    qmlRegisterSingletonType<MirFocusController>(uri, 0, 1, "MirFocusController", mirFocusControllerSingleton);
     qmlRegisterType<MirSurfaceItem>(uri, 0, 1, "MirSurfaceItem");
     qmlRegisterType<ApplicationInfo>(uri, 0, 1, "ApplicationInfo");
 
     qmlRegisterSingletonType<ApplicationManager>(uri, 0, 1, "ApplicationManager", applicationManagerSingleton);
     qmlRegisterSingletonType<SurfaceManager>(uri, 0, 1, "SurfaceManager", surfaceManagerSingleton);
+    qmlRegisterType<TopLevelWindowModel>(uri, 0, 1, "TopLevelWindowModel");
 
     qmlRegisterUncreatableType<Mir>(uri, 0, 1, "Mir", "Mir provides enum values, it can't be instantiated");
 }

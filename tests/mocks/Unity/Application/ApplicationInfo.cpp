@@ -90,14 +90,17 @@ void ApplicationInfo::createSurface()
         return;
     }
 
+    bool wasFocused = focused();
+
     auto surface = surfaceManager->createSurface(surfaceName,
            Mir::NormalType,
-           fullscreen() ? Mir::FullscreenState : Mir::MaximizedState,
-           m_screenshotFileName);
+           fullscreen() ? Mir::FullscreenState : Mir::RestoredState,
+           m_screenshotFileName,
+           this);
 
     surface->setShellChrome(m_shellChrome);
 
-    m_surfaceList->appendSurface(surface);
+    m_surfaceList->addSurface(surface);
 
     ++m_liveSurfaceCount;
     connect(surface, &MirSurface::liveChanged, this, [this, surface](){
@@ -125,7 +128,18 @@ void ApplicationInfo::createSurface()
             setState(Running);
         }
     });
+    connect(surface, &MirSurfaceInterface::focusedChanged, this, [&](bool /*value*/) {
+        #if APPLICATION_DEBUG
+        qDebug().nospace() << "Application[" << appId() << "].focusedChanged(" << focused() << ")";
+        #endif
+        Q_EMIT focusedChanged(focused());
+    });
+
     connect(surface, &MirSurface::focusRequested, this, &ApplicationInfo::focusRequested);
+
+    if (wasFocused != focused()) {
+        Q_EMIT focusedChanged(focused());
+    }
 
     if (m_state == Starting) {
         if (m_requestedState == RequestedRunning) {
@@ -218,7 +232,7 @@ void ApplicationInfo::setFullscreen(bool value)
 {
     m_fullscreen = value;
     if (m_surfaceList->rowCount() > 0) {
-        m_surfaceList->get(0)->setState(Mir::FullscreenState);
+        m_surfaceList->get(0)->requestState(Mir::FullscreenState);
     }
 }
 

@@ -44,7 +44,8 @@ public:
     Q_INVOKABLE MirSurface* createSurface(const QString& name,
                                   Mir::Type type,
                                   Mir::State state,
-                                  const QUrl& screenshot);
+                                  const QUrl& screenshot,
+                                  ApplicationInfo *application);
 
     MirSurface* inputMethodSurface() const;
 
@@ -69,7 +70,7 @@ public:
 Q_SIGNALS:
     void inputMethodSurfaceChanged();
     void countChanged();
-    void surfaceCreated(MirSurface *surface);
+    void surfaceCreated(MirSurface *surface, ApplicationInfo *application);
     void surfaceDestroyed(MirSurface*surface);
 
     void newSurfaceMinimumWidthChanged(int value);
@@ -80,7 +81,7 @@ Q_SIGNALS:
     void newSurfaceHeightIncrementChanged(int value);
 
 private:
-    static SurfaceManager *the_surface_manager;
+    static SurfaceManager *m_instance;
     VirtualKeyboard *m_virtualKeyboard;
 
     int m_newSurfaceMinimumWidth{0};

@@ -52,6 +52,15 @@ Rectangle {
     }
 
     property var shell: shellLoader.item ? shellLoader.item : null
+    onShellChanged: {
+        if (shell) {
+            topLevelSurfaceList = testCase.findInvisibleChild(shell, "topLevelSurfaceList");
+        } else {
+            topLevelSurfaceList = null;
+        }
+    }
+
+    property var topLevelSurfaceList: null
 
     Item {
         id: shellContainer
@@ -318,21 +327,21 @@ Rectangle {
                         id: fullscreeAppCheck
 
                         onTriggered: {
-                            if (!MirFocusController.focusedSurface) return;
-                            if (MirFocusController.focusedSurface.state == Mir.FullscreenState) {
-                                MirFocusController.focusedSurface.state = Mir.RestoredState;
+                            if (!topLevelSurfaceList.focusedSurface) return;
+                            if (topLevelSurfaceList.focusedSurface.state == Mir.FullscreenState) {
+                                topLevelSurfaceList.focusedSurface.requestState(Mir.RestoredState);
                             } else {
-                                MirFocusController.focusedSurface.state = Mir.FullscreenState;
+                                topLevelSurfaceList.focusedSurface.requestState(Mir.FullscreenState);
                             }
                         }
 
                         Binding {
                             target: fullscreeAppCheck
-                            when: MirFocusController.focusedSurface
+                            when: topLevelSurfaceList && topLevelSurfaceList.focusedSurface
                             property: "checked"
                             value: {
-                                if (!MirFocusController.focusedSurface) return false;
-                                return MirFocusController.focusedSurface.state === Mir.FullscreenState
+                                if (!topLevelSurfaceList || !topLevelSurfaceList.focusedSurface) return false;
+                                return topLevelSurfaceList.focusedSurface.state === Mir.FullscreenState
                             }
                         }
                     }
@@ -346,21 +355,21 @@ Rectangle {
                         id: chromeAppCheck
 
                         onTriggered: {
-                            if (!MirFocusController.focusedSurface) return;
-                            if (MirFocusController.focusedSurface.shellChrome == Mir.LowChrome) {
-                                MirFocusController.focusedSurface.setShellChrome(Mir.NormalChrome);
+                            if (!topLevelSurfaceList.focusedSurface) return;
+                            if (topLevelSurfaceList.focusedSurface.shellChrome == Mir.LowChrome) {
+                                topLevelSurfaceList.focusedSurface.setShellChrome(Mir.NormalChrome);
                             } else {
-                                MirFocusController.focusedSurface.setShellChrome(Mir.LowChrome);
+                                topLevelSurfaceList.focusedSurface.setShellChrome(Mir.LowChrome);
                             }
                         }
 
                         Binding {
                             target: chromeAppCheck
-                            when: MirFocusController.focusedSurface !== null
+                            when: topLevelSurfaceList && topLevelSurfaceList.focusedSurface !== null
                             property: "checked"
                             value: {
-                                if (!MirFocusController.focusedSurface) return false;
-                                MirFocusController.focusedSurface.shellChrome === Mir.LowChrome
+                                if (!topLevelSurfaceList || !topLevelSurfaceList.focusedSurface) return false;
+                                topLevelSurfaceList.focusedSurface.shellChrome === Mir.LowChrome
                             }
                         }
                     }
@@ -950,21 +959,21 @@ Rectangle {
             loadShell("phone");
             swipeAwayGreeter();
             var item = findChild(shell, "inputMethod");
-            var surface = SurfaceManager.inputMethodSurface;
+            var surface = topLevelSurfaceList.inputMethodSurface;
 
-            surface.setState(Mir.MinimizedState);
+            surface.requestState(Mir.MinimizedState);
             tryCompare(item, "visible", false);
 
-            surface.setState(Mir.RestoredState);
+            surface.requestState(Mir.RestoredState);
             tryCompare(item, "visible", true);
 
-            surface.setState(Mir.MinimizedState);
+            surface.requestState(Mir.MinimizedState);
             tryCompare(item, "visible", false);
 
-            surface.setState(Mir.MaximizedState);
+            surface.requestState(Mir.MaximizedState);
             tryCompare(item, "visible", true);
 
-            surface.setState(Mir.MinimizedState);
+            surface.requestState(Mir.MinimizedState);
             tryCompare(item, "visible", false);
         }
 
@@ -2397,7 +2406,7 @@ Rectangle {
 
             compare(launcher.lockedVisible, true);
 
-            app.surfaceList.get(0).state = Mir.FullscreenState;
+            app.surfaceList.get(0).requestState(Mir.FullscreenState);
 
             tryCompare(launcher, "lockedVisible", false);
         }
@@ -2584,7 +2593,7 @@ Rectangle {
             verify(promptSurface);
             tryCompare(appSurface, "keymap", promptSurface.keymap);
             // ... and that the controller's surface keymap is also the same
-            tryCompare(MirFocusController.focusedSurface, "keymap", "sk");
+            tryCompare(topLevelSurfaceList.focusedSurface, "keymap", "sk");
             app.promptSurfaceList.get(0).close();
 
             // switch to next keymap, should go to "cz+qwerty"
@@ -2702,7 +2711,6 @@ Rectangle {
             return [
                 {tag: "no need to displace", windowHeight: units.gu(10), windowY: units.gu(5), targetDisplacement: units.gu(5), oskEnabled: true},
                 {tag: "displace to top", windowHeight: units.gu(50), windowY: units.gu(10), targetDisplacement: PanelState.panelHeight, oskEnabled: true},
-                {tag: "displace to top", windowHeight: units.gu(50), windowY: units.gu(10), targetDisplacement: PanelState.panelHeight, oskEnabled: true},
                 {tag: "osk not on this screen", windowHeight: units.gu(40), windowY: units.gu(10), targetDisplacement: units.gu(10), oskEnabled: false},
             ]
         }
@@ -2714,24 +2722,24 @@ Rectangle {
             swipeAwayGreeter();
             shell.oskEnabled = data.oskEnabled;
 
-            var oldOSKState = SurfaceManager.inputMethodSurface.state;
-            SurfaceManager.inputMethodSurface.state = Mir.RestoredState;
+            var oldOSKState = topLevelSurfaceList.inputMethodSurface.state;
+            topLevelSurfaceList.inputMethodSurface.requestState(Mir.RestoredState);
             var appRepeater = findChild(shell, "appRepeater");
             var dashAppDelegate = appRepeater.itemAt(0);
             verify(dashAppDelegate);
             dashAppDelegate.requestedHeight = data.windowHeight;
             dashAppDelegate.requestedY = data.windowY;
-            SurfaceManager.inputMethodSurface.setInputBounds(Qt.rect(0, 0, 0, 0));
+            topLevelSurfaceList.inputMethodSurface.setInputBounds(Qt.rect(0, 0, 0, 0));
             var initialY = dashAppDelegate.y;
             print("intial", initialY, "panel", PanelState.panelHeight);
             verify(initialY > PanelState.panelHeight);
 
-            SurfaceManager.inputMethodSurface.setInputBounds(Qt.rect(0, root.height / 2, root.width, root.height / 2));
+            topLevelSurfaceList.inputMethodSurface.setInputBounds(Qt.rect(0, root.height / 2, root.width, root.height / 2));
             tryCompare(dashAppDelegate, "y", data.targetDisplacement);
 
-            SurfaceManager.inputMethodSurface.setInputBounds(Qt.rect(0, 0, 0, 0));
+            topLevelSurfaceList.inputMethodSurface.setInputBounds(Qt.rect(0, 0, 0, 0));
             tryCompare(dashAppDelegate, "y", initialY);
-            SurfaceManager.inputMethodSurface.state = oldOSKState;
+            topLevelSurfaceList.inputMethodSurface.requestState(oldOSKState);
         }
 
         function test_cursorHidingWithFullscreenApp() {

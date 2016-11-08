@@ -21,8 +21,9 @@
 
 #define MIRSURFACELISTMODEL_DEBUG 0
 
-#ifdef MIRSURFACELISTMODEL_DEBUG
-#define DEBUG_MSG(params) qDebug().nospace() << "MirSurfaceListModel::" << __func__  << " " << params
+#if MIRSURFACELISTMODEL_DEBUG
+#include <QDebug>
+#define DEBUG_MSG(params) qDebug().nospace() << "MirSurfaceListModel::" << __func__  <<  params
 #else
 #define DEBUG_MSG(params) ((void)0)
 #endif
@@ -54,14 +55,25 @@ QVariant MirSurfaceListModel::data(const QModelIndex& index, int role) const
 
 void MirSurfaceListModel::raise(MirSurface *surface)
 {
+    DEBUG_MSG("(" << surface << ")");
     int i = m_surfaceList.indexOf(surface);
     if (i != -1) {
         moveSurface(i, 0);
     }
 }
 
+void MirSurfaceListModel::addSurface(MirSurface *surface)
+{
+    if (surface->focused()) {
+        prependSurface(surface);
+    } else {
+        appendSurface(surface);
+    }
+}
+
 void MirSurfaceListModel::appendSurface(MirSurface *surface)
 {
+    DEBUG_MSG("(" << surface << ")");
     beginInsertRows(QModelIndex(), m_surfaceList.size(), m_surfaceList.size());
     m_surfaceList.append(surface);
     connectSurface(surface);
@@ -74,6 +86,7 @@ void MirSurfaceListModel::appendSurface(MirSurface *surface)
 
 void MirSurfaceListModel::prependSurface(MirSurface *surface)
 {
+    DEBUG_MSG("(" << surface << ")");
     beginInsertRows(QModelIndex(), 0, 0);
     m_surfaceList.prepend(surface);
     connectSurface(surface);
@@ -85,6 +98,11 @@ void MirSurfaceListModel::prependSurface(MirSurface *surface)
 void MirSurfaceListModel::connectSurface(MirSurface *surface)
 {
     connect(surface, &QObject::destroyed, this, [this, surface](){ this->removeSurface(surface); });
+    connect(surface, &MirSurfaceInterface::focusedChanged, this, [this, surface](bool surfaceFocused){
+        if (surfaceFocused) {
+            raise(surface);
+        }
+    });
 }
 
 void MirSurfaceListModel::removeSurface(MirSurface *surface)
