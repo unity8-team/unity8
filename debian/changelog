@@ -1,3 +1,15 @@
+unity8 (8.14+17.04.20161109-0ubuntu1) zesty; urgency=medium
+
+  [ Michael Zanetti ]
+  * Added blur and darkening to wallpaper while in spread
+  * Fixes in the spread after design review (LP: #1637502, #1638848)
+  * More fixes to the unified stages code (LP: #1637205, #1637249,
+    #1637258)
+  * Delay alt tab for tiny bit in order to avoid flickering on quick alt-
+    tabs
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 09 Nov 2016 16:31:56 +0000
+
 unity8 (8.14+17.04.20161027-0ubuntu1) zesty; urgency=medium
 
   * MenuItemFactory: activate item on calendar selection change (LP:
