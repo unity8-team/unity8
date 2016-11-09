@@ -597,7 +597,8 @@ void TopLevelWindowModel::move(int from, int to)
         m_modelState = MovingState;
 
         beginMoveRows(parent, from, from, parent, to + (to > from ? 1 : 0));
-        m_windowModel.move(from, to);
+        ModelEntry entry = m_windowModel.takeAt(from);
+        m_windowModel.insert(to, entry);
         endMoveRows();
 
         m_modelState = IdleState;
