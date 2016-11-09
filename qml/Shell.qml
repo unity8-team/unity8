@@ -43,7 +43,6 @@ import Unity.Session 0.1
 import Unity.DashCommunicator 0.1
 import Unity.Indicators 0.1 as Indicators
 import Cursor 1.1
-import WindowManager 0.1
 
 
 StyledItem {
@@ -264,10 +263,9 @@ StyledItem {
         width: parent.width
         height: parent.height
 
-        TopLevelSurfaceList {
+        TopLevelWindowModel {
             id: topLevelSurfaceList
             objectName: "topLevelSurfaceList"
-            applicationsModel: ApplicationManager
         }
 
         Stage {
@@ -320,6 +318,7 @@ StyledItem {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
+        surface: topLevelSurfaceList.inputMethodSurface
         anchors {
             fill: parent
             topMargin: panel.panelHeight
@@ -485,8 +484,8 @@ StyledItem {
                 greeterShown: greeter.shown
             }
 
-            readonly property bool focusedSurfaceIsFullscreen: MirFocusController.focusedSurface
-                ? MirFocusController.focusedSurface.state === Mir.FullscreenState
+            readonly property bool focusedSurfaceIsFullscreen: topLevelSurfaceList.focusedWindow
+                ? topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
                 : false
             fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0)
                             || greeter.hasLockedApp
@@ -785,7 +784,9 @@ StyledItem {
     }
 
     // non-visual object
-    KeymapSwitcher {}
+    KeymapSwitcher {
+        focusedSurface: topLevelSurfaceList.focusedWindow ? topLevelSurfaceList.focusedWindow.surface : null
+    }
 
     Rectangle {
         id: shutdownFadeOutRectangle

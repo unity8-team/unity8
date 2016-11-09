@@ -21,19 +21,19 @@
 
 #include <paths.h>
 
-SurfaceManager *SurfaceManager::the_surface_manager = nullptr;
+SurfaceManager *SurfaceManager::m_instance = nullptr;
 
 SurfaceManager *SurfaceManager::instance()
 {
-    return the_surface_manager;
+    return m_instance;
 }
 
 SurfaceManager::SurfaceManager(QObject *parent) :
     QObject(parent)
     , m_virtualKeyboard(nullptr)
 {
-    Q_ASSERT(the_surface_manager == nullptr);
-    the_surface_manager = this;
+    Q_ASSERT(m_instance == nullptr);
+    m_instance = this;
 
     m_virtualKeyboard = new VirtualKeyboard;
     connect(m_virtualKeyboard, &QObject::destroyed, this, [this](QObject *obj) {
@@ -46,14 +46,15 @@ SurfaceManager::SurfaceManager(QObject *parent) :
 
 SurfaceManager::~SurfaceManager()
 {
-    Q_ASSERT(the_surface_manager == this);
-    the_surface_manager = nullptr;
+    Q_ASSERT(m_instance == this);
+    m_instance = nullptr;
 }
 
 MirSurface *SurfaceManager::createSurface(const QString& name,
                                           Mir::Type type,
                                           Mir::State state,
-                                          const QUrl& screenshot)
+                                          const QUrl& screenshot,
+                                          ApplicationInfo *application)
 {
     MirSurface* surface = new MirSurface(name, type, state, screenshot);
     connect(surface, &QObject::destroyed, this, [this](QObject *obj) {
@@ -68,7 +69,7 @@ MirSurface *SurfaceManager::createSurface(const QString& name,
     surface->setWidthIncrement(m_newSurfaceWidthIncrement);
     surface->setHeightIncrement(m_newSurfaceHeightIncrement);
 
-    Q_EMIT surfaceCreated(surface);
+    Q_EMIT surfaceCreated(surface, application);
     return surface;
 }
 

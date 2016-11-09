@@ -70,11 +70,13 @@ FocusScope {
 
     readonly property Item clientAreaItem: applicationWindow
 
+    readonly property real contentX: applicationWindow.x
+    readonly property real contentY: applicationWindow.y
+
     signal closeClicked()
     signal maximizeClicked()
     signal maximizeHorizontallyClicked()
     signal maximizeVerticallyClicked()
-    signal minimizeClicked()
     signal decorationPressed()
     signal decorationReleased()
 
@@ -163,7 +165,11 @@ FocusScope {
         onMaximizeClicked: { root.decorationPressed(); root.maximizeClicked(); }
         onMaximizeHorizontallyClicked: { root.decorationPressed(); root.maximizeHorizontallyClicked(); }
         onMaximizeVerticallyClicked: { root.decorationPressed(); root.maximizeVerticallyClicked(); }
-        onMinimizeClicked: root.minimizeClicked();
+        onMinimizeClicked: {
+            if (applicationWindow.surface) {
+                applicationWindow.surface.requestState(Mir.MinimizedState);
+            }
+        }
         onPressed: root.decorationPressed();
 
         onPressedChanged: moveHandler.handlePressedChanged(pressed, pressedButtons, mouseX, mouseY)

@@ -21,7 +21,6 @@ import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.Test 0.1
 import Utils 0.1
-import WindowManager 0.1
 
 import ".."
 import "../../../qml/Stage"
@@ -50,9 +49,8 @@ Rectangle {
         focus: true
         mode: "stagedWithSideStage"
         applicationManager: ApplicationManager
-        topLevelSurfaceList: TopLevelSurfaceList {
+        topLevelSurfaceList: TopLevelWindowModel {
             id: topLevelSurfaceList
-            applicationsModel: ApplicationManager
         }
     }
 
@@ -628,7 +626,7 @@ Rectangle {
         function test_selectSuspendedAppWithoutSurface() {
             compare(topSurfaceList.applicationAt(0).appId, "unity8-dash");
             var dashSurfaceId = topSurfaceList.idAt(0);
-            var dashSurface = topSurfaceList.surfaceAt(0);
+            var dashWindow = topSurfaceList.windowAt(0);
 
             var webbrowserSurfaceId = topSurfaceList.nextId;
             webbrowserCheckBox.checked = true;
@@ -637,7 +635,7 @@ Rectangle {
 
             switchToSurface(dashSurfaceId);
 
-            tryCompare(MirFocusController, "focusedSurface", dashSurface);
+            tryCompare(topLevelSurfaceList, "focusedWindow", dashWindow);
             tryCompare(webbrowserApp, "state", ApplicationInfoInterface.Suspended);
 
             compare(webbrowserApp.surfaceList.count, 1);
