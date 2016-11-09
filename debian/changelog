@@ -1,3 +1,13 @@
+unity8 (8.14+17.04.20161109.2-0ubuntu1) zesty; urgency=medium
+
+  [ Daniel d'Andrada ]
+  * Let the model deal with some window management decisions
+
+  [ Michael Zanetti ]
+  * just so I can test this on something with a touchscreen
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 09 Nov 2016 15:24:11 +0000
+
 unity8 (8.14+17.04.20161027-0ubuntu1) zesty; urgency=medium
 
   * MenuItemFactory: activate item on calendar selection change (LP:
