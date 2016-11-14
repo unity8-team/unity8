@@ -1,3 +1,10 @@
+unity8 (8.14+17.04.20161114-0ubuntu1) zesty; urgency=medium
+
+  [ Michael Zanetti ]
+  * Hotfix for now allowing to go to spread when locked (LP: #1641578)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Mon, 14 Nov 2016 12:28:43 +0000
+
 unity8 (8.14+17.04.20161109-0ubuntu1) zesty; urgency=medium
 
   [ Michael Zanetti ]
