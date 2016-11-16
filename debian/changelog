@@ -1,3 +1,10 @@
+unity8 (8.14+17.04.20161116.2-0ubuntu1) zesty; urgency=medium
+
+  * Refactor the dash to make implementing a wide view dash easier in
+    the future.
+
+ -- Josh Arenson <josharenson@gmail.com>  Wed, 16 Nov 2016 23:16:56 +0000
+
 unity8 (8.14+17.04.20161109-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
