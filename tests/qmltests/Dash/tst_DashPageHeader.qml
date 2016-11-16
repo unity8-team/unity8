@@ -28,12 +28,6 @@ Item {
     width: units.gu(110)
     height: units.gu(50)
 
-    SignalSpy {
-        id: escapeSpy
-        target: pageHeader
-        signalName: "clearSearch"
-    }
-
     UT.UnityTestCase {
         name: "PageHeaderLabelTest"
         when: windowShown
@@ -58,13 +52,13 @@ Item {
             searchEnabled = true;
 
             // Reset to initial state
-            pageHeader.searchQuery = "";
-            pageHeader.closePopup();
-            pageHeader.searchHistory.clear();
+            pageHeader.searchContents.searchTextField.text = "";
+            pageHeader.searchContents.closePopup();
+            pageHeader.searchContents.searchHistory.clear();
 
             // Check initial state
-            tryCompare(pageHeader.extraPanel, "visible", false);
-            compare(pageHeader.searchHistory.count, 0);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
+            compare(pageHeader.searchContents.searchHistory.count, 0);
         }
 
         function test_search_disabled() {
@@ -153,7 +147,6 @@ Item {
 
         function cleanup() {
             doResetSearch();
-            escapeSpy.clear();
         }
 
         function test_popup_closing_data() {
@@ -194,7 +187,7 @@ Item {
             pageHeader.triggerSearch();
 
             var headerContainer = findChild(pageHeader, "headerContainer");
-            tryCompare(pageHeader.extraPanel, "visible", true);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", true);
 
             pageHeader.searchQuery = data.searchText;
 
@@ -205,7 +198,7 @@ Item {
             }
 
             tryCompare(headerContainer, "showSearch", !data.hideSearch);
-            tryCompare(pageHeader.extraPanel, "visible", false);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
 
             doResetSearch();
         }
@@ -220,26 +213,19 @@ Item {
             pageHeader.triggerSearch();
 
             var headerContainer = findChild(pageHeader, "headerContainer");
-            tryCompare(pageHeader.extraPanel, "visible", true);
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", true);
 
             pageHeader.searchQuery = "foobar";
 
             // press Esc once, the search should be cleared
             keyClick(Qt.Key_Escape);
-            pageHeader.searchQuery = ""; // simulate clearing the text field, the clear button doesn't do anything on its own
-            compare(escapeSpy.count, 1);
-            compare(escapeSpy.signalArguments[0][0], true);
-
-            escapeSpy.clear();
+            verify(pageHeader.searchQuery.length === 0)
 
             // press Escape a second time, the whole search should be hidden
             keyClick(Qt.Key_Escape);
             tryCompare(headerContainer, "showSearch", false);
-            compare(escapeSpy.count, 1);
-            compare(escapeSpy.signalArguments[0][0], false);
-            tryCompare(pageHeader.extraPanel, "visible", false);
-
-            doResetSearch();
+            verify(pageHeader.searchQuery === "")
+            tryCompare(pageHeader.searchContents, "extraPanelVisible", false);
         }
 
         function test_search_change_shows_search() {
@@ -266,7 +252,6 @@ Item {
             searchHistory: SearchHistoryModel
             searchEntryEnabled: true
             title: "%^$%^%^&%^&%^$%GHR%"
-            extraPanel: peExtraPanel
             scopeStyle: QtObject {
                 readonly property color foreground: theme.palette.normal.baseText
                 readonly property url headerLogo: showImageCheckBox.checked ? pageHeader.titleImageSource : ""
@@ -276,18 +261,6 @@ Item {
             property string titleImageSource: Qt.resolvedUrl("tst_PageHeader/logo-ubuntu-orange.svg")
             property date lastBackClicked
             onBackClicked: lastBackClicked = new Date()
-        }
-
-        PageHeaderExtraPanel {
-            id: peExtraPanel
-            width: parent.width
-            z: 1
-            visible: false
-            searchHistory: SearchHistoryModel
-            onHistoryItemClicked: {
-                SearchHistoryModel.addQuery(text);
-                pageHeader.searchQuery = text;
-            }
         }
 
         Row {

@@ -88,6 +88,14 @@ Item {
             return findChild(genericScopeView, categoryName);
         }
 
+        function getExtraPanel(searchHeaderContents) {
+            if (searchHeaderContents.extraPanelVisible) {
+                return findChild(searchHeaderContents.thePopover, "extraPanel");
+            } else {
+                return findChild(searchHeaderContents, "extraPanel");
+            }
+        }
+
         function getCategoryDelegate(category, delegate) {
             var dashContentList = findChild(dash, "dashContentList");
             var genericScopeView = dashContentList.currentItem;
@@ -133,7 +141,8 @@ Item {
 
             var dashContentList = findChild(dashContent, "dashContentList")
             var searchButton = findChild(dashContentList.currentItem, "search_button")
-            var extraPanel = findChild(dashContentList.currentItem, "peExtraPanel")
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var extraPanel = getExtraPanel(searchHeaderContents);
             waitForRendering(extraPanel);
             tryCompare(extraPanel, "visible", false)
 
@@ -171,7 +180,8 @@ Item {
             var dashContentList = findChild(dashContent, "dashContentList")
             var searchButton = findChild(dashContentList.currentItem, "search_button")
             verify(searchButton)
-            var extraPanel = findChild(dashContentList.currentItem, "peExtraPanel")
+            var searchHeaderContents = findChild(dashContentList.currentItem, "searchHeaderContents");
+            var extraPanel = getExtraPanel(searchHeaderContents);
             verify(extraPanel)
 
             var primaryFilter = findChild(extraPanel, "primaryFilter")

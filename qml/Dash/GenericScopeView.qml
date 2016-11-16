@@ -36,7 +36,7 @@ FocusScope {
     property bool enableHeightBehaviorOnNextCreation: false
     property var categoryView: categoryView
     readonly property alias subPageShown: subPageLoader.subPageShown
-    readonly property alias extraPanelShown: peExtraPanel.visible
+    property var searchHeader
     property int paginationCount: 0
     property int paginationIndex: 0
     property bool visibleToParent: false
@@ -44,6 +44,7 @@ FocusScope {
     property var holdingList: null
     property bool wasCurrentOnMoveStart: false
     property var filtersPopover: null
+    property alias searchContents: scopePageHeader.searchContents
 
     property var scopeStyle: ScopeStyle {
         style: scope ? scope.customizations : {}
@@ -67,10 +68,6 @@ FocusScope {
 
     function closePreview() {
         subPageLoader.closeSubPage()
-    }
-
-    function resetSearch() {
-        categoryView.pageHeader.resetSearch()
     }
 
     property var maybePreviewResult;
@@ -568,16 +565,19 @@ FocusScope {
         }
 
         pageHeader: DashPageHeader {
+            id: scopePageHeader
             objectName: "scopePageHeader"
             width: parent.width
             title: scopeView.scope ? scopeView.scope.name : ""
-            extraPanel: peExtraPanel
+
+            categoryView: scopeView.categoryView
+            scope: scopeView.scope
+            scopeView: scopeView
+
             searchHistory: SearchHistoryModel
             searchHint: scopeView.scope && scopeView.scope.searchHint || i18n.ctr("Label: Hint for dash search line edit", "Search")
-            scopeHasFilters: scopeView.scope.filters != null
-            activeFiltersCount: scopeView.scope.activeFiltersCount
+            activeFiltersCount: scopeView.scope ? scopeView.scope.activeFiltersCount : 0
             showBackButton: scopeView.hasBackAction
-            showSignatureLine: !showBackButton
             searchEntryEnabled: true
             settingsEnabled: scopeView.scope && scopeView.scope.settings && scopeView.scope.settings.count > 0 || false
             favoriteEnabled: scopeView.scope && scopeView.scope.id !== "clickscope"
@@ -591,55 +591,6 @@ FocusScope {
             onSettingsClicked: subPageLoader.openSubPage("settings")
             onFavoriteClicked: scopeView.scope.favorite = !scopeView.scope.favorite
             onSearchTextFieldFocused: scopeView.showHeader()
-            onClearSearch: { // keepPanelOpen
-                var panelOpen = peExtraPanel.visible;
-                resetSearch(keepPanelOpen);
-                scopeView.scope.resetPrimaryNavigationTag();
-                peExtraPanel.resetNavigation();
-                if ((panelOpen || searchHistory.count > 0) && keepPanelOpen) {
-                    openPopup();
-                }
-            }
-            onShowFiltersPopup: { // item
-                extraPanel.visible = false;
-                scopeView.filtersPopover = PopupUtils.open(Qt.resolvedUrl("FiltersPopover.qml"), item, { "contentWidth": Qt.binding(function() { return scopeView.width - units.gu(2); } ) } );
-                scopeView.filtersPopover.Component.onDestruction.connect(function () {
-                    categoryView.pageHeader.closePopup(false, true);
-                    categoryView.pageHeader.unfocus(true); // remove the focus from the search field
-                })
-            }
-        }
-
-        PageHeaderExtraPanel {
-            id: peExtraPanel
-            objectName: "peExtraPanel"
-            width: parent.width >= units.gu(60) ? units.gu(40) : parent.width
-            anchors {
-                top: categoryView.pageHeader.bottom
-                topMargin: -categoryView.pageHeader.signatureLineHeight
-            }
-            z: 1
-            visible: false
-
-            searchHistory: SearchHistoryModel
-            scope: scopeView.scope
-            windowHeight: scopeView.height
-
-            onHistoryItemClicked: {
-                SearchHistoryModel.addQuery(text);
-                categoryView.pageHeader.searchQuery = text;
-                categoryView.pageHeader.unfocus();
-            }
-
-            onDashNavigationLeafClicked: {
-                categoryView.pageHeader.closePopup();
-                categoryView.pageHeader.unfocus();
-            }
-
-            onExtraPanelOptionSelected: {
-                categoryView.pageHeader.closePopup();
-                categoryView.pageHeader.unfocus();
-            }
         }
     }
 
