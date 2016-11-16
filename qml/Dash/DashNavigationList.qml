@@ -97,6 +97,11 @@ Item {
                             elide: Text.ElideMiddle
                         }
 
+                        MouseArea {
+                            anchors.fill: parent
+                            onPressed: forceActiveFocus();
+                        }
+
                         Icon {
                             id: rightIcon
                             anchors {
