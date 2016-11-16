@@ -26,7 +26,7 @@ Item {
     objectName: "pageHeader"
     implicitHeight: headerContainer.height + signatureLineHeight
     readonly property real signatureLineHeight: showSignatureLine ? units.gu(2.5) : headerBottomLine.height
-    readonly property real headerDividerLuminance: Style.luminance(bottomBorder.color)
+    readonly property real headerDividerLuminance: Style.luminance(root.scopeStyle ? root.scopeStyle.headerDividerColor : "#e0e0e0")
 
     property alias extraPanelHeight: searchHeaderContents.extraPanelHeight
     property alias searchContents: searchHeaderContents
@@ -128,7 +128,7 @@ Item {
         }
     }
 
-    Rectangle {
+    /*Rectangle {
         id: bottomBorder
         visible: showSignatureLine
         anchors {
@@ -149,7 +149,7 @@ Item {
             height: units.dp(1)
             color: Qt.darker(parent.color, 1.1)
         }
-    }
+    }*/
 
 
     Rectangle {
