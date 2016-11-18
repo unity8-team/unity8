@@ -99,7 +99,10 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onPressed: forceActiveFocus();
+                            onPressed: {
+                                forceActiveFocus();
+                                mouse.accepted = false;
+                            }
                         }
 
                         Icon {
