@@ -1,3 +1,10 @@
+unity8 (8.15+17.04.20161122.1-0ubuntu1) zesty; urgency=medium
+
+  * Fix the Super key not invoking the dash scope home (LP: #1607427)
+  * Brigthness control hooks (LP: #1595947)
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Tue, 22 Nov 2016 15:23:27 +0000
+
 unity8 (8.15+17.04.20161116.1-0ubuntu1) zesty; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
