@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20161123-0ubuntu1) zesty; urgency=medium
+
+  * No change rebuild against new qtdeclarative.
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 23 Nov 2016 09:30:10 +0000
+
 unity8 (8.15+17.04.20161116.1-0ubuntu1) zesty; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
