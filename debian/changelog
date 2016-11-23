@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20161123-0ubuntu1) zesty; urgency=medium
+
+  * Brigthness control hooks (LP: #1595947)
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Wed, 23 Nov 2016 10:20:23 +0000
+
 unity8 (8.15+17.04.20161116.1-0ubuntu1) zesty; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
