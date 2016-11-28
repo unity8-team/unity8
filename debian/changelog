@@ -1,3 +1,16 @@
+unity8 (8.15+17.04.20161128-0ubuntu1) zesty; urgency=medium
+
+  [ Albert Astals Cid ]
+  * Bring back fix for 1517830 (LP: #1517830)
+
+  [ Josh Arenson ]
+  * Allow the scopes list to automatically scroll when a scope is being
+    dragged past the bounds of the screen. (LP: #1575319)
+  * Refactor the dash to make implementing a wide view dash easier in
+    the future.
+
+ -- Andrea Cimitan <andrea.cimitan@canonical.com>  Mon, 28 Nov 2016 11:25:21 +0000
+
 unity8 (8.15+17.04.20161116.1-0ubuntu1) zesty; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
