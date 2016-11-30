@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20161130.1-0ubuntu1) zesty; urgency=medium
+
+  * MenuItemFactory: Add subtitle support to SwitchItem widget
+
+ -- Pete Woods <pete.woods@canonical.com>  Wed, 30 Nov 2016 13:22:55 +0000
+
 unity8 (8.15+17.04.20161116.1-0ubuntu1) zesty; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
