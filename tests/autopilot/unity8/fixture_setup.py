@@ -27,7 +27,6 @@ import ubuntuuitoolkit
 from autopilot import introspection
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
-from ubuntuuitoolkit import fixture_setup
 
 from unity8 import (
     get_binary_path,
@@ -43,7 +42,19 @@ from unity8 import (
 logger = logging.getLogger(__name__)
 
 
-class LaunchUnityWithFakeSensors(fixtures.Fixture):
+class BaseUnityFixture(fixtures.Fixture):
+
+    def _setup_env_var(self, key, value, global_=True):
+        process_helpers.set_environment_variable(key, value, global_=global_)
+        self.addCleanup(process_helpers.unset_environment_variable, key,
+                        global_=global_)
+
+    def restart_unity_with_testability(self, *args):
+        self._setup_env_var('QT_LOAD_TESTABILITY', '1')
+        return process_helpers.restart_unity(*args)
+
+
+class LaunchUnityWithFakeSensors(BaseUnityFixture):
 
     """Fixture to launch Unity8 with an injectable sensors backend.
 
@@ -57,10 +68,8 @@ class LaunchUnityWithFakeSensors(fixtures.Fixture):
     def setUp(self):
         """Restart Unity8 with testability and create sensors."""
         super().setUp()
-        self.useFixture(
-            fixture_setup.InitctlEnvironmentVariable(
-                UBUNTU_PLATFORM_API_TEST_OVERRIDE='sensors'))
 
+        self._setup_env_var('UBUNTU_PLATFORM_API_TEST_OVERRIDE', 'sensors')
         self.addCleanup(process_helpers.stop_job, 'unity8')
         restart_thread = threading.Thread(
             target=self._restart_unity_with_testability)
@@ -70,6 +79,8 @@ class LaunchUnityWithFakeSensors(fixtures.Fixture):
 
         restart_thread.join()
         self.fake_sensors = sensors.FakePlatformSensors()
+
+
 
     def _get_lightdm_mock_path(self):
         lib_path = get_mocks_library_path()
@@ -131,8 +142,8 @@ class LaunchUnityWithFakeSensors(fixtures.Fixture):
         binary_arg = "BINARY=%s" % get_binary_path()
         env_args = ["%s=%s" % (k, v) for k, v in _environment.items()]
         args = [binary_arg] + env_args
-        self.unity_proxy = process_helpers.restart_unity_with_testability(
-            *args)
+
+        self.unity_proxy = self.restart_unity_with_testability(*args)
         self.main_win = self.unity_proxy.select_single(shell.ShellView)
 
     def _create_sensors(self):
@@ -152,7 +163,7 @@ class LaunchUnityWithFakeSensors(fixtures.Fixture):
             fifo.write('create proximity\n')
 
 
-class RestartUnityWithTestability(fixtures.Fixture):
+class RestartUnityWithTestability(BaseUnityFixture):
 
     """Fixture to launch Unity8 with testability.
 
@@ -193,8 +204,7 @@ class RestartUnityWithTestability(fixtures.Fixture):
         ]
         all_args = [binary_arg] + variable_args
 
-        self.unity_proxy = process_helpers.restart_unity_with_testability(
-            *all_args)
+        self.unity_proxy = super().restart_unity_with_testability(*all_args)
 
     def _unlink_mir_socket(self):
         # FIXME: we shouldn't be doing this

@@ -314,9 +314,7 @@ class DashBaseTestCase(AutopilotTestCase):
 
         if model() != 'Desktop':
             # On the phone, we need unity to be running and unlocked.
-            self.addCleanup(process_helpers.stop_job, 'unity8')
-            process_helpers.restart_unity_with_testability()
-            process_helpers.unlock_unity()
+            fixture_setup.RestartUnityWithTestability()
 
         self.ensure_dash_not_running()
 

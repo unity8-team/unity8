@@ -37,31 +37,31 @@ class CannotAccessUnity(Exception):
     pass
 
 
-def unlock_unity():
-    """Helper function that attempts to unlock the unity greeter.
+def _run_command(command):
+    try:
+        output = subprocess.check_output(
+            command,
+            shell=True,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
+        )
+        logger.info(output)
+    except subprocess.CalledProcessError as e:
+        e.args += ('Failed running command {}. Error {}'.format(command, e.output),)
+        raise
 
-    """
+
+def unlock_unity():
+    """ Helper function that attempts to unlock the unity greeter. """
     greeter.wait_for_greeter()
     greeter.hide_greeter_with_dbus()
     greeter.wait_for_greeter_gone()
 
 
 def lock_unity():
-    """Helper function that attempts to lock unity greeter.
-
-    """
+    """ Helper function that attempts to lock unity greeter """
     greeter.show_greeter_with_dbus()
     greeter.wait_for_greeter()
-
-
-def restart_unity_with_testability(*args):
-    """Restarts (or starts) unity with testability enabled.
-
-    Passes *args arguments to the launched process.
-
-    """
-    args += ("QT_LOAD_TESTABILITY=1",)
-    return restart_unity(*args)
 
 
 def restart_unity(*args):
@@ -73,8 +73,7 @@ def restart_unity(*args):
       unity8 upstart job.
 
     """
-    status = _get_unity_status()
-    if "start/" in status:
+    if is_job_running('unity8'):
         stop_job('unity8')
 
     pid = start_job('unity8', *args)
@@ -91,20 +90,11 @@ def start_job(name, *args):
 
     """
     logger.info('Starting job {} with arguments {}.'.format(name, args))
-    command = ['/sbin/initctl', 'start', name] + list(args)
-    try:
-        output = subprocess.check_output(
-            command,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
-        )
-        logger.info(output)
-        pid = get_job_pid(name)
-    except subprocess.CalledProcessError as e:
-        e.args += ('Failed to start {}: {}.'.format(name, e.output),)
-        raise
-    else:
-        return pid
+    command = 'systemctl start {} {}'.format(name,
+                                             ' '.join(str(x) for x in args))
+    output = _run_command(command)
+    logger.info(output)
+    return get_job_pid(name)
 
 
 def get_job_pid(name):
@@ -115,7 +105,7 @@ def get_job_pid(name):
 
     """
     status = get_job_status(name)
-    if "start/" not in status:
+    if 'active' not in status:
         raise JobError('{} is not in the running state.'.format(name))
     return int(status.split()[-1])
 
@@ -124,19 +114,11 @@ def get_job_status(name):
     """Return the status of a job.
 
     :param str name: The name of the job.
-    :raises JobError: if it's not possible to get the status of the job.
+    :raises CalledProcessError: if it's not possible to get the status of the job.
 
     """
-    try:
-        return subprocess.check_output([
-            '/sbin/initctl',
-            'status',
-            name
-        ], universal_newlines=True)
-    except subprocess.CalledProcessError as error:
-        raise JobError(
-            "Unable to get {}'s status: {}".format(name, error)
-        )
+    command = 'systemctl status {}'.format(name)
+    return _run_command(command)
 
 
 def stop_job(name):
@@ -147,17 +129,8 @@ def stop_job(name):
 
     """
     logger.info('Stopping job {}.'.format(name))
-    command = ['/sbin/initctl', 'stop', name]
-    try:
-        output = subprocess.check_output(
-            command,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
-        )
-        logger.info(output)
-    except subprocess.CalledProcessError as e:
-        e.args += ('Failed to stop {}: {}.'.format(name, e.output),)
-        raise
+    command = 'systemctl stop {}'.format(name)
+    _run_command(command)
 
 
 def is_job_running(name):
@@ -167,7 +140,8 @@ def is_job_running(name):
     :raises JobError: if it's not possible to get the status of the job.
 
     """
-    return 'start/' in get_job_status(name)
+    command = 'systemctl show {} -p ActiveState'.format(name)
+    return 'ActiveState=active' in _run_command(command)
 
 
 def _get_unity_status():
@@ -189,3 +163,19 @@ def _get_unity_proxy_object(pid):
         pid=pid,
         emulator_base=ubuntuuitoolkit.UbuntuUIToolkitCustomProxyObjectBase
     )
+
+
+def _add_global(command, global_):
+    if global_:
+        command += ' --global'
+    return command
+
+
+def set_environment_variable(key, value, global_=True):
+    command = 'systemctl set-environment {}={}'.format(key, value)
+    _run_command(_add_global(command, global_))
+
+
+def unset_environment_variable(key, global_=True):
+    command = 'systemctl unset-environment {}'.format(key)
+    _run_command(_add_global(command, global_))
