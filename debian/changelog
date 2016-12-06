@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20161206.2-0ubuntu1) zesty; urgency=medium
+
+  * Add a D-Bus interface to control some debug facilities on the fly
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 06 Dec 2016 16:34:25 +0000
+
 unity8 (8.15+17.04.20161129-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
