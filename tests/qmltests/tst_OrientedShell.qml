@@ -1004,7 +1004,7 @@ Rectangle {
             var rotationStates = findInvisibleChild(orientedShell, "rotationStates");
             waitUntilTransitionsEnd(rotationStates);
 
-            performLeftEdgeSwipeToSwitchToDash();
+            ApplicationManager.requestFocusApplication("unity8-dash");
 
             // Should be back to portrait
             tryCompare(shell, "transformRotationAngle", 0);
@@ -1394,18 +1394,6 @@ Rectangle {
             tryCompare(shell, "orientation", orientation);
             var rotationStates = findInvisibleChild(orientedShell, "rotationStates");
             waitUntilTransitionsEnd(rotationStates);
-        }
-
-        function performLeftEdgeSwipeToSwitchToDash() {
-            var swipeLength = shell.width * 0.7;
-
-            var touchStartX = 1;
-            var touchStartY = shell.height / 2;
-            touchFlick(shell,
-                       touchStartX, touchStartY,
-                       touchStartX + swipeLength, touchStartY);
-
-            tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash");
         }
 
         function performEdgeSwipeToSwitchToPreviousApp() {

@@ -36,7 +36,7 @@ StyledItem {
     readonly property int cellHeight: units.gu(5)
     readonly property int highlightedHeight: units.gu(15)
     readonly property int moveDuration: UbuntuAnimation.FastDuration
-    property string currentSession: LightDMService.greeter.defaultSession
+    property string currentSession: LightDMService.users.data(currentIndex, LightDMService.userRoles.SessionRole)
     readonly property string currentUser: userList.currentItem.username
     property bool wasPrompted: false
 
@@ -166,7 +166,7 @@ StyledItem {
         }
 
         delegate: Item {
-            width: parent.width
+            width: userList.width
             height: root.cellHeight
 
             readonly property bool belowHighlight: (userList.currentIndex < 0 && index > 0) || (userList.currentIndex >= 0 && index > userList.currentIndex)
