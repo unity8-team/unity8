@@ -28,7 +28,7 @@ import Ubuntu.DownloadDaemonListener 0.1
 PreviewWidget {
     id: root
 
-    implicitHeight: progressBar.implicitHeight
+    implicitHeight: progressBar.height
     implicitWidth: progressBar.implicitWidth
 
     ProgressBar {
@@ -37,8 +37,7 @@ PreviewWidget {
         anchors.right: parent.right
         value: 0
         maximumValue: 100
-        implicitHeight: units.gu(4)
-        height: parent.height
+        height: units.gu(4)
         width: (root.width - units.gu(1)) / 2
 
         property var source: widgetData["source"]
