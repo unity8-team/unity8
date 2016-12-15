@@ -524,7 +524,7 @@ Showable {
                 // Check if we should initiate a factory reset
                 if (maxFailedLogins >= 2) { // require at least a warning
                     if (AccountsService.failedLogins === maxFailedLogins - 1) {
-                        //loader.item.showLastChance();
+                        //loader.item.showLastChance(); // not implemented yet
                     } else if (AccountsService.failedLogins >= maxFailedLogins) {
                         SystemImage.factoryReset(); // Ouch!
                     }

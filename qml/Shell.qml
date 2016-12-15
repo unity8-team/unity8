@@ -127,8 +127,7 @@ StyledItem {
 
     // For autopilot and test consumption
     readonly property string focusedApplicationId: ApplicationManager.focusedApplicationId
-    readonly property var mainApp:
-            applicationsDisplayLoader.item ? applicationsDisplayLoader.item.mainApp : null
+    readonly property var mainApp: stage.mainApp
 
     // Note when greeter is waiting on PAM, so that we can disable edges until
     // we know which user data to show and whether the session is locked.
