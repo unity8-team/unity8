@@ -88,7 +88,7 @@ StyledItem {
         } else if (notifications.topmostIsFullscreen) {
             return Qt.PrimaryOrientation;
         } else if (showingGreeter) {
-            return greeter.supportedOrientations;
+            return shell.orientations.map(greeter.supportedOrientations);
         } else {
             return shell.orientations.map(stage.supportedOrientations);
         }
