@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20161220-0ubuntu1) zesty; urgency=medium
+
+  * Improvements for the appdrawer
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 20 Dec 2016 09:47:53 +0000
+
 unity8 (8.15+17.04.20161207.1-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]

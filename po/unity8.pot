@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-07 13:49+0000\n"
+"POT-Creation-Date: 2016-12-20 09:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -489,16 +489,21 @@ msgstr ""
 msgid "Select desktop environment"
 msgstr ""
 
-#: qml/Launcher/Drawer.qml:80
+#: qml/Launcher/Drawer.qml:92
 msgid "Search…"
 msgstr ""
 
-#: qml/Launcher/Drawer.qml:101
+#: qml/Launcher/Drawer.qml:122
 msgctxt "Apps sorted alphabetically"
 msgid "A-Z"
 msgstr ""
 
-#: qml/Launcher/MoreAppsHeader.qml:32
+#: qml/Launcher/Drawer.qml:126
+msgctxt "Most used apps"
+msgid "Most used"
+msgstr ""
+
+#: qml/Launcher/MoreAppsHeader.qml:29
 msgid "More apps in the store"
 msgstr ""
 
