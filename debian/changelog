@@ -1,3 +1,10 @@
+unity8 (8.15+17.04.20170103-0ubuntu1) zesty; urgency=medium
+
+  * Allow the scopes list to automatically scroll when a scope is being
+    dragged past the bounds of the screen. (LP: #1575319)
+
+ -- Josh Arenson <josharenson@gmail.com>  Tue, 03 Jan 2017 17:49:37 +0000
+
 unity8 (8.15+17.04.20161215-0ubuntu1) zesty; urgency=medium
 
   * Let the model deal with some window management decisions (LP:

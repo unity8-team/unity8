@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-15 16:17+0000\n"
+"POT-Creation-Date: 2017-01-03 17:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -426,15 +426,15 @@ msgstr ""
 msgid "Enable location data"
 msgstr ""
 
-#: qml/Dash/ScopesList.qml:57
+#: qml/Dash/ScopesList.qml:146
 msgid "Manage"
 msgstr ""
 
-#: qml/Dash/ScopesList.qml:104
+#: qml/Dash/ScopesList.qml:187
 msgid "Home"
 msgstr ""
 
-#: qml/Dash/ScopesList.qml:105
+#: qml/Dash/ScopesList.qml:188
 msgid "Also installed"
 msgstr ""
 
