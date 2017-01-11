@@ -568,6 +568,43 @@ StyledItem {
             }
         }
 
+        GlobalShortcut {
+            id: nextWorkspaceShortcut
+            objectName: "nextWorkspaceShortcut"
+            shortcut: Qt.ControlModifier | Qt.AltModifier | Qt.Key_Right
+            onTriggered: {
+                workspaceSwitcher.enabled = true;
+                workspaceSwitcher.switchNext();
+            }
+        }
+
+        GlobalShortcut {
+            id: previousWorkspaceShortcut
+            objectName: "previousWorkspaceShortcut"
+            shortcut: Qt.ControlModifier | Qt.AltModifier | Qt.Key_Left
+            onTriggered: {
+                workspaceSwitcher.enabled = true;
+                workspaceSwitcher.switchPrevious();
+            }
+        }
+
+        WorkspaceSwitcher {
+            id: workspaceSwitcher
+            objectName: "workspaceSwitcher"
+            enabled: false
+            width: (parent.width - launcher.panelWidth) * 0.8
+            height: units.gu(20) // FIXME calculate
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: launcher.lockedVisible ? launcher.panelWidth/2 : 0
+            anchors.verticalCenterOffset: panel.panelHeight/2
+            visible: opacity > 0
+            opacity: enabled ? 0.95 : 0
+
+            Behavior on opacity {
+                UbuntuNumberAnimation {}
+            }
+        }
+
         Tutorial {
             id: tutorial
             objectName: "tutorial"

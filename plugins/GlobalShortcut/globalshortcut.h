@@ -52,6 +52,9 @@ public:
     bool isActive() const;
     void setActive(bool active);
 
+public Q_SLOTS:
+    Q_INVOKABLE void trigger(); // for testing
+
 protected:
     void componentComplete() override;
     void keyPressEvent(QKeyEvent * event) override;
@@ -69,7 +72,7 @@ private Q_SLOTS:
 
 private:
     QVariant m_shortcut;
-    bool m_active = true;
+    bool m_active{true};
 };
 
 

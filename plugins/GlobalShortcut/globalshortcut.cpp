@@ -56,6 +56,11 @@ void GlobalShortcut::setActive(bool active)
     Q_EMIT activeChanged(active);
 }
 
+void GlobalShortcut::trigger()
+{
+    Q_EMIT triggered(m_shortcut.toString());
+}
+
 void GlobalShortcut::componentComplete()
 {
     connect(this, &QQuickItem::windowChanged, this, &GlobalShortcut::setupFilterOnWindow);
