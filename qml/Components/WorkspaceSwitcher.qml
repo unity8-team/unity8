@@ -33,28 +33,31 @@ Rectangle {
         {
             "name": "Philips",
             "hasPointer": true,
-            "workspaces": ["bar", "foo", "baz"]
+            "workspaces": ["bar", "foo", "baz"],
+            "currentWorkspace": 0
         },
         {
             "name": "Home project",
-            "workspaces": ["a", "b", "c", "d"]
+            "workspaces": ["a", "b", "c", "d"],
+            "currentWorkspace": 1
         },
         {
             "name": "Work project",
-            "workspaces": ["w", "x", "y", "z", "ž"]
+            "workspaces": ["w", "x", "y", "z", "ž"],
+            "currentWorkspace": 2
         },
         {
             "name": "Dell P2014H 20",
-            "workspaces": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "abc", "def", "ghi"]
+            "workspaces": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "abc", "def", "ghi"],
+            "currentWorkspace": 3
         },
         {
-            "name": "Sony VPL-DW240",
-            "workspaces": ["abc", "def", "ghi"]
+            "name": "Sony VPL-DW240"
         }
     ]
 
     property int currentScreen: 0
-    property int currentWS: 0
+    property int currentWS: root.model[root.currentScreen].currentWorkspace || 0 // default state
 
     onCurrentScreenChanged: {
         print("Current screen", currentScreen)
@@ -87,7 +90,7 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 radius: units.gu(.5)
-                color: root.currentScreen == index ? "white" : UbuntuColors.inkstone
+                color: isCurrent ? "white" : UbuntuColors.inkstone
                 anchors.bottomMargin: -radius
             }
 
@@ -113,7 +116,7 @@ Rectangle {
 
             onClicked: {
                 root.currentScreen = index;
-                root.currentWS = -1;
+                root.currentWS = root.model[root.currentScreen].currentWorkspace || 0
             }
         }
     }
@@ -124,7 +127,7 @@ Rectangle {
         Rectangle {
             width: units.gu(12) // FIXME should use the correct aspect ratio
             height: units.gu(7)
-            readonly property bool isCurrent: root.currentWS == index
+            property bool isCurrent: root.currentWS === index
             color: isCurrent ? "#80ffffff" : UbuntuColors.graphite
 
             Label {
@@ -135,8 +138,10 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    // need to assign twice as the JSON model doesn't signal changes back to QML, so a simple binding doesn't update :/
+                    root.model[root.currentScreen].currentWorkspace = index;
                     root.currentWS = index;
-                    print("Selected WS:", modelData, "with index:", index)
+                    print("Current WS:", modelData, "with index:", root.model[root.currentScreen].currentWorkspace)
                 }
             }
         }
@@ -165,7 +170,7 @@ Rectangle {
                 spacing: root.padding
                 padding: root.padding
                 Repeater {
-                    model: root.model[root.currentScreen].workspaces
+                    model: root.model[root.currentScreen].workspaces || 1
                     delegate: workspaceComponent
                 }
             }
