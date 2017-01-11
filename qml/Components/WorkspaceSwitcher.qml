@@ -81,7 +81,7 @@ Rectangle {
 
         MouseArea {
             width: row.childrenRect.width + padding*4
-            height: row.childrenRect.height + padding*2.5
+            height: row.childrenRect.height + padding*2
             readonly property bool isCurrent: root.currentScreen == index
 
             Rectangle {
@@ -124,7 +124,8 @@ Rectangle {
         Rectangle {
             width: units.gu(12) // FIXME should use the correct aspect ratio
             height: units.gu(7)
-            color: root.currentWS == index ? "white" : UbuntuColors.graphite
+            readonly property bool isCurrent: root.currentWS == index
+            color: isCurrent ? "#80ffffff" : UbuntuColors.graphite
 
             Label {
                 anchors.centerIn: parent
@@ -158,7 +159,7 @@ Rectangle {
         Rectangle {
             width: Math.max(childrenRect.width, screensRow.width)
             height: childrenRect.height
-            color: UbuntuColors.ash
+            color: UbuntuColors.silk
             Row {
                 id: wsRow
                 spacing: root.padding
