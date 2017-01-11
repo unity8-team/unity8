@@ -124,7 +124,6 @@ Rectangle {
         Rectangle {
             width: units.gu(12) // FIXME should use the correct aspect ratio
             height: units.gu(7)
-            radius: units.gu(.5)
             color: root.currentWS == index ? "white" : UbuntuColors.graphite
 
             Label {

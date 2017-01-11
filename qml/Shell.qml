@@ -593,7 +593,6 @@ StyledItem {
             objectName: "workspaceSwitcher"
             enabled: false
             width: (parent.width - launcher.panelWidth) * 0.8
-            height: units.gu(20) // FIXME calculate
             anchors.centerIn: parent
             anchors.horizontalCenterOffset: launcher.lockedVisible ? launcher.panelWidth/2 : 0
             anchors.verticalCenterOffset: panel.panelHeight/2
