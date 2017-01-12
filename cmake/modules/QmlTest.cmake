@@ -114,10 +114,11 @@ endfunction()
 # Three targets will be created:
 #   - test${component_name} - Runs the test
 #   - xvfbtest${component_name} - Runs the test under xvfb
+#   - xvfbtest${component_name} - Runs the test under xvfb and record it
 #   - gdbtest${component_name} - Runs the test under gdb
 
 function(add_executable_test COMPONENT_NAME TARGET)
-    import_executables(gdb xvfb-run OPTIONAL)
+    import_executables(gdb xvfb-run recordmydesktop OPTIONAL)
 
     cmake_parse_arguments(QMLTEST "${QMLTEST_OPTIONS}" "${QMLTEST_SINGLE}" "${QMLTEST_MULTI}" ${ARGN})
     mangle_arguments()
@@ -139,6 +140,8 @@ function(add_executable_test COMPONENT_NAME TARGET)
             ${args}
     )
 
+    set(record_wrapper ${CMAKE_SOURCE_DIR}/tools/record.py )
+
     add_qmltest_target(test${COMPONENT_NAME} ${TARGET}
         COMMAND ${qmltest_command}
         ${depends}
@@ -154,6 +157,15 @@ function(add_executable_test COMPONENT_NAME TARGET)
             ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
             TARGETS ${xvfb_targets}
         )
+
+        if (TARGET recordmydesktop)
+            add_qmltest_target(rxvfbtest${COMPONENT_NAME} ${TARGET}
+                COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${record_wrapper} ${qmltest_command}
+                ${depends}
+                ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
+                TARGETS ${xvfb_targets}
+            )
+        endif()
     endif()
 
     if(TARGET gdb)
