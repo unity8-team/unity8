@@ -114,10 +114,11 @@ endfunction()
 # Three targets will be created:
 #   - test${component_name} - Runs the test
 #   - xvfbtest${component_name} - Runs the test under xvfb
+#   - xvfbtest${component_name} - Runs the test under xvfb and record it
 #   - gdbtest${component_name} - Runs the test under gdb
 
 function(add_executable_test COMPONENT_NAME TARGET)
-    import_executables(gdb xvfb-run OPTIONAL)
+    import_executables(gdb xvfb-run recordmydesktop OPTIONAL)
 
     cmake_parse_arguments(QMLTEST "${QMLTEST_OPTIONS}" "${QMLTEST_SINGLE}" "${QMLTEST_MULTI}" ${ARGN})
     mangle_arguments()
@@ -150,8 +151,6 @@ function(add_executable_test COMPONENT_NAME TARGET)
     )
 
     if(TARGET xvfb-run)
-        set(temp_rxvfb_targets ${rxvfb_targets})
-
         add_qmltest_target(xvfbtest${COMPONENT_NAME} ${TARGET}
             COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${qmltest_command}
             ${depends}
@@ -159,12 +158,14 @@ function(add_executable_test COMPONENT_NAME TARGET)
             TARGETS ${xvfb_targets}
         )
 
-        add_qmltest_target(rxvfbtest${COMPONENT_NAME} ${TARGET}
-            COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${record_wrapper} ${qmltest_command}
-            ${depends}
-            ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
-            TARGETS ${temp_rxvfb_targets}
-        )
+        if (TARGET recordmydesktop)
+            add_qmltest_target(rxvfbtest${COMPONENT_NAME} ${TARGET}
+                COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${record_wrapper} ${qmltest_command}
+                ${depends}
+                ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
+                TARGETS ${xvfb_targets}
+            )
+        endif()
     endif()
 
     if(TARGET gdb)
@@ -301,14 +302,6 @@ macro(mangle_arguments)
         endif()
     endforeach()
     set(xvfb_targets "${xvfb_targets}" PARENT_SCOPE)
-
-    set(rxvfb_targets "")
-    foreach(target ${QMLTEST_TARGETS})
-        if(TARGET rxvfb${target})
-            list(APPEND rxvfb_targets rxvfb${target})
-        endif()
-    endforeach()
-    set(rxvfb_targets "${rxvfb_targets}" PARENT_SCOPE)
 endmacro()
 
 
