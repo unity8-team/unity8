@@ -1,3 +1,11 @@
+unity8 (8.15+17.04.20170112-0ubuntu1) zesty; urgency=medium
+
+  [ Daniel van Vugt ]
+  * Deprecate usage of Mir's input resampling, instead opting for: (LP:
+    #1497105, #1591328)
+
+ -- Andrea Cimitan <andrea.cimitan@canonical.com>  Thu, 12 Jan 2017 15:00:11 +0000
+
 unity8 (8.15+17.04.20161215-0ubuntu2~1) zesty; urgency=medium
 
   * No change rebuild
