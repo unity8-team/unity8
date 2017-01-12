@@ -60,7 +60,7 @@ if __name__ == "__main__":
                 # store the exit code to return
                 returncode = err.returncode
 
-                print("==== Record wrapper. Econding ====")
+                print("==== Record wrapper. Enconding ====")
                 # stop recording, give 60 seconds to encode
                 recorder.terminate()
                 try:
@@ -73,7 +73,7 @@ if __name__ == "__main__":
                     except subprocess.TimeoutExpired:
                         pass
 
-                print("==== Record wrapper. Econding is over. Return code: ", recorder.returncode)
+                print("==== Record wrapper. Enconding is over. Return code: ", recorder.returncode)
                 print(tmpname, " ", outfile)
 
                 if recorder.returncode is 0:
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                     recorder.kill()
                     print("===== Had to kill recorder =====")
                 elif recorder.returncode is not 0:
-                    # only print recorder output if terminated successfully
+                    # only print recorder output if terminated unsuccessfully
                     print("===== Recorder error =====\nSTDOUT:\n{0}\n\nSTDERR:\n{1}".format(*recorder.communicate()))
 
     sys.exit(returncode)
