@@ -29,7 +29,6 @@ if __name__ == "__main__":
     "qmltest.ogv" in the current directory.
     """
 
-
     argv = sys.argv[1:]
 
     outfile = os.path.join(os.curdir, "qmltest.ogv")
@@ -43,7 +42,6 @@ if __name__ == "__main__":
                 break
     except IndexError as err:
         raise ValueError("Incorrect logger definition:\n{0}".format(argv)) from err
-
 
     with tempfile.TemporaryDirectory() as tmpdir:
         # create a temporary file and close it to let recordmydesktop overwrite it
@@ -61,7 +59,7 @@ if __name__ == "__main__":
                 returncode = err.returncode
 
                 print("==== Record wrapper. Enconding ====")
-                # stop recording, give 60 seconds to encode
+                # stop recording, give ENCODE_LIMIT seconds to encode
                 recorder.terminate()
                 try:
                     recorder.wait(ENCODE_LIMIT)
