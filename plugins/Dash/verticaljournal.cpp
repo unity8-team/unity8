@@ -49,7 +49,7 @@ void VerticalJournal::setColumnWidth(qreal columnWidth)
 
         if (isComponentComplete()) {
             Q_FOREACH(const auto &column, m_columnVisibleItems) {
-                Q_FOREACH(const ViewItem item, column) {
+                Q_FOREACH(const ViewItem &item, column) {
                     item.m_item->setWidth(columnWidth);
                 }
             }
@@ -65,7 +65,7 @@ void VerticalJournal::findBottomModelIndexToAdd(int *modelIndex, qreal *yPos)
 
     Q_FOREACH(const auto &column, m_columnVisibleItems) {
         if (!column.isEmpty()) {
-            const ViewItem &item = column.last();
+            const ViewItem &item = column.constLast();
             *yPos = qMin(*yPos, item.y() + item.height() + rowSpacing());
             *modelIndex = qMax(*modelIndex, item.m_modelIndex + 1);
         } else {
@@ -82,9 +82,9 @@ void VerticalJournal::findTopModelIndexToAdd(int *modelIndex, qreal *yPos)
 
     // Find the topmost free column
     for (int i = 0; i < m_columnVisibleItems.count(); ++i) {
-        const auto &column = m_columnVisibleItems[i];
+        const auto &column = m_columnVisibleItems.at(i);
         if (!column.isEmpty()) {
-            const ViewItem &item = column.first();
+            const ViewItem &item = column.constFirst();
             const auto itemTopPos = item.y() - rowSpacing();
             if (itemTopPos > *yPos) {
                 *yPos = itemTopPos;
@@ -113,12 +113,12 @@ bool VerticalJournal::removeNonVisibleItems(qreal bufferFromY, qreal bufferToY)
 
     for (int i = 0; i < m_columnVisibleItems.count(); ++i) {
         QList<ViewItem> &column = m_columnVisibleItems[i];
-        while (!column.isEmpty() && column.first().y() + column.first().height() < bufferFromY) {
+        while (!column.isEmpty() && column.constFirst().y() + column.constFirst().height() < bufferFromY) {
             releaseItem(column.takeFirst().m_item);
             changed = true;
         }
 
-        while (!column.isEmpty() && column.last().y() > bufferToY) {
+        while (!column.isEmpty() && column.constLast().y() > bufferToY) {
             releaseItem(column.takeLast().m_item);
             changed = true;
         }
@@ -135,20 +135,20 @@ void VerticalJournal::addItemToView(int modelIndex, QQuickItem *item)
     }
 
     // Check if we add it to the bottom of existing column items
-    const QList<ViewItem> &firstColumn = m_columnVisibleItems[0];
-    qreal columnToAddY = !firstColumn.isEmpty() ? firstColumn.last().y() + firstColumn.last().height() : -rowSpacing();
+    const QList<ViewItem> &firstColumn = m_columnVisibleItems.constFirst();
+    qreal columnToAddY = !firstColumn.isEmpty() ? firstColumn.constLast().y() + firstColumn.constLast().height() : -rowSpacing();
     int columnToAddTo = 0;
     for (int i = 1; i < m_columnVisibleItems.count(); ++i) {
-        const QList<ViewItem> &column = m_columnVisibleItems[i];
-        const qreal iY = !column.isEmpty() ? column.last().y() + column.last().height() : -rowSpacing();
+        const QList<ViewItem> &column = m_columnVisibleItems.at(i);
+        const qreal iY = !column.isEmpty() ? column.constLast().y() + column.constLast().height() : -rowSpacing();
         if (iY < columnToAddY) {
             columnToAddTo = i;
             columnToAddY = iY;
         }
     }
 
-    const QList<ViewItem> &columnToAdd = m_columnVisibleItems[columnToAddTo];
-    if (columnToAdd.isEmpty() || columnToAdd.last().m_modelIndex < modelIndex) {
+    const QList<ViewItem> &columnToAdd = m_columnVisibleItems.at(columnToAddTo);
+    if (columnToAdd.isEmpty() || columnToAdd.constLast().m_modelIndex < modelIndex) {
         item->setX(columnToAddTo * (m_columnWidth + columnSpacing()));
         item->setY(columnToAddY + rowSpacing());
 
@@ -157,7 +157,7 @@ void VerticalJournal::addItemToView(int modelIndex, QQuickItem *item)
     } else {
         Q_ASSERT(m_indexColumnMap.contains(modelIndex));
         columnToAddTo = m_indexColumnMap[modelIndex];
-        columnToAddY = m_columnVisibleItems[columnToAddTo].first().y();
+        columnToAddY = m_columnVisibleItems[columnToAddTo].constFirst().y();
 
         item->setX(columnToAddTo * (m_columnWidth + columnSpacing()));
         item->setY(columnToAddY - rowSpacing() - item->height());
@@ -171,7 +171,7 @@ void VerticalJournal::cleanupExistingItems()
     // Cleanup the existing items
     for (int i = 0; i < m_columnVisibleItems.count(); ++i) {
         QList<ViewItem> &column = m_columnVisibleItems[i];
-        Q_FOREACH(const ViewItem item, column)
+        Q_FOREACH(const ViewItem &item, column)
             releaseItem(item.m_item);
         column.clear();
     }
@@ -185,7 +185,7 @@ void VerticalJournal::calculateImplicitHeight()
     qreal bottomMostY = 0;
     Q_FOREACH(const auto &column, m_columnVisibleItems) {
         if (!column.isEmpty()) {
-            const ViewItem &item = column.last();
+            const ViewItem &item = column.constLast();
             lastModelIndex = qMax(lastModelIndex, item.m_modelIndex);
             bottomMostY = qMax(bottomMostY, item.y() + item.height());
         }
@@ -216,11 +216,11 @@ void VerticalJournal::doRelayout()
     // all since we can't consistently relayout without the first item being there
 
     if (!allItems.isEmpty()) {
-        if (allItems.first().m_modelIndex == 0) {
-            Q_FOREACH(const ViewItem item, allItems)
+        if (allItems.constFirst().m_modelIndex == 0) {
+            Q_FOREACH(const ViewItem &item, allItems)
                 addItemToView(item.m_modelIndex, item.m_item);
         } else {
-            Q_FOREACH(const ViewItem item, allItems)
+            Q_FOREACH(const ViewItem &item, allItems)
                 releaseItem(item.m_item);
         }
     }
@@ -229,7 +229,7 @@ void VerticalJournal::doRelayout()
 void VerticalJournal::updateItemCulling(qreal visibleFromY, qreal visibleToY)
 {
     Q_FOREACH(const auto &column, m_columnVisibleItems) {
-        Q_FOREACH(const ViewItem item, column) {
+        Q_FOREACH(const ViewItem &item, column) {
             const bool cull = item.y() + item.height() <= visibleFromY || item.y() >= visibleToY;
             QQuickItemPrivate::get(item.m_item)->setCulled(cull);
         }
@@ -238,7 +238,7 @@ void VerticalJournal::updateItemCulling(qreal visibleFromY, qreal visibleToY)
 
 void VerticalJournal::processModelRemoves(const QVector<QQmlChangeSet::Change> &removes)
 {
-    Q_FOREACH(const QQmlChangeSet::Change remove, removes) {
+    Q_FOREACH(const QQmlChangeSet::Change &remove, removes) {
         for (int i = remove.count - 1; i >= 0; --i) {
             const int indexToRemove = remove.index + i;
             // Since we only support removing from the end, indexToRemove
@@ -250,7 +250,7 @@ void VerticalJournal::processModelRemoves(const QVector<QQmlChangeSet::Change> &
             for (int i = 0; !found && i < m_columnVisibleItems.count(); ++i) {
                 QList<ViewItem> &column = m_columnVisibleItems[i];
                 if (!column.isEmpty()) {
-                    const int lastColumnIndex = column.last().m_modelIndex;
+                    const int lastColumnIndex = column.constLast().m_modelIndex;
                     if (lastColumnIndex == indexToRemove) {
                         releaseItem(column.takeLast().m_item);
                         found = true;

@@ -301,7 +301,7 @@ void AbstractDashView::onModelUpdated(const QQmlChangeSet &changeSet, bool reset
 
         // The current AbstractDashViews do not support insertions that are not at the end
         // so reset if that happens
-        Q_FOREACH(const QQmlChangeSet::Change insert, changeSet.inserts()) {
+        Q_FOREACH(const QQmlChangeSet::Change &insert, changeSet.inserts()) {
             if (insert.index < m_delegateModel->count() - 1) {
                 cleanupExistingItems();
                 break;
