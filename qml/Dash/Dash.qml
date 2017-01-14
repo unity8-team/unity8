@@ -262,7 +262,7 @@ Showable {
             bottomMargin: Qt.inputMethod.keyboardRectangle.height
         }
         height: units.dp(3)
-        color: scopeStyle.backgroundLuminance > 0.7 ? "#50000000" : "#50ffffff"
+        color: scopeItem.scopeStyle.backgroundLuminance > 0.7 ? "#50000000" : "#50ffffff"
         opacity: 0
         visible: opacity > 0
 

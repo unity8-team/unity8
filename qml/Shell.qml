@@ -44,6 +44,7 @@ import Unity.DashCommunicator 0.1
 import Unity.Indicators 0.1 as Indicators
 import Cursor 1.1
 import WindowManager 1.0
+import Wizard 0.1
 
 
 StyledItem {
@@ -313,6 +314,12 @@ StyledItem {
             altTabPressed: physicalKeysMapper.altTabPressed
             oskEnabled: shell.oskEnabled
             spreadEnabled: tutorial.spreadEnabled && (!greeter || (!greeter.hasLockedApp && !greeter.shown))
+
+            Binding {
+                target: stage.dashboard
+                property: "available"
+                value: !panel.focusedSurfaceIsFullscreen && !greeter.shown && !wizard.active
+            }
         }
     }
 

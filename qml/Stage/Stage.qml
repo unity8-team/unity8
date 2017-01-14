@@ -25,6 +25,7 @@ import GlobalShortcut 1.0
 import GSettings 1.0
 import "Spread"
 import "Spread/MathUtils.js" as MathUtils
+import "../Dash/Dashboard"
 
 FocusScope {
     id: root
@@ -55,6 +56,9 @@ FocusScope {
 
     // used by the snap windows (edge maximize) feature
     readonly property alias previewRectangle: fakeRectangle
+
+    // for shell & dash
+    readonly property alias dashboard: dashboard
 
     readonly property bool spreadShown: state == "spread"
     readonly property var mainApp: priv.focusedAppDelegate ? priv.focusedAppDelegate.application : null
@@ -538,6 +542,13 @@ FocusScope {
             z: -2
         }
 
+        Dashboard {
+            id: dashboard
+            anchors.fill: parent
+            anchors.leftMargin: root.leftMargin
+            anchors.topMargin: PanelState.panelHeight
+        }
+
         BlurLayer {
             id: blurLayer
             anchors.fill: parent
@@ -563,7 +574,6 @@ FocusScope {
             target: root.topLevelSurfaceList
             onListChanged: priv.updateMainAndSideStageIndexes()
         }
-
 
         DropArea {
             objectName: "MainStageDropArea"
