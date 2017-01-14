@@ -34,6 +34,11 @@ Text {
         color: UbuntuColors.jet
         opacity: 0.2
     }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: print("Delegate", parent.objectName, "clicked")
+    }
     
     Timer {
         running: model.ttl

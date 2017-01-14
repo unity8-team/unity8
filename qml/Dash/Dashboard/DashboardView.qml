@@ -61,28 +61,31 @@ StyledItem {
         ListElement { name: "U" }
     }
 
-    ResponsiveVerticalJournal {
+    ScrollView {
         id: contents
         anchors {
             left: parent.left
             top: parent.top
             bottom: buttonBar.top
             right: parent.right
-            leftMargin: root.leftMargin
-            rightMargin: root.leftMargin
             topMargin: root.topMargin
             bottomMargin: root.contentSpacing
         }
+        horizontalScrollbar: null
+        flickableItem.flickableDirection: Flickable.VerticalFlick
+        //flickableItem.rightMargin: root.contentSpacing
 
-        opacity: editMode ? 0.5 : 1
-        Behavior on opacity { UbuntuNumberAnimation {} }
+        ResponsiveVerticalJournal {
+            width: root.width
 
-        model: fakeModel
-        rowSpacing: root.contentSpacing
-        columnWidth: units.gu(30) // TODO calculate based on columnCount
+            opacity: editMode ? 0.5 : 1
+            Behavior on opacity { UbuntuNumberAnimation {} }
 
-        delegate: DashboardDelegate {
-            //width: contents.columnWidth
+            model: fakeModel
+            rowSpacing: root.contentSpacing
+            columnWidth: units.gu(30) // TODO calculate based on columnCount
+
+            delegate: DashboardDelegate {}
         }
     }
 
@@ -108,12 +111,12 @@ StyledItem {
         Button {
             id: btnAddMore
             text: i18n.tr("Add more sources")
-            iconName: "add"
+            //iconName: "add" // FIXME screws the button width and the whole layout
             iconPosition: "right"
             visible: root.editMode
         }
 
-        Item {
+        Item { // horizontal spacer
             Layout.fillWidth: true
         }
 
