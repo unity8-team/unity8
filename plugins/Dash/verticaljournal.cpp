@@ -34,6 +34,7 @@
 VerticalJournal::VerticalJournal()
  : m_columnWidth(0)
 {
+    setFlag(ItemAcceptsDrops);
 }
 
 qreal VerticalJournal::columnWidth() const

@@ -83,14 +83,18 @@ StyledItem {
         ResponsiveVerticalJournal {
             width: root.width
 
-            opacity: editMode ? 0.5 : 1
-            Behavior on opacity { UbuntuNumberAnimation {} }
-
             model: fakeModel
-            rowSpacing: root.contentSpacing
+            rowSpacing: root.contentSpacing * 2
             columnWidth: units.gu(30) // TODO calculate based on columnCount
 
-            delegate: DashboardDelegate {}
+            delegate: DashboardDelegate {
+                editMode: root.editMode
+
+                onClose: {
+                    print("Closing index:", index)
+                    fakeModel.remove(index, 1);
+                }
+            }
         }
     }
 

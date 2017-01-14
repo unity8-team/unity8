@@ -16,13 +16,18 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
+import "../../Notifications"
 
 Item {
     objectName: "delegate" + index
     width: parent.width
     height: Math.max(units.gu(8), Math.floor(Math.random() * 300)) // FIXME calculate
+
+    property bool editMode: false
+
+    signal close()
     
-    Text {
+    Label {
         id: label
         anchors.fill: parent
         horizontalAlignment: Text.AlignHCenter
@@ -36,12 +41,15 @@ Item {
         anchors.fill: parent
         radius: units.gu(.5)
         color: UbuntuColors.jet
-        opacity: 0.2
+        opacity: editMode ? 0.1 : 0.2
+        Behavior on opacity { UbuntuNumberAnimation {} }
     }
 
     MouseArea {
+        enabled: editMode
         anchors.fill: parent
         onClicked: print("Delegate", parent.objectName, "clicked")
+        onPressAndHold: print("Delegate", parent.objectName, "pressed and held")
     }
     
     Timer {
@@ -49,5 +57,22 @@ Item {
         repeat: running
         interval: running ? model.ttl : 0
         onTriggered: label.text = eval(model.content)
+    }
+
+    NotificationButton { // FIXME make this a generic component
+        objectName: "closeButton"
+        width: units.gu(2)
+        height: width
+        radius: width / 2
+        visible: enabled
+        enabled: editMode
+        iconName: "close"
+        outline: false
+        hoverEnabled: true
+        color: theme.palette.normal.negative
+        anchors.horizontalCenter: parent.left
+        anchors.verticalCenter: parent.top
+
+        onClicked: close();
     }
 }

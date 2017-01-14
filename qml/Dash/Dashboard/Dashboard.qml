@@ -41,10 +41,5 @@ Showable {
         anchors.fill: parent
         active: available
         source: "DashboardView.qml"
-
-//        Connections {
-//            target: loader.item
-//            onQuit: root.hide()
-//        }
     }
 }
