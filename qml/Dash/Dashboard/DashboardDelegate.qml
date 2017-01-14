@@ -17,17 +17,21 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 
-Text {
+Item {
     objectName: "delegate" + index
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
-
-    text: model.name + " (" + index + ")" + (model.content ? "\n" + eval(model.content) : "")
-    color: model.headerColor ? model.headerColor : "white"
-    
     width: parent.width
     height: Math.max(units.gu(8), Math.floor(Math.random() * 300)) // FIXME calculate
     
+    Text {
+        id: label
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+
+        text: model.name + " (" + index + ")" + (model.content ? "\n" + eval(model.content) : "")
+        color: model.headerColor ? model.headerColor : "white"
+    }
+
     Rectangle {
         anchors.fill: parent
         radius: units.gu(.5)
@@ -44,6 +48,6 @@ Text {
         running: model.ttl
         repeat: running
         interval: running ? model.ttl : 0
-        onTriggered: parent.text = eval(model.content)
+        onTriggered: label.text = eval(model.content)
     }
 }

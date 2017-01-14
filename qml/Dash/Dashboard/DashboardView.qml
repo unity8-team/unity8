@@ -20,6 +20,7 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3
 import "../../Components"
 import ".."
+import "../../Components/flickableUtils.js" as FlickableUtilsJS
 
 StyledItem {
     id: root
@@ -71,9 +72,13 @@ StyledItem {
             topMargin: root.topMargin
             bottomMargin: root.contentSpacing
         }
-        horizontalScrollbar: null
-        flickableItem.flickableDirection: Flickable.VerticalFlick
-        //flickableItem.rightMargin: root.contentSpacing
+        flickableItem {
+            flickableDirection: Flickable.VerticalFlick
+            flickDeceleration: FlickableUtilsJS.getFlickDeceleration(units.gridUnit)
+            maximumFlickVelocity: FlickableUtilsJS.getMaximumFlickVelocity(units.gridUnit)
+            boundsBehavior: Flickable.StopAtBounds
+        }
+        horizontalScrollbar.enabled: false
 
         ResponsiveVerticalJournal {
             width: root.width
