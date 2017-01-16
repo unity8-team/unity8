@@ -25,6 +25,15 @@ Item {
 
     property bool editMode: false
 
+    //Drag.dragType: Drag.None
+    //Drag.active: mouseArea.dragging
+    Drag.active: mouseArea.drag.active
+    Drag.hotSpot.x: width/2
+    Drag.hotSpot.y: height/2
+    Drag.proposedAction: Qt.MoveAction
+    Drag.onDragStarted: print("Drag started")
+    Drag.onDragFinished: print("Drag finished")
+
     signal close()
     
     Label {
@@ -46,10 +55,30 @@ Item {
     }
 
     MouseArea {
+        id: mouseArea
         enabled: editMode
         anchors.fill: parent
-        onClicked: print("Delegate", parent.objectName, "clicked")
-        onPressAndHold: print("Delegate", parent.objectName, "pressed and held")
+        //onClicked: print("Delegate", parent.objectName, "clicked")
+        //onPressAndHold: print("Delegate", parent.objectName, "pressed and held")
+
+        drag.target: dragging ? parent : undefined
+        //drag.target: parent
+        property bool dragging: false
+        drag.onActiveChanged: print("DRAGGING:", drag.active)
+
+        onPressedChanged: {
+            if (containsPress) {
+                dragging = true;
+                parent.Drag.source = parent;
+                parent.Drag.startDrag();
+            }
+        }
+        onReleased: {
+            if (dragging) {
+                parent.Drag.drop();
+                dragging = false;
+            }
+        }
     }
     
     Timer {

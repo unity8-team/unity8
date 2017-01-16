@@ -80,6 +80,18 @@ StyledItem {
         }
         horizontalScrollbar.enabled: false
 
+        DropArea {
+            id: dropArea
+            anchors.fill: parent
+
+            onEntered: print("Entered!!!", drag.source.source.objectName)
+            onExited: print("Exited")
+            onDropped: {
+                drop.acceptProposedAction();
+                print("DROP from:", drop.source);
+            }
+        }
+
         ResponsiveVerticalJournal {
             width: root.width
 
