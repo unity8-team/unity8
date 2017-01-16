@@ -75,7 +75,7 @@ Item {
         columnSpacing: {
             // parent.width = columns * columnWidth + (columns-1) * spacing + spacing(margins)
             var expectedColumns = Math.max(1, Math.floor(parent.width / (columnWidth + minimumColumnSpacing)));
-            Math.floor((parent.width - expectedColumns * columnWidth) / expectedColumns);
+            return Math.floor((parent.width - expectedColumns * columnWidth) / expectedColumns);
         }
     }
 }

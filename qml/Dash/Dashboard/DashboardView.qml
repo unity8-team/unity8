@@ -30,7 +30,7 @@ StyledItem {
     property int columnCount: 3
 
     readonly property int leftMargin: units.gu(3)
-    readonly property int topMargin: units.gu(4)
+    readonly property int topMargin: units.gu(3)
     readonly property int contentSpacing: units.gu(1)
 
     theme: ThemeSettings {
@@ -93,14 +93,16 @@ StyledItem {
         }
 
         ResponsiveVerticalJournal {
-            width: root.width
+            width: contents.width
 
             model: fakeModel
-            rowSpacing: root.contentSpacing * 2
-            columnWidth: units.gu(30) // TODO calculate based on columnCount
+            rowSpacing: root.contentSpacing
+            minimumColumnSpacing: root.contentSpacing
+            columnWidth: (contents.width - root.leftMargin*2 - contents.verticalScrollbar.width) / root.columnCount
 
             delegate: DashboardDelegate {
                 editMode: root.editMode
+                width: parent.columnWidth
 
                 onClose: {
                     print("Closing index:", index)

@@ -28,6 +28,8 @@ Showable {
     // expected behavior of no emission on startup.
     readonly property bool active: loader.active
 
+    property int columnCount: 3
+
     hideAnimation: StandardAnimation { property: "opacity"; to: 0 }
 
     onRequiredChanged: {
@@ -41,5 +43,12 @@ Showable {
         anchors.fill: parent
         active: available
         source: "DashboardView.qml"
+    }
+
+    Binding {
+        target: loader.item
+        property: "columnCount"
+        value: root.columnCount
+        when: root.active
     }
 }

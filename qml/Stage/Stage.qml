@@ -473,14 +473,17 @@ FocusScope {
         State {
             name: "staged"; when: root.mode === "staged"
             PropertyChanges { target: wallpaper; visible: false }
+            PropertyChanges { target: dashboard; columnCount: 1 }
         },
         State {
             name: "stagedWithSideStage"; when: root.mode === "stagedWithSideStage"
             PropertyChanges { target: triGestureArea; enabled: priv.sideStageEnabled }
             PropertyChanges { target: sideStage; visible: true }
+            PropertyChanges { target: dashboard; columnCount: 3 }
         },
         State {
             name: "windowed"; when: root.mode === "windowed"
+            PropertyChanges { target: dashboard; columnCount: 5 }
         }
     ]
     transitions: [
