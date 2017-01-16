@@ -84,11 +84,11 @@ StyledItem {
             id: dropArea
             anchors.fill: parent
 
-            onEntered: print("Entered!!!", drag.source.source.objectName)
+            onEntered: print("Entered!!!", drag.source.objectName)
             onExited: print("Exited")
             onDropped: {
+                print("DROP from:", drop.source, ", index:", drag.source.visualIndex);
                 drop.acceptProposedAction();
-                print("DROP from:", drop.source);
             }
         }
 

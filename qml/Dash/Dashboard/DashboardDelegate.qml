@@ -23,10 +23,12 @@ Item {
     width: parent.width
     height: Math.max(units.gu(8), Math.floor(Math.random() * 300)) // FIXME calculate
 
+    // read-write API
     property bool editMode: false
 
-    //Drag.dragType: Drag.None
-    //Drag.active: mouseArea.dragging
+    // readonly API
+    readonly property int visualIndex: index
+
     Drag.active: mouseArea.drag.active
     Drag.hotSpot.x: width/2
     Drag.hotSpot.y: height/2
@@ -35,7 +37,7 @@ Item {
     Drag.onDragFinished: print("Drag finished")
 
     signal close()
-    
+
     Label {
         id: label
         anchors.fill: parent
@@ -58,25 +60,16 @@ Item {
         id: mouseArea
         enabled: editMode
         anchors.fill: parent
-        //onClicked: print("Delegate", parent.objectName, "clicked")
-        //onPressAndHold: print("Delegate", parent.objectName, "pressed and held")
 
-        drag.target: dragging ? parent : undefined
-        //drag.target: parent
-        property bool dragging: false
-        drag.onActiveChanged: print("DRAGGING:", drag.active)
-
-        onPressedChanged: {
-            if (containsPress) {
-                dragging = true;
-                parent.Drag.source = parent;
-                parent.Drag.startDrag();
-            }
-        }
+        drag.target: parent
         onReleased: {
-            if (dragging) {
-                parent.Drag.drop();
-                dragging = false;
+            if (drag.active) {
+                var result = parent.Drag.drop();
+                if (result) {
+                    print("Drop accepted");
+                } else {
+                    print("Drop rejected");
+                }
             }
         }
     }
@@ -85,7 +78,7 @@ Item {
         running: model.ttl
         repeat: running
         interval: running ? model.ttl : 0
-        onTriggered: label.text = eval(model.content)
+        onTriggered: label.text = eval(model.content);
     }
 
     NotificationButton { // FIXME make this a generic component
