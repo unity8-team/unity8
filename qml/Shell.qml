@@ -109,7 +109,7 @@ StyledItem {
         }
     }
     function _onMainAppChanged(appId) {
-        if (wizard.active && appId != "" && appId != "unity8-dash") {
+        if (wizard.active && appId != "") {
             // If this happens on first boot, we may be in the
             // wizard while receiving a call.  But a call is more
             // important than the wizard so just bail out of it.
@@ -435,11 +435,11 @@ StyledItem {
 
         if (shell.mode === "greeter") {
             SessionBroadcast.requestHomeShown(AccountsService.user);
-        } else {
-            var animate = !LightDMService.greeter.active && !stages.shown;
+        } /*else {
+            var animate = !LightDMService.greeter.active && !stages.shown; // FIXME stages.shown??? it's an Item
             dash.setCurrentScope(0, animate, false);
             ApplicationManager.requestFocusApplication("unity8-dash");
-        }
+        }*/
     }
 
     Item {
