@@ -440,6 +440,7 @@ FocusScope {
             PropertyChanges { target: cancelSpreadMouseArea; enabled: true }
             PropertyChanges { target: blurLayer; visible: true; blurRadius: 32; brightness: .65; opacity: 1 }
             PropertyChanges { target: wallpaper; visible: false }
+            PropertyChanges { target: dashboard; available: false }
         },
         State {
             name: "stagedRightEdge"; when: (rightEdgeDragArea.dragging || edgeBarrier.progress > 0) && root.mode == "staged"
@@ -450,13 +451,14 @@ FocusScope {
                 brightness: .65
                 opacity: 1
             }
+            PropertyChanges { target: dashboard; available: false }
         },
         State {
             name: "sideStagedRightEdge"; when: (rightEdgeDragArea.dragging || edgeBarrier.progress > 0) && root.mode == "stagedWithSideStage"
             extend: "stagedRightEdge"
             PropertyChanges {
                 target: sideStage
-                opacity: priv.sideStageDelegate.x === sideStage.x ? 1 : 0
+                opacity: priv.sideStageDelegate && priv.sideStageDelegate.x === sideStage.x ? 1 : 0
                 visible: true
             }
         },
@@ -469,21 +471,21 @@ FocusScope {
                 brightness: .65
                 opacity: MathUtils.linearAnimation(spreadItem.rightEdgeBreakPoint, 1, 0, 1, Math.max(rightEdgeDragArea.dragging ? rightEdgeDragArea.progress : 0, edgeBarrier.progress))
             }
+            PropertyChanges { target: dashboard; available: false }
         },
         State {
             name: "staged"; when: root.mode === "staged"
-            PropertyChanges { target: wallpaper; visible: false }
-            PropertyChanges { target: dashboard; columnCount: 1 }
+            PropertyChanges { target: dashboard; available: true; columnCount: 1 }
         },
         State {
             name: "stagedWithSideStage"; when: root.mode === "stagedWithSideStage"
             PropertyChanges { target: triGestureArea; enabled: priv.sideStageEnabled }
             PropertyChanges { target: sideStage; visible: true }
-            PropertyChanges { target: dashboard; columnCount: 3 }
+            PropertyChanges { target: dashboard; available: true; columnCount: 3 }
         },
         State {
             name: "windowed"; when: root.mode === "windowed"
-            PropertyChanges { target: dashboard; columnCount: 5 }
+            PropertyChanges { target: dashboard; available: true; columnCount: 5 }
         }
     ]
     transitions: [
@@ -503,6 +505,7 @@ FocusScope {
                 ScriptAction {
                     script: {
                         var item = appRepeater.itemAt(Math.max(0, spreadItem.highlightedIndex));
+                        if (!item) return;
                         if (item.stage == ApplicationInfoInterface.SideStage && !sideStage.shown) {
                             sideStage.show();
                         }
