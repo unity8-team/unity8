@@ -149,7 +149,6 @@ FocusScope {
 
     WindowDecoration {
         id: decoration
-        closeButtonVisible: root.application.appId !== "unity8-dash"
         objectName: "appWindowDecoration"
         anchors { left: parent.left; top: parent.top; right: parent.right }
         height: units.gu(3)
