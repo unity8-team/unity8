@@ -51,8 +51,14 @@ Item {
     property real displayMarginBeginning: 0
     property real displayMarginEnd: 0
 
+    readonly property alias view: verticalJournalView
+
     implicitHeight: verticalJournalView.implicitHeight + rowSpacing
     clip: height < implicitHeight
+
+    function moveDelegate(from, to) {
+        verticalJournalView.move(from, to);
+    }
 
     VerticalJournal {
         id: verticalJournalView
