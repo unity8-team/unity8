@@ -19,7 +19,7 @@ import Ubuntu.Components 1.3
 import "../../Notifications"
 
 Item {
-    objectName: "delegate" + index
+    objectName: "dashboardDelegate" + index
     height: Math.max(units.gu(8), Math.floor(Math.random() * 300)) // FIXME base on actual data
 
     // read-write API

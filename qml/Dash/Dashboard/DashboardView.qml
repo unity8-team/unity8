@@ -18,6 +18,7 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.2
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3
+import Utils 0.1
 import "../../Components"
 import ".."
 import "../../Components/flickableUtils.js" as FlickableUtilsJS
@@ -84,15 +85,28 @@ StyledItem {
             id: dropArea
             anchors.fill: parent
 
-            onEntered: print("Entered!!!", drag.source.objectName)
-            onExited: print("Exited")
             onDropped: {
-                print("DROP from:", drop.source, ", index:", drag.source.visualIndex);
-                drop.acceptProposedAction();
+                var fromIndex = drag.source.visualIndex;
+                print("DROP from:", drop.source, ", index:", fromIndex);
+
+                function matchDelegate(obj) { return String(obj.objectName).indexOf("dashboardDelegate") >= 0 &&
+                                              obj.objectName !== drag.source.objectName; }
+                var delegateAtCenter = Functions.itemAt(journal.view, drop.x, drop.y, matchDelegate);
+
+                var toIndex = delegateAtCenter ? delegateAtCenter.visualIndex : fromIndex;
+                print("Dropped on", delegateAtCenter, ", index:", toIndex);
+
+                fakeModel.move(fromIndex, toIndex, 1);
+                journal.moveDelegate(fromIndex, toIndex);
+
+                if (delegateAtCenter) {
+                    drop.acceptProposedAction();
+                }
             }
         }
 
         ResponsiveVerticalJournal {
+            id: journal
             width: contents.width
 
             model: fakeModel
