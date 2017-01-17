@@ -36,7 +36,7 @@ public:
     static Q_INVOKABLE QQuickItem* itemAt(QQuickItem* parent,
                                           int x,
                                           int y,
-                                          QJSValue matcher);
+                                          QJSValue matcher = QJSValue(QJSValue::UndefinedValue));
 
     static Q_INVOKABLE bool itemUnderMouse(QQuickItem* item);
 };

@@ -38,13 +38,13 @@ QQuickItem *GlobalFunctions::itemAt(QQuickItem* parent, int x, int y, QJSValue m
                 && child->width() >= point.x()
                 && point.y() >= 0
                 && child->height() >= point.y()) {
-            if (!matcher.isCallable()) return child;
+            if (matcher.isUndefined() || !matcher.isCallable()) return child;
 
             QQmlEngine* engine = qmlEngine(child);
             if (!engine) return child;
 
             QJSValue newObj = engine->newQObject(child);
-            if (matcher.call(QJSValueList() << newObj).toBool()) {
+            if (matcher.call({newObj}).toBool()) {
                 return child;
             }
         }
