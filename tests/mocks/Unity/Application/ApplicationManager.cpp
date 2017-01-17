@@ -125,7 +125,7 @@ unityapi::ApplicationInfoInterface *ApplicationManager::findApplicationWithSurfa
     return nullptr;
 }
 
-QModelIndex ApplicationManager::findIndex(ApplicationInfo* application)
+QModelIndex ApplicationManager::findIndex(ApplicationInfo* application) const
 {
     for (int i = 0; i < m_runningApplications.size(); ++i) {
         if (m_runningApplications.at(i) == application) {
@@ -253,7 +253,7 @@ ApplicationInfo* ApplicationManager::startApplication(const QString &appId,
     return application;
 }
 
-ApplicationInfo* ApplicationManager::add(QString appId)
+ApplicationInfo* ApplicationManager::add(const QString &appId)
 {
     ApplicationInfo *application = nullptr;
 
@@ -483,7 +483,7 @@ void ApplicationManager::buildListOfAvailableApplications()
 }
 
 
-QStringList ApplicationManager::availableApplications()
+QStringList ApplicationManager::availableApplications() const
 {
     QStringList appIds;
     Q_FOREACH(ApplicationInfo *app, m_availableApplications) {
@@ -497,7 +497,7 @@ bool ApplicationManager::isEmpty() const
     return m_runningApplications.isEmpty();
 }
 
-ApplicationInfo *ApplicationManager::findApplication(MirSurface* surface)
+ApplicationInfo *ApplicationManager::findApplication(MirSurface* surface) const
 {
     for (ApplicationInfo *app : m_runningApplications) {
         auto surfaceList = static_cast<MirSurfaceListModel*>(app->surfaceList());
@@ -508,13 +508,13 @@ ApplicationInfo *ApplicationManager::findApplication(MirSurface* surface)
     return nullptr;
 }
 
-QString ApplicationManager::toString()
+QString ApplicationManager::toString() const
 {
     QString str;
     for (int i = 0; i < m_runningApplications.count(); ++i) {
         auto *application = m_runningApplications.at(i);
 
-        QString itemStr = QString("(index=%1,appId=%2)")
+        QString itemStr = QStringLiteral("(index=%1,appId=%2)")
             .arg(i)
             .arg(application->appId());
 

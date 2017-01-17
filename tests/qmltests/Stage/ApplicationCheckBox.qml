@@ -30,8 +30,6 @@ Column {
         }
     }
 
-    //enabled: appId !== "unity8-dash"
-
     onCheckedChanged: {
         if (d.bindGuard) { return; }
         d.bindGuard = true;

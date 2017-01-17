@@ -66,10 +66,10 @@ class ApplicationManager : public ApplicationManagerInterface {
     QString focusedApplicationId() const override;
 
     // Only for testing
-    QStringList availableApplications();
-    Q_INVOKABLE ApplicationInfo* add(QString appId);
+    QStringList availableApplications() const;
+    Q_INVOKABLE ApplicationInfo* add(const QString &appId);
 
-    QModelIndex findIndex(ApplicationInfo* application);
+    QModelIndex findIndex(ApplicationInfo* application) const;
 
     bool isEmpty() const;
 
@@ -85,8 +85,8 @@ class ApplicationManager : public ApplicationManagerInterface {
     bool add(ApplicationInfo *application);
     void remove(ApplicationInfo* application);
     void buildListOfAvailableApplications();
-    QString toString();
-    ApplicationInfo *findApplication(MirSurface* surface);
+    QString toString() const;
+    ApplicationInfo *findApplication(MirSurface* surface) const;
     QList<ApplicationInfo*> m_runningApplications;
     QList<ApplicationInfo*> m_availableApplications;
     bool m_modelBusy{false};
