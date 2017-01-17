@@ -28,6 +28,9 @@ Item {
     // readonly API
     readonly property int visualIndex: index
 
+    scale: editMode ? 0.95 : 1
+    Behavior on scale { UbuntuNumberAnimation {} }
+
     Drag.active: mouseArea.drag.active
     Drag.hotSpot.x: width/2
     Drag.hotSpot.y: height/2
@@ -51,7 +54,7 @@ Item {
         anchors.fill: parent
         radius: units.gu(.5)
         color: UbuntuColors.jet
-        opacity: editMode ? 0.1 : 0.2
+        opacity: editMode ? 0.15 : 0.1
         Behavior on opacity { UbuntuNumberAnimation {} }
     }
 
@@ -82,18 +85,23 @@ Item {
 
     NotificationButton { // FIXME make this a generic component
         objectName: "closeButton"
-        width: units.gu(2)
+        width: units.gu(3)
         height: width
         radius: width / 2
-        visible: enabled
+        visible: opacity > 0
         enabled: editMode
+        opacity: enabled ? 1 : 0
         iconName: "close"
         outline: false
         hoverEnabled: true
         color: theme.palette.normal.negative
         anchors.horizontalCenter: parent.left
+        anchors.horizontalCenterOffset: width/4
         anchors.verticalCenter: parent.top
+        anchors.verticalCenterOffset: height/4
 
         onClicked: close();
+
+        Behavior on opacity { UbuntuNumberAnimation {} }
     }
 }
