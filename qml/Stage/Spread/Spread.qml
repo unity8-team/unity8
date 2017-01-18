@@ -43,6 +43,12 @@ Item {
 
     // Calculated stuff
     readonly property int totalItemCount: model.count
+    onTotalItemCountChanged: {
+        if (totalItemCount == 0) {
+            root.leaveSpread();
+        }
+    }
+
     readonly property real leftStackXPos: 0.03 * root.width + leftMargin
     readonly property real rightStackXPos: root.width - 1.5 * leftStackXPos + leftMargin
 
