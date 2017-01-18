@@ -84,6 +84,7 @@ StyledItem {
         DropArea {
             id: dropArea
             anchors.fill: parent
+            keys: ["unity8-dashboard"]
 
             onDropped: {
                 var fromIndex = drag.source.visualIndex;
@@ -96,12 +97,11 @@ StyledItem {
                 var toIndex = delegateAtCenter ? delegateAtCenter.visualIndex : fromIndex;
                 print("Dropped on", delegateAtCenter, ", index:", toIndex);
 
-                fakeModel.move(fromIndex, toIndex, 1);
-                journal.moveDelegate(fromIndex, toIndex);
-
                 if (delegateAtCenter) {
+                    fakeModel.move(fromIndex, toIndex, 1);
                     drop.acceptProposedAction();
                 }
+                journal.moveDelegate(fromIndex, toIndex); // this refreshes the view as well
             }
         }
 
