@@ -535,7 +535,6 @@ FocusScope {
             to: "stagedWithSideStage"
             ScriptAction { script: priv.updateMainAndSideStageIndexes(); }
         }
-
     ]
 
     MouseArea {

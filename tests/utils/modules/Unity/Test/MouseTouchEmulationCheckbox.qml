@@ -42,6 +42,7 @@ RowLayout {
         anchors.verticalCenter: parent.verticalCenter
         AbstractButton {
             anchors.fill: parent
+            activeFocusOnPress: false
             onClicked: checkbox.checked = !checkbox.checked
         }
     }
