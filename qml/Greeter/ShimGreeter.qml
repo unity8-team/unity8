@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2015 Canonical, Ltd.
+ * Copyright (C) 2015-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import QtQuick 2.4
  *
  */
 
-/* FIXME: this shuld be fine as a QtObject, but bug lp:1447391
+/* FIXME: this should be fine as a QtObject, but bug lp:1447391
  * dictates wrapping as an item instead
  */
 Item {
@@ -41,5 +41,6 @@ Item {
     property var notifyAboutToFocusApp: (function(appId) { return; })
     property var notifyAppFocused: (function(appId) { return; })
     property var notifyShowingDashFromDrag: (function(appId) { return false; })
-
+    property var notifyUserRequestedApp: (function() { return; })
+    property var notifyAppFocusRequested: (function() { return; })
 }
