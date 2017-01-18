@@ -63,6 +63,7 @@ Item {
         id: mouseArea
         enabled: editMode
         anchors.fill: parent
+        cursorShape: drag.active ? Qt.DragMoveCursor : undefined
 
         drag.target: parent
         onReleased: {
