@@ -94,14 +94,20 @@ StyledItem {
                                               obj.objectName !== drag.source.objectName; }
                 var delegateAtCenter = Functions.itemAt(journal.view, drop.x, drop.y, matchDelegate);
 
-                var toIndex = delegateAtCenter ? delegateAtCenter.visualIndex : fromIndex;
+                if (!delegateAtCenter) {
+                    print("Invalid drop, bailing out");
+                    journal.view.relayout();
+                    return;
+                }
+
+                var toIndex = delegateAtCenter.visualIndex;
                 print("Dropped on", delegateAtCenter, ", index:", toIndex);
 
                 if (delegateAtCenter) {
                     fakeModel.move(fromIndex, toIndex, 1);
+                    journal.view.move(fromIndex, toIndex); // this refreshes the view as well
                     drop.acceptProposedAction();
                 }
-                journal.moveDelegate(fromIndex, toIndex); // this refreshes the view as well
             }
         }
 

@@ -41,6 +41,14 @@ Item {
 
     signal close()
 
+    Rectangle {
+        anchors.fill: parent
+        radius: units.gu(.5)
+        color: UbuntuColors.jet
+        opacity: editMode ? 0.15 : 0.1
+        Behavior on opacity { UbuntuNumberAnimation {} }
+    }
+
     Label {
         id: label
         anchors.fill: parent
@@ -49,14 +57,6 @@ Item {
 
         text: model.name + " (" + index + ")" + (model.content ? "\n" + eval(model.content) : "")
         color: model.headerColor ? model.headerColor : "white"
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        radius: units.gu(.5)
-        color: UbuntuColors.jet
-        opacity: editMode ? 0.15 : 0.1
-        Behavior on opacity { UbuntuNumberAnimation {} }
     }
 
     MouseArea {

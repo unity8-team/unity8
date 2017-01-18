@@ -79,10 +79,8 @@ Q_SIGNALS:
     void displayMarginBeginningChanged();
     void displayMarginEndChanged();
 
-protected Q_SLOTS:
-    void relayout();
-
 public Q_SLOTS:
+    Q_INVOKABLE void relayout();
     Q_INVOKABLE void move(int from, int to);
 
 protected:
