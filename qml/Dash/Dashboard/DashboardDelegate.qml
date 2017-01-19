@@ -17,8 +17,10 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import "../../Notifications"
+import ".."
 
 Item {
+    id: root
     objectName: "dashboardDelegate" + index
     height: Math.max(units.gu(8), Math.floor(Math.random() * 300)) // FIXME base on actual data
 
@@ -36,9 +38,8 @@ Item {
     Drag.hotSpot.x: width/2
     Drag.hotSpot.y: height/2
     Drag.proposedAction: Qt.MoveAction
-    Drag.onDragStarted: print("Drag started")
-    Drag.onDragFinished: print("Drag finished")
 
+    signal itemDragging(bool dragging, var dragItem)
     signal close()
 
     Rectangle {
@@ -66,6 +67,11 @@ Item {
         cursorShape: drag.active ? Qt.DragMoveCursor : undefined
 
         drag.target: parent
+
+        drag.onActiveChanged: {
+            itemDragging(drag.active, root);
+        }
+
         onReleased: {
             if (drag.active) {
                 var result = parent.Drag.drop();

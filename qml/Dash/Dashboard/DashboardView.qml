@@ -63,6 +63,11 @@ StyledItem {
         ListElement { name: "U" }
     }
 
+    Autoscroller {
+        id: autoscroller
+        flickable: contents.flickableItem
+    }
+
     ScrollView {
         id: contents
         anchors {
@@ -128,6 +133,7 @@ StyledItem {
                     print("Closing index:", index)
                     fakeModel.remove(index, 1);
                 }
+                onItemDragging: autoscroller.autoscroll(dragging, dragItem)
             }
         }
     }

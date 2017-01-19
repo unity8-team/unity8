@@ -211,7 +211,7 @@ Rectangle {
                     text: "Dashboard column count"
                     model: [1, 3, 5]
                     onSelectedIndexChanged: {
-                        dashboard.columnCount = model[selectedIndex];
+                        if (dashboard) dashboard.columnCount = model[selectedIndex];
                     }
                 }
 

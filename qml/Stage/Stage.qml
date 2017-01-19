@@ -331,7 +331,7 @@ FocusScope {
             }
         }
 
-        property int nextInStack: {
+        readonly property int nextInStack: {
             var mainStageIndex = priv.mainStageDelegate ? priv.mainStageDelegate.itemIndex : -1;
             var sideStageIndex = priv.sideStageDelegate ? priv.sideStageDelegate.itemIndex : -1;
             if (sideStageIndex == -1) {
