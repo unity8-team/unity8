@@ -18,10 +18,8 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.2
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3
-import Utils 0.1
 import "../../Components"
 import ".."
-import "../../Components/flickableUtils.js" as FlickableUtilsJS
 
 StyledItem {
     id: root
@@ -63,13 +61,20 @@ StyledItem {
         ListElement { name: "U" }
     }
 
-    Autoscroller {
-        id: autoscroller
-        flickable: contents.flickableItem
+    Component {
+        id: dashboardViewContentsComponent
+        DashboardViewContents {
+            model: fakeModel
+            editMode: root.editMode
+            columnCount: root.columnCount
+            contentSpacing: root.contentSpacing
+        }
     }
 
-    ScrollView {
-        id: contents
+    Loader {
+        active: true
+        asynchronous: true
+        visible: active && status === Loader.Ready
         anchors {
             left: parent.left
             top: parent.top
@@ -78,62 +83,10 @@ StyledItem {
             topMargin: root.topMargin
             bottomMargin: root.contentSpacing
         }
-        flickableItem {
-            flickableDirection: Flickable.VerticalFlick
-            flickDeceleration: FlickableUtilsJS.getFlickDeceleration(units.gridUnit)
-            maximumFlickVelocity: FlickableUtilsJS.getMaximumFlickVelocity(units.gridUnit)
-            boundsBehavior: Flickable.StopAtBounds
-        }
-        horizontalScrollbar.enabled: false
 
-        DropArea {
-            id: dropArea
-            anchors.fill: parent
-            keys: ["unity8-dashboard"]
-
-            onDropped: {
-                var fromIndex = drag.source.visualIndex;
-                print("DROP from:", drop.source, ", index:", fromIndex);
-
-                function matchDelegate(obj) { return String(obj.objectName).indexOf("dashboardDelegate") >= 0 &&
-                                              obj.objectName !== drag.source.objectName; }
-                var delegateAtCenter = Functions.itemAt(journal.view, drop.x, drop.y, matchDelegate);
-
-                if (!delegateAtCenter) {
-                    print("Invalid drop, bailing out");
-                    journal.view.relayout();
-                    return;
-                }
-
-                var toIndex = delegateAtCenter.visualIndex;
-                print("Dropped on", delegateAtCenter, ", index:", toIndex);
-
-                if (delegateAtCenter) {
-                    fakeModel.move(fromIndex, toIndex, 1);
-                    journal.view.move(fromIndex, toIndex); // this refreshes the view as well
-                    drop.acceptProposedAction();
-                }
-            }
-        }
-
-        ResponsiveVerticalJournal {
-            id: journal
-            width: contents.width
-
-            model: fakeModel
-            rowSpacing: root.contentSpacing
-            minimumColumnSpacing: root.contentSpacing
-            columnWidth: (contents.width - root.leftMargin*2 - contents.verticalScrollbar.width) / root.columnCount
-
-            delegate: DashboardDelegate {
-                editMode: root.editMode
-                width: parent.columnWidth
-
-                onClose: {
-                    print("Closing index:", index)
-                    fakeModel.remove(index, 1);
-                }
-                onItemDragging: autoscroller.autoscroll(dragging, dragItem)
+        sourceComponent: {
+            if (root.state == "dashboard") {
+                return dashboardViewContentsComponent;
             }
         }
     }
@@ -152,17 +105,17 @@ StyledItem {
         }
 
         Button {
-            id: btnLocation
             text: root.columnCount == 1 ? i18n.tr("Location...") : i18n.tr("Edit location")
-            visible: root.editMode
+            visible: root.editMode && root.state == "dashboard"
+            onClicked: root.state = "location"
         }
 
         Button {
-            id: btnAddMore
             text: root.columnCount == 1 ? i18n.tr("Add...") : i18n.tr("Add more sources")
             //iconName: "add" // FIXME screws the button width and the whole layout
             iconPosition: "right"
-            visible: root.editMode
+            visible: root.editMode && root.state == "dashboard"
+            onClicked: root.state = "sources"
         }
 
         Item { // horizontal spacer
@@ -170,9 +123,24 @@ StyledItem {
         }
 
         Button {
-            id: btnEditDone
             text: root.editMode ? i18n.tr("Done") : i18n.tr("Edit")
-            onClicked: root.editMode = !root.editMode;
+            onClicked: {
+                root.editMode = !root.editMode;
+                root.state = "dashboard";
+            }
         }
     }
+
+    state: "dashboard"
+    states: [
+        State {
+            name: "dashboard"
+        },
+        State {
+            name: "sources"
+        },
+        State {
+            name: "location"
+        }
+    ]
 }

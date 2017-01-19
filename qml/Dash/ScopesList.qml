@@ -90,33 +90,33 @@ Item {
         }
         clip: true
         model: scope ? scope.categories : null
-            delegate: Loader {
-                asynchronous: true
-                width: root.width
-                active: results.count > 0
-                visible: active
-                sourceComponent: ScopesListCategory {
-                    objectName: "scopesListCategory" + categoryId
+        delegate: Loader {
+            asynchronous: true
+            width: root.width
+            active: results.count > 0
+            visible: active
+            sourceComponent: ScopesListCategory {
+                objectName: "scopesListCategory" + categoryId
 
-                    model: results
+                model: results
 
-                    title: {
-                        if (isFavoritesFeed) return i18n.tr("Home");
-                        else if (isAlsoInstalled) return i18n.tr("Also installed");
-                        else return name;
-                    }
+                title: {
+                    if (isFavoritesFeed) return i18n.tr("Home");
+                    else if (isAlsoInstalled) return i18n.tr("Also installed");
+                    else return name;
+                }
 
-                    editMode: root.state == "edit"
-                    scopeStyle: root.scopeStyle
-                    isFavoritesFeed: categoryId == "favorites"
-                    isAlsoInstalled: categoryId == "other"
+                editMode: root.state == "edit"
+                scopeStyle: root.scopeStyle
+                isFavoritesFeed: categoryId == "favorites"
+                isAlsoInstalled: categoryId == "other"
 
-                    onItemDragging: autoscroller.autoscroll(dragging, dragItem);
-                    onRequestFavorite: root.requestFavorite(scopeId, favorite);
-                    onRequestEditMode: root.state = "edit";
-                    onRequestScopeMoveTo: root.requestFavoriteMoveTo(scopeId, index);
-                    onRequestActivate: root.scope.activate(result, categoryId);
-                    onRequestRestore: root.requestRestore(scopeId);
+                onItemDragging: autoscroller.autoscroll(dragging, dragItem);
+                onRequestFavorite: root.requestFavorite(scopeId, favorite);
+                onRequestEditMode: root.state = "edit";
+                onRequestScopeMoveTo: root.requestFavoriteMoveTo(scopeId, index);
+                onRequestActivate: root.scope.activate(result, categoryId);
+                onRequestRestore: root.requestRestore(scopeId);
             }
         }
     }
