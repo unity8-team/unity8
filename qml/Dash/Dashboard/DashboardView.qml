@@ -153,13 +153,13 @@ StyledItem {
 
         Button {
             id: btnLocation
-            text: i18n.tr("Edit location")
+            text: root.columnCount == 1 ? i18n.tr("Location...") : i18n.tr("Edit location")
             visible: root.editMode
         }
 
         Button {
             id: btnAddMore
-            text: i18n.tr("Add more sources")
+            text: root.columnCount == 1 ? i18n.tr("Add...") : i18n.tr("Add more sources")
             //iconName: "add" // FIXME screws the button width and the whole layout
             iconPosition: "right"
             visible: root.editMode
@@ -173,7 +173,6 @@ StyledItem {
             id: btnEditDone
             text: root.editMode ? i18n.tr("Done") : i18n.tr("Edit")
             onClicked: root.editMode = !root.editMode;
-            //onClicked: fakeModel.move(0, 1, 1); // exchange 0 and 1
         }
     }
 }

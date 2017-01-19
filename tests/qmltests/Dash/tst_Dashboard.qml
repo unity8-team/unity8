@@ -24,13 +24,11 @@ import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItem
 import Unity.Application 0.1
 import Unity.ApplicationMenu 0.1
-import Unity.Indicators 0.1
 import Unity.Launcher 0.1
 import Unity.Test 0.1
 import Powerd 0.1
 import Wizard 0.1 as Wizard
 import Utils 0.1
-import Unity.Indicators 0.1 as Indicators
 
 import "../../../qml"
 import "../../../qml/Components"
@@ -125,24 +123,22 @@ Rectangle {
 
             active: false
             property bool itemDestroyed: false
-            sourceComponent: Component {
-                Shell {
-                    id: __shell
-                    objectName: "shell"
-                    usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
-                    onUsageScenarioChanged: columnCountSelector.selectedIndex = usageScenarioSelector.selectedIndex;
-                    nativeWidth: width
-                    nativeHeight: height
-                    orientation: shellLoader.shellOrientation
-                    orientations: Orientations {
-                        native_: shellLoader.nativeOrientation
-                        primary: shellLoader.primaryOrientation
-                    }
-                    mode: "shell"
+            sourceComponent: Shell {
+                id: __shell
+                objectName: "shell"
+                usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
+                onUsageScenarioChanged: columnCountSelector.selectedIndex = usageScenarioSelector.selectedIndex;
+                nativeWidth: width
+                nativeHeight: height
+                orientation: shellLoader.shellOrientation
+                orientations: Orientations {
+                    native_: shellLoader.nativeOrientation
+                    primary: shellLoader.primaryOrientation
+                }
+                mode: "shell"
 
-                    Component.onDestruction: {
-                        shellLoader.itemDestroyed = true;
-                    }
+                Component.onDestruction: {
+                    shellLoader.itemDestroyed = true;
                 }
             }
         }
