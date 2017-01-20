@@ -5,6 +5,7 @@ import sys
 import subprocess
 import shutil
 import tempfile
+from lxml import etree
 
 ENCODE_LIMIT = 120
 GRACE_TIME = 5
@@ -17,31 +18,57 @@ recordmydesktop_args = [
     "--overwrite",
 ]
 
-if __name__ == "__main__":
-    """
-    This script wraps any passed command, recording the screen as the command
-    runs with recordmydesktop. Maximum encoding time is {0}s, the process is
-    interrupted after that time. If the command exits with return code 0,
-    recording is aborted and no video produced.
-    Output video file name is derived from the first logger option in the
-    "-o /file/path,format" format with *absolute* paths, the file is saved
-    next to the test log file with the extension ".ogv", falling back to
-    "qmltest.ogv" in the current directory.
-    """
 
-    argv = sys.argv[1:]
-
-    outfile = os.path.join(os.curdir, "qmltest.ogv")
-    returncode = 0
-
+def getLoggerOutputPath(argv):
+    outfile = None
     try:
         for logger in (argv[k + 1] for k, v in enumerate(argv) if v == "-o"):
             log = logger.split(',')[0]
             if os.path.isabs(log):
-                outfile = "{0}.ogv".format(os.path.splitext(log)[0])
+                outfile  = log
                 break
     except IndexError as err:
         raise ValueError("Incorrect logger definition:\n{0}".format(argv)) from err
+    return outfile
+
+
+def sanitizeArgv(argv, failure_test):
+    argv.append(failure_test)
+    try:
+        for k in (k for k, v in enumerate(argv) if v == "-o"):
+            log = argv[k+1].split(',')[0]
+            if os.path.isabs(log):
+                argv.pop(k)
+                argv.pop(k)
+                break
+    except IndexError as err:
+        raise ValueError("Incorrect logger definition:\n{0}".format(argv)) from err
+    return argv
+
+
+def getRecordOutputPath(logger_outfile, failure_test):
+    lo_basename = os.path.splitext(logger_outfile)[0]
+    failure_test = str.replace(failure_test, '::', '-')
+    return "{0}-{1}.ogv".format(os.path.splitext(logger_outfile)[0], failure_test)
+
+
+def getFailingTests(logger_outfile):
+    failures = set()
+
+    tree = etree.parse(logger_outfile)
+    root = tree.getroot()
+    for failure in root.iterfind("testcase/failure"):
+        failure_name = failure.getparent().attrib['name']
+        failures.add(failure_name)
+
+    return failures
+
+
+def run_and_record_test_failure(argv, failure_test):
+    logger_outfile = getLoggerOutputPath(argv)
+    record_outfile = getRecordOutputPath(logger_outfile, failure_test)
+
+    argv = sanitizeArgv(argv, failure_test)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         # create a temporary file and close it to let recordmydesktop overwrite it
@@ -55,9 +82,6 @@ if __name__ == "__main__":
             try:
                 subprocess.check_call(argv)
             except subprocess.CalledProcessError as err:
-                # store the exit code to return
-                returncode = err.returncode
-
                 print("==== Record wrapper. Enconding ====")
                 # stop recording, give ENCODE_LIMIT seconds to encode
                 recorder.terminate()
@@ -72,11 +96,11 @@ if __name__ == "__main__":
                         pass
 
                 print("==== Record wrapper. Enconding is over. Return code: ", recorder.returncode)
-                print(tmpname, " ", outfile)
+                print(tmpname, " ", record_outfile)
 
                 if recorder.returncode is 0:
                     # only store the file if recorder exited cleanly
-                    shutil.move(tmpname, outfile)
+                    shutil.move(tmpname, record_outfile)
             else:
                 # abort the recording, test passed
                 recorder.send_signal(subprocess.signal.SIGABRT)
@@ -93,5 +117,23 @@ if __name__ == "__main__":
                 elif recorder.returncode is not 0:
                     # only print recorder output if terminated unsuccessfully
                     print("===== Recorder error =====\nSTDOUT:\n{0}\n\nSTDERR:\n{1}".format(*recorder.communicate()))
+
+if __name__ == "__main__":
+    argv = sys.argv[1:]
+
+    logger_outfile = getLoggerOutputPath(argv)
+    returncode = 0
+
+    try:
+        # Run the tests without recording
+        subprocess.check_call(argv)
+    except subprocess.CalledProcessError as err:
+        returncode = err.returncode
+        failures = getFailingTests(logger_outfile)
+
+        # We now run each failing test and eventually record it if it fails again
+        argv.pop()
+        for failure in failures:
+            run_and_record_test_failure(argv[:], failure)
 
     sys.exit(returncode)
