@@ -15,10 +15,9 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Layouts 1.2
 import Ubuntu.Components 1.3
 
-ColumnLayout {
+Column {
     id: root
     spacing: root.contentSpacing
 
@@ -31,15 +30,28 @@ ColumnLayout {
         }
         text: i18n.tr("Location and language")
         textSize: Label.Large
+        wrapMode: Label.WordWrap
+        maximumLineCount: 2
         color: "white"
     }
 
     Column {
-        anchors.centerIn: parent
-        width: parent.width / 2
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
         spacing: root.contentSpacing
 
+        Image {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: Math.max(units.gu(15), root.width/3)
+            height: width
+            source: "image://theme/language-chooser"
+        }
+
         TextField {
+            id: locationEdit
+            enabled: !checkbox.checked
             anchors {
                 left: parent.left
                 right: parent.right
@@ -53,6 +65,7 @@ ColumnLayout {
         }
 
         TextField {
+            id: languageEdit
             anchors {
                 left: parent.left
                 right: parent.right
@@ -63,6 +76,33 @@ ColumnLayout {
                 name: "language-chooser"
                 height: parent.height * 0.7
                 width: height
+            }
+        }
+
+        Item {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+            height: childrenRect.height
+            CheckBox {
+                id: checkbox
+                anchors.left: parent.left
+            }
+            Label {
+                anchors {
+                    left: checkbox.right
+                    right: parent.right
+                    leftMargin: root.contentSpacing
+                }
+                text: i18n.tr("Do not allow Scopes to use your location and language")
+                wrapMode: Label.WordWrap
+                maximumLineCount: 2
+                color: "white"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: checkbox.trigger()
+                }
             }
         }
     }
