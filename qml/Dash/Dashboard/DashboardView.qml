@@ -71,23 +71,27 @@ StyledItem {
         }
     }
 
+    Component {
+        id: dashboardViewLocationComponent
+        DashboardViewLocation {
+            contentSpacing: root.contentSpacing
+        }
+    }
+
     Loader {
+        id: loader
         active: true
         asynchronous: true
-        visible: active && status === Loader.Ready
+        visible: status === Loader.Ready
         anchors {
             left: parent.left
             top: parent.top
             bottom: buttonBar.top
             right: parent.right
+            leftMargin: root.leftMargin
+            rightMargin: root.leftMargin
             topMargin: root.topMargin
             bottomMargin: root.contentSpacing
-        }
-
-        sourceComponent: {
-            if (root.state == "dashboard") {
-                return dashboardViewContentsComponent;
-            }
         }
     }
 
@@ -105,17 +109,13 @@ StyledItem {
         }
 
         Button {
-            text: root.columnCount == 1 ? i18n.tr("Location...") : i18n.tr("Edit location")
-            visible: root.editMode && root.state == "dashboard"
-            onClicked: root.state = "location"
+            id: btnLocationBack
         }
 
         Button {
-            text: root.columnCount == 1 ? i18n.tr("Add...") : i18n.tr("Add more sources")
-            //iconName: "add" // FIXME screws the button width and the whole layout
-            iconPosition: "right"
-            visible: root.editMode && root.state == "dashboard"
-            onClicked: root.state = "sources"
+            id: btnSources
+            //iconName: "add" // FIXME icon screws the button width and the whole layout
+            //iconPosition: "right"
         }
 
         Item { // horizontal spacer
@@ -123,11 +123,7 @@ StyledItem {
         }
 
         Button {
-            text: root.editMode ? i18n.tr("Done") : i18n.tr("Edit")
-            onClicked: {
-                root.editMode = !root.editMode;
-                root.state = "dashboard";
-            }
+            id: btnEdit
         }
     }
 
@@ -135,12 +131,39 @@ StyledItem {
     states: [
         State {
             name: "dashboard"
+            when: !root.editMode
+            PropertyChanges { target: loader; sourceComponent: dashboardViewContentsComponent }
+            PropertyChanges { target: btnEdit; text: i18n.tr("Edit"); onClicked: root.editMode = true; }
+            PropertyChanges { target: btnLocationBack; visible: false }
+            PropertyChanges { target: btnSources; visible: false }
+        },
+        State {
+            name: "edit"
+            extend: "dashboard"
+            when: root.editMode
+            PropertyChanges { target: btnEdit; visible: true; text: i18n.tr("Done"); onClicked: root.editMode = false; }
+            PropertyChanges { target: btnLocationBack; visible: true; text: root.columnCount == 1 ? i18n.tr("Location...") : i18n.tr("Edit location");
+                onClicked: root.state = "location";
+            }
+            PropertyChanges { target: btnSources; visible: true; text: root.columnCount == 1 ? i18n.tr("Add...") : i18n.tr("Add more sources ➕");
+                onClicked: root.state = "sources";
+            }
         },
         State {
             name: "sources"
+            extend: "edit"
+            PropertyChanges { target: loader; sourceComponent: undefined } // TODO
+            PropertyChanges { target: btnLocationBack; text: i18n.tr("Back"); onClicked: root.editMode = false; }
+            PropertyChanges { target: btnSources; visible: false }
+            PropertyChanges { target: btnEdit; visible: false }
         },
         State {
             name: "location"
+            extend: "edit"
+            PropertyChanges { target: loader; sourceComponent: dashboardViewLocationComponent }
+            PropertyChanges { target: btnLocationBack; text: i18n.tr("Back"); onClicked: root.editMode = false; }
+            PropertyChanges { target: btnSources; visible: false }
+            PropertyChanges { target: btnEdit; visible: false }
         }
     ]
 }

@@ -35,6 +35,7 @@ RowLayout {
         id: checkbox
         checked: true
         activeFocusOnPress: false
+        activeFocusOnTab: false
     }
     Label {
         id: label
@@ -43,6 +44,7 @@ RowLayout {
         AbstractButton {
             anchors.fill: parent
             activeFocusOnPress: false
+            activeFocusOnTab: false
             onClicked: checkbox.checked = !checkbox.checked
         }
     }

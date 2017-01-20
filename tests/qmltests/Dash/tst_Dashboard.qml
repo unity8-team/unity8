@@ -170,6 +170,7 @@ Rectangle {
                     Button {
                         text: "Show Launcher"
                         activeFocusOnPress: false
+                        activeFocusOnTab: false
                         enabled: !autohideLauncherCheckbox.checked
                         onClicked: {
                             if (shellLoader.status !== Loader.Ready)
@@ -182,6 +183,7 @@ Rectangle {
                     Button {
                         text: "Print focused"
                         activeFocusOnPress: false
+                        activeFocusOnTab: false
                         onClicked: {
                             var childs = [];
                             childs.push(shell)
@@ -255,6 +257,7 @@ Rectangle {
                     CheckBox {
                         id: autohideLauncherCheckbox
                         activeFocusOnPress: false
+                        activeFocusOnTab: false
                         onCheckedChanged:  {
                             GSettingsController.setAutohideLauncher(checked)
                         }
