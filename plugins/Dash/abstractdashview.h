@@ -81,7 +81,6 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     Q_INVOKABLE void relayout();
-    Q_INVOKABLE void move(int from, int to);
 
 protected:
     void updatePolish() override;

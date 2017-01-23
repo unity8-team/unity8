@@ -318,16 +318,6 @@ void AbstractDashView::relayout()
     polish();
 }
 
-void AbstractDashView::move(int from, int to)
-{
-    if (!model())
-        return;
-
-    model()->moveRow(QModelIndex(), from, QModelIndex(), to);
-
-    relayout();
-}
-
 void AbstractDashView::onHeightChanged()
 {
     polish();

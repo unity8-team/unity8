@@ -56,10 +56,6 @@ Item {
     implicitHeight: verticalJournalView.implicitHeight + rowSpacing
     clip: height < implicitHeight
 
-    function moveDelegate(from, to) {
-        verticalJournalView.move(from, to);
-    }
-
     VerticalJournal {
         id: verticalJournalView
         objectName: "responsiveVerticalJournalView"

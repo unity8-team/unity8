@@ -47,10 +47,10 @@ ScrollView {
         id: dropArea
         anchors.fill: parent
         keys: ["unity8-dashboard"]
-        
+
         onDropped: {
-            var fromIndex = drag.source.visualIndex;
-            print("DROP from:", drop.source, ", index:", fromIndex);
+            var fromIndex = drop.source.visualIndex;
+            print("Drop from:", drop.source, ", index:", fromIndex);
             
             function matchDelegate(obj) { return String(obj.objectName).indexOf("dashboardDelegate") >= 0 &&
                                           obj.objectName !== drag.source.objectName; }
@@ -67,7 +67,6 @@ ScrollView {
             
             if (delegateAtCenter) {
                 journal.model.move(fromIndex, toIndex, 1);
-                journal.view.move(fromIndex, toIndex); // this refreshes the view as well
                 drop.acceptProposedAction();
             }
         }

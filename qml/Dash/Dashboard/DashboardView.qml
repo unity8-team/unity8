@@ -153,7 +153,7 @@ StyledItem {
             name: "sources"
             extend: "edit"
             PropertyChanges { target: loader; sourceComponent: undefined } // TODO
-            PropertyChanges { target: btnLocationBack; text: i18n.tr("Back"); onClicked: root.editMode = false; }
+            PropertyChanges { target: btnLocationBack; text: i18n.tr("Back"); onClicked: root.state = "edit" }
             PropertyChanges { target: btnSources; visible: false }
             PropertyChanges { target: btnEdit; visible: false }
         },
@@ -161,7 +161,7 @@ StyledItem {
             name: "location"
             extend: "edit"
             PropertyChanges { target: loader; sourceComponent: dashboardViewLocationComponent }
-            PropertyChanges { target: btnLocationBack; text: i18n.tr("Back"); onClicked: root.editMode = false; }
+            PropertyChanges { target: btnLocationBack; text: i18n.tr("Back"); onClicked: root.state = "edit" }
             PropertyChanges { target: btnSources; visible: false }
             PropertyChanges { target: btnEdit; visible: false }
         }

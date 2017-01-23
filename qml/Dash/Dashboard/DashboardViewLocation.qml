@@ -15,6 +15,8 @@
  */
 
 import QtQuick 2.4
+import QtPositioning 5.6
+import QtLocation 5.6
 import Ubuntu.Components 1.3
 
 Column {
@@ -22,6 +24,49 @@ Column {
     spacing: root.contentSpacing
 
     property int contentSpacing
+
+    Plugin {
+        id: osmPlugin
+        name: "osm"
+        PluginParameter { name: "osm.useragent"; value: "Unity 8 Dashboard" }
+    }
+
+    GeocodeModel {
+        id: geo
+        autoUpdate: false
+        plugin: osmPlugin
+        query: src.position.coordinate
+        onStatusChanged: {
+            print("Reverse geocoder status changed:", status)
+            if (status == GeocodeModel.Ready) {
+                print("Ready, results:", count)
+                var address = get(0).address;
+                print("LOCATION:", address.text)
+                locationEdit.text = address.district + ", " + address.city + ", " + address.state + ", " + address.country;
+            } else if (status == GeocodeModel.Error) {
+                console.error("Reverse geocoder error:", errorString, error);
+            }
+        }
+    }
+
+    PositionSource {
+        id: src
+        active: false
+
+        onPositionChanged: {
+            var coord = position.coordinate;
+            console.log("Coordinate:", coord, "(", coord.latitude, coord.longitude, ")");
+            geo.update();
+        }
+    }
+
+    Component.onCompleted: {
+        if (src.valid) {
+            src.update(); // Request a single update of the position
+        } else {
+            console.warn("No supported positioning methods")
+        }
+    }
 
     Label {
         anchors {
@@ -61,6 +106,11 @@ Column {
                 name: "location-active"
                 height: parent.height * 0.7
                 width: height
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: src.valid
+                    onClicked: src.update();
+                }
             }
         }
 
@@ -71,7 +121,6 @@ Column {
                 right: parent.right
             }
             placeholderText: i18n.tr("Select your language")
-            text: i18n.language
             primaryItem: Icon {
                 name: "language-chooser"
                 height: parent.height * 0.7
