@@ -46,7 +46,7 @@ ScrollView {
     DropArea {
         id: dropArea
         anchors.fill: parent
-        keys: ["unity8-dashboard"]
+        keys: "unity8-dashboard"
 
         onDropped: {
             var fromIndex = drop.source.visualIndex;

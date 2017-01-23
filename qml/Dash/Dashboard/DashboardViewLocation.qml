@@ -18,12 +18,22 @@ import QtQuick 2.4
 import QtPositioning 5.6
 import QtLocation 5.6
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3
+import Ubuntu.SystemSettings.LanguagePlugin 1.0
 
 Column {
     id: root
     spacing: root.contentSpacing
 
+    // write API
     property int contentSpacing
+
+    // read API
+    readonly property string currentLanguage: langPlugin.languageCodes[langListView.currentIndex]
+
+    UbuntuLanguagePlugin {
+        id: langPlugin
+    }
 
     Plugin {
         id: osmPlugin
@@ -38,13 +48,18 @@ Column {
         query: src.position.coordinate
         onStatusChanged: {
             print("Reverse geocoder status changed:", status)
-            if (status == GeocodeModel.Ready) {
+            if (status === GeocodeModel.Ready) {
                 print("Ready, results:", count)
+            } else if (status === GeocodeModel.Error) {
+                console.error("Reverse geocoder error:", errorString, error);
+            }
+        }
+        onLocationsChanged: {
+            if (count > 0) {
                 var address = get(0).address;
                 print("LOCATION:", address.text)
-                locationEdit.text = address.district + ", " + address.city + ", " + address.state + ", " + address.country;
-            } else if (status == GeocodeModel.Error) {
-                console.error("Reverse geocoder error:", errorString, error);
+                var parts = [address.district, address.city, address.state, address.country]
+                locationEdit.text = parts.filter(Boolean).join(", ");
             }
         }
     }
@@ -89,7 +104,7 @@ Column {
 
         Image {
             anchors.horizontalCenter: parent.horizontalCenter
-            width: Math.max(units.gu(15), root.width/3)
+            width: units.gu(15)
             height: width
             source: "image://theme/language-chooser"
         }
@@ -106,26 +121,45 @@ Column {
                 name: "location-active"
                 height: parent.height * 0.7
                 width: height
+            }
+            secondaryItem: Icon {
+                name: "reset"
+                height: parent.height * 0.7
+                width: height
+                visible: src.valid
                 MouseArea {
                     anchors.fill: parent
-                    enabled: src.valid
                     onClicked: src.update();
                 }
             }
         }
 
-        TextField {
-            id: languageEdit
+        ComboButton {
+            id: langCombo
             anchors {
                 left: parent.left
                 right: parent.right
             }
-            placeholderText: i18n.tr("Select your language")
-            primaryItem: Icon {
-                name: "language-chooser"
-                height: parent.height * 0.7
-                width: height
+            text: langPlugin.languageNames[langListView.currentIndex]
+            ListView {
+                id: langListView
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+                model: langPlugin.languageNames
+                currentIndex: langPlugin.currentLanguage
+                delegate: Standard {
+                    highlightWhenPressed: false
+                    __foregroundColor: UbuntuColors.jet
+                    text: modelData
+                    onClicked: {
+                        langListView.currentIndex = index;
+                        langCombo.expanded = false;
+                    }
+                }
             }
+            onClicked: expanded = !expanded
         }
 
         Item {

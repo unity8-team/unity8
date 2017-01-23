@@ -33,7 +33,7 @@ Item {
     scale: editMode ? 0.95 : 1
     Behavior on scale { UbuntuNumberAnimation {} }
 
-    Drag.keys: ["unity8-dashboard"]
+    Drag.keys: "unity8-dashboard"
     Drag.active: mouseArea.drag.active
     Drag.hotSpot.x: width/2
     Drag.hotSpot.y: height/2
