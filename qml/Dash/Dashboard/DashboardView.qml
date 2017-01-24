@@ -59,6 +59,12 @@ StyledItem {
         ListElement { name: "S" }
         ListElement { name: "T" }
         ListElement { name: "U" }
+
+        Component.onCompleted: { // set random heights
+            for (var i = 0; i < count; i++) {
+                setProperty(i, "height", Math.max(units.gu(8), Math.floor(Math.random() * 300)));
+            }
+        }
     }
 
     Component {

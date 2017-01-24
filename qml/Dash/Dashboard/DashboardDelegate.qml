@@ -22,7 +22,6 @@ import ".."
 Item {
     id: root
     objectName: "dashboardDelegate" + index
-    height: Math.max(units.gu(8), Math.floor(Math.random() * 300)) // FIXME base on actual data
 
     // read-write API
     property bool editMode: false

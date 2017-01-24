@@ -23,6 +23,7 @@ import Ubuntu.SystemSettings.LanguagePlugin 1.0
 
 Column {
     id: root
+    objectName: "DashboardViewLocation"
     spacing: root.contentSpacing
 
     // write API

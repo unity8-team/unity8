@@ -83,6 +83,7 @@ ScrollView {
         delegate: DashboardDelegate {
             editMode: contents.editMode
             width: parent.columnWidth
+            height: model.height
             
             onClose: {
                 print("Closing index:", index)
