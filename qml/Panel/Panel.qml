@@ -41,6 +41,7 @@ Item {
     property real expandedPanelHeight: units.gu(7)
     property real indicatorMenuWidth: width
     property real applicationMenuWidth: width
+    property bool globalMenus: true
 
     property alias applicationMenus: __applicationMenus
     property alias indicators: __indicators
@@ -87,7 +88,7 @@ Item {
                                                     PanelState.decorationsAlwaysVisible
 
         property bool showPointerMenu: revealControls &&
-                                       (PanelState.decorationsVisible || mode == "staged")
+                                       (PanelState.decorationsVisible || root.globalMenus || mode == "staged")
 
         property bool enablePointerMenu: revealControls &&
                                          applicationMenus.available &&

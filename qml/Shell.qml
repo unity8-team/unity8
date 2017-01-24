@@ -313,6 +313,7 @@ StyledItem {
             altTabPressed: physicalKeysMapper.altTabPressed
             oskEnabled: shell.oskEnabled
             spreadEnabled: tutorial.spreadEnabled && (!greeter || (!greeter.hasLockedApp && !greeter.shown))
+            globalMenus : settings.enableGlobalMenus
 
             onSpreadShownChanged: {
                 panel.indicators.hide();
@@ -450,12 +451,14 @@ StyledItem {
             id: panel
             objectName: "panel"
             anchors.fill: parent //because this draws indicator menus
+            z: shell.usageScenario === "desktop" ? 1 : 0 // otherwise the menus are drawn below the panel.
 
-            mode: shell.usageScenario == "desktop" ? "windowed" : "staged"
+            mode: shell.usageScenario === "desktop" ? "windowed" : "staged"
             minimizedPanelHeight: units.gu(3)
             expandedPanelHeight: units.gu(7)
             indicatorMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
             applicationMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
+            globalMenus: settings.enableGlobalMenus
 
             indicators {
                 hides: [launcher]

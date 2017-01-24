@@ -48,6 +48,7 @@ FocusScope {
     property int highlightSize: units.gu(1)
     property real shadowOpacity: 0
     property bool darkening: false
+    property bool enableMenus: false
 
     property real requestedWidth
     property real requestedHeight
@@ -230,11 +231,12 @@ FocusScope {
             onMinimizeClicked: root.minimizeClicked();
 
             enableMenus: {
-                return active &&
+                return root.enableMenus &&
+                        active &&
                          surface &&
                           (PanelState.focusedPersistentSurfaceId === surface.persistentId && !PanelState.decorationsVisible)
             }
-            menu: sharedAppModel.model
+            menu: root.enableMenus ? sharedAppModel.model : undefined
 
             Indicators.SharedUnityMenuModel {
                 id: sharedAppModel

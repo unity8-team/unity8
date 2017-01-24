@@ -53,6 +53,11 @@
       <summary>Enable or disable the indicator pull down menus</summary>
       <description>Toggle the availability of the indicator pull down menus</description>
     </key>
+    <key type="b" name="enable-global-menus">
+      <default>true</default>
+      <summary>Enable/disable global application menus.</summary>
+      <description>When this is enabled, the application menus will always be shown in the top panel. Otherwise they will appear in the window decoration.</description>
+    </key>
   </schema>
 
   <schema path="/com/canonical/unity8/greeter/" id="com.canonical.Unity8.Greeter" gettext-domain="unity8">

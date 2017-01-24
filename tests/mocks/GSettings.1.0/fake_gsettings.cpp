@@ -29,6 +29,7 @@ GSettingsControllerQml::GSettingsControllerQml()
     , m_edgeDragWidth(2)
     , m_enableLauncher(true)
     , m_enableIndicatorMenu(true)
+    , m_enableGlobalMenus(true)
 {
 }
 
@@ -173,6 +174,19 @@ void GSettingsControllerQml::setEnableIndicatorMenu(bool enableIndicatorMenu)
     }
 }
 
+bool GSettingsControllerQml::enableGlobalMenus() const
+{
+    return m_enableGlobalMenus;
+}
+
+void GSettingsControllerQml::setEnableGlobalMenus(bool enableGlobalMenus)
+{
+    if (m_enableGlobalMenus != enableGlobalMenus) {
+        m_enableGlobalMenus = enableGlobalMenus;
+        Q_EMIT enableGlobalMenusChanged(enableGlobalMenus);
+    }
+}
+
 GSettingsSchemaQml::GSettingsSchemaQml(QObject *parent): QObject(parent) {
 }
 
@@ -241,6 +255,8 @@ void GSettingsQml::componentComplete()
             this, &GSettingsQml::enableLauncherChanged);
     connect(GSettingsControllerQml::instance(), &GSettingsControllerQml::enableIndicatorMenuChanged,
             this, &GSettingsQml::enableIndicatorMenuChanged);
+    connect(GSettingsControllerQml::instance(), &GSettingsControllerQml::enableGlobalMenusChanged,
+            this, &GSettingsQml::enableGlobalMenusChanged);
 
     Q_EMIT disableHeightChanged();
     Q_EMIT pictureUriChanged();
@@ -252,6 +268,7 @@ void GSettingsQml::componentComplete()
     Q_EMIT edgeDragWidthChanged();
     Q_EMIT enableLauncherChanged();
     Q_EMIT enableIndicatorMenuChanged();
+    Q_EMIT enableGlobalMenusChanged();
 }
 
 GSettingsSchemaQml * GSettingsQml::schema() const {
@@ -376,6 +393,15 @@ QVariant GSettingsQml::enableIndicatorMenu() const
     }
 }
 
+QVariant GSettingsQml::enableGlobalMenus() const
+{
+    if (m_valid && m_schema->id() == "com.canonical.Unity8") {
+        return GSettingsControllerQml::instance()->enableGlobalMenus();
+    } else {
+        return QVariant();
+    }
+}
+
 void GSettingsQml::setLifecycleExemptAppids(const QVariant &appIds)
 {
     if (m_valid && m_schema->id() == "com.canonical.qtmir") {
@@ -415,5 +441,12 @@ void GSettingsQml::setEnableIndicatorMenu(const QVariant &enableIndicatorMenu)
 {
     if (m_valid && m_schema->id() == "com.canonical.Unity8") {
         GSettingsControllerQml::instance()->setEnableIndicatorMenu(enableIndicatorMenu.toBool());
+    }
+}
+
+void GSettingsQml::setEnableGlobalMenus(const QVariant &enableGlobalMenus)
+{
+    if (m_valid && m_schema->id() == "com.canonical.Unity8") {
+        GSettingsControllerQml::instance()->setEnableGlobalMenus(enableGlobalMenus.toBool());
     }
 }

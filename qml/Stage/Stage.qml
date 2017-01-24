@@ -46,6 +46,7 @@ FocusScope {
     property int leftMargin: 0
     property bool oskEnabled: false
     property rect inputMethodRect
+    property bool globalMenus: true
 
     // Configuration
     property string mode: "staged"
