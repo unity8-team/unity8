@@ -209,10 +209,7 @@ Item {
                 fontSize: "medium"
                 font.weight: Font.Medium
                 text: PanelState.title
-
-                opacity: d.showTouchMenu && !d.showPointerMenuApplicationTitle ? 1 : 0
-                visible: opacity !== 0
-                Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
+                visible: false
             }
 
             LinearGradient  {
@@ -230,9 +227,12 @@ Item {
                     GradientStop { position: 1; color: "transparent" }
                 }
                 start: Qt.point(0, 0)
-                end: Qt.point(units.gu(7), 0)
+                end: Qt.point(endpoint, 0)
 
-                opacity: d.showPointerMenuApplicationTitle ? 1 : 0
+                property real endpoint: d.showPointerMenuApplicationTitle ? menuBarLoader.anchors.leftMargin :
+                                        parent.width - __indicators.barWidth
+
+                opacity: d.showTouchMenu || d.showPointerMenuApplicationTitle ? 1 : 0
                 visible: opacity !== 0
                 Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
             }
