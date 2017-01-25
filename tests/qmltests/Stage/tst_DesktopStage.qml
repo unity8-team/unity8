@@ -84,6 +84,7 @@ Item {
         property bool itemDestroyed: false
         sourceComponent: Component {
             Stage {
+                globalMenus: false
                 anchors.fill: parent
                 background: "/usr/share/backgrounds/warty-final-ubuntu.png"
                 focus: true

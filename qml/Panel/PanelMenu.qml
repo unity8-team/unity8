@@ -35,8 +35,7 @@ Showable {
     property color panelColor: theme.palette.normal.background
 
     property alias alignment: bar.alignment
-    property alias rowTitle: bar.rowTitle
-    property alias showRowTitle: bar.showRowTitle
+    property alias showRow: bar.showRow
     property alias rowItemDelegate: bar.rowItemDelegate
     property alias pageDelegate: content.pageDelegate
 
@@ -45,7 +44,7 @@ Showable {
     readonly property bool partiallyOpened: unitProgress > 0 && unitProgress < 1.0
     readonly property bool fullyClosed: unitProgress == 0
     readonly property alias expanded: bar.expanded
-    readonly property int barWidth: Math.min(bar.width, bar.implicitWidth)
+    property int barWidth: Math.min(bar.width, bar.implicitWidth)
 
     signal showTapped()
 

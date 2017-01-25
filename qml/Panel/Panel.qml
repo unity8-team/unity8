@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
  */
 
 import QtQuick 2.4
+import QtGraphicalEffects 1.0
 import Ubuntu.Components 1.3
 import Ubuntu.Layouts 1.0
 import Unity.Application 0.1
@@ -89,6 +90,8 @@ Item {
 
         property bool showPointerMenu: revealControls &&
                                        (PanelState.decorationsVisible || root.globalMenus || mode == "staged")
+
+        property bool showPointerMenuApplicationTitle: showPointerMenu && !showWindowDecorationControls
 
         property bool enablePointerMenu: revealControls &&
                                          applicationMenus.available &&
@@ -179,59 +182,94 @@ Item {
                 }
             }
 
-            Row {
-                anchors.fill: parent
-                spacing: units.gu(2)
+            WindowControlButtons {
+                id: windowControlButtons
+                objectName: "panelWindowControlButtons"
+                height: parent.height
 
-                // WindowControlButtons inside the mouse area, otherwise QML doesn't grok nested hover events :/
-                // cf. https://bugreports.qt.io/browse/QTBUG-32909
-                WindowControlButtons {
-                    id: windowControlButtons
-                    objectName: "panelWindowControlButtons"
-                    height: indicators.minimizedPanelHeight
-                    opacity: d.showWindowDecorationControls ? 1 : 0
-                    visible: opacity != 0
-                    Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
+                opacity: d.showWindowDecorationControls ? 1 : 0
+                visible: opacity !== 0
+                Behavior on opacity { UbuntuNumberAnimation { duration: 1000/*UbuntuAnimation.SnapDuration*/ } }
 
-                    active: PanelState.decorationsVisible || PanelState.decorationsAlwaysVisible
-                    windowIsMaximized: true
-                    onCloseClicked: PanelState.closeClicked()
-                    onMinimizeClicked: PanelState.minimizeClicked()
-                    onMaximizeClicked: PanelState.restoreClicked()
-                    closeButtonShown: PanelState.closeButtonShown
+                active: PanelState.decorationsVisible || PanelState.decorationsAlwaysVisible
+                windowIsMaximized: true
+                onCloseClicked: PanelState.closeClicked()
+                onMinimizeClicked: PanelState.minimizeClicked()
+                onMaximizeClicked: PanelState.restoreClicked()
+                closeButtonShown: PanelState.closeButtonShown
+            }
+
+            Label {
+                id: titleLabel
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: units.gu(1)
+
+                maximumLineCount: 1
+                fontSize: "medium"
+                font.weight: Font.Medium
+                text: PanelState.title
+
+                opacity: d.showTouchMenu && !d.showPointerMenuApplicationTitle ? 1 : 0
+                visible: opacity !== 0
+                Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
+            }
+
+            LinearGradient  {
+                id: titleGradient
+                width: titleLabel.width
+                height: titleLabel.height
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: units.gu(1)
+
+                source: titleLabel
+                gradient: Gradient {
+                    GradientStop { position: 0; color: theme.palette.selected.backgroundText }
+                    GradientStop { position: 0.7; color: theme.palette.selected.backgroundText }
+                    GradientStop { position: 1; color: "transparent" }
                 }
+                start: Qt.point(0, 0)
+                end: Qt.point(units.gu(7), 0)
 
-                Loader {
-                    id: menuBarLoader
-                    height: parent.height
-                    enabled: d.enablePointerMenu
-                    opacity: d.showPointerMenu ? 1 : 0
-                    visible: opacity != 0
-                    Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
-                    active: __applicationMenus.model
+                opacity: d.showPointerMenuApplicationTitle ? 1 : 0
+                visible: opacity !== 0
+                Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
+            }
 
-                    width: parent.width - windowControlButtons.width - units.gu(2) - __indicators.barWidth
+            Loader {
+                id: menuBarLoader
+                anchors.left: parent.left
+                anchors.leftMargin: d.showPointerMenuApplicationTitle ? units.gu(8) : (windowControlButtons.width + units.gu(2))
+                height: parent.height
+                enabled: d.enablePointerMenu
+                active: __applicationMenus.model
 
-                    property bool menusRequested: menuBarLoader.item ? menuBarLoader.item.showRequested : false
+                opacity: d.showPointerMenu ? 1 : 0
+                visible: opacity !== 0
+                Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
 
-                    sourceComponent: MenuBar {
-                        id: bar
-                        objectName: "menuBar"
-                        anchors.left: parent.left
-                        anchors.margins: units.gu(1)
-                        height: menuBarLoader.height
-                        enableKeyFilter: valid && PanelState.decorationsVisible
-                        unityMenuModel: __applicationMenus.model
+                width: parent.width - anchors.leftMargin - __indicators.barWidth
 
-                        Connections {
-                            target: __applicationMenus
-                            onShownChanged: bar.dismiss();
-                        }
+                property bool menusRequested: menuBarLoader.item ? menuBarLoader.item.showRequested : false
 
-                        Connections {
-                            target: __indicators
-                            onShownChanged: bar.dismiss();
-                        }
+                sourceComponent: MenuBar {
+                    id: bar
+                    objectName: "menuBar"
+                    anchors.left: parent.left
+                    anchors.margins: units.gu(1)
+                    height: menuBarLoader.height
+                    enableKeyFilter: valid && PanelState.decorationsVisible
+                    unityMenuModel: __applicationMenus.model
+
+                    Connections {
+                        target: __applicationMenus
+                        onShownChanged: bar.dismiss();
+                    }
+
+                    Connections {
+                        target: __indicators
+                        onShownChanged: bar.dismiss();
                     }
                 }
             }
@@ -258,8 +296,9 @@ Item {
             openedHeight: root.height
             alignment: Qt.AlignLeft
             enableHint: !callHint.active && !fullscreenMode
-            showOnClick: !callHint.visible
+            showOnClick: false
             panelColor: panelAreaBackground.color
+            barWidth: Math.max(titleLabel.width, units.gu(10))
 
             onShowTapped: {
                 if (callHint.active) {
@@ -267,8 +306,7 @@ Item {
                 }
             }
 
-            showRowTitle: !expanded
-            rowTitle: PanelState.title
+            showRow: expanded
             rowItemDelegate: ActionItem {
                 id: actionItem
                 property int ownIndex: index
@@ -301,7 +339,6 @@ Item {
 
             enabled: d.enableTouchMenus
             opacity: d.showTouchMenu ? 1 : 0
-            visible: opacity != 0
             Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
 
             onEnabledChanged: {

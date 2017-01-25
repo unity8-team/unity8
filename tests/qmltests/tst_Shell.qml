@@ -309,6 +309,19 @@ Rectangle {
                     }
                 }
 
+                Row {
+                    anchors { left: parent.left; right: parent.right }
+                    CheckBox {
+                        checked: GSettingsController.enableGlobalMenus
+                        onCheckedChanged:  {
+                            GSettingsController.setEnableGlobalMenus(checked)
+                        }
+                    }
+                    Label {
+                        text: "Enable Global Menus"
+                    }
+                }
+
                 Label { text: "Applications"; font.bold: true }
 
                 Button {

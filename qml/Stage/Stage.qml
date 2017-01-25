@@ -1551,6 +1551,7 @@ FocusScope {
                     highlightSize: windowInfoItem.iconMargin / 2
                     stageWidth: appContainer.width
                     stageHeight: appContainer.height
+                    enableMenus: !root.globalMenus
 
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight

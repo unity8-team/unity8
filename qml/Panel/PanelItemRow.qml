@@ -16,29 +16,28 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
+import QtGraphicalEffects 1.0
 import "../Components"
 
 Item {
     id: root
-    implicitWidth: showRowTitle && !expanded ? rowTitle != "" ? rowLabel.width : 0 : row.width
+    implicitWidth: row.width
     implicitHeight: units.gu(3)
 
-    property bool showRowTitle: false
-    property alias rowTitle: rowLabel.text
+    property bool showRow: true
     property QtObject model: null
     property real overFlowWidth: width
     property bool expanded: false
-    readonly property alias currentItem: row.currentItem
-    readonly property alias currentItemIndex: row.currentIndex
-
     property real unitProgress: 0.0
     property real selectionChangeBuffer: units.gu(2)
     property bool enableLateralChanges: false
     property color hightlightColor: "#ffffff"
-
     property alias delegate: row.delegate
-
     property real lateralPosition: -1
+
+    readonly property alias currentItem: row.currentItem
+    readonly property alias currentItemIndex: row.currentIndex
+
     onLateralPositionChanged: {
         updateItemFromLateralPosition();
     }
@@ -138,31 +137,12 @@ Item {
         d.previousItem = currentItem;
     }
 
-    Label {
-        id: rowLabel
-        objectName: "panelTitle"
-        anchors {
-            left: parent.left
-            leftMargin: units.gu(1)
-            verticalCenter: parent.verticalCenter
-        }
-        width: implicitWidth + units.gu(2)
-        elide: Text.ElideRight
-        maximumLineCount: 1
-        fontSize: "medium"
-        font.weight: Font.Medium
-        color: Theme.palette.selected.backgroundText
-        opacity: showRowTitle ? 1 : 0
-        visible: opacity != 0
-        Behavior on opacity { NumberAnimation { duration: UbuntuAnimation.SnapDuration } }
-    }
-
     ListView {
         id: row
         objectName: "panelRow"
         orientation: ListView.Horizontal
         model: root.model
-        opacity: showRowTitle ? 0 : 1
+        opacity: showRow ? 1 : 0
         // dont set visible on basis of opacity; otherwise width will not be calculated correctly
         anchors {
             top: parent.top
