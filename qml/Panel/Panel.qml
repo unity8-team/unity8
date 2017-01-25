@@ -189,7 +189,7 @@ Item {
 
                 opacity: d.showWindowDecorationControls ? 1 : 0
                 visible: opacity !== 0
-                Behavior on opacity { UbuntuNumberAnimation { duration: 1000/*UbuntuAnimation.SnapDuration*/ } }
+                Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
 
                 active: PanelState.decorationsVisible || PanelState.decorationsAlwaysVisible
                 windowIsMaximized: true
