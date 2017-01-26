@@ -69,6 +69,7 @@ StyledItem {
         stage.updateFocusedAppOrientationAnimated();
     }
     property bool hasMouse: false
+    property bool hasKeyboard: false
 
     // to be read from outside
     readonly property int mainAppWindowOrientationAngle: stage.mainAppWindowOrientationAngle
@@ -241,7 +242,7 @@ StyledItem {
             // Ignore when greeter is active, to avoid pocket presses
             if (!greeter.active) {
                 launcher.fadeOut();
-                shell.showHome();
+                ApplicationManager.requestFocusApplication("unity8-dash");
             }
         }
         onTouchBegun: { cursor.opacity = 0; }
@@ -326,6 +327,35 @@ StyledItem {
                 value: !panel.focusedSurfaceIsFullscreen && !greeter.shown && !wizard.active
             }
         }
+
+        TouchGestureArea {
+            anchors.fill: stage
+
+            minimumTouchPoints: 4
+            maximumTouchPoints: minimumTouchPoints
+
+            readonly property bool recognisedPress: status == TouchGestureArea.Recognized &&
+                                                    touchPoints.length >= minimumTouchPoints &&
+                                                    touchPoints.length <= maximumTouchPoints
+            property bool wasPressed: false
+
+            onRecognisedPressChanged: {
+                if (recognisedPress) {
+                    wasPressed = true;
+                }
+            }
+
+            onStatusChanged: {
+                if (status !== TouchGestureArea.Recognized) {
+                    if (status === TouchGestureArea.WaitingForTouch) {
+                        if (wasPressed && !dragging) {
+                            launcher.openDrawer(true);
+                        }
+                    }
+                    wasPressed = false;
+                }
+            }
+        }
     }
 
     InputMethod {
@@ -349,6 +379,16 @@ StyledItem {
             Qt.createComponent(Qt.resolvedUrl("Greeter/ShimGreeter.qml"));
         onLoaded: {
             item.objectName = "greeter"
+        }
+        property bool openDrawerAfterUnlock: false
+        Connections {
+            target: greeter
+            onActiveChanged: {
+                if (!greeter.active && greeterLoader.openDrawerAfterUnlock) {
+                    launcher.openDrawer(false);
+                    greeterLoader.openDrawerAfterUnlock = false;
+                }
+            }
         }
     }
 
@@ -440,11 +480,13 @@ StyledItem {
 
         if (shell.mode === "greeter") {
             SessionBroadcast.requestHomeShown(AccountsService.user);
-        } /*else {
-            var animate = !LightDMService.greeter.active && !stages.shown; // FIXME stages.shown??? it's an Item
-            dash.setCurrentScope(0, animate, false);
-            ApplicationManager.requestFocusApplication("unity8-dash");
-        }*/
+        } else {
+            if (!greeter.active) {
+                launcher.openDrawer(false);
+            } else {
+                greeterLoader.openDrawerAfterUnlock = true;
+            }
+        }
     }
 
     Item {
@@ -519,7 +561,7 @@ StyledItem {
             lockedVisible: shell.usageScenario == "desktop" && !settings.autohideLauncher && !panel.fullscreenMode
             blurSource: greeter.shown ? greeter : stages
             topPanelHeight: panel.panelHeight
-            drawerEnabled: !greeter.shown
+            drawerEnabled: !greeter.active
 
             onShowDashHome: showHome()
             onLauncherApplicationSelected: {
@@ -664,8 +706,10 @@ StyledItem {
         id: dialogs
         objectName: "dialogs"
         anchors.fill: parent
+        visible: hasActiveDialog
         z: overlay.z + 10
         usageScenario: shell.usageScenario
+        hasKeyboard: shell.hasKeyboard
         onPowerOffClicked: {
             shutdownFadeOutRectangle.enabled = true;
             shutdownFadeOutRectangle.visible = true;
