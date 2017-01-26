@@ -214,7 +214,7 @@ Item {
 
             LinearGradient  {
                 id: titleGradient
-                objectName: "titleLabel"
+                objectName: "panelTitle"
                 width: titleLabel.width
                 height: titleLabel.height
                 anchors.verticalCenter: parent.verticalCenter

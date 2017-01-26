@@ -791,21 +791,21 @@ PanelTest {
             panel.globalMenus = data.global;
             mouseEmulation.checked = false;
 
-            var titleLabel = findChild(panel, "titleLabel"); verify(titleLabel);
+            var panelTitle = findChild(panel, "panelTitle"); verify(panelTitle);
             var appMenuRow = findChild(panel.applicationMenus, "panelRow"); verify(appMenuRow);
             var appMenuBar = findChild(panel, "menuBar"); verify(appMenuBar);
 
-            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(panelTitle, "visible", true, undefined, "App title should be visible");
             tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
 
             mouseMove(panel, panel.width/2, panel.panelHeight);
 
-            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(panelTitle, "visible", true, undefined, "App title should be visible");
             tryCompare(appMenuBar, "visible", data.mode == "staged" || data.global, undefined, "App menu bar should be visible on mouse hover");
 
             mouseMove(panel, panel.width/2, panel.panelHeight * 2);
 
-            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(panelTitle, "visible", true, undefined, "App title should be visible");
             tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
         }
 
@@ -822,21 +822,21 @@ PanelTest {
             panel.globalMenus = data.global;
             mouseEmulation.checked = false;
 
-            var titleLabel = findChild(panel, "titleLabel"); verify(titleLabel);
+            var panelTitle = findChild(panel, "panelTitle"); verify(panelTitle);
             var appMenuRow = findChild(panel.applicationMenus, "panelRow"); verify(appMenuRow);
             var appMenuBar = findChild(panel, "menuBar"); verify(appMenuBar);
 
-            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(panelTitle, "visible", true, undefined, "App title should be visible");
             tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
 
             mouseMove(panel, panel.width/2, panel.panelHeight);
 
-            tryCompare(titleLabel, "visible", true, undefined, "App title should still be visible on mouse hover when panel decorations are not visible");
+            tryCompare(panelTitle, "visible", true, undefined, "App title should still be visible on mouse hover when panel decorations are not visible");
             tryCompare(appMenuBar, "visible", data.global, undefined, "App menu bar should only be visible on mouse hover if using globl menus");
 
             PanelState.decorationsVisible = true;
 
-            tryCompare(titleLabel, "visible", false, undefined, "App title should still be visible on mouse hover when panel decorations are visible");
+            tryCompare(panelTitle, "visible", false, undefined, "App title should still be visible on mouse hover when panel decorations are visible");
             tryCompare(appMenuBar, "visible", true, undefined, "App menu bar should be visible on mouse hover when panel decorations not visible");
         }
 
