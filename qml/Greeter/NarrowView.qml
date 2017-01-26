@@ -50,21 +50,13 @@ FocusScope {
     signal tease()
     signal emergencyCall()
 
-    function showMessage(html) {
-        lockscreen.showMessage(html);
-    }
-
-    function showPrompt(text, isSecret, isDefaultPrompt) {
-        lockscreen.showPrompt(text, isSecret, isDefaultPrompt);
-    }
-
     function hide() {
         lockscreen.hide();
         coverPage.hide();
     }
 
-    function notifyAuthenticationSucceeded(showFakePassword) {
-        lockscreen.notifyAuthenticationSucceeded(showFakePassword);
+    function showFakePassword() {
+        lockscreen.showFakePassword();
     }
 
     function notifyAuthenticationFailed() {
@@ -76,11 +68,8 @@ FocusScope {
         coverPage.showErrorMessage(msg);
     }
 
-    function reset(forceShow) {
-        lockscreen.reset();
-        if (forceShow) {
-            coverPage.show();
-        }
+    function forceShow() {
+        coverPage.show();
     }
 
     function tryToUnlock(toTheRight) {
@@ -107,6 +96,7 @@ FocusScope {
         objectName: "lockscreen"
         anchors.fill: parent
         shown: false
+        opacity: 0
 
         hasCancel: true
         covered: coverPage.shown
@@ -143,10 +133,12 @@ FocusScope {
         onClicked: hide()
 
         onShowProgressChanged: {
-            if (showProgress === 1) {
-                lockscreen.reset();
-            } else if (showProgress === 0) {
-                lockscreen.tryToUnlock();
+            if (showProgress === 0) {
+                if (lockscreen.shown) {
+                    lockscreen.tryToUnlock();
+                } else {
+                    root.responded("");
+                }
             }
         }
     }

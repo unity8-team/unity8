@@ -54,25 +54,25 @@ FocusScope {
     signal tease()
     signal emergencyCall() // unused
 
+    function hide() {
+        lockscreen.hide();
+    }
+
+    function showFakePassword() {
+        lockscreen.showFakePassword();
+    }
+
     function notifyAuthenticationFailed() {
         lockscreen.notifyAuthenticationFailed();
-    }
-
-    function reset(forceShow) {
-        lockscreen.reset();
-    }
-
-    function showMessage(html) {
-        lockscreen.showMessage(html);
-    }
-
-    function showPrompt(text, isSecret, isDefaultPrompt) {
-        lockscreen.showPrompt(text, isSecret, isDefaultPrompt);
     }
 
     function showErrorMessage(msg) {
         // Unused, only for optional coverPage message when prompt is covered,
         // but we always show prompt, so we don't need this.
+    }
+
+    function forceShow() {
+        // Nothing to do, we are always fully shown
     }
 
     function tryToUnlock(toTheRight) {
@@ -83,14 +83,6 @@ FocusScope {
     QtObject {
         id: d
         property bool landscape: root.width > root.height
-    }
-
-    function hide() {
-        lockscreen.hide();
-    }
-
-    function notifyAuthenticationSucceeded(showFakePassword) {
-        lockscreen.notifyAuthenticationSucceeded(showFakePassword);
     }
 
     LoginPage {

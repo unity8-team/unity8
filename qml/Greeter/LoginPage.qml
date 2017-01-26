@@ -17,6 +17,7 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import "../Components"
+import "." 0.1
 
 Showable {
     id: root
@@ -119,8 +120,15 @@ Showable {
         onSelected: if (enabled) root.selected(index)
         onResponded: root.responded(response)
         onSessionChooserButtonClicked: parent.state = "SessionsList"
+        onCurrentIndexChanged: setCurrentSession()    
 
         Keys.forwardTo: [sessionChooserLoader.item]
+
+        Component.onCompleted: setCurrentSession()
+
+        function setCurrentSession() {
+            currentSession = LightDMService.users.data(currentIndex, LightDMService.userRoles.SessionRole);
+        }
     }
 
     Loader {
@@ -149,7 +157,7 @@ Showable {
             onSessionSelected: loginList.currentSession = sessionKey
             onShowLoginList: {
                 root.state = "LoginList"
-                loginList.passwordInput.forceActiveFocus();
+                loginList.tryToUnlock();
             }
             ignoreUnknownSignals: true
         }
