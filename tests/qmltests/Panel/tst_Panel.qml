@@ -78,6 +78,7 @@ PanelTest {
                     id: panel
                     anchors.fill: parent
                     mode: modeSelector.model[modeSelector.selectedIndex]
+                    globalMenus: false
 
                     indicatorMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
                     applicationMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
@@ -225,6 +226,18 @@ PanelTest {
                     color: "white"
                 }
             }
+
+            RowLayout {
+                Layout.fillWidth: true
+                CheckBox {
+                    checked: panel.globalMenus
+                    onCheckedChanged: panel.globalMenus = checked
+                }
+                Label {
+                    text: "Global Menus"
+                    color: "white"
+                }
+            }
         }
     }
 
@@ -251,6 +264,7 @@ PanelTest {
 
         function init() {
             panel.mode = "staged";
+            panel.globalMenus = true;
             mouseEmulation.checked = true;
             panel.fullscreenMode = false;
             callManager.foregroundCall = null;
@@ -269,12 +283,13 @@ PanelTest {
             compare(windowControlButtonsSpy.valid, true);
 
             waitForRendering(panel);
+            waitForAllAnimationToComplete("initial");
         }
 
         function cleanup() {
             panel.indicators.hide();
             panel.applicationMenus.hide();
-            waitForAllAnimationToComplete("initial");
+            mouseMove(panel, -1, -1);
         }
 
         function get_indicator_item(index) {
@@ -338,6 +353,8 @@ PanelTest {
         // expose more of the panel, binding it to the selected indicator and opening it's menu.
         // Tested from first Y pixel to check for swipe from offscreen.
         function test_drag_indicator_item_down_shows_menu(data) {
+            skip("Unstable test; panel expansion refactor may be required");
+
             panel.fullscreenMode = data.fullscreen;
             callManager.foregroundCall = data.call;
 
@@ -759,45 +776,102 @@ PanelTest {
             }
         }
 
-        function test_stagedApplicationMenuBarShowOnMouseHover() {
-            PanelState.title = "Fake Title";
-            panel.mode = "staged";
-            mouseEmulation.checked = false;
-
-            var appTitle = findChild(panel.applicationMenus, "panelTitle"); verify(appTitle);
-            var appMenuRow = findChild(panel.applicationMenus, "panelRow"); verify(appMenuRow);
-            var appMenuBar = findChild(panel, "menuBar"); verify(appMenuBar);
-
-            tryCompare(appTitle, "visible", true, undefined, "App title should be visible");
-            tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
-
-            mouseMove(panel, panel.width/2, panel.panelHeight);
-
-            tryCompare(appTitle, "visible", false, undefined, "App title should not be visible on mouse hover");
-            tryCompare(appMenuBar, "visible", true, undefined, "App menu bar should be visible on mouse hover");
+        function test_stagedApplicationMenuBarShowOnMouseHover_data() {
+            return [
+                { tag: "windowed-global", mode: "windowed", global: true },
+                { tag: "windowed-local", mode: "windowed", global: false },
+                { tag: "staged-global", mode: "staged", global: true },
+                { tag: "staged-local", mode: "staged", global: false },
+            ];
         }
 
-        function test_windowedApplicationMenuShowOnMouseHoverWhenDecorationsShown() {
+        function test_stagedApplicationMenuBarShowOnMouseHover(data) {
             PanelState.title = "Fake Title";
-            panel.mode = "windowed";
+            panel.mode = data.mode;
+            panel.globalMenus = data.global;
             mouseEmulation.checked = false;
 
-            var appTitle = findChild(panel.applicationMenus, "panelTitle"); verify(appTitle);
+            var titleLabel = findChild(panel, "titleLabel"); verify(titleLabel);
             var appMenuRow = findChild(panel.applicationMenus, "panelRow"); verify(appMenuRow);
             var appMenuBar = findChild(panel, "menuBar"); verify(appMenuBar);
 
-            tryCompare(appTitle, "visible", true, undefined, "App title should be visible");
+            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
             tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
 
             mouseMove(panel, panel.width/2, panel.panelHeight);
 
-            tryCompare(appTitle, "visible", true, undefined, "App title should still be visible on mouse hover when panel decorations are not visible");
-            tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should be visible on mouse hover when panel decorations are not visible");
+            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(appMenuBar, "visible", data.mode == "staged" || data.global, undefined, "App menu bar should be visible on mouse hover");
+
+            mouseMove(panel, panel.width/2, panel.panelHeight * 2);
+
+            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
+        }
+
+        function test_windowedApplicationMenuShowOnMouseHoverWhenDecorationsShown_data() {
+            return [
+                { tag: "global", global: true },
+                { tag: "local", global: false }
+            ];
+        }
+
+        function test_windowedApplicationMenuShowOnMouseHoverWhenDecorationsShown(data) {
+            PanelState.title = "Fake Title";
+            panel.mode = "windowed";
+            panel.globalMenus = data.global;
+            mouseEmulation.checked = false;
+
+            var titleLabel = findChild(panel, "titleLabel"); verify(titleLabel);
+            var appMenuRow = findChild(panel.applicationMenus, "panelRow"); verify(appMenuRow);
+            var appMenuBar = findChild(panel, "menuBar"); verify(appMenuBar);
+
+            tryCompare(titleLabel, "visible", true, undefined, "App title should be visible");
+            tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should not be visible");
+
+            mouseMove(panel, panel.width/2, panel.panelHeight);
+
+            tryCompare(titleLabel, "visible", true, undefined, "App title should still be visible on mouse hover when panel decorations are not visible");
+            tryCompare(appMenuBar, "visible", data.global, undefined, "App menu bar should only be visible on mouse hover if using globl menus");
 
             PanelState.decorationsVisible = true;
 
-            tryCompare(appTitle, "visible", false, undefined, "App title should still be visible on mouse hover when panel decorations are visible");
+            tryCompare(titleLabel, "visible", false, undefined, "App title should still be visible on mouse hover when panel decorations are visible");
             tryCompare(appMenuBar, "visible", true, undefined, "App menu bar should be visible on mouse hover when panel decorations not visible");
+        }
+
+        function test_keyboardNavigation_data() {
+            return [
+                {tag: "tab to start", doTab: false},
+                {tag: "no tab to start", doTab: true}
+            ]
+        }
+
+        function test_keyboardNavigation(data) {
+            var indicatorsBar = findChild(panel.indicators, "indicatorsBar");
+
+            pullDownIndicatorsMenu();
+
+            indicatorsBar.setCurrentItemIndex(0);
+
+            if (data.doTab) {
+                keyClick(Qt.Key_Tab);
+            }
+
+            keyClick(Qt.Key_Right);
+            tryCompare(indicatorsBar, "currentItemIndex", 1);
+
+            keyClick(Qt.Key_Right);
+            tryCompare(indicatorsBar, "currentItemIndex", 2);
+
+            keyClick(Qt.Key_Left);
+            tryCompare(indicatorsBar, "currentItemIndex", 1);
+
+            keyClick(Qt.Key_Left);
+            tryCompare(indicatorsBar, "currentItemIndex", 0);
+
+            keyClick(Qt.Key_Escape);
+            tryCompare(panel.indicators, "fullyClosed", true);
         }
     }
 }

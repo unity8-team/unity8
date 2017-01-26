@@ -30,6 +30,7 @@ GSettingsControllerQml::GSettingsControllerQml()
     , m_enableLauncher(true)
     , m_enableIndicatorMenu(true)
     , m_enableGlobalMenus(true)
+    , m_appstoreUri("http://uappexplorer.com")
 {
 }
 
@@ -172,6 +173,11 @@ void GSettingsControllerQml::setEnableIndicatorMenu(bool enableIndicatorMenu)
         m_enableIndicatorMenu = enableIndicatorMenu;
         Q_EMIT enableIndicatorMenuChanged(enableIndicatorMenu);
     }
+}
+
+QString GSettingsControllerQml::appstoreUri() const
+{
+    return m_appstoreUri;
 }
 
 bool GSettingsControllerQml::enableGlobalMenus() const
@@ -391,6 +397,14 @@ QVariant GSettingsQml::enableIndicatorMenu() const
     } else {
         return QVariant();
     }
+}
+
+QVariant GSettingsQml::appstoreUri() const
+{
+    if (m_valid && m_schema->id() == "com.canonical.Unity8") {
+        return GSettingsControllerQml::instance()->appstoreUri();
+    }
+    return QVariant();
 }
 
 QVariant GSettingsQml::enableGlobalMenus() const

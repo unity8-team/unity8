@@ -48,6 +48,7 @@ Item {
             row.resetCurrentItem();
         }
         row.setCurrentItemIndex(index);
+        d.alignIndicators();
     }
 
     function addScrollOffset(scrollAmmout) {
