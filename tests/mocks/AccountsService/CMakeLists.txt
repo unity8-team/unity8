@@ -1,8 +1,12 @@
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/plugins/LightDM
-    ${CMAKE_SOURCE_DIR}/plugins/LightDM/IntegratedLightDM
     ${CMAKE_SOURCE_DIR}/plugins/Utils
+    )
+
+include_directories(
+    SYSTEM
+    ${LIBLIGHTDM_INCLUDE_DIRS}
     )
 
 add_library(MockAccountsService-qml MODULE

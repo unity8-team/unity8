@@ -27,6 +27,7 @@ import Unity.Launcher 0.1
 import GlobalShortcut 1.0 // has to be before Utils, because of WindowInputFilter
 import GSettings 1.0
 import ImageCache 0.1
+import LightDM 0.1 as LightDM
 import Utils 0.1
 import Powerd 0.1
 import SessionBroadcast 0.1
@@ -200,6 +201,12 @@ StyledItem {
         target: LauncherModel
         property: "applicationManager"
         value: ApplicationManager
+    }
+
+    Binding {
+        target: AccountsService
+        property: "greeterMode"
+        value: shell.mode === "greeter"
     }
 
     Component.onCompleted: {
@@ -528,7 +535,7 @@ StyledItem {
             readonly property bool focusedSurfaceIsFullscreen: topLevelSurfaceList.focusedWindow
                 ? topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
                 : false
-            fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0)
+            fullscreenMode: (focusedSurfaceIsFullscreen && !LightDM.Greeter.active && launcher.progress === 0)
                             || greeter.hasLockedApp
             greeterShown: greeter && greeter.shown
         }

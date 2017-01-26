@@ -22,8 +22,8 @@ import Ubuntu.Components 1.3
 import AccountsService 0.1
 import Biometryd 0.0
 import GSettings 1.0
+import LightDM 0.1 as LightDM
 import LightDMController 0.1
-import LightDM.FullLightDM 0.1 as LightDM
 import Unity.Test 0.1 as UT
 
 Item {
@@ -173,7 +173,7 @@ Item {
 
         function getIndexOf(name) {
             for (var i = 0; i < LightDM.Users.count; i++) {
-                if (name === LightDM.Users.data(i, LightDM.UserRoles.NameRole)) {
+                if (name === LightDM.Users.data(i, LightDM.Users.NameRole)) {
                     return i;
                 }
             }
@@ -500,13 +500,13 @@ Item {
         function test_selectUserHintUnset() {
             LightDMController.selectUserHint = "";
             resetLoader();
-            verifySelected(LightDM.Users.data(0, LightDM.UserRoles.NameRole));
+            verifySelected(LightDM.Users.data(0, LightDM.Users.NameRole));
         }
 
         function test_selectUserHintInvalid() {
             LightDMController.selectUserHint = "not-a-real-user";
             resetLoader();
-            verifySelected(LightDM.Users.data(0, LightDM.UserRoles.NameRole));
+            verifySelected(LightDM.Users.data(0, LightDM.Users.NameRole));
         }
 
         function test_selectUserHintGuest() {
@@ -548,7 +548,7 @@ Item {
             verify(biometryd.operation);
             verify(biometryd.operation.running);
 
-            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.UserRoles.UidRole));
+            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.Users.UidRole));
             verify(!greeter.active);
         }
 
@@ -560,7 +560,7 @@ Item {
             verify(biometryd.operation);
             verify(biometryd.operation.running);
 
-            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.UserRoles.UidRole));
+            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.Users.UidRole));
             compare(viewTryToUnlockSpy.count, 1);
             verify(greeter.locked);
         }
@@ -603,12 +603,12 @@ Item {
             compare(viewTryToUnlockSpy.count, 1);
 
             // Confirm that we are stuck in this mode until next login
-            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.UserRoles.UidRole));
+            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.Users.UidRole));
             compare(viewTryToUnlockSpy.count, 2);
 
             unlockAndShowGreeter();
 
-            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.UserRoles.UidRole));
+            biometryd.operation.mockSuccess(LightDM.Users.data(index, LightDM.Users.UidRole));
             verify(!greeter.active);
         }
 

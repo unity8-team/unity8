@@ -18,13 +18,13 @@ import QtQuick 2.4
 import AccountsService 0.1
 import Biometryd 0.0
 import GSettings 1.0
+import LightDM 0.1 as LightDM
 import Powerd 0.1
 import Ubuntu.Components 1.3
 import Ubuntu.SystemImage 0.1
 import Unity.Launcher 0.1
 import Unity.Session 0.1
 
-import "." 0.1
 import "../Components"
 
 Showable {
@@ -51,7 +51,7 @@ Showable {
     readonly property bool hasLockedApp: lockedApp !== ""
 
     property bool forcedUnlock
-    readonly property bool locked: LightDMService.greeter.active && !LightDMService.greeter.authenticated && !forcedUnlock
+    readonly property bool locked: LightDM.Greeter.active && !LightDM.Greeter.authenticated && !forcedUnlock
 
     property bool tabletMode
     property url viewSource // only used for testing
@@ -137,24 +137,23 @@ Showable {
     }
 
     function sessionToStart() {
-        for (var i = 0; i < LightDMService.sessions.count; i++) {
-            var session = LightDMService.sessions.data(i,
-                LightDMService.sessionRoles.KeyRole);
+        for (var i = 0; i < LightDM.Sessions.count; i++) {
+            var session = LightDM.Sessions.data(i, LightDM.Sessions.KeyRole);
             if (loader.item.sessionToStart === session) {
                 return session;
             }
         }
 
-        return LightDMService.greeter.defaultSession;
+        return LightDM.Greeter.defaultSession;
     }
 
     QtObject {
         id: d
 
-        readonly property bool multiUser: LightDMService.users.count > 1
-        readonly property int selectUserIndex: d.getUserIndex(LightDMService.greeter.selectUser)
+        readonly property bool multiUser: LightDM.Users.count > 1
+        readonly property int selectUserIndex: d.getUserIndex(LightDM.Greeter.selectUser)
         property int currentIndex: Math.max(selectUserIndex, 0)
-        readonly property bool waiting: LightDMService.prompts.count == 0 && !root.forcedUnlock
+        readonly property bool waiting: LightDM.Prompts.count == 0 && !root.forcedUnlock
         property bool isLockscreen // true when we are locking an active session, rather than first user login
         readonly property bool secureFingerprint: isLockscreen &&
                                                   AccountsService.failedFingerprintLogins <
@@ -180,8 +179,8 @@ Showable {
                 return -1;
 
             // Find index for requested user, if it exists
-            for (var i = 0; i < LightDMService.users.count; i++) {
-                if (username === LightDMService.users.data(i, LightDMService.userRoles.NameRole)) {
+            for (var i = 0; i < LightDM.Users.count; i++) {
+                if (username === LightDM.Users.data(i, LightDM.Users.NameRole)) {
                     return i;
                 }
             }
@@ -190,29 +189,31 @@ Showable {
         }
 
         function selectUser(index) {
-            if (index < 0 || index >= LightDMService.users.count)
+            if (index < 0 || index >= LightDM.Users.count)
                 return;
             currentIndex = index;
-            var user = LightDMService.users.data(index, LightDMService.userRoles.NameRole);
+            var user = LightDM.Users.data(index, LightDM.Users.NameRole);
             AccountsService.user = user;
             LauncherModel.setUser(user);
-            LightDMService.greeter.authenticate(user); // always resets auth state
+            LightDM.Greeter.authenticate(user); // always resets auth state
         }
 
         function hideView() {
             if (loader.item) {
                 loader.item.enabled = false; // drop OSK and prevent interaction
                 loader.item.hide();
+                sessionStarted();
             }
         }
 
         function login() {
-            if (LightDMService.greeter.startSessionSync(root.sessionToStart())) {
-                sessionStarted();
-                hideView();
-            } else if (loader.item) {
+            if (!LightDM.Greeter.startSessionSync(root.sessionToStart())) {
                 loader.item.notifyAuthenticationFailed();
+                selectUser(currentIndex);
             }
+
+            // If successful as a lockscreen, we don't need to hide ourselves.
+            // logind will tell us to unlock if our current user logged in.
         }
 
         function startUnlock(toTheRight) {
@@ -234,7 +235,7 @@ Showable {
 
         function showFingerprintMessage(msg) {
             d.selectUser(d.currentIndex);
-            LightDMService.prompts.prepend(msg, LightDMService.prompts.Error);
+            LightDM.Prompts.prepend(msg, LightDM.Prompts.Error);
             if (loader.item) {
                 loader.item.showErrorMessage(msg);
                 loader.item.notifyAuthenticationFailed();
@@ -356,7 +357,7 @@ Showable {
             root.lockedApp = "";
             item.forceActiveFocus();
             d.selectUser(d.currentIndex);
-            LightDMService.infographic.readyForDataChange();
+            LightDM.Infographic.readyForDataChange();
         }
 
         Connections {
@@ -366,7 +367,7 @@ Showable {
             }
             onResponded: {
                 if (root.locked) {
-                    LightDMService.greeter.respond(response);
+                    LightDM.Greeter.respond(response);
                 } else {
                     d.login();
                 }
@@ -443,18 +444,18 @@ Showable {
         Binding {
             target: loader.item
             property: "userModel"
-            value: LightDMService.users
+            value: LightDM.Users
         }
 
         Binding {
             target: loader.item
             property: "infographicModel"
-            value: LightDMService.infographic
+            value: LightDM.Infographic
         }
     }
 
     Connections {
-        target: LightDMService.greeter
+        target: LightDM.Greeter
 
         onShowGreeter: root.forceShow()
         onHideGreeter: root.forcedUnlock = true
@@ -508,20 +509,20 @@ Showable {
     }
 
     Binding {
-        target: LightDMService.greeter
+        target: LightDM.Greeter
         property: "active"
         value: root.active
     }
 
     Binding {
-        target: LightDMService.infographic
+        target: LightDM.Infographic
         property: "username"
-        value: AccountsService.statsWelcomeScreen ? LightDMService.users.data(d.currentIndex, LightDMService.userRoles.NameRole) : ""
+        value: AccountsService.statsWelcomeScreen ? LightDM.Users.data(d.currentIndex, LightDM.Users.NameRole) : ""
     }
 
     Connections {
         target: i18n
-        onLanguageChanged: LightDMService.infographic.readyForDataChange()
+        onLanguageChanged: LightDM.Infographic.readyForDataChange()
     }
 
     Observer {
@@ -573,7 +574,7 @@ Showable {
                 failOperation("fingerprint reader is locked");
                 return;
             }
-            if (result !== LightDMService.users.data(d.currentIndex, LightDMService.userRoles.UidRole)) {
+            if (result !== LightDM.Users.data(d.currentIndex, LightDM.Users.UidRole)) {
                 AccountsService.failedFingerprintLogins++;
                 failOperation("not the selected user");
                 return;

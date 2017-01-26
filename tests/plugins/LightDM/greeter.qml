@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright 2013,2015-2016 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,4 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../liblightdm/SessionsModel.h"
+import QtQuick 2.4
+import LightDM 0.1 as LightDM
+
+Item {
+    property var greeter: LightDM.Greeter
+}

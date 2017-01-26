@@ -301,7 +301,7 @@ void UserMetricsPrivate::generateFakeData()
         QSharedPointer<UserMetricsData> data(
                 new UserMetricsData("<b>52km</b> travelled", first, firstMonth,
                         ninth, secondMonth, this));
-        m_fakeData.insert("single", data);
+        m_fakeData.insert("has-password", data);
         m_fakeData.insert("has-pin", data);
     }
 
@@ -317,7 +317,7 @@ void UserMetricsPrivate::generateFakeData()
         QSharedPointer<UserMetricsData> data(
                 new UserMetricsData("<b>33</b> messages today", second,
                         firstMonth, eighth, secondMonth, this));
-        m_fakeData.insert("single", data);
+        m_fakeData.insert("has-password", data);
         m_fakeData.insert("has-pin", data);
     }
 
@@ -334,10 +334,8 @@ void UserMetricsPrivate::generateFakeData()
         QSharedPointer<UserMetricsData> data(
                 new UserMetricsData("<b>19</b> minutes talk time", eighth,
                         firstMonth, second, secondMonth, this));
-        m_fakeData.insert("single", data);
-        m_fakeData.insert("has-pin", data);
-        // Also use same data for some tablet users
         m_fakeData.insert("has-password", data);
+        m_fakeData.insert("has-pin", data);
         m_fakeData.insert("no-password", data);
         m_fakeData.insert("empty-name", data);
     }

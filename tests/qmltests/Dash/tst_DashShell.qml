@@ -20,8 +20,8 @@ import "../../../qml/Dash"
 import "../../../qml/"
 import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
+import LightDM 0.1 as LightDM
 import LightDMController 0.1
-import LightDM.FullLightDM 0.1 as LightDM
 
 Item {
     id: root

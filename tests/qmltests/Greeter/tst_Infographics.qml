@@ -20,7 +20,7 @@ import ".."
 import "../../../qml/Greeter"
 import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
-import LightDM.FullLightDM 0.1 as LightDM
+import LightDM 0.1 as LightDM
 
 Item {
     property variant infographicModel: LightDM.Infographic

@@ -18,8 +18,8 @@ import QtQuick 2.4
 import QtTest 1.0
 import AccountsService 0.1
 import GSettings 1.0
+import LightDM 0.1 as LightDM
 import LightDMController 0.1
-import LightDM.FullLightDM 0.1 as LightDM
 import SessionBroadcast 0.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItem
@@ -450,8 +450,8 @@ Rectangle {
                             var biometryd = testCase.findInvisibleChild(shellContainer, "biometryd");
                             var uid = 0;
                             for (var i = 0; i < LightDM.Users.count; i++) {
-                                if (LightDM.Users.data(i, LightDM.UserRoles.NameRole) == AccountsService.user) {
-                                    uid = LightDM.Users.data(i, LightDM.UserRoles.UidRole);
+                                if (LightDM.Users.data(i, LightDM.Users.NameRole) == AccountsService.user) {
+                                    uid = LightDM.Users.data(i, LightDM.Users.UidRole);
                                     break;
                                 }
                             }
@@ -832,7 +832,7 @@ Rectangle {
         function selectUser(name) {
             // Find index of user with the right name
             for (var i = 0; i < LightDM.Users.count; i++) {
-                if (LightDM.Users.data(i, LightDM.UserRoles.NameRole) == name) {
+                if (LightDM.Users.data(i, LightDM.Users.NameRole) == name) {
                     break
                 }
             }

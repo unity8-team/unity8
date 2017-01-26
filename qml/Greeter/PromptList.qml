@@ -16,8 +16,8 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
+import LightDM 0.1 as LightDM
 import "../Components"
-import "." 0.1
 
 FocusScope {
     id: root
@@ -58,13 +58,13 @@ FocusScope {
 
         Repeater {
             id: repeater
-            model: LightDMService.prompts
+            model: LightDM.Prompts
 
             delegate: Loader {
                 id: loader
 
-                readonly property bool isLabel: model.type == LightDMService.prompts.Message ||
-                                                model.type == LightDMService.prompts.Error
+                readonly property bool isLabel: model.type == LightDM.Prompts.Message ||
+                                                model.type == LightDM.Prompts.Error
                 readonly property var modelData: model
 
                 sourceComponent: isLabel ? infoLabel : greeterPrompt
@@ -99,7 +99,7 @@ FocusScope {
             property var model
             readonly property bool isPrompt: false
 
-            color: model.type === LightDMService.prompts.Message ? theme.palette.normal.raisedText
+            color: model.type === LightDM.Prompts.Message ? theme.palette.normal.raisedText
                                                           : theme.palette.normal.negative
             fontSize: "small"
             textFormat: Text.PlainText
@@ -121,8 +121,8 @@ FocusScope {
 
             interactive: root.interactive
             isAlphanumeric: model.text !== "" || root.alphanumeric
-            isPrompt: model.type !== LightDMService.prompts.Button
-            isSecret: model.type === LightDMService.prompts.Secret
+            isPrompt: model.type !== LightDM.Prompts.Button
+            isSecret: model.type === LightDM.Prompts.Secret
             text: model.text ? model.text : (isAlphanumeric ? i18n.tr("Passphrase") : i18n.tr("Passcode"))
 
             onClicked: root.clicked()

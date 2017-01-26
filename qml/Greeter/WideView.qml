@@ -16,7 +16,7 @@
 
 import QtQuick 2.4
 import Ubuntu.Components 1.3
-import "." 0.1
+import LightDM 0.1 as LightDM
 
 FocusScope {
     id: root
@@ -139,7 +139,7 @@ FocusScope {
             Component.onCompleted: setCurrentSession()
 
             function setCurrentSession() {
-                currentSession = LightDMService.users.data(currentIndex, LightDMService.userRoles.SessionRole);
+                currentSession = LightDM.Users.data(currentIndex, LightDM.Users.SessionRole);
             }
         }
 

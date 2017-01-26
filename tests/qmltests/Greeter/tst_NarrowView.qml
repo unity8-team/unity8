@@ -18,8 +18,8 @@ import QtQuick 2.4
 import QtTest 1.0
 import ".."
 import "../../../qml/Greeter"
+import LightDM 0.1 as LightDM
 import LightDMController 0.1
-import LightDM.FullLightDM 0.1 as LightDM
 import Ubuntu.Components 1.3
 import Ubuntu.Telephony 0.1 as Telephony
 import Unity.Test 0.1 as UT
@@ -88,7 +88,7 @@ Item {
                 Row {
                     Button {
                         text: "Show Message"
-                        onClicked: LightDMService.prompts.append(messageField.text, LightDMService.prompts.Message)
+                        onClicked: LightDM.Prompts.append(messageField.text, LightDM.Prompts.Message)
                     }
                     TextField {
                         id: messageField
@@ -99,7 +99,7 @@ Item {
                 Row {
                     Button {
                         text: "Show Prompt"
-                        onClicked: LightDMService.prompts.append(promptField.text, isSecretCheckBox.checked ? LightDMService.prompts.Secret : LightDMService.prompts.Question)
+                        onClicked: LightDM.Prompts.append(promptField.text, isSecretCheckBox.checked ? LightDM.Prompts.Secret : LightDM.Prompts.Question)
                     }
                     TextField {
                         id: promptField
@@ -269,7 +269,7 @@ Item {
             view.currentIndex = 0; // break binding with text field
 
             LightDM.Greeter.authenticate("no-password");
-            tryCompare(LightDMService.prompts, "count", 1);
+            tryCompare(LightDM.Prompts, "count", 1);
 
             telepathyHelper.ready = true;
             telepathyHelper.emergencyCallsAvailable = true;

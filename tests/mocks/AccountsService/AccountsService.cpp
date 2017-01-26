@@ -26,6 +26,7 @@ AccountsService::AccountsService(QObject* parent)
     m_enableLauncherWhileLocked(true),
     m_enableIndicatorsWhileLocked(true),
     m_backgroundFile(),
+    m_greeterMode(true),
     m_statsWelcomeScreen(true),
     m_failedLogins(0),
     m_failedFingerprintLogins(0),
@@ -48,6 +49,19 @@ void AccountsService::setUser(const QString &user)
     Q_EMIT userChanged();
     Q_EMIT passwordDisplayHintChanged();
     Q_EMIT backgroundFileChanged();
+}
+
+bool AccountsService::greeterMode() const
+{
+    return m_greeterMode;
+}
+
+void AccountsService::setGreeterMode(bool greeterMode)
+{
+    if (m_greeterMode != greeterMode) {
+        m_greeterMode = greeterMode;
+        Q_EMIT greeterModeChanged();
+    }
 }
 
 bool AccountsService::demoEdges() const

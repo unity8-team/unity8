@@ -18,8 +18,8 @@ import QtQuick 2.4
 import QtTest 1.0
 import ".."
 import "../../../qml/Greeter"
+import LightDM 0.1 as LightDM
 import LightDMController 0.1
-import LightDM.FullLightDM 0.1 as LightDM
 import Ubuntu.Components 1.3
 import Unity.Test 0.1 as UT
 
@@ -119,7 +119,7 @@ StyledItem {
                 Row {
                     Button {
                         text: "Show Message"
-                        onClicked: LightDMService.prompts.append(messageField.text, LightDMService.prompts.Message)
+                        onClicked: LightDM.Prompts.append(messageField.text, LightDM.Prompts.Message)
                     }
                     TextField {
                         id: messageField
@@ -130,7 +130,7 @@ StyledItem {
                 Row {
                     Button {
                         text: "Show Prompt"
-                        onClicked: LightDMService.prompts.append(promptField.text, isSecretCheckBox.checked ? LightDMService.prompts.Secret : LightDMService.prompts.Question)
+                        onClicked: LightDM.Prompts.append(promptField.text, isSecretCheckBox.checked ? LightDM.Prompts.Secret : LightDM.Prompts.Question)
                     }
                     TextField {
                         id: promptField
@@ -331,7 +331,7 @@ StyledItem {
 
         function init() {
             selectIndex(0); // break binding with text field
-            tryCompare(LightDMService.prompts, "count", 1);
+            tryCompare(LightDM.Prompts, "count", 1);
             selectedSpy.clear();
             respondedSpy.clear();
             teaseSpy.clear();
@@ -359,7 +359,7 @@ StyledItem {
 
         function getIndexOf(name) {
             for (var i = 0; i < LightDM.Users.count; i++) {
-                if (name === LightDM.Users.data(i, LightDM.UserRoles.NameRole)) {
+                if (name === LightDM.Users.data(i, LightDM.Users.NameRole)) {
                     return i;
                 }
             }
@@ -368,7 +368,7 @@ StyledItem {
         }
 
         function selectIndex(i) {
-            var user = LightDM.Users.data(i, LightDM.UserRoles.NameRole);
+            var user = LightDM.Users.data(i, LightDM.Users.NameRole);
             LightDM.Greeter.authenticate(user);
 
             var userList = findChild(view, "userList");
@@ -449,7 +449,7 @@ StyledItem {
             for(var i = 0; i < LightDM.Sessions.count; i++) {
                 var delegateName = "sessionDelegate" + String(i);
                 var currentDelegate = findChild(view, delegateName);
-                var sessionKey = LightDM.Sessions.data(i,LightDM.SessionRoles.KeyRole);
+                var sessionKey = LightDM.Sessions.data(i,LightDM.Sessions.KeyRole);
                 if (sessionKey === "gnome-classic") {
                     waitForRendering(currentDelegate);
                     tap(currentDelegate);

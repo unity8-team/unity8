@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012,2013,2015 Canonical, Ltd.
+ * Copyright (C) 2012-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,35 +65,22 @@ static QObject *users_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
     return new UsersModel();
 }
 
-static QObject *infographic_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
+static QObject *infographic_provider(QQmlEngine *engine, QJSEngine *)
 {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-    return UserMetricsOutput::UserMetrics::getInstance();
+    auto instance = UserMetricsOutput::UserMetrics::getInstance();
+    engine->setObjectOwnership(instance, QQmlEngine::CppOwnership);
+    return instance;
 }
 
-void PLUGIN_CLASSNAME::registerTypes(const char *uri)
+void LightDM::registerTypes(const char *uri)
 {
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<UserMetricsOutput::ColorTheme>();
 
-#if defined INTEGRATED_LIGHTDM
-    Q_ASSERT(uri == QLatin1String("LightDM.IntegratedLightDM"));
-    qmlRegisterSingletonType<Greeter>(uri, 0, 1, "Greeter", greeter_provider);
-#elif defined FULL_LIGHTDM
-    Q_ASSERT(uri == QLatin1String("LightDM.FullLightDM"));
+    Q_ASSERT(uri == QLatin1String("LightDM"));
     qmlRegisterSingletonType<QLightDM::Greeter>(uri, 0, 1, "Greeter", greeter_provider);
-#else
-    #error No library defined in LightDM plugin
-#endif
-
-    qmlRegisterSingletonType<PromptsModel>(uri, 0, 1, "Prompts", prompts_provider);
-
-    qmlRegisterSingletonType<SessionsModel>(uri, 0, 1, "Sessions", sessions_provider);
-    qmlRegisterUncreatableType<QLightDM::SessionsModel>(uri, 0, 1, "SessionRoles", QStringLiteral("Type is not instantiable"));
-
-    qmlRegisterSingletonType<UsersModel>(uri, 0, 1, "Users", users_provider);
-    qmlRegisterUncreatableType<QLightDM::UsersModel>(uri, 0, 1, "UserRoles", QStringLiteral("Type is not instantiable"));
-
     qmlRegisterSingletonType<UserMetricsOutput::UserMetrics>(uri, 0, 1, "Infographic", infographic_provider);
+    qmlRegisterSingletonType<PromptsModel>(uri, 0, 1, "Prompts", prompts_provider);
+    qmlRegisterSingletonType<SessionsModel>(uri, 0, 1, "Sessions", sessions_provider);
+    qmlRegisterSingletonType<UsersModel>(uri, 0, 1, "Users", users_provider);
 }
