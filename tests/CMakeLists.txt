@@ -8,9 +8,11 @@ add_meta_test(uitests)
 add_meta_test(xvfbuitests)
 add_meta_test(rxvfbuitests)
 
-add_meta_test(alltests DEPENDS unittests uitests)
-add_meta_test(xvfballtests DEPENDS unittests xvfbuitests)
-add_meta_test(rxvfballtests DEPENDS unittests rxvfbuitests)
+# Run our meta-meta tests serially because we don't need to nest
+# parallelized tests.
+add_meta_test(alltests SERIAL DEPENDS unittests uitests)
+add_meta_test(xvfballtests SERIAL DEPENDS unittests xvfbuitests)
+add_meta_test(rxvfballtests SERIAL DEPENDS unittests rxvfbuitests)
 
 # Support libraries and plugins
 add_subdirectory(mocks)
@@ -44,8 +46,8 @@ macro(unity8_parse_arguments)
 
     set(ld_paths)
     list(APPEND ld_paths
+        ${UNITY_MOCKPATH}/liblightdm
         ${UNITY_MOCKPATH}/libusermetrics
-        ${UNITY_MOCKPATH}/LightDM/IntegratedLightDM/liblightdm
     )
 
     string(REPLACE ";" ":" ld_library_path "${ld_paths}")
