@@ -286,8 +286,8 @@ Rectangle {
                     text: "Drag for left edge push"
                     width: parent.width
                     Component.onCompleted: {
-                        var launcherEdgeBarrier = testCase.findChild(shellContainer, "launcherEdgeBarrier");
-                        target = testCase.findChild(launcherEdgeBarrier, "edgeBarrierController");
+                        var launcher = testCase.findChild(shellContainer, "launcher");
+                        target = testCase.findChild(launcher, "edgeBarrierController");
                     }
                     onDragged: {
                         var launcher = testCase.findChild(shellContainer, "launcher");

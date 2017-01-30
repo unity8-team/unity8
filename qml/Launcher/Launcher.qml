@@ -463,7 +463,6 @@ FocusScope {
 
     EdgeBarrier {
         id: edgeBarrier
-        objectName: "launcherEdgeBarrier"
         edge: Qt.LeftEdge
         target: parent
         enabled: root.available
