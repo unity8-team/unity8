@@ -35,7 +35,6 @@ import Powerd 0.1
 import Wizard 0.1 as Wizard
 import Utils 0.1
 import Unity.Indicators 0.1 as Indicators
-import QtQuick.Layouts 1.1
 import Ubuntu.Components.ListItems 1.3
 
 import "../../qml"

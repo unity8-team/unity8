@@ -145,9 +145,7 @@ FocusScope {
     }
 
     function pushEdge(amount) {
-        print("pushing")
         if (root.state === "" || root.state == "visible" || root.state == "visibleTemporary") {
-            print("still pushing")
             edgeBarrier.push(amount);
         }
     }
