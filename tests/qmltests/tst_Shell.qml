@@ -209,17 +209,6 @@ Rectangle {
                         }
                     }
                     Button {
-                        text: "Show Launcher"
-                        activeFocusOnPress: false
-                        onClicked: {
-                            if (shellLoader.status !== Loader.Ready)
-                                return;
-
-                            var launcher = testCase.findChild(shellLoader.item, "launcher");
-                            launcher.state = "visible";
-                        }
-                    }
-                    Button {
                         text: "Print focused"
                         activeFocusOnPress: false
                         onClicked: {
