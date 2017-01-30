@@ -35,6 +35,8 @@ import Powerd 0.1
 import Wizard 0.1 as Wizard
 import Utils 0.1
 import Unity.Indicators 0.1 as Indicators
+import QtQuick.Layouts 1.1
+import Ubuntu.Components.ListItems 1.3
 
 import "../../qml"
 import "../../qml/Components"
@@ -128,7 +130,7 @@ Rectangle {
                 Shell {
                     id: __shell
                     objectName: "shell"
-                    usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
+                    usageScenario: usageScenarioSelector.values[usageScenarioSelector.selectedIndex]
                     nativeWidth: width
                     nativeHeight: height
                     orientation: shellLoader.shellOrientation
@@ -238,60 +240,71 @@ Rectangle {
                         }
                     }
                 }
-                Label {
-                    text: "LightDM mock mode"
-                }
 
-                ListItem.ItemSelector {
-                    anchors { left: parent.left; right: parent.right }
-                    activeFocusOnPress: false
-                    model: ["single", "single-passphrase", "single-pin", "full"]
+                ValueSelector {
+                    text: "LightDM:"
+                    values: ["single", "single-passphrase", "single-pin", "full"]
                     onSelectedIndexChanged: {
                         testCase.tearDown();
-                        LightDMController.userMode = model[selectedIndex];
+                        LightDMController.userMode = values[selectedIndex];
                         shellLoader.active = true;
                     }
                 }
-                Label {
-                    text: "Size"
-                }
 
-                ListItem.ItemSelector {
+                ValueSelector {
                     id: sizeSelector
-                    anchors { left: parent.left; right: parent.right }
-                    activeFocusOnPress: false
-                    model: ["phone", "tablet", "desktop"]
+                    text: "Size"
+                    values: ["phone", "tablet", "desktop"]
                     onSelectedIndexChanged: {
-                        shellLoader.state = model[selectedIndex];
+                        shellLoader.state = values[selectedIndex];
                     }
                 }
-                Label {
-                    text: "Usage scenario"
-                }
 
-                ListItem.ItemSelector {
+                ValueSelector {
                     id: usageScenarioSelector
-                    anchors { left: parent.left; right: parent.right }
-                    activeFocusOnPress: false
-                    model: ["phone", "tablet", "desktop"]
-                }
-                MouseTouchEmulationCheckbox {
-                    id: mouseEmulation
-                    checked: true
-                }
-                Label {
-                    text: "Ctrl key as"
+                    text: "Usage scenario"
+                    values: ["phone", "tablet", "desktop"]
+
                 }
 
-                ListItem.ItemSelector {
-                    id: ctrlModifier
-                    anchors { left: parent.left; right: parent.right }
-                    activeFocusOnPress: false
-                    model: ["Ctrl", "Alt", "Super"]
+                ValueSelector {
+                    text: "Ctrl key as"
+                    values: ["Ctrl", "Alt", "Super"]
                     onSelectedIndexChanged: {
                         var keyMapper = testCase.findChild(shellContainer, "physicalKeysMapper");
                         keyMapper.controlInsteadOfAlt = selectedIndex == 1;
                         keyMapper.controlInsteadOfSuper = selectedIndex == 2;
+                    }
+                }
+
+                MouseTouchEmulationCheckbox {
+                    id: mouseEmulation
+                    checked: true
+                }
+
+                EdgeBarrierControls {
+                    id: edgeBarrierControls
+                    text: "Drag for left edge push"
+                    width: parent.width
+                    Component.onCompleted: {
+                        var launcherEdgeBarrier = testCase.findChild(shellContainer, "launcherEdgeBarrier");
+                        target = testCase.findChild(launcherEdgeBarrier, "edgeBarrierController");
+                    }
+                    onDragged: {
+                        var launcher = testCase.findChild(shellContainer, "launcher");
+                        launcher.pushEdge(amount);
+                    }
+                }
+                EdgeBarrierControls {
+                    text: "Drag for right edge push"
+                    width: parent.width
+                    Component.onCompleted: {
+                        var stage = testCase.findChild(shellContainer, "stage");
+                        target = testCase.findChild(stage, "edgeBarrierController");
+                    }
+                    onDragged: {
+                        var stage = testCase.findChild(shellContainer, "stage");
+                        stage.pushRightEdge(amount);
                     }
                 }
 

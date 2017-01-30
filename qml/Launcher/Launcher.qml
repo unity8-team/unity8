@@ -145,7 +145,9 @@ FocusScope {
     }
 
     function pushEdge(amount) {
+        print("pushing")
         if (root.state === "" || root.state == "visible" || root.state == "visibleTemporary") {
+            print("still pushing")
             edgeBarrier.push(amount);
         }
     }
@@ -463,6 +465,7 @@ FocusScope {
 
     EdgeBarrier {
         id: edgeBarrier
+        objectName: "launcherEdgeBarrier"
         edge: Qt.LeftEdge
         target: parent
         enabled: root.available
