@@ -35,6 +35,8 @@ add_executable(launchermodeltestExec
     ${LAUNCHER_API_INCLUDEDIR}/unity/shell/launcher/LauncherModelInterface.h
     ${LAUNCHER_API_INCLUDEDIR}/unity/shell/launcher/QuickListModelInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/Mir.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h
     ${LAUNCHER_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
     )
 target_link_libraries(launchermodeltestExec

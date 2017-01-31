@@ -817,6 +817,7 @@ Rectangle {
                         divider.colorFrom: UbuntuColors.inkstone
                         divider.colorTo: UbuntuColors.inkstone
                         divider.visible: model.hasSeparator
+                        visible: model.visible
 
                         Label {
                             id: label
@@ -830,6 +831,7 @@ Rectangle {
                             fontSize: index == 0 ? "medium" : "small"
                             font.weight: index == 0 ? Font.Medium : Font.Light
                             color: model.clickable ? theme.palette.normal.backgroundText : theme.palette.disabled.backgroundText
+                            elide: Text.ElideRight
                         }
 
                         onClicked: {

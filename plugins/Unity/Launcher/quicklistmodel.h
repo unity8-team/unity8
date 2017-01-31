@@ -37,6 +37,10 @@ public:
 
     void appendAction(const QuickListEntry &entry);
 
+    void insertAction(int i, const QuickListEntry &entry);
+
+    void moveAction(int from, int to);
+
     /**
      * @brief Update an existing action
      * @param entry The new, updated entry
@@ -46,9 +50,11 @@ public:
      */
     void updateAction(const QuickListEntry &entry);
 
+    void removeAction(int index);
     void removeAction(const QuickListEntry &entry);
 
     QuickListEntry get(int index) const;
+    QuickListEntry get(QString const& actionId) const;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;

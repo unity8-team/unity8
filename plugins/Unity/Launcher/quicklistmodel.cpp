@@ -37,6 +37,20 @@ void QuickListModel::appendAction(const QuickListEntry &entry)
     endInsertRows();
 }
 
+void QuickListModel::insertAction(int i, const QuickListEntry &entry)
+{
+    beginInsertRows(QModelIndex(), i, i);
+    m_list.insert(i, entry);
+    endInsertRows();
+}
+
+void QuickListModel::moveAction(int from, int to)
+{
+    beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+    m_list.move(from, to);
+    endMoveRows();
+}
+
 void QuickListModel::updateAction(const QuickListEntry &entry)
 {
     for (int i = 0; i < m_list.count(); ++i) {
@@ -48,20 +62,33 @@ void QuickListModel::updateAction(const QuickListEntry &entry)
     }
 }
 
-void QuickListModel::removeAction(const QuickListEntry &entry)
+void QuickListModel::removeAction(int i)
 {
-    const int start = m_list.indexOf(entry);
-    if (start > -1) {
-        beginRemoveRows(QModelIndex(), start, start);
-        m_list.removeOne(entry);
-        Q_EMIT dataChanged(index(start), index(start));
+    if (i > -1) {
+        beginRemoveRows(QModelIndex(), i, i);
+        m_list.removeAt(i);
+        Q_EMIT dataChanged(index(i), index(i));
         endRemoveRows();
     }
+}
+
+void QuickListModel::removeAction(const QuickListEntry &entry)
+{
+    removeAction(m_list.indexOf(entry));
 }
 
 QuickListEntry QuickListModel::get(int index) const
 {
     return m_list.at(index);
+}
+
+QuickListEntry QuickListModel::get(QString const& actionId) const
+{
+    for (int i = 0; i < m_list.count(); ++i) {
+        if (m_list.at(i).actionId() == actionId) {
+            return m_list.at(i);
+        }
+    }
 }
 
 int QuickListModel::rowCount(const QModelIndex &index) const
@@ -81,6 +108,8 @@ QVariant QuickListModel::data(const QModelIndex &index, int role) const
         return m_list.at(index.row()).clickable();
     case RoleHasSeparator:
         return m_list.at(index.row()).hasSeparator();
+    case RoleVisible:
+        return m_list.at(index.row()).visible();
     }
     return QVariant();
 }

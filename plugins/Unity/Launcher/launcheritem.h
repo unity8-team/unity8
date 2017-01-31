@@ -24,9 +24,13 @@
 
 #include <unity/shell/launcher/LauncherItemInterface.h>
 
-class QuickListModel;
-
-using namespace unity::shell::launcher;
+namespace unity {
+namespace shell {
+namespace application {
+class MirSurfaceListInterface;
+}
+}
+}
 
 class LauncherItem: public LauncherItemInterface
 {
@@ -63,6 +67,12 @@ private:
     void setFocused(bool focused);
     void setAlerting(bool alerting);
     void setSurfaceCount(int surfaceCount);
+    void setSurfaceList(unity::shell::application::MirSurfaceListInterface *surfaces);
+
+    void surfaceListRowsInserted(const QModelIndex &parent, int first, int last);
+    void surfaceListRowsMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
+    void surfaceListRowsAboutToBeRemoved(const QModelIndex &parent, int first, int last);
+    void sanitizeWindowListSection();
 
 private:
     QString m_appId;
@@ -78,8 +88,10 @@ private:
     bool m_focused;
     bool m_alerting;
     int m_surfaceCount;
+    int m_sizeWindowList;
     QuickListModel *m_quickList;
     QuickListEntry m_quitAction;
+    unity::shell::application::MirSurfaceListInterface *m_surfaces;
 
     friend class LauncherModel;
     friend class AppDrawerModel;
