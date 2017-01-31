@@ -164,7 +164,7 @@ FocusScope {
         id: closeFocusedShortcut
         shortcut: Qt.AltModifier|Qt.Key_F4
         onTriggered: {
-            if (priv.focusedAppDelegate && !priv.focusedAppDelegate.isDash) {
+            if (priv.focusedAppDelegate) {
                 priv.focusedAppDelegate.close();
             }
         }
@@ -402,7 +402,7 @@ FocusScope {
     Binding {
         target: PanelState
         property: "closeButtonShown"
-        value: priv.focusedAppDelegate && priv.focusedAppDelegate.maximized && !priv.focusedAppDelegate.isDash
+        value: priv.focusedAppDelegate && priv.focusedAppDelegate.maximized
     }
 
     Component.onDestruction: {
@@ -415,7 +415,6 @@ FocusScope {
         model: root.applicationManager
         delegate: QtObject {
             property var stateBinding: Binding {
-                readonly property bool isDash: model.application ? model.application.appId == "unity8-dash" : false
                 target: model.application
                 property: "requestedState"
 
@@ -425,7 +424,6 @@ FocusScope {
                 //       in staged mode, when it switches to Windowed mode it will suddenly
                 //       resume all those apps at once. We might want to avoid that.
                 value: root.mode === "windowed"
-                       || isDash
                        || (!root.suspended && model.application && priv.focusedAppDelegate &&
                            (priv.focusedAppDelegate.appId === model.application.appId ||
                             priv.mainStageAppId === model.application.appId ||
@@ -1652,7 +1650,6 @@ FocusScope {
                     objectName: "dragArea"
                     anchors.fill: decoratedWindow
                     enabled: false
-                    closeable: !appDelegate.isDash
 
                     onClicked: {
                         spreadItem.highlightedIndex = index;
@@ -1696,7 +1693,7 @@ FocusScope {
                     objectName: "closeMouseArea"
                     anchors { left: parent.left; top: parent.top; leftMargin: -height / 2; topMargin: -height / 2 + spreadMaths.closeIconOffset }
                     readonly property var mousePos: hoverMouseArea.mapToItem(appDelegate, hoverMouseArea.mouseX, hoverMouseArea.mouseY)
-                    visible: !appDelegate.isDash && dragArea.distance == 0
+                    visible: dragArea.distance == 0
                              && index == spreadItem.highlightedIndex
                              && mousePos.y < (decoratedWindow.height / 3)
                              && mousePos.y > -units.gu(4)
