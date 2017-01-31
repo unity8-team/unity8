@@ -30,7 +30,8 @@ Column {
     property int contentSpacing
 
     // read API
-    readonly property string currentLanguage: langPlugin.languageCodes[langListView.currentIndex]
+    readonly property string currentLanguage: langPlugin.languageCodes[langListView.currentIndex] // locale code
+    readonly property var location: src.position.coordinate // QtPositioning.coordinate
 
     UbuntuLanguagePlugin {
         id: langPlugin
@@ -46,7 +47,7 @@ Column {
         id: geo
         autoUpdate: false
         plugin: osmPlugin
-        query: src.position.coordinate
+        query: src.position.coordinate.isValid ? src.position.coordinate : undefined
         onStatusChanged: {
             print("Reverse geocoder status changed:", status)
             if (status === GeocodeModel.Ready) {
