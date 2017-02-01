@@ -1,3 +1,10 @@
+unity8 (8.15+17.04.20170201-0ubuntu1) zesty; urgency=medium
+
+  [ Andrea Azzarone ]
+  * Add window list to quicklist. (LP: #1630297)
+
+ -- Marco Trevisan (Treviño) <mail@3v1n0.net>  Wed, 01 Feb 2017 15:30:32 +0000
+
 unity8 (8.15+17.04.20170124-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
