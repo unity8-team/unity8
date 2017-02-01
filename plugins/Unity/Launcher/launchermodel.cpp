@@ -22,6 +22,7 @@
 #include "ualwrapper.h"
 
 #include <unity/shell/application/ApplicationInfoInterface.h>
+#include <unity/shell/application/MirSurfaceInterface.h>
 #include <unity/shell/application/MirSurfaceListInterface.h>
 
 #include <QDesktopServices>
@@ -203,6 +204,17 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
         } else if (actionId == QLatin1String("stop_item")) { // Quit
             if (m_appManager) {
                 m_appManager->stopApplication(appId);
+            }
+        } else if (actionId.startsWith("window_item_")) {
+            QString surfaceId = actionId.right(actionId.size() - 12);
+            auto app = m_appManager->findApplication(appId);
+
+            for (int i = 0; app && i < app->surfaceList()->count(); ++i) {
+                auto surface = app->surfaceList()->get(i);
+                if (surface && surface->persistentId() == surfaceId) {
+                    surface->activate();
+                    break;
+                }
             }
         // Nope, we don't know this action, let the backend forward it to the application
         } else {
@@ -523,12 +535,14 @@ void LauncherModel::applicationAdded(const QModelIndex &parent, int row)
         }
 
         item->setRunning(true);
+        item->setSurfaceList(app->surfaceList());
     } else {
         LauncherItem *item = new LauncherItem(app->appId(), app->name(), app->icon().toString(), this);
         item->setRecent(true);
         item->setRunning(true);
         item->setFocused(app->focused());
         item->setSurfaceCount(app->surfaceCount());
+        item->setSurfaceList(app->surfaceList());
         beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
         m_list.append(item);
         endInsertRows();
@@ -583,6 +597,7 @@ void LauncherModel::applicationRemoved(const QModelIndex &parent, int row)
     } else {
         QVector<int> changedRoles = {RoleRunning};
         item->setRunning(false);
+        item->setSurfaceList(nullptr);
         if (item->focused()) {
             changedRoles << RoleFocused;
             item->setFocused(false);

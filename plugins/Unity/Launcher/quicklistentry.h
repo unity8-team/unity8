@@ -40,6 +40,9 @@ public:
     void setHasSeparator(bool hasSeparator);
     bool hasSeparator() const;
 
+    bool visible() const;
+    void setVisible(bool visible);
+
     bool operator==(const QuickListEntry & other);
 
 private:
@@ -47,6 +50,7 @@ private:
     QString m_text;
     QString m_icon;
     bool m_hasSeparator;
+    bool m_visible;
 };
 
 #endif // QUICKLISTENTRY

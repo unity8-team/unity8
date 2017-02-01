@@ -20,7 +20,14 @@
 #include "launcheritem.h"
 #include "quicklistmodel.h"
 
+#include <unity/shell/application/MirSurfaceInterface.h>
+#include <unity/shell/application/MirSurfaceListInterface.h>
+
 #include <libintl.h>
+
+namespace {
+const int WINDOWLIST_STARTING_INDEX = 1;
+}
 
 LauncherItem::LauncherItem(const QString &appId, const QString &name, const QString &icon, QObject *parent) :
     LauncherItemInterface(parent),
@@ -36,7 +43,9 @@ LauncherItem::LauncherItem(const QString &appId, const QString &name, const QStr
     m_focused(false),
     m_alerting(false),
     m_surfaceCount(0),
-    m_quickList(new QuickListModel(this))
+    m_sizeWindowList(0),
+    m_quickList(new QuickListModel(this)),
+    m_surfaces(nullptr)
 {
     Q_ASSERT(parent != nullptr);
     QuickListEntry nameAction;
@@ -229,6 +238,83 @@ void LauncherItem::setSurfaceCount(int surfaceCount)
     if (m_surfaceCount != surfaceCount) {
         m_surfaceCount = surfaceCount;
         Q_EMIT surfaceCountChanged(surfaceCount);
+    }
+}
+
+void LauncherItem::setSurfaceList(unity::shell::application::MirSurfaceListInterface *surfaces)
+{
+    if (m_surfaces == surfaces)
+        return;
+
+    if (m_surfaces) {
+        disconnect(m_surfaces, &QAbstractItemModel::rowsInserted, this, &LauncherItem::surfaceListRowsInserted);
+        disconnect(m_surfaces, &QAbstractItemModel::rowsRemoved,  this, &LauncherItem::surfaceListRowsAboutToBeRemoved);
+        disconnect(m_surfaces, &QAbstractItemModel::rowsMoved, this, &LauncherItem::surfaceListRowsMoved);
+    }
+
+    m_surfaces = surfaces;
+
+    if (m_surfaces) {
+        connect(m_surfaces, &QAbstractItemModel::rowsInserted, this, &LauncherItem::surfaceListRowsInserted);
+        connect(m_surfaces, &QAbstractItemModel::rowsAboutToBeRemoved,  this, &LauncherItem::surfaceListRowsAboutToBeRemoved);
+        connect(m_surfaces, &QAbstractItemModel::rowsMoved, this, &LauncherItem::surfaceListRowsMoved);
+    }
+}
+
+void LauncherItem::surfaceListRowsInserted(const QModelIndex &parent, int first, int last)
+{
+    for (int i=first; i <= last; ++i) {
+        auto surface = m_surfaces->get(i);
+
+        QuickListEntry windowAction;
+        windowAction.setActionId(QStringLiteral("window_item_") + surface->persistentId());
+        windowAction.setText(surface->name());
+
+        connect(surface, &unity::shell::application::MirSurfaceInterface::nameChanged, this, [this, windowAction] (QString const& name) {
+            auto action = m_quickList->get(windowAction.actionId());
+            action.setText(name);
+            m_quickList->updateAction(action);
+        });
+
+        m_quickList->insertAction(WINDOWLIST_STARTING_INDEX+i, windowAction);
+        ++m_sizeWindowList;
+    }
+
+    sanitizeWindowListSection();
+}
+
+void LauncherItem::surfaceListRowsAboutToBeRemoved(const QModelIndex &parent, int first, int last)
+{
+    for (int i=first; i <= last; ++i) {
+        m_quickList->removeAction(WINDOWLIST_STARTING_INDEX+i);
+        --m_sizeWindowList;
+    }
+
+    sanitizeWindowListSection();
+}
+
+
+void LauncherItem::surfaceListRowsMoved(const QModelIndex &, int start, int end, const QModelIndex &, int row)
+{
+    for (int i=start; i <= end; ++i)
+        m_quickList->moveAction(WINDOWLIST_STARTING_INDEX + i, WINDOWLIST_STARTING_INDEX + row + i - start);
+
+    sanitizeWindowListSection();
+}
+
+void LauncherItem::sanitizeWindowListSection()
+{
+    for (int i=0; i < m_sizeWindowList; ++i) {
+        if (m_sizeWindowList <= 1) {
+            auto entry = m_quickList->get(i+WINDOWLIST_STARTING_INDEX);
+            entry.setVisible(false);
+            m_quickList->updateAction(entry);
+        } else {
+            auto entry = m_quickList->get(i+WINDOWLIST_STARTING_INDEX);
+            entry.setVisible(true);
+            entry.setHasSeparator(i == m_sizeWindowList - 1);
+            m_quickList->updateAction(entry);
+        }
     }
 }
 

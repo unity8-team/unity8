@@ -20,6 +20,7 @@
 
 QuickListEntry::QuickListEntry()
     : m_hasSeparator(false)
+    , m_visible(true)
 {
 }
 
@@ -66,6 +67,16 @@ void QuickListEntry::setHasSeparator(bool hasSeparator)
 bool QuickListEntry::hasSeparator() const
 {
     return m_hasSeparator;
+}
+
+bool QuickListEntry::visible() const
+{
+    return m_visible;
+}
+
+void QuickListEntry::setVisible(bool visible)
+{
+    m_visible = visible;
 }
 
 bool QuickListEntry::operator==(const QuickListEntry &other)
