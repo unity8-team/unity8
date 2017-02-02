@@ -263,8 +263,11 @@ void DBusUnitySessionService::Logout()
 
 void DBusUnitySessionService::EndSession()
 {
-    const QDBusMessage msg = QDBusMessage::createMethodCall(LOGIN1_SERVICE, d->logindSessionPath, LOGIN1_SESSION_IFACE, QStringLiteral("Terminate"));
-    QDBusConnection::systemBus().asyncCall(msg);
+    const QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("com.ubuntu.Upstart"),
+                                                            QStringLiteral("/com/ubuntu/Upstart"),
+                                                            QStringLiteral("com.ubuntu.Upstart0_6"),
+                                                            QStringLiteral("EndSession"));
+    QDBusConnection::sessionBus().asyncCall(msg);
 }
 
 bool DBusUnitySessionService::CanHibernate() const
