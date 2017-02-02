@@ -34,14 +34,17 @@ MouseArea {
 
     // to be set from outside, useful mostly for testing purposes
     property var unitySessionService: DBusUnitySessionService
-    property var closeAllApps: function() {
-        while (true) {
-            var app = ApplicationManager.get(0);
-            if (app === null) {
-                break;
-            }
+    property var closeAllApps: function(callback) {
+        for (var i = ApplicationManager.count-1; i >= 0; i--) {
+            var app = ApplicationManager.get(i);
+            if (!app)
+                continue;
             ApplicationManager.stopApplication(app.appId);
         }
+
+        ApplicationManager.emptyChanged.connect(function() {
+            if (ApplicationManager.empty) callback();
+        });
     }
     property string usageScenario
     property size screenSize: Qt.size(Screen.width, Screen.height)
@@ -222,8 +225,7 @@ MouseArea {
                 focus: true
                 text: i18n.tr("Yes")
                 onClicked: {
-                    root.closeAllApps();
-                    unitySessionService.reboot();
+                    root.closeAllApps(unitySessionService.reboot);
                     rebootDialog.hide();
                 }
                 color: theme.palette.normal.negative
@@ -243,9 +245,8 @@ MouseArea {
                 focus: true
                 text: i18n.ctr("Button: Power off the system", "Power off")
                 onClicked: {
-                    root.closeAllApps();
+                    root.closeAllApps(root.powerOffClicked);
                     powerDialog.hide();
-                    root.powerOffClicked();
                 }
                 color: theme.palette.normal.negative
                 Component.onCompleted: if (root.hasKeyboard) forceActiveFocus(Qt.TabFocusReason)
@@ -254,8 +255,7 @@ MouseArea {
                 width: parent.width
                 text: i18n.ctr("Button: Restart the system", "Restart")
                 onClicked: {
-                    root.closeAllApps();
-                    unitySessionService.reboot();
+                    root.closeAllApps(unitySessionService.reboot);
                     powerDialog.hide();
                 }
             }
@@ -296,9 +296,11 @@ MouseArea {
         }
 
         onLogoutReady: {
-            root.closeAllApps();
-            Qt.quit();
-            unitySessionService.endSession();
+            function callback() {
+                Qt.quit();
+                unitySessionService.endSession();
+            }
+            root.closeAllApps(callback);
         }
     }
 }
