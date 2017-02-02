@@ -35,16 +35,17 @@ MouseArea {
     // to be set from outside, useful mostly for testing purposes
     property var unitySessionService: DBusUnitySessionService
     property var closeAllApps: function(callback) {
+        ApplicationManager.countChanged.connect(function() {
+            if (ApplicationManager.empty || (ApplicationManager.count === 1 && ApplicationManager.get(0).appId === "unity8-dash"))
+                callback();
+        });
+
         for (var i = ApplicationManager.count-1; i >= 0; i--) {
             var app = ApplicationManager.get(i);
             if (!app)
                 continue;
             ApplicationManager.stopApplication(app.appId);
         }
-
-        ApplicationManager.emptyChanged.connect(function() {
-            if (ApplicationManager.empty) callback();
-        });
     }
     property string usageScenario
     property size screenSize: Qt.size(Screen.width, Screen.height)
