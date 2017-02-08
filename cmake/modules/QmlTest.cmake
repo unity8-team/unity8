@@ -200,7 +200,7 @@ function(add_executable_test COMPONENT_NAME TARGET)
 
     if(TARGET xvfb-run)
         if (TARGET recordmydesktop)
-            set(record_wrapper ${CMAKE_SOURCE_DIR}/tools/record.py)
+            set(record_wrapper ${PROJECT_BINARY_DIR}/tools/record.py)
             add_qmltest_target(rxvfbtest${COMPONENT_NAME} ${TARGET}
                 COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${record_wrapper} ${qmltest_command}
                 ${depends}

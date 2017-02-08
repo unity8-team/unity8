@@ -12,3 +12,5 @@ install(TARGETS ${SCOPE_TOOL}
     )
 
 install(FILES unlock-device DESTINATION ${SHELL_APP_DIR})
+
+configure_file(record.py ${PROJECT_BINARY_DIR}/tools/record.py COPYONLY)
