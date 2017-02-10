@@ -13,4 +13,4 @@ install(TARGETS ${SCOPE_TOOL}
 
 install(FILES unlock-device DESTINATION ${SHELL_APP_DIR})
 
-configure_file(record.py ${PROJECT_BINARY_DIR}/tools/record.py COPYONLY)
+install(FILES record_wrapper.py DESTINATION "${SHELL_PRIVATE_LIBDIR}/tests/scripts")
