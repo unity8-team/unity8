@@ -25,6 +25,7 @@ Item {
 
     // read-write API
     property bool editMode: false
+    property bool shouldClose: false
 
     // readonly API
     readonly property int visualIndex: index
@@ -40,6 +41,7 @@ Item {
 
     signal itemDragging(bool dragging, var dragItem)
     signal close()
+    signal undoClose()
 
     Rectangle {
         anchors.fill: parent
@@ -98,16 +100,16 @@ Item {
         visible: opacity > 0
         enabled: editMode
         opacity: enabled ? 1 : 0
-        iconName: "close"
+        iconName: root.shouldClose ? "add" : "close"
         outline: false
         hoverEnabled: true
-        color: theme.palette.normal.negative
+        color: root.shouldClose ? theme.palette.normal.positive : theme.palette.normal.negative
         anchors.horizontalCenter: parent.left
         anchors.horizontalCenterOffset: width/4
         anchors.verticalCenter: parent.top
         anchors.verticalCenterOffset: height/4
 
-        onClicked: close();
+        onClicked: root.shouldClose ? undoClose() : close()
 
         Behavior on opacity { UbuntuNumberAnimation {} }
     }

@@ -25,10 +25,14 @@ ScrollView {
     id: contents
     objectName: "DashboardViewContents"
 
+    // write API
     property alias model: journal.model
     property bool editMode: false
     property int columnCount: 3
     property int contentSpacing
+
+    // read-write API
+    property var indexesToClose: []
 
     flickableItem {
         flickableDirection: Flickable.VerticalFlick
@@ -42,7 +46,7 @@ ScrollView {
         id: autoscroller
         flickable: contents.flickableItem
     }
-    
+
     DropArea {
         id: dropArea
         anchors.fill: parent
@@ -67,11 +71,24 @@ ScrollView {
             
             if (delegateAtCenter) {
                 journal.model.move(fromIndex, toIndex, 1);
+
+                Array.prototype.move = function (old_index, new_index) {
+                    if (new_index >= this.length) {
+                        var k = new_index - this.length;
+                        while ((k--) + 1) {
+                            this.push(undefined);
+                        }
+                    }
+                    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+                    return this; // for testing purposes
+                };
+                indexesToClose.move(fromIndex, toIndex);
+
                 drop.acceptProposedAction();
             }
         }
     }
-    
+
     ResponsiveVerticalJournal {
         id: journal
         width: contents.width
@@ -79,16 +96,24 @@ ScrollView {
         rowSpacing: contents.contentSpacing
         minimumColumnSpacing: contents.contentSpacing
         columnWidth: (contents.width - root.leftMargin*2 - contents.verticalScrollbar.width) / contents.columnCount
-        
+
         delegate: DashboardDelegate {
             editMode: contents.editMode
+            shouldClose: indexesToClose.indexOf(index) !== -1
             width: parent.columnWidth
             height: model.height
-            
+
             onClose: {
-                print("Closing index:", index)
-                contents.model.remove(index, 1);
+                print("Closing index:", index);
+                indexesToClose.push(index);
+                shouldClose = true;
             }
+            onUndoClose: {
+                print("Undoing close:", index);
+                indexesToClose.splice(indexesToClose.indexOf(index), 1);
+                shouldClose = false;
+            }
+
             onItemDragging: autoscroller.autoscroll(dragging, dragItem)
         }
     }

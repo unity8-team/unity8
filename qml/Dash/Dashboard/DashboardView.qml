@@ -145,7 +145,25 @@ StyledItem {
             name: "edit"
             extend: "dashboard"
             when: root.editMode
-            PropertyChanges { target: btnEditApply; text: i18n.tr("Apply changes"); onClicked: root.editMode = false; }
+            PropertyChanges { target: btnEditApply; text: i18n.tr("Apply changes");
+                onClicked: {
+                    var toClose = loader.item.indexesToClose;
+                    print("!!! To close:", toClose);
+                    if (toClose.length > 0) {
+                        toClose.sort(function(a, b) { // sort numerically in descending order
+                            return b - a;
+                        });
+                        print("!!! To close sorted:", toClose);
+
+                        toClose.forEach(function(index) {
+                            print("Closing", index);
+                            loader.item.model.remove(index, 1);
+                        });
+                    }
+                    root.editMode = false;
+                    loader.item.indexesToClose = [];
+                }
+            }
             PropertyChanges { target: btnSources; visible: true }
         }
     ]
