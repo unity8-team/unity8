@@ -13,4 +13,8 @@ install(TARGETS ${SCOPE_TOOL}
 
 install(FILES unlock-device DESTINATION ${SHELL_APP_DIR})
 
-install(FILES record_wrapper.py DESTINATION "${SHELL_PRIVATE_LIBDIR}/tests/scripts")
+install(FILES record_wrapper.py
+     PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE
+                 GROUP_EXECUTE GROUP_READ
+                 WORLD_EXECUTE WORLD_READ
+     DESTINATION "${SHELL_PRIVATE_LIBDIR}/tests/scripts")
