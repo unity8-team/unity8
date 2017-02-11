@@ -1378,7 +1378,7 @@ Rectangle {
             var tooltipShape = findChild(launcher, "tooltipShape");
 
             // Initial state
-            tryCompare(tooltipShape, "visible", false);
+            tryCompare(tooltipShape, "visible", true);
             tryCompare(tooltipShape, "opacity", .0);
 
             // Move the mouse on the launcher icon
