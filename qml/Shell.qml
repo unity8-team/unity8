@@ -71,7 +71,6 @@ StyledItem {
     property bool hasKeyboard: false
     onHasKeyboardChanged: {
         if (!hasKeyboard) {
-            print("!!! Keyboard gone, should enable OSK")
             oskPreferred = true;
         }
     }
@@ -242,7 +241,6 @@ StyledItem {
         Keys.onPressed: {
             physicalKeysMapper.onKeyPressed(event, lastInputTimestamp);
             if (hasKeyboard) {
-                print("!!! Typed something, should hide OSK")
                 shell.oskPreferred = false; // only disable/hide OSK when it's coming from a hardware keyboard, not e.g. a power button press
             }
         }
@@ -258,7 +256,7 @@ StyledItem {
                 ApplicationManager.requestFocusApplication("unity8-dash");
             }
         }
-        onTouchBegun: { cursor.opacity = 0; print("!!! Touched screen, should enable OSK"); shell.oskPreferred = true; }
+        onTouchBegun: { cursor.opacity = 0; shell.oskPreferred = true; }
         onTouchEnded: {
             // move the (hidden) cursor to the last known touch position
             var mappedCoords = mapFromItem(null, pos.x, pos.y);

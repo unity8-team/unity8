@@ -342,12 +342,9 @@ Rectangle {
                     activeFocusOnPress: false
                     onCheckedChanged: {
                         var inputMethod = testCase.inputMethodSurface();
-                        print("IM:", inputMethod)
                         if (inputMethod.visible) {
-                            print("!!! Hide it")
                             inputMethod.requestState(Mir.HiddenState);
                         } else {
-                            print("!!! Show it")
                             inputMethod.requestState(Mir.RestoredState);
                         }
                     }

@@ -269,7 +269,6 @@ Item {
         hasMouse: pointerInputDevices > 0
         hasKeyboard: keyboardsModel.count > 0
         oskEnabled: oskPreferred || forceOSKEnabled
-        onOskEnabledChanged: print("!!! OSK ENABLED:", oskEnabled)
 
         usageScenario: {
             if (unity8Settings.usageMode === "Windowed") {
