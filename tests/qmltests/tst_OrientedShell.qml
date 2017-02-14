@@ -341,11 +341,14 @@ Rectangle {
                     checked: false
                     activeFocusOnPress: false
                     onCheckedChanged: {
-                        var surface = SurfaceManager.inputMethodSurface;
-                        if (checked) {
-                            surface.setState(Mir.RestoredState);
+                        var inputMethod = testCase.inputMethodSurface();
+                        print("IM:", inputMethod)
+                        if (inputMethod.visible) {
+                            print("!!! Hide it")
+                            inputMethod.requestState(Mir.HiddenState);
                         } else {
-                            surface.setState(Mir.MinimizedState);
+                            print("!!! Show it")
+                            inputMethod.requestState(Mir.RestoredState);
                         }
                     }
                 }
@@ -507,6 +510,18 @@ Rectangle {
             topLevelSurfaceList = null;
 
             tearDown();
+        }
+
+        function inputMethodSurface() {
+            var surfaceManager = findInvisibleChild(orientedShellLoader.item, "surfaceManager");
+            verify(surfaceManager);
+            surfaceManager.createInputMethodSurface();
+
+            var tlsl = testCase.findInvisibleChild(orientedShellLoader.item, "topLevelSurfaceList");
+            verify(tlsl);
+
+            tryCompareFunction(function() { return tlsl.inputMethodSurface !== null }, true);
+            return tlsl.inputMethodSurface;
         }
 
         function test_appSupportingOnlyPrimaryOrientationMakesPhoneShellStayPut() {

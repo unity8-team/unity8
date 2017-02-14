@@ -69,6 +69,12 @@ StyledItem {
     }
     property bool hasMouse: false
     property bool hasKeyboard: false
+    onHasKeyboardChanged: {
+        if (!hasKeyboard) {
+            print("!!! Keyboard gone, should enable OSK")
+            oskPreferred = true;
+        }
+    }
 
     // to be read from outside
     readonly property int mainAppWindowOrientationAngle: stage.mainAppWindowOrientationAngle
@@ -78,6 +84,8 @@ StyledItem {
             && (!greeter || !greeter.animating)
 
     readonly property bool showingGreeter: greeter && greeter.shown
+
+    property bool oskPreferred: !hasKeyboard
 
     property bool startingUp: true
     Timer { id: finishStartUpTimer; interval: 500; onTriggered: startingUp = false }
@@ -231,7 +239,13 @@ StyledItem {
 
     WindowInputFilter {
         id: inputFilter
-        Keys.onPressed: physicalKeysMapper.onKeyPressed(event, lastInputTimestamp);
+        Keys.onPressed: {
+            physicalKeysMapper.onKeyPressed(event, lastInputTimestamp);
+            if (hasKeyboard) {
+                print("!!! Typed something, should hide OSK")
+                shell.oskPreferred = false; // only disable/hide OSK when it's coming from a hardware keyboard, not e.g. a power button press
+            }
+        }
         Keys.onReleased: physicalKeysMapper.onKeyReleased(event, lastInputTimestamp);
     }
 
@@ -244,7 +258,7 @@ StyledItem {
                 ApplicationManager.requestFocusApplication("unity8-dash");
             }
         }
-        onTouchBegun: { cursor.opacity = 0; }
+        onTouchBegun: { cursor.opacity = 0; print("!!! Touched screen, should enable OSK"); shell.oskPreferred = true; }
         onTouchEnded: {
             // move the (hidden) cursor to the last known touch position
             var mappedCoords = mapFromItem(null, pos.x, pos.y);
