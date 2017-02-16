@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013, 2015 Canonical, Ltd.
+ * Copyright (C) 2012, 2013, 2015, 2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,6 @@
 #include "plugin.h"
 #include "testutil.h"
 
-#ifdef UNITY8_ENABLE_TOUCH_EMULATION
-#include <MouseTouchAdaptor.h>
-#endif
-
 #include "TouchEventSequenceWrapper.h"
 
 #include <qqml.h>
@@ -31,13 +27,6 @@ QObject *testutil_provider(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine 
 {
     return new TestUtil();
 }
-
-#ifdef UNITY8_ENABLE_TOUCH_EMULATION
-QObject *getMouseTouchAdaptorQMLSingleton(QQmlEngine* /* engine */, QJSEngine* /* scriptEngine */)
-{
-    return MouseTouchAdaptor::instance();
-}
-#endif
 
 } // anonymous namespace
 
@@ -49,11 +38,4 @@ void UnityTestPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<TestUtil>(uri, 0, 1, "Util", testutil_provider);
     qmlRegisterUncreatableType<TouchEventSequenceWrapper>(uri, 0, 1, "TouchEventSequence",
             "You cannot directly create a TouchEventSequence object.");
-
-    #ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    // Ensure the instance gets created
-    MouseTouchAdaptor::instance();
-    qmlRegisterSingletonType<MouseTouchAdaptor>(uri, 0, 1, "MouseTouchAdaptor",
-                                                getMouseTouchAdaptorQMLSingleton);
-    #endif
 }

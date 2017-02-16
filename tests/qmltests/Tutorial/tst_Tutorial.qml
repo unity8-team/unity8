@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Canonical, Ltd.
+ * Copyright (C) 2013-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -328,7 +328,7 @@ Rectangle {
         function ensureInputMethodSurface() {
             var surfaceManager = findInvisibleChild(shell, "surfaceManager");
             verify(surfaceManager);
-            surfaceManager.createInputMethodSurface();
+            MirTest.createInputMethodSurface();
 
             tryCompareFunction(function() { return topLevelSurfaceList.inputMethodSurface !== null }, true);
         }

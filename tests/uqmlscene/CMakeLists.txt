@@ -5,7 +5,6 @@ add_executable(uqmlscene
     )
 
 qt5_use_modules(uqmlscene Qml Quick Test DBus)
-pkg_check_modules(XCB REQUIRED xcb)
 
 include_directories(
     SYSTEM
@@ -20,14 +19,9 @@ include_directories(
     ${libunity8-private_SOURCE_DIR}
 )
 
-if (NOT "${XCB_INCLUDE_DIRS}" STREQUAL "")
-    set_target_properties(uqmlscene PROPERTIES INCLUDE_DIRECTORIES ${XCB_INCLUDE_DIRS})
-endif()
-
 target_link_libraries(uqmlscene
     ${Qt5Qml_LIBRARIES}
     ${Qt5Quick_LIBRARIES}
-    ${XCB_LDFLAGS}
     UbuntuGestures
     unity8-private
     )

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Canonical, Ltd.
+ * Copyright (C) 2015-2017 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -47,7 +47,7 @@ public:
     void setTopBoundaryOffset(int topBoundaryOffset);
 
 public Q_SLOTS:
-    void handleMouseEvent(ulong timestamp, QPointF movement, Qt::MouseButtons buttons,
+    void handleMouseEvent(ulong timestamp, QPointF movement, QPointF position, Qt::MouseButtons buttons,
             Qt::KeyboardModifiers modifiers) override;
     void handleWheelEvent(ulong timestamp, QPoint angleDelta, Qt::KeyboardModifiers modifiers) override;
 
@@ -67,6 +67,7 @@ Q_SIGNALS:
 
 protected:
     void itemChange(ItemChange change, const ItemChangeData &value) override;
+    void applyMouseMovement(ulong timestamp, QPointF movement, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
 private Q_SLOTS:
     void registerScreen(QScreen *screen);

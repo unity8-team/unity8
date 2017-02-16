@@ -26,7 +26,7 @@ Column {
 
     function createSurface() {
         if (d.application) {
-            d.application.createSurface();
+            MirTest.createSurface(d.application.appId);
         }
     }
 
@@ -149,7 +149,7 @@ Column {
             width: height
             height: promptsLabel.height * 0.7
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: d.application.createPromptSurface()
+            onClicked: MirTest.createPromptSurface(d.application.appId)
             Label { text: "➕"; anchors.centerIn: parent }
         }
         MouseArea {
@@ -178,7 +178,7 @@ Column {
                 anchors.verticalCenter: parent.verticalCenter
                 enabled: model.surface.live
                 visible: enabled
-                onClicked: model.surface.setLive(false);
+                onClicked: d.application.killSurface(model.surface);
                 Label {
                     text: "⛒"
                     anchors.centerIn: parent

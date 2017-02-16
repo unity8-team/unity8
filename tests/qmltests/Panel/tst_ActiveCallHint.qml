@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Canonical Ltd.
+ * Copyright 2014,2017 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,10 @@ Item {
             callHint.labelSwitchInterval = 300;
             call1.elapsedTime = 0;
 
-            ApplicationManager.stopApplication("dialer-app");
+        }
+
+        function cleanup() {
+            killApps();
         }
 
         function test_activeHint_data() {
@@ -114,13 +117,6 @@ Item {
             callManager.callIndicatorVisible = data.visible;
 
             compare(callHint.active, data.expected, "Call hint should be active when callIndicatorVisible=true");
-
-            if (data.dialer) {
-                // clean up
-                ApplicationManager.stopApplication("dialer-app");
-                ApplicationManager.stopApplication("unity8-dash");
-                tryCompare(ApplicationManager, "count", 0);
-            }
         }
 
         function test_currentCall_data() {
