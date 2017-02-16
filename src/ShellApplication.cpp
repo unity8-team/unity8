@@ -32,15 +32,33 @@
 #include "UnityCommandLineParser.h"
 #include "DebuggingController.h"
 
-ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
-    : QGuiApplication(argc, argv)
+#include <qtmir/displayconfigurationstorage.h>
+
+#include <QDebug>
+
+struct DemoDisplayConfigurationStorage : miral::DisplayConfigurationStorage
+{
+    void save(const miral::DisplayId&, const miral::DisplayConfigurationOptions&) override
+    {
+        qDebug() << "OVERRIDE miral::DisplayConfigurationStorage::save";
+    }
+
+    bool load(const miral::DisplayId&, miral::DisplayConfigurationOptions&) const override
+    {
+        qDebug() << "OVERRIDE miral::DisplayConfigurationStorage::load";
+        return false;
+    }
+};
+
+ShellApplication::ShellApplication(int & argc, char ** argv)
+    : qtmir::GuiServerApplication(argc, argv, {})
 {
     setApplicationName(QStringLiteral("unity8"));
     setOrganizationName(QStringLiteral("Canonical"));
 
     connect(this, &QGuiApplication::screenAdded, this, &ShellApplication::onScreenAdded);
 
-    setupQmlEngine(isMirServer);
+    setupQmlEngine();
 
     UnityCommandLineParser parser(*this);
 
@@ -102,7 +120,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     //
     // TODO: Support an arbitrary number of screens and different policies
     //       (eg cloned desktop, several desktops, etc)
-    if (isMirServer && screens().count() == 2) {
+    if (screens().count() == 2) {
         m_shellView->setScreen(screens().at(1));
         m_qmlArgs.setDeviceName(QStringLiteral("desktop"));
 
@@ -122,7 +140,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
         if (!QProcess::startDetached("initctl emit --no-wait unity8-greeter-started")) {
             qDebug() << "Unable to send unity8-greeter-started event to Upstart";
         }
-    } else if (isMirServer || parser.hasFullscreen()) {
+    } else if (parser.hasFullscreen()) {
         m_shellView->showFullScreen();
     } else {
         m_shellView->show();
@@ -153,16 +171,13 @@ void ShellApplication::destroyResources()
     m_qmlEngine = nullptr;
 }
 
-void ShellApplication::setupQmlEngine(bool isMirServer)
+void ShellApplication::setupQmlEngine()
 {
     m_qmlEngine = new QQmlEngine(this);
 
     m_qmlEngine->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
 
     prependImportPaths(m_qmlEngine, ::overrideImportPaths());
-    if (!isMirServer) {
-        prependImportPaths(m_qmlEngine, ::nonMirImportPaths());
-    }
     appendImportPaths(m_qmlEngine, ::fallbackImportPaths());
 
     m_qmlEngine->setNetworkAccessManagerFactory(new CachingNetworkManagerFactory);

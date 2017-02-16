@@ -1,12 +1,14 @@
 add_subdirectory(libunity8-private)
 
 pkg_check_modules(CONNECTIVITY REQUIRED connectivity-qt1)
+pkg_check_modules(QTMIRSERVER REQUIRED qtmirserver>=0.6.0)
 
 include_directories(
     SYSTEM
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
     ${CONNECTIVITY_INCLUDE_DIRS}
+    ${QTMIRSERVER_INCLUDE_DIRS}
 )
 
 include_directories(
@@ -47,7 +49,7 @@ qt5_use_modules(${SHELL_APP} DBus Gui Qml Quick Test)
 if (NOT "${ANDROID_PROPERTIES_INCLUDE_DIRS}" STREQUAL "")
     set_target_properties(${SHELL_APP} PROPERTIES INCLUDE_DIRECTORIES ${ANDROID_PROPERTIES_INCLUDE_DIRS})
 endif()
-target_link_libraries(${SHELL_APP} ${ANDROID_PROPERTIES_LDFLAGS} UbuntuGestures connectivity-qt1 unity8-private)
+target_link_libraries(${SHELL_APP} ${ANDROID_PROPERTIES_LDFLAGS} UbuntuGestures connectivity-qt1 unity8-private qtmirserver)
 
 if (ENABLE_TOUCH_EMULATION)
     target_link_libraries(${SHELL_APP} ${MOUSETOUCHADAPTOR_LIBS_LDFLAGS})

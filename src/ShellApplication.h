@@ -31,11 +31,13 @@
 #include "SecondaryWindow.h"
 #include "ShellView.h"
 
-class ShellApplication : public QGuiApplication
+#include <qtmir/guiserverapplication.h>
+
+class ShellApplication : public qtmir::GuiServerApplication
 {
     Q_OBJECT
 public:
-    ShellApplication(int & argc, char ** argv, bool isMirServer);
+    ShellApplication(int & argc, char ** argv);
     virtual ~ShellApplication();
 
     void destroyResources();
@@ -47,7 +49,7 @@ private Q_SLOTS:
     void onScreenAdded(QScreen*);
 
 private:
-    void setupQmlEngine(bool isMirServer);
+    void setupQmlEngine();
     QString m_deviceName;
     ApplicationArguments m_qmlArgs;
     ShellView *m_shellView{nullptr};
