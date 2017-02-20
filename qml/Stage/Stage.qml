@@ -978,7 +978,6 @@ FocusScope {
                 visible: (
                           !visuallyMinimized
                           && !greeter.fullyShown
-                          && (priv.foregroundMaximizedAppDelegate === null || priv.foregroundMaximizedAppDelegate.normalZ <= z)
                          )
                          || appDelegate.fullscreen
                          || focusAnimation.running || rightEdgeFocusAnimation.running || hidingAnimation.running
