@@ -203,12 +203,19 @@ Rectangle {
                 unloadWindow();
             }
             if (root.fakeApplication) {
-                ApplicationManager.stopApplication(root.fakeApplication.appId);
+                stopApplication(root.fakeApplication.appId);
             }
 
             root.fakeApplication = ApplicationManager.startApplication(appId);
+
             loader.active = true;
             tryCompare(loader, "status", Loader.Ready);
+
+            // Wait until application has created its surface and ApplicationWindow is diplaying it
+            var appWindowStates = findInvisibleChild(decoratedWindow, "applicationWindowStateGroup");
+            verify(appWindowStates);
+            tryCompare(appWindowStates, "state", "surface");
+            waitUntilTransitionsEnd(appWindowStates);
         }
 
         function unloadWindow() {
