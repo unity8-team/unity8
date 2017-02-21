@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Canonical, Ltd.
+ * Copyright (C) 2015-2017 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -33,9 +33,11 @@ MousePointer::MousePointer(QQuickItem *parent)
 {
 }
 
-void MousePointer::handleMouseEvent(ulong timestamp, QPointF movement, Qt::MouseButtons buttons,
+void MousePointer::handleMouseEvent(ulong timestamp, QPointF movement, QPointF position, Qt::MouseButtons buttons,
         Qt::KeyboardModifiers modifiers)
 {
+    Q_UNUSED(position);
+
     if (!parentItem()) {
         return;
     }
@@ -44,6 +46,11 @@ void MousePointer::handleMouseEvent(ulong timestamp, QPointF movement, Qt::Mouse
         Q_EMIT mouseMoved();
     }
 
+    applyMouseMovement(timestamp, movement, buttons, modifiers);
+}
+
+void MousePointer::applyMouseMovement(ulong timestamp, QPointF movement, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers)
+{
     m_accumulatedMovement += movement;
     // don't apply the fractional part
     QPointF appliedMovement(int(m_accumulatedMovement.x()), int(m_accumulatedMovement.y()));

@@ -32,9 +32,6 @@
 
 #include <paths.h>
 #include "../qmldebuggerutils.h"
-#ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    #include "../MouseTouchAdaptor.h"
-#endif
 #include "../CachingNetworkManagerFactory.h"
 #include "../UnixSignalHandler.h"
 
@@ -50,10 +47,6 @@ int main(int argc, const char *argv[])
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Description: Unity 8 Shell Dash"));
     parser.addHelpOption();
-
-    QCommandLineOption mousetouchOption(QStringLiteral("mousetouch"),
-        QStringLiteral("Allow the mouse to provide touch input"));
-    parser.addOption(mousetouchOption);
 
     QCommandLineOption windowGeometryOption(QStringList() << QStringLiteral("windowgeometry"),
         QStringLiteral("Specify the window geometry as [<width>x<height>]"), QStringLiteral("windowgeometry"), QStringLiteral("1"));
@@ -92,15 +85,6 @@ int main(int argc, const char *argv[])
     bindtextdomain("unity8", translationDirectory().toUtf8().data());
     textdomain("unity8");
 
-    #ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    // You will need this if you want to interact with touch-only components using a mouse
-    // Needed only when manually testing on a desktop.
-    MouseTouchAdaptor *mouseTouchAdaptor = 0;
-    if (parser.isSet(mousetouchOption)) {
-        mouseTouchAdaptor = MouseTouchAdaptor::instance();
-    }
-    #endif
-
     QQmlApplicationEngine *engine = new QQmlApplicationEngine(application);
 
     int initialWidth = -1;
@@ -135,10 +119,6 @@ int main(int argc, const char *argv[])
     int result = application->exec();
 
     delete engine;
-
-    #ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    delete mouseTouchAdaptor;
-    #endif
 
     delete application;
 

@@ -2,6 +2,7 @@ Tests: qmluitests.sh
 Restrictions: allow-stderr
 Depends: dpkg-dev,
          unity8-tests,
+         mir-graphics-drivers-desktop
 
 Tests: autopilot.sh
 Restrictions: allow-stderr,

@@ -149,7 +149,6 @@ class UnityTestCase(AutopilotTestCase):
                 '-windowgeometry',
                 geo_string,
                 '-frameless',
-                '-mousetouch'
             ]
         return scale_divisor
 

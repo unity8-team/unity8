@@ -65,4 +65,25 @@ UnityTestCase {
             throw new Error("startApplication("+appId+") called from line " +  util.callerLine(1) + " failed!");
         }
     }
+
+    /*
+        Wait until the client surface geometry matches what QML code requested
+     */
+    function waitUntilSurfaceGeometryIsUpToDate(appDelegate) {
+        var surface = appDelegate.surface;
+
+        tryCompareFunction(function() { return surface.position.x === surface.requestedPosition.x }, true);
+        tryCompareFunction(function() { return surface.position.y === surface.requestedPosition.y }, true);
+
+        var surfaceItem = findChild(appDelegate, "surfaceItem");
+        verify(surfaceItem);
+
+        // TODO: Consider size restrictions (min, max, increment)
+        tryCompareFunction(function() {
+            return surfaceItem.surfaceWidth !== 0 ? surface.size.width === surfaceItem.surfaceWidth : true
+        }, true);
+        tryCompareFunction(function() {
+            return surfaceItem.surfaceHeight !== 0 ? surface.size.height === surfaceItem.surfaceHeight : true
+        }, true);
+    }
 }

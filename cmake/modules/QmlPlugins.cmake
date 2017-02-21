@@ -27,7 +27,9 @@ endif()
 # Resource file names are matched against {*.{qml,js,jpg,png,sci,svg},qmldir}.
 #
 # export_qmlfiles(plugin path
-#     [SEARCH_PATH path]      # Path to search for resources in (defaults to ${CMAKE_CURRENT_SOURCE_DIR})
+#     [SEARCH_PATH path]      # Path to search for resource files. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
+#     [GLOBBING_EXPRESSIONS]  # The globbing expressions used to find the files to be copied. If set,
+#                               overrides any given SEARCH_PATH.
 #     [BINARY_DIR path]
 #     [DESTINATION path]
 #     [TARGET_PREFIX string]  # Will be prefixed to the target name
@@ -38,8 +40,8 @@ endif()
 
 macro(export_qmlfiles PLUGIN PATH)
     set(single SEARCH_PATH BINARY_DIR DESTINATION TARGET_PREFIX)
-    cmake_parse_arguments(QMLFILES "" "${single}" "" ${ARGN})
- 
+    cmake_parse_arguments(QMLFILES "" "${single}" "GLOBBING_EXPRESSIONS" ${ARGN})
+
     if(NOT QMLFILES_SEARCH_PATH)
         set(QMLFILES_SEARCH_PATH ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
@@ -50,16 +52,20 @@ macro(export_qmlfiles PLUGIN PATH)
         set(qmlfiles_dir ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
-    file(GLOB QMLFILES
-        ${QMLFILES_SEARCH_PATH}/*.qml
-        ${QMLFILES_SEARCH_PATH}/*.js
-        ${QMLFILES_SEARCH_PATH}/*.jpg
-        ${QMLFILES_SEARCH_PATH}/*.png
-        ${QMLFILES_SEARCH_PATH}/*.sci
-        ${QMLFILES_SEARCH_PATH}/*.svg
-        ${QMLFILES_SEARCH_PATH}/*.qmltypes
-        ${QMLFILES_SEARCH_PATH}/qmldir
-    )
+    if(NOT QMLFILES_GLOBBING_EXPRESSIONS)
+        set(QMLFILES_GLOBBING_EXPRESSIONS
+            ${QMLFILES_SEARCH_PATH}/*.qml
+            ${QMLFILES_SEARCH_PATH}/*.js
+            ${QMLFILES_SEARCH_PATH}/*.jpg
+            ${QMLFILES_SEARCH_PATH}/*.png
+            ${QMLFILES_SEARCH_PATH}/*.sci
+            ${QMLFILES_SEARCH_PATH}/*.svg
+            ${QMLFILES_SEARCH_PATH}/*.qmltypes
+            ${QMLFILES_SEARCH_PATH}/qmldir
+        )
+    endif()
+
+    file(GLOB QMLFILES ${QMLFILES_GLOBBING_EXPRESSIONS})
 
     execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${qmlfiles_dir})
 

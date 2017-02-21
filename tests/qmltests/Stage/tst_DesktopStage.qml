@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Canonical, Ltd.
+ * Copyright (C) 2015-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +37,6 @@ Item {
     height: stageLoader.height
 
     property var greeter: { fullyShown: true }
-
-    Binding {
-        target: MouseTouchAdaptor
-        property: "enabled"
-        value: false
-    }
 
     Component.onCompleted: {
         ApplicationMenusLimits.screenWidth = Qt.binding( function() { return stageLoader.width; } );
@@ -155,7 +149,7 @@ Item {
                 Divider {}
 
                 Repeater {
-                    model: ApplicationManager.availableApplications
+                    model: MirTest.availableApplications
                     ApplicationCheckBox {
                         appId: modelData
                     }
@@ -232,11 +226,15 @@ Item {
         function test_appFocusSwitch(data) {
             data.apps.forEach(startApplication);
 
-            ApplicationManager.requestFocusApplication(data.apps[data.focusfrom]);
-            tryCompare(ApplicationManager.findApplication(data.apps[data.focusfrom]).surfaceList.get(0), "activeFocus", true);
+            var fromAppId = data.apps[data.focusfrom];
+            ApplicationManager.requestFocusApplication(fromAppId);
+            var fromSurface = ApplicationManager.findApplication(fromAppId).surfaceList.get(0);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(fromAppId, fromSurface); }, true);
 
-            ApplicationManager.requestFocusApplication(data.apps[data.focusTo]);
-            tryCompare(ApplicationManager.findApplication(data.apps[data.focusTo]).surfaceList.get(0), "activeFocus", true);
+            var toAppId = data.apps[data.focusTo];
+            ApplicationManager.requestFocusApplication(toAppId);
+            var toSurface = ApplicationManager.findApplication(toAppId).surfaceList.get(0);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(toAppId, toSurface); }, true);
         }
 
         function test_tappingOnWindowChangesFocusedApp_data() {
@@ -257,13 +255,14 @@ Item {
             var fromAppWindow = findChild(fromDelegate, "appWindow");
             verify(fromAppWindow);
             tap(fromAppWindow);
-            compare(fromDelegate.surface.activeFocus, true);
+
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(fromDelegate.appId, fromDelegate.surface); }, true);
             compare(topSurfaceList.focusedWindow, fromDelegate.window);
 
             var toAppWindow = findChild(toDelegate, "appWindow");
             verify(toAppWindow);
             tap(toAppWindow);
-            compare(toDelegate.surface.activeFocus, true);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(toDelegate.appId, toDelegate.surface); }, true);
             compare(topSurfaceList.focusedWindow, toDelegate.window);
         }
 
@@ -282,14 +281,14 @@ Item {
             var fromAppWindow = findChild(fromDelegate, "appWindow");
             verify(fromAppWindow);
             mouseClick(fromAppWindow);
-            compare(fromDelegate.surface.activeFocus, true);
-            compare(topSurfaceList.focusedWindow, fromDelegate.window);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(fromDelegate.appId, fromDelegate.surface); }, true);
+            tryCompare(topSurfaceList, "focusedWindow", fromDelegate.window);
 
             var toAppWindow = findChild(toDelegate, "appWindow");
             verify(toAppWindow);
             mouseClick(toAppWindow);
-            compare(toDelegate.surface.activeFocus, true);
-            compare(topSurfaceList.focusedWindow, toDelegate.window);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(toDelegate.appId, toDelegate.surface); }, true);
+            tryCompare(topSurfaceList, "focusedWindow", toDelegate.window);
         }
 
         function test_tappingOnDecorationFocusesApplication_data() {
@@ -337,7 +336,7 @@ Item {
             verify(fromAppDecoration);
             tap(fromAppDecoration);
 
-            tryCompare(fromDelegate.surface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(fromDelegate.appId, fromDelegate.surface); }, true);
 
             var toAppDecoration = findChild(toDelegate, "appWindowDecoration");
             verify(toAppDecoration);
@@ -348,7 +347,7 @@ Item {
 
             tap(toAppDecoration);
 
-            tryCompare(toDelegate.surface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(toDelegate.appId, toDelegate.surface); }, true);
         }
 
         function test_clickingOnDecorationFocusesApplication_data() {
@@ -366,12 +365,12 @@ Item {
             var fromAppDecoration = findChild(fromDelegate, "appWindowDecoration");
             verify(fromAppDecoration);
             mouseClick(fromAppDecoration);
-            tryCompare(fromDelegate.surface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(fromDelegate.appId, fromDelegate.surface); }, true);
 
             var toAppDecoration = findChild(toDelegate, "appWindowDecoration");
             verify(toAppDecoration);
             mouseClick(toAppDecoration);
-            tryCompare(toDelegate.surface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(toDelegate.appId, toDelegate.surface); }, true);
         }
 
         function test_windowMaximize() {
@@ -511,9 +510,9 @@ Item {
             var minimizeButton = findChild(decoratedWindow, "minimizeWindowButton");
             verify(minimizeButton);
 
-            tryCompare(dashSurface, "exposed", true);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed("unity8-dash", dashSurface); }, true);
             mouseClick(minimizeButton);
-            tryCompare(dashSurface, "exposed", false);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed("unity8-dash", dashSurface); }, false);
         }
 
         function test_maximizeApplicationHidesSurfacesBehindIt() {
@@ -525,13 +524,13 @@ Item {
             dialerDelegate.requestMaximize();
             tryCompare(dialerDelegate, "visuallyMaximized", true);
 
-            tryCompare(dashDelegate.surface, "exposed", false);
-            compare(gmailDelegate.surface.exposed, true);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed("unity8-dash", dashDelegate.surface); }, false);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed("gmail-webapp", gmailDelegate.surface); }, true);
 
             // restore without raising
             dialerDelegate.requestRestore();
-            tryCompare(dashDelegate.surface, "exposed", true);
-            compare(gmailDelegate.surface.exposed, true);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed("unity8-dash", dashDelegate.surface); }, true);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed("gmail-webapp", gmailDelegate.surface); }, true);
         }
 
         function test_applicationsBecomeVisibleWhenOccludingAppRemoved() {
@@ -564,16 +563,18 @@ Item {
             tryCompare(dialerDelegate, "visuallyMaximized", true);
             tryCompare(gmailDelegate, "visuallyMaximized", true);
 
-            tryCompare(dashApp.surfaceList.get(0), "exposed", false);
-            tryCompare(dialerApp.surfaceList.get(0), "exposed", false);
-            tryCompare(mapApp.surfaceList.get(0), "exposed", false);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed(dashApp.appId, dashApp.surfaceList.get(0)); }, false);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed(dialerApp.appId, dialerApp.surfaceList.get(0)); }, false);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed(mapApp.appId, mapApp.surfaceList.get(0)); }, false);
 
             ApplicationManager.stopApplication("gmail-webapp");
             wait(2000)
 
-            tryCompare(mapApp.surfaceList.get(0), "exposed", true);
-            tryCompare(dialerApp.surfaceList.get(0), "exposed", true);
-            tryCompare(dashApp.surfaceList.get(0), "exposed", false); // still occluded by maximised dialer
+            // still occluded by maximised dialer
+            tryCompareFunction(function(){ return MirTest.surfaceExposed(dashApp.appId, dashApp.surfaceList.get(0)); }, false);
+
+            tryCompareFunction(function(){ return MirTest.surfaceExposed(dialerApp.appId, dialerApp.surfaceList.get(0)); }, true);
+            tryCompareFunction(function(){ return MirTest.surfaceExposed(mapApp.appId, mapApp.surfaceList.get(0)); }, true);
         }
 
         function test_maximisedAppStaysVisibleWhenAppStarts() {
@@ -700,8 +701,8 @@ Item {
             tryCompare(dialerMaximizeButton, "visible", true);
 
             // add size restrictions, smaller than our stage
-            dialerDelegate.surface.setMaximumWidth(40);
-            dialerDelegate.surface.setMaximumHeight(30);
+            MirTest.setSurfaceMaximumWidth(dialerDelegate.application.appId, dialerDelegate.surface, 40);
+            MirTest.setSurfaceMaximumHeight(dialerDelegate.application.appId, dialerDelegate.surface, 30);
             tryCompare(dialerMaximizeButton, "visible", false);
 
             // try double clicking the decoration, shouldn't maximize it
@@ -722,8 +723,8 @@ Item {
             );
 
             // remove restrictions, the maximize button should again be visible
-            dialerDelegate.surface.setMaximumWidth(0);
-            dialerDelegate.surface.setMaximumHeight(0);
+            MirTest.setSurfaceMaximumWidth(dialerDelegate.application.appId, dialerDelegate.surface, units.gu(100000));
+            MirTest.setSurfaceMaximumHeight(dialerDelegate.application.appId, dialerDelegate.surface, units.gu(100000));
             tryCompare(dialerMaximizeButton, "visible", true);
         }
 
@@ -842,8 +843,7 @@ Item {
             verify(closeButton);
             mouseClick(closeButton);
             closeButton = null;
-            tryCompare(topSurfaceList, "count", originalWindowCount);
-            wait(100); // plus some spare room
+            waitUntilAppIsDead("dialer-app");
             appDelegate = startApplication("dialer-app");
 
             // Make sure it's again where we left it in normal state before destroying

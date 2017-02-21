@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Canonical Ltd.
+ * Copyright 2014-2017 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,9 @@ Rectangle {
     Connections {
         target: surfaceContainerLoader.status === Loader.Ready ? surfaceContainerLoader.item : null
         onSurfaceChanged: {
+            surfaceCheckbox.noop = true;
             surfaceCheckbox.checked = surfaceContainerLoader.item.surface !== null
+            surfaceCheckbox.noop = false;
         }
     }
 
@@ -102,23 +104,15 @@ Rectangle {
                     id: surfaceCheckbox;
                     checked: false;
                     activeFocusOnPress: false
+                    property bool noop: false
                     onCheckedChanged: {
-                        if (surfaceContainerLoader.status !== Loader.Ready)
+                        if (surfaceContainerLoader.status !== Loader.Ready || noop)
                             return;
 
                         if (checked) {
-                            var application = ApplicationManager.add("music-app");
-                            application.manualSurfaceCreation = true;
-
-                            application.createSurface();
-                            surfaceContainerLoader.item.surface = application.surfaceList.get(0);
-
-                            application.setState(ApplicationInfoInterface.Running);
+                            testCase.createSurface();
                         } else {
-                            if (surfaceContainerLoader.item.surface) {
-                                surfaceContainerLoader.item.surface.setLive(false);
-                            }
-                            ApplicationManager.stopApplication("music-app");
+                            testCase.destroySurface();
                         }
                     }
                 }
@@ -143,7 +137,21 @@ Rectangle {
         id: testCase
         name: "SurfaceContainer"
 
+        property var application: null
         property Item surfaceContainer: surfaceContainerLoader.status === Loader.Ready ? surfaceContainerLoader.item : null
+
+        function createSurface() {
+            application = ApplicationManager.startApplication("music-app");
+            tryCompareFunction(function(){ return MirTest.internalState(application); }, MirTest.Running);
+            tryCompare(application.surfaceList, "count", 1);
+            surfaceContainer.surface = application.surfaceList.get(0);
+        }
+
+        function destroySurface() {
+            killApps();
+            application = null;
+            surfaceContainer.surface = null;
+        }
 
         function cleanup() {
             // reload our test subject to get it in a fresh state once again
@@ -208,22 +216,19 @@ Rectangle {
             var surfaceItem = findChild(surfaceContainer, "surfaceItem");
             verify(surfaceItem !== null);
 
-            surfaceItem.touchPressCount = 0;
-            surfaceItem.touchReleaseCount = 0;
-
             tap(surfaceContainer);
 
             // surface got touches as the surfaceContainer is interactive
-            compare(surfaceItem.touchPressCount, 1)
-            compare(surfaceItem.touchReleaseCount, 1);
+            tryCompareFunction(function(){ return MirTest.touchPressCount(surfaceContainer.surface); }, 1);
+            tryCompareFunction(function(){ return MirTest.touchReleaseCount(surfaceContainer.surface); }, 1);
 
             interactiveCheckbox.checked = false;
             tap(surfaceContainer);
 
             // surface shouldn't get the touches from the second tap as the surfaceContainer
             // was *not* interactive when it happened.
-            compare(surfaceItem.touchPressCount, 1)
-            compare(surfaceItem.touchReleaseCount, 1);
+            tryCompareFunction(function(){ return MirTest.touchPressCount(surfaceContainer.surface); }, 1);
+            tryCompareFunction(function(){ return MirTest.touchReleaseCount(surfaceContainer.surface); }, 1);
         }
 
         function test_surfaceItemGetsActiveFocusOnMousePress() {

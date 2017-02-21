@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2015,2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
-import Unity.Test 0.1
+import Unity.Application 0.1
 
 RowLayout {
     id: root
@@ -25,8 +25,8 @@ RowLayout {
     property alias checked: checkbox.checked
 
     Binding {
-        target: MouseTouchAdaptor
-        property: "enabled"
+        target: Mir
+        property: "touchEmulationEnabled"
         value: checkbox.checked
     }
 

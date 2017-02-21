@@ -632,14 +632,27 @@ TestCase {
          kill all (fake) running apps, bringing Unity.Application back to its initial state
      */
     function killApps() {
+        MirTest.killPrompts();
+        tryCompareFunction(function() { return MirTest.promptsRunning(); }, false);
+
         while (ApplicationManager.count > 0) {
-            var application = ApplicationManager.get(0);
-            ApplicationManager.stopApplication(application.appId);
-            // wait until all zombie surfaces are gone. As MirSurfaceItems hold references over them.
-            // They won't be gone until those surface items are destroyed.
-            tryCompareFunction(function() { return application.surfaceList.count }, 0);
-            tryCompare(application, "state", ApplicationInfo.Stopped);
+            var appId = ApplicationManager.get(0).appId;
+            stopApplication(appId);
         }
         compare(ApplicationManager.count, 0);
+
+        MirTest.stopInputMethod();
+        tryCompareFunction(function() { return MirTest.isInputMethodRunning(); }, false);
+    }
+
+    function stopApplication(appId) {
+        ApplicationManager.stopApplication(appId);
+        waitUntilAppIsDead(appId);
+    }
+
+    function waitUntilAppIsDead(appId) {
+            tryCompareFunction(function() { return ApplicationManager.findApplication(appId) === null
+                                                && MirTest.isApplicationRunning(appId) === false; }, true, 60000,
+                                "Unable to kill application " + appId);
     }
 }

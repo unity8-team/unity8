@@ -77,7 +77,7 @@ function(add_unity8_unittest COMPONENT_NAME TARGET)
     )
 endfunction()
 
-# add a graphical unit test
+# add a graphical unit test running as a regular GUI app
 function(add_unity8_uitest COMPONENT_NAME TARGET)
     unity8_parse_arguments(${ARGN})
     add_executable_test(${COMPONENT_NAME} ${TARGET}
@@ -103,7 +103,7 @@ function(add_unity8_qmlunittest PATH COMPONENT_NAME)
     )
 endfunction()
 
-# add a graphical qml test
+# add a graphical qml test running as a mir server
 function(add_unity8_qmltest PATH COMPONENT_NAME)
     unity8_parse_arguments(${ARGN})
     add_qml_test(${PATH} ${COMPONENT_NAME}
@@ -111,6 +111,7 @@ function(add_unity8_qmltest PATH COMPONENT_NAME)
         TARGETS uitests
         ${U8TEST_ARGN}
         ENVIRONMENT ${environment}
+                    QT_QPA_PLATFORM=mirserver
                     ${U8TEST_ENVIRONMENT}
     )
 endfunction()

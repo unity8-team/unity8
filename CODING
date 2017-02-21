@@ -68,9 +68,9 @@ Running Unity 8 on devices
 ==========================
 
 Running unity8 on a device should be done using crossbuilder.
-Go to 
+Go to
 * https://launchpad.net/crossbuilder and
-* https://wiki.ubuntu.com/Touch/Crossbuilder 
+* https://wiki.ubuntu.com/Touch/Crossbuilder
 for more details on crossbuilder.
 
 unity8 will automatically restart on the phone once deployment
@@ -133,6 +133,12 @@ $ make tryComponentName
 So to try out, for instance, the DragHandle component, you would do:
 
 $ make tryDragHandle
+
+To define the dimensions of the test window, use the MIR_SERVER_X11_DISPLAYS environment variable. Like this:
+
+$ MIR_SERVER_X11_DISPLAYS=1920x1080 make tryDragHandle
+
+To have the mouse bounded by shell screen limits when running, eg, "make tryShell", hold the Shift key.
 
 NB: Manual test or interation doesn't make sense for all components or classes,
 particularly the non-graphical ones. In such cases no "tryFoo" make target is
