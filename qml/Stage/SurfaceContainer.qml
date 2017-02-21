@@ -39,6 +39,9 @@ FocusScope {
     // to update surface activeFocus. See mock MirSurfaceItem.
     property alias consumesInput: surfaceItem.consumesInput
 
+    // read from outside
+    readonly property bool isFullyOpaque: surface ? surfaceItem.opacity === 1.0 : true
+
     onSurfaceChanged: {
         // Not a binding because animations might remove the surface from the surfaceItem
         // programatically (in order to signal that a zombie surface is free for deletion),

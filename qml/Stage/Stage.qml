@@ -343,6 +343,8 @@ FocusScope {
         }
 
         readonly property real virtualKeyboardHeight: root.inputMethodRect.height
+
+        property bool anyWindowAnimating: false
     }
 
     Component.onCompleted: priv.updateMainAndSideStageIndexes();
@@ -821,6 +823,7 @@ FocusScope {
                 readonly property bool canBeMaximizedHorizontally: maximumWidth == 0 || maximumWidth >= appContainer.width
                 readonly property bool canBeMaximizedVertically: maximumHeight == 0 || maximumHeight >= appContainer.height
                 readonly property alias orientationChangesEnabled: decoratedWindow.orientationChangesEnabled
+                readonly property alias isFullyOpaque: decoratedWindow.isFullyOpaque
 
                 property int windowState: WindowStateStorage.WindowStateNormal
                 property bool animationsEnabled: true
@@ -978,9 +981,12 @@ FocusScope {
                 visible: (
                           !visuallyMinimized
                           && !greeter.fullyShown
+                          && (priv.foregroundMaximizedAppDelegate === null || priv.foregroundMaximizedAppDelegate.normalZ <= z)
                          )
                          || appDelegate.fullscreen
                          || focusAnimation.running || rightEdgeFocusAnimation.running || hidingAnimation.running
+                         || priv.anyWindowAnimating          // bug #1666363
+                         || (priv.foregroundMaximizedAppDelegate && !priv.foregroundMaximizedAppDelegate.isFullyOpaque)   // bug #1666170
 
                 function close() {
                     model.window.close();
@@ -1500,11 +1506,12 @@ FocusScope {
                         to: ",normal,restored,maximized,maximizedLeft,maximizedRight,maximizedTopLeft,maximizedTopRight,maximizedBottomLeft,maximizedBottomRight,maximizedHorizontally,maximizedVertically,fullscreen"
                         enabled: appDelegate.animationsEnabled
                         SequentialAnimation {
+                            ScriptAction { script: { priv.anyWindowAnimating = true; } }
                             PropertyAction { target: appDelegate; property: "visuallyMinimized" }
                             UbuntuNumberAnimation { target: appDelegate; properties: "requestedX,requestedY,windowedX,windowedY,opacity,scale,requestedWidth,requestedHeight,windowedWidth,windowedHeight";
                                 duration: priv.animationDuration }
                             PropertyAction { target: appDelegate; property: "visuallyMaximized" }
-                            ScriptAction { script: { fakeRectangle.stop(); } }
+                            ScriptAction { script: { fakeRectangle.stop(); priv.anyWindowAnimating = false; } }
                         }
                     }
                 ]
