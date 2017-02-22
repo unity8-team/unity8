@@ -572,16 +572,6 @@ Rectangle {
                                 // Move it down by the the missing size to compensate index calculation with only expanded items
                                 itemCenterY += (launcherListView.itemHeight - selectedItem.height) / 2
 
-                                if (mouseY > launcherListView.height - launcherListView.topMargin - launcherListView.bottomMargin - launcherListView.realItemHeight) {
-                                    progressiveScrollingTimer.downwards = false
-                                    progressiveScrollingTimer.start()
-                                } else if (mouseY < launcherListView.realItemHeight) {
-                                    progressiveScrollingTimer.downwards = true
-                                    progressiveScrollingTimer.start()
-                                } else {
-                                    progressiveScrollingTimer.stop()
-                                }
-
                                 var newIndex = (itemCenterY + launcherListView.realContentY) / launcherListView.realItemHeight
 
                                 if (newIndex > draggedIndex + 1) {
@@ -601,6 +591,15 @@ Rectangle {
                                     }
                                 }
                             }
+                            if (mouseY > launcherListView.height - launcherListView.topMargin - launcherListView.bottomMargin - launcherListView.realItemHeight) {
+                                progressiveScrollingTimer.downwards = false
+                                progressiveScrollingTimer.start()
+                            } else if (mouseY < launcherListView.realItemHeight) {
+                                progressiveScrollingTimer.downwards = true
+                                progressiveScrollingTimer.start()
+                            } else {
+                                progressiveScrollingTimer.stop()
+                            }
                         }
                     }
                     Timer {
@@ -613,12 +612,12 @@ Rectangle {
                             if (downwards) {
                                 var minY =  -launcherListView.topMargin
                                 if (launcherListView.contentY > minY) {
-                                    launcherListView.contentY = Math.max(launcherListView.contentY - units.dp(2), minY)
+                                    launcherListView.contentY = Math.max(launcherListView.contentY - units.dp(dndArea.pressed ? 2 : 6), minY)
                                 }
                             } else {
                                 var maxY = launcherListView.contentHeight - launcherListView.height + launcherListView.topMargin + launcherListView.originY
                                 if (launcherListView.contentY < maxY) {
-                                    launcherListView.contentY = Math.min(launcherListView.contentY + units.dp(2), maxY)
+                                    launcherListView.contentY = Math.min(launcherListView.contentY + units.dp(dndArea.pressed ? 2 : 6), maxY)
                                 }
                             }
                         }

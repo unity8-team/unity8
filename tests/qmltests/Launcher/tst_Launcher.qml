@@ -1500,5 +1500,18 @@ Rectangle {
             tryCompare(launcher, "maxPanelX", 0);
             launcher.panelWidth = oldSize;
         }
+
+        function test_hoverAutoScrolling() {
+            revealByEdgePush();
+            var list = findChild(launcher, "launcherListView")
+            mouseMove(root, units.gu(4), root.height / 2)
+
+            mouseMove(root, units.gu(4), root.height - units.gu(2))
+            tryCompare(list, "contentY", list.contentHeight - list.height + list.topMargin)
+            print("pass 1")
+
+            mouseMove(root, units.gu(4), units.gu(12)) // BFB height
+            tryCompare(list, "contentY", -list.topMargin)
+        }
     }
 }
