@@ -595,7 +595,7 @@ Rectangle {
                             if (mouseY > launcherListView.height - launcherListView.topMargin - launcherListView.bottomMargin - launcherListView.realItemHeight
                                     // N.B: when using touch interaction, we sometimes get values like 2147483458 for mouseY
                                     // on touchRelease(). Working around that by making sure we're still inside the screen.
-                                    && mouseY < root.height
+                                    && mouseY <= root.height
                                     ) {
                                 progressiveScrollingTimer.downwards = false
                                 progressiveScrollingTimer.start()
