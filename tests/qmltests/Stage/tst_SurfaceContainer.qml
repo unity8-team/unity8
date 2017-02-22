@@ -133,7 +133,7 @@ Rectangle {
         }
     }
 
-    UT.UnityTestCase {
+    UT.StageTestCase {
         id: testCase
         name: "SurfaceContainer"
 

@@ -16,7 +16,6 @@
 
 import QtQuick 2.4
 import QtTest 1.0
-import Unity.Application 0.1
 import Ubuntu.Components 1.3
 import Ubuntu.Test 1.0 as UbuntuTest
 import Unity.Test 0.1 as UT
@@ -626,33 +625,5 @@ TestCase {
             var transition = transitions[i];
             tryCompare(transition, "running", false, 2000);
         }
-    }
-
-    /*
-         kill all (fake) running apps, bringing Unity.Application back to its initial state
-     */
-    function killApps() {
-        MirTest.killPrompts();
-        tryCompareFunction(function() { return MirTest.promptsRunning(); }, false);
-
-        while (ApplicationManager.count > 0) {
-            var appId = ApplicationManager.get(0).appId;
-            stopApplication(appId);
-        }
-        compare(ApplicationManager.count, 0);
-
-        MirTest.stopInputMethod();
-        tryCompareFunction(function() { return MirTest.isInputMethodRunning(); }, false);
-    }
-
-    function stopApplication(appId) {
-        ApplicationManager.stopApplication(appId);
-        waitUntilAppIsDead(appId);
-    }
-
-    function waitUntilAppIsDead(appId) {
-            tryCompareFunction(function() { return ApplicationManager.findApplication(appId) === null
-                                                && MirTest.isApplicationRunning(appId) === false; }, true, 60000,
-                                "Unable to kill application " + appId);
     }
 }

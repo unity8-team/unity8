@@ -166,7 +166,7 @@ Rectangle {
         }
     }
 
-    UT.UnityTestCase {
+    UT.StageTestCase {
         id: testCase
         name: "ApplicationWindow"
         when: windowShown

@@ -63,7 +63,7 @@ Item {
         callManager.foregroundCall = call3;
     }
 
-    UT.UnityTestCase {
+    UT.StageTestCase {
         name: "ActiveCallHint"
         when: windowShown
 

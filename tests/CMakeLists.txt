@@ -116,6 +116,18 @@ function(add_unity8_qmltest PATH COMPONENT_NAME)
     )
 endfunction()
 
+# add a graphical qml test running as a regular application in the host system
+function(add_unity8_simpleqmltest PATH COMPONENT_NAME)
+    unity8_parse_arguments(${ARGN})
+    add_qml_test(${PATH} ${COMPONENT_NAME}
+        IMPORT_PATHS ${UNITY_IMPORT_PATHS}
+        TARGETS uitests
+        ${U8TEST_ARGN}
+        ENVIRONMENT ${environment}
+                    ${U8TEST_ENVIRONMENT}
+    )
+endfunction()
+
 # add a graphical qml benchmark
 function(add_unity8_qmlbenchmark PATH COMPONENT_NAME ITERATIONS)
     add_unity8_qmltest(${PATH} ${COMPONENT_NAME} ITERATIONS ${ITERATIONS} ${ARGN})

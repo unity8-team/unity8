@@ -18,7 +18,6 @@ import QtQuick 2.4
 import QtTest 1.0
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3
-import Unity.Application 0.1
 import QMenuModel 0.1
 import Unity.Test 0.1
 import Utils 0.1
@@ -104,6 +103,7 @@ Item {
                 var menuItem = findChild(menuPage, menuItemName); verify(menuItem);
 
                 var menuPriv = findInvisibleChild(menuPage, "d");
+                verify(menuPriv);
 
                 // recurse into submenu
                 var submenu = rows[i]["submenu"];

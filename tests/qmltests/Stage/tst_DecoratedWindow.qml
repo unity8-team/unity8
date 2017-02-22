@@ -182,7 +182,7 @@ Rectangle {
         }
     }
 
-    UT.UnityTestCase {
+    UT.StageTestCase {
         id: testCase
         name: "DecoratedWindow"
         when: windowShown
