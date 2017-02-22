@@ -591,7 +591,6 @@ Rectangle {
                                     }
                                 }
                             }
-                            print(mouseY, pressed)
                             if (mouseY > launcherListView.height - launcherListView.topMargin - launcherListView.bottomMargin - launcherListView.realItemHeight
                                     // N.B: when using touch interaction, we sometimes get values like 2147483458 for mouseY
                                     // on touchRelease(). Working around that by making sure we're still inside the screen.
