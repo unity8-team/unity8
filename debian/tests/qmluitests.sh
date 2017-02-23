@@ -10,4 +10,8 @@ export ARTIFACTS_DIR="${ADT_ARTIFACTS}"
 
 export MIR_SERVER_PLATFORM_GRAPHICS_LIB="/usr/lib/${DEB_HOST_MULTIARCH}/mir/server-platform/server-mesa-x11.so.12"
 
+echo "********* checking dri **********"
+ls /dev/dri
+echo "********* DONE checking dri **********"
+
 /usr/lib/$DEB_HOST_MULTIARCH/unity8/tests/scripts/xvfballtests.sh
