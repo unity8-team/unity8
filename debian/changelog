@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20170223-0ubuntu1) zesty; urgency=medium
+
+  * Make some small changes to the greeter's session list
+
+ -- Josh Arenson <josharenson@gmail.com>  Thu, 23 Feb 2017 15:07:07 +0000
+
 unity8 (8.15+17.04.20170216.1-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
