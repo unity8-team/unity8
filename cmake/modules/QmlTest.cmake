@@ -118,7 +118,7 @@ function(add_qml_unittest PATH COMPONENT_NAME)
 
     add_executable_test(${COMPONENT_NAME} qmltestrunner
         ${ARGN}
-        ARGS -input ${CMAKE_CURRENT_SOURCE_DIR}/${PATH}/tst_${COMPONENT_NAME}.qml ${QMLTEST_ARGS}
+        ARGS -input ${CMAKE_CURRENT_SOURCE_DIR}/${PATH}/tst_${COMPONENT_NAME}.qml ${QMLTEST_ARGS} -maxwarnings 0
     )
 
     if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${PATH}/tst_${COMPONENT_NAME}.qml")
@@ -151,7 +151,7 @@ function(add_manual_qml_test PATH COMPONENT_NAME)
 endfunction()
 
 
-# add_executable_test(target component_name
+# add_executable_test(component_name target
 #     [...]                              # see doc for add_manual_qml_test for common arguments
 #     [ADD_TEST]                         # whether to add to the "test" target
 #     [ARG_PREFIX arg_prefix]            # prefix logging arguments with this string
@@ -189,10 +189,12 @@ function(add_executable_test COMPONENT_NAME TARGET)
             ${args}
     )
 
+    set(common_qmltest_env QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT})
+
     add_qmltest_target(test${COMPONENT_NAME} ${TARGET}
         COMMAND ${qmltest_command}
         ${depends}
-        ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT}
+        ENVIRONMENT ${common_qmltest_env}
         ${add_test}
         ${targets}
     )
@@ -201,7 +203,7 @@ function(add_executable_test COMPONENT_NAME TARGET)
         add_qmltest_target(xvfbtest${COMPONENT_NAME} ${TARGET}
             COMMAND $<TARGET_FILE:xvfb-run> --server-args "-screen 0 1024x768x24" --auto-servernum ${qmltest_command}
             ${depends}
-            ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
+            ENVIRONMENT ${common_qmltest_env} LD_PRELOAD=/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/mesa/libGL.so.1
             TARGETS ${xvfb_targets}
         )
     endif()
@@ -210,7 +212,7 @@ function(add_executable_test COMPONENT_NAME TARGET)
         add_qmltest_target(gdbtest${COMPONENT_NAME} ${TARGET}
             COMMAND $<TARGET_FILE:gdb> -ex run -args ${qmltest_command}
             ${depends}
-            ENVIRONMENT QML2_IMPORT_PATH=${imports} ${QMLTEST_ENVIRONMENT}
+            ENVIRONMENT ${common_qmltest_env}
         )
     endif()
 endfunction()

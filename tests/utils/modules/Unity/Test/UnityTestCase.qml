@@ -16,7 +16,6 @@
 
 import QtQuick 2.4
 import QtTest 1.0
-import Unity.Application 0.1
 import Ubuntu.Components 1.3
 import Ubuntu.Test 1.0 as UbuntuTest
 import Unity.Test 0.1 as UT
@@ -626,20 +625,5 @@ TestCase {
             var transition = transitions[i];
             tryCompare(transition, "running", false, 2000);
         }
-    }
-
-    /*
-         kill all (fake) running apps, bringing Unity.Application back to its initial state
-     */
-    function killApps() {
-        while (ApplicationManager.count > 0) {
-            var application = ApplicationManager.get(0);
-            ApplicationManager.stopApplication(application.appId);
-            // wait until all zombie surfaces are gone. As MirSurfaceItems hold references over them.
-            // They won't be gone until those surface items are destroyed.
-            tryCompareFunction(function() { return application.surfaceList.count }, 0);
-            tryCompare(application, "state", ApplicationInfo.Stopped);
-        }
-        compare(ApplicationManager.count, 0);
     }
 }

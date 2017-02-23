@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Canonical Ltd.
+ * Copyright 2014-2017 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,25 +82,23 @@ Item {
                     }
                 }
                 Repeater {
-                    model: ApplicationManager.availableApplications
+                    model: MirTest.availableApplications
                     ApplicationCheckBox { appId: modelData }
                 }
             }
         }
     }
 
-    UT.UnityTestCase {
+    UT.StageTestCase {
         id: testCase
         name: "PhoneStage"
         when: windowShown
 
+        stage: stage
+        topLevelSurfaceList: stage.topLevelSurfaceList
+
         function init() {
-            // wait until unity8-dash is up and running.
-            ApplicationManager.startApplication("unity8-dash");
-            tryCompare(ApplicationManager, "count", 1);
-            var dashApp = ApplicationManager.findApplication("unity8-dash");
-            verify(dashApp);
-            tryCompare(dashApp, "state", ApplicationInfoInterface.Running);
+            startApplication("unity8-dash");
 
             // wait for Stage to stabilize back into its initial state
             var appRepeater = findChild(stage, "appRepeater");
@@ -109,15 +107,9 @@ Item {
         }
 
         function cleanup() {
-            ApplicationManager.requestFocusApplication("unity8-dash");
-            tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash");
-            tryCompare(stage, "state", "staged");
-            waitForRendering(stage);
-
             killApps();
 
             stage.shellOrientationAngle = 0;
-
             waitForRendering(stage)
         }
 
@@ -145,13 +137,9 @@ Item {
         function addApps(count) {
             if (count == undefined) count = 1;
             for (var i = 0; i < count; i++) {
-                var startingAppId = ApplicationManager.availableApplications[ApplicationManager.count];
-                var appSurfaceId = topLevelSurfaceList.nextId;
-                var app = ApplicationManager.startApplication(startingAppId)
-                tryCompare(app, "state", ApplicationInfoInterface.Running)
-                waitUntilAppSurfaceShowsUp(appSurfaceId);
-                waitForRendering(stage)
-                tryCompare(ApplicationManager, "focusedApplicationId", startingAppId)
+                var startingAppId = MirTest.availableApplications[ApplicationManager.count];
+                startApplication(startingAppId);
+                tryCompare(ApplicationManager, "focusedApplicationId", startingAppId);
             }
         }
 
@@ -229,8 +217,8 @@ Item {
             var endY = startY;
             var endX = stage.width - (stage.width * data.progress) - stage.dragAreaWidth;
 
-            var oldFocusedApp = ApplicationManager.get(0);
-            var newFocusedApp = ApplicationManager.get(data.newFocusedIndex);
+            var oldFocusedApp = topLevelSurfaceList.applicationAt(0);
+            var newFocusedApp = topLevelSurfaceList.applicationAt(data.newFocusedIndex);
 
             touchFlick(stage, startX, startY, endX, endY,
                        true /* beginTouch */, false /* endTouch */, units.gu(10), 50);
@@ -264,7 +252,7 @@ Item {
             performEdgeSwipeToShowAppSpread();
 
             var tile = findChild(stage, "appDelegate_" + topLevelSurfaceList.idAt(data.index));
-            var appId = ApplicationManager.get(data.index).appId;
+            var appId = topLevelSurfaceList.applicationAt(data.index).appId;
 
             if (tile.mapToItem(stage, 0, 0).x > stage.width - units.gu(3)) {
                 // Item is not visible... Need to flick the spread
@@ -294,7 +282,7 @@ Item {
         function test_select(data) {
             addApps(5);
 
-            var selectedApp = ApplicationManager.get(data.index);
+            var selectedApp = topLevelSurfaceList.applicationAt(data.index);
             var appRepeater = findChild(stage, "appRepeater");
             var selectedAppDeleage = appRepeater.itemAt(data.index);
 
@@ -331,11 +319,11 @@ Item {
         function test_focusNewTopMostAppAfterFocusedOneClosesItself() {
             addApps(2);
 
-            var secondApp = ApplicationManager.get(0);
+            var secondApp = topLevelSurfaceList.applicationAt(0);
             tryCompare(secondApp, "requestedState", ApplicationInfoInterface.RequestedRunning);
             tryCompare(secondApp, "focused", true);
 
-            var firstApp = ApplicationManager.get(1);
+            var firstApp = topLevelSurfaceList.applicationAt(1);
             tryCompare(firstApp, "requestedState", ApplicationInfoInterface.RequestedSuspended);
             tryCompare(firstApp, "focused", false);
 
@@ -432,7 +420,7 @@ Item {
 
             var surface2Id = topLevelSurfaceList.nextId;
             verify(surface1Id !== surface2Id); // sanity checking
-            webbrowserApp.createSurface();
+            MirTest.createSurface(webbrowserApp.appId);
             waitUntilAppSurfaceShowsUp(surface2Id);
 
             performEdgeSwipeToShowAppSpread();
@@ -498,12 +486,12 @@ Item {
             switchToSurface(dashSurfaceId);
 
             tryCompare(topLevelSurfaceList, "focusedWindow", dashWindow);
-            tryCompare(webbrowserApp, "state", ApplicationInfoInterface.Suspended);
+            tryCompareFunction(function(){ return MirTest.internalState(webbrowserApp); }, MirTest.Suspended);
 
             compare(webbrowserApp.surfaceList.count, 1);
 
             // simulate the suspended app being killed by the out-of-memory daemon
-            webbrowserApp.surfaceList.get(0).setLive(false);
+            MirTest.killApplication(webbrowserApp.appId);
 
             // wait until the surface is gone
             tryCompare(webbrowserApp.surfaceList, "count", 0);
@@ -542,12 +530,12 @@ Item {
             switchToSurface(dashSurfaceId);
 
             tryCompare(topLevelSurfaceList, "focusedWindow", dashWindow);
-            tryCompare(webbrowserApp, "state", ApplicationInfoInterface.Suspended);
+            tryCompareFunction(function(){ return MirTest.internalState(webbrowserApp); }, MirTest.Suspended);
 
             compare(webbrowserApp.surfaceList.count, 1);
 
             // simulate the suspended app being killed by the out-of-memory daemon
-            webbrowserApp.surfaceList.get(0).setLive(false);
+            MirTest.killApplication(webbrowserApp.appId);
 
             // wait until the surface is gone
             tryCompare(webbrowserApp.surfaceList, "count", 0);

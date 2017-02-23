@@ -40,7 +40,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
 
     connect(this, &QGuiApplication::screenAdded, this, &ShellApplication::onScreenAdded);
 
-    setupQmlEngine(isMirServer);
+    setupQmlEngine();
 
     UnityCommandLineParser parser(*this);
 
@@ -85,15 +85,6 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     if (parser.hasFrameless()) {
         m_shellView->setFlags(Qt::FramelessWindowHint);
     }
-
-
-    #ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    // You will need this if you want to interact with touch-only components using a mouse
-    // Needed only when manually testing on a desktop.
-    if (parser.hasMouseToTouch()) {
-        m_mouseTouchAdaptor = MouseTouchAdaptor::instance();
-    }
-    #endif
 
     new DebuggingController(this);
 
@@ -144,25 +135,17 @@ void ShellApplication::destroyResources()
     delete m_secondaryWindow;
     m_secondaryWindow = nullptr;
 
-    #ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    delete m_mouseTouchAdaptor;
-    m_mouseTouchAdaptor = nullptr;
-    #endif
-
     delete m_qmlEngine;
     m_qmlEngine = nullptr;
 }
 
-void ShellApplication::setupQmlEngine(bool isMirServer)
+void ShellApplication::setupQmlEngine()
 {
     m_qmlEngine = new QQmlEngine(this);
 
     m_qmlEngine->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
 
     prependImportPaths(m_qmlEngine, ::overrideImportPaths());
-    if (!isMirServer) {
-        prependImportPaths(m_qmlEngine, ::nonMirImportPaths());
-    }
     appendImportPaths(m_qmlEngine, ::fallbackImportPaths());
 
     m_qmlEngine->setNetworkAccessManagerFactory(new CachingNetworkManagerFactory);

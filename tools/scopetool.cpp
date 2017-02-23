@@ -95,7 +95,6 @@ int main(int argc, char *argv[])
 
     QUrl source(::qmlDirectory() + "/ScopeTool.qml");
     prependImportPaths(view->engine(), ::overrideImportPaths());
-    prependImportPaths(view->engine(), ::nonMirImportPaths());
     appendImportPaths(view->engine(), ::fallbackImportPaths());
 
     view->setSource(source);

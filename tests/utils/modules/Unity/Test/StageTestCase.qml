@@ -65,4 +65,53 @@ UnityTestCase {
             throw new Error("startApplication("+appId+") called from line " +  util.callerLine(1) + " failed!");
         }
     }
+
+    /*
+        Wait until the client surface geometry matches what QML code requested
+     */
+    function waitUntilSurfaceGeometryIsUpToDate(appDelegate) {
+        var surface = appDelegate.surface;
+
+        tryCompareFunction(function() { return surface.position.x === surface.requestedPosition.x }, true);
+        tryCompareFunction(function() { return surface.position.y === surface.requestedPosition.y }, true);
+
+        var surfaceItem = findChild(appDelegate, "surfaceItem");
+        verify(surfaceItem);
+
+        // TODO: Consider size restrictions (min, max, increment)
+        tryCompareFunction(function() {
+            return surfaceItem.surfaceWidth !== 0 ? surface.size.width === surfaceItem.surfaceWidth : true
+        }, true);
+        tryCompareFunction(function() {
+            return surfaceItem.surfaceHeight !== 0 ? surface.size.height === surfaceItem.surfaceHeight : true
+        }, true);
+    }
+
+    /*
+         kill all (fake) running apps, bringing Unity.Application back to its initial state
+     */
+    function killApps() {
+        MirTest.killPrompts();
+        tryCompareFunction(function() { return MirTest.promptsRunning(); }, false);
+
+        while (ApplicationManager.count > 0) {
+            var appId = ApplicationManager.get(0).appId;
+            stopApplication(appId);
+        }
+        compare(ApplicationManager.count, 0);
+
+        MirTest.stopInputMethod();
+        tryCompareFunction(function() { return MirTest.isInputMethodRunning(); }, false);
+    }
+
+    function stopApplication(appId) {
+        ApplicationManager.stopApplication(appId);
+        waitUntilAppIsDead(appId);
+    }
+
+    function waitUntilAppIsDead(appId) {
+            tryCompareFunction(function() { return ApplicationManager.findApplication(appId) === null
+                                                && MirTest.isApplicationRunning(appId) === false; }, true, 60000,
+                                "Unable to kill application " + appId);
+    }
 }

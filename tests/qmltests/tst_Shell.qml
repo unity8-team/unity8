@@ -129,6 +129,7 @@ Rectangle {
                     id: __shell
                     objectName: "shell"
                     usageScenario: usageScenarioSelector.model[usageScenarioSelector.selectedIndex]
+                    hasMouse: true
                     nativeWidth: width
                     nativeHeight: height
                     orientation: shellLoader.shellOrientation
@@ -315,8 +316,8 @@ Rectangle {
                     width: parent.width
                     activeFocusOnPress: false
                     onClicked: {
-                        for (var i = 0; i < ApplicationManager.availableApplications.length; i++) {
-                            var appId = ApplicationManager.availableApplications[i];
+                        for (var i = 0; i < MirTest.availableApplications.length; i++) {
+                            var appId = MirTest.availableApplications[i];
                             ApplicationManager.startApplication(appId)
                         }
                     }
@@ -324,7 +325,7 @@ Rectangle {
 
                 Repeater {
                     id: appCheckBoxRepeater
-                    model: ApplicationManager.availableApplications
+                    model: MirTest.availableApplications
                     ApplicationCheckBox {
                         appId: modelData
                     }
@@ -611,19 +612,16 @@ Rectangle {
 
         function loadDesktopShellWithApps() {
             loadShell("desktop");
-            waitForRendering(shell)
-            shell.usageScenario = "desktop"
-            waitForRendering(shell)
-            var app1 = ApplicationManager.startApplication("dialer-app")
-            var app2 = ApplicationManager.startApplication("webbrowser-app")
-            var app3 = ApplicationManager.startApplication("camera-app")
-            var app4 = ApplicationManager.startApplication("facebook-webapp")
-            var app5 = ApplicationManager.startApplication("camera-app")
-            var app6 = ApplicationManager.startApplication("gallery-app")
-            var app7 = ApplicationManager.startApplication("calendar-app")
-            for (var i = 0; i < topLevelSurfaceList.count; ++i) {
-                waitUntilAppWindowIsFullyLoaded(topLevelSurfaceList.idAt(i));
-            }
+            waitForRendering(shell);
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            startApplication("dialer-app");
+            startApplication("webbrowser-app");
+            startApplication("camera-app");
+            startApplication("facebook-webapp");
+            startApplication("camera-app");
+            startApplication("gallery-app");
+            startApplication("calendar-app");
         }
 
         function waitForGreeterToStabilize() {
@@ -682,9 +680,25 @@ Rectangle {
         function ensureInputMethodSurface() {
             var surfaceManager = findInvisibleChild(shell, "surfaceManager");
             verify(surfaceManager);
-            surfaceManager.createInputMethodSurface();
+            MirTest.createInputMethodSurface();
 
             tryCompareFunction(function() { return root.topLevelSurfaceList.inputMethodSurface !== null }, true);
+        }
+
+        function setSurfaceInputBounds(surface, floatRect) {
+
+            var rectangle = Qt.rect(Math.round(floatRect.x), Math.round(floatRect.y),
+                                    Math.round(floatRect.width), Math.round(floatRect.height));
+
+            MirTest.setSurfaceInputBounds(surface, rectangle);
+
+            tryCompareFunction(function() {
+                var r = surface.inputBounds;
+                return r.x === rectangle.x
+                    && r.y === rectangle.y
+                    && r.width === rectangle.width
+                    && r.height === rectangle.height;
+            }, true);
         }
 
         function test_snapDecisionDismissalReturnsFocus() {
@@ -696,7 +710,7 @@ Rectangle {
             var appSurface = appDelegate.surface;
             verify(appSurface);
 
-            tryCompare(appSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, true);
 
             notifications.model = mockNotificationsModel;
 
@@ -718,7 +732,7 @@ Rectangle {
             waitForRendering(notification);
 
             // Make sure activeFocus went away from the app window
-            tryCompare(appSurface, "activeFocus", false);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, false);
             tryCompare(stage, "interactive", false);
 
             // Clicking the button should dismiss the notification and return focus
@@ -726,7 +740,7 @@ Rectangle {
             mouseClick(buttonAccept);
 
             // Make sure we're back to normal
-            tryCompare(appSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, true);
             compare(stage.interactive, true, "Stages not interactive again after modal notification has closed");
         }
 
@@ -900,7 +914,7 @@ Rectangle {
             var appSurface = appDelegate.surface;
             verify(appSurface);
 
-            tryCompare(appSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, true);
 
             // Drag the indicators panel half-open
             var touchX = shell.width / 2;
@@ -911,7 +925,7 @@ Rectangle {
                     true /* beginTouch */, false /* endTouch */);
             verify(indicators.partiallyOpened);
 
-            tryCompare(appSurface, "activeFocus", false);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, false);
 
             // And finish getting it open
             touchFlick(indicators,
@@ -920,11 +934,11 @@ Rectangle {
                     false /* beginTouch */, true /* endTouch */);
             tryCompare(indicators, "fullyOpened", true);
 
-            tryCompare(appSurface, "activeFocus", false);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, false);
 
             dragToCloseIndicatorsPanel();
 
-            tryCompare(appSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appSurface); }, true);
         }
 
         function test_launchedAppHasActiveFocus_data() {
@@ -942,7 +956,7 @@ Rectangle {
 
             var appDelegate = startApplication("webbrowser-app");
 
-            tryCompare(appDelegate.surface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(appDelegate.surface); }, true);
         }
 
         function test_launchedAppKeepsActiveFocusOnUsageModeChange() {
@@ -957,21 +971,21 @@ Rectangle {
             var webAppSurface = webApp.surfaceList.get(topLevelSurfaceList.indexForId(webAppSurfaceId));
             verify(webAppSurface);
 
-            tryCompare(webAppSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(webAppSurface); }, true);
 
             shell.usageScenario = "desktop";
 
             // check that the desktop stage and window have been loaded
             waitUntilAppWindowIsFullyLoaded(webAppSurfaceId);
 
-            tryCompare(webAppSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(webAppSurface); }, true);
 
             shell.usageScenario = "tablet";
 
             // check that the tablet stage and app surface delegate have been loaded
             waitUntilAppWindowIsFullyLoaded(webAppSurfaceId);
 
-            tryCompare(webAppSurface, "activeFocus", true);
+            tryCompareFunction(function(){ return MirTest.hasActiveFocus(webAppSurface); }, true);
         }
 
         function dragToCloseIndicatorsPanel() {
@@ -1298,20 +1312,15 @@ Rectangle {
 
             waitUntilFocusedApplicationIsShowingItsSurface();
 
-            var topmostSurfaceItem = findChild(topmostSpreadDelegate, "surfaceItem");
-            verify(topmostSurfaceItem);
-
             var rightEdgeDragArea = findChild(shell, "rightEdgeDragArea");
-            topmostSurfaceItem.touchPressCount = 0;
-            topmostSurfaceItem.touchReleaseCount = 0;
 
             var tapPoint = rightEdgeDragArea.mapToItem(shell, rightEdgeDragArea.width / 2,
                     rightEdgeDragArea.height / 2);
 
             tap(shell, tapPoint.x, tapPoint.y);
 
-            tryCompare(topmostSurfaceItem, "touchPressCount", 1);
-            tryCompare(topmostSurfaceItem, "touchReleaseCount", 1);
+            tryCompareFunction(function(){ return MirTest.touchPressCount(topmostSpreadDelegate.surface); }, 1);
+            tryCompareFunction(function(){ return MirTest.touchReleaseCount(topmostSpreadDelegate.surface); }, 1);
         }
 
         /*
@@ -1323,11 +1332,8 @@ Rectangle {
             loadShell("phone");
             swipeAwayGreeter();
             var topmostSpreadDelegate = findChild(shell, "appDelegate_" + topLevelSurfaceList.idAt(0));
-            var topmostSurfaceItem = findChild(topmostSpreadDelegate, "surfaceItem");
             var rightEdgeDragArea = findChild(shell, "rightEdgeDragArea");
 
-            topmostSurfaceItem.touchPressCount = 0;
-            topmostSurfaceItem.touchReleaseCount = 0;
 
             var gestureStartPoint = rightEdgeDragArea.mapToItem(shell, rightEdgeDragArea.width / 2,
                     rightEdgeDragArea.height / 2);
@@ -1336,8 +1342,8 @@ Rectangle {
                     gestureStartPoint.x /* fromX */, gestureStartPoint.y /* fromY */,
                     units.gu(1) /* toX */, gestureStartPoint.y /* toY */);
 
-            tryCompare(topmostSurfaceItem, "touchPressCount", 0);
-            tryCompare(topmostSurfaceItem, "touchReleaseCount", 0);
+            tryCompareFunction(function(){ return MirTest.touchPressCount(topmostSpreadDelegate.surface); }, 0);
+            tryCompareFunction(function(){ return MirTest.touchReleaseCount(topmostSpreadDelegate.surface); }, 0);
         }
 
         function waitUntilFocusedApplicationIsShowingItsSurface()
@@ -1377,7 +1383,7 @@ Rectangle {
         function test_physicalHomeKeyPressFocusesDash() {
             loadShell("phone");
 
-            var galleryApp = ApplicationManager.startApplication("gallery-app");
+            var galleryApp = startApplication("gallery-app");
             tryCompare(ApplicationManager, "focusedApplicationId", "gallery-app");
 
             var windowInputMonitor = findInvisibleChild(shell, "windowInputMonitor");
@@ -1424,7 +1430,7 @@ Rectangle {
             selectUser(data.user)
 
             var greeter = findChild(shell, "greeter")
-            var app = ApplicationManager.startApplication("dialer-app")
+            var app = startApplication("dialer-app")
 
             confirmLoggedIn(data.loggedIn)
 
@@ -1482,13 +1488,9 @@ Rectangle {
             loadShell("tablet");
             shell.usageScenario = "desktop";
 
-            var webBrowserSurfaceId = topLevelSurfaceList.nextId;
-            var webBrowserApp = ApplicationManager.startApplication("webbrowser-app");
-            waitUntilAppWindowIsFullyLoaded(webBrowserSurfaceId);
+            var webBrowserApp = startApplication("webbrowser-app").application;
 
-            var gallerySurfaceId = topLevelSurfaceList.nextId;
-            var galleryApp = ApplicationManager.startApplication("gallery-app");
-            waitUntilAppWindowIsFullyLoaded(gallerySurfaceId);
+            var galleryApp = startApplication("gallery-app").application;
 
             ApplicationManager.requestFocusApplication("unity8-dash");
             tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash");
@@ -1506,13 +1508,9 @@ Rectangle {
             loadShell("tablet");
             shell.usageScenario = "tablet";
 
-            var webBrowserSurfaceId = topLevelSurfaceList.nextId;
-            var webBrowserApp = ApplicationManager.startApplication("webbrowser-app");
-            waitUntilAppWindowIsFullyLoaded(webBrowserSurfaceId);
+            var webBrowserApp = startApplication("webbrowser-app").application;
 
-            var gallerySurfaceId = topLevelSurfaceList.nextId;
-            var galleryApp = ApplicationManager.startApplication("gallery-app");
-            waitUntilAppWindowIsFullyLoaded(gallerySurfaceId);
+            var galleryApp = startApplication("gallery-app").application;
 
             ApplicationManager.requestFocusApplication("unity8-dash");
             tryCompare(ApplicationManager, "focusedApplicationId", "unity8-dash");
@@ -1542,26 +1540,20 @@ Rectangle {
             var desktopStage = findChild(shell, "stage");
             verify(desktopStage != null)
 
-            var app1SurfaceId = topLevelSurfaceList.nextId;
-            var app1 = ApplicationManager.startApplication("dialer-app")
-            waitUntilAppWindowIsFullyLoaded(app1SurfaceId);
+            startApplication("dialer-app");
 
-            var app2SurfaceId = topLevelSurfaceList.nextId;
-            var app2 = ApplicationManager.startApplication("webbrowser-app")
-            waitUntilAppWindowIsFullyLoaded(app2SurfaceId);
-            var app2Surface = app2.surfaceList.get(0);
+            var app2Delegate = startApplication("webbrowser-app");
+            var app2Surface = app2Delegate.application.surfaceList.get(0);
             verify(app2Surface);
 
-            var app3SurfaceId = topLevelSurfaceList.nextId;
-            var app3 = ApplicationManager.startApplication("camera-app")
-            waitUntilAppWindowIsFullyLoaded(app3SurfaceId);
-            var app3Surface = app3.surfaceList.get(0);
+            var app3Delegate = startApplication("camera-app");
+            var app3Surface = app3Delegate.application.surfaceList.get(0);
             verify(app3Surface);
 
             // Do a quick alt-tab and see if focus changes
-            tryCompare(app3Surface, "activeFocus", true)
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(app3Delegate.appId, app3Surface); }, true);
             keyClick(Qt.Key_Tab, Qt.AltModifier)
-            tryCompare(app2Surface, "activeFocus", true)
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(app2Delegate.appId, app2Surface); }, true);
 
             // Press Alt+Tab
             keyPress(Qt.Key_Alt);
@@ -1569,7 +1561,7 @@ Rectangle {
             keyRelease(Qt.Key_Alt)
 
             // Focus should have switched back now
-            tryCompare(app3Surface, "activeFocus", true)
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(app3Delegate.appId, app3Surface); }, true);
         }
 
         function test_altTabWrapAround() {
@@ -1582,7 +1574,7 @@ Rectangle {
             verify(spread !== null)
 
             // remember the focused appId
-            var focused = ApplicationManager.get(ApplicationManager.findApplication(ApplicationManager.focusedApplicationId));
+            var focused = ApplicationManager.findApplication(ApplicationManager.focusedApplicationId);
 
             tryCompare(stage, "state", "windowed")
 
@@ -1614,7 +1606,7 @@ Rectangle {
             // Make sure that after wrapping around once, we have the same one focused as at the beginning
             var focusedAppSurface = focused.surfaceList.get(0);
             verify(focusedAppSurface);
-            tryCompare(focusedAppSurface, "activeFocus", true)
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(focused.appId, focusedAppSurface); }, true);
         }
 
         function test_altBackTabNavigation() {
@@ -1862,7 +1854,7 @@ Rectangle {
             loadDesktopShellWithApps();
 
             var appRepeater = findChild(shell, "appRepeater")
-            var application = topLevelSurfaceList.applicationAt(0);
+            var appId = topLevelSurfaceList.applicationAt(0).appId;
             var surfaceId = topLevelSurfaceList.idAt(0);
             var appDelegate = appRepeater.itemAt(0);
             var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
@@ -1874,14 +1866,10 @@ Rectangle {
             tryCompare(appDelegate, "state", "maximized");
             tryCompare(PanelState, "decorationsVisible", true)
 
-            ApplicationManager.stopApplication(application.appId);
+            stopApplication(appId);
             tryCompare(PanelState, "decorationsVisible", false)
 
-            // wait until all zombie surfaces are gone. As MirSurfaceItems hold references over them.
-            // They won't be gone until those surface items are destroyed.
-            tryCompareFunction(function() { return application.surfaceList.count }, 0);
-
-            ApplicationManager.startApplication(application.appId);
+            startApplication(appId);
             tryCompare(PanelState, "decorationsVisible", true)
         }
 
@@ -1947,14 +1935,8 @@ Rectangle {
             shell.usageScenario = "desktop";
             waitForRendering(shell);
 
-            var appSurfaceId = topLevelSurfaceList.nextId;
-            var app = ApplicationManager.startApplication("dialer-app")
-            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+            var appDelegate = startApplication("dialer-app");
 
-            var appContainer = findChild(shell, "appContainer");
-            verify(appContainer);
-            var appDelegate = findChild(appContainer, "appDelegate_" + appSurfaceId);
-            verify(appDelegate);
             var decoration = findChild(appDelegate, "appWindowDecoration");
             verify(decoration);
 
@@ -1973,22 +1955,18 @@ Rectangle {
         function test_restoreWindowStateFixesIfUnderPanel() {
             loadDesktopShellWithApps();
             var appRepeater = findChild(shell, "appRepeater")
-            var application = topLevelSurfaceList.applicationAt(0);
+            var appId = topLevelSurfaceList.applicationAt(0).appId;
             var appDelegate = appRepeater.itemAt(0);
 
             // Move it under the panel programmatically (might happen later with an alt+drag)
             appDelegate.y = -units.gu(10)
 
-            ApplicationManager.stopApplication(application.appId);
-            // wait until all zombie surfaces are gone. As MirSurfaceItems hold references over them.
-            // They won't be gone until those surface items are destroyed.
-            tryCompareFunction(function() { return application.surfaceList.count }, 0);
-
-            ApplicationManager.startApplication(application.appId);
+            stopApplication(appId);
+            startApplication(appId);
             waitForRendering(shell)
 
             // Make sure the newly started one is at index 0 again
-            tryCompareFunction(function () { return topLevelSurfaceList.applicationAt(0).appId; }, application.appId);
+            tryCompareFunction(function () { return topLevelSurfaceList.applicationAt(0).appId; }, appId);
 
             appDelegate = appRepeater.itemAt(0);
             compare(appDelegate.y >= PanelState.panelHeight, true);
@@ -2027,7 +2005,7 @@ Rectangle {
             var app1Surface = app1.surfaceList.get(0);
             verify(app1Surface);
 
-            verify(!app1Surface.activeFocus);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(app1.appId, app1Surface); }, false);
 
             // Make sure app1 is exempt with a requested suspend
             verify(app1.exemptFromLifecycle);
@@ -2067,7 +2045,7 @@ Rectangle {
             var app1Surface = app1.surfaceList.get(0);
             verify(app1Surface);
 
-            verify(!app1Surface.activeFocus);
+            tryCompareFunction(function(){ return MirTest.surfaceFocused(app1.appId, app1Surface); }, false);
 
             // Make sure app1 is exempt with a requested suspend
             verify(app1.exemptFromLifecycle);
@@ -2093,7 +2071,7 @@ Rectangle {
             verify(dialogs);
             dialogs.screenSize = data.screenSize;
 
-            ApplicationManager.startApplication("camera-app")
+            startApplication("camera-app")
 
             shell.usageScenario = "phone"
             waitForRendering(shell);
@@ -2106,7 +2084,7 @@ Rectangle {
             waitForRendering(shell);
 
             // Now start a legacy app
-            ApplicationManager.startApplication("libreoffice")
+            startApplication("libreoffice")
 
             shell.usageScenario = "phone"
             waitForRendering(shell);
@@ -2240,10 +2218,7 @@ Rectangle {
             var launcher = findChild(shell, "launcher");
             var launcherPanel = findChild(launcher, "launcherPanel");
 
-            var appSurfaceId = topLevelSurfaceList.nextId;
-            var app = ApplicationManager.startApplication("music-app");
-            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
-            var appDelegate = findChild(appContainer, "appDelegate_" + appSurfaceId);
+            var appDelegate = startApplication("music-app");
             appDelegate.maximize();
             tryCompare(appDelegate, "visuallyMaximized", true);
             waitForRendering(shell);
@@ -2305,32 +2280,27 @@ Rectangle {
             swipeAwayGreeter();
 
             // Let's open a fullscreen app
-            var appSurfaceId = topLevelSurfaceList.nextId;
-            var app = ApplicationManager.startApplication("camera-app");
-            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+            startApplication("camera-app");
 
             var appRepeater = findChild(shell, "appRepeater");
             var topmostAppDelegate = appRepeater.itemAt(0);
             verify(topmostAppDelegate);
 
-            var topmostSurfaceItem = findChild(topmostAppDelegate, "surfaceItem");
-            verify(topmostSurfaceItem);
-
             mouseClick(shell, 1, shell.height / 2);
-            compare(topmostSurfaceItem.mousePressCount, 1);
-            compare(topmostSurfaceItem.mouseReleaseCount, 1);
+            tryCompareFunction(function(){ return MirTest.mousePressCount(topmostAppDelegate.surface); }, 1);
+            tryCompareFunction(function(){ return MirTest.mouseReleaseCount(topmostAppDelegate.surface); }, 1);
 
             mouseClick(shell, shell.width - 1, shell.height / 2);
-            compare(topmostSurfaceItem.mousePressCount, 2);
-            compare(topmostSurfaceItem.mouseReleaseCount, 2);
+            tryCompareFunction(function(){ return MirTest.mousePressCount(topmostAppDelegate.surface); }, 2);
+            tryCompareFunction(function(){ return MirTest.mouseReleaseCount(topmostAppDelegate.surface); }, 2);
 
             tap(shell, 1, shell.height / 2);
-            compare(topmostSurfaceItem.touchPressCount, 1);
-            compare(topmostSurfaceItem.touchReleaseCount, 1);
+            tryCompareFunction(function(){ return MirTest.touchPressCount(topmostAppDelegate.surface); }, 1);
+            tryCompareFunction(function(){ return MirTest.touchReleaseCount(topmostAppDelegate.surface); }, 1);
 
             tap(shell, shell.width - 1, shell.height / 2);
-            compare(topmostSurfaceItem.touchPressCount, 2);
-            compare(topmostSurfaceItem.touchReleaseCount, 2);
+            tryCompareFunction(function(){ return MirTest.touchPressCount(topmostAppDelegate.surface); }, 2);
+            tryCompareFunction(function(){ return MirTest.touchReleaseCount(topmostAppDelegate.surface); }, 2);
         }
 
         function test_background_data() {
@@ -2412,9 +2382,7 @@ Rectangle {
             shell.usageScenario = "phone";
             waitForRendering(shell);
 
-            var gallerySurfaceId = topLevelSurfaceList.nextId;
-            var galleryApp = ApplicationManager.startApplication("gallery-app");
-            waitUntilAppWindowIsFullyLoaded(gallerySurfaceId);
+            startApplication("gallery-app");
             compare(topLevelSurfaceList.applicationAt(0).appId, "gallery-app");
 
             dragLauncherIntoView();
@@ -2466,7 +2434,8 @@ Rectangle {
             tryCompare(appSurface, "keymap", "sk");
 
             // try to create a prompt surface, verify it also has the same keymap
-            app.createPromptSurface();
+            MirTest.createPromptSurface(app.appId);
+            tryCompare(app.promptSurfaceList, "count", 1);
             var promptSurface = app.promptSurfaceList.get(0);
             verify(promptSurface);
             tryCompare(appSurface, "keymap", promptSurface.keymap);
@@ -2496,6 +2465,7 @@ Rectangle {
 
             // focus our first app, make sure it also has the "fr" keymap
             ApplicationManager.requestFocusApplication("dialer-app");
+            tryCompare(ApplicationManager, "focusedApplicationId", "dialer-app");
             tryCompare(appSurface, "keymap", "fr");
 
             // switch to previous keymap, should be "cz+qwerty"
@@ -2513,6 +2483,7 @@ Rectangle {
 
             // switch to app2, should also get "fr"
             ApplicationManager.requestFocusApplication("calendar-app");
+            tryCompare(ApplicationManager, "focusedApplicationId", "calendar-app");
             tryCompare(app2Surface, "keymap", "fr");
         }
 
@@ -2660,15 +2631,20 @@ Rectangle {
 
             dashAppDelegate.windowedHeight = data.windowHeight;
             dashAppDelegate.windowedY = data.windowY;
-            topLevelSurfaceList.inputMethodSurface.setInputBounds(Qt.rect(0, 0, 0, 0));
+
+            setSurfaceInputBounds(topLevelSurfaceList.inputMethodSurface, Qt.rect(0, 0, 0, 0));
+
+            waitUntilSurfaceGeometryIsUpToDate(dashAppDelegate);
             var initialY = dashAppDelegate.y;
             print("intial", initialY, "panel", PanelState.panelHeight);
             verify(initialY > PanelState.panelHeight);
 
-            topLevelSurfaceList.inputMethodSurface.setInputBounds(Qt.rect(0, root.height / 2, root.width, root.height / 2));
+            setSurfaceInputBounds(topLevelSurfaceList.inputMethodSurface, Qt.rect(0, root.height / 2, root.width, root.height / 2));
+            waitUntilSurfaceGeometryIsUpToDate(dashAppDelegate);
             tryCompare(dashAppDelegate, "y", data.targetDisplacement);
 
-            topLevelSurfaceList.inputMethodSurface.setInputBounds(Qt.rect(0, 0, 0, 0));
+            setSurfaceInputBounds(topLevelSurfaceList.inputMethodSurface, Qt.rect(0, 0, 0, 0));
+            waitUntilSurfaceGeometryIsUpToDate(dashAppDelegate);
             tryCompare(dashAppDelegate, "y", initialY);
             topLevelSurfaceList.inputMethodSurface.requestState(oldOSKState);
         }
@@ -2680,9 +2656,7 @@ Rectangle {
             swipeAwayGreeter();
 
             // load some fullscreen app
-            var cameraSurfaceId = topLevelSurfaceList.nextId;
-            var cameraApp = ApplicationManager.startApplication("camera-app");
-            waitUntilAppWindowIsFullyLoaded(cameraSurfaceId);
+            startApplication("camera-app");
 
             var cursor = findChild(shell, "cursor");
             verify(cursor);

@@ -24,10 +24,6 @@
 
 #include "ApplicationArguments.h"
 
-#ifdef UNITY8_ENABLE_TOUCH_EMULATION
-#include "MouseTouchAdaptor.h"
-#endif
-
 #include "SecondaryWindow.h"
 #include "ShellView.h"
 
@@ -47,15 +43,11 @@ private Q_SLOTS:
     void onScreenAdded(QScreen*);
 
 private:
-    void setupQmlEngine(bool isMirServer);
+    void setupQmlEngine();
     QString m_deviceName;
     ApplicationArguments m_qmlArgs;
     ShellView *m_shellView{nullptr};
     SecondaryWindow *m_secondaryWindow{nullptr};
-
-    #ifdef UNITY8_ENABLE_TOUCH_EMULATION
-    MouseTouchAdaptor *m_mouseTouchAdaptor{nullptr};
-    #endif
 
     QQmlEngine *m_qmlEngine{nullptr};
 };

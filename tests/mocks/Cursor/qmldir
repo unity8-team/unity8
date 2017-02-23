@@ -1,2 +1,3 @@
 module Cursor
+plugin WindowedCursor-qml
 Cursor 1.1 Cursor.qml
