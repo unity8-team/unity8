@@ -1,3 +1,9 @@
+unity8 (8.15+17.04.20170223-0ubuntu1) zesty; urgency=medium
+
+  * Use qtmir in qmltests instead of mocks
+
+ -- Daniel d'Andrada <daniel.dandrada@canonical.com>  Thu, 23 Feb 2017 11:20:38 +0000
+
 unity8 (8.15+17.04.20170216.1-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
