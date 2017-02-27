@@ -19,6 +19,8 @@
 
 #include "launcheritem.h"
 
+class UalWrapper;
+
 class AppDrawerModel: public AppDrawerModelInterface
 {
     Q_OBJECT
@@ -28,6 +30,10 @@ public:
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
+private Q_SLOTS:
+    void appInfoChanged(const QString &appId);
+
 private:
     QList<LauncherItem*> m_list;
+    UalWrapper *m_ual;
 };

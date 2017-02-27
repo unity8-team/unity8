@@ -25,6 +25,7 @@ public:
         QString name;
         QString icon;
         QStringList keywords;
+        uint popularity = 0;
     };
 
     UalWrapper(QObject* parent = nullptr);
@@ -32,4 +33,6 @@ public:
     static QStringList installedApps();
     static AppInfo getApplicationInfo(const QString &appId);
 
+Q_SIGNALS:
+    void appInfoChanged(const QString &appId);
 };

@@ -21,7 +21,8 @@
 #include <QDateTime>
 
 AppDrawerModel::AppDrawerModel(QObject *parent):
-    AppDrawerModelInterface(parent)
+    AppDrawerModelInterface(parent),
+    m_ual(new UalWrapper(this))
 {
     Q_FOREACH (const QString &appId, UalWrapper::installedApps()) {
         UalWrapper::AppInfo info = UalWrapper::getApplicationInfo(appId);
@@ -32,7 +33,9 @@ AppDrawerModel::AppDrawerModel(QObject *parent):
         m_list.append(new LauncherItem(appId, info.name, info.icon, this));
         m_list.last()->setKeywords(info.keywords);
     }
-    qsrand(QDateTime::currentMSecsSinceEpoch() / 100);
+
+    // keep this a queued connection as it's coming from another thread.
+    connect(m_ual, &UalWrapper::appInfoChanged, this, &AppDrawerModel::appInfoChanged, Qt::QueuedConnection);
 }
 
 int AppDrawerModel::rowCount(const QModelIndex &parent) const
@@ -53,10 +56,30 @@ QVariant AppDrawerModel::data(const QModelIndex &index, int role) const
     case RoleKeywords:
         return m_list.at(index.row())->keywords();
     case RoleUsage:
-        // FIXME: u-a-l needs to provide API for usage stats.
-        // don't forget to drop the qsrand() call in the ctor when dropping this.
-        return qrand();
+        return m_list.at(index.row())->popularity();
     }
 
     return QVariant();
+}
+
+void AppDrawerModel::appInfoChanged(const QString &appId)
+{
+    LauncherItem *item = nullptr;
+    int idx = -1;
+
+    for(int i = 0; i < m_list.count(); i++) {
+        if (m_list.at(i)->appId() == appId) {
+            item = m_list.at(i);
+            idx = i;
+            break;
+        }
+    }
+
+    if (!item) {
+        return;
+    }
+
+    UalWrapper::AppInfo info = m_ual->getApplicationInfo(appId);
+    item->setPopularity(info.popularity);
+    Q_EMIT dataChanged(index(idx), index(idx), {AppDrawerModelInterface::RoleUsage});
 }
