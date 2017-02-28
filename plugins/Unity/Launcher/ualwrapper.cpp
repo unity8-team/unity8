@@ -32,11 +32,7 @@ QStringList UalWrapper::installedApps()
     QStringList appIds;
     try {
         for (const std::shared_ptr<Application> &app : Registry::installedApps()) {
-            if (!app->appId().package.value().empty()) {
-                appIds << QString::fromStdString(app->appId().package.value() + "_" + app->appId().appname.value());
-            } else {
-                appIds << QString::fromStdString(app->appId().appname);
-            }
+            appIds << QString::fromStdString(app->appId().persistentID());
         }
     } catch (const std::runtime_error &e) {
         qWarning() << "ubuntu-all-launch threw an exception listing apps:" << e.what();

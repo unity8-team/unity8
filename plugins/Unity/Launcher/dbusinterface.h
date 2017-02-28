@@ -41,9 +41,6 @@ Q_SIGNALS:
     void alertCalled(const QString &appId);
 
 private:
-    static QString decodeAppId(const QString& path);
-    static QString encodeAppId(const QString& appId);
-
     LauncherModel *m_launcherModel;
 
 };

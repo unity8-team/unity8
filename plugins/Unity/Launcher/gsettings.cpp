@@ -20,6 +20,9 @@
 #include "gsettings.h"
 
 #include <QVariant>
+#include <ubuntu-app-launch/appid.h>
+
+namespace ual = ubuntu::app_launch;
 
 GSettings::GSettings(QObject *parent):
     QObject(parent)
@@ -45,11 +48,12 @@ QStringList GSettings::storedApplications() const
             QString appId = entry;
             appId.remove(QStringLiteral("appid://"));
             const QStringList splittedAppId = appId.split('/');
-            if (splittedAppId.count() == 3) {
-                // Strip current-user-version in case its there
-                appId = splittedAppId.first() +  "_" + splittedAppId.at(1);
+            auto ualappid = ual::AppID::discover(splittedAppId.value(0).toStdString(),
+                                                 splittedAppId.value(1).toStdString(),
+                                                 splittedAppId.value(2).toStdString());
+            if (!ualappid.empty()) {
+                storedApps << QString::fromStdString(ualappid.persistentID());
             }
-            storedApps << appId;
         }
     }
     return storedApps;
