@@ -40,6 +40,8 @@ Rectangle {
     signal applicationSelected(string appId)
     signal showDashHome()
     signal kbdNavigationCancelled()
+    signal focusNextSurface(string appId)
+    signal focusPreviousSurface(string appId)
 
     onXChanged: {
         if (quickList.state === "open") {
@@ -484,6 +486,16 @@ Rectangle {
 
                         onReleased: {
                             endDrag(drag);
+                        }
+
+                        onWheel: {
+                            var wheeledItem = launcherListView.itemAt(mouseX, mouseY + launcherListView.realContentY)
+                            print("wheeled item is", wheeledItem.appId)
+                            if (wheel.angleDelta.y < 0) {
+                                root.focusPreviousSurface(wheeledItem.appId)
+                            } else {
+                                root.focusNextSurface(wheeledItem.appId);
+                            }
                         }
 
                         function endDrag(dragItem) {

@@ -573,6 +573,43 @@ StyledItem {
                     stage.focus = true;
                 }
             }
+            onFocusNextSurface: {
+                print("focusnext")
+                var appInfo = ApplicationManager.findApplication(appId)
+                if (!appInfo) {
+                    return;
+                }
+                var focusedId = -1;
+                for (var i = 0; i < appInfo.surfaceList.count; i++) {
+                    var surface = appInfo.surfaceList.get(i);
+                    if (surface.focused) {
+                        focusedId = i;
+                        break;
+                    }
+                }
+                print("should focus", focusedId + 1)
+                appInfo.surfaceList.get((focusedId+1) % appInfo.surfaceList.count).activate();
+            }
+            onFocusPreviousSurface: {
+                print("focusprevious")
+                var appInfo = ApplicationManager.findApplication(appId)
+                if (!appInfo) {
+                    return;
+                }
+                var focusedId = appInfo.surfaceList.count - 1;
+                for (var i = appInfo.surfaceList.count - 1; i >= 0; i--) {
+                    var surface = appInfo.surfaceList.get(i);
+                    if (surface.focused) {
+                        focused = i;
+                        break;
+                    }
+                }
+                if (focusedId - 1 < 0) {
+                    focusedId = appInfo.surfaceList.count - 1;
+                }
+
+                appInfo.surfaceList.get(focusedId).activate();
+            }
 
             GlobalShortcut {
                 shortcut: Qt.MetaModifier | Qt.Key_A

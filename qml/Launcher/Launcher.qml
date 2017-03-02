@@ -53,6 +53,9 @@ FocusScope {
     // emitted when an application is selected
     signal launcherApplicationSelected(string appId)
 
+    signal focusNextSurface(string appId)
+    signal focusPreviousSurface(string appId)
+
     // emitted when the dash icon in the launcher has been tapped
     signal showDashHome()
 
@@ -445,6 +448,13 @@ FocusScope {
             panel.highlightIndex = -2;
             root.hide();
             root.focus = false;
+        }
+
+        onFocusNextSurface: {
+            root.focusNextSurface(appId);
+        }
+        onFocusPreviousSurface: {
+            root.focusPreviousSurface(appId);
         }
 
         Behavior on x {
