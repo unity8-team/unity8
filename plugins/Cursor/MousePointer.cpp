@@ -23,6 +23,7 @@
 #include <QQuickWindow>
 #include <QGuiApplication>
 #include <QtMath>
+#include <QQuickView>
 
 #include <qpa/qwindowsysteminterface.h>
 
@@ -151,6 +152,7 @@ void MousePointer::itemChange(ItemChange change, const ItemChangeData &value)
     if (change == ItemSceneChange) {
         registerWindow(value.window);
     }
+    QQuickItem::itemChange(change, value);
 }
 
 void MousePointer::registerWindow(QWindow *window)
@@ -166,6 +168,9 @@ void MousePointer::registerWindow(QWindow *window)
     m_registeredWindow = window;
 
     if (m_registeredWindow) {
+        if (m_registeredWindow->inherits("QQuickView")) {
+            setParentItem(static_cast<QQuickView *>(window)->rootObject());
+        }
         connect(window, &QWindow::screenChanged, this, &MousePointer::registerScreen);
         registerScreen(window->screen());
     } else {
