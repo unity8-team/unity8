@@ -50,7 +50,7 @@ Item {
             rightMargin: -units.gu(1)
             bottomMargin: -units.gu(1)
         }
-        source: "graphics/rectangular_dropshadow.sci"
+        Component.onCompleted: source = "graphics/rectangular_dropshadow.sci"
     }
 
     Rectangle {

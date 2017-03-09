@@ -143,9 +143,9 @@ StyledItem {
             fill: contents
             margins: shapedBack.visible ? -units.gu(1) : -units.gu(1.5)
         }
-        source: "../graphics/dropshadow2gu.sci"
         opacity: notification.opacity * 0.5
         enabled: !fullscreen
+        Component.onCompleted: source = "../graphics/dropshadow2gu.sci"
     }
 
     UbuntuShape {

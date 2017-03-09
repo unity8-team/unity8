@@ -145,8 +145,8 @@ FocusScope {
         }
         height: Math.min(applicationWindow.implicitHeight, applicationWindow.height) * applicationWindow.itemScale
                 + root.decorationHeight * Math.min(1, root.showDecoration) + (active ? units.gu(4) : units.gu(3))
-        source: "../graphics/dropshadow2gu.sci"
         opacity: root.shadowOpacity
+        Component.onCompleted: source = "../graphics/dropshadow2gu.sci"
     }
 
     ApplicationWindow {

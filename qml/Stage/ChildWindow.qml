@@ -80,8 +80,8 @@ Item {
             left: parent.left; right: parent.right
             margins: -shadowThickness
         }
-        source: "../graphics/dropshadow2gu.sci"
         opacity: .3
+        Component.onCompleted: source = "../graphics/dropshadow2gu.sci"
     }
 
     Loader {

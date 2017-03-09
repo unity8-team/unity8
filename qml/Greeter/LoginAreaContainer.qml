@@ -26,8 +26,8 @@ Item {
             rightMargin: -units.gu(1.5)
             bottomMargin: -units.gu(1.5)
         }
-        source: "../graphics/dropshadow2gu.sci"
         opacity: 0.35
+        Component.onCompleted: source = "../graphics/dropshadow2gu.sci"
     }
 
     UbuntuShape {
