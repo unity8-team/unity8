@@ -24,12 +24,13 @@ ListItem {
 
     signal requestFavorite(string scopeId, bool favorite)
 
+    readonly property int index: model.index
+
     height: layout.height + (divider.visible ? divider.height : 0)
     width: parent.width
 
-    readonly property int index: model.index
-
     divider.visible: results.count > 0
+
     Item {
         id: layout
 
