@@ -283,6 +283,24 @@ TestCase {
         }
     }
 
+    function flickToYBeginning(item) {
+        if (!item)
+            qtest_fail("no item given", 1);
+
+        var i = 0;
+        var x = item.width / 2;
+        var y = units.gu(1);
+        var toY = item.height - units.gu(1)
+        var maxIterations = 5 + item.contentHeight / item.height;
+        while (i < maxIterations && !item.atYBeginning) {
+            touchFlick(item, x, y, x , toY);
+            tryCompare(item, "moving", false);
+            ++i;
+        }
+
+        tryCompare(item, "atYBeginning", true);
+    }
+
     function flickToYEnd(item) {
         if (!item)
             qtest_fail("no item given", 1);
