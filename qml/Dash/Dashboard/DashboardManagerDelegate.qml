@@ -24,6 +24,7 @@ ListItem {
 
     signal requestFavorite(string scopeId, bool favorite)
 
+    // Expose for testing
     readonly property int index: model.index
 
     height: layout.height + (divider.visible ? divider.height : 0)
@@ -62,9 +63,9 @@ ListItem {
             }
 
             delegate: ListItem {
-                               readonly property alias innerLayoutPadding: innerLayout.padding
-                height: innerLayout.height + (divider.visible ?
-                                              divider.height : 0)
+                readonly property alias innerLayoutPadding: innerLayout.padding
+
+                height: innerLayout.height + (divider.visible ? divider.height : 0)
                 width: parent.width
 
                 ListItemLayout {
