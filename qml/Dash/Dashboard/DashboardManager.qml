@@ -20,8 +20,6 @@ import Ubuntu.Components 1.3
 import Unity 0.2
 import "../../Components"
 
-
-
 MainView {
     id: root
 

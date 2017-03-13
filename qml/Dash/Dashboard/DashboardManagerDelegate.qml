@@ -28,10 +28,8 @@ ListItem {
     // Expose for testing
     readonly property int index: model.index
 
-    height: layout.height + (divider.visible ? divider.height : 0)
-    width: parent.width
-
-    divider.visible: results.count > 0
+    implicitHeight: layout.height
+    divider.visible: false
 
     Item {
         id: layout
@@ -66,8 +64,18 @@ ListItem {
             delegate: ListItem {
                 readonly property alias innerLayoutPadding: innerLayout.padding
 
-                height: innerLayout.height + (divider.visible ? divider.height : 0)
+                height: innerLayout.height
                 width: parent.width
+
+                divider.visible: false
+
+                Rectangle {
+                    height: units.dp(1); width: parent.width
+                    color: theme.palette.normal.raisedText
+                    anchors.top: parent.top
+
+                    visible: index != 0
+                }
 
                 ListItemLayout {
                     id: innerLayout
