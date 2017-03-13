@@ -25,6 +25,8 @@ ListItem {
 
     signal requestFavorite(string scopeId, bool favorite)
 
+    
+
     // Expose for testing
     readonly property int index: model.index
 
@@ -81,12 +83,14 @@ ListItem {
                     id: innerLayout
                     objectName: "layout" + index
 
-                    UbuntuShape {
-                        height: units.gu(4.67)
-                        width: units.gu(4.67)
+                    ProportionalShape {
+                        height: units.gu(4.5)
+                        width: units.gu(4.5)
                         SlotsLayout.position: SlotsLayout.Leading
+
+                        aspect: UbuntuShape.Flat
                         source: Image {
-                            anchors.fill: parent
+                            sourceSize.height: units.gu(4.5)
                             source: "../" + model.art
                         }
                     }
@@ -94,12 +98,12 @@ ListItem {
                     title.text: model.scopeId
 
                     // FIXME: update when pin icon is added to theme
-                    Image {
+                    Icon {
                         objectName: "pinIcon"
 
                         height: units.gu(2)
                         width: units.gu(2)
-                        fillMode: Image.PreserveAspectFit
+                        //fillMode: Image.PreserveAspectFit
                         source: {
                             if (categoryView.isPinnedToDashboard) {
                                 return "graphics/pinned.png"
