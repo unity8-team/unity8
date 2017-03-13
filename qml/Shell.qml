@@ -258,7 +258,7 @@ StyledItem {
     AvailableDesktopArea {
         id: availableDesktopAreaItem
         anchors.fill: parent
-        anchors.topMargin: panel.minimizedPanelHeight
+        anchors.topMargin: panel.fullscreenMode ? 0 : panel.minimizedPanelHeight
         anchors.leftMargin: launcher.lockedVisible ? launcher.panelWidth : 0
     }
 
