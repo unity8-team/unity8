@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright (C) 2016-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 
 #include "WindowManagerPlugin.h"
 
+#include "AvailableDesktopArea.h"
 #include "TopLevelWindowModel.h"
 #include "Window.h"
 
@@ -23,6 +24,7 @@
 
 void WindowManagerPlugin::registerTypes(const char *uri)
 {
+    qmlRegisterType<AvailableDesktopArea>(uri, 1, 0, "AvailableDesktopArea");
     qmlRegisterType<TopLevelWindowModel>(uri, 1, 0, "TopLevelWindowModel");
 
     qRegisterMetaType<Window*>("Window*");

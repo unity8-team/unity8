@@ -97,6 +97,7 @@ Item {
 
         sourceComponent: Component {
             WindowDecoration {
+                id: windowDecoration
                 height: units.gu(3)
                 title: root.surface ? root.surface.name : ""
                 active: root.surface ? root.surface.focused : false
@@ -109,6 +110,11 @@ Item {
                     d.moveHandler.handlePositionChanged(mouse);
                 }
                 onReleased: if (d.moveHandler) { d.moveHandler.handleReleased(); }
+                Binding {
+                    target: root.surface
+                    property: "topMargin"
+                    value: windowDecoration.height
+                }
             }
         }
     }

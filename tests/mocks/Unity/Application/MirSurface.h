@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Canonical, Ltd.
+ * Copyright (C) 2015-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,9 @@ public:
 
     unity::shell::application::MirSurfaceInterface* parentSurface() const override;
     unity::shell::application::MirSurfaceListInterface* childSurfaceList() const override;
+
+    int topMargin() const override;
+    void setTopMargin(int) override;
 
     Q_INVOKABLE void close() override;
     Q_INVOKABLE void activate() override;
@@ -227,6 +230,8 @@ private:
     unity::shell::application::MirSurfaceInterface* m_parentSurface;
 
     MirSurfaceListModel *m_childSurfaceList;
+
+    int m_topMargin{0};
 };
 
 #endif // MOCK_MIR_SURFACE_H

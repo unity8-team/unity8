@@ -172,6 +172,12 @@ FocusScope {
         property real itemScale: 1
         property real minSize: Math.min(root.scaleToPreviewSize, Math.min(requestedHeight, Math.min(requestedWidth, Math.min(implicitHeight, implicitWidth))))
 
+        Binding {
+            target: applicationWindow.surface
+            property: "topMargin"
+            value: applicationWindow.y
+        }
+
         transform: [
             Rotation {
                 id: rotationTransform

@@ -255,6 +255,12 @@ StyledItem {
         }
     }
 
+    AvailableDesktopArea {
+        anchors.fill: parent
+        anchors.topMargin: panel.minimizedPanelHeight
+        anchors.leftMargin: launcher.lockedVisible ? launcher.panelWidth : 0
+    }
+
     GSettings {
         id: settings
         schema.id: "com.canonical.Unity8"

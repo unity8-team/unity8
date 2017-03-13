@@ -1,4 +1,5 @@
 set(WINDOWMANAGER_SRC
+    AvailableDesktopArea.cpp
     TopLevelWindowModel.cpp
     Window.cpp
     WindowManagerPlugin.cpp
@@ -8,6 +9,11 @@ set(WINDOWMANAGER_SRC
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceListInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/SurfaceManagerInterface.h
    )
+
+include_directories(
+    SYSTEM
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+)
 
 add_library(windowmanager-qml SHARED ${WINDOWMANAGER_SRC})
 
