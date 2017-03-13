@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 Canonical, Ltd.
+ * Copyright (C) 2014-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import GlobalShortcut 1.0
 import GSettings 1.0
 import "Spread"
 import "Spread/MathUtils.js" as MathUtils
+import WindowManager 1.0
 
 FocusScope {
     id: root
@@ -118,6 +119,12 @@ FocusScope {
                 priv.goneToSpread = true;
             }
         }
+    }
+
+    // For MirAL window management
+    WindowMargins {
+        normal: Qt.rect(0, root.mode === "windowed" ? priv.windowDecorationHeight : 0, 0, 0)
+        dialog: normal
     }
 
     property Item itemConfiningMouseCursor: !spreadShown && priv.focusedAppDelegate && priv.focusedAppDelegate.window.confinesMousePointer ?
@@ -347,6 +354,8 @@ FocusScope {
         }
 
         readonly property real virtualKeyboardHeight: root.inputMethodRect.height
+
+        readonly property real windowDecorationHeight: units.gu(3)
     }
 
     Component.onCompleted: priv.updateMainAndSideStageIndexes();
@@ -776,8 +785,8 @@ FocusScope {
                                 angleDiff = (360 + angleDiff) % 360;
                                 if (angleDiff === 90 || angleDiff === 270) {
                                     var aux = decoratedWindow.requestedHeight;
-                                    decoratedWindow.requestedHeight = decoratedWindow.requestedWidth + decoratedWindow.decorationHeight;
-                                    decoratedWindow.requestedWidth = aux - decoratedWindow.decorationHeight;
+                                    decoratedWindow.requestedHeight = decoratedWindow.requestedWidth + decoratedWindow.actualDecorationHeight;
+                                    decoratedWindow.requestedWidth = aux - decoratedWindow.actualDecorationHeight;
                                 }
                             }
                             decoratedWindow.surfaceOrientationAngle = shellOrientationAngle;
@@ -1591,6 +1600,7 @@ FocusScope {
                     focus: true
                     interactive: root.interactive
                     showDecoration: 1
+                    decorationHeight: priv.windowDecorationHeight
                     maximizeButtonShown: appDelegate.canBeMaximized
                     overlayShown: touchControls.overlayShown
                     width: implicitWidth
@@ -1781,6 +1791,7 @@ FocusScope {
                             displacementY: appDelegate.clientAreaItem.y
 
                             boundsItem: root.availableDesktopArea
+                            decorationHeight: priv.windowDecorationHeight
 
                             z: childWindowRepeater.count - model.index
                         }

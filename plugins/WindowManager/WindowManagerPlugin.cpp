@@ -19,6 +19,7 @@
 #include "AvailableDesktopArea.h"
 #include "TopLevelWindowModel.h"
 #include "Window.h"
+#include "WindowMargins.h"
 
 #include <QtQml>
 
@@ -26,6 +27,7 @@ void WindowManagerPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<AvailableDesktopArea>(uri, 1, 0, "AvailableDesktopArea");
     qmlRegisterType<TopLevelWindowModel>(uri, 1, 0, "TopLevelWindowModel");
+    qmlRegisterType<WindowMargins>(uri, 1, 0, "WindowMargins");
 
     qRegisterMetaType<Window*>("Window*");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Canonical, Ltd.
+ * Copyright (C) 2015-2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -547,17 +547,4 @@ MirSurfaceInterface* MirSurface::parentSurface() const
 MirSurfaceListInterface* MirSurface::childSurfaceList() const
 {
     return m_childSurfaceList;
-}
-
-int MirSurface::topMargin() const
-{
-    return m_topMargin;
-}
-
-void MirSurface::setTopMargin(int value)
-{
-    if (value != m_topMargin) {
-        m_topMargin = value;
-        Q_EMIT topMarginChanged(value);
-    }
 }
