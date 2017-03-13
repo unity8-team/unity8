@@ -27,6 +27,7 @@ Item {
     property Item target
     property alias requestedWidth: surfaceContainer.requestedWidth
     property alias requestedHeight: surfaceContainer.requestedHeight
+    property real decorationHeight
 
     width: surface ? surface.size.width : 0
     height: surface ? surface.size.height : 0
@@ -97,7 +98,8 @@ Item {
 
         sourceComponent: Component {
             WindowDecoration {
-                height: units.gu(3)
+                id: windowDecoration
+                height: root.decorationHeight
                 title: root.surface ? root.surface.name : ""
                 active: root.surface ? root.surface.focused : false
                 closeButtonVisible: false
@@ -109,6 +111,11 @@ Item {
                     d.moveHandler.handlePositionChanged(mouse);
                 }
                 onReleased: if (d.moveHandler) { d.moveHandler.handleReleased(); }
+                Binding {
+                    target: root.surface
+                    property: "topMargin"
+                    value: windowDecoration.height
+                }
             }
         }
     }

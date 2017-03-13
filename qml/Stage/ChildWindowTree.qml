@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright (C) 2016-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ Item {
     property real displacementX: 0
     property real displacementY: 0
     property alias boundsItem: childWindow.boundsItem
+    property alias decorationHeight: childWindow.decorationHeight
 
     x: surface ? surface.position.x + displacementX : 0
     y: surface ? surface.position.y + displacementY : 0
