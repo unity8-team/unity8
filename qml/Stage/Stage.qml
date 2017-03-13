@@ -43,7 +43,6 @@ FocusScope {
     property int shellOrientationAngle
     property bool spreadEnabled: true // If false, animations and right edge will be disabled
     property bool suspended
-    property int leftMargin: 0
     property bool oskEnabled: false
     property rect inputMethodRect
     property real rightEdgePushProgress: 0
@@ -568,7 +567,7 @@ FocusScope {
             id: spreadItem
             objectName: "spreadItem"
             anchors.fill: appContainer
-            leftMargin: root.leftMargin
+            leftMargin: root.availableDesktopArea.x
             model: root.topLevelSurfaceList
             spreadFlickable: floatingFlickable
             z: 10
@@ -759,7 +758,7 @@ FocusScope {
                     target: appDelegate
                     property: "y"
                     value: appDelegate.requestedY -
-                           Math.min(appDelegate.requestedY - PanelState.panelHeight,
+                           Math.min(appDelegate.requestedY - root.availableDesktopArea.y,
                                     Math.max(0, priv.virtualKeyboardHeight - (appContainer.height - (appDelegate.requestedY + appDelegate.height))))
                     when: root.oskEnabled && appDelegate.focus && (appDelegate.state == "normal" || appDelegate.state == "restored")
                           && root.inputMethodRect.height > 0
@@ -893,7 +892,7 @@ FocusScope {
                     target: appDelegate
                     screenWidth: appContainer.width
                     screenHeight: appContainer.height
-                    leftMargin: root.leftMargin
+                    leftMargin: root.availableDesktopArea.x
                     minimumY: root.availableDesktopArea.y
                 }
 
@@ -1146,7 +1145,7 @@ FocusScope {
 
                 StagedRightEdgeMaths {
                     id: stagedRightEdgeMaths
-                    sceneWidth: appContainer.width - root.leftMargin
+                    sceneWidth: root.availableDesktopArea.width
                     sceneHeight: appContainer.height
                     isMainStageApp: priv.mainStageDelegate == appDelegate
                     isSideStageApp: priv.sideStageDelegate == appDelegate
@@ -1157,7 +1156,7 @@ FocusScope {
                     progress: 0
                     targetHeight: spreadItem.stackHeight
                     targetX: spreadMaths.targetX
-                    startY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                    startY: appDelegate.fullscreen ? 0 : root.availableDesktopArea.y
                     targetY: spreadMaths.targetY
                     targetAngle: spreadMaths.targetAngle
                     targetScale: spreadMaths.targetScale
@@ -1278,9 +1277,9 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             x: stageMaths.itemX
-                            y: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            y: root.availableDesktopArea.y
                             requestedWidth: appContainer.width
-                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
+                            requestedHeight: root.availableDesktopArea.height
                             visuallyMaximized: true
                             visible: appDelegate.x < root.width
                         }
@@ -1306,10 +1305,10 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             x: stageMaths.itemX
-                            y: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            y: root.availableDesktopArea.y
                             z: stageMaths.itemZ
                             requestedWidth: stageMaths.itemWidth
-                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
+                            requestedHeight: root.availableDesktopArea.height
                             visuallyMaximized: true
                             visible: appDelegate.x < root.width
                         }
@@ -1326,11 +1325,11 @@ FocusScope {
                         name: "maximized"; when: appDelegate.maximized && !appDelegate.minimized
                         PropertyChanges {
                             target: appDelegate;
-                            requestedX: root.leftMargin;
+                            requestedX: root.availableDesktopArea.x;
                             requestedY: 0;
                             visuallyMinimized: false;
                             visuallyMaximized: true
-                            requestedWidth: appContainer.width - root.leftMargin;
+                            requestedWidth: root.availableDesktopArea.width;
                             requestedHeight: appContainer.height;
                         }
                         PropertyChanges { target: touchControls; enabled: true }
@@ -1373,10 +1372,10 @@ FocusScope {
                         extend: "normal"
                         PropertyChanges {
                             target: appDelegate
-                            windowedX: root.leftMargin
-                            windowedY: PanelState.panelHeight
-                            windowedWidth: (appContainer.width - root.leftMargin)/2
-                            windowedHeight: appContainer.height - PanelState.panelHeight
+                            windowedX: root.availableDesktopArea.x
+                            windowedY: root.availableDesktopArea.y
+                            windowedWidth: root.availableDesktopArea.width / 2
+                            windowedHeight: root.availableDesktopArea.height
                         }
                     },
                     State {
@@ -1384,7 +1383,7 @@ FocusScope {
                         extend: "maximizedLeft"
                         PropertyChanges {
                             target: appDelegate;
-                            windowedX: (appContainer.width + root.leftMargin)/2
+                            windowedX: root.availableDesktopArea.x + (root.availableDesktopArea.width / 2)
                         }
                     },
                     State {
@@ -1392,10 +1391,10 @@ FocusScope {
                         extend: "normal"
                         PropertyChanges {
                             target: appDelegate
-                            windowedX: root.leftMargin
-                            windowedY: PanelState.panelHeight
-                            windowedWidth: (appContainer.width - root.leftMargin)/2
-                            windowedHeight: (appContainer.height - PanelState.panelHeight)/2
+                            windowedX: root.availableDesktopArea.x
+                            windowedY: root.availableDesktopArea.y
+                            windowedWidth: root.availableDesktopArea.width / 2
+                            windowedHeight: root.availableDesktopArea.height / 2
                         }
                     },
                     State {
@@ -1403,7 +1402,7 @@ FocusScope {
                         extend: "maximizedTopLeft"
                         PropertyChanges {
                             target: appDelegate
-                            windowedX: (appContainer.width + root.leftMargin)/2
+                            windowedX: root.availableDesktopArea.x + (root.availableDesktopArea.width / 2)
                         }
                     },
                     State {
@@ -1411,10 +1410,10 @@ FocusScope {
                         extend: "normal"
                         PropertyChanges {
                             target: appDelegate
-                            windowedX: root.leftMargin
-                            windowedY: (appContainer.height + PanelState.panelHeight)/2
-                            windowedWidth: (appContainer.width - root.leftMargin)/2
-                            windowedHeight: appContainer.height/2
+                            windowedX: root.availableDesktopArea.x
+                            windowedY: root.availableDesktopArea.y + (root.availableDesktopArea.height / 2)
+                            windowedWidth: root.availableDesktopArea.width / 2
+                            windowedHeight: root.availableDesktopArea.height / 2
                         }
                     },
                     State {
@@ -1422,20 +1421,26 @@ FocusScope {
                         extend: "maximizedBottomLeft"
                         PropertyChanges {
                             target: appDelegate
-                            windowedX: (appContainer.width + root.leftMargin)/2
+                            windowedX: root.availableDesktopArea.x + (root.availableDesktopArea.width / 2)
                         }
                     },
                     State {
                         name: "maximizedHorizontally"; when: appDelegate.maximizedHorizontally && !appDelegate.minimized
                         extend: "normal"
-                        PropertyChanges { target: appDelegate; windowedX: root.leftMargin; windowedY: windowedY;
-                            windowedWidth: appContainer.width - root.leftMargin; windowedHeight: windowedHeight }
+                        PropertyChanges {
+                            target: appDelegate
+                            windowedX: root.availableDesktopArea.x; windowedY: windowedY
+                            windowedWidth: root.availableDesktopArea.width; windowedHeight: windowedHeight
+                        }
                     },
                     State {
                         name: "maximizedVertically"; when: appDelegate.maximizedVertically && !appDelegate.minimized
                         extend: "normal"
-                        PropertyChanges { target: appDelegate; windowedX: windowedX; windowedY: PanelState.panelHeight;
-                            windowedWidth: windowedWidth; windowedHeight: appContainer.height - PanelState.panelHeight }
+                        PropertyChanges {
+                            target: appDelegate
+                            windowedX: windowedX; windowedY: root.availableDesktopArea.y
+                            windowedWidth: windowedWidth; windowedHeight: root.availableDesktopArea.height
+                        }
                     },
                     State {
                         name: "minimized"; when: appDelegate.minimized
@@ -1788,7 +1793,7 @@ FocusScope {
     FakeMaximizeDelegate {
         id: fakeRectangle
         target: priv.focusedAppDelegate
-        leftMargin: root.leftMargin
+        leftMargin: root.availableDesktopArea.x
         appContainerWidth: appContainer.width
         appContainerHeight: appContainer.height
     }

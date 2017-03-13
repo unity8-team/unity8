@@ -319,7 +319,6 @@ StyledItem {
 
             onInteractiveChanged: { if (interactive) { focus = true; } }
 
-            leftMargin: shell.usageScenario == "desktop" && !settings.autohideLauncher ? launcher.panelWidth: 0
             suspended: greeter.shown
             altTabPressed: physicalKeysMapper.altTabPressed
             oskEnabled: shell.oskEnabled
