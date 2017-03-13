@@ -47,6 +47,7 @@ FocusScope {
     property bool oskEnabled: false
     property rect inputMethodRect
     property real rightEdgePushProgress: 0
+    property Item availableDesktopArea
 
     // Configuration
     property string mode: "staged"
@@ -669,13 +670,6 @@ FocusScope {
             }
         }
 
-        Item {
-            id: boundariesForWindowPlacement
-            anchors.fill: parent
-            anchors.topMargin: PanelState.panelHeight
-            visible: false
-        }
-
         Repeater {
             id: appRepeater
             model: topLevelSurfaceList
@@ -900,7 +894,7 @@ FocusScope {
                     screenWidth: appContainer.width
                     screenHeight: appContainer.height
                     leftMargin: root.leftMargin
-                    minimumY: boundariesForWindowPlacement.y
+                    minimumY: root.availableDesktopArea.y
                 }
 
                 Connections {
@@ -1569,7 +1563,7 @@ FocusScope {
                     anchors.margins: touchControls.overlayShown ? borderThickness/2 : -borderThickness
 
                     target: appDelegate
-                    boundsItem: boundariesForWindowPlacement
+                    boundsItem: root.availableDesktopArea
                     minWidth: units.gu(10)
                     minHeight: units.gu(10)
                     borderThickness: units.gu(2)
@@ -1597,7 +1591,7 @@ FocusScope {
                     width: implicitWidth
                     height: implicitHeight
                     highlightSize: windowInfoItem.iconMargin / 2
-                    boundsItem: boundariesForWindowPlacement
+                    boundsItem: root.availableDesktopArea
 
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
@@ -1660,7 +1654,7 @@ FocusScope {
                     resizeArea: resizeArea
                     enabled: false
                     visible: enabled
-                    boundsItem: boundariesForWindowPlacement
+                    boundsItem: root.availableDesktopArea
 
                     onFakeMaximizeAnimationRequested: if (!appDelegate.maximized) fakeRectangle.maximize(amount, true)
                     onFakeMaximizeLeftAnimationRequested: if (!appDelegate.maximizedLeft) fakeRectangle.maximizeLeft(amount, true)
@@ -1781,7 +1775,7 @@ FocusScope {
                             displacementX: appDelegate.clientAreaItem.x
                             displacementY: appDelegate.clientAreaItem.y
 
-                            boundsItem: boundariesForWindowPlacement
+                            boundsItem: root.availableDesktopArea
 
                             z: childWindowRepeater.count - model.index
                         }

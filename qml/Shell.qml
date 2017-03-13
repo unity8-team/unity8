@@ -256,6 +256,7 @@ StyledItem {
     }
 
     AvailableDesktopArea {
+        id: availableDesktopAreaItem
         anchors.fill: parent
         anchors.topMargin: panel.minimizedPanelHeight
         anchors.leftMargin: launcher.lockedVisible ? launcher.panelWidth : 0
@@ -296,6 +297,7 @@ StyledItem {
             topLevelSurfaceList: topLevelSurfaceList
             inputMethodRect: inputMethod.visibleRect
             rightEdgePushProgress: rightEdgeBarrier.progress
+            availableDesktopArea: availableDesktopAreaItem
 
             property string usageScenario: shell.usageScenario === "phone" || greeter.hasLockedApp
                                                        ? "phone"
