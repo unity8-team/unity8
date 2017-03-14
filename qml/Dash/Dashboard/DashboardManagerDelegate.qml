@@ -25,8 +25,6 @@ ListItem {
 
     signal requestFavorite(string scopeId, bool favorite)
 
-    
-
     // Expose for testing
     readonly property int index: model.index
 
