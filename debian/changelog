@@ -1,3 +1,11 @@
+unity8 (8.15+17.04.20170316.1-0ubuntu1) zesty; urgency=medium
+
+  * hide "private" launcher quicklist entries when the greeter is locked
+    (LP: #1667649)
+  * add surface titles to launcher's quicklist (LP: #1661668)
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Thu, 16 Mar 2017 12:29:15 +0000
+
 unity8 (8.15+17.04.20170308-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
