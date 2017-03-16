@@ -69,12 +69,11 @@ ListItem {
 
                 divider.visible: false
 
+                // Work around for lp:1665559
                 Rectangle {
                     height: units.dp(1); width: parent.width
-                    color: theme.palette.normal.raisedText
+                    color: theme.palette.normal.raisedSecondaryText
                     anchors.top: parent.top
-
-                    visible: index != 0
                 }
 
                 ListItemLayout {
@@ -82,13 +81,14 @@ ListItem {
                     objectName: "layout" + index
 
                     ProportionalShape {
+                        id: scopeArt
                         height: units.gu(4.5)
-                        width: units.gu(4.5)
                         SlotsLayout.position: SlotsLayout.Leading
 
                         aspect: UbuntuShape.Flat
                         source: Image {
-                            sourceSize.height: units.gu(4.5)
+                            sourceSize.height: scopeArt.height
+                            sourceSize.width: scopeArt.width
                             source: "../" + model.art
                         }
                     }
@@ -101,7 +101,6 @@ ListItem {
 
                         height: units.gu(2)
                         width: units.gu(2)
-                        //fillMode: Image.PreserveAspectFit
                         source: {
                             if (categoryView.isPinnedToDashboard) {
                                 return "graphics/pinned.png"
