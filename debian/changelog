@@ -1,3 +1,10 @@
+unity8 (8.15+17.04.20170317-0ubuntu1) zesty; urgency=medium
+
+  * Signal aboutToShow (LP: #1664578)
+  * Support Panel top level items to be disabled (LP: #1670694)
+
+ -- Albert Astals Cid <albert.astals@canonical.com>  Fri, 17 Mar 2017 12:08:17 +0000
+
 unity8 (8.15+17.04.20170308-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
