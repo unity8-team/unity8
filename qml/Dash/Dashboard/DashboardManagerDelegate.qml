@@ -61,6 +61,8 @@ ListItem {
                 }
             }
 
+            displaced: Transition { UbuntuNumberAnimation { properties: "y"; duration: UbuntuAnimation.SnapDuration }
+        }
             delegate: ListItem {
                 readonly property alias innerLayoutPadding: innerLayout.padding
 
