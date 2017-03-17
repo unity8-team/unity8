@@ -61,7 +61,7 @@ ListItem {
                 }
             }
 
-            displaced: Transition { UbuntuNumberAnimation { properties: "y"; duration: UbuntuAnimation.SnapDuration }
+            displaced: Transition { UbuntuNumberAnimation { properties: "y"; duration: UbuntuAnimation.FastDuration }
         }
             delegate: ListItem {
                 readonly property alias innerLayoutPadding: innerLayout.padding
@@ -76,6 +76,7 @@ ListItem {
                     height: units.dp(1); width: parent.width
                     color: theme.palette.normal.raisedSecondaryText
                     anchors.top: parent.top
+                    visible: index != 0
                 }
 
                 ListItemLayout {
