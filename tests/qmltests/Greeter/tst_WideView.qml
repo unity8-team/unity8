@@ -356,6 +356,7 @@ StyledItem {
             loader.active = true;
             tryCompare(loader, "status", Loader.Ready);
             removeTimeConstraintsFromSwipeAreas(loader.item);
+            LightDMController.sessionMode = "single";
         }
 
         function getIndexOf(name) {
@@ -409,6 +410,7 @@ StyledItem {
         }
 
         function test_sessionIconsAreValid() {
+            LightDMController.sessionMode = "full";
             selectUser("has-password");
 
             // Test the login list icon is valid
@@ -430,6 +432,7 @@ StyledItem {
             // Ensure the default session is selected (Ubuntu)
             cleanup();
 
+            LightDMController.sessionMode = "full";
             selectUser("has-password");
 
             var sessionChooserButton = findChild(view, "sessionChooserButton");
@@ -475,6 +478,7 @@ StyledItem {
         }
 
         function test_sessionIconShownWithMultipleSessions() {
+            LightDMController.sessionMode = "full";
             selectUser("has-password");
 
             var sessionChooserButton = findChild(view, "sessionChooserButton");
