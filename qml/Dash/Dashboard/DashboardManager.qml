@@ -45,7 +45,10 @@ MainView {
 
         clip: true
         model: scopes.overviewScope ? scopes.overviewScope.categories : null
-        delegate: DashboardManagerDelegate {
+        delegate: DashboardManagerCategory {
+            categoryId: model.categoryId
+            categoryName: model.name
+            categoryResults: model.results
             onRequestFavorite: scopes.setFavorite(scopeId, favorite);
         }
     }
