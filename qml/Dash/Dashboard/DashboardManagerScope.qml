@@ -17,6 +17,7 @@
 import QtQuick 2.4
 import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItems
 import Unity 0.2
 import "../../Components"
 
@@ -32,11 +33,11 @@ ListItem {
 
     divider.visible: false
 
-    // Work around for lp:1665559
-    Rectangle {
-        height: units.dp(1); width: parent.width
-        color: theme.palette.normal.raisedSecondaryText
-        anchors.top: parent.top
+    ListItems.ThinDivider {
+        anchors {
+            leftMargin: units.gu(1)
+            rightMargin: units.gu(1)
+        }
         visible: index != 0
     }
 
