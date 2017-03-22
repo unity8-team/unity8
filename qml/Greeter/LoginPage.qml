@@ -120,7 +120,7 @@ Showable {
         onSelected: if (enabled) root.selected(index)
         onResponded: root.responded(response)
         onSessionChooserButtonClicked: parent.state = "SessionsList"
-        onCurrentIndexChanged: setCurrentSession()    
+        onCurrentIndexChanged: setCurrentSession()
 
         Keys.forwardTo: [sessionChooserLoader.item]
 
