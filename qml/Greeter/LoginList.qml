@@ -43,7 +43,11 @@ StyledItem {
     signal sessionChooserButtonClicked()
 
     function tryToUnlock() {
-        promptList.forceActiveFocus();
+        if (!locked && model.count == 1) {
+            responded("");
+        } else {
+            promptList.forceActiveFocus();
+        }
     }
 
     function showError() {

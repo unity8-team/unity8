@@ -615,13 +615,13 @@ Rectangle {
             // wait until unity8-dash is fully loaded
             tryCompare(topLevelSurfaceList, "count", 1);
             waitUntilAppWindowIsFullyLoaded(topLevelSurfaceList.idAt(0));
+
+            waitForRendering(shell);
         }
 
         function loadDesktopShellWithApps() {
             loadShell("desktop");
-            waitForRendering(shell)
-            shell.usageScenario = "desktop"
-            waitForRendering(shell)
+            swipeAwayGreeter();
             var app1 = ApplicationManager.startApplication("dialer-app")
             var app2 = ApplicationManager.startApplication("webbrowser-app")
             var app3 = ApplicationManager.startApplication("camera-app")
@@ -1422,25 +1422,40 @@ Rectangle {
 
         function test_appLaunchDuringGreeter_data() {
             return [
-                {tag: "auth error", user: "auth-error", loggedIn: false, passwordFocus: false},
-                {tag: "without password", user: "no-password", loggedIn: true, passwordFocus: false},
-                {tag: "with password", user: "has-password", loggedIn: false, passwordFocus: true},
+                {tag: "full, auth error", mode: "full", shell: "tablet", user: "auth-error", loggedIn: false, passwordFocus: false},
+                {tag: "full, no password, tablet", mode: "full", shell: "tablet", user: "no-password", loggedIn: false, passwordFocus: false},
+                {tag: "full, no password, phone", mode: "full", shell: "phone", user: "no-password", loggedIn: false, passwordFocus: false},
+                {tag: "single, no password, tablet", mode: "single", shell: "tablet", loggedIn: true},
+                {tag: "single, no password, phone", mode: "single", shell: "phone", loggedIn: true},
+                {tag: "single, with password, phone", mode: "single-passphrase", shell: "phone", loggedIn: false, passwordFocus: true},
             ]
         }
 
         function test_appLaunchDuringGreeter(data) {
-            setLightDMMockMode("full");
-            loadShell("tablet");
+            setLightDMMockMode(data.mode);
+            loadShell(data.shell);
 
-            selectUser(data.user)
+            if (data.user) {
+                if (data.shell == "phone") {
+                    var touchX = shell.width - (shell.edgeSize / 2);
+                    var touchY = shell.height / 2;
+                    touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
+                    var coverPage = findChild(shell, "coverPage");
+                    tryCompare(coverPage, "showProgress", 0);
+                }
+                selectUser(data.user);
+            }
+
+            confirmLoggedIn(false);
 
             var greeter = findChild(shell, "greeter")
             ApplicationManager.startApplication("dialer-app");
 
             confirmLoggedIn(data.loggedIn)
 
-            if (data.passwordFocus) {
-                var passwordInput = findChild(greeter, "promptField");
+            if (!data.loggedIn) {
+                var inputName = data.passwordFocus ? "promptField" : "promptButton";
+                var passwordInput = findChild(greeter, inputName);
                 tryCompare(passwordInput, "focus", true)
             }
         }
@@ -1547,8 +1562,7 @@ Rectangle {
 
         function test_altTabSwitchesFocus(data) {
             loadShell(data.shellType);
-            shell.usageScenario = data.shellType;
-            waitForRendering(root)
+            swipeAwayGreeter();
 
             var desktopStage = findChild(shell, "stage");
             verify(desktopStage != null)
@@ -2156,11 +2170,9 @@ Rectangle {
         }
 
         function test_superTabToCycleLauncher(data) {
-            loadShell("desktop");
-            shell.usageScenario = "desktop";
-            waitForRendering(shell);
             GSettingsController.setAutohideLauncher(!data.launcherLocked);
-            waitForRendering(shell);
+            loadShell("desktop");
+            swipeAwayGreeter();
 
             var stage = findChild(shell, "stage");
             var launcher = findChild(shell, "launcher");
@@ -2277,7 +2289,7 @@ Rectangle {
 
         function test_fullscreenAppHidesLockedOutLauncher() {
             loadShell("desktop");
-            shell.usageScenario = "desktop";
+            swipeAwayGreeter();
 
             var launcher = findChild(shell, "launcher");
             var launcherPanel = findChild(launcher, "launcherPanel");
@@ -2531,8 +2543,7 @@ Rectangle {
 
         function test_dragPanelToRestoreMaximizedWindow() {
             loadShell("desktop");
-            shell.usageScenario = "desktop";
-            waitForRendering(shell);
+            swipeAwayGreeter();
             var panel = findChild(shell, "windowControlArea");
             verify(panel);
 
