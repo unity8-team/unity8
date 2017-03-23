@@ -32,10 +32,6 @@ ListItem {
     divider.visible: false
 
     ListItems.ThinDivider {
-        anchors {
-            leftMargin: units.gu(1)
-            rightMargin: units.gu(1)
-        }
         visible: index != 0
     }
 
