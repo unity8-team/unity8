@@ -15,7 +15,6 @@
 */
 
 import QtQuick 2.4
-import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
 import Unity 0.2
