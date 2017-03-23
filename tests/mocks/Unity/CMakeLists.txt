@@ -22,7 +22,7 @@ include_directories(
 add_definitions(-DQT_NO_KEYWORDS)
 
 set(UnityQML_SOURCES
-  ../../graphics/graphics.qrc
+  ../../graphics.qrc
   fake_scope.cpp
   fake_scopes.cpp
   fake_scopesoverview.cpp

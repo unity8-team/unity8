@@ -132,7 +132,22 @@ else()
   FIND_PROGRAM(QDBUSXML2CPP_EXECUTABLE qdbusxml2cpp)
 endif()
 
+FILE(GLOB_RECURSE TEST_GRAPHICS_FILE
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    graphics/*
+)
 
+function(generate_qrc)
+    SET(qrc_header "<!DOCTYPE RCC><RCC version=\"1.0\"><qresource>")
+    SET(qrc_footer "</qresource></RCC>")
+    FOREACH(graphic ${TEST_GRAPHICS_FILE})
+        STRING(CONCAT qrc_header ${qrc_header} "<file>${graphic}</file>")
+    ENDFOREACH(graphic)
+    STRING(CONCAT qrc_header ${qrc_header} ${qrc_footer})
+    FILE(WRITE graphics.qrc ${qrc_header})
+endfunction()
+
+generate_qrc()
 install(DIRECTORY data graphics
     DESTINATION "${SHELL_APP_DIR}/tests"
 )
