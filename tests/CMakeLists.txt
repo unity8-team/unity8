@@ -134,7 +134,7 @@ endif()
 
 FILE(GLOB_RECURSE TEST_GRAPHICS_FILE
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    graphics/*
+    graphics/*.png
 )
 
 function(generate_qrc)
