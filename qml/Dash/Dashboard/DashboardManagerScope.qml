@@ -23,8 +23,7 @@ import "../../Components"
 ListItem {
     readonly property alias innerLayoutPadding: innerLayout.padding
 
-    // FIXME change to an alias once this is sorted out
-    property alias scopeIcon: scopeArtIcon._source
+    property alias scopeIcon: scopeArtIcon.source
     property alias scopeId: innerLayout.scopeId
 
     height: innerLayout.height
@@ -55,10 +54,6 @@ ListItem {
             source: Image {
                 id: scopeArtIcon
 
-                // FIXME delete this when the art path is sorted out
-                property string _source
-
-                source: "../" + _source
                 sourceSize.height: scopeArt.height
                 sourceSize.width: scopeArt.width
             }
