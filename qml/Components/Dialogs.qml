@@ -35,7 +35,7 @@ MouseArea {
     property var unitySessionService: DBusUnitySessionService
     property var closeAllApps: function(callback) {
         ApplicationManager.countChanged.connect(function() {
-            if (ApplicationManager.empty || (ApplicationManager.count === 1 && ApplicationManager.get(0).appId === "unity8-dash"))
+            if (ApplicationManager.count === 0 || (ApplicationManager.count === 1 && ApplicationManager.get(0).appId === "unity8-dash"))
                 callback();
         });
 
