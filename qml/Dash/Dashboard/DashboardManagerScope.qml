@@ -31,7 +31,12 @@ ListItem {
 
     divider.visible: false
 
-    ListItems.ThinDivider {
+
+    Rectangle {
+        height: units.dp(1);
+        width: parent.width
+        anchors.top: parent.top
+        color: "#eeeeee"
         visible: index != 0
     }
 
