@@ -67,8 +67,6 @@ Object {
             "com.canonical.indicator.location": timezoneMenu,
         },
         "indicator-session": {
-            "indicator.user-menu-item": Platform.isPC ? userMenuItem : null,
-            "indicator.guest-menu-item": Platform.isPC ? userMenuItem : null,
             "com.canonical.indicator.switch": Math.min(Screen.width, Screen.height) > units.gu(60) ? switchMenu : null // Desktop mode switch
         },
         "indicator-messages": {
@@ -77,12 +75,6 @@ Object {
     }
 
     readonly property var _action_filter_map: {
-        "indicator-session": {
-            "indicator.logout": Platform.isPC ? undefined : null,
-            "indicator.suspend": Platform.isPC ? undefined : null,
-            "indicator.hibernate": Platform.isPC ? undefined : null,
-            "indicator.reboot": Platform.isPC ? undefined : null
-        },
         "indicator-keyboard": {
             "indicator.map": null,
             "indicator.chart": null
