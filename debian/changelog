@@ -1,3 +1,10 @@
+unity8 (8.15+17.04.20170324.2-0ubuntu1) zesty; urgency=medium
+
+  [ Daniel d'Andrada ]
+  * Tell qtmir/miral about the available desktop area
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Fri, 24 Mar 2017 15:03:39 +0000
+
 unity8 (8.15+17.04.20170321-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]
