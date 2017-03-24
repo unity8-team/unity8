@@ -19,6 +19,7 @@ import QtQml.StateMachine 1.0 as DSM
 import Ubuntu.Components 1.3
 import Unity.Launcher 0.1
 import Ubuntu.Components.Popups 1.3
+import Utils 0.1
 import "../Components"
 
 Rectangle {
@@ -29,12 +30,14 @@ Rectangle {
 
     property var model
     property bool inverted: false
+    property bool privateMode: false
     property bool dragging: false
     property bool moving: launcherListView.moving || launcherListView.flicking
     property bool preventHiding: moving || dndArea.draggedIndex >= 0 || quickList.state === "open" || dndArea.pressed
                                  || dndArea.containsMouse || dashItem.hovered
     property int highlightIndex: -2
     property bool shortcutHintsShown: false
+    readonly property bool quickListOpen: quickList.state === "open"
 
     signal applicationSelected(string appId)
     signal showDashHome()
@@ -91,8 +94,10 @@ Rectangle {
                 objectName: "dashItem"
                 width: parent.width * .6
                 height: width
+                sourceSize.width: width
+                sourceSize.height: height
                 anchors.centerIn: parent
-                source: "graphics/home.png"
+                source: "graphics/home.svg"
                 rotation: root.rotation
             }
             AbstractButton {
@@ -686,6 +691,8 @@ Rectangle {
     InverseMouseArea {
         anchors.fill: quickListShape
         enabled: quickList.state == "open" || pressed
+        hoverEnabled: enabled
+        visible: enabled
 
         onClicked: {
             quickList.state = "";
@@ -806,7 +813,11 @@ Rectangle {
 
                 Repeater {
                     id: popoverRepeater
-                    model: quickList.model
+                    objectName: "popoverRepeater"
+                    model: QuickListProxyModel {
+                        source: quickList.model
+                        privateMode: root.privateMode
+                    }
 
                     ListItem {
                         objectName: "quickListEntry" + index
@@ -830,6 +841,7 @@ Rectangle {
                             fontSize: index == 0 ? "medium" : "small"
                             font.weight: index == 0 ? Font.Medium : Font.Light
                             color: model.clickable ? theme.palette.normal.backgroundText : theme.palette.disabled.backgroundText
+                            elide: Text.ElideRight
                         }
 
                         onClicked: {

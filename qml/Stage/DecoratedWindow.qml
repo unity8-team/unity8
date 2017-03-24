@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 Canonical, Ltd.
+ * Copyright (C) 2014-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@ FocusScope {
 
     readonly property Item clientAreaItem: applicationWindow
 
+    property alias altDragEnabled: altDragHandler.enabled
+
     signal closeClicked()
     signal maximizeClicked()
     signal maximizeHorizontallyClicked()
@@ -79,6 +81,10 @@ FocusScope {
     signal minimizeClicked()
     signal decorationPressed()
     signal decorationReleased()
+
+    function cancelDrag() {
+        moveHandler.cancelDrag();
+    }
 
     QtObject {
         id: d
@@ -204,12 +210,15 @@ FocusScope {
         height: units.gu(3)
 
         title: applicationWindow.title
+        windowMoving: moveHandler.moving && !altDragHandler.dragging
 
         opacity: root.hasDecoration ? Math.min(1, root.showDecoration) : 0
         Behavior on opacity { UbuntuNumberAnimation { } }
+        visible: opacity > 0 // don't eat input when decoration is fully translucent
 
         onPressed: root.decorationPressed();
         onPressedChanged: moveHandler.handlePressedChanged(pressed, pressedButtons, mouseX, mouseY)
+        onPressedChangedEx: moveHandler.handlePressedChanged(pressed, pressedButtons, mouseX, mouseY)
         onPositionChanged: moveHandler.handlePositionChanged(mouse)
         onReleased: {
             root.decorationReleased();
@@ -255,10 +264,12 @@ FocusScope {
     }
 
     MouseArea {
+        id: altDragHandler
         anchors.fill: applicationWindow
         acceptedButtons: Qt.LeftButton
         property bool dragging: false
         cursorShape: undefined // don't interfere with the cursor shape set by the underlying MirSurfaceItem
+        visible: enabled
         onPressed: {
             if (mouse.button == Qt.LeftButton && mouse.modifiers == Qt.AltModifier) {
                 root.decorationPressed(); // to raise it

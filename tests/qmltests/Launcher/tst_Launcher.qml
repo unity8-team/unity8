@@ -97,6 +97,11 @@ Rectangle {
     }
     Binding {
         target: launcherLoader.item
+        property: "privateMode"
+        value: privateModeCheckBox.checked
+    }
+    Binding {
+        target: launcherLoader.item
         property: "panelWidth"
         value: units.gu(Math.round(widthSlider.value))
     }
@@ -116,6 +121,20 @@ Rectangle {
                 AbstractButton {
                     anchors.fill: parent
                     onClicked: lockedVisibleCheckBox.checked = !lockedVisibleCheckBox.checked
+                }
+            }
+        }
+
+        RowLayout {
+            CheckBox {
+                id: privateModeCheckBox
+                checked: false
+            }
+            Label {
+                text: "Private mode (lockscreen locked)"
+                AbstractButton {
+                    anchors.fill: parent
+                    onClicked: privateModeCheckBox.checked = !privateModeCheckBox.checked
                 }
             }
         }
@@ -1242,6 +1261,7 @@ Rectangle {
             keyClick(Qt.Key_Down);
             keyClick(Qt.Key_Down);
             keyClick(Qt.Key_Down);
+            keyClick(Qt.Key_Down);
             tryCompare(quickList, "selectedIndex", 0)
 
             // Left gets us back to the launcher
@@ -1478,6 +1498,41 @@ Rectangle {
             compare(launcherPanel.x, -launcherPanel.width);
 
             launcher.available = true;
+        }
+
+        function test_hoverOnEdgeBarrerPreventsHiding() {
+            revealByEdgePush();
+
+            // Make sure the mouse is on the very left edge (on top of the barrier)
+            mouseMove(root, 1, root.height / 2);
+
+            // trigger the hide timer
+            compare(fakeDismissTimer.running, true);
+            fakeDismissTimer.triggered();
+
+            compare(launcher.state, "visibleTemporary");
+        }
+
+        function test_hideQuicklistItemsInPrivateModel_data() {
+            return [
+                { tag: "private mode", private: true },
+                { tag: "normal mode", private: false }
+            ];
+        }
+
+        function test_hideQuicklistItemsInPrivateModel(data) {
+            privateModeCheckBox.checked = data.private;
+
+            revealByEdgePush();
+
+            var item = findChild(launcher, "launcherDelegate4");
+            var quickListShape = findChild(launcher, "quickListShape")
+
+            mousePress(item)
+            tryCompare(quickListShape, "visible", true)
+
+            var repeater = findChild(launcher, "popoverRepeater");
+            tryCompare(repeater, "count", LauncherModel.get(4).quickList.count - (data.private ? 1 : 0))
         }
 
         function test_hintOnSizeChange() {

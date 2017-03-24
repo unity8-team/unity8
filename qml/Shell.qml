@@ -69,6 +69,7 @@ StyledItem {
     }
     property bool hasMouse: false
     property bool hasKeyboard: false
+    property bool hasTouchscreen: false
 
     // to be read from outside
     readonly property int mainAppWindowOrientationAngle: stage.mainAppWindowOrientationAngle
@@ -288,6 +289,7 @@ StyledItem {
             applicationManager: ApplicationManager
             topLevelSurfaceList: topLevelSurfaceList
             inputMethodRect: inputMethod.visibleRect
+            rightEdgePushProgress: rightEdgeBarrier.progress
 
             property string usageScenario: shell.usageScenario === "phone" || greeter.hasLockedApp
                                                        ? "phone"
@@ -424,7 +426,9 @@ StyledItem {
         id: showGreeterDelayed
         interval: 1
         onTriggered: {
-            greeter.forceShow();
+            // Go through the dbus service, because it has checks for whether
+            // we are even allowed to lock or not.
+            DBusUnitySessionService.PromptLock();
         }
     }
 
@@ -498,6 +502,7 @@ StyledItem {
             expandedPanelHeight: units.gu(7)
             indicatorMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
             applicationMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
+            applicationMenuContentX: launcher.lockedVisible ? launcher.panelWidth : 0
 
             indicators {
                 hides: [launcher]
@@ -523,14 +528,16 @@ StyledItem {
                 hides: [launcher]
                 available: (!greeter || !greeter.shown)
                         && !shell.waitingOnGreeter
+                        && !stage.spreadShown
             }
 
             readonly property bool focusedSurfaceIsFullscreen: topLevelSurfaceList.focusedWindow
                 ? topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
                 : false
-            fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0)
+            fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0 && !stage.spreadShown)
                             || greeter.hasLockedApp
             greeterShown: greeter && greeter.shown
+            hasKeyboard: shell.hasKeyboard
         }
 
         Launcher {
@@ -555,6 +562,7 @@ StyledItem {
             blurSource: greeter.shown ? greeter : stages
             topPanelHeight: panel.panelHeight
             drawerEnabled: !greeter.active
+            privateMode: greeter.active
 
             onShowDashHome: showHome()
             onLauncherApplicationSelected: {
@@ -563,7 +571,14 @@ StyledItem {
             }
             onShownChanged: {
                 if (shown) {
-                    panel.indicators.hide()
+                    panel.indicators.hide();
+                    panel.applicationMenus.hide();
+                }
+            }
+            onDrawerShownChanged: {
+                if (drawerShown) {
+                    panel.indicators.hide();
+                    panel.applicationMenus.hide();
                 }
             }
             onFocusChanged: {
@@ -625,8 +640,8 @@ StyledItem {
             objectName: "tutorial"
             anchors.fill: parent
 
-            paused: callManager.hasCalls || !greeter || greeter.active ||
-                    wizard.active
+            paused: callManager.hasCalls || !greeter || greeter.active || wizard.active
+                    || !hasTouchscreen // TODO #1661557 something better for no touchscreen
             delayed: dialogs.hasActiveDialog || notifications.hasNotification ||
                      inputMethod.visible ||
                      (launcher.shown && !launcher.lockedVisible) ||
@@ -692,6 +707,33 @@ StyledItem {
                     PropertyChanges { target: notifications; width: units.gu(38) }
                 }
             ]
+        }
+
+        EdgeBarrier {
+            id: rightEdgeBarrier
+            enabled: !greeter.shown
+
+            // NB: it does its own positioning according to the specified edge
+            edge: Qt.RightEdge
+
+            onPassed: {
+                panel.indicators.hide()
+            }
+
+            material: Component {
+                Item {
+                    Rectangle {
+                        width: parent.height
+                        height: parent.width
+                        rotation: 90
+                        anchors.centerIn: parent
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: Qt.rgba(0.16,0.16,0.16,0.5)}
+                            GradientStop { position: 1.0; color: Qt.rgba(0.16,0.16,0.16,0)}
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -776,7 +818,7 @@ StyledItem {
 
         onPushedRightBoundary: {
             if (buttons === Qt.NoButton) {
-                stage.pushRightEdge(amount);
+                rightEdgeBarrier.push(amount);
             } else if (buttons === Qt.LeftButton && previewRectangle && previewRectangle.target.canBeMaximizedLeftRight) {
                 previewRectangle.maximizeRight(amount);
             }

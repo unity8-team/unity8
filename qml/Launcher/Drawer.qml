@@ -27,6 +27,7 @@ FocusScope {
 
     property int panelWidth: 0
     readonly property bool moving: listLoader.item && listLoader.item.moving
+    readonly property Item searchTextField: searchField
 
     signal applicationSelected(string appId)
 
@@ -95,7 +96,11 @@ FocusScope {
                 KeyNavigation.down: sections
 
                 onAccepted: {
-                    if (searchField.displayText != "" && listLoader.item && listLoader.item.currentItem) {
+                    if (searchField.displayText != "" && listLoader.item) {
+                        // In case there is no currentItem (it might have been filtered away) lets reset it to the first item
+                        if (!listLoader.item.currentItem) {
+                            listLoader.item.currentIndex = 0;
+                        }
                         root.applicationSelected(listLoader.item.getFirstAppId());
                     }
                 }
@@ -208,13 +213,16 @@ FocusScope {
                     root.dragDistance += diff;
                     oldX = mouseX
                 }
-                onReleased: {
+                onReleased: reset();
+                onCanceled: reset();
+                function reset() {
                     if (root.draggingHorizontally) {
                         root.draggingHorizontally = false;
                         parent.interactive = true;
                     }
                     reactivateTimer.start();
                 }
+
                 Timer {
                     id: reactivateTimer
                     interval: 0
@@ -238,6 +246,7 @@ FocusScope {
                         source: sortProxyModel
                         group: AppDrawerProxyModel.GroupByAll
                         sortBy: AppDrawerProxyModel.SortByUsage
+                        dynamicSortFilter: false
                     }
 
                     delegate: UbuntuShape {
@@ -287,6 +296,7 @@ FocusScope {
                         source: sortProxyModel
                         sortBy: AppDrawerProxyModel.SortByAToZ
                         group: AppDrawerProxyModel.GroupByAToZ
+                        dynamicSortFilter: false
                     }
 
                     delegate: UbuntuShape {
@@ -320,6 +330,7 @@ FocusScope {
                                 id: categoryModel
                                 source: sortProxyModel
                                 filterLetter: model.letter
+                                dynamicSortFilter: false
                             }
                             delegateWidth: units.gu(8)
                             delegateHeight: units.gu(10)

@@ -42,6 +42,8 @@
 #include <globalfunctions.h>
 #include <appdrawerproxymodel.h>
 #include <tabfocusfence.h>
+#include <expressionfiltermodel.h>
+#include <quicklistproxymodel.h>
 
 static QObject *createWindowStateStorage(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -86,4 +88,6 @@ void FakeUtilsPlugin::registerTypes(const char *uri)
     qmlRegisterType<URLDispatcher>(uri, 0, 1, "URLDispatcher");
     qmlRegisterType<AppDrawerProxyModel>(uri, 0, 1, "AppDrawerProxyModel");
     qmlRegisterType<TabFocusFenceItem>(uri, 0, 1, "TabFocusFence");
+    qmlRegisterType<ExpressionFilterModel>(uri, 0, 1, "ExpressionFilterModel");
+    qmlRegisterType<QuickListProxyModel>(uri, 0, 1, "QuickListProxyModel");
 }

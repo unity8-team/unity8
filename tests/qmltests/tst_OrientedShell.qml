@@ -695,9 +695,11 @@ Rectangle {
             // false -> true -> false
             compare(transitionSpy.count, 2);
 
-            // It should retain native dimensions regardless of its rotation/orientation
-            compare(cameraSurface.width, orientedShell.width);
-            compare(cameraSurface.height, orientedShell.height);
+            if (!data.windowed) { // subject to shell-chrome policies
+                // It should retain native dimensions regardless of its rotation/orientation
+                compare(cameraSurface.width, orientedShell.width);
+                compare(cameraSurface.height, orientedShell.height);
+            }
 
             // Surface focus shouldn't have been touched because of the rotation
             compare(focusChangedSpy.count, 0);
@@ -1433,8 +1435,9 @@ Rectangle {
         function swipeAwayGreeter() {
             var greeter = findChild(shell, "greeter");
             tryCompare(greeter, "fullyShown", true);
+            waitForRendering(greeter)
 
-            var touchX = shell.width - (shell.edgeSize / 2);
+            var touchX = shell.width * .75;
             var touchY = shell.height / 2;
             touchFlick(shell, touchX, touchY, shell.width * 0.1, touchY);
 
@@ -1639,6 +1642,18 @@ Rectangle {
 
             tryCompare(dialogLoader, "item", null);
             compare(window.activeFocusItem, surfaceItem);
+        }
+
+        function test_tutorialDisabledWithNoTouchscreen() {
+            loadShell("desktop");
+            usageModeSelector.selectWindowed();
+
+            MockInputDeviceBackend.addMockDevice("/touchscreen", InputInfo.TouchScreen);
+            var tutorial = findChild(shell, "tutorial");
+            tryCompare(tutorial, "paused", false);
+
+            MockInputDeviceBackend.removeDevice("/touchscreen");
+            tryCompare(tutorial, "paused", true);
         }
     }
 }

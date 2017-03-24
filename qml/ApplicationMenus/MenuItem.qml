@@ -34,7 +34,7 @@ ActionItem {
         val += units.gu(1) + title.contentWidth;
         if (hasSubmenu) {
             val += units.gu(1) + chevronIcon.width;
-        } else if (shortcut != undefined) {
+        } else if (menuData && menuData.shortcut != undefined) {
             val += units.gu(3) + shortcutLabel.contentWidth;
         }
         return val + units.gu(1);
@@ -46,10 +46,12 @@ ActionItem {
     enabled: menuData ? menuData.sensitive : false
 
     action: Action {
+        enabled: root.enabled
+
         // FIXME - SDK Action:text modifies menu text with html underline for mnemonic
-        text: menuData.label.replace("_", "&").replace("<u>", "&").replace("</u>", "")
-        checkable: menuData.isCheck || menuData.isRadio
-        checked: menuData.isToggled
+        text: menuData ? menuData.label.replace("_", "&").replace("<u>", "&").replace("</u>", "") : ""
+        checkable: menuData && (menuData.isCheck || menuData.isRadio)
+        checked: menuData && menuData.isToggled
     }
 
     width: {
@@ -111,6 +113,7 @@ ActionItem {
                 elide: Text.ElideNone
                 wrapMode: Text.NoWrap
                 clip: true
+                color: enabled ? theme.palette.normal.overlayText : theme.palette.disabled.overlayText
                 Layout.fillWidth: true
 
                 text: root.text ? root.text : ""
@@ -121,11 +124,11 @@ ActionItem {
                 elide: Text.ElideNone
                 wrapMode: Text.NoWrap
                 clip: true
-                color: enabled ? theme.palette.normal.backgroundSecondaryText :
-                                 theme.palette.disabled.backgroundSecondaryText
+                color: enabled ? theme.palette.normal.overlaySecondaryText :
+                                 theme.palette.disabled.overlaySecondaryText
 
-                visible: menuData.shortcut != undefined && !root.hasSubmenu && QuickUtils.keyboardAttached
-                text: menuData.shortcut ? menuData.shortcut : ""
+                visible: menuData && menuData.shortcut != undefined && !root.hasSubmenu && QuickUtils.keyboardAttached
+                text: menuData && menuData.shortcut ? menuData.shortcut : ""
             }
         }
 
@@ -133,18 +136,11 @@ ActionItem {
             id: chevronIcon
             width: units.gu(2)
             height: units.gu(2)
-            color: enabled ? theme.palette.normal.backgroundSecondaryText :
-                             theme.palette.disabled.backgroundSecondaryText
+            color: enabled ? theme.palette.normal.overlayText :
+                             theme.palette.disabled.overlayText
 
             visible: root.hasSubmenu
-            name: "chevron"
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            root.trigger(action && action.checkable ? !action.checked : undefined);
+            name: "toolkit_chevron-ltr_2gu"
         }
     }
 }

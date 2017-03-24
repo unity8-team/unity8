@@ -137,6 +137,7 @@ Rectangle {
                         primary: shellLoader.primaryOrientation
                     }
                     mode: shellLoader.mode
+                    hasTouchscreen: true
                     Component.onCompleted: {
                         ApplicationManager.startApplication("unity8-dash");
                     }
@@ -334,7 +335,9 @@ Rectangle {
 
                 Row {
                     CheckBox {
-                        id: fullscreeAppCheck
+                        id: fullscreenAppCheck
+                        activeFocusOnPress: false
+                        activeFocusOnTab: false
 
                         onTriggered: {
                             if (!topLevelSurfaceList.focusedWindow) return;
@@ -346,13 +349,10 @@ Rectangle {
                         }
 
                         Binding {
-                            target: fullscreeAppCheck
+                            target: fullscreenAppCheck
                             when: topLevelSurfaceList && topLevelSurfaceList.focusedWindow
                             property: "checked"
-                            value: {
-                                if (!topLevelSurfaceList || !topLevelSurfaceList.focusedWindow) return false;
-                                return topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
-                            }
+                            value: topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
                         }
                     }
                     Label {
@@ -363,6 +363,8 @@ Rectangle {
                 Row {
                     CheckBox {
                         id: chromeAppCheck
+                        activeFocusOnPress: false
+                        activeFocusOnTab: false
 
                         onTriggered: {
                             if (!topLevelSurfaceList.focusedWindow || !topLevelSurfaceList.focusedWindow.surface) return;
@@ -378,10 +380,8 @@ Rectangle {
                             target: chromeAppCheck
                             when: topLevelSurfaceList && topLevelSurfaceList.focusedWindow !== null && topLevelSurfaceList.focusedWindow.surface !== null
                             property: "checked"
-                            value: {
-                                if (!topLevelSurfaceList || !topLevelSurfaceList.focusedWindow || !topLevelSurfaceList.focusedWindow.surface) return false;
-                                topLevelSurfaceList.focusedWindow.surface.shellChrome === Mir.LowChrome
-                            }
+                            value: topLevelSurfaceList.focusedWindow.surface &&
+                                   topLevelSurfaceList.focusedWindow.surface.shellChrome === Mir.LowChrome
                         }
                     }
                     Label {
@@ -2292,7 +2292,6 @@ Rectangle {
             return [
                 { tag: "phone" },
                 { tag: "tablet" },
-                { tag: "desktop" },
             ]
         }
 
@@ -2514,27 +2513,44 @@ Rectangle {
             tryCompare(app2Surface, "keymap", "fr");
         }
 
-        function test_dragPanelToRestoreMaximizedWindow() {
+        function test_dragPanelToRestoreMaximizedWindow_data() {
+            return [
+                        { tag: "with mouse", mouse: true },
+                        { tag: "with touch", mouse: false }
+                    ]
+        }
+
+        function test_dragPanelToRestoreMaximizedWindow(data) {
             loadShell("desktop");
             shell.usageScenario = "desktop";
             waitForRendering(shell);
             var panel = findChild(shell, "windowControlArea");
             verify(panel);
 
-            var appSurfaceId = topLevelSurfaceList.nextId;
-            var app = ApplicationManager.startApplication("dialer-app")
-            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
-
             // start dialer, maximize it
-            var appContainer = findChild(shell, "appContainer");
-            var appDelegate = findChild(appContainer, "appDelegate_" + appSurfaceId);
+            var appDelegate = startApplication("dialer-app");
             verify(appDelegate);
-            var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
-            mouseClick(maximizeButton);
 
+            var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
+            if (data.mouse) {
+                mouseClick(maximizeButton);
+            } else {
+                tap(maximizeButton);
+            }
+
+            waitUntilTransitionsEnd(appDelegate);
             tryCompare(appDelegate, "state", "maximized");
 
-            mouseDrag(panel, panel.width/2, panel.height/2, 0, shell.height/3, Qt.LeftButton, Qt.NoModifier, 500);
+            if (data.mouse) {
+                mouseMove(panel, panel.width/2, panel.panelHeight/2); // to reveal the menus
+                var menuBarLoader = findInvisibleChild(panel, "menuBarLoader");
+                verify(menuBarLoader);
+                tryCompare(menuBarLoader.item, "visible", true);
+                mouseDrag(panel, panel.width/2, panel.height/2, 0, shell.height/3, Qt.LeftButton, Qt.NoModifier, 500);
+            } else {
+                touchFlick(panel, panel.width/2, panel.panelHeight/2, panel.width/2, shell.height/3);
+            }
+
             tryCompare(appDelegate, "state", "restored");
         }
 
@@ -2585,6 +2601,55 @@ Rectangle {
             tryCompareFunction(function() { return ApplicationManager.focusedApplicationId; }, "calendar-app");
         }
 
+        function test_rightEdgePushWithOpenIndicators() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            var stage = findChild(shell, "stage");
+            var cursor = findChild(shell, "cursor");
+            var indicators = findChild(shell, "indicators");
+
+            // Open indicators
+            var touchX = shell.width - units.gu(5);
+            touchFlick(shell,
+                    touchX /* fromX */, indicators.minimizedPanelHeight * 0.5 /* fromY */,
+                    touchX /* toX */, shell.height * 0.9 /* toY */,
+                    true /* beginTouch */, true /* endTouch */);
+            tryCompare(indicators, "fullyOpened", true);
+
+            // push the right edge
+            mouseMove(shell, shell.width -  1, units.gu(10));
+            for (var i = 0; i < units.gu(10); i++) {
+                cursor.pushedRightBoundary(1, 0);
+            }
+            tryCompare(stage, "rightEdgePushProgress", 1);
+            tryCompare(stage, "state", "spread");
+            tryCompare(indicators, "fullyOpened", false);
+
+            mouseMove(shell, shell.width - units.gu(5), units.gu(10));
+
+            tryCompare(stage, "rightEdgePushProgress", 0);
+        }
+
+        function test_rightEdgePushOnGreeter() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+
+            var stage = findChild(shell, "stage");
+            var cursor = findChild(shell, "cursor");
+
+            // push the right edge, but verify it doesn't emit any progress
+            mouseMove(shell, shell.width -  1, units.gu(10));
+            for (var i = 0; i < units.gu(10); i++) {
+                cursor.pushedRightBoundary(1, 0);
+                compare(stage.rightEdgePushProgress, 0);
+            }
+            compare(stage.rightEdgePushProgress, 0);
+        }
+
         function test_oskDisplacesWindow_data() {
             return [
                 {tag: "no need to displace", windowHeight: units.gu(10), windowY: units.gu(5), targetDisplacement: units.gu(5), oskEnabled: true},
@@ -2623,8 +2688,8 @@ Rectangle {
         }
 
         function test_cursorHidingWithFullscreenApp() {
-            loadShell("desktop");
-            shell.usageScenario = "desktop";
+            loadShell("phone");
+            shell.usageScenario = "phone";
             waitForRendering(shell);
             swipeAwayGreeter();
 
@@ -2686,14 +2751,14 @@ Rectangle {
             GSettingsController.setEnableIndicatorMenu(true);
         }
 
-        function test_spreadDisabled_data() {
+        function test_spreadDisabled_WithSwipe_data() {
             return [
                 { tag: "enabled", spreadEnabled: true },
                 { tag: "disabled", spreadEnabled: false }
             ];
         }
 
-        function test_spreadDisabled(data) {
+        function test_spreadDisabled_WithSwipe(data) {
             loadShell("phone");
             swipeAwayGreeter();
             var stage = findChild(shell, "stage");
@@ -2702,34 +2767,90 @@ Rectangle {
             // Try swiping
             touchFlick(shell, shell.width - 2, shell.height / 2, units.gu(1), shell.height / 2);
             tryCompare(stage, "state", data.spreadEnabled ? "spread" : "staged");
+        }
 
-            stage.closeSpread();
-            tryCompare(stage, "state", "staged");
+        function test_spreadDisabled_WithEdgePush_data() {
+            return [
+                { tag: "enabled", spreadEnabled: true },
+                { tag: "disabled", spreadEnabled: false }
+            ];
+        }
+
+        function test_spreadDisabled_WithEdgePush(data) {
+            loadShell("phone");
+            swipeAwayGreeter();
+            var stage = findChild(shell, "stage");
+            stage.spreadEnabled = data.spreadEnabled;
 
             // Try by edge push
+            var cursor = findChild(shell, "cursor");
             mouseMove(stage, stage.width -  1, units.gu(10));
             for (var i = 0; i < units.gu(10); i++) {
-                stage.pushRightEdge(1);
+                cursor.pushedRightBoundary(1, 0);
             }
             mouseMove(stage, stage.width - units.gu(5), units.gu(10));
             tryCompare(stage, "state", data.spreadEnabled ? "spread" : "staged");
+        }
 
-            stage.closeSpread();
-            tryCompare(stage, "state", "staged");
+        function test_spreadDisabled_WithAltTab_data() {
+            return [
+                { tag: "enabled", spreadEnabled: true },
+                { tag: "disabled", spreadEnabled: false }
+            ];
+        }
+
+        function test_spreadDisabled_WithAltTab(data) {
+            loadShell("phone");
+            swipeAwayGreeter();
+            var stage = findChild(shell, "stage");
+            stage.spreadEnabled = data.spreadEnabled;
 
             // Try by alt+tab
             keyPress(Qt.Key_Alt);
             keyClick(Qt.Key_Tab);
             tryCompare(stage, "state", data.spreadEnabled ? "spread" : "staged");
             keyRelease(Qt.Key_Alt);
+        }
 
-            stage.closeSpread();
-            tryCompare(stage, "state", "staged");
+        function test_spreadDisabled_WithSuperW_data() {
+            return [
+                { tag: "enabled", spreadEnabled: true },
+                { tag: "disabled", spreadEnabled: false }
+            ];
+        }
+
+        function test_spreadDisabled_WithSuperW(data) {
+            loadShell("phone");
+            swipeAwayGreeter();
+            var stage = findChild(shell, "stage");
+            stage.spreadEnabled = data.spreadEnabled;
 
             // Try by Super+W
-            keyPress(Qt.Key_W, Qt.MetaModifier)
+            keyPress(Qt.Key_W, Qt.MetaModifier, 200);
             tryCompare(stage, "state", data.spreadEnabled ? "spread" : "staged");
             keyRelease(Qt.Key_W, Qt.MetaModifier)
+        }
+
+        function test_launcherWindowResizeInteraction()
+        {
+            loadShell("desktop");
+            waitForRendering(shell)
+            shell.usageScenario = "desktop"
+            waitForRendering(shell)
+            swipeAwayGreeter();
+
+            var app1SurfaceId = topLevelSurfaceList.nextId;
+            var app1 = ApplicationManager.startApplication("dialer-app")
+            waitUntilAppWindowIsFullyLoaded(app1SurfaceId);
+
+            var launcherDelegate1 = findChild(shell, "launcherDelegate1");
+            mouseClick(launcherDelegate1, launcherDelegate1.width / 2, launcherDelegate1.height / 2, Qt.RightButton);
+
+            var appDelegate = findChild(shell, "appDelegate_" + app1SurfaceId);
+            mouseMove(shell, appDelegate.mapToItem(shell, 0, 0).x, launcherDelegate1.mapToItem(shell, 0, 0).y);
+
+            expectFail("", "Cursor should not change while launcher menu is open");
+            tryCompare(Mir, "cursorName", "left_side");
         }
 
         function test_panelTitleShowsWhenGreeterNotShown_data() {
@@ -2744,7 +2865,7 @@ Rectangle {
             loadShell(data.tag);
 
             var panel = findChild(shell, "panel"); verify(panel);
-            var panelTitle = findChild(panel.applicationMenus, "panelTitle"); verify(panelTitle);
+            var panelTitle = findChild(panel, "panelTitle"); verify(panelTitle);
             compare(panelTitle.visible, false, "Panel title should not be visible when greeter is shown");
 
             swipeAwayGreeter();
@@ -2778,6 +2899,287 @@ Rectangle {
                 mouseClick(stage, stage.width-10, stage.height/2, undefined, undefined, 100);
             }
             tryCompareFunction(function() { return drawer.visible; }, false);
+        }
+
+        function test_restoreFromFullscreen() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            var appSurfaceId = topLevelSurfaceList.nextId;
+            var app = ApplicationManager.startApplication("dialer-app")
+            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+
+            // start dialer
+            var appContainer = findChild(shell, "appContainer");
+            var appDelegate = findChild(appContainer, "appDelegate_" + appSurfaceId);
+            verify(appDelegate);
+            tryCompare(appDelegate, "state", "normal");
+
+            // now maximize to right
+            appDelegate.requestMaximizeRight();
+            tryCompare(appDelegate, "state", "maximizedRight");
+
+            // switch to fullscreen
+            app.surfaceList.get(0).requestState(Mir.FullscreenState);
+            tryCompare(appDelegate, "state", "fullscreen");
+
+            // restore, should go back to maximizedRight, not restored
+            appDelegate.requestRestore();
+            tryCompare(appDelegate, "state", "maximizedRight");
+        }
+
+
+        function test_closeAppsInSpreadWithQ() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            var appSurfaceId = topLevelSurfaceList.nextId;
+            var app = ApplicationManager.startApplication("dialer-app")
+            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+
+            appSurfaceId = topLevelSurfaceList.nextId;
+            app = ApplicationManager.startApplication("calendar-app")
+            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+
+            keyPress(Qt.Key_Alt);
+            keyClick(Qt.Key_Tab);
+
+            var stage = findChild(shell, "stage");
+            var spread = findChild(stage, "spreadItem");
+            var appRepeater = findChild(stage, "appRepeater");
+
+            tryCompare(stage, "state", "spread");
+
+            tryCompare(ApplicationManager, "count", 3);
+            tryCompareFunction(function() {return appRepeater.itemAt(spread.highlightedIndex).appId == "dialer-app"}, true);
+
+            // Close one app with Q while in spread
+            keyClick(Qt.Key_Q);
+
+            tryCompare(ApplicationManager, "count", 2);
+
+            // Now the dash should be highlighted
+            tryCompareFunction(function() {return appRepeater.itemAt(spread.highlightedIndex).appId == "unity8-dash"}, true);
+
+            keyClick(Qt.Key_Q);
+
+            // Dash is not closeable, should still be 2
+            tryCompare(ApplicationManager, "count", 2);
+
+            // Move to the next one, should be closable again
+            keyClick(Qt.Key_Tab);
+            tryCompareFunction(function() {return appRepeater.itemAt(spread.highlightedIndex).appId == "calendar-app"}, true);
+
+            // close it
+            keyClick(Qt.Key_Q);
+            tryCompare(ApplicationManager, "count", 1);
+
+            keyRelease(Qt.Key_Alt);
+
+            // Now start the apps again
+            appSurfaceId = topLevelSurfaceList.nextId;
+            app = ApplicationManager.startApplication("dialer-app");
+            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+
+            appSurfaceId = topLevelSurfaceList.nextId;
+            app = ApplicationManager.startApplication("calendar-app");
+            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+
+            // First focus the dash so it'll be the leftmost in the spread
+            ApplicationManager.requestFocusApplication("unity8-dash");
+
+            keyPress(Qt.Key_Alt);
+            keyClick(Qt.Key_Tab);
+            tryCompare(stage, "state", "spread");
+
+            // Move to the last one
+            keyClick(Qt.Key_Tab);
+
+            // Close the last one, make sure the highlight fixes itself to stick within the list
+            tryCompare(spread, "highlightedIndex", ApplicationManager.count - 1);
+            var oldHighlighted = spread.highlightedIndex;
+
+            keyClick(Qt.Key_Q);
+            tryCompare(spread, "highlightedIndex", oldHighlighted - 1);
+
+            keyRelease(Qt.Key_Alt);
+
+        }
+
+        function test_altTabToMinimizedApp() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            var appSurfaceId = topLevelSurfaceList.nextId;
+            var app = ApplicationManager.startApplication("dialer-app")
+            waitUntilAppWindowIsFullyLoaded(appSurfaceId);
+
+            // start dialer
+            var appContainer = findChild(shell, "appContainer");
+            var appDelegate = findChild(appContainer, "appDelegate_" + appSurfaceId);
+            verify(appDelegate);
+            tryCompare(appDelegate, "state", "normal");
+
+            // minimize dialer
+            appDelegate.requestMinimize();
+            tryCompare(appDelegate, "state", "minimized");
+
+            // try to bring dialer back from minimized by doing alt-tab
+            keyClick(Qt.Key_Tab, Qt.AltModifier);
+            tryCompare(appDelegate, "visible", true);
+            tryCompare(appDelegate, "focus", true);
+            tryCompare(topLevelSurfaceList.focusedWindow, "surface", appDelegate.surface);
+            tryCompare(topLevelSurfaceList.applicationAt(0), "appId", "dialer-app");
+        }
+
+        function test_touchMenuPosition_data() {
+            return [
+                        { tag: "launcher locked", lockLauncher: true },
+                        { tag: "launcher not locked", lockLauncher: false }
+                    ];
+        }
+
+        function test_touchMenuPosition(data) {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            var panel = findChild(shell, "panel");
+            var launcher = testCase.findChild(shell, "launcher");
+            launcher.lockedVisible = data.lockLauncher;
+            if (data.lockLauncher) {
+                compare(panel.applicationMenus.x, launcher.panelWidth);
+            } else {
+                compare(panel.applicationMenus.x, 0);
+            }
+        }
+
+        function test_touchMenuHidesOnLauncherAppDrawer_data() {
+            return [
+                        { tag: "launcher locked", lockLauncher: true },
+                        { tag: "launcher not locked", lockLauncher: false }
+                    ];
+        }
+
+        function test_touchMenuHidesOnLauncherAppDrawer(data) {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            var panel = findChild(shell, "panel");
+            var launcher = testCase.findChild(shell, "launcher");
+            launcher.lockedVisible = data.lockLauncher;
+
+            waitForRendering(panel.applicationMenus);
+
+            if (data.lockLauncher) {
+                panel.applicationMenus.show();
+                tryCompare(panel.applicationMenus, "fullyOpened", true);
+                launcher.openDrawer();
+            } else {
+                tryCompare(launcher, "shown", false);
+                panel.applicationMenus.show();
+                tryCompare(panel.applicationMenus, "fullyOpened", true);
+                launcher.switchToNextState("visible");
+            }
+            tryCompare(panel.applicationMenus, "fullyClosed", true);
+        }
+
+        function test_doubleClickPanelRestoresWindow() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            // start dialer
+            var appDelegate = startApplication("dialer-app")
+            verify(appDelegate);
+            tryCompare(appDelegate, "state", "normal");
+
+            // maximize dialer
+            var decoration = findChild(appDelegate, "appWindowDecoration");
+            verify(decoration);
+            mouseDoubleClickSequence(decoration);
+            tryCompare(appDelegate, "state", "maximized");
+
+            // double click the panel
+            var panel = findChild(shell, "panel");
+            verify(panel);
+            mouseDoubleClickSequence(panel, panel.width/2, PanelState.panelHeight/2, Qt.LeftButton, Qt.NoModifier, 300);
+            tryCompare(appDelegate, "state", "restored");
+        }
+
+        function test_noMenusWithActiveCall() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            // start music-app, maximize it
+            var appDelegate = startApplication("music-app")
+            verify(appDelegate);
+            appDelegate.requestMaximize();
+
+            // move the mouse over panel to reveal the menus
+            var panel = findChild(shell, "panel");
+            verify(panel);
+            mouseMove(panel, panel.width/2, panel.panelHeight/2); // to reveal the menus
+            var menuBarLoader = findInvisibleChild(panel, "menuBarLoader");
+            verify(menuBarLoader);
+            tryCompare(menuBarLoader.item, "visible", true);
+
+            // place a phone call
+            callManager.foregroundCall = phoneCall;
+
+            // menu bar should be hidden
+            tryCompare(menuBarLoader, "active", false);
+            tryCompare(menuBarLoader, "item", null);
+
+            // remove call
+            callManager.foregroundCall = null;
+
+            // menu bar should be revealed
+            tryCompare(menuBarLoader, "active", true);
+            tryCompare(menuBarLoader.item, "visible", true);
+        }
+
+        function test_maximizedWindowAndMenuInPanel() {
+            loadShell("desktop");
+            shell.usageScenario = "desktop";
+            waitForRendering(shell);
+            swipeAwayGreeter();
+
+            // start music-app, maximize it
+            var appDelegate = startApplication("music-app")
+            verify(appDelegate);
+            appDelegate.requestMaximize();
+            tryCompare(appDelegate, "state", "maximized");
+
+            // move the mouse over panel to reveal the menus
+            var panel = findChild(shell, "panel");
+            verify(panel);
+            mouseMove(panel, panel.width/2, panel.panelHeight/2); // to reveal the menus
+            var menuBar = findChild(panel, "menuBar");
+            verify(menuBar);
+            tryCompare(menuBar, "visible", true);
+
+            // check that the menu popup appears
+            var priv = findInvisibleChild(menuBar, "d");
+            var menuItem0 = findChild(menuBar, "menuBar-item0");
+            verify(menuItem0);
+            mouseMove(menuItem0, menuItem0.width/2, menuItem0.height/2, 200);
+            tryCompare(menuItem0, "visible", true);
+            mouseClick(menuItem0);
+            tryCompare(priv, "currentItem", menuItem0);
+            tryCompare(priv.currentItem, "popupVisible", true);
         }
     }
 }
