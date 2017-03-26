@@ -33,17 +33,22 @@ MouseArea {
 
     // to be set from outside, useful mostly for testing purposes
     property var unitySessionService: DBusUnitySessionService
-    property var closeAllApps: function(callback) {
+    property var closeAllApps: function() {
         ApplicationManager.countChanged.connect(function() {
-            if (ApplicationManager.count === 0 || (ApplicationManager.count === 1 && ApplicationManager.get(0).appId === "unity8-dash"))
-                callback();
+            if (ApplicationManager.count === 0 || (ApplicationManager.count === 1 && ApplicationManager.get(0).appId === "unity8-dash")) {
+                d.callback();
+            }
         });
 
         for (var i = ApplicationManager.count-1; i >= 0; i--) {
             var app = ApplicationManager.get(i);
-            if (!app)
+            if (!app || app.appId === "unity8-dash") // skip dash or it will just respawn into our face
                 continue;
             ApplicationManager.stopApplication(app.appId);
+        }
+
+        if (d.callback) { // allow interrupting the shutdown sequence
+            d.shutdownDiscardTimer.start();
         }
     }
     property string usageScenario
@@ -145,6 +150,13 @@ MouseArea {
                 dialogLoader.active = true;
             }
         }
+
+        property var callback
+
+        property Timer shutdownDiscardTimer: Timer {
+            interval: 5000
+            onTriggered: d.callback = null;
+        }
     }
 
     Loader {
@@ -226,7 +238,8 @@ MouseArea {
                 focus: true
                 text: i18n.tr("Yes")
                 onClicked: {
-                    root.closeAllApps(unitySessionService.reboot);
+                    d.callback = unitySessionService.reboot;
+                    root.closeAllApps();
                     rebootDialog.hide();
                 }
                 color: theme.palette.normal.negative
@@ -246,7 +259,8 @@ MouseArea {
                 focus: true
                 text: i18n.ctr("Button: Power off the system", "Power off")
                 onClicked: {
-                    root.closeAllApps(root.powerOffClicked);
+                    d.callback = root.powerOffClicked;
+                    root.closeAllApps();
                     powerDialog.hide();
                 }
                 color: theme.palette.normal.negative
@@ -256,7 +270,8 @@ MouseArea {
                 width: parent.width
                 text: i18n.ctr("Button: Restart the system", "Restart")
                 onClicked: {
-                    root.closeAllApps(unitySessionService.reboot);
+                    d.callback = unitySessionService.reboot;
+                    root.closeAllApps();
                     powerDialog.hide();
                 }
             }
@@ -297,11 +312,11 @@ MouseArea {
         }
 
         onLogoutReady: {
-            function callback() {
+            d.callback = function() {
                 Qt.quit();
                 unitySessionService.endSession();
             }
-            root.closeAllApps(callback);
+            root.closeAllApps();
         }
     }
 }
