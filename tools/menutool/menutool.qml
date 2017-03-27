@@ -23,24 +23,32 @@ import "../../qml/Components/PanelState"
 
 import QMenuModel 0.1
 import Unity.Indicators 0.1 as Indicators
+import Unity.ApplicationMenu 0.1
 
 Item {
     width: units.gu(180)
     height: units.gu(120)
 
-    UnityMenuModel {
-        id: menuModel
-        busName: contextBusName
-        menuObjectPath: "/com/ubuntu/Menu/0"
-        actions: { "unity": "/com/ubuntu/Menu/0" }
+    Connections {
+        target: ApplicationMenuRegistry
+        onAppMenuRegistered: {
+            appsModel.clear();
+            var theMenus = ApplicationMenuRegistry.appMenus();
+            for (var i in theMenus) {
+                appsModel.append({"pid": i, "menuData": theMenus[i]});
+            }
+        }
     }
 
-    readonly property bool hasMenus: repeater.count > 0
-    Repeater {
-        id: repeater
-        model: menuModel
-        delegate: Item {}
+    ListModel {
+        id: appsModel
     }
+
+    UnityMenuModel {
+        id: menuModel
+    }
+
+    property bool showingMenus: false
 
     Panel {
         id: panel
@@ -48,7 +56,7 @@ Item {
         height: parent.height
         width: parent.width / 2
         minimizedPanelHeight: units.gu(6)
-        visible: hasMenus
+        visible: showingMenus
 
         mode: "windowed"
 
@@ -94,7 +102,7 @@ Item {
         height: parent.height
         width: parent.width / 2
         x: width
-        visible: hasMenus
+        visible: showingMenus
 
         MenuBar {
             id: menuBar
@@ -110,9 +118,29 @@ Item {
         PanelState.title = "Drag here to open touch menu";
     }
 
-    Text {
-        anchors.centerIn: parent
-        text: "The dbus address you gave has no menus. Make sure you read the README file."
-        visible: !hasMenus
+    Item {
+        anchors.fill: parent
+        visible: !showingMenus
+
+        Column {
+            anchors.centerIn: parent
+            Text {
+                text: appsModel.count > 0 ? "Please select a menu to show:" : "You are not running any application that exports menus. See the README"
+            }
+
+            Repeater {
+                model: appsModel
+
+                Button {
+                    text: "PID: " + pid + "\tmenuPath: " + menuData.menuPath
+                    onClicked: {
+                        menuModel.busName = menuData.service;
+                        menuModel.menuObjectPath = menuData.menuPath;
+                        menuModel.actions = { "unity": menuData.actionPath };
+                        showingMenus = true;
+                    }
+                }
+            }
+        }
     }
 }

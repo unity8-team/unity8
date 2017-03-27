@@ -30,20 +30,10 @@ int main(int argc, char *argv[])
     QGuiApplication::setApplicationName("Menu Test Tool");
     QGuiApplication *application = new QGuiApplication(argc, argv);
 
-    QCommandLineParser parser;
-    parser.parse(application->arguments());
-    const QStringList args = parser.positionalArguments();
-
-    if (args.count() != 1) {
-        qWarning() << "You need to pass the dbus address";
-        return 1;
-    }
-
     QQuickView* view = new QQuickView();
     view->setResizeMode(QQuickView::SizeRootObjectToView);
     view->setTitle(QGuiApplication::applicationName());
     view->engine()->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
-    view->rootContext()->setContextProperty("contextBusName", args[0]);
 
     QUrl source(::sourceDirectory() + "/tools/menutool/menutool.qml");
     prependImportPaths(view->engine(), ::overrideImportPaths());
