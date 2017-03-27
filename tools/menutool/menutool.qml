@@ -31,12 +31,15 @@ Item {
 
     Connections {
         target: ApplicationMenuRegistry
-        onAppMenuRegistered: {
-            appsModel.clear();
-            var theMenus = ApplicationMenuRegistry.appMenus();
-            for (var i in theMenus) {
-                appsModel.append({"pid": i, "menuData": theMenus[i]});
-            }
+        onAppMenuRegistered: rebuildAppList();
+        onAppMenuUnregistered: rebuildAppList();
+    }
+
+    function rebuildAppList() {
+        appsModel.clear();
+        var theMenus = ApplicationMenuRegistry.appMenus();
+        for (var i in theMenus) {
+            appsModel.append({"pid": i, "menuData": theMenus[i]});
         }
     }
 
