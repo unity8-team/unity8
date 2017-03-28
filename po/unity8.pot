@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 10:58+0000\n"
+"POT-Creation-Date: 2017-03-28 17:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -347,25 +347,25 @@ msgstr ""
 msgid "Preview Share Item"
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:317
+#: qml/Components/VirtualTouchPad.qml:311
 msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:327
+#: qml/Components/VirtualTouchPad.qml:321
 msgid "Tap left button to click."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:339
+#: qml/Components/VirtualTouchPad.qml:333
 msgid "Tap right button to right click."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:351
+#: qml/Components/VirtualTouchPad.qml:345
 msgid "Swipe with two fingers to scroll."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:396
+#: qml/Components/VirtualTouchPad.qml:390
 msgid "Find more settings in the system settings."
 msgstr ""
 
@@ -489,15 +489,15 @@ msgid_plural "Please wait %1 minutes and then try again…"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Greeter/Greeter.qml:561
+#: qml/Greeter/Greeter.qml:579
 msgid "Try again"
 msgstr ""
 
-#: qml/Greeter/Greeter.qml:562
+#: qml/Greeter/Greeter.qml:580
 msgid "Enter passphrase to unlock"
 msgstr ""
 
-#: qml/Greeter/Greeter.qml:563
+#: qml/Greeter/Greeter.qml:581
 msgid "Enter passcode to unlock"
 msgstr ""
 
