@@ -52,6 +52,10 @@ Rectangle {
         surfaceManager: sMgr
     }
 
+    PanelState {
+        id: panelState
+    }
+
     Item {
         id: fakeShell
 
@@ -99,7 +103,7 @@ Rectangle {
                 surface: fakeApplication && fakeApplication.surfaceList.count > 0 ? fakeApplication.surfaceList.get(0) : null
 
                 Binding {
-                    target: PanelState
+                    target: panelState
                     property: "focusedPersistentSurfaceId"
                     value: decoratedWindow.surface ? decoratedWindow.surface.persistentId : "x"
                 }

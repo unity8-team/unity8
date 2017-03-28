@@ -42,6 +42,8 @@ PanelTest {
         value: keyboardAttached.checked
     }
 
+    readonly property alias panelState: panel.panelState
+
     SurfaceManager { id: sMgr }
     ApplicationMenuDataLoader {
         id: appMenuData
@@ -99,6 +101,8 @@ PanelTest {
                         model: root.indicatorsModel
                         hides: [ panel.applicationMenus ]
                     }
+
+                    panelState: PanelState {}
                 }
             }
         }
@@ -153,7 +157,7 @@ PanelTest {
                 Layout.fillWidth: true
                 CheckBox {
                     id: windowControlsCB
-                    onClicked: PanelState.decorationsVisible = checked
+                    onClicked: panelState.decorationsVisible = checked
                 }
                 Label {
                     text: "Show window decorations"
@@ -164,7 +168,7 @@ PanelTest {
             RowLayout {
                 Layout.fillWidth: true
                 CheckBox {
-                    onClicked: PanelState.title = checked ? "Fake window title" : ""
+                    onClicked: panelState.title = checked ? "Fake window title" : ""
                 }
                 Label {
                     text: "Show fake window title"
@@ -250,7 +254,7 @@ PanelTest {
 
         SignalSpy {
             id: windowControlButtonsSpy
-            target: PanelState
+            target: panelState
             signalName: "closeClicked"
         }
 
@@ -260,8 +264,8 @@ PanelTest {
             panel.fullscreenMode = false;
             callManager.foregroundCall = null;
 
-            PanelState.title = "";
-            PanelState.decorationsVisible = false;
+            panelState.title = "";
+            panelState.decorationsVisible = false;
 
             // Wait for the indicators to get into position.
             // (switches between normal and fullscreen modes are animated)
@@ -456,7 +460,7 @@ PanelTest {
         }
 
         function test_hint(data) {
-            PanelState.title = "Fake Title"
+            panelState.title = "Fake Title"
             panel.fullscreenMode = data.fullscreen;
             callManager.foregroundCall = data.call;
 
@@ -498,7 +502,7 @@ PanelTest {
         // menus, first by running the hint animation, then after dragging down will
         // expose more of the panel. Releasing the touch will complete the show.
         function test_drag_applicationMenu_down_shows_menu(data) {
-            PanelState.title = "Fake Title";
+            panelState.title = "Fake Title";
             panel.fullscreenMode = data.fullscreen;
             callManager.foregroundCall = data.call;
 
@@ -589,7 +593,7 @@ PanelTest {
         }
 
         function test_darkenedAreaEatsAllApplicationMenuEvents() {
-            PanelState.title = "Fake Title"
+            panelState.title = "Fake Title"
 
             // The center of the area not covered by the indicators menu
             // Ie, the visible darkened area behind the menu
@@ -710,7 +714,7 @@ PanelTest {
             var windowControlArea = findChild(panel, "windowControlArea");
             verify(windowControlArea, "Window control area should have been created in windowed mode")
 
-            PanelState.decorationsVisible = true;
+            panelState.decorationsVisible = true;
             // click in very topleft corner and verify the close button got clicked too
             mouseMove(panel, 0, 0);
             mouseClick(panel, 0, 0, undefined /*button*/, undefined /*modifiers*/, 100 /*short delay*/);
@@ -773,7 +777,7 @@ PanelTest {
         }
 
         function test_stagedApplicationMenuBarShowOnMouseHover() {
-            PanelState.title = "Fake Title";
+            panelState.title = "Fake Title";
             panel.mode = "staged";
             mouseEmulation.checked = false;
 
@@ -791,7 +795,7 @@ PanelTest {
         }
 
         function test_windowedApplicationMenuShowOnMouseHoverWhenDecorationsShown() {
-            PanelState.title = "Fake Title";
+            panelState.title = "Fake Title";
             panel.mode = "windowed";
             mouseEmulation.checked = false;
 
@@ -807,7 +811,7 @@ PanelTest {
             tryCompare(appTitle, "visible", true, undefined, "App title should still be visible on mouse hover when panel decorations are not visible");
             tryCompare(appMenuBar, "visible", false, undefined, "App menu bar should be visible on mouse hover when panel decorations are not visible");
 
-            PanelState.decorationsVisible = true;
+            panelState.decorationsVisible = true;
 
             tryCompare(appTitle, "visible", false, undefined, "App title should still be visible on mouse hover when panel decorations are visible");
             tryCompare(appMenuBar, "visible", true, undefined, "App menu bar should be visible on mouse hover when panel decorations not visible");
@@ -855,7 +859,7 @@ PanelTest {
 
             var indicatorsBar = findChild(panel.applicationMenus, "indicatorsBar");
 
-            PanelState.title = "Fake Title"
+            panelState.title = "Fake Title"
             pullDownApplicationsMenu(0 /*xPos*/);
             compare(aboutToShowCalledSpy.count, 1);
 
@@ -888,7 +892,7 @@ PanelTest {
 
             var indicatorsBar = findChild(panel.applicationMenus, "indicatorsBar");
 
-            PanelState.title = "Fake Title"
+            panelState.title = "Fake Title"
             pullDownApplicationsMenu(0 /*xPos*/);
 
             tryCompare(indicatorsBar, "currentItemIndex", 0);

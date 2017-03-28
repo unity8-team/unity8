@@ -47,6 +47,7 @@ FocusScope {
     property bool oskEnabled: false
     property rect inputMethodRect
     property real rightEdgePushProgress: 0
+    property PanelState panelState
 
     // Configuration
     property string mode: "staged"
@@ -352,20 +353,20 @@ FocusScope {
     Component.onCompleted: priv.updateMainAndSideStageIndexes();
 
     Connections {
-        target: PanelState
+        target: panelState
         onCloseClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.close(); } }
         onMinimizeClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.requestMinimize(); } }
         onRestoreClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.requestRestore(); } }
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "decorationsVisible"
         value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "title"
         value: {
             if (priv.focusedAppDelegate !== null) {
@@ -380,7 +381,7 @@ FocusScope {
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "focusedPersistentSurfaceId"
         value: {
             if (priv.focusedAppDelegate !== null) {
@@ -394,21 +395,21 @@ FocusScope {
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "dropShadow"
         value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppDelegate !== null && mode == "windowed"
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "closeButtonShown"
         value: priv.focusedAppDelegate && priv.focusedAppDelegate.maximized && !priv.focusedAppDelegate.isDash
     }
 
     Component.onDestruction: {
-        PanelState.title = "";
-        PanelState.decorationsVisible = false;
-        PanelState.dropShadow = false;
+        panelState.title = "";
+        panelState.decorationsVisible = false;
+        panelState.dropShadow = false;
     }
 
     Instantiator {
@@ -678,7 +679,7 @@ FocusScope {
         Item {
             id: boundariesForWindowPlacement
             anchors.fill: parent
-            anchors.topMargin: PanelState.panelHeight
+            anchors.topMargin: panelState.panelHeight
             visible: false
         }
 
@@ -779,7 +780,7 @@ FocusScope {
                     target: appDelegate
                     property: "y"
                     value: appDelegate.requestedY -
-                           Math.min(appDelegate.requestedY - PanelState.panelHeight,
+                           Math.min(appDelegate.requestedY - panelState.panelHeight,
                                     Math.max(0, priv.virtualKeyboardHeight - (appContainer.height - (appDelegate.requestedY + appDelegate.height))))
                     when: root.oskEnabled && appDelegate.focus && (appDelegate.state == "normal" || appDelegate.state == "restored")
                           && root.inputMethodRect.height > 0
@@ -1177,7 +1178,7 @@ FocusScope {
                     progress: 0
                     targetHeight: spreadItem.stackHeight
                     targetX: spreadMaths.targetX
-                    startY: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                    startY: appDelegate.fullscreen ? 0 : panelState.panelHeight
                     targetY: spreadMaths.targetY
                     targetAngle: spreadMaths.targetAngle
                     targetScale: spreadMaths.targetScale
@@ -1298,9 +1299,9 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             x: stageMaths.itemX
-                            y: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            y: appDelegate.fullscreen ? 0 : panelState.panelHeight
                             requestedWidth: appContainer.width
-                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
+                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
                             visuallyMaximized: true
                             visible: appDelegate.x < root.width
                         }
@@ -1330,10 +1331,10 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             x: stageMaths.itemX
-                            y: appDelegate.fullscreen ? 0 : PanelState.panelHeight
+                            y: appDelegate.fullscreen ? 0 : panelState.panelHeight
                             z: stageMaths.itemZ
                             requestedWidth: stageMaths.itemWidth
-                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - PanelState.panelHeight
+                            requestedHeight: appDelegate.fullscreen ? appContainer.height : appContainer.height - panelState.panelHeight
                             visuallyMaximized: true
                             visible: appDelegate.x < root.width
                         }
@@ -1402,9 +1403,9 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             windowedX: root.leftMargin
-                            windowedY: PanelState.panelHeight
+                            windowedY: panelState.panelHeight
                             windowedWidth: (appContainer.width - root.leftMargin)/2
-                            windowedHeight: appContainer.height - PanelState.panelHeight
+                            windowedHeight: appContainer.height - panelState.panelHeight
                         }
                     },
                     State {
@@ -1421,9 +1422,9 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             windowedX: root.leftMargin
-                            windowedY: PanelState.panelHeight
+                            windowedY: panelState.panelHeight
                             windowedWidth: (appContainer.width - root.leftMargin)/2
-                            windowedHeight: (appContainer.height - PanelState.panelHeight)/2
+                            windowedHeight: (appContainer.height - panelState.panelHeight)/2
                         }
                     },
                     State {
@@ -1440,7 +1441,7 @@ FocusScope {
                         PropertyChanges {
                             target: appDelegate
                             windowedX: root.leftMargin
-                            windowedY: (appContainer.height + PanelState.panelHeight)/2
+                            windowedY: (appContainer.height + panelState.panelHeight)/2
                             windowedWidth: (appContainer.width - root.leftMargin)/2
                             windowedHeight: appContainer.height/2
                         }
@@ -1462,8 +1463,8 @@ FocusScope {
                     State {
                         name: "maximizedVertically"; when: appDelegate.maximizedVertically && !appDelegate.minimized
                         extend: "normal"
-                        PropertyChanges { target: appDelegate; windowedX: windowedX; windowedY: PanelState.panelHeight;
-                            windowedWidth: windowedWidth; windowedHeight: appContainer.height - PanelState.panelHeight }
+                        PropertyChanges { target: appDelegate; windowedX: windowedX; windowedY: panelState.panelHeight;
+                            windowedWidth: windowedWidth; windowedHeight: appContainer.height - panelState.panelHeight }
                     },
                     State {
                         name: "minimized"; when: appDelegate.minimized
@@ -1576,7 +1577,7 @@ FocusScope {
                 ]
 
                 Binding {
-                    target: PanelState
+                    target: panelState
                     property: "decorationsAlwaysVisible"
                     value: appDelegate && appDelegate.maximized && touchControls.overlayShown
                 }
@@ -1621,6 +1622,7 @@ FocusScope {
                     highlightSize: windowInfoItem.iconMargin / 2
                     boundsItem: boundariesForWindowPlacement
                     altDragEnabled: root.mode == "windowed"
+                    panelState: root.panelState
 
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
@@ -1820,6 +1822,7 @@ FocusScope {
         leftMargin: root.leftMargin
         appContainerWidth: appContainer.width
         appContainerHeight: appContainer.height
+        panelState: root.panelState
     }
 
     MouseArea {

@@ -16,14 +16,27 @@
 
 #include "plugin.h"
 #include "screens.h"
+#include "screenwindow.h"
 
 #include <QScreen>
+
+namespace {
+QObject* screensSingleton(QQmlEngine* engine, QJSEngine* scriptEngine) {
+    Q_UNUSED(engine);
+    Q_UNUSED(scriptEngine);
+    return new Screens();
+}
+}
 
 void UnityScreensPlugin::registerTypes(const char* uri)
 {
     Q_ASSERT(QLatin1String(uri) == QLatin1String("Unity.Screens"));
 
     qRegisterMetaType<QScreen*>("QScreen*");
+    qRegisterMetaType<ScreenMode*>("ScreenMode*");
+    qmlRegisterUncreatableType<ScreenMode>(uri, 0, 1, "ScreenMode", "ScreenMode is not creatable.");
 
-    qmlRegisterType<Screens>(uri, 0, 1, "Screens");
+    qmlRegisterSingletonType<Screens>(uri, 0, 1, "Screens", screensSingleton);
+    qmlRegisterType<ScreenWindow>(uri, 0, 1, "ScreenWindow");
+    qmlRegisterRevision<QWindow,1>(uri, 0, 1);
 }
