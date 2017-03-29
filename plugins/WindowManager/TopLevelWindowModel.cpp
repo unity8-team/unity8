@@ -672,13 +672,15 @@ void TopLevelWindowModel::activateTopMostWindowWithoutId(int forbiddenId)
     }
 }
 
-unityapi::ApplicationInstanceListInterface* TopLevelWindowModel::applicationInstancesModel() const
+QAbstractListModel* TopLevelWindowModel::applicationInstancesModel() const
 {
     return m_applicationInstances;
 }
 
-void TopLevelWindowModel::setApplicationInstancesModel(unityapi::ApplicationInstanceListInterface* appInstancesModel)
+void TopLevelWindowModel::setApplicationInstancesModel(QAbstractListModel* appInstancesModelParam)
 {
+    auto appInstancesModel = static_cast<unityapi::ApplicationInstanceListInterface*>(appInstancesModelParam);
+
     if (m_applicationInstances == appInstancesModel) {
         return;
     }
@@ -722,4 +724,6 @@ void TopLevelWindowModel::setApplicationInstancesModel(unityapi::ApplicationInst
 
     endResetModel();
     m_modelState = IdleState;
+
+    Q_EMIT applicationInstancesModelChanged();
 }

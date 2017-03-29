@@ -47,7 +47,7 @@ QVariant AllApplicationInstances::data(const QModelIndex& index, int role) const
 
 ApplicationInstanceInterface *AllApplicationInstances::get(int index)
 {
-    if (index > 0 && index < m_appInstanceList.count()) {
+    if (index >= 0 && index < m_appInstanceList.count()) {
         return m_appInstanceList[index];
     } else {
         return nullptr;

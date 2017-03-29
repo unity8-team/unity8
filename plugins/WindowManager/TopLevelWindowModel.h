@@ -78,7 +78,7 @@ class WINDOWMANAGERQML_EXPORT TopLevelWindowModel : public QAbstractListModel
             WRITE setSurfaceManager
             NOTIFY surfaceManagerChanged)
 
-    Q_PROPERTY(unity::shell::application::ApplicationInstanceListInterface* applicationInstancesModel
+    Q_PROPERTY(QAbstractListModel* applicationInstancesModel
             READ applicationInstancesModel WRITE setApplicationInstancesModel NOTIFY applicationInstancesModelChanged)
 
     /**
@@ -112,8 +112,8 @@ public:
 
     // Own API
 
-    unity::shell::application::ApplicationInstanceListInterface* applicationInstancesModel() const;
-    void setApplicationInstancesModel(unity::shell::application::ApplicationInstanceListInterface*);
+    QAbstractListModel* applicationInstancesModel() const;
+    void setApplicationInstancesModel(QAbstractListModel*);
 
     unity::shell::application::MirSurfaceInterface* inputMethodSurface() const;
     Window* focusedWindow() const;
