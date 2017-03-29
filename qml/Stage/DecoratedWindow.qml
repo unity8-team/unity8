@@ -30,7 +30,7 @@ FocusScope {
     // The surface might not be able to resize to the requested values. It will return its actual size
     // in implicitWidth/implicitHeight.
 
-    property alias application: applicationWindow.application
+    property alias applicationInstance: applicationWindow.applicationInstance
     property alias surface: applicationWindow.surface
     readonly property alias focusedSurface: applicationWindow.focusedSurface
     property alias active: decoration.active
@@ -177,8 +177,8 @@ FocusScope {
         transform: [
             Rotation {
                 id: rotationTransform
-                readonly property int rotationAngle: applicationWindow.application &&
-                                                     applicationWindow.application.rotatesWindowContents
+                readonly property int rotationAngle: applicationWindow.applicationInstance &&
+                                                     applicationWindow.applicationInstance.application.rotatesWindowContents
                                                      ? ((360 - applicationWindow.surfaceOrientationAngle) % 360) : 0
                 origin.x: {
                     if (rotationAngle == 90) return applicationWindow.height / 2;

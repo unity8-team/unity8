@@ -11,7 +11,8 @@ add_executable(TopLevelWindowModelTestExec
     ${CMAKE_SOURCE_DIR}/tests/mocks/Unity/Application/MirSurfaceListModel.cpp
 
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInfoInterface.h
-    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationManagerInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInstanceInterface.h
+    ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/ApplicationInstanceListInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/Mir.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceInterface.h
     ${APPLICATION_API_INCLUDEDIR}/unity/shell/application/MirSurfaceListInterface.h

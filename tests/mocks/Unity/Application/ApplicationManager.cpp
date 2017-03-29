@@ -30,6 +30,9 @@
 #include <QDateTime>
 #include <QtDBus/QtDBus>
 
+// unity-api
+#include <unity/shell/application/ApplicationInstanceInterface.h>
+
 #define APPLICATIONMANAGER_DEBUG 0
 
 #if APPLICATIONMANAGER_DEBUG
@@ -40,7 +43,7 @@
 #define XDEBUG_MSG(params) ((void)0)
 #endif
 
-namespace unityapi = unity::shell::application;
+using namespace unity::shell::application;
 
 
 ApplicationManager::ApplicationManager(QObject *parent)
@@ -84,8 +87,6 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
         return app->comment();
     case RoleIcon:
         return app->icon();
-    case RoleState:
-        return app->state();
     case RoleFocused:
         return app->focused();
     case RoleIsTouchApp:
@@ -93,7 +94,7 @@ QVariant ApplicationManager::data(const QModelIndex& index, int role) const {
     case RoleExemptFromLifecycle:
         return app->exemptFromLifecycle();
     case RoleApplication:
-        return QVariant::fromValue(static_cast<unityapi::ApplicationInfoInterface*>(app));
+        return QVariant::fromValue(static_cast<ApplicationInfoInterface*>(app));
     default:
         return QVariant();
     }
@@ -114,12 +115,15 @@ ApplicationInfo *ApplicationManager::findApplication(const QString &appId) const
     return nullptr;
 }
 
-unityapi::ApplicationInfoInterface *ApplicationManager::findApplicationWithSurface(unityapi::MirSurfaceInterface* surface) const
+ApplicationInfoInterface *ApplicationManager::findApplicationWithSurface(MirSurfaceInterface* surface) const
 {
     for (ApplicationInfo *app : m_runningApplications) {
-        auto surfaceList = static_cast<MirSurfaceListModel*>(app->surfaceList());
-        if (surfaceList->contains(static_cast<MirSurface*>(surface))) {
-            return app;
+        auto instanceList = app->instanceList();
+        for (int i = 0; i < instanceList->count(); ++i) {
+            auto surfaceList = static_cast<MirSurfaceListModel*>(instanceList->get(i)->surfaceList());
+            if (surfaceList->contains(static_cast<MirSurface*>(surface))) {
+                return app;
+            }
         }
     }
     return nullptr;
@@ -142,7 +146,7 @@ bool ApplicationManager::add(ApplicationInfo *application) {
     }
     DEBUG_MSG(application->appId());
 
-    application->setState(ApplicationInfo::Starting);
+    application->start();
 
     beginInsertRows(QModelIndex(), m_runningApplications.size(), m_runningApplications.size());
     m_runningApplications.append(application);
@@ -156,11 +160,6 @@ bool ApplicationManager::add(ApplicationInfo *application) {
         if (application->focused()) {
             raiseApp(application->appId());
         }
-    });
-    connect(application, &ApplicationInfo::stateChanged, this, [application, this]() {
-        QModelIndex appIndex = findIndex(application);
-        if (!appIndex.isValid()) return;
-        Q_EMIT dataChanged(appIndex, appIndex, QVector<int>() << ApplicationManager::RoleState);
     });
 
     connect(application, &ApplicationInfo::closed, this, [application, this]() {
@@ -502,6 +501,16 @@ QStringList ApplicationManager::availableApplications()
     return appIds;
 }
 
+ApplicationInfo* ApplicationManager::getAvailableApplication(const QString &appId)
+{
+    Q_FOREACH(ApplicationInfo *app, m_availableApplications) {
+        if (app->appId() == appId) {
+            return app;
+        }
+    }
+    return nullptr;
+}
+
 bool ApplicationManager::isEmpty() const
 {
     return m_runningApplications.isEmpty();
@@ -510,9 +519,12 @@ bool ApplicationManager::isEmpty() const
 ApplicationInfo *ApplicationManager::findApplication(MirSurface* surface)
 {
     for (ApplicationInfo *app : m_runningApplications) {
-        auto surfaceList = static_cast<MirSurfaceListModel*>(app->surfaceList());
-        if (surfaceList->contains(surface)) {
-            return app;
+        ApplicationInstanceListInterface *appInstances = app->instanceList();
+        for (int i = 0; i < appInstances->count(); ++i) {
+            auto surfaceList = static_cast<MirSurfaceListModel*>(appInstances->get(i)->surfaceList());
+            if (surfaceList->contains(surface)) {
+                return app;
+            }
         }
     }
     return nullptr;

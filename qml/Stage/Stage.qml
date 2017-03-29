@@ -31,6 +31,7 @@ FocusScope {
     anchors.fill: parent
 
     property QtObject applicationManager
+    property QtObject applicationInstanceList
     property QtObject topLevelSurfaceList
     property bool altTabPressed
     property url background
@@ -58,7 +59,9 @@ FocusScope {
     readonly property alias previewRectangle: fakeRectangle
 
     readonly property bool spreadShown: state == "spread"
-    readonly property var mainApp: priv.focusedAppDelegate ? priv.focusedAppDelegate.application : null
+    readonly property var mainApp: priv.focusedAppDelegate && priv.focusedAppDelegate.applicationInstance
+                ? priv.focusedAppDelegate.applicationInstance.application
+                : null
 
     // application windows never rotate independently
     property int mainAppWindowOrientationAngle: shellOrientationAngle
@@ -412,11 +415,11 @@ FocusScope {
     }
 
     Instantiator {
-        model: root.applicationManager
+        model: root.topLevelSurfaceList ? root.topLevelSurfaceList.allApplicationInstances : null
         delegate: QtObject {
             property var stateBinding: Binding {
                 readonly property bool isDash: model.application ? model.application.appId == "unity8-dash" : false
-                target: model.application
+                target: model.applicationInstance
                 property: "requestedState"
 
                 // TODO: figure out some lifecycle policy, like suspending minimized apps
@@ -426,14 +429,19 @@ FocusScope {
                 //       resume all those apps at once. We might want to avoid that.
                 value: root.mode === "windowed"
                        || isDash
-                       || (!root.suspended && model.application && priv.focusedAppDelegate &&
-                           (priv.focusedAppDelegate.appId === model.application.appId ||
+                       || (!root.suspended && model.applicationInstance && priv.focusedAppDelegate &&
+                           (priv.focusedAppDelegate.applicationInstance === model.applicationInstance ||
                             priv.mainStageAppId === model.application.appId ||
                             priv.sideStageAppId === model.application.appId))
-                       ? ApplicationInfoInterface.RequestedRunning
-                       : ApplicationInfoInterface.RequestedSuspended
+                       ? ApplicationInstanceInterface.RequestedRunning
+                       : ApplicationInstanceInterface.RequestedSuspended
             }
+        }
+    }
 
+    Instantiator {
+        model: root.applicationManager
+        delegate: QtObject {
             property var lifecycleBinding: Binding {
                 target: model.application
                 property: "exemptFromLifecycle"
@@ -791,7 +799,7 @@ FocusScope {
                     target: root
                     onShellOrientationAngleChanged: {
                         // at this point decoratedWindow.surfaceOrientationAngle is the old shellOrientationAngle
-                        if (application && application.rotatesWindowContents) {
+                        if (model.application && model.application.rotatesWindowContents) {
                             if (root.state == "windowed") {
                                 var angleDiff = decoratedWindow.surfaceOrientationAngle - shellOrientationAngle;
                                 angleDiff = (360 + angleDiff) % 360;
@@ -808,7 +816,7 @@ FocusScope {
                     }
                 }
 
-                readonly property alias application: decoratedWindow.application
+                readonly property var application: model.application
                 readonly property alias minimumWidth: decoratedWindow.minimumWidth
                 readonly property alias minimumHeight: decoratedWindow.minimumHeight
                 readonly property alias maximumWidth: decoratedWindow.maximumWidth
@@ -864,7 +872,7 @@ FocusScope {
                 readonly property alias focusedSurface: decoratedWindow.focusedSurface
                 readonly property bool dragging: touchControls.overlayShown ? touchControls.dragging : decoratedWindow.dragging
 
-                readonly property string appId: model.application.appId
+                readonly property string appId: model.applicationInstance.application.appId
                 readonly property bool isDash: appId == "unity8-dash"
                 readonly property alias clientAreaItem: decoratedWindow.clientAreaItem
 
@@ -1608,7 +1616,7 @@ FocusScope {
                     objectName: "decoratedWindow"
                     anchors.left: appDelegate.left
                     anchors.top: appDelegate.top
-                    application: model.application
+                    applicationInstance: model.applicationInstance
                     surface: model.window.surface
                     active: model.window.focused
                     focus: true

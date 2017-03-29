@@ -75,6 +75,7 @@ MirSurface::MirSurface(const QString& name,
         Mir::Type type,
         Mir::State state,
         MirSurface *parentSurface,
+        ApplicationInstanceInterface *applicationInstance,
         const QUrl& screenshot,
         const QUrl &qmlFilePath)
     : unity::shell::application::MirSurfaceInterface(nullptr)
@@ -93,6 +94,7 @@ MirSurface::MirSurface(const QString& name,
     , m_shellChrome(Mir::NormalChrome)
     , m_parentSurface(parentSurface)
     , m_childSurfaceList(new MirSurfaceListModel(this))
+    , m_applicationInstance(applicationInstance)
 {
     DEBUG_MSG("state=" << stateToStr(state));
 
@@ -504,6 +506,7 @@ void MirSurface::openMenu(qreal x, qreal y, qreal width, qreal height)
 {
     auto *menu = SurfaceManager::instance()->createSurface("menu", Mir::MenuType, Mir::HiddenState,
             this /* parentSurface */,
+            m_applicationInstance,
             QUrl() /* screenshot */,
             QUrl("qrc:///Unity/Application/KateMenu.qml"));
 
@@ -518,6 +521,7 @@ void MirSurface::openDialog(qreal x, qreal y, qreal width, qreal height)
 {
     auto *dialog = SurfaceManager::instance()->createSurface("dialog", Mir::DialogType, Mir::HiddenState,
             this /* parentSurface */,
+            m_applicationInstance,
             QUrl() /* screenshot */,
             QUrl("qrc:///Unity/Application/KateDialog.qml"));
 
@@ -551,4 +555,9 @@ MirSurfaceInterface* MirSurface::parentSurface() const
 MirSurfaceListInterface* MirSurface::childSurfaceList() const
 {
     return m_childSurfaceList;
+}
+
+ApplicationInstanceInterface* MirSurface::applicationInstance() const
+{
+    return m_applicationInstance;
 }

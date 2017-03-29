@@ -62,10 +62,11 @@ MirSurface *SurfaceManager::createSurface(const QString& name,
                                           Mir::Type type,
                                           Mir::State state,
                                           MirSurface *parentSurface,
+                                          unity::shell::application::ApplicationInstanceInterface *appInstance,
                                           const QUrl &screenshot,
                                           const QUrl &qmlFilePath)
 {
-    MirSurface* surface = new MirSurface(name, type, state, parentSurface, screenshot, qmlFilePath);
+    MirSurface* surface = new MirSurface(name, type, state, parentSurface, appInstance, screenshot, qmlFilePath);
     registerSurface(surface);
     if (parentSurface) {
         static_cast<MirSurfaceListModel*>(parentSurface->childSurfaceList())->addSurface(surface);

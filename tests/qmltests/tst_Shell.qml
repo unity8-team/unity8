@@ -324,10 +324,9 @@ Rectangle {
                 }
 
                 Repeater {
-                    id: appCheckBoxRepeater
                     model: ApplicationManager.availableApplications
-                    ApplicationCheckBox {
-                        appId: modelData
+                    ApplicationControls {
+                        application: ApplicationManager.getAvailableApplication(modelData)
                     }
                 }
 

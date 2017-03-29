@@ -18,6 +18,8 @@
 #define UNITYAPPLICATIONMOCKS_H
 
 #include <unity/shell/application/ApplicationInfoInterface.h>
+#include <unity/shell/application/ApplicationInstanceInterface.h>
+#include <unity/shell/application/ApplicationInstanceListInterface.h>
 #include <unity/shell/application/ApplicationManagerInterface.h>
 #include <unity/shell/application/MirSurfaceInterface.h>
 #include <unity/shell/application/SurfaceManagerInterface.h>
@@ -31,6 +33,9 @@ class MirSurface : public MirSurfaceInterface
 {
     Q_OBJECT
 public:
+    MirSurface(ApplicationInstanceInterface *applicationInstance)
+        : m_applicationInstance(applicationInstance) {}
+
     Mir::Type type() const override { return m_type; }
     QString name() const override { return QString("foo"); }
     QString persistentId() const override { return QString("a-b-c-my-id"); }
@@ -64,6 +69,7 @@ public:
     void setRequestedPosition(const QPoint &) override {}
     MirSurfaceInterface* parentSurface() const override { return nullptr; }
     unity::shell::application::MirSurfaceListInterface* childSurfaceList() const override { return nullptr; }
+    unity::shell::application::ApplicationInstanceInterface* applicationInstance() const override { return m_applicationInstance; }
     void close() override {}
     void activate() override {}
 
@@ -80,6 +86,7 @@ public:
     Mir::Type m_type { Mir::NormalType };
     Mir::State m_state { Mir::RestoredState };
     bool m_live { true };
+    ApplicationInstanceInterface *m_applicationInstance;
 };
 
 class SurfaceManager : public SurfaceManagerInterface
@@ -89,6 +96,44 @@ class SurfaceManager : public SurfaceManagerInterface
 public:
     void raise(MirSurfaceInterface *) override {}
     void activate(MirSurfaceInterface *) override {}
+};
+
+class ApplicationInstanceList : public ApplicationInstanceListInterface
+{
+public:
+
+    void add(ApplicationInstanceInterface *applicationInstance)
+    {
+        beginInsertRows(QModelIndex(), 0, 0);
+        m_list.prepend(applicationInstance);
+        endInsertRows();
+        Q_EMIT countChanged(m_list.count());
+    }
+
+    int rowCount(const QModelIndex &) const override
+    {
+        return m_list.count();
+    }
+
+    QVariant data(const QModelIndex& index, int role) const override
+    {
+        if (index.row() < 0 || index.row() >= m_list.size())
+            return QVariant();
+
+        if (role == ApplicationInstanceRole) {
+            ApplicationInstanceInterface *appInstance = m_list.at(index.row());
+            return QVariant::fromValue(appInstance);
+        } else {
+            return QVariant();
+        }
+    }
+
+    ApplicationInstanceInterface *get(int index) override
+    {
+        return m_list.at(index);
+    }
+
+    QList<ApplicationInstanceInterface*> m_list;
 };
 
 class Application : public ApplicationInfoInterface
@@ -102,15 +147,6 @@ public:
     QString name() const override { return "foo"; }
     QString comment() const override { return "bar"; }
     QUrl icon() const override { return QUrl(); }
-    State state() const override { return m_state; }
-    RequestedState requestedState() const override { return m_requestedState; }
-    void setRequestedState(RequestedState value) override
-    {
-        if (value != m_requestedState) {
-            m_requestedState = value;
-            Q_EMIT requestedStateChanged(value);
-        }
-    }
     bool focused() const override { return false; }
     QString splashTitle() const override { return QString(); }
     QUrl splashImage() const override { return QUrl(); }
@@ -125,79 +161,42 @@ public:
     void setExemptFromLifecycle(bool) override {}
     QSize initialSurfaceSize() const override { return QSize(); }
     void setInitialSurfaceSize(const QSize &) override {}
-    MirSurfaceListInterface* surfaceList() const override { return &m_surfaceList; }
-    MirSurfaceListInterface* promptSurfaceList() const override { return nullptr; }
     int surfaceCount() const override { return 0; }
 
+    ApplicationInstanceListInterface* instanceList() const override { return &m_instanceList; }
+
     QString m_appId;
+    mutable ApplicationInstanceList m_instanceList;
+};
+
+class ApplicationInstance : public ApplicationInstanceInterface
+{
+    Q_OBJECT
+public:
+    ApplicationInstance(ApplicationInfoInterface *app) : m_application(app) {}
+    State state() const override { return m_state; }
+    RequestedState requestedState() const override { return m_requestedState; }
+    void setRequestedState(RequestedState value) override
+    {
+        if (value != m_requestedState) {
+            m_requestedState = value;
+            Q_EMIT requestedStateChanged(value);
+        }
+    }
+    MirSurfaceListInterface* surfaceList() const override { return &m_surfaceList; }
+    MirSurfaceListInterface* promptSurfaceList() const override { return nullptr; }
+
+    bool fullscreen() const override { return false; }
+    ApplicationInfoInterface* application() const override { return m_application; }
+    bool focused() const override { return false; }
+
+    void close() override {}
+
     State m_state;
     RequestedState m_requestedState;
     mutable MirSurfaceListModel m_surfaceList;
-};
 
-class ApplicationManager : public ApplicationManagerInterface
-{
-    Q_OBJECT
-
-public:
-
-    int rowCount(const QModelIndex &) const override
-    {
-        return m_applications.count();
-    }
-
-    QVariant data(const QModelIndex &/*index*/, int /*role*/) const override
-    {
-        return QVariant();
-    }
-
-    QString focusedApplicationId() const override {return QString();}
-
-    ApplicationInfoInterface *get(int index) const override
-    {
-        return m_applications[index];
-    }
-
-    ApplicationInfoInterface *findApplication(const QString &appId) const override
-    {
-        Q_UNUSED(appId);
-        return nullptr;
-    }
-
-    ApplicationInfoInterface *findApplicationWithSurface(MirSurfaceInterface* surface) const override
-    {
-        for (int i = 0; i < m_applications.count(); ++i) {
-            if (m_applications[i]->m_surfaceList.contains(surface)) {
-                return m_applications[i];
-            }
-        }
-        return nullptr;
-    }
-
-    bool requestFocusApplication(const QString &appId) override
-    {
-        Q_UNUSED(appId);
-        return false;
-    }
-
-    ApplicationInfoInterface *startApplication(const QString &appId, const QStringList &/*arguments*/) override
-    {
-        Application *application = new Application(appId);
-        prepend(application);
-        return application;
-    }
-
-    bool stopApplication(const QString &) override { return true; }
-
-private:
-    void prepend(Application *application)
-    {
-        beginInsertRows(QModelIndex(), 0 /*first*/, 0 /*last*/);
-        m_applications.append(application);
-        endInsertRows();
-    }
-
-    QList<Application*> m_applications;
+    ApplicationInfoInterface *m_application;
 };
 
 #endif // UNITYAPPLICATIONMOCKS_H
