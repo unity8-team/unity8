@@ -19,12 +19,11 @@
 
 #include <QObject>
 
+#include <unity/shell/application/ApplicationInstanceInterface.h>
 #include <unity/shell/application/SurfaceManagerInterface.h>
 
 #include "MirSurface.h"
 #include "VirtualKeyboard.h"
-
-class ApplicationInfo;
 
 class SurfaceManager : public unity::shell::application::SurfaceManagerInterface
 {
@@ -50,6 +49,7 @@ public:
                                   Mir::Type type,
                                   Mir::State state,
                                   MirSurface *parentSurface,
+                                  unity::shell::application::ApplicationInstanceInterface *appInstance,
                                   const QUrl &screenshot,
                                   const QUrl &qmlFilePath = QUrl());
 

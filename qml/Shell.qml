@@ -270,10 +270,14 @@ StyledItem {
             id: surfaceMan
             objectName: "surfaceManager"
         }
+        AllApplicationInstances {
+            id: allAppInstances
+            applicationsModel: ApplicationManager
+        }
         TopLevelWindowModel {
             id: topLevelSurfaceList
             objectName: "topLevelSurfaceList"
-            applicationManager: ApplicationManager // it's a singleton
+            applicationInstancesModel: allAppInstances
             surfaceManager: surfaceMan
         }
 
@@ -287,6 +291,7 @@ StyledItem {
             background: wallpaperResolver.background
 
             applicationManager: ApplicationManager
+            applicationInstanceList: allAppInstances
             topLevelSurfaceList: topLevelSurfaceList
             inputMethodRect: inputMethod.visibleRect
             rightEdgePushProgress: rightEdgeBarrier.progress

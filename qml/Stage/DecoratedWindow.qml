@@ -30,7 +30,7 @@ FocusScope {
     // The surface might not be able to resize to the requested values. It will return its actual size
     // in implicitWidth/implicitHeight.
 
-    property alias application: applicationWindow.application
+    property alias applicationInstance: applicationWindow.applicationInstance
     property alias surface: applicationWindow.surface
     readonly property alias focusedSurface: applicationWindow.focusedSurface
     property alias active: decoration.active
@@ -93,12 +93,14 @@ FocusScope {
 
         property int visibleDecorationHeight: root.hasDecoration ? root.showDecoration * decoration.height : 0
         Behavior on visibleDecorationHeight { enabled: root.animateDecoration; UbuntuNumberAnimation { } }
+
+        property QtObject application: root.applicationInstance ? root.applicationInstance.application : null
     }
 
     StateGroup {
         states: [
             State {
-                name: "normal"; when: root.scaleToPreviewProgress <= 0 && root.application.state === ApplicationInfoInterface.Running
+                name: "normal"; when: root.scaleToPreviewProgress <= 0 && root.applicationInstance.state === ApplicationInfoInterface.Running
                 PropertyChanges {
                     target: root
                     implicitWidth: counterRotate ? applicationWindow.implicitHeight : applicationWindow.implicitWidth
@@ -106,7 +108,7 @@ FocusScope {
                 }
             },
             State {
-                name: "normalSuspended"; when: root.scaleToPreviewProgress <= 0 && root.application.state !== ApplicationInfoInterface.Running
+                name: "normalSuspended"; when: root.scaleToPreviewProgress <= 0 && root.applicationInstance.state !== ApplicationInfoInterface.Running
                 extend: "normal"
                 PropertyChanges {
                     target: root
@@ -177,8 +179,7 @@ FocusScope {
         transform: [
             Rotation {
                 id: rotationTransform
-                readonly property int rotationAngle: applicationWindow.application &&
-                                                     applicationWindow.application.rotatesWindowContents
+                readonly property int rotationAngle: d.application && d.application.rotatesWindowContents
                                                      ? ((360 - applicationWindow.surfaceOrientationAngle) % 360) : 0
                 origin.x: {
                     if (rotationAngle == 90) return applicationWindow.height / 2;
@@ -203,7 +204,7 @@ FocusScope {
 
     WindowDecoration {
         id: decoration
-        closeButtonVisible: root.application.appId !== "unity8-dash"
+        closeButtonVisible: d.application && d.application.appId !== "unity8-dash"
         objectName: "appWindowDecoration"
 
         anchors { left: parent.left; top: parent.top; right: parent.right }

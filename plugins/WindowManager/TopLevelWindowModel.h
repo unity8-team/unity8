@@ -20,6 +20,7 @@
 #include <QAbstractListModel>
 #include <QLoggingCategory>
 
+#include "AllApplicationInstances.h"
 #include "WindowManagerGlobal.h"
 
 Q_DECLARE_LOGGING_CATEGORY(TOPLEVELWINDOWMODEL)
@@ -30,7 +31,7 @@ namespace unity {
     namespace shell {
         namespace application {
             class ApplicationInfoInterface;
-            class ApplicationManagerInterface;
+            class ApplicationInstanceListInterface;
             class MirSurfaceInterface;
             class SurfaceManagerInterface;
         }
@@ -77,10 +78,8 @@ class WINDOWMANAGERQML_EXPORT TopLevelWindowModel : public QAbstractListModel
             WRITE setSurfaceManager
             NOTIFY surfaceManagerChanged)
 
-    Q_PROPERTY(unity::shell::application::ApplicationManagerInterface* applicationManager
-            READ applicationManager
-            WRITE setApplicationManager
-            NOTIFY applicationManagerChanged)
+    Q_PROPERTY(QAbstractListModel* applicationInstancesModel
+            READ applicationInstancesModel WRITE setApplicationInstancesModel NOTIFY applicationInstancesModelChanged)
 
     /**
       The id to be used on the next entry created
@@ -98,6 +97,7 @@ public:
     enum Roles {
         WindowRole = Qt::UserRole,
         ApplicationRole = Qt::UserRole + 1,
+        ApplicationInstanceRole = Qt::UserRole + 2,
     };
 
     TopLevelWindowModel();
@@ -107,17 +107,18 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     QHash<int, QByteArray> roleNames() const override {
         QHash<int, QByteArray> roleNames { {WindowRole, "window"},
-                                           {ApplicationRole, "application"} };
+                                           {ApplicationRole, "application"},
+                                           {ApplicationInstanceRole, "applicationInstance"}, };
         return roleNames;
     }
 
     // Own API
 
+    QAbstractListModel* applicationInstancesModel() const;
+    void setApplicationInstancesModel(QAbstractListModel*);
+
     unity::shell::application::MirSurfaceInterface* inputMethodSurface() const;
     Window* focusedWindow() const;
-
-    unity::shell::application::ApplicationManagerInterface *applicationManager() const { return m_applicationManager; }
-    void setApplicationManager(unity::shell::application::ApplicationManagerInterface*);
 
     unity::shell::application::SurfaceManagerInterface *surfaceManager() const { return m_surfaceManager; }
     void setSurfaceManager(unity::shell::application::SurfaceManagerInterface*);
@@ -168,8 +169,8 @@ Q_SIGNALS:
     void countChanged();
     void inputMethodSurfaceChanged(unity::shell::application::MirSurfaceInterface* inputMethodSurface);
     void focusedWindowChanged(Window *focusedWindow);
-    void applicationManagerChanged(unity::shell::application::ApplicationManagerInterface*);
     void surfaceManagerChanged(unity::shell::application::SurfaceManagerInterface*);
+    void applicationInstancesModelChanged();
 
     /**
      * @brief Emitted when the list changes
@@ -202,15 +203,14 @@ private:
     void deleteAt(int index);
     void removeAt(int index);
 
-    void addApplication(unity::shell::application::ApplicationInfoInterface *application);
-    void removeApplication(unity::shell::application::ApplicationInfoInterface *application);
+    void addApplicationInstance(unity::shell::application::ApplicationInstanceInterface *applicationInstance);
+    void removeApplicationInstance(unity::shell::application::ApplicationInstanceInterface *applicationInstance);
 
-    void prependPlaceholder(unity::shell::application::ApplicationInfoInterface *application);
-    void prependSurface(unity::shell::application::MirSurfaceInterface *surface,
-                        unity::shell::application::ApplicationInfoInterface *application);
+    void prependPlaceholder(unity::shell::application::ApplicationInstanceInterface *applicationInstance);
+    void prependSurface(unity::shell::application::MirSurfaceInterface *surface);
     void prependSurfaceHelper(unity::shell::application::MirSurfaceInterface *surface,
-                              unity::shell::application::ApplicationInfoInterface *application);
-    void prependWindow(Window *window, unity::shell::application::ApplicationInfoInterface *application);
+                              unity::shell::application::ApplicationInstanceInterface *applicationInstance);
+    void prependWindow(Window *window, unity::shell::application::ApplicationInstanceInterface *applicationInstance);
 
     void connectWindow(Window *window);
     void connectSurface(unity::shell::application::MirSurfaceInterface *surface);
@@ -229,10 +229,10 @@ private:
     struct ModelEntry {
         ModelEntry() {}
         ModelEntry(Window *window,
-                   unity::shell::application::ApplicationInfoInterface *application)
-            : window(window), application(application) {}
+                   unity::shell::application::ApplicationInstanceInterface *applicationInstance)
+            : window(window), applicationInstance(applicationInstance) {}
         Window *window{nullptr};
-        unity::shell::application::ApplicationInfoInterface *application{nullptr};
+        unity::shell::application::ApplicationInstanceInterface *applicationInstance{nullptr};
         bool removeOnceSurfaceDestroyed{false};
     };
 
@@ -246,8 +246,8 @@ private:
     // there's no reason to try out its limits.
     static const int m_maxId{1000000};
 
-    unity::shell::application::ApplicationManagerInterface* m_applicationManager{nullptr};
     unity::shell::application::SurfaceManagerInterface *m_surfaceManager{nullptr};
+    unity::shell::application::ApplicationInstanceListInterface *m_applicationInstances{nullptr};
 
     enum ModelState {
         IdleState,

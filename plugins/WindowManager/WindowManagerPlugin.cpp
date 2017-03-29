@@ -16,6 +16,7 @@
 
 #include "WindowManagerPlugin.h"
 
+#include "AllApplicationInstances.h"
 #include "TopLevelWindowModel.h"
 #include "Window.h"
 
@@ -23,9 +24,9 @@
 
 void WindowManagerPlugin::registerTypes(const char *uri)
 {
+    qmlRegisterType<AllApplicationInstances>(uri, 1, 0, "AllApplicationInstances");
     qmlRegisterType<TopLevelWindowModel>(uri, 1, 0, "TopLevelWindowModel");
 
     qRegisterMetaType<Window*>("Window*");
-
     qRegisterMetaType<QAbstractListModel*>("QAbstractListModel*");
 }

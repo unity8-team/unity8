@@ -68,11 +68,15 @@ Item {
         id: appMenuData
         surfaceManager: sMgr
     }
+    AllApplicationInstances {
+        id: allAppInstances
+        applicationsModel: ApplicationManager
+    }
 
     TopLevelWindowModel {
         id: topSurfaceList
-        applicationManager: ApplicationManager
         surfaceManager: sMgr
+        applicationInstancesModel: allAppInstances
     }
 
     Loader {
@@ -99,6 +103,7 @@ Item {
                 }
                 orientations: Orientations {}
                 applicationManager: ApplicationManager
+                applicationInstanceList: allAppInstances
                 topLevelSurfaceList: topSurfaceList
                 interactive: true
                 mode: "windowed"
@@ -156,8 +161,8 @@ Item {
 
                 Repeater {
                     model: ApplicationManager.availableApplications
-                    ApplicationCheckBox {
-                        appId: modelData
+                    ApplicationControls {
+                        application: ApplicationManager.getAvailableApplication(modelData)
                     }
                 }
 

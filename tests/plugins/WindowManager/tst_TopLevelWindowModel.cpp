@@ -34,19 +34,20 @@ private Q_SLOTS:
     void secondSurfaceIsHidden();
 
 private:
-    ApplicationManager *applicationManager{nullptr};
     SurfaceManager *surfaceManager{nullptr};
+    ApplicationInstanceList *applicationInstanceList{nullptr};
     TopLevelWindowModel *topLevelWindowModel{nullptr};
 };
 
 void tst_TopLevelWindowModel::init()
 {
-    applicationManager = new ApplicationManager;
     surfaceManager = new SurfaceManager;
 
+    applicationInstanceList = new ApplicationInstanceList;
+
     topLevelWindowModel = new TopLevelWindowModel;
-    topLevelWindowModel->setApplicationManager(applicationManager);
     topLevelWindowModel->setSurfaceManager(surfaceManager);
+    topLevelWindowModel->setApplicationInstancesModel(applicationInstanceList);
 }
 
 void tst_TopLevelWindowModel::cleanup()
@@ -54,25 +55,28 @@ void tst_TopLevelWindowModel::cleanup()
     delete topLevelWindowModel;
     topLevelWindowModel = nullptr;
 
+    delete applicationInstanceList;
+    applicationInstanceList = nullptr;
+
     delete surfaceManager;
     surfaceManager = nullptr;
-
-    delete applicationManager;
-    applicationManager = nullptr;
 }
 
 void tst_TopLevelWindowModel::singleSurfaceStartsHidden()
 {
     QCOMPARE(topLevelWindowModel->rowCount(), 0);
 
-    auto application = static_cast<Application*>(applicationManager->startApplication(QString("hello-world"), QStringList()));
+    auto application = new Application(QString("hello-world"));
+    auto applicationInstance = new ApplicationInstance(application);
+
+    applicationInstanceList->add(applicationInstance);
 
     QCOMPARE(topLevelWindowModel->rowCount(), 1);
     QCOMPARE((void*)topLevelWindowModel->windowAt(0)->surface(), (void*)nullptr);
 
-    auto surface = new MirSurface;
+    auto surface = new MirSurface(applicationInstance);
     surface->m_state = Mir::HiddenState;
-    application->m_surfaceList.addSurface(surface);
+    applicationInstance->m_surfaceList.addSurface(surface);
     Q_EMIT surfaceManager->surfaceCreated(surface);
 
     QCOMPARE(topLevelWindowModel->rowCount(), 1);
@@ -84,27 +88,34 @@ void tst_TopLevelWindowModel::singleSurfaceStartsHidden()
     QCOMPARE(topLevelWindowModel->rowCount(), 1);
     // Now that the surface is no longer hidden, TopLevelWindowModel should expose it.
     QCOMPARE((void*)topLevelWindowModel->windowAt(0)->surface(), (void*)surface);
+
+    // cleanup
+    delete surface;
+    delete applicationInstance;
+    delete application;
 }
 
 void tst_TopLevelWindowModel::secondSurfaceIsHidden()
 {
     QCOMPARE(topLevelWindowModel->rowCount(), 0);
 
-    auto application = static_cast<Application*>(applicationManager->startApplication(QString("hello-world"), QStringList()));
+    auto application = new Application(QString("hello-world"));
+    auto applicationInstance = new ApplicationInstance(application);
+    applicationInstanceList->add(applicationInstance);
 
     QCOMPARE(topLevelWindowModel->rowCount(), 1);
     QCOMPARE((void*)topLevelWindowModel->windowAt(0)->surface(), (void*)nullptr);
 
-    auto firstSurface = new MirSurface;
-    application->m_surfaceList.addSurface(firstSurface);
+    auto firstSurface = new MirSurface(applicationInstance);
+    applicationInstance->m_surfaceList.addSurface(firstSurface);
     Q_EMIT surfaceManager->surfaceCreated(firstSurface);
 
     QCOMPARE(topLevelWindowModel->rowCount(), 1);
     QCOMPARE((void*)topLevelWindowModel->windowAt(0)->surface(), (void*)firstSurface);
 
-    auto secondSurface = new MirSurface;
+    auto secondSurface = new MirSurface(applicationInstance);
     secondSurface->m_state = Mir::HiddenState;
-    application->m_surfaceList.addSurface(secondSurface);
+    applicationInstance->m_surfaceList.addSurface(secondSurface);
     Q_EMIT surfaceManager->surfaceCreated(secondSurface);
 
     // still only the first surface is exposed by TopLevelWindowModel
@@ -123,6 +134,12 @@ void tst_TopLevelWindowModel::secondSurfaceIsHidden()
     // and it's gone again
     QCOMPARE(topLevelWindowModel->rowCount(), 1);
     QCOMPARE((void*)topLevelWindowModel->windowAt(0)->surface(), (void*)firstSurface);
+
+    // cleanup
+    delete firstSurface;
+    delete secondSurface;
+    delete applicationInstance;
+    delete application;
 }
 
 QTEST_MAIN(tst_TopLevelWindowModel)

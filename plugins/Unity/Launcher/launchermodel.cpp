@@ -22,6 +22,8 @@
 #include "ualwrapper.h"
 
 #include <unity/shell/application/ApplicationInfoInterface.h>
+#include <unity/shell/application/ApplicationInstanceInterface.h>
+#include <unity/shell/application/ApplicationInstanceListInterface.h>
 #include <unity/shell/application/MirSurfaceListInterface.h>
 #include <unity/shell/application/MirSurfaceInterface.h>
 
@@ -210,12 +212,15 @@ void LauncherModel::quickListActionInvoked(const QString &appId, int actionIndex
             if (!appInfo) {
                 qWarning() << "App for" << appId << "not found in launcher. Cannot invoke quicklist action";
             }
-            for (int i = 0; i < appInfo->surfaceList()->count(); ++i) {
-                MirSurfaceInterface *iface = appInfo->surfaceList()->get(i);
-                QString id = actionId;
-                id.remove(QRegExp("^surface_"));
-                if (id == iface->persistentId()) {
-                    iface->activate();
+            QString surfaceId = actionId;
+            surfaceId.remove(QRegExp("^surface_"));
+            for (int i = 0; i < appInfo->instanceList()->count(); ++i) {
+                auto *appInstance = appInfo->instanceList()->get(i);
+                for (int j = 0; j < appInstance->surfaceList()->count(); ++j) {
+                    MirSurfaceInterface *surface = appInstance->surfaceList()->get(j);
+                    if (surfaceId == surface->persistentId()) {
+                        surface->activate();
+                    }
                 }
             }
         // Nope, we don't know this action, let the backend forward it to the application
@@ -571,16 +576,18 @@ void LauncherModel::updateSurfaceListForApp(ApplicationInfoInterface* app)
     }
     LauncherItem *item = m_list.at(idx);
     QList<QPair<QString, QString> > surfaces;
-    for (int i = 0; i < app->surfaceList()->count(); ++i) {
-        MirSurfaceInterface* iface = app->surfaceList()->get(i);
-        // Avoid duplicate connections, so let's just disconnect first to be sure
-        disconnect(iface, &MirSurfaceInterface::nameChanged, this, &LauncherModel::updateSurfaceListForSurface);
-        connect(iface, &MirSurfaceInterface::nameChanged, this, &LauncherModel::updateSurfaceListForSurface);
-        QString name = iface->name();
-        if (name.isEmpty()) {
-            name = app->name();
+    for (int i = 0; i < app->instanceList()->count(); ++i) {
+        auto *appInstance = app->instanceList()->get(i);
+        for (int j = 0; j < appInstance->surfaceList()->count(); ++j) {
+            MirSurfaceInterface* surface = appInstance->surfaceList()->get(j);
+            connect(surface, &MirSurfaceInterface::nameChanged, this, &LauncherModel::updateSurfaceListForSurface,
+                    Qt::UniqueConnection);
+            QString name = surface->name();
+            if (name.isEmpty()) {
+                name = app->name();
+            }
+            surfaces.append({surface->persistentId(), name});
         }
-        surfaces.append({iface->persistentId(), name});
     }
     item->setSurfaces(surfaces);
     Q_EMIT dataChanged(index(idx), index(idx), {RoleSurfaceCount});

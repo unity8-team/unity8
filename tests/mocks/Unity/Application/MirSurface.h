@@ -46,6 +46,7 @@ public:
             Mir::Type type,
             Mir::State state,
             MirSurface *parentSurface,
+            unity::shell::application::ApplicationInstanceInterface*,
             const QUrl& screenshot,
             const QUrl &qmlFilePath = QUrl());
     virtual ~MirSurface();
@@ -101,6 +102,8 @@ public:
 
     unity::shell::application::MirSurfaceInterface* parentSurface() const override;
     unity::shell::application::MirSurfaceListInterface* childSurfaceList() const override;
+
+    unity::shell::application::ApplicationInstanceInterface* applicationInstance() const override;
 
     Q_INVOKABLE void close() override;
     Q_INVOKABLE void activate() override;
@@ -231,6 +234,8 @@ private:
     unity::shell::application::MirSurfaceInterface* m_parentSurface;
 
     MirSurfaceListModel *m_childSurfaceList;
+
+    unity::shell::application::ApplicationInstanceInterface* m_applicationInstance;
 };
 
 #endif // MOCK_MIR_SURFACE_H
