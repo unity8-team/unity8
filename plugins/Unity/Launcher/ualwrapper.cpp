@@ -24,6 +24,12 @@ using namespace ubuntu::app_launch;
 UalWrapper::UalWrapper(QObject *parent):
     QObject(parent)
 {
+    Registry::appAdded().connect([this](const std::shared_ptr<Application>&app) {
+        Q_EMIT appAdded(QString::fromStdString(app->appId()));
+    });
+    Registry::appRemoved().connect([this](const AppID &appId) {
+        Q_EMIT appRemoved(QString::fromStdString(appId.persistentID()));
+    });
     Registry::appInfoUpdated().connect([this](const std::shared_ptr<Application>&app){
         Q_EMIT appInfoChanged(QString::fromStdString(app->appId()));
     });

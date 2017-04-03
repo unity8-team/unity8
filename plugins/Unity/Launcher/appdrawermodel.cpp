@@ -32,9 +32,12 @@ AppDrawerModel::AppDrawerModel(QObject *parent):
         }
         m_list.append(new LauncherItem(appId, info.name, info.icon, this));
         m_list.last()->setKeywords(info.keywords);
+        m_list.last()->setPopularity(info.popularity);
     }
 
     // keep this a queued connection as it's coming from another thread.
+    connect(m_ual, &UalWrapper::appAdded, this, &AppDrawerModel::appAdded, Qt::QueuedConnection);
+    connect(m_ual, &UalWrapper::appRemoved, this, &AppDrawerModel::appRemoved, Qt::QueuedConnection);
     connect(m_ual, &UalWrapper::appInfoChanged, this, &AppDrawerModel::appInfoChanged, Qt::QueuedConnection);
 }
 
@@ -60,6 +63,39 @@ QVariant AppDrawerModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
+}
+
+void AppDrawerModel::appAdded(const QString &appId)
+{
+    UalWrapper::AppInfo info = UalWrapper::getApplicationInfo(appId);
+    if (!info.valid) {
+        qWarning() << "App added signal received but failed to get app info for app" << appId;
+        return;
+    }
+
+    beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
+    m_list.append(new LauncherItem(appId, info.name, info.icon, this));
+    m_list.last()->setKeywords(info.keywords);
+    m_list.last()->setPopularity(info.popularity);
+    endInsertRows();
+}
+
+void AppDrawerModel::appRemoved(const QString &appId)
+{
+    int idx = -1;
+    for (int i = 0; i < m_list.count(); i++) {
+        if (m_list.at(i)->appId() == appId) {
+            idx = i;
+            break;
+        }
+    }
+    if (idx < 0) {
+        qWarning() << "App removed signal received but app doesn't seem to be in the drawer model";
+        return;
+    }
+    beginRemoveRows(QModelIndex(), idx, idx);
+    m_list.takeAt(idx)->deleteLater();
+    endRemoveRows();
 }
 
 void AppDrawerModel::appInfoChanged(const QString &appId)

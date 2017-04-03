@@ -34,5 +34,7 @@ public:
     static AppInfo getApplicationInfo(const QString &appId);
 
 Q_SIGNALS:
+    void appAdded(const QString &appId);
+    void appRemoved(const QString &appId);
     void appInfoChanged(const QString &appId);
 };

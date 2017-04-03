@@ -31,6 +31,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private Q_SLOTS:
+    void appAdded(const QString &appId);
+    void appRemoved(const QString &appId);
     void appInfoChanged(const QString &appId);
 
 private:
