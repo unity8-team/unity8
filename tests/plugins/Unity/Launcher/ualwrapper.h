@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright (C) 2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
  */
 
 #include <QObject>
+
+// This is a mock implementation
 
 class UalWrapper: public QObject
 {
@@ -34,8 +36,20 @@ public:
     static QStringList installedApps();
     static AppInfo getApplicationInfo(const QString &appId);
 
+    // for testing:
+    static UalWrapper* instance();
+    void addMockApp(const QString &appId);
+    void removeMockApp(const QString &appId);
+
 Q_SIGNALS:
     void appAdded(const QString &appId);
     void appRemoved(const QString &appId);
     void appInfoChanged(const QString &appId);
+
+
+private:
+    static QStringList s_list;
+    static UalWrapper *s_instance;
+
+    friend class AppDrawerModelTest;
 };

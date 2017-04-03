@@ -67,6 +67,7 @@ UalWrapper::AppInfo UalWrapper::getApplicationInfo(const QString &appId)
         std::shared_ptr<Application> ualApp;
         ualApp = Application::create(ualAppId, Registry::getDefault());
 
+        info.appId = appId;
         info.name = QString::fromStdString(ualApp->info()->name());
         info.icon = QString::fromStdString(ualApp->info()->iconPath());
         for (const std::string &keyword : ualApp->info()->keywords().value()) {
