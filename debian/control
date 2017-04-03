@@ -6,6 +6,7 @@ Build-Depends: cmake,
                dbus-test-runner,
                debhelper (>= 9),
                dh-apparmor,
+               dh-systemd,
                doxyqml,
 # To allow cross-compiling to work, we also must append :native
 # to g++ so we don't try to run arm g++
@@ -71,6 +72,7 @@ Build-Depends: cmake,
                qtdeclarative5-private-dev (>= 5.6),
                qtdeclarative5-ubuntu-content1,
                qtdeclarative5-ubuntu-settings-components (>= 0.11),
+               systemd,
                ttf-ubuntu-font-family,
                xvfb,
 Standards-Version: 3.9.4
@@ -120,7 +122,8 @@ Description: Development tool for Unity scopes
 Package: unity8
 Architecture: any
 Provides: indicator-renderer,
-Depends: dmz-cursor-theme,
+Depends: dbus,
+         dmz-cursor-theme,
          gsettings-desktop-schemas,
          libcap2-bin,
          libglib2.0-bin,
