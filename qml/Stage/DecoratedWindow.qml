@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 Canonical, Ltd.
+ * Copyright (C) 2014-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ FocusScope {
     property bool hasDecoration: true
     // This will temporarily show/hide the decoration without actually changing the surface's dimensions
     property real showDecoration: 1
+    property alias decorationHeight: decoration.height
     property bool animateDecoration: false
     property bool showHighlight: false
     property int highlightSize: units.gu(1)
@@ -55,11 +56,15 @@ FocusScope {
     property int scaleToPreviewSize: units.gu(30)
 
     property alias surfaceOrientationAngle: applicationWindow.surfaceOrientationAngle
-    readonly property real decorationHeight: Math.min(d.visibleDecorationHeight, d.requestedDecorationHeight)
+
+    // Height of the decoration that's actually being displayed at this moment. Will match decorationHeight
+    // when the decoration is being fully displayed
+    readonly property real actualDecorationHeight: Math.min(d.visibleDecorationHeight, d.requestedDecorationHeight)
+
     readonly property bool counterRotate: surfaceOrientationAngle != 0 && surfaceOrientationAngle != 180
 
     readonly property int minimumWidth: !counterRotate ? applicationWindow.minimumWidth : applicationWindow.minimumHeight
-    readonly property int minimumHeight: decorationHeight + (!counterRotate ? applicationWindow.minimumHeight : applicationWindow.minimumWidth)
+    readonly property int minimumHeight: actualDecorationHeight + (!counterRotate ? applicationWindow.minimumHeight : applicationWindow.minimumWidth)
     readonly property int maximumWidth: !counterRotate ? applicationWindow.maximumWidth : applicationWindow.maximumHeight
     readonly property int maximumHeight: (root.decorationShown && applicationWindow.maximumHeight > 0 ? decoration.height : 0)
                                          + (!counterRotate ? applicationWindow.maximumHeight : applicationWindow.maximumWidth)
@@ -72,6 +77,10 @@ FocusScope {
 
     readonly property Item clientAreaItem: applicationWindow
 
+    property alias altDragEnabled: altDragHandler.enabled
+
+    property Item windowMargins
+
     signal closeClicked()
     signal maximizeClicked()
     signal maximizeHorizontallyClicked()
@@ -79,6 +88,10 @@ FocusScope {
     signal minimizeClicked()
     signal decorationPressed()
     signal decorationReleased()
+
+    function cancelDrag() {
+        moveHandler.cancelDrag();
+    }
 
     QtObject {
         id: d
@@ -96,7 +109,7 @@ FocusScope {
                 PropertyChanges {
                     target: root
                     implicitWidth: counterRotate ? applicationWindow.implicitHeight : applicationWindow.implicitWidth
-                    implicitHeight: root.decorationHeight + (counterRotate ? applicationWindow.implicitWidth:  applicationWindow.implicitHeight)
+                    implicitHeight: root.actualDecorationHeight + (counterRotate ? applicationWindow.implicitWidth:  applicationWindow.implicitHeight)
                 }
             },
             State {
@@ -105,7 +118,7 @@ FocusScope {
                 PropertyChanges {
                     target: root
                     implicitWidth: counterRotate ? applicationWindow.requestedHeight : applicationWindow.requestedWidth
-                    implicitHeight: root.decorationHeight + (counterRotate ? applicationWindow.requestedWidth:  applicationWindow.requestedHeight)
+                    implicitHeight: root.actualDecorationHeight + (counterRotate ? applicationWindow.requestedWidth:  applicationWindow.requestedHeight)
                 }
             },
             State {
@@ -144,7 +157,7 @@ FocusScope {
             margins: active ? -units.gu(2) : -units.gu(1.5)
         }
         height: Math.min(applicationWindow.implicitHeight, applicationWindow.height) * applicationWindow.itemScale
-                + root.decorationHeight * Math.min(1, root.showDecoration) + (active ? units.gu(4) : units.gu(3))
+                + root.actualDecorationHeight * Math.min(1, root.showDecoration) + (active ? units.gu(4) : units.gu(3))
         source: "../graphics/dropshadow2gu.sci"
         opacity: root.shadowOpacity
     }
@@ -153,7 +166,7 @@ FocusScope {
         id: applicationWindow
         objectName: "appWindow"
         anchors.top: parent.top
-        anchors.topMargin: root.decorationHeight * Math.min(1, root.showDecoration)
+        anchors.topMargin: root.actualDecorationHeight * Math.min(1, root.showDecoration)
         anchors.left: parent.left
         width: implicitWidth
         height: implicitHeight
@@ -201,15 +214,18 @@ FocusScope {
         objectName: "appWindowDecoration"
 
         anchors { left: parent.left; top: parent.top; right: parent.right }
-        height: units.gu(3)
+        height: units.gu(3) // a default value. overwritten by root.decorationHeight
 
         title: applicationWindow.title
+        windowMoving: moveHandler.moving && !altDragHandler.dragging
 
         opacity: root.hasDecoration ? Math.min(1, root.showDecoration) : 0
         Behavior on opacity { UbuntuNumberAnimation { } }
+        visible: opacity > 0 // don't eat input when decoration is fully translucent
 
         onPressed: root.decorationPressed();
         onPressedChanged: moveHandler.handlePressedChanged(pressed, pressedButtons, mouseX, mouseY)
+        onPressedChangedEx: moveHandler.handlePressedChanged(pressed, pressedButtons, mouseX, mouseY)
         onPositionChanged: moveHandler.handlePositionChanged(mouse)
         onReleased: {
             root.decorationReleased();
@@ -255,10 +271,12 @@ FocusScope {
     }
 
     MouseArea {
+        id: altDragHandler
         anchors.fill: applicationWindow
         acceptedButtons: Qt.LeftButton
         property bool dragging: false
         cursorShape: undefined // don't interfere with the cursor shape set by the underlying MirSurfaceItem
+        visible: enabled
         onPressed: {
             if (mouse.button == Qt.LeftButton && mouse.modifiers == Qt.AltModifier) {
                 root.decorationPressed(); // to raise it

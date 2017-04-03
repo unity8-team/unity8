@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Canonical Ltd.
+ * Copyright 2016, 2017 Canonical Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,20 +28,28 @@ Item {
     property alias unityMenuModel: rowRepeater.model
     property bool enableKeyFilter: false
     property real overflowWidth: width
+    property bool windowMoving: false
 
     // read from outside
     readonly property bool valid: rowRepeater.count > 0
     readonly property bool showRequested: d.longAltPressed || d.currentItem != null
 
+    // MoveHandler API for DecoratedWindow
+    signal pressed(var mouse)
+    signal pressedChangedEx(bool pressed, var pressedButtons, real mouseX, real mouseY)
+    signal positionChanged(var mouse)
+    signal released(var mouse)
+    signal doubleClicked(var mouse)
+
     implicitWidth: row.width
     height: parent.height
 
-    function select(index) {
-        d.select(index);
-    }
-
     function dismiss() {
         d.dismissAll();
+    }
+
+    function invokeMenu(mouseEvent) {
+        mouseArea.onClicked(mouseEvent);
     }
 
     GlobalShortcut {
@@ -77,12 +85,12 @@ Item {
         anchors.fill: parent
         enabled: d.currentItem != null
         hoverEnabled: enabled && d.currentItem && d.currentItem.__popup != null
-        onPressed: d.dismissAll()
+        onPressed: { mouse.accepted = false; d.dismissAll(); }
     }
 
     Row {
         id: row
-        spacing: units.gu(2)
+        spacing: 0
         height: parent.height
 
         ActionContext {
@@ -94,6 +102,11 @@ Item {
         Connections {
             target: root.unityMenuModel
             onModelReset: d.firstInvisibleIndex = undefined
+        }
+
+        Component {
+            id: menuComponent
+            MenuPopup { }
         }
 
         Repeater {
@@ -112,17 +125,31 @@ Item {
                 readonly property bool shouldDisplay: x + width + ((__ownIndex < rowRepeater.count-1) ? units.gu(2) : 0) <
                                                 root.overflowWidth - ((__ownIndex < rowRepeater.count-1) ? overflowButton.width : 0)
 
-                implicitWidth: column.implicitWidth
+                // First item is not centered, it has 0 gu on the left and 1 on the right
+                // so needs different width and anchors
+                readonly property bool isFirstItem: __ownIndex == 0
+
+                implicitWidth: column.implicitWidth + (isFirstItem ? units.gu(1) : units.gu(2))
                 implicitHeight: row.height
-                enabled: model.sensitive && shouldDisplay
+                enabled: (model.sensitive === true) && shouldDisplay
                 opacity: shouldDisplay ? 1 : 0
 
                 function show() {
                     if (!__popup) {
-                        __popup = menuComponent.createObject(root, { objectName: visualItem.objectName + "-menu" });
+                        root.unityMenuModel.aboutToShow(visualItem.__ownIndex);
+                        __popup = menuComponent.createObject(root,
+                                                             {
+                                                                 objectName: visualItem.objectName + "-menu",
+                                                                 desiredX: Qt.binding(function() { return visualItem.x - units.gu(1); }),
+                                                                 desiredY: Qt.binding(function() { return root.height; }),
+                                                                 unityMenuModel: Qt.binding(function() { return root.unityMenuModel.submenu(visualItem.__ownIndex); }),
+                                                                 selectFirstOnCountChange: false
+                                                             });
+                        __popup.reset();
                         __popup.childActivated.connect(dismiss);
                         // force the current item to be the newly popped up menu
-                    } else {
+                    } else if (!__popup.visible) {
+                        root.unityMenuModel.aboutToShow(visualItem.__ownIndex);
                         __popup.show();
                     }
                     d.currentItem = visualItem;
@@ -162,22 +189,13 @@ Item {
                     onDismissAll: visualItem.dismiss()
                 }
 
-                Component {
-                    id: menuComponent
-                    MenuPopup {
-                        desiredX: visualItem.x - units.gu(1)
-                        desiredY: parent.height
-                        unityMenuModel: root.unityMenuModel.submenu(visualItem.__ownIndex)
-
-                        Component.onCompleted: reset();
-                    }
-                }
-
                 RowLayout {
                     id: column
                     spacing: units.gu(1)
                     anchors {
-                        centerIn: parent
+                        verticalCenter: parent.verticalCenter
+                        horizontalCenter: !visualItem.isFirstItem ? parent.horizontalCenter : undefined
+                        left: visualItem.isFirstItem ? parent.left : undefined
                     }
 
                     Icon {
@@ -212,29 +230,53 @@ Item {
                         }
                     }
                 }
+
+                Component.onDestruction: {
+                    if (__popup) {
+                        __popup.destroy();
+                        __popup = null;
+                    }
+                }
             } // Item ( delegate )
         } // Repeater
     } // Row
 
     MouseArea {
-        anchors.fill: row
+        id: mouseArea
+        anchors.fill: parent
         hoverEnabled: d.currentItem
+
+        property bool moved: false
 
         onEntered: {
             if (d.currentItem) {
                 updateCurrentItemFromPosition(Qt.point(mouseX, mouseY))
             }
         }
-        onPositionChanged: {
+
+        onClicked: {
+            if (!moved) {
+                var prevItem = d.currentItem;
+                updateCurrentItemFromPosition(Qt.point(mouseX, mouseY));
+                if (prevItem && d.currentItem == prevItem) {
+                    prevItem.hide();
+                }
+            }
+            moved = false;
+        }
+
+        // for the MoveHandler
+        onPressed: root.pressed(mouse)
+        onPressedChanged: root.pressedChangedEx(pressed, pressedButtons, mouseX, mouseY)
+        onReleased: root.released(mouse)
+        onDoubleClicked: root.doubleClicked(mouse)
+
+        Mouse.ignoreSynthesizedEvents: true
+        Mouse.onPositionChanged: {
+            root.positionChanged(mouse);
+            moved = root.windowMoving;
             if (d.currentItem) {
                 updateCurrentItemFromPosition(Qt.point(mouse.x, mouse.y))
-            }
-        }
-        onClicked: {
-            var prevItem = d.currentItem;
-            updateCurrentItemFromPosition(Qt.point(mouse.x, mouse.y))
-            if (prevItem && d.currentItem == prevItem) {
-                prevItem.hide();
             }
         }
 
@@ -259,7 +301,7 @@ Item {
         hoverEnabled: d.currentItem
         onEntered: d.currentItem = this
         onPositionChanged: d.currentItem = this
-        onClicked: d.currentItem = this
+        onPressed: d.currentItem = this
 
         property Item __popup: null;
         readonly property bool popupVisible: __popup && __popup.visible
@@ -341,6 +383,9 @@ Item {
                     function activate(index) {
                         return sourceModel.activate(mapRowToSource(index));
                     }
+                    function aboutToShow(index) {
+                        return sourceModel.aboutToShow(mapRowToSource(index));
+                    }
                 }
 
                 Connections {
@@ -356,8 +401,8 @@ Item {
         anchors {
             bottom: row.bottom
         }
-        x: d.currentItem ? row.x + d.currentItem.x - units.gu(1) : 0
-        width: d.currentItem ? d.currentItem.width + units.gu(2) : 0
+        x: d.currentItem ? row.x + d.currentItem.x : 0
+        width: d.currentItem ? d.currentItem.width : 0
         height: units.dp(4)
         color: UbuntuColors.orange
         visible: d.currentItem

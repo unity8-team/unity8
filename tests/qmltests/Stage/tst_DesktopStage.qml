@@ -100,8 +100,15 @@ Item {
                 orientations: Orientations {}
                 applicationManager: ApplicationManager
                 topLevelSurfaceList: topSurfaceList
+                availableDesktopArea: availableDesktopAreaItem
                 interactive: true
                 mode: "windowed"
+
+                Item {
+                    id: availableDesktopAreaItem
+                    anchors.fill: parent
+                    anchors.topMargin: PanelState.panelHeight
+                }
             }
         }
     }
@@ -321,7 +328,7 @@ Item {
             var maximizeButton = findChild(appDelegate, "maximizeWindowButton");
             verify(maximizeButton);
             mouseClick(maximizeButton);
-            tryCompare(appDelegate, "visuallyMaximized", true);
+            tryCompare(appDelegate, "maximized", true);
         }
 
         function test_tappingOnDecorationFocusesApplication(data) {
@@ -637,7 +644,7 @@ Item {
             var dialerAppDelegate = startApplication("dialer-app");
 
             // verify the drop shadow becomes visible
-            verify(PanelState.dropShadow == true);
+            tryCompareFunction(function() { return PanelState.dropShadow; }, true);
 
             // close the maximized app
             ApplicationManager.stopApplication("facebook-webapp");
@@ -771,6 +778,32 @@ Item {
             tryCompareFunction(function(){return posBefore == posAfter;}, data.button !== Qt.LeftButton ? true : false);
         }
 
+        function test_spreadDisablesWindowDrag() {
+            var appDelegate = startApplication("dialer-app");
+            verify(appDelegate);
+            var decoration = findChild(appDelegate, "appWindowDecoration");
+            verify(decoration);
+
+            // grab the decoration
+            mousePress(decoration);
+
+            // enter the spread
+            keyPress(Qt.Key_W, Qt.MetaModifier)
+            tryCompare(stage, "state", "spread");
+
+            // try to drag the window
+            mouseMove(decoration, 10, 10, 200);
+
+            // verify it's not moving even before we release the decoration drag
+            tryCompare(appDelegate, "dragging", false);
+
+            // cleanup
+            mouseRelease(decoration);
+            keyRelease(Qt.Key_W, Qt.MetaModifier);
+            stage.closeSpread();
+            tryCompare(stage, "state", "windowed");
+        }
+
         // regression test for https://bugs.launchpad.net/ubuntu/+source/unity8/+bug/1627281
         function test_doubleTapToMaximizeWindow() {
             var dialerAppDelegate = startApplication("dialer-app");
@@ -785,7 +818,7 @@ Item {
             waitUntilTransitionsEnd(dialerAppDelegate);
             waitUntilTransitionsEnd(stage);
 
-            tryCompare(dialerAppDelegate, "state", "maximized");
+            tryCompare(dialerAppDelegate, "maximized", true);
         }
 
         function test_saveRestoreSize() {
@@ -1012,6 +1045,34 @@ Item {
             mouseMove(closeButton, closeButton.width/2, closeButton.height/2);
             expectFail("", "Hovering the window controls should be ignored when the menu is open");
             tryCompare(closeButton, "containsMouse", true);
+        }
+
+        function test_windowControlsTouchInteractionWithMenu() {
+            var appDelegate = startApplication("gmail-webapp");
+
+            var wd = findChild(appDelegate, "appWindowDecoration");
+            var maxButton = findChild(wd, "maximizeWindowButton");
+            var menuBarLoader = findChild(wd, "menuBarLoader");
+            var menuNav = findInvisibleChild(menuBarLoader, "d");
+
+            // make the menubar active and visible, select first item
+            menuBarLoader.active = true;
+            menuNav.select(0);
+            tryCompare(menuBarLoader.item, "visible", true);
+
+            // verify the maximized button can still be tapped
+            tap(maxButton);
+            tryCompare(appDelegate, "state", "maximized");
+        }
+
+        function test_childWindowGetsActiveFocus() {
+            var appDelegate = startApplication("kate");
+            appDelegate.surface.openDialog(units.gu(5), units.gu(5), units.gu(30), units.gu(30));
+            var childWindow = findChild(appDelegate, "childWindow");
+            verify(childWindow);
+            var surfaceItem = findChild(childWindow, "surfaceItem");
+            verify(surfaceItem);
+            tryCompare(surfaceItem, "activeFocus", true);
         }
     }
 }

@@ -69,6 +69,7 @@ StyledItem {
     }
     property bool hasMouse: false
     property bool hasKeyboard: false
+    property bool hasTouchscreen: false
 
     // to be read from outside
     readonly property int mainAppWindowOrientationAngle: stage.mainAppWindowOrientationAngle
@@ -254,6 +255,13 @@ StyledItem {
         }
     }
 
+    AvailableDesktopArea {
+        id: availableDesktopAreaItem
+        anchors.fill: parent
+        anchors.topMargin: panel.fullscreenMode ? 0 : panel.minimizedPanelHeight
+        anchors.leftMargin: launcher.lockedVisible ? launcher.panelWidth : 0
+    }
+
     GSettings {
         id: settings
         schema.id: "com.canonical.Unity8"
@@ -289,6 +297,7 @@ StyledItem {
             topLevelSurfaceList: topLevelSurfaceList
             inputMethodRect: inputMethod.visibleRect
             rightEdgePushProgress: rightEdgeBarrier.progress
+            availableDesktopArea: availableDesktopAreaItem
 
             property string usageScenario: shell.usageScenario === "phone" || greeter.hasLockedApp
                                                        ? "phone"
@@ -310,7 +319,6 @@ StyledItem {
 
             onInteractiveChanged: { if (interactive) { focus = true; } }
 
-            leftMargin: shell.usageScenario == "desktop" && !settings.autohideLauncher ? launcher.panelWidth: 0
             suspended: greeter.shown
             altTabPressed: physicalKeysMapper.altTabPressed
             oskEnabled: shell.oskEnabled
@@ -425,7 +433,9 @@ StyledItem {
         id: showGreeterDelayed
         interval: 1
         onTriggered: {
-            greeter.forceShow();
+            // Go through the dbus service, because it has checks for whether
+            // we are even allowed to lock or not.
+            DBusUnitySessionService.PromptLock();
         }
     }
 
@@ -499,6 +509,7 @@ StyledItem {
             expandedPanelHeight: units.gu(7)
             indicatorMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
             applicationMenuWidth: parent.width > units.gu(60) ? units.gu(40) : parent.width
+            applicationMenuContentX: launcher.lockedVisible ? launcher.panelWidth : 0
 
             indicators {
                 hides: [launcher]
@@ -533,6 +544,7 @@ StyledItem {
             fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0 && !stage.spreadShown)
                             || greeter.hasLockedApp
             greeterShown: greeter && greeter.shown
+            hasKeyboard: shell.hasKeyboard
         }
 
         Launcher {
@@ -557,6 +569,7 @@ StyledItem {
             blurSource: greeter.shown ? greeter : stages
             topPanelHeight: panel.panelHeight
             drawerEnabled: !greeter.active
+            privateMode: greeter.active
 
             onShowDashHome: showHome()
             onLauncherApplicationSelected: {
@@ -565,7 +578,14 @@ StyledItem {
             }
             onShownChanged: {
                 if (shown) {
-                    panel.indicators.hide()
+                    panel.indicators.hide();
+                    panel.applicationMenus.hide();
+                }
+            }
+            onDrawerShownChanged: {
+                if (drawerShown) {
+                    panel.indicators.hide();
+                    panel.applicationMenus.hide();
                 }
             }
             onFocusChanged: {
@@ -627,8 +647,8 @@ StyledItem {
             objectName: "tutorial"
             anchors.fill: parent
 
-            paused: callManager.hasCalls || !greeter || greeter.active ||
-                    wizard.active
+            paused: callManager.hasCalls || !greeter || greeter.active || wizard.active
+                    || !hasTouchscreen // TODO #1661557 something better for no touchscreen
             delayed: dialogs.hasActiveDialog || notifications.hasNotification ||
                      inputMethod.visible ||
                      (launcher.shown && !launcher.lockedVisible) ||

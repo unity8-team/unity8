@@ -1,3 +1,152 @@
+unity8 (8.15+17.04.20170328.3-0ubuntu1) zesty; urgency=medium
+
+  [ Albert Astals Cid ]
+  * mock: Remove empty property and move invokable
+  * Tune quicklist item selection
+  * Fix unminimizing going to the wrong position the second time (LP:
+    #1671458)
+  * Remove unclickable gaps on the menubar (LP: #1672722)
+  * indicators client is a tool
+  * Make sure we destroy the popups when the item goes away (LP:
+    #1670338)
+  * UnityApplicationMocks: Initialize m_state and m_requestedState
+  * Don't use appInfo after checking it if is null
+  * Initialize m_privateMode
+  * Hook up aboutToShow for overflow menus (LP: #1676016)
+
+  [ Daniel d'Andrada ]
+  * Give active focus to child surface qml items (LP: #1671072)
+  * Satellite child windows (LP: #1673415)
+  * Tell qtmir/miral about the available desktop area
+
+  [ Florian Boucault ]
+  * WindowStateStorage: use a private QThreadPool to ensure that
+    WindowStateStorage::saveValue always has a thread available to
+    execute the query in. (LP: #1675424)
+
+  [ Lukáš Tinkl ]
+  * Protect against loading invalid window geometry (LP: #1674262)
+  * Remove usage of the deprecated (and non-functional) system-image-
+    dbus service.
+  * Implement Ctrl+Alt+T to launch the terminal app (LP: #1673500)
+  * Only take normal and dialog surface types into account for launcher
+    items (LP: #1669047)
+  * Fix the shutdown dialog after recent refactoring in
+    DBusUnitySessionService (LP: #1676426)
+
+  [ Michael Zanetti ]
+  * drop the grey background behind icons in the drawer (LP: #1675688)
+
+  [ Pete Woods ]
+  * Fix Unity/Platform::isPC, and add tests (LP: #1670657)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Tue, 28 Mar 2017 21:50:20 +0000
+
+unity8 (8.15+17.04.20170321-0ubuntu1) zesty; urgency=medium
+
+  [ Albert Astals Cid ]
+  * Signal aboutToShow (LP: #1664578)
+  * Support Panel top level items to be disabled (LP: #1670694)
+  * Improve Launcher ←→ touch menu interaction (LP: #1667620, #1671069)
+  * Fix real world submenus (e.g. kate) not getting their first item
+    selected on open (LP: #1666859)
+
+  [ Daniel d'Andrada ]
+  * Really disable the window decoration when in staged mode (LP:
+    #1670361)
+  * Don't let clients resize their surfaces while in staged
+    (phone/tablet) mode (LP: #1670390)
+  * TopLevelWindowModel: don't put hidden windows in the model (LP:
+    #1665286)
+
+  [ Lukáš Tinkl ]
+  * Reset always-show-osk gsetting on startup to default value (false
+    atm)
+  * Fix the restored-to position with Miral due to the state changes
+    being async (LP: #1669819)
+  * Add a cursor name fallback mapping "grabbing" -> "closedhand" for
+    Breeze
+  * Fix unsnapping a maximized window from the panel (LP: #1671721)
+  * Disable altDrag feature outside windowed mode
+
+  [ Michael Terry ]
+  * Don't lock the screen for guest users or users in the nopasswdlogin
+    group. (LP: #1644237)
+  * Support GNOME-style logout DBus API (making the Logout, Reboot, and
+    Shutdown launcher commands work) (LP: #1673229)
+
+  [ Michael Zanetti ]
+  * Add support for closing apps from the spread with "Q" (LP: #1670327)
+  * hide "private" launcher quicklist entries when the greeter is locked
+    (LP: #1667649)
+  * add surface titles to launcher's quicklist (LP: #1661668)
+  * properly reset the drawer state when cancelling a horizontal drag
+    (LP: #1669536)
+  * fix the focus moving correctly between launcher and drawer (LP:
+    #1669880)
+  * unfocus the drawer's textfield when it is moved (LP: #1669839)
+
+  [ Pete Woods ]
+  * Fix up indicators-client after refactoring (LP: #1672797)
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Tue, 21 Mar 2017 10:58:13 +0000
+
+unity8 (8.15+17.04.20170308-0ubuntu1) zesty; urgency=medium
+
+  [ Albert Astals Cid ]
+  * Let's follow the keyboard order
+  * Enable the license check (LP: #1590044)
+  * Show a barebones error message if loading the QML doesn't work
+  * Make sure cursor is back to normal when closing the window (LP:
+    #1666158)
+  * Fix small warning when sensitive is undefined
+  * Remove unused member variable
+  * Initialize m_msecsSinceReference
+  * Add warning if registerService fails
+  * Move menus Component {} out of the repeater
+  * Add tool to browse menus of a running app
+
+  [ Daniel d'Andrada ]
+  * Drag child windows with Alt+LeftMouseButton (LP: #1664947)
+
+  [ Gerry Boland ]
+  * TopLevelWindowModel: connect to the OSK surface to know when it goes
+    away so we can clean up after it. (LP: #1670681)
+
+  [ Josh Arenson ]
+  * Initialize sessionMode to single when mock is reset (LP: #1667463)
+
+  [ Lukáš Tinkl ]
+  * Make the menu string "Back" translatable
+  * Let the OSK be driven by a switch in indicator-keyboard (LP:
+    #1521518)
+  * Disable the tutorial when there's no touchscreen (LP: #1661557)
+  * Shell chrome fixes (LP: #1658117, #1665723, #1665724, #1669010)
+  * Cancel the drag as soon as we're entering the spread (LP: #1668642)
+  * Fix being unable to use window control buttons or menus with touch
+    (LP: #1667604, #1668387)
+
+  [ Michael Terry ]
+  * Set QT_IM_MODULE in the greeter so that the OSK can come up. (LP:
+    #1670383)
+  * Simplify our startup handling of Mir environment variables and set
+    the right socket path in snappy.
+
+  [ Michael Zanetti ]
+  * Cancel the home key activation if something else is pressed along
+    with Meta (LP: #1670678)
+  * close the drawer when something is launched from the launcher (LP:
+    #1660367)
+  * use a svg instead of a png for the Launcher's BFB (LP: #1668057)
+  * change the default setting for the launcher autohiding (LP:
+    #1670655)
+
+  [ Nick Dedekind ]
+  * Split up Shell::test_spreadDisabled to ensure initial state for each
+    test.
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Wed, 08 Mar 2017 09:56:46 +0000
+
 unity8 (8.15+17.04.20170221-0ubuntu1) zesty; urgency=medium
 
   * Handle ubuntu-app-launch API/ABI break

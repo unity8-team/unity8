@@ -23,9 +23,6 @@ import Utils 0.1
 import Unity.ApplicationMenu 0.1
 
 import QtQuick.Window 2.2
-// for indicator-keyboard
-import AccountsService 0.1
-import Unity.InputInfo 0.1
 
 import "../ApplicationMenus"
 import "../Components"
@@ -41,12 +38,14 @@ Item {
     property real expandedPanelHeight: units.gu(7)
     property real indicatorMenuWidth: width
     property real applicationMenuWidth: width
+    property alias applicationMenuContentX: __applicationMenus.menuContentX
 
     property alias applicationMenus: __applicationMenus
     property alias indicators: __indicators
     property bool fullscreenMode: false
     property real panelAreaShowProgress: 1.0
     property bool greeterShown: false
+    property bool hasKeyboard: false
 
     property string mode: "staged"
 
@@ -176,6 +175,10 @@ Item {
                     // let it fall through to the window decoration of the maximized window behind, if any
                     mouse.accepted = false;
                 }
+                var menubar = menuBarLoader.item;
+                if (menubar) {
+                    menubar.invokeMenu(mouse);
+                }
             }
 
             Row {
@@ -202,16 +205,17 @@ Item {
 
                 Loader {
                     id: menuBarLoader
+                    objectName: "menuBarLoader"
                     height: parent.height
                     enabled: d.enablePointerMenu
                     opacity: d.showPointerMenu ? 1 : 0
                     visible: opacity != 0
                     Behavior on opacity { UbuntuNumberAnimation { duration: UbuntuAnimation.SnapDuration } }
-                    active: __applicationMenus.model
+                    active: __applicationMenus.model && !callHint.visible
 
                     width: parent.width - windowControlButtons.width - units.gu(2) - __indicators.barWidth
 
-                    property bool menusRequested: menuBarLoader.item ? menuBarLoader.item.showRequested : false
+                    readonly property bool menusRequested: menuBarLoader.item ? menuBarLoader.item.showRequested : false
 
                     sourceComponent: MenuBar {
                         id: bar
@@ -231,6 +235,9 @@ Item {
                             target: __indicators
                             onShownChanged: bar.dismiss();
                         }
+
+                        onDoubleClicked: PanelState.restoreClicked()
+                        onPressed: mouse.accepted = false // let the parent mouse area handle this, so it can both unsnap window and show menu
                     }
                 }
             }
@@ -250,6 +257,7 @@ Item {
         PanelMenu {
             id: __applicationMenus
 
+            x: menuContentX
             model: registeredMenuModel.model
             width: root.applicationMenuWidth
             minimizedPanelHeight: root.minimizedPanelHeight
@@ -258,6 +266,7 @@ Item {
             alignment: Qt.AlignLeft
             enableHint: !callHint.active && !fullscreenMode
             showOnClick: false
+            adjustDragHandleSizeToContents: false
             panelColor: panelAreaBackground.color
 
             onShowTapped: {
@@ -266,12 +275,12 @@ Item {
                 }
             }
 
-            showRowTitle: !expanded
-            rowTitle: PanelState.title
+            hideRow: !expanded
             rowItemDelegate: ActionItem {
                 id: actionItem
                 property int ownIndex: index
                 objectName: "appMenuItem"+index
+                enabled: model.sensitive
 
                 width: _title.width + units.gu(2)
                 height: parent.height
@@ -290,6 +299,13 @@ Item {
             }
 
             pageDelegate: PanelMenuPage {
+                readonly property bool isCurrent: modelIndex == __applicationMenus.currentMenuIndex
+                onIsCurrentChanged: {
+                    if (isCurrent && menuModel) {
+                        menuModel.aboutToShow(modelIndex);
+                    }
+                }
+
                 menuModel: __applicationMenus.model
                 submenuIndex: modelIndex
 
@@ -306,6 +322,28 @@ Item {
             onEnabledChanged: {
                 if (!enabled) hide();
             }
+        }
+
+        Label {
+            id: rowLabel
+            objectName: "panelTitle"
+            anchors {
+                left: parent.left
+                leftMargin: units.gu(1)
+                right: __indicators.left
+                rightMargin: units.gu(1)
+            }
+            height: root.minimizedPanelHeight
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            maximumLineCount: 1
+            fontSize: "medium"
+            font.weight: Font.Medium
+            color: Theme.palette.selected.backgroundText
+            opacity: __applicationMenus.visible && !__applicationMenus.expanded ? 1 : 0
+            visible: opacity != 0
+            Behavior on opacity { NumberAnimation { duration: UbuntuAnimation.SnapDuration } }
+            text: PanelState.title
         }
 
         PanelMenu {
@@ -337,12 +375,12 @@ Item {
                 objectName: identifier+"-panelItem"
 
                 property int ownIndex: index
-                property bool overflow: parent.width - x > __indicators.overFlowWidth
-                property bool hidden: !expanded && (overflow || !indicatorVisible || hideSessionIndicator || hideKeyboardIndicator)
+                readonly property bool overflow: parent.width - x > __indicators.overFlowWidth
+                readonly property bool hidden: !expanded && (overflow || !indicatorVisible || hideSessionIndicator || hideKeyboardIndicator)
                 // HACK for indicator-session
                 readonly property bool hideSessionIndicator: identifier == "indicator-session" && Math.min(Screen.width, Screen.height) <= units.gu(60)
                 // HACK for indicator-keyboard
-                readonly property bool hideKeyboardIndicator: identifier == "indicator-keyboard" && (AccountsService.keymaps.length < 2 || keyboardsModel.count == 0)
+                readonly property bool hideKeyboardIndicator: identifier == "indicator-keyboard" && !hasKeyboard
 
                 height: parent.height
                 expanded: indicators.expanded
@@ -394,11 +432,6 @@ Item {
                 if (!enabled) hide();
             }
         }
-    }
-
-    InputDeviceModel {
-        id: keyboardsModel
-        deviceFilter: InputInfo.Keyboard
     }
 
     IndicatorsLight {

@@ -23,6 +23,7 @@
 #include "quicklistmodel.h"
 
 #include <unity/shell/launcher/LauncherItemInterface.h>
+#include <unity/shell/application/MirSurfaceInterface.h>
 
 class QuickListModel;
 
@@ -64,7 +65,7 @@ private:
     void setCountVisible(bool countVisible);
     void setFocused(bool focused);
     void setAlerting(bool alerting);
-    void setSurfaceCount(int surfaceCount);
+    void setSurfaces(const QList<QPair<QString, QString >> &surfaces);
 
 private:
     QString m_appId;
@@ -80,7 +81,7 @@ private:
     bool m_countVisible;
     bool m_focused;
     bool m_alerting;
-    int m_surfaceCount;
+    QList<QPair<QString, QString> > m_surfaces;
     QuickListModel *m_quickList;
     QuickListEntry m_quitAction;
 
