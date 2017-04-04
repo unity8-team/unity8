@@ -24,6 +24,7 @@ public:
         bool valid = false;
         QString name;
         QString icon;
+        QString description;
         QStringList keywords;
     };
 

@@ -29,8 +29,10 @@ AppDrawerModel::AppDrawerModel(QObject *parent):
             qWarning() << "Failed to get app info for app" << appId;
             continue;
         }
-        m_list.append(new LauncherItem(appId, info.name, info.icon, this));
-        m_list.last()->setKeywords(info.keywords);
+        auto item = new LauncherItem(appId, info.name, info.icon, this);
+        item->setKeywords(info.keywords);
+        item->setDescription(info.description);
+        m_list.append(item);
     }
     qsrand(QDateTime::currentMSecsSinceEpoch() / 100);
 }
@@ -52,6 +54,8 @@ QVariant AppDrawerModel::data(const QModelIndex &index, int role) const
         return m_list.at(index.row())->icon();
     case RoleKeywords:
         return m_list.at(index.row())->keywords();
+    case RoleDescription:
+        return m_list.at(index.row())->description();
     case RoleUsage:
         // FIXME: u-a-l needs to provide API for usage stats.
         // don't forget to drop the qsrand() call in the ctor when dropping this.

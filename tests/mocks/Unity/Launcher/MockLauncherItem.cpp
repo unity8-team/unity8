@@ -72,6 +72,19 @@ QStringList MockLauncherItem::keywords() const
     return m_keywords;
 }
 
+QString MockLauncherItem::description() const
+{
+    return m_description;
+}
+
+void MockLauncherItem::setDescription(const QString &description)
+{
+    if (m_description != description) {
+        m_description = description;
+        Q_EMIT descriptionChanged(m_description);
+    }
+}
+
 bool MockLauncherItem::pinned() const
 {
     return m_pinned;
