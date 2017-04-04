@@ -113,10 +113,10 @@ int AppDrawerProxyModel::count() const
 
 QVariant AppDrawerProxyModel::data(const QModelIndex &index, int role) const
 {
-    QModelIndex idx = mapToSource(index);
+    const QModelIndex idx = mapToSource(index);
     if (role == Qt::UserRole) {
-        QString name = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
-        return name.length() > 0 ? QString(name.at(0)).toUpper() : QChar();
+        const QString name = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
+        return !name.isEmpty() ? name.at(0).toUpper() : QChar();
     }
     return m_source->data(idx, role);
 }
@@ -138,34 +138,31 @@ bool AppDrawerProxyModel::filterAcceptsRow(int source_row, const QModelIndex &so
     const QModelIndex idx{m_source->index(source_row, 0)};
 
     if (m_group == GroupByAToZ && source_row > 0) {
-        QString currentName = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
-        QChar currentLetter = currentName.length() > 0 ? currentName.at(0) : QChar();
-        QString previousName = m_source->data(m_source->index(source_row - 1,0 ), AppDrawerModelInterface::RoleName).toString();
-        QChar previousLetter = previousName.length() > 0 ? previousName.at(0) : QChar();
+        const QString currentName = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
+        const QChar currentLetter = !currentName.isEmpty() ? currentName.at(0) : QChar();
+        const QString previousName = m_source->data(m_source->index(source_row - 1,0 ), AppDrawerModelInterface::RoleName).toString();
+        const QChar previousLetter = !previousName.isEmpty() ? previousName.at(0) : QChar();
         if (currentLetter.toLower() == previousLetter.toLower()) {
             return false;
         }
-    } else if(m_group == GroupByAll && source_row > 0) {
+    } else if (m_group == GroupByAll && source_row > 0) {
         return false;
     }
 
     if (!m_filterLetter.isEmpty()) {
-        QString currentName = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
-        QString currentLetter = currentName.length() > 0 ? QString(currentName.at(0)) : QString();
+        const QString currentName = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
+        const QString currentLetter = !currentName.isEmpty() ? QString(currentName.at(0)) : QString();
         if (currentLetter.toLower() != m_filterLetter.toLower()) {
             return false;
         }
     }
     if (!m_filterString.isEmpty()) {
-
-        QStringList allWords;
-        allWords << m_source->data(idx, AppDrawerModelInterface::RoleAppId).toString()
-                 << m_source->data(idx, AppDrawerModelInterface::RoleName).toString()
-                 << m_source->data(idx, AppDrawerModelInterface::RoleDescription).toString()
-                 << m_source->data(idx, AppDrawerModelInterface::RoleKeywords).toStringList();
+        const auto roles = {AppDrawerModelInterface::RoleAppId, AppDrawerModelInterface::RoleName,
+                            AppDrawerModelInterface::RoleDescription, AppDrawerModelInterface::RoleKeywords};
         bool found = false;
-        Q_FOREACH (const QString &currentWord, allWords) {
-            if (currentWord.contains(m_filterString, Qt::CaseInsensitive)) {
+        Q_FOREACH (const auto &role, roles) {
+            const QString data = m_source->data(idx, role).toString();
+            if (data.contains(m_filterString, Qt::CaseInsensitive)) {
                 found = true;
                 break;
             }
