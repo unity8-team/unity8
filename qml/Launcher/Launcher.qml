@@ -128,6 +128,7 @@ FocusScope {
         } else {
             switchToNextState("")
         }
+        root.focus = false;
     }
 
     function fadeOut() {
@@ -229,7 +230,6 @@ FocusScope {
             root.hide();
             panel.highlightIndex = -2
             event.accepted = true;
-            root.focus = false;
         }
     }
 

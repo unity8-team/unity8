@@ -174,6 +174,7 @@ StyledItem {
         } else {
             startApp(appId);
         }
+        stage.focus = true;
     }
 
     function activateURL(url) {
