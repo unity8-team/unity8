@@ -43,13 +43,16 @@ Rectangle {
     signal showDashHome()
     signal kbdNavigationCancelled()
 
-    onXChanged: {
+    onXChanged: closeQuickList();
+
+    function closeQuickList() {
         if (quickList.state === "open") {
-            quickList.state = ""
+            quickList.state = "";
+            quickList.focus = false;
         }
     }
 
-    onHighlightIndexChanged: quickList.state = ""
+    onHighlightIndexChanged: closeQuickList();
 
     function highlightNext() {
         highlightIndex++;
@@ -562,7 +565,7 @@ Rectangle {
                                     var distance = Math.max(Math.abs(mouse.x - startX), Math.abs(mouse.y - startY))
                                     if (!preDragging && distance > units.gu(1.5)) {
                                         preDragging = true;
-                                        quickList.state = "";
+                                        closeQuickList();
                                     }
                                     if (distance > launcherListView.itemHeight) {
                                         selectedItem.dragging = true
@@ -697,8 +700,7 @@ Rectangle {
         visible: enabled
 
         onClicked: {
-            quickList.state = "";
-            quickList.focus = false;
+            closeQuickList();
             root.kbdNavigationCancelled();
         }
 
@@ -772,7 +774,7 @@ Rectangle {
             case Qt.Key_Escape:
                 quickList.selectedIndex = -1;
                 quickList.focus = false;
-                quickList.state = ""
+                closeQuickList();
                 event.accepted = true;
                 break;
             case Qt.Key_Enter:
@@ -783,7 +785,7 @@ Rectangle {
                 }
                 quickList.selectedIndex = -1;
                 quickList.focus = false;
-                quickList.state = ""
+                closeQuickList();
                 root.kbdNavigationCancelled();
                 event.accepted = true;
                 break;
@@ -869,11 +871,10 @@ Rectangle {
                                 return;
                             }
                             Haptics.play();
-                            quickList.state = "";
+                            closeQuickList();
                             // Unsetting model to prevent showing changing entries during fading out
                             // that may happen because of triggering an action.
                             LauncherModel.quickListActionInvoked(quickList.appId, index);
-                            quickList.focus = false;
                             root.kbdNavigationCancelled();
                             quickList.model = undefined;
                         }
