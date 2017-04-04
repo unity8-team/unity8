@@ -79,6 +79,7 @@ FocusScope {
             source: appDrawerModel
             filterString: searchField.displayText
             sortBy: AppDrawerProxyModel.SortByAToZ
+            dynamicSortFilter: false
         }
 
         Item {

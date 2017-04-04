@@ -87,7 +87,7 @@ void AppDrawerProxyModel::setFilterString(const QString &filterString)
     if (m_filterString != filterString) {
         m_filterString = filterString;
         Q_EMIT filterStringChanged();
-        invalidateFilter();
+        invalidate();
     }
 }
 
@@ -139,10 +139,10 @@ bool AppDrawerProxyModel::filterAcceptsRow(int source_row, const QModelIndex &so
 
     if (m_group == GroupByAToZ && source_row > 0) {
         const QString currentName = m_source->data(idx, AppDrawerModelInterface::RoleName).toString();
-        const QChar currentLetter = !currentName.isEmpty() ? currentName.at(0) : QChar();
-        const QString previousName = m_source->data(m_source->index(source_row - 1,0 ), AppDrawerModelInterface::RoleName).toString();
-        const QChar previousLetter = !previousName.isEmpty() ? previousName.at(0) : QChar();
-        if (currentLetter.toLower() == previousLetter.toLower()) {
+        const QChar currentLetter = !currentName.isEmpty() ? currentName.at(0).toLower() : QChar();
+        const QString previousName = m_source->data(m_source->index(source_row - 1, 0), AppDrawerModelInterface::RoleName).toString();
+        const QChar previousLetter = !previousName.isEmpty() ? previousName.at(0).toLower() : QChar();
+        if (currentLetter == previousLetter) {
             return false;
         }
     } else if (m_group == GroupByAll && source_row > 0) {
