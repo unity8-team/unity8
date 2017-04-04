@@ -23,9 +23,7 @@
 AppDrawerProxyModel::AppDrawerProxyModel(QObject *parent):
     QSortFilterProxyModel(parent)
 {
-    setSortRole(AppDrawerModelInterface::RoleName);
     setSortLocaleAware(true);
-    sort(0);
 
     connect(this, &QAbstractListModel::rowsInserted, this, &AppDrawerProxyModel::countChanged);
     connect(this, &QAbstractListModel::rowsRemoved, this, &AppDrawerProxyModel::countChanged);
@@ -45,6 +43,8 @@ void AppDrawerProxyModel::setSource(QAbstractItemModel *source)
         setSortRole(m_sortBy == SortByAToZ ? AppDrawerModelInterface::RoleName : AppDrawerModelInterface::RoleUsage);
         connect(m_source, &QAbstractItemModel::rowsRemoved, this, &AppDrawerProxyModel::invalidate);
         connect(m_source, &QAbstractItemModel::rowsInserted, this, &AppDrawerProxyModel::invalidate);
+        connect(m_source, &QAbstractItemModel::modelReset, this, &AppDrawerProxyModel::invalidate);
+        sort(0);
         Q_EMIT sourceChanged();
     }
 }
@@ -59,7 +59,7 @@ void AppDrawerProxyModel::setGroup(AppDrawerProxyModel::GroupBy group)
     if (m_group != group) {
         m_group = group;
         Q_EMIT groupChanged();
-        invalidateFilter();
+        invalidate();
     }
 }
 
@@ -73,7 +73,7 @@ void AppDrawerProxyModel::setFilterLetter(const QString &filterLetter)
     if (m_filterLetter != filterLetter) {
         m_filterLetter = filterLetter;
         Q_EMIT filterLetterChanged();
-        invalidateFilter();
+        invalidate();
     }
 }
 
