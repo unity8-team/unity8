@@ -74,8 +74,6 @@ UalWrapper::AppInfo UalWrapper::getApplicationInfo(const QString &appId)
             info.keywords << QString::fromStdString(keyword);
         }
         info.popularity = ualApp->info()->popularity();
-        qDebug() << "popularity of" << appId << "is" << info.popularity;
-
         info.valid = true;
     } catch (const std::runtime_error &e) {
         qWarning() << "ubuntu-app-launch threw an exception getting app info for appId:" << appId << ":" << e.what();
