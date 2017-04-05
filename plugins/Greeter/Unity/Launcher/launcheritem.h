@@ -36,6 +36,7 @@ public:
     QString icon() const override;
     QStringList keywords() const override;
     QString description() const override;
+    uint popularity() const override;
     bool pinned() const override;
     bool running() const override;
     bool recent() const override;
