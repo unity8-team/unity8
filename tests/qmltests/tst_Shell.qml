@@ -1735,8 +1735,8 @@ Rectangle {
         function test_selectFromSpreadWithMouse_data() {
             return [
                 {tag: "click on tileInfo", tileInfo: true, maximize: false },
-                {tag: "click on surface, maximized", tileInfo: false, maximize: true },
-                {tag: "click on tileInfo", tileInfo: true, maximize: false },
+                {tag: "click on surface", tileInfo: false, maximize: false },
+                {tag: "click on tileInfo, maximized", tileInfo: true, maximize: true },
                 {tag: "click on surface, maximized", tileInfo: false, maximize: true },
             ]
         }
@@ -1793,7 +1793,6 @@ Rectangle {
             var windowButtons = findChild(decoratedWindow, "windowControlButtons");
             verify(windowButtons);
             tryCompare(windowButtons, "visible", true);
-
         }
 
         function test_progressiveAutoScrolling() {
