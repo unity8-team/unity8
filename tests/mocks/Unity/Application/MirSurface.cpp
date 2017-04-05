@@ -127,6 +127,10 @@ QString MirSurface::persistentId() const
     return m_name+"Id";
 }
 
+QString MirSurface::appId() const
+{
+    return m_name+"appId";
+}
 Mir::Type MirSurface::type() const
 {
     return m_type;
@@ -448,6 +452,11 @@ void MirSurface::setHeightIncrement(int value)
 void MirSurface::close()
 {
     DEBUG_MSG("");
+
+    for (int i = 0; i < m_childSurfaceList->count(); ++i) {
+        m_childSurfaceList->get(i)->close();
+    }
+
     if (!m_zombieTimer.isActive()) {
         m_zombieTimer.start();
         Q_EMIT closeRequested();

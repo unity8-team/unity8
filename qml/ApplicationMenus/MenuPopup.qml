@@ -33,6 +33,8 @@ UbuntuShape {
     // if they don't fit when growing right
     property bool substractWidth: false
 
+    property bool selectFirstOnCountChange: true
+
     property real desiredX
     x: {
         var dummy = visible; // force recalc when shown/hidden
@@ -73,8 +75,8 @@ UbuntuShape {
         d.currentItem = null;
     }
 
-    function select(index) {
-        d.select(index)
+    function selectFirstIndex() {
+        d.selectNext(-1);
     }
 
     function reset() {
@@ -295,6 +297,8 @@ UbuntuShape {
 
                         width: MathUtils.clamp(implicitWidth, d.__minimumWidth, d.__maximumWidth)
 
+                        property Item popup: null
+
                         action.onTriggered: {
                             submenuHoverTimer.stop();
 
@@ -302,6 +306,7 @@ UbuntuShape {
 
                             if (hasSubmenu) {
                                 if (!popup) {
+                                    root.unityMenuModel.aboutToShow(__ownIndex);
                                     var model = root.unityMenuModel.submenu(__ownIndex);
                                     popup = submenuComponent.createObject(focusScope, {
                                                                                 objectName: parent.objectName + "-",
@@ -323,8 +328,10 @@ UbuntuShape {
                                         popup = null;
                                         root.childActivated();
                                     });
-                                } else if (popup) {
+                                } else if (!popup.visible) {
+                                    root.unityMenuModel.aboutToShow(__ownIndex);
                                     popup.visible = true;
+                                    popup.item.selectFirstIndex();
                                 }
                             } else {
                                 root.unityMenuModel.activate(__ownIndex);
@@ -346,6 +353,13 @@ UbuntuShape {
                                 }
                             }
                         }
+
+                        Component.onDestruction: {
+                            if (popup) {
+                                popup.destroy();
+                                popup = null;
+                            }
+                        }
                     }
                 }
 
@@ -358,11 +372,17 @@ UbuntuShape {
                     Repeater {
                         id: repeater
 
+                        onCountChanged: {
+                            if (root.selectFirstOnCountChange && !d.currentItem && count > 0) {
+                                root.selectFirstIndex();
+                            }
+                        }
+
                         Loader {
                             id: loader
                             objectName: root.objectName + "-item" + __ownIndex
 
-                            property Item popup: null
+                            readonly property var popup: item ? item.popup : null
                             property var __menuData: model
                             property int __ownIndex: index
                             property bool __isSeparator: model.isSeparator
@@ -484,9 +504,6 @@ UbuntuShape {
                     target: item
                     onChildActivated: childActivated();
                 }
-
-                Component.onCompleted: item.select(0);
-                onVisibleChanged: if (visible) { item.select(0); }
             }
         }
     }

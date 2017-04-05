@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 Canonical, Ltd.
+ * Copyright (C) 2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "plugin.h"
-#include "SystemImage.h"
+#include <QtCore/QtGlobal>
 
-#include <QtQml>
-
-void BackendPlugin::registerTypes(const char *uri)
-{
-    Q_ASSERT(uri == QLatin1String("Ubuntu.SystemImage"));
-
-    qmlRegisterSingletonType<SystemImage>(uri, 0, 1, "SystemImage",
-                                          [](QQmlEngine*, QJSEngine*) -> QObject* { return new SystemImage; });
-}
+#if defined(WINDOWMANAGERQML_LIBRARY)
+#  define WINDOWMANAGERQML_EXPORT Q_DECL_EXPORT
+#else
+#  define WINDOWMANAGERQML_EXPORT Q_DECL_IMPORT
+#endif

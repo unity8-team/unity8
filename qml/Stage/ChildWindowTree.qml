@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright (C) 2016-2017 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,14 @@ import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Unity.Application 0.1
 
-Item {
+FocusScope {
     id: root
 
     property alias surface: childWindow.surface
     property real displacementX: 0
     property real displacementY: 0
     property alias boundsItem: childWindow.boundsItem
+    property alias decorationHeight: childWindow.decorationHeight
 
     x: surface ? surface.position.x + displacementX : 0
     y: surface ? surface.position.y + displacementY : 0
@@ -59,10 +60,6 @@ Item {
     // NB: those bindings will be overwritten by MoveHandler when you first move the window
     property real windowedX: x
     property real windowedY: y
-
-
-    property real restoredX
-    property real restoredY
 
     state: "restored"
     // end of API expected by MoveHandler
@@ -104,6 +101,13 @@ Item {
         onFocusRequested: {
             root.surface.activate();
         }
+        onFocusedChanged: {
+            if (root.surface.focused) {
+                childWindow.focus = true;
+                // Propagate
+                root.focus = true;
+            }
+        }
     }
 
     // Using a loader here mainly to circunvent the "ChildWindowTree is instantiated recursively" error from the QML engine
@@ -122,6 +126,13 @@ Item {
             when: childRepeaterLoader.item
             property: "boundsItem"
             value: root.boundsItem
+        }
+        onFocusChanged: {
+            if (focus) {
+                // A surface in some ChildWindowTree got focused.
+                // Propagate
+                root.focus = true;
+            }
         }
     }
 }
