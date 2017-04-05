@@ -1749,12 +1749,15 @@ Rectangle {
             var appRepeater = findInvisibleChild(shell, "appRepeater");
             verify(appRepeater !== null);
 
-            keyPress(Qt.Key_Alt)
-            keyClick(Qt.Key_Tab);
-
             var surface = topLevelSurfaceList.surfaceAt(2);
             var spreadDelegate2 = appRepeater.itemAt(2);
             var decoratedWindow = findChild(spreadDelegate2, "decoratedWindow");
+
+            // maximize hides the window control buttons
+            spreadDelegate2.requestMaximize();
+
+            keyPress(Qt.Key_Alt)
+            keyClick(Qt.Key_Tab);
 
             tryCompare(stage, "state", "spread");
 
@@ -1777,6 +1780,12 @@ Rectangle {
             tryCompare(surface, "focused", true);
 
             keyRelease(Qt.Key_Alt);
+
+            // verify the window control buttons are again visible, lp#1680018
+            spreadDelegate2.requestRestore();
+            var windowButtons = findChild(decoratedWindow, "windowControlButtons");
+            verify(windowButtons);
+            tryCompare(windowButtons, "visible", true);
         }
 
         function test_progressiveAutoScrolling() {
