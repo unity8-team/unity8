@@ -28,7 +28,7 @@ UalWrapper::UalWrapper(QObject *parent):
         Q_EMIT appAdded(QString::fromStdString(app->appId()));
     });
     Registry::appRemoved().connect([this](const AppID &appId) {
-        Q_EMIT appRemoved(QString::fromStdString(appId.persistentID()));
+        Q_EMIT appRemoved(QString::fromStdString(appId));
     });
     Registry::appInfoUpdated().connect([this](const std::shared_ptr<Application>&app){
         Q_EMIT appInfoChanged(QString::fromStdString(app->appId()));
