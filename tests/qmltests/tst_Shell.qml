@@ -265,6 +265,7 @@ Rectangle {
                     anchors { left: parent.left; right: parent.right }
                     activeFocusOnPress: false
                     model: ["phone", "tablet", "desktop"]
+                    selectedIndex: 2
                     onSelectedIndexChanged: {
                         shellLoader.state = model[selectedIndex];
                     }
@@ -278,6 +279,7 @@ Rectangle {
                     anchors { left: parent.left; right: parent.right }
                     activeFocusOnPress: false
                     model: ["phone", "tablet", "desktop"]
+                    selectedIndex: 0
                 }
                 MouseTouchEmulationCheckbox {
                     id: mouseEmulation
@@ -1710,9 +1712,9 @@ Rectangle {
             var spreadDelegate2 = appRepeater.itemAt(2);
             var closeMouseArea = findChild(spreadDelegate2, "closeMouseArea");
 
-            // Move the mosue over tile 2 and verify the close button becomes visible
+            // Move the mouse over tile 2 and verify the close button becomes visible
             var x = 0;
-            var y = shell.height * .5;
+            var y = shell.height * .6;
             mouseMove(shell, x, y)
             while (spreadItem.highlightedIndex !== 2 && x <= 4000) {
                 x+=10;
@@ -1761,7 +1763,7 @@ Rectangle {
 
             // Move the mouse over tile 2 and verify the highlight becomes visible
             var x = 0;
-            var y = shell.height * (data.tileInfo ? .9 : 0.5)
+            var y = shell.height * (data.tileInfo ? .9 : 0.7)
             mouseMove(shell, x, y)
             while (spreadItem.highlightedIndex !== 2 && x <= 4000) {
                 x+=10;
@@ -1783,6 +1785,15 @@ Rectangle {
         function test_progressiveAutoScrolling() {
             loadDesktopShellWithApps()
 
+            // load some more apps
+            ApplicationManager.startApplication("twitter-webapp")
+            ApplicationManager.startApplication("ubuntu-weather-app")
+            ApplicationManager.startApplication("notes-app")
+            for (var i = 0; i < topLevelSurfaceList.count; ++i) {
+                waitUntilAppWindowIsFullyLoaded(topLevelSurfaceList.idAt(i));
+            }
+
+
             var appRepeater = findInvisibleChild(shell, "appRepeater");
             verify(appRepeater !== null);
 
@@ -1795,7 +1806,7 @@ Rectangle {
 
             // Move the mouse to the right and make sure it scrolls the Flickable
             var x = 0;
-            var y = shell.height * .5
+            var y = shell.height * .7
             mouseMove(shell, x, y)
             while (x <= shell.width) {
                 x+=10;

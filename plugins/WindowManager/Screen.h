@@ -16,7 +16,6 @@ class Screen: public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool active READ isActive WRITE setActive NOTIFY activeChanged)
-
     Q_PROPERTY(bool used READ used NOTIFY usedChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(qtmir::OutputTypes outputType READ outputType NOTIFY outputTypeChanged)

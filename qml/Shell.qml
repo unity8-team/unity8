@@ -99,8 +99,9 @@ StyledItem {
 
     readonly property var topLevelSurfaceList: {
         if (!WMScreen.currentWorkspace) return null;
-        return WMScreen.currentWorkspace.windowModel
+        return stage.temporarySelectedWorkspace ? stage.temporarySelectedWorkspace.windowModel : WMScreen.currentWorkspace.windowModel
     }
+    onTopLevelSurfaceListChanged: print("**********************  have new TLSL", topLevelSurfaceList)
 
     onMainAppChanged: {
         if (mainApp) {
@@ -189,11 +190,12 @@ StyledItem {
     }
 
     function startApp(appId) {
-        if (ApplicationManager.findApplication(appId)) {
-            ApplicationManager.requestFocusApplication(appId);
-        } else {
+        stage.closeSpread();
+        if (!ApplicationManager.findApplication(appId)) {
             ApplicationManager.startApplication(appId);
         }
+        print("focusing", appId)
+        ApplicationManager.requestFocusApplication(appId);
     }
 
     function startLockedApp(app) {

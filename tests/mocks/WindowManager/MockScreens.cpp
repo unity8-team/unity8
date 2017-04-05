@@ -31,10 +31,11 @@ QWeakPointer<MockScreens> m_screens;
 class MockScreen : public qtmir::Screen
 {
     Q_OBJECT
+    Q_PROPERTY(QString outputTypeName READ outputTypeName NOTIFY outputTypeNameChanged)
 public:
     MockScreen()
     {
-        m_sizes.append(new qtmir::ScreenMode(50, QSize(640,480)));
+        m_sizes.append(new qtmir::ScreenMode(50, QSize(800,568)));
         m_sizes.append(new qtmir::ScreenMode(60, QSize(1280,1024)));
         m_sizes.append(new qtmir::ScreenMode(60, QSize(1440,900)));
         m_sizes.append(new qtmir::ScreenMode(60, QSize(1920,1080)));
@@ -51,7 +52,6 @@ public:
 
         if (m_connectedWindow) {
             disconnect(m_connectedWindow.data());
-            m_sizes.takeFirst()->deleteLater();
         }
 
         m_connectedWindow = w;
@@ -77,7 +77,6 @@ public:
             });
             if (w->isActive()) setActive(true);
 
-            m_sizes.push_front(new qtmir::ScreenMode(50, w->size()));
             Q_EMIT availableModesChanged();
 
         }
@@ -90,6 +89,7 @@ public:
     QSizeF physicalSize() const override { return m_physicalSize; }
     qtmir::FormFactor formFactor() const override { return m_formFactor; }
     qtmir::OutputTypes outputType() const override { return m_outputType; }
+    QString outputTypeName() const { return QStringLiteral("Internal"); }
     MirPowerMode powerMode() const override { return m_powerMode; }
     Qt::ScreenOrientation orientation() const override { return m_orientation; }
     QPoint position() const override { return m_position; }
@@ -137,6 +137,9 @@ public:
         return true;
     }
 
+Q_SIGNALS:
+    void outputTypeNameChanged();
+
 public:
     miral::DisplayId m_id;
     bool m_active{false};
@@ -168,7 +171,7 @@ MockScreens::MockScreens()
         screen->m_active = i == 0;
         screen->m_name = QString("Monitor %1").arg(i);
         screen->m_position = QPoint(lastPoint.x(), lastPoint.y());
-        screen->m_currentModeIndex = 3;
+        screen->m_currentModeIndex = 0;
         m_mocks.append(screen);
 
         lastPoint.rx() += screen->m_sizes[screen->m_currentModeIndex]->size.width();
