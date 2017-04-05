@@ -35,14 +35,14 @@ MouseArea {
     property var unitySessionService: DBusUnitySessionService
     property var closeAllApps: function() {
         ApplicationManager.countChanged.connect(function() {
-            if (ApplicationManager.count === 0 || (ApplicationManager.count === 1 && ApplicationManager.get(0).appId === "unity8-dash")) {
+            if (ApplicationManager.count === 0) {
                 d.callback();
             }
         });
 
         for (var i = ApplicationManager.count-1; i >= 0; i--) {
             var app = ApplicationManager.get(i);
-            if (!app || app.appId === "unity8-dash") // skip dash or it will just respawn into our face
+            if (!app)
                 continue;
             ApplicationManager.stopApplication(app.appId);
         }
