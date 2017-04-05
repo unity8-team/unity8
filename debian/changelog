@@ -1,3 +1,14 @@
+unity8 (8.15+17.04.20170405.2-0ubuntu1) zesty; urgency=medium
+
+  [ Nick Dedekind ]
+  * multimonitor support
+
+  [ Michael Zanetti, Nick Dedekind ]
+  * WIP - just putting to Needs Review to get Jenkins' opinion
+  * screens and workspaces switcher
+
+ -- Nicholas Dedekind <nick.dedekind@canonical.com>  Wed, 05 Apr 2017 12:21:28 +0000
+
 unity8 (8.15+17.04.20170328.3-0ubuntu1) zesty; urgency=medium
 
   [ Albert Astals Cid ]

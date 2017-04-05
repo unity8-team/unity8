@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unity8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-28 21:50+0000\n"
+"POT-Creation-Date: 2017-04-05 12:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,6 +61,46 @@ msgstr ""
 
 #: plugins/Unity/Launcher/launcheritem.cpp:123
 msgid "Unpin shortcut"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:160
+msgid "Unknown"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:162
+msgid "VGA"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:166
+msgid "DVI"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:168
+msgid "Composite"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:170
+msgid "S-Video"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:174
+msgid "Internal"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:176
+msgid "Component"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:178
+msgid "DisplayPort"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:181
+msgid "HDMI"
+msgstr ""
+
+#: plugins/WindowManager/Screen.cpp:183
+msgid "TV"
 msgstr ""
 
 #: qml/Components/Dialogs.qml:176
@@ -355,25 +395,25 @@ msgstr ""
 msgid "Preview Share Item"
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:317
+#: qml/Components/VirtualTouchPad.qml:311
 msgid ""
 "Your device is now connected to an external display. Use this screen as a "
 "touch pad to interact with the pointer."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:327
+#: qml/Components/VirtualTouchPad.qml:321
 msgid "Tap left button to click."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:339
+#: qml/Components/VirtualTouchPad.qml:333
 msgid "Tap right button to right click."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:351
+#: qml/Components/VirtualTouchPad.qml:345
 msgid "Swipe with two fingers to scroll."
 msgstr ""
 
-#: qml/Components/VirtualTouchPad.qml:396
+#: qml/Components/VirtualTouchPad.qml:390
 msgid "Find more settings in the system settings."
 msgstr ""
 
@@ -497,15 +537,15 @@ msgid_plural "Please wait %1 minutes and then try again…"
 msgstr[0] ""
 msgstr[1] ""
 
-#: qml/Greeter/Greeter.qml:550
+#: qml/Greeter/Greeter.qml:568
 msgid "Try again"
 msgstr ""
 
-#: qml/Greeter/Greeter.qml:551
+#: qml/Greeter/Greeter.qml:569
 msgid "Enter passphrase to unlock"
 msgstr ""
 
-#: qml/Greeter/Greeter.qml:552
+#: qml/Greeter/Greeter.qml:570
 msgid "Enter passcode to unlock"
 msgstr ""
 
