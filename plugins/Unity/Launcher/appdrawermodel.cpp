@@ -30,9 +30,10 @@ AppDrawerModel::AppDrawerModel(QObject *parent):
             qWarning() << "Failed to get app info for app" << appId;
             continue;
         }
-        m_list.append(new LauncherItem(appId, info.name, info.icon, this));
-        m_list.last()->setKeywords(info.keywords);
-        m_list.last()->setPopularity(info.popularity);
+        LauncherItem* item = new LauncherItem(appId, info.name, info.icon, this);
+        item->setKeywords(info.keywords);
+        item->setPopularity(info.popularity);
+        m_list.append(item);
     }
 
     // keep this a queued connection as it's coming from another thread.
@@ -74,9 +75,10 @@ void AppDrawerModel::appAdded(const QString &appId)
     }
 
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
-    m_list.append(new LauncherItem(appId, info.name, info.icon, this));
-    m_list.last()->setKeywords(info.keywords);
-    m_list.last()->setPopularity(info.popularity);
+    LauncherItem* item = new LauncherItem(appId, info.name, info.icon, this);
+    item->setKeywords(info.keywords);
+    item->setPopularity(info.popularity);
+    m_list.append(item);
     endInsertRows();
 }
 
