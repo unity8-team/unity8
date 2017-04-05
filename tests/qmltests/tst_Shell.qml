@@ -1785,13 +1785,15 @@ Rectangle {
 
             keyRelease(Qt.Key_Alt);
 
+            // verify the window control buttons are again visible, lp#1680018
             if (data.maximize) {
-                // verify the window control buttons are again visible, lp#1680018
+
                 spreadDelegate2.requestRestore();
-                var windowButtons = findChild(decoratedWindow, "windowControlButtons");
-                verify(windowButtons);
-                tryCompare(windowButtons, "visible", true);
             }
+            var windowButtons = findChild(decoratedWindow, "windowControlButtons");
+            verify(windowButtons);
+            tryCompare(windowButtons, "visible", true);
+
         }
 
         function test_progressiveAutoScrolling() {
