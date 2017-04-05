@@ -53,7 +53,6 @@ StyledItem {
     theme.name: "Ubuntu.Components.Themes.SuruDark"
 
     // to be set from outside
-    property alias surfaceManager: topLevelSurfaceList.surfaceManager
     property int orientationAngle: 0
     property int orientation
     property Orientations orientations
@@ -97,6 +96,11 @@ StyledItem {
     }
 
     readonly property var mainApp: stage.mainApp
+
+    readonly property var topLevelSurfaceList: {
+        if (!WMScreen.currentWorkspace) return null;
+        return WMScreen.currentWorkspace.windowModel
+    }
 
     onMainAppChanged: {
         if (mainApp) {
@@ -280,12 +284,6 @@ StyledItem {
         width: parent.width
         height: parent.height
 
-        TopLevelWindowModel {
-            id: topLevelSurfaceList
-            objectName: "topLevelSurfaceList"
-            applicationManager: ApplicationManager // it's a singleton
-        }
-
         Stage {
             id: stage
             objectName: "stage"
@@ -296,7 +294,7 @@ StyledItem {
             background: wallpaperResolver.background
 
             applicationManager: ApplicationManager
-            topLevelSurfaceList: topLevelSurfaceList
+            topLevelSurfaceList: shell.topLevelSurfaceList
             inputMethodRect: inputMethod.visibleRect
             rightEdgePushProgress: rightEdgeBarrier.progress
             availableDesktopArea: availableDesktopAreaItem
@@ -366,7 +364,7 @@ StyledItem {
     InputMethod {
         id: inputMethod
         objectName: "inputMethod"
-        surface: topLevelSurfaceList.inputMethodSurface
+        surface: shell.topLevelSurfaceList.inputMethodSurface
         anchors {
             fill: parent
             topMargin: panel.panelHeight
@@ -553,8 +551,8 @@ StyledItem {
                         && !stage.spreadShown
             }
 
-            readonly property bool focusedSurfaceIsFullscreen: topLevelSurfaceList.focusedWindow
-                ? topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
+            readonly property bool focusedSurfaceIsFullscreen: shell.topLevelSurfaceList.focusedWindow
+                ? shell.topLevelSurfaceList.focusedWindow.state === Mir.FullscreenState
                 : false
             fullscreenMode: (focusedSurfaceIsFullscreen && !LightDMService.greeter.active && launcher.progress == 0 && !stage.spreadShown)
                             || greeter.hasLockedApp
@@ -890,7 +888,7 @@ StyledItem {
 
     // non-visual objects
     KeymapSwitcher {
-        focusedSurface: topLevelSurfaceList.focusedWindow ? topLevelSurfaceList.focusedWindow.surface : null
+        focusedSurface: shell.topLevelSurfaceList.focusedWindow ? shell.topLevelSurfaceList.focusedWindow.surface : null
     }
     BrightnessControl {}
 

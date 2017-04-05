@@ -144,10 +144,6 @@ Rectangle {
                     Component.onDestruction: {
                         shellLoader.itemDestroyed = true;
                     }
-                    SurfaceManager {
-                        id: surfaceMan
-                    }
-                    surfaceManager: surfaceMan
                 }
             }
         }
@@ -232,7 +228,7 @@ Rectangle {
             }
 
             ItemSelector {
-                    id: modeSelector
+                id: modeSelector
                 anchors { left: parent.left; right: parent.right }
                 activeFocusOnPress: false
                 text: "Mode"
@@ -250,13 +246,7 @@ Rectangle {
         property real halfWidth: shell ?  shell.width / 2 : 0
         property real halfHeight: shell ? shell.height / 2 : 0
 
-        onShellChanged: {
-            if (shell) {
-                topLevelSurfaceList = testCase.findInvisibleChild(shell, "topLevelSurfaceList");
-            } else {
-                topLevelSurfaceList = null;
-            }
-        }
+        topLevelSurfaceList: shell ? shell.topLevelSurfaceList : null;
 
         function init() {
             prepareShell();
@@ -321,7 +311,7 @@ Rectangle {
         }
 
         function ensureInputMethodSurface() {
-            shell.surfaceManager.createInputMethodSurface();
+            SurfaceManager.createInputMethodSurface();
 
             tryCompareFunction(function() { return topLevelSurfaceList.inputMethodSurface !== null }, true);
         }

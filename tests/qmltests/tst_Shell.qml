@@ -56,21 +56,16 @@ Rectangle {
         id: appMenuData
     }
 
-    property var shell: shellLoader.item ? shellLoader.item : null
+    readonly property var shell: shellLoader.item ? shellLoader.item : null
     onShellChanged: {
         if (shell) {
-            topLevelSurfaceList = testCase.findInvisibleChild(shell, "topLevelSurfaceList");
-            appMenuData.surfaceManager = shell.surfaceManager;
             panelState = testCase.findInvisibleChild(shell, "panelState");
         } else {
-            topLevelSurfaceList = null;
-            appMenuData.surfaceManager = null;
             panelState = null;
         }
     }
-
-    property var topLevelSurfaceList: null
     property var panelState: null
+    readonly property alias topLevelSurfaceList: testCase.topLevelSurfaceList
 
     QtObject {
         id: _screenWindow
@@ -152,11 +147,6 @@ Rectangle {
                     Component.onDestruction: {
                         shellLoader.itemDestroyed = true;
                     }
-
-                    SurfaceManager {
-                        id: surfaceMan
-                    }
-                    surfaceManager: surfaceMan
                 }
             }
         }
@@ -573,6 +563,7 @@ Rectangle {
         when: windowShown
 
         property Item shell: shellLoader.status === Loader.Ready ? shellLoader.item : null
+        topLevelSurfaceList: shell ? shell.topLevelSurfaceList : null
 
         function init() {
             if (shellLoader.active) {
@@ -611,7 +602,6 @@ Rectangle {
             waitForGreeterToStabilize();
 
             // from StageTestCase
-            topLevelSurfaceList = findInvisibleChild(shell, "topLevelSurfaceList");
             verify(topLevelSurfaceList);
             stage = findChild(shell, "stage");
 
@@ -691,9 +681,7 @@ Rectangle {
         }
 
         function ensureInputMethodSurface() {
-            var surfaceManager = shell.surfaceManager;
-            verify(surfaceManager);
-            surfaceManager.createInputMethodSurface();
+            SurfaceManager.createInputMethodSurface();
 
             tryCompareFunction(function() { return root.topLevelSurfaceList.inputMethodSurface !== null }, true);
         }

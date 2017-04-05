@@ -18,7 +18,7 @@ import QtQuick 2.4
 import QtQuick.Window 2.2
 import Unity.InputInfo 0.1
 import Unity.Session 0.1
-import Unity.Screens 0.1
+import WindowManager 1.0
 import Utils 0.1
 import GSettings 1.0
 import "Components"
@@ -34,7 +34,6 @@ Item {
 
     property alias deviceConfiguration: _deviceConfiguration
     property alias orientations: d.orientations
-    property alias surfaceManager: shell.surfaceManager
 
     onWidthChanged: calculateUsageMode();
 

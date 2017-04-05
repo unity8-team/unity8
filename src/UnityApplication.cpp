@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ShellApplication.h"
+#include "UnityApplication.h"
 
 // Qt
 #include <QLibrary>
@@ -30,20 +30,30 @@
 // libandroid-properties
 #include <hybris/properties/properties.h>
 
+// qtmir
+#include <qtmir/displayconfigurationstorage.h>
+
 // local
 #include <paths.h>
 #include "CachingNetworkManagerFactory.h"
 #include "UnityCommandLineParser.h"
 #include "DebuggingController.h"
+#include "WindowManagementPolicy.h"
+#include "DisplayConfigurationStorage.h"
 
-ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
-    : QGuiApplication(argc, argv)
+#include <QDebug>
+
+
+
+UnityApplication::UnityApplication(int & argc, char ** argv)
+    : qtmir::MirServerApplication(argc, argv, { qtmir::SetWindowManagementPolicy<WindowManagementPolicy>(),
+                                                qtmir::SetDisplayConfigurationStorage<DisplayConfigurationStorage>() })
     , m_qmlArgs(this)
 {
     setApplicationName(QStringLiteral("unity8"));
     setOrganizationName(QStringLiteral("Canonical"));
 
-    setupQmlEngine(isMirServer);
+    setupQmlEngine();
 
     if (m_qmlArgs.deviceName().isEmpty()) {
         char buffer[200];
@@ -85,8 +95,7 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     m_qmlEngine->rootContext()->setContextProperty(QStringLiteral("applicationArguments"), &m_qmlArgs);
     m_qmlEngine->rootContext()->setContextProperty("DebuggingController", new DebuggingController(this));
 
-    auto component(new QQmlComponent(m_qmlEngine,
-                                     QUrl::fromLocalFile(::qmlDirectory() + "/ShellApplication.qml")));
+    auto component(new QQmlComponent(m_qmlEngine, m_qmlArgs.qmlfie()));
     component->create();
     if (component->status() == QQmlComponent::Error) {
         m_qmlEngine->rootContext()->setContextProperty(QStringLiteral("errorString"), component->errorString());
@@ -112,12 +121,12 @@ ShellApplication::ShellApplication(int & argc, char ** argv, bool isMirServer)
     }
 }
 
-ShellApplication::~ShellApplication()
+UnityApplication::~UnityApplication()
 {
     destroyResources();
 }
 
-void ShellApplication::destroyResources()
+void UnityApplication::destroyResources()
 {
     #ifdef UNITY8_ENABLE_TOUCH_EMULATION
     delete m_mouseTouchAdaptor;
@@ -128,16 +137,13 @@ void ShellApplication::destroyResources()
     m_qmlEngine = nullptr;
 }
 
-void ShellApplication::setupQmlEngine(bool isMirServer)
+void UnityApplication::setupQmlEngine()
 {
     m_qmlEngine = new QQmlEngine(this);
 
     m_qmlEngine->setBaseUrl(QUrl::fromLocalFile(::qmlDirectory()));
 
     prependImportPaths(m_qmlEngine, ::overrideImportPaths());
-    if (!isMirServer) {
-        prependImportPaths(m_qmlEngine, ::nonMirImportPaths());
-    }
     appendImportPaths(m_qmlEngine, ::fallbackImportPaths());
 
     m_qmlEngine->setNetworkAccessManagerFactory(new CachingNetworkManagerFactory);

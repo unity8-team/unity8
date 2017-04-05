@@ -43,10 +43,8 @@ Item {
         value: false
     }
 
-    SurfaceManager { id: sMgr }
     ApplicationMenuDataLoader {
         id: appMenuData
-        surfaceManager: sMgr
     }
 
     Rectangle {

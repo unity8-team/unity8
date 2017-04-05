@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Canonical, Ltd.
+ * Copyright (C) 2016-2017 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -14,29 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENWINDOW_H
-#define SCREENWINDOW_H
+#include "ScreenWindow.h"
+#include "Screen.h"
 
-#include <QQuickWindow>
-#include <QPointer>
+// Qt
+#include <QGuiApplication>
+#include <QDebug>
 
-#include "screens.h"
-
-class ScreenWindow : public QQuickWindow
+ScreenWindow::ScreenWindow(QQuickWindow *parent)
+    : QQuickWindow(parent)
 {
-    Q_OBJECT
-    Q_PROPERTY(Screen *screen READ screenWrapper WRITE setScreenWrapper NOTIFY screenWrapperChanged)
-public:
-    ScreenWindow(QWindow *parent = 0);
+}
 
-    Screen *screenWrapper() const;
-    void setScreenWrapper(Screen *screen);
+ScreenWindow::~ScreenWindow()
+{
+}
 
-Q_SIGNALS:
-    void screenWrapperChanged();
+ConcreteScreen *ScreenWindow::screenWrapper() const
+{
+    return m_screen.data();
+}
 
-private:
-    QPointer<Screen> m_screen;
-};
-
-#endif // SCREENWINDOW_H
+void ScreenWindow::setScreenWrapper(ConcreteScreen *screen)
+{
+    if (m_screen != screen) {
+        m_screen = screen;
+        Q_EMIT screenWrapperChanged(screen);
+    }
+    QQuickWindow::setScreen(screen->qscreen());
+}

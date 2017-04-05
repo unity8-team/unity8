@@ -17,7 +17,6 @@
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
-import "../Components/PanelState"
 
 ActionItem {
     id: root
@@ -25,7 +24,6 @@ ActionItem {
     implicitWidth: requiredWidth
 
     property var menuData: undefined
-    property PanelState panelState
 
     readonly property real requiredWidth: {
         var val = 0;

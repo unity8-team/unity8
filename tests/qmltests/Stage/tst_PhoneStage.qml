@@ -32,10 +32,10 @@ Item {
 
     property var greeter: { fullyShown: true }
 
-    SurfaceManager { id: sMgr }
+    readonly property var topLevelSurfaceList: WorkspaceManager.activeWorkspace.windowModel
+
     ApplicationMenuDataLoader {
         id: appMenuData
-        surfaceManager: sMgr
     }
 
     Stage {
@@ -48,16 +48,13 @@ Item {
         orientations: Orientations {}
         applicationManager: ApplicationManager
         mode: "staged"
-        topLevelSurfaceList: TopLevelWindowModel {
-            id: topLevelSurfaceList
-            applicationManager: ApplicationManager
-            surfaceManager: sMgr
-        }
+        topLevelSurfaceList: root.topLevelSurfaceList
         availableDesktopArea: availableDesktopAreaItem
         Item {
             id: availableDesktopAreaItem
             anchors.fill: parent
         }
+
         Component.onCompleted: {
             ApplicationManager.startApplication("unity8-dash");
         }
@@ -563,6 +560,7 @@ Item {
             performEdgeSwipeToShowAppSpread();
 
             var appDelegate = findChild(stage, "appDelegate_" + webbrowserSurfaceId);
+            verify(appDelegate);
             var dragArea = findChild(appDelegate, "dragArea");
             verify(dragArea);
             tryCompare(dragArea, "closeable", true);

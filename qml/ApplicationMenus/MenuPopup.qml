@@ -294,7 +294,6 @@ UbuntuShape {
                         // Parent will be loader
                         id: menuItem
                         menuData: parent.__menuData
-                        panelState: root.panelState
                         objectName: parent.objectName + "-actionItem"
 
                         width: MathUtils.clamp(implicitWidth, d.__minimumWidth, d.__maximumWidth)

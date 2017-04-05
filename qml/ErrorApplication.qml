@@ -17,7 +17,7 @@
 import QtQuick 2.4
 import QtQuick.Window 2.2
 import Ubuntu.Components 1.3
-import Unity.Screens 0.1
+import WindowManager 1.0
 
 Instantiator {
     id: root

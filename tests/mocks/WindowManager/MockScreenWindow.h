@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016-2017 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3, as published by
@@ -14,12 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QQmlExtensionPlugin>
-#include <QtQml/qqml.h>
+#ifndef MOCK_SCREENWINDOW_H
+#define MOCK_SCREENWINDOW_H
 
-class UnityScreensPlugin : public QQmlExtensionPlugin {
+#include "ScreenWindow.h"
+
+class MockScreenWindow : public ScreenWindow
+{
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
 public:
-    void registerTypes(const char* uri) override;
+    explicit MockScreenWindow(QQuickWindow *parent = 0);
+    ~MockScreenWindow();
 };
+
+#endif // MOCK_SCREENWINDOW_H
