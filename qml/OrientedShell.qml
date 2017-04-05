@@ -32,14 +32,16 @@ Item {
     implicitWidth: units.gu(40)
     implicitHeight: units.gu(71)
 
+    property alias deviceConfiguration: _deviceConfiguration
+    property alias orientations: d.orientations
+    property alias surfaceManager: shell.surfaceManager
+
     onWidthChanged: calculateUsageMode();
 
     DeviceConfiguration {
-        id: deviceConfiguration
+        id: _deviceConfiguration
         name: applicationArguments.deviceName
     }
-
-    property alias orientations: d.orientations
 
     Item {
         id: d
@@ -155,10 +157,6 @@ Item {
             }
         }
         return false;
-    }
-
-    Screens {
-        id: screens
     }
 
     property int orientation

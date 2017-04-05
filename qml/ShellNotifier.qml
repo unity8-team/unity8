@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNITY_SHELL_VIEW_H
-#define UNITY_SHELL_VIEW_H
+/*
+    Shared signals & properties on multi-window desktop
+ */
 
-#include <QQuickView>
+pragma Singleton
+import QtQuick 2.4
 
-class ShellView : public QQuickView
-{
-    Q_OBJECT
+QtObject {
+    property var greeter: QtObject {
+        signal hide(bool now)
 
-public:
-    ShellView(QQmlEngine *engine, QObject *qmlArgs);
-
-private Q_SLOTS:
-    void onWidthChanged(int);
-    void onHeightChanged(int);
-};
-
-#endif // UNITY_SHELL_VIEW_H
+        property bool shown: true
+    }
+}

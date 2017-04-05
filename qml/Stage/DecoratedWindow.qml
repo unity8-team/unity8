@@ -38,6 +38,7 @@ FocusScope {
     property alias maximizeButtonShown: decoration.maximizeButtonShown
     property alias interactive: applicationWindow.interactive
     readonly property alias orientationChangesEnabled: applicationWindow.orientationChangesEnabled
+    property PanelState panelState
 
     // Changing this will actually add/remove a decoration, meaning, requestedHeight will take the decoration into account.
     property bool hasDecoration: true
@@ -218,6 +219,7 @@ FocusScope {
 
         title: applicationWindow.title
         windowMoving: moveHandler.moving && !altDragHandler.dragging
+        panelState: root.panelState
 
         opacity: root.hasDecoration ? Math.min(1, root.showDecoration) : 0
         Behavior on opacity { UbuntuNumberAnimation { } }
@@ -241,7 +243,7 @@ FocusScope {
         enableMenus: {
             return active &&
                      surface &&
-                      (PanelState.focusedPersistentSurfaceId === surface.persistentId && !PanelState.decorationsVisible)
+                      (panelState.focusedPersistentSurfaceId === surface.persistentId && !panelState.decorationsVisible)
         }
         menu: sharedAppModel.model
 

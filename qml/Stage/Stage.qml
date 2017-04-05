@@ -48,6 +48,7 @@ FocusScope {
     property rect inputMethodRect
     property real rightEdgePushProgress: 0
     property Item availableDesktopArea
+    property PanelState panelState
 
     // Configuration
     property string mode: "staged"
@@ -381,20 +382,20 @@ FocusScope {
     Component.onCompleted: priv.updateMainAndSideStageIndexes();
 
     Connections {
-        target: PanelState
+        target: panelState
         onCloseClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.close(); } }
         onMinimizeClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.requestMinimize(); } }
         onRestoreClicked: { if (priv.focusedAppDelegate) { priv.focusedAppDelegate.requestRestore(); } }
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "decorationsVisible"
         value: priv.focusedAppDelegate !== null && priv.focusedAppDelegate.maximized // FIXME for Locally integrated menus
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "title"
         value: {
             if (priv.focusedAppDelegate !== null) {
@@ -409,7 +410,7 @@ FocusScope {
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "focusedPersistentSurfaceId"
         value: {
             if (priv.focusedAppDelegate !== null) {
@@ -423,21 +424,21 @@ FocusScope {
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "dropShadow"
         value: priv.focusedAppDelegate && !priv.focusedAppDelegate.maximized && priv.foregroundMaximizedAppDelegate !== null && mode == "windowed"
     }
 
     Binding {
-        target: PanelState
+        target: panelState
         property: "closeButtonShown"
         value: priv.focusedAppDelegate && priv.focusedAppDelegate.maximized && !priv.focusedAppDelegate.isDash
     }
 
     Component.onDestruction: {
-        PanelState.title = "";
-        PanelState.decorationsVisible = false;
-        PanelState.dropShadow = false;
+        panelState.title = "";
+        panelState.decorationsVisible = false;
+        panelState.dropShadow = false;
     }
 
     Instantiator {
@@ -1606,7 +1607,7 @@ FocusScope {
                 ]
 
                 Binding {
-                    target: PanelState
+                    target: panelState
                     property: "decorationsAlwaysVisible"
                     value: appDelegate && appDelegate.maximized && touchControls.overlayShown
                 }
@@ -1652,6 +1653,7 @@ FocusScope {
                     highlightSize: windowInfoItem.iconMargin / 2
                     altDragEnabled: root.mode == "windowed"
                     boundsItem: root.availableDesktopArea
+                    panelState: root.panelState
 
                     requestedWidth: appDelegate.requestedWidth
                     requestedHeight: appDelegate.requestedHeight
@@ -1860,6 +1862,7 @@ FocusScope {
         leftMargin: root.availableDesktopArea.x
         appContainerWidth: appContainer.width
         appContainerHeight: appContainer.height
+        panelState: root.panelState
     }
 
     MouseArea {
