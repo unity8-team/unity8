@@ -19,9 +19,11 @@ import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 
 Item {
-    property alias text: label.text
     property alias color: label.color
+    property alias fontSize: label.fontSize
     property alias iconName: icon.name
+    property alias labelOpacity: label.opacity
+    property alias text: label.text
 
     signal clicked(variant mouse)
 

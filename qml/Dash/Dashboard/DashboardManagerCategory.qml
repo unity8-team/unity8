@@ -56,6 +56,8 @@ ListItem {
 
             header: DashSectionHeader {
                 visible: results.count > 0
+                fontSize: "small"
+                labelOpacity: 0.75
                 text: {
                     if (categoryName === "Favorites") {
                         return i18n.tr("Dashboard");
