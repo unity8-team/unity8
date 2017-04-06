@@ -24,14 +24,18 @@ class AppDrawerModelTest : public QObject
     Q_OBJECT
 
 private:
-    AppDrawerModel *appDrawerModel;
+    AppDrawerModel *appDrawerModel{nullptr};
 
 private Q_SLOTS:
 
     void initTestCase() {
         UalWrapper::s_list << QStringLiteral("app1") << QStringLiteral("app2");
-        appDrawerModel = new AppDrawerModel(this);
+        appDrawerModel = new AppDrawerModel();
         QCOMPARE(appDrawerModel->rowCount(QModelIndex()), 2);
+    }
+
+    void cleanupTestCase() {
+        appDrawerModel->deleteLater();
     }
 
     void testUalAppAddedRemoved() {
