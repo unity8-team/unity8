@@ -42,6 +42,7 @@ UalWrapper::AppInfo UalWrapper::getApplicationInfo(const QString &appId)
     info.name = "App_" + appId;
     info.icon = "/dummy/icon/path/" + appId + ".png";
     info.keywords << QStringLiteral("keyword1") << QStringLiteral("keyword2");
+    info.description = "Dummy description";
     info.popularity = 1;
     info.valid = true;
     return info;

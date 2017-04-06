@@ -28,6 +28,7 @@ public:
         QString name;
         QString icon;
         QStringList keywords;
+        QString description;
         uint popularity = 0;
     };
 
