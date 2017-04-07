@@ -100,8 +100,15 @@ Item {
                 orientations: Orientations {}
                 applicationManager: ApplicationManager
                 topLevelSurfaceList: topSurfaceList
+                availableDesktopArea: availableDesktopAreaItem
                 interactive: true
                 mode: "windowed"
+
+                Item {
+                    id: availableDesktopAreaItem
+                    anchors.fill: parent
+                    anchors.topMargin: PanelState.panelHeight
+                }
             }
         }
     }
@@ -686,13 +693,6 @@ Item {
             tryCompare(facebookAppDelegate, "maximized", true);
         }
 
-        function test_dashHasNoCloseButton() {
-            var dashAppDelegate = startApplication("unity8-dash");
-            verify(dashAppDelegate);
-            var closeButton = findChild(dashAppDelegate, "closeWindowButton");
-            tryCompare(closeButton, "visible", false);
-        }
-
         function test_hideMaximizeButtonWhenSizeConstrained() {
             var dialerDelegate = startApplication("dialer-app");
 
@@ -863,11 +863,7 @@ Item {
             maximizeAppDelegate(appDelegate);
 
             // Close the window and restart the application
-            var closeButton = findChild(appDelegate, "closeWindowButton");
-            appDelegate = null;
-            verify(closeButton);
-            mouseClick(closeButton);
-            closeButton = null;
+            appDelegate.close();
             tryCompare(topSurfaceList, "count", originalWindowCount);
             wait(100); // plus some spare room
             appDelegate = startApplication("dialer-app");
@@ -1056,6 +1052,16 @@ Item {
             // verify the maximized button can still be tapped
             tap(maxButton);
             tryCompare(appDelegate, "state", "maximized");
+        }
+
+        function test_childWindowGetsActiveFocus() {
+            var appDelegate = startApplication("kate");
+            appDelegate.surface.openDialog(units.gu(5), units.gu(5), units.gu(30), units.gu(30));
+            var childWindow = findChild(appDelegate, "childWindow");
+            verify(childWindow);
+            var surfaceItem = findChild(childWindow, "surfaceItem");
+            verify(surfaceItem);
+            tryCompare(surfaceItem, "activeFocus", true);
         }
     }
 }
