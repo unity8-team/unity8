@@ -139,3 +139,12 @@ QList<QObject*> ApplicationMenuRegistry::getMenusForSurface(const QString &surfa
     }
     return list;
 }
+
+QVariantMap ApplicationMenuRegistry::appMenus() const
+{
+    QVariantMap result;
+    for (auto it = m_appMenus.begin(); it != m_appMenus.end(); ++it) {
+        result.insert(QString::number(it.key()), QVariant::fromValue(it.value()));
+    }
+    return result;
+}

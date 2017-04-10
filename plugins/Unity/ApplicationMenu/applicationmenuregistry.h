@@ -66,6 +66,9 @@ public:
                              const QString &service);
     void UnregisterSurfaceMenu(const QString &surfaceId, const QDBusObjectPath &menuObjectPath);
 
+    // for menutool
+    Q_INVOKABLE QVariantMap appMenus() const;
+
 Q_SIGNALS:
     void appMenuRegistered(uint processId);
     void appMenuUnregistered(uint processId);
