@@ -1018,7 +1018,7 @@ Rectangle {
             // Doing longpress
             mousePress(clickedItem)
             tryCompare(clickedItem, "itemOpacity", 0) // Wait for longpress to happen
-            verify(quickList, "state", "open")
+            compare(quickList.state, "open")
 
             launcher.hide();
 
@@ -1038,13 +1038,13 @@ Rectangle {
             // Doing RMB click
             mouseClick(clickedItem, clickedItem.width / 2, clickedItem.height / 2, Qt.RightButton)
             tryCompare(quickListShape, "visible", true)
-            verify(quickList, "state", "open")
-            verify(dndArea, "dragging", false)
+            compare(quickList.state, "open")
+            compare(dndArea.dragging, false)
 
             // Click somewhere in the empty space to dismiss the quicklist
             mouseClick(launcher, launcher.width - units.gu(1), units.gu(1));
             tryCompare(quickListShape, "visible", false);
-            verify(quickList, "state", "")
+            compare(quickList.state, "")
         }
 
         function test_revealByEdgePush() {
@@ -1565,7 +1565,7 @@ Rectangle {
 
             // Open quickList
             mouseClick(clickedItem, clickedItem.width / 2, clickedItem.height / 2, Qt.RightButton)
-            verify(quickList, "state", "open")
+            compare(quickList.state, "open")
             compare(quickList.selectedIndex, -1)
 
             var qEntry = findChild(launcher, "quickListEntry0");
@@ -1579,6 +1579,24 @@ Rectangle {
             mouseMove(qEntry, qEntry.width / 2 + 1, qEntry.height / 2, 10);
 
             tryCompare(quickList, "selectedIndex", -1)
+        }
+
+        function test_tabClosesQuickList() {
+            dragLauncherIntoView();
+            var clickedItem = findChild(launcher, "launcherDelegate2")
+            var quickList = findChild(launcher, "quickList")
+            var launcherPanel = findChild(launcher, "launcherPanel");
+
+            // Initial state
+            tryCompare(quickList, "state", "")
+
+            // Open quickList
+            mouseClick(clickedItem, clickedItem.width / 2, clickedItem.height / 2, Qt.RightButton)
+            compare(quickList.state, "open")
+            tryCompare(launcherPanel, "highlightIndex", 2);
+            keyClick(Qt.Key_Tab);
+            compare(quickList.state, "")
+            tryCompare(launcherPanel, "highlightIndex", 3);
         }
     }
 }

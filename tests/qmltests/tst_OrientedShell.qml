@@ -938,7 +938,7 @@ Rectangle {
             verify(appRepeaterConnections.target);
             appRepeaterConnections.itemAddedCallback = function(item) {
                 dialerDelegate = item;
-                verify(item.application.appId, "dialer-app");
+                compare(item.application.appId, "dialer-app");
             }
 
             WindowStateStorage.saveStage("dialer-app", ApplicationInfoInterface.SideStage)

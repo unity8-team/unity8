@@ -49,6 +49,8 @@ Rectangle {
         }
     }
 
+    onHighlightIndexChanged: quickList.state = ""
+
     function highlightNext() {
         highlightIndex++;
         if (highlightIndex >= launcherListView.count) {
@@ -799,8 +801,8 @@ Rectangle {
             item = launcherListView.itemAt(launcherListView.width / 2, itemPosition + launcherListView.itemHeight / 2);
             quickList.model = launcherListView.model.get(index).quickList;
             quickList.appId = launcherListView.model.get(index).appId;
-            quickList.state = "open";
             root.highlightIndex = index;
+            quickList.state = "open";
             quickList.forceActiveFocus();
         }
 
