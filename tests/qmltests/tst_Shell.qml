@@ -1760,8 +1760,10 @@ Rectangle {
 
         function test_selectFromSpreadWithMouse_data() {
             return [
-                {tag: "click on tileInfo", tileInfo: true },
-                {tag: "click on surface", tileInfo: false },
+                {tag: "click on tileInfo", tileInfo: true, maximize: false },
+                {tag: "click on surface", tileInfo: false, maximize: false },
+                {tag: "click on tileInfo, maximized", tileInfo: true, maximize: true },
+                {tag: "click on surface, maximized", tileInfo: false, maximize: true },
             ]
         }
 
@@ -1775,12 +1777,17 @@ Rectangle {
             var appRepeater = findInvisibleChild(shell, "appRepeater");
             verify(appRepeater !== null);
 
-            keyPress(Qt.Key_Alt)
-            keyClick(Qt.Key_Tab);
-
             var surface = topLevelSurfaceList.surfaceAt(2);
             var spreadDelegate2 = appRepeater.itemAt(2);
             var decoratedWindow = findChild(spreadDelegate2, "decoratedWindow");
+
+            if (data.maximize) {
+                // maximize hides the window control buttons
+                spreadDelegate2.requestMaximize();
+            }
+
+            keyPress(Qt.Key_Alt)
+            keyClick(Qt.Key_Tab);
 
             tryCompare(stage, "state", "spread");
 
@@ -1803,6 +1810,15 @@ Rectangle {
             tryCompare(surface, "focused", true);
 
             keyRelease(Qt.Key_Alt);
+
+            // verify the window control buttons are again visible, lp#1680018
+            if (data.maximize) {
+
+                spreadDelegate2.requestRestore();
+            }
+            var windowButtons = findChild(decoratedWindow, "windowControlButtons");
+            verify(windowButtons);
+            tryCompare(windowButtons, "visible", true);
         }
 
         function test_progressiveAutoScrolling() {

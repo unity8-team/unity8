@@ -100,6 +100,7 @@ MouseArea {
 
         WindowControlButtons {
             id: buttons
+            objectName: "windowControlButtons"
             anchors {
                 top: parent.top
                 bottom: parent.bottom
