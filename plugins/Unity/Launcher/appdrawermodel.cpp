@@ -32,6 +32,7 @@ AppDrawerModel::AppDrawerModel(QObject *parent):
         }
         LauncherItem* item = new LauncherItem(appId, info.name, info.icon, this);
         item->setKeywords(info.keywords);
+        item->setDescription(info.description);
         item->setPopularity(info.popularity);
         m_list.append(item);
     }
@@ -59,6 +60,8 @@ QVariant AppDrawerModel::data(const QModelIndex &index, int role) const
         return m_list.at(index.row())->icon();
     case RoleKeywords:
         return m_list.at(index.row())->keywords();
+    case RoleDescription:
+        return m_list.at(index.row())->description();
     case RoleUsage:
         return m_list.at(index.row())->popularity();
     }

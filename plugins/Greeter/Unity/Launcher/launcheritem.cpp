@@ -89,6 +89,19 @@ void LauncherItem::setKeywords(const QStringList &keywords)
     }
 }
 
+QString LauncherItem::description() const
+{
+    return m_description;
+}
+
+void LauncherItem::setDescription(const QString &description)
+{
+    if (m_description != description) {
+        m_description = description;
+        Q_EMIT descriptionChanged(m_description);
+    }
+}
+
 uint LauncherItem::popularity() const
 {
     // Not exposing usage order in greeter session at this point.

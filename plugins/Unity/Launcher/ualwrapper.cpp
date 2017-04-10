@@ -66,14 +66,16 @@ UalWrapper::AppInfo UalWrapper::getApplicationInfo(const QString &appId)
 
         std::shared_ptr<Application> ualApp;
         ualApp = Application::create(ualAppId, Registry::getDefault());
+        auto appInfo = ualApp->info();
 
         info.appId = appId;
-        info.name = QString::fromStdString(ualApp->info()->name());
-        info.icon = QString::fromStdString(ualApp->info()->iconPath());
-        for (const std::string &keyword : ualApp->info()->keywords().value()) {
+        info.name = QString::fromStdString(appInfo->name());
+        info.icon = QString::fromStdString(appInfo->iconPath());
+        info.description = QString::fromStdString(appInfo->description());
+        for (const std::string &keyword : appInfo->keywords().value()) {
             info.keywords << QString::fromStdString(keyword);
         }
-        info.popularity = ualApp->info()->popularity();
+        info.popularity = appInfo->popularity();
         info.valid = true;
     } catch (const std::runtime_error &e) {
         qWarning() << "ubuntu-app-launch threw an exception getting app info for appId:" << appId << ":" << e.what();
