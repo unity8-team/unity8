@@ -1,3 +1,31 @@
+unity8 (8.15+17.04.20170410-0ubuntu1) zesty; urgency=medium
+
+  [ Albert Astals Cid ]
+  * menutool: Use the ApplicationMenuRegistry
+  * Hide quicklist when launcher index changes (LP: #1672719)
+  * Fix Up/Down after Tab with quicklist open
+
+  [ Lukáš Tinkl ]
+  * Add autotest for missing window control buttons after a maximized
+    window exits spread (LP: #1680018)
+  * Appdrawer: search in more fields (appid and description), optimize
+    and massively speed up (LP: #1678299)
+  * Better session management, do not kill the apps, instead try closing
+    them in reverse order, and wait with the action until the app model
+    is empty
+
+  [ Michael Zanetti ]
+  * Appdrawer improvements (LP: #1672392)
+
+  [ Michał Sawicz ]
+  * Default to qtmir for providing the Unity.Application module (LP:
+    #1676996)
+
+  [ Pete Woods ]
+  * Remove indicator-session visibility and desktop profile hacks
+
+ -- Lukáš Tinkl <lukas.tinkl@canonical.com>  Mon, 10 Apr 2017 10:48:34 +0000
+
 unity8 (8.15+17.04.20170404.7-0ubuntu2) zesty; urgency=medium
 
   [ Michael Zanetti  ]
