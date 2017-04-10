@@ -1280,7 +1280,9 @@ Rectangle {
 
         function test_selectQuicklistItemByKeyboard() {
             launcher.openForKeyboardNavigation();
-            waitForRendering(launcher);
+
+            var launcherPanel = findChild(launcher, "launcherPanel");
+            tryCompareFunction( function(){ return launcherPanel.x === 0; }, true );
 
             signalSpy.signalName = "quickListTriggered"
 
@@ -1597,6 +1599,38 @@ Rectangle {
             keyClick(Qt.Key_Tab);
             compare(quickList.state, "")
             tryCompare(launcherPanel, "highlightIndex", 3);
+        }
+
+        function test_upDownAfterQuickList() {
+
+            dragLauncherIntoView();
+            var clickedItem = findChild(launcher, "launcherDelegate2")
+            var quickList = findChild(launcher, "quickList")
+            var launcherPanel = findChild(launcher, "launcherPanel");
+
+            launcherLoader.item.openForKeyboardNavigation()
+            launcherLoader.item.forceActiveFocus();
+
+            tryCompare(launcherPanel, "highlightIndex", -1);
+
+            keyClick(Qt.Key_Tab);
+            tryCompare(launcherPanel, "highlightIndex", 0);
+
+            keyClick(Qt.Key_Down);
+            tryCompare(launcherPanel, "highlightIndex", 1);
+
+            keyClick(Qt.Key_Right);
+            compare(quickList.state, "open")
+            tryCompare(launcherPanel, "highlightIndex", 1);
+
+            keyClick(Qt.Key_Tab);
+            tryCompare(launcherPanel, "highlightIndex", 2);
+
+            keyClick(Qt.Key_Down);
+            tryCompare(launcherPanel, "highlightIndex", 3);
+
+            keyClick(Qt.Key_Up);
+            tryCompare(launcherPanel, "highlightIndex", 2);
         }
     }
 }
